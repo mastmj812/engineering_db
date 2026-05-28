@@ -1,0 +1,7 @@
+sqlalchemy==2.0.36
+psycopg[binary]
+pandas>=2.3
+python-dotenv==1.0.1
+requests==2.32.3
+tenacity==9.0.0
+enverus-developer-api>=3.0.0
