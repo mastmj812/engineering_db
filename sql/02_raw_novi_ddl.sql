@@ -1,7 +1,7 @@
 -- =============================================================================
 -- raw_novi DDL - generated from Novi's shipped schema.postgres.sql
 -- Source file: data\us-horizontals\All basins\All subbasins\Bulk\schema.postgres.sql
--- Tables included: WellDetails, WellMonths, WellSpacing, Wells
+-- Tables included: ForecastWellMonths, WellDetails, WellMonths, WellSpacing, Wells
 -- 
 -- DO NOT EDIT BY HAND. Regenerate with scripts/generate_novi_ddl.py.
 -- =============================================================================
@@ -262,6 +262,30 @@ CREATE TABLE raw_novi."WellDetails" (
     "ModifiedAt" timestamp NULL,
     "DeletedAt" timestamp NULL,
     CONSTRAINT "WellDetails_pkey" PRIMARY KEY ("API10")
+,
+    "ingested_at" timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE raw_novi."ForecastWellMonths" (
+    "API10" varchar(32) NOT NULL,
+    "Date" date NOT NULL,
+    "MonthsOnProduction" int2 NOT NULL,
+    "IsForecasted" bool NOT NULL,
+    "Basin" varchar(36) NOT NULL,
+    "Subbasin" varchar(36) NOT NULL,
+    "OilPerDay" float8 NULL,
+    "OilPerMonth" int4 NULL,
+    "CumulativeOil" int4 NULL,
+    "GasPerDay" float8 NULL,
+    "GasPerMonth" int4 NULL,
+    "CumulativeGas" int4 NULL,
+    "WaterPerDay" float8 NULL,
+    "WaterPerMonth" int4 NULL,
+    "CumulativeWater" int4 NULL,
+    "CreatedAt" timestamp NULL,
+    "ModifiedAt" timestamp NULL,
+    "DeletedAt" timestamp NULL,
+    CONSTRAINT "ForecastWellMonths_pkey" PRIMARY KEY ("API10", "Date")
 ,
     "ingested_at" timestamptz NOT NULL DEFAULT now()
 );

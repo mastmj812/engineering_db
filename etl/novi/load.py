@@ -21,9 +21,20 @@ from etl.db import get_connection, log_etl_run
 logger = logging.getLogger(__name__)
 
 # Load order matters when downstream FKs are added. Wells is the parent
-# (keyed on API10); WellMonths, WellDetails, and WellSpacing all reference
-# it. Keep Wells first.
-MVP_TABLES: list[str] = ["Wells", "WellMonths", "WellDetails", "WellSpacing"]
+# (keyed on API10); WellMonths, WellDetails, WellSpacing, and
+# ForecastWellMonths all reference it. Keep Wells first.
+#
+# ForecastWellMonths is a unified history + forecast time series — the
+# IsForecasted boolean splits actuals from Novi's algorithmic forecast.
+# Loaded verbatim (~3 GB / ~50–100M rows) so raw_novi mirrors the source
+# exactly; curated layer is where IsForecasted=TRUE filtering happens.
+MVP_TABLES: list[str] = [
+    "Wells",
+    "WellMonths",
+    "WellDetails",
+    "WellSpacing",
+    "ForecastWellMonths",
+]
 
 
 def load_table(bulk_dir: Path, table_name: str) -> int:
