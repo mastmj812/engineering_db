@@ -126,6 +126,10 @@ class NoviDataSdk:
             return self._fetch_bulk_data_file(target_dir, latest_export['URL'], latest_export['ExportDate'])
 
         tmp_dir_base = self._data_dir / '_tmp' / (scope or self._scope) / (basin or 'All basins') / (subbasin or 'All subbasins')
+        # LOCAL PATCH: the diff loop below reassigns `latest_export` to each diff
+        # (which carries DiffURL, not the full-export URL), so capture the full
+        # export now for use by the full-download fallbacks below.
+        full_export = latest_export
         try:
             diff_tmp_dirs = []
             for diff in diffs:
@@ -141,6 +145,15 @@ class NoviDataSdk:
                 latest_export['ShapefileURL'],
                 None
             )
+
+            # LOCAL PATCH: merge_bulk_diffs reads schema.json from the *current*
+            # (pre-rename) bulk dir. If it is missing, the merge raises only after
+            # target_dir has been renamed away, and the `finally` below then deletes
+            # the live data. Detect it here -- before touching anything -- and fall
+            # back to a full download instead.
+            if not (target_dir / 'schema.json').exists():
+                print('Current bulk data has no schema.json; cannot diff-merge, fetching the full export instead')
+                return self._fetch_bulk_data_file(target_dir, full_export['URL'], full_export['ExportDate'])
 
             current_tmp_dir = target_dir.rename(tmp_dir_base / 'current')
 
@@ -158,11 +171,18 @@ class NoviDataSdk:
             self.write_file(target_dir.parent / self.EXPORT_DATE_FILE, latest_export['ExportDate'])
 
             return target_dir
-        except NoviDataDiffMergingException as e:
-            print(f'Error while merging diffs, falling back to just downloading a single whole file. Error message: {str(e)}')
-            return self._fetch_bulk_data_file(target_dir, latest_export['URL'], latest_export['ExportDate'])
+        except Exception as e:
+            # LOCAL PATCH: broadened from NoviDataDiffMergingException. By this point
+            # target_dir may already be renamed into tmp_dir_base, and the finally
+            # below will delete it -- so ANY merge failure (missing schema.json,
+            # malformed diff, I/O error) must recover via a full download rather than
+            # propagate and lose the local cache. Uses full_export, not latest_export
+            # (which the diff loop reassigned to a diff lacking the full-export URL).
+            print(f'Error while merging diffs, falling back to a full download. Error message: {str(e)}')
+            return self._fetch_bulk_data_file(target_dir, full_export['URL'], full_export['ExportDate'])
         finally:
-            shutil.rmtree(tmp_dir_base)
+            # ignore_errors so a cleanup failure can't mask the real exception above
+            shutil.rmtree(tmp_dir_base, ignore_errors=True)
 
     def _fetch_bulk_data_file(self, target_dir: Path, url: str, export_date: Optional[str]):
         print(f'Downloading {url} to {target_dir}')
