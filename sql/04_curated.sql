@@ -120,6 +120,21 @@ SELECT
     e.envinterval                                              AS env_interval,
 
     -- =========================================================================
+    -- LAND METADATA (Novi WellDetails — TX/NM land subdivision; useful for
+    -- spatial filtering and unit reconstruction. TX wells use the Spanish
+    -- grant system (Block / Survey / Abstract); NM wells use PLSS (Township
+    -- / Range / Section). Section is populated for both systems.
+    -- `range_` carries a trailing underscore because `range` is contextually
+    -- reserved in PG window-function syntax.)
+    -- =========================================================================
+    wd."Section"                                               AS section,
+    wd."Township"                                              AS township,
+    wd."Range"                                                 AS range_,
+    wd."TXBlock"                                               AS tx_block,
+    wd."TXSurvey"                                              AS tx_survey,
+    wd."TXAbstract"                                            AS tx_abstract,
+
+    -- =========================================================================
     -- WELLBORE LOCATIONS (Novi WellDetails is richer - has LP/MP)
     -- =========================================================================
     COALESCE(wd."SHLLatitude", n."SHLLatitude",
@@ -134,12 +149,64 @@ SELECT
     wd."MPLatitude"                                            AS midpoint_lat,
     wd."MPLongitude"                                           AS midpoint_lon,
 
+    -- -------------------------------------------------------------------------
+    -- Wellstick: 4-point LINESTRING built from the Novi locations
+    -- (Surface Hole → Landing Point → Midpoint → Bottom Hole), in the
+    -- well's natural traverse order. NULL points are skipped; result is
+    -- NULL if fewer than two valid points exist. Replaces what Enverus's
+    -- LateralLine WKT used to provide in the type-curve app.
+    -- -------------------------------------------------------------------------
+    CASE
+        WHEN (
+            (COALESCE(wd."SHLLatitude", n."SHLLatitude") IS NOT NULL)::int
+          + (wd."LPLatitude"  IS NOT NULL)::int
+          + (wd."MPLatitude"  IS NOT NULL)::int
+          + (COALESCE(wd."BHLLatitude", n."BHLLatitude") IS NOT NULL)::int
+        ) >= 2
+        THEN ST_SetSRID(
+            ST_MakeLine(
+                ARRAY_REMOVE(ARRAY[
+                    CASE WHEN COALESCE(wd."SHLLatitude",  n."SHLLatitude")  IS NOT NULL
+                          AND COALESCE(wd."SHLLongitude", n."SHLLongitude") IS NOT NULL
+                         THEN ST_Point(
+                                COALESCE(wd."SHLLongitude", n."SHLLongitude"),
+                                COALESCE(wd."SHLLatitude",  n."SHLLatitude"))
+                    END,
+                    CASE WHEN wd."LPLatitude" IS NOT NULL
+                          AND wd."LPLongitude" IS NOT NULL
+                         THEN ST_Point(wd."LPLongitude", wd."LPLatitude")
+                    END,
+                    CASE WHEN wd."MPLatitude" IS NOT NULL
+                          AND wd."MPLongitude" IS NOT NULL
+                         THEN ST_Point(wd."MPLongitude", wd."MPLatitude")
+                    END,
+                    CASE WHEN COALESCE(wd."BHLLatitude",  n."BHLLatitude")  IS NOT NULL
+                          AND COALESCE(wd."BHLLongitude", n."BHLLongitude") IS NOT NULL
+                         THEN ST_Point(
+                                COALESCE(wd."BHLLongitude", n."BHLLongitude"),
+                                COALESCE(wd."BHLLatitude",  n."BHLLatitude"))
+                    END
+                ], NULL)
+            ),
+            4326
+        )
+    END                                                        AS wellstick_geom,
+
     -- =========================================================================
     -- GEOLOGY (Novi authoritative - distinct Formation / Reported / Grid)
     -- =========================================================================
     COALESCE(wd."Formation", n."Formation")                    AS formation,
     COALESCE(wd."ReportedFormation", n."ReportedFormation")    AS reported_formation,
     COALESCE(wd."GridFormation", n."GridFormation")            AS grid_formation,
+    -- Trust flag for formation assignment. When TRUE, the directional
+    -- survey on file is the operator's pre-drill PLAN, not the actual
+    -- post-drill survey — and both Novi and Enverus use that planned
+    -- survey to "land" the well in their proprietary structure model,
+    -- which often misassigns Formation / ENVInterval. Self-corrects when
+    -- the operator uploads the actual survey; NM regulators are
+    -- notoriously slow, so many NM wells carry provisional formations
+    -- for an extended period after spud. See COMMENT ON COLUMN below.
+    wd."DirectionalSurveyIsPlanned"                            AS directional_survey_is_planned,
 
     -- =========================================================================
     -- WELLBORE (Novi WellDetails primary, Enverus fallback)
@@ -295,6 +362,26 @@ CREATE INDEX idx_curated_wells_first_production_date
 
 CREATE INDEX idx_curated_wells_basin_subbasin
     ON curated.wells (basin, subbasin);
+
+-- Spatial index for map-overlay queries (ST_Intersects against viewport bbox).
+-- NULL wellsticks are skipped by GIST natively.
+CREATE INDEX idx_curated_wells_wellstick_geom
+    ON curated.wells USING GIST (wellstick_geom);
+
+
+-- =============================================================================
+-- Column comments (visible in pgAdmin → Properties → Columns; survives
+-- matview rebuilds because they're attached after CREATE.)
+-- =============================================================================
+
+COMMENT ON COLUMN curated.wells.directional_survey_is_planned IS
+'TRUE = the directional survey is the operator''s pre-drill PLAN, not the actual post-drill survey. Both Novi and Enverus use planned surveys to assign Formation / ENVInterval via their proprietary structure models, which can mis-land the well. Self-corrects when the operator files the actual survey; NM regulators are notoriously slow, so NM wells often carry provisional formation assignments for an extended period.';
+
+COMMENT ON COLUMN curated.wells.wellstick_geom IS
+'LINESTRING (4326) built from the four Novi locations Surface Hole → Landing Point → Midpoint → Bottom Hole, in natural traverse order. NULL points are skipped; result is NULL if fewer than two valid points exist. Replaces what Enverus LateralLine WKT provided in the legacy type-curve app.';
+
+COMMENT ON COLUMN curated.wells.range_ IS
+'PLSS Range (NM-style land subdivision). Trailing underscore avoids the contextually-reserved SQL keyword. Populated only for PLSS states; ~0% in TX, ~20% Permian-wide.';
 
 
 -- =============================================================================
