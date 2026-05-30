@@ -24,9 +24,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
+from etl import notify as notify_step
 from etl import refresh as refresh_step
 from etl.enverus import pull_production as enverus_production
 from etl.enverus import pull_wells as enverus_wells
+from scripts import cleanup_vertical_production as cleanup_step
+
+# Sunday = 6 in Python's Monday-is-0 weekday convention. The weekly
+# vertical-production cleanup runs on this day only; the rest of the
+# week the step is skipped silently (no row in the run report).
+_CLEANUP_WEEKDAY = 6
 
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
 
@@ -122,6 +129,12 @@ def main() -> int:
     logger = logging.getLogger(__name__)
     logger.info("run_daily starting; log file: %s", log_path)
 
+    # Heartbeat: tell healthchecks.io the run actually started. The
+    # success/"fail" ping at the end of notify_run distinguishes outcomes;
+    # this /start ping resets the dead-man's-switch grace period so a
+    # missed run alerts cleanly the next morning.
+    notify_step.ping_healthcheck("/start")
+
     report = RunReport()
     state: dict[str, Path | None] = {"novi_bulk_dir": None}
 
@@ -140,13 +153,31 @@ def main() -> int:
 
         return sum(load_all(state["novi_bulk_dir"]).values())
 
-    _run_step("novi.sync", step_novi_sync, report)
-    _run_step("novi.load", step_novi_load, report)
-    _run_step("enverus.pull_wells", enverus_wells.main, report)
-    _run_step("enverus.pull_production", enverus_production.main, report)
-    _run_step("curated.refresh", lambda: (refresh_step.main() or 0), report)
-
-    _print_summary(report)
+    # Wrap the per-step body in try/finally so the summary + notification
+    # always fire — even if a bug in the orchestrator itself (not the
+    # individual steps, which are already _run_step-guarded) raises.
+    try:
+        _run_step("novi.sync", step_novi_sync, report)
+        _run_step("novi.load", step_novi_load, report)
+        _run_step("enverus.pull_wells", enverus_wells.main, report)
+        _run_step("enverus.pull_production", enverus_production.main, report)
+        # Weekly cleanup must precede curated.refresh so Sunday's matview
+        # rebuild reflects the cleaned raw_enverus.production.
+        if datetime.now().weekday() == _CLEANUP_WEEKDAY:
+            _run_step("enverus.cleanup_vertical", cleanup_step.main, report)
+        _run_step("curated.refresh", lambda: (refresh_step.main() or 0), report)
+    finally:
+        _print_summary(report)
+        # notify_run pings the healthcheck (success or /fail) AND sends
+        # the email summary. Both no-op cleanly when their env vars
+        # are unset, so the notification path is opt-in per channel.
+        try:
+            notify_step.notify_run(report.steps, log_path=log_path)
+        except Exception:
+            # Defense in depth — notify_run already swallows its own
+            # exceptions; this is the last guard against a notification
+            # bug perturbing the orchestrator's exit code.
+            logger.exception("notify_run raised (non-fatal)")
 
     failed = [s for s in report.steps if s.status == "failed"]
     return 1 if failed else 0
