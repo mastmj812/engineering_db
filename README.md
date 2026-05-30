@@ -53,14 +53,28 @@ python -m scripts.generate_enverus_ddl
 # 11. Apply the generated Enverus DDL
 psql -d oilgas -f sql/03_raw_enverus_ddl.sql
 
-# 12. Kick off a daily cycle end-to-end
+# 12. Build the curated layer (after at least one Novi + Enverus load)
+psql -d oilgas -f sql/04_curated.sql
+psql -d oilgas -f sql/05_curated_production.sql
+psql -d oilgas -f sql/06_curated_derived.sql
+
+# 13. Kick off a daily cycle end-to-end
 python -m scripts.run_daily
 ```
 
-The two raw schemas are now derived from authoritative upstream artifacts:
+The two raw schemas are derived from authoritative upstream artifacts:
 Novi ships `schema.postgres.sql` with the bulk download, and Enverus's SDK
-exposes `v3.ddl(dataset, database="pg")`. The `curated.*` layer is deferred
-until both raw schemas exist (column names aren't pinned until step 11).
+exposes `v3.ddl(dataset, database="pg")`. The `curated.*` layer is built on
+top of them in three phases:
+
+- **04 — `curated.wells`** (matview): Novi `Wells` + `WellDetails` + `WellSpacing` joined to the latest Enverus completion per wellbore, with snake_case columns and a documented source-of-truth per field.
+- **05 — `curated.production`** (matview): Novi `WellMonths` pass-through, indexed for the `(api10, months_on_production)` cohort-query pattern.
+- **06 — derived analytical layer**:
+  - `curated.wells_enriched` (regular view): adds per-well derived columns — `completion_vintage_bucket`, `lateral_length_class`, `is_horizontal`, `stages_per_1000ft`, per-stage intensity, `has_completion_intensity`.
+  - `curated.production_normalized` (matview): production INNER JOIN wells with per-1000-ft normalized rates (oil/gas/water/boe, current and cumulative) and cohort keys carried forward.
+  - `curated.type_curve_cohorts` (matview): pre-computed P10/P25/P50/P75/P90 of per-1000-ft rates by (state, county, formation, vintage bucket) × MoP 1-240, with `well_count` / `well_months` for sample-size filtering.
+
+`curated.refresh_all()` refreshes all four matviews `CONCURRENTLY` in dependency order; `wells_enriched` is a regular view and auto-syncs.
 
 ## Running
 
@@ -85,21 +99,34 @@ python -m etl.enverus.pull_production
 python -m etl.refresh
 ```
 
-Periodic maintenance (run weekly, not part of daily orchestrator):
+Periodic maintenance: `scripts.cleanup_vertical_production` runs
+automatically inside `run_daily.py` on Sundays only (gated on
+`datetime.now().weekday() == 6`), positioned between the Enverus
+production pull and the curated refresh so Sunday's matview rebuild
+reflects the cleaned `raw_enverus.production`. The other six days of
+the week the step is skipped silently and doesn't appear in the run
+report. You can also invoke it ad-hoc:
 
 ```powershell
 python -m scripts.cleanup_vertical_production
 ```
 
-The incremental production pull skips the per-wellbore chunked filter on
-non-cold runs (huge speedup), so vertical-well production rows occasionally
-sneak in. This cleanup script deletes them.
+The incremental production pull skips the per-wellbore chunked filter
+on non-cold runs (huge speedup), so vertical-well production rows
+occasionally sneak in. This cleanup script deletes them.
 
-One-time historical backfill (stub):
+One-time historical backfill:
 
 ```powershell
-python -m scripts.backfill --source enverus --table production \
+# Enverus production: producingmonth between(start, end); requires both dates
+python -m scripts.backfill --source enverus --table production `
     --start-date 2010-01-01 --end-date 2025-12-31
+
+# Enverus wells: full non-incremental Permian pull (no date filter)
+python -m scripts.backfill --source enverus --table wells
+
+# Novi: TRUNCATE+COPY the current on-disk TSV (Novi has no "as-of" history)
+python -m scripts.backfill --source novi --table production
 ```
 
 ## Architecture
@@ -154,6 +181,51 @@ Windows Task Scheduler runs the daily pipeline:
 
 Recommended cadence: daily, off-hours, after the upstream sources have
 finished their nightly refresh.
+
+## Notifications
+
+The daily run can send a plain-text summary email at the end of every
+run (success or failure) and ping a healthchecks.io dead-man's-switch.
+Both are opt-in via env vars; leaving any of them unset disables that
+channel cleanly. See `etl/notify.py` for implementation details.
+
+**Email summary** (Gmail SMTP) — answers "did the run land, and what did
+it touch?"
+
+```ini
+NOTIFY_EMAIL_TO=you@example.com
+NOTIFY_EMAIL_FROM=sender@gmail.com
+NOTIFY_SMTP_USER=sender@gmail.com
+NOTIFY_SMTP_PASS=<16-char Gmail app password>
+NOTIFY_SMTP_HOST=smtp.gmail.com   # default
+NOTIFY_SMTP_PORT=587              # default
+```
+
+The Gmail account needs 2FA enabled, then generate an app password at
+https://myaccount.google.com/apppasswords (regular Gmail passwords were
+disabled for SMTP in 2022). The body is a fixed-width text table with
+per-step status, row counts, curated.production freshness
+(`MAX(prod_date)` + days behind today), curated.* row counts, and the
+Novi `ExportDate.txt` snapshot tag.
+
+**healthchecks.io dead-man's-switch** — answers "did the run actually
+fire at all?" Catches the failure mode email can't: Windows Task
+Scheduler silently failing to start the run when the laptop was asleep
+or the user wasn't logged in.
+
+```ini
+HEALTHCHECKS_PING_URL=https://hc-ping.com/<your-check-uuid>
+```
+
+1. Sign up free at https://healthchecks.io.
+2. Create a check with schedule "daily at 06:00" and a ~2-hour grace
+   window (covers slow runs without false alarms).
+3. Add an email/Slack/SMS integration on the check so missed pings reach
+   you.
+4. Copy the ping URL into the env var above.
+
+The run pings `<url>/start` at the top of `run_daily.py` and either
+`<url>` (success) or `<url>/fail` (any step failed) at the end.
 
 ## Conventions and defaults
 
@@ -218,6 +290,10 @@ engineering_db/
 │   ├── 01_initial_ddl_v3.sql        # meta schema + extensions (hand-written)
 │   ├── 02_raw_novi_ddl.sql          # generated from Novi's schema.postgres.sql
 │   ├── 03_raw_enverus_ddl.sql       # generated from DeveloperAPIv3.ddl()
+│   ├── 04_curated.sql               # curated.wells (matview) — includes wellstick_geom + GIST index
+│   ├── 05_curated_production.sql    # curated.production (matview)
+│   ├── 06_curated_derived.sql       # wells_enriched + production_normalized + type_curve_cohorts
+│   ├── 07_cutover_prep.sql          # one-time: drop+rebuild curated chain to pick up wellstick_geom
 │   └── migrations/
 ├── scripts/
 │   ├── generate_novi_ddl.py
