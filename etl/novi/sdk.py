@@ -121,6 +121,15 @@ class NoviDataSdk:
 
             raise e
 
+        # LOCAL PATCH: an empty diff set must NOT proceed into the merge.
+        # merge_bulk_diffs empties target_dir and only writes files that appear
+        # in the diffs, so zero diffs produces a Bulk/ with no Database/ (total
+        # cache loss) while still advancing ExportDate.txt. A newer export with
+        # no usable diffs means there is nothing to merge -- do a full download.
+        if not diffs:
+            print('No diffs returned for this window; fetching the full export instead')
+            return self._fetch_bulk_data_file(target_dir, latest_export['URL'], latest_export['ExportDate'])
+
         if len(diffs) > 30:
             print(f'There are {len(diffs)} diffs to apply, falling back to just downloading a single whole file')
             return self._fetch_bulk_data_file(target_dir, latest_export['URL'], latest_export['ExportDate'])

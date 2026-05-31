@@ -54,7 +54,13 @@ def sync_bulk(data_dir: Path | None = None) -> Path:
         scope=scope,
         data_dir=data_dir,
     )
-    target = sdk.update_bulk_data()
+    # no_diffs=True forces a full download whenever a newer export exists,
+    # bypassing the SDK's diff-merge path entirely. That path has destroyed
+    # the local cache twice via separate bugs (an uncaught exception mid-merge,
+    # and an empty diff set silently emptying the Database/ dir), and a failed
+    # merge also wrongly advances ExportDate.txt so the cache can't self-heal.
+    # A full download is ~1.6 GB / ~1 min nightly -- cheap vs. silent data loss.
+    target = sdk.update_bulk_data(no_diffs=True)
     logger.info("Novi bulk sync complete; data at: %s", target)
     _verify_bulk_dir(target)
     return target
