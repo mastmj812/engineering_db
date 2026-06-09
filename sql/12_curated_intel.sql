@@ -53,6 +53,10 @@ SELECT
     -- identity / geology / completion
     s.phase, s.operator, s.formation, s.county, s.pad_name,
     s.fp_year, s.tvd, s.md, s.ll_ft, s.prop_load,
+    -- PUD ML highgrade attributes (sql/13; NULL for PDP/RES). Scores are signed
+    -- ML floats; tiers are 'Tier-1'..'Tier-4'. Drives the erebor Highgrade tab.
+    pa.spacing_s, pa.spacing_t, pa.deplet_s, pa.deplet_t,
+    pa.complet_s, pa.complet_t, pa.rqs, pa.rqt,
     -- reserves / rates
     s.oil_eur, s.gas_eur, s.dgas_eur, s.ngl_eur, s.water_eur,
     s.oil_ip, s.gas_ip, s.dgas_ip, s.ngl_ip, s.water_ip,
@@ -82,7 +86,11 @@ LEFT JOIN slice_irr si       ON si.basin = s.basin AND si.category = s.category
 LEFT JOIN curated.wells w    ON w.api10 = s.api10
 LEFT JOIN pad_npv pn         ON pn.basin = s.basin AND pn.pad_name = s.pad_name
 LEFT JOIN raw_novi_intel.analytics a
-                             ON a.basin = s.basin AND a.well_name = s.unique_id;
+                             ON a.basin = s.basin AND a.well_name = s.unique_id
+LEFT JOIN raw_novi_intel.pud_attrs pa
+                             ON pa.basin = s.basin
+                            AND pa.report_version = s.report_version
+                            AND pa.unique_id = s.unique_id;
 
 -- Unique key required for REFRESH ... CONCURRENTLY.
 CREATE UNIQUE INDEX idx_intel_locations_pk ON curated.intel_locations (stick_id);

@@ -4,6 +4,7 @@ Phased so the multi-GB CSV COPY can be run separately from the fast shapefile lo
 psql is not required — .sql files are executed via psycopg.
 
     python -m scripts.load_novi_intel --ddl --shapefiles      # schema + geometry/economics
+    python -m scripts.load_novi_intel --pud-attrs             # PUD ML tier/score attrs
     python -m scripts.load_novi_intel --csvs                  # analytics/arps/forecast (slow)
     python -m scripts.load_novi_intel --curated               # build/refresh curated.intel_*
     python -m scripts.load_novi_intel --all                   # everything, in order
@@ -33,22 +34,25 @@ def run_sql_file(name: str) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Load Novi Intelligence into engineering_db.")
-    ap.add_argument("--ddl", action="store_true", help="create/rebuild raw_novi_intel schema (sql/11)")
+    ap.add_argument("--ddl", action="store_true", help="create/rebuild raw_novi_intel schema (sql/11 + 13)")
     ap.add_argument("--shapefiles", action="store_true", help="load sticks/pads/grid/outline")
+    ap.add_argument("--pud-attrs", action="store_true", help="load PUD ML tier/score attrs (sql/13 table)")
     ap.add_argument("--csvs", action="store_true", help="load analytics/arps/forecast (slow)")
     ap.add_argument("--curated", action="store_true", help="build/refresh curated.intel_* (sql/12)")
-    ap.add_argument("--all", action="store_true", help="ddl + shapefiles + csvs + curated")
+    ap.add_argument("--all", action="store_true", help="ddl + shapefiles + pud-attrs + csvs + curated")
     args = ap.parse_args()
 
     do_ddl = args.ddl or args.all
     do_shp = args.shapefiles or args.all
+    do_pud = args.pud_attrs or args.all
     do_csv = args.csvs or args.all
     do_cur = args.curated or args.all
-    if not any((do_ddl, do_shp, do_csv, do_cur)):
-        ap.error("specify at least one of --ddl/--shapefiles/--csvs/--curated/--all")
+    if not any((do_ddl, do_shp, do_pud, do_csv, do_cur)):
+        ap.error("specify at least one of --ddl/--shapefiles/--pud-attrs/--csvs/--curated/--all")
 
     if do_ddl:
         run_sql_file("11_raw_novi_intel.sql")
+        run_sql_file("13_pud_attrs.sql")
     if do_shp:
         from etl.novi_intel import load_shapefiles
         for b in ("delaware", "midland"):
@@ -56,6 +60,10 @@ def main() -> None:
             load_shapefiles.load_pads(b)
             load_shapefiles.load_grid(b)
             load_shapefiles.load_outline(b)
+    if do_pud:
+        from etl.novi_intel import load_pud_attrs
+        for b in ("delaware", "midland"):
+            load_pud_attrs.load_pud_attrs(b)
     if do_csv:
         from etl.novi_intel import load_csvs
         for b in ("delaware", "midland"):

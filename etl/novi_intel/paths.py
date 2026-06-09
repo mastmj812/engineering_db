@@ -35,6 +35,13 @@ PAD_ZIP_PRED = lambda n: ("pad shapefile" in n) or ("pad)" in n)
 GRID_ZIP_PRED = lambda n: "land grid" in n
 OUTLINE_ZIP_PRED = lambda n: "outline" in n
 
+# PUD ML-attribute shapefiles (geometry identical to PUD_Oil sticks; attrs only).
+# `other_ml` -> spacing/depletion/completion score+tier; `rock_quality` -> RQ score+tier.
+PUD_ATTR_ZIP_PRED = {
+    "other_ml": lambda n: n.startswith("other_ml_pud_oil"),
+    "rock_quality": lambda n: n.startswith("undrilled_rock_quality"),
+}
+
 
 def _find(root: Path, pred, suffix: str) -> Path | None:
     for dirpath, _dirs, files in os.walk(root):
@@ -58,6 +65,11 @@ def grid_zip(basin: str) -> Path | None:
 
 def outline_zip(basin: str) -> Path | None:
     return _find(BASIN_DIRS[basin], OUTLINE_ZIP_PRED, ".zip")
+
+
+def pud_attr_zip(basin: str, kind: str) -> Path | None:
+    """kind in {'other_ml','rock_quality'} -> the matching PUD ML-attribute .zip."""
+    return _find(BASIN_DIRS[basin], PUD_ATTR_ZIP_PRED[kind], ".zip")
 
 
 def csv_path(basin: str, kind: str) -> Path | None:
