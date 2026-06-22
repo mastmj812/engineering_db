@@ -6,7 +6,7 @@ Intended to be invoked by Windows Task Scheduler:
 Sequence:
     1. Sync Novi bulk TSVs to disk (etl.novi.sync.sync_bulk)
     2. COPY Novi TSVs into raw_novi.* (etl.novi.load.load_all)
-    3. Pull Enverus deltas into raw_enverus.* (one step per MVP dataset)
+    3. Pull Enverus wells deltas into raw_enverus.wells (etl.enverus.pull_wells)
     4. Refresh curated materialized views (curated.refresh_all)
 
 Each step is isolated in its own try/except so a single failure does not
@@ -26,14 +26,7 @@ from typing import Callable
 
 from etl import notify as notify_step
 from etl import refresh as refresh_step
-from etl.enverus import pull_production as enverus_production
 from etl.enverus import pull_wells as enverus_wells
-from scripts import cleanup_vertical_production as cleanup_step
-
-# Sunday = 6 in Python's Monday-is-0 weekday convention. The weekly
-# vertical-production cleanup runs on this day only; the rest of the
-# week the step is skipped silently (no row in the run report).
-_CLEANUP_WEEKDAY = 6
 
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
 
@@ -160,11 +153,6 @@ def main() -> int:
         _run_step("novi.sync", step_novi_sync, report)
         _run_step("novi.load", step_novi_load, report)
         _run_step("enverus.pull_wells", enverus_wells.main, report)
-        _run_step("enverus.pull_production", enverus_production.main, report)
-        # Weekly cleanup must precede curated.refresh so Sunday's matview
-        # rebuild reflects the cleaned raw_enverus.production.
-        if datetime.now().weekday() == _CLEANUP_WEEKDAY:
-            _run_step("enverus.cleanup_vertical", cleanup_step.main, report)
         _run_step("curated.refresh", lambda: (refresh_step.main() or 0), report)
     finally:
         _print_summary(report)

@@ -32,8 +32,10 @@ logger = logging.getLogger(__name__)
 # https://app.enverus.com/direct/#/api/explorer/v3/gettingStarted
 MVP_DATASETS: list[str] = [
     "wells",
-    "production",
     # Add others as needed, e.g. "rigs", "permits", "casings"
+    # NOTE: "production" was removed 2026-06-22 — Enverus production was
+    # ingested but never consumed (curated.production is Novi WellMonths
+    # only). Re-add here if a cross-source production need ever arises.
 ]
 
 

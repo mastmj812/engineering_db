@@ -2,9 +2,8 @@
 
 Enverus's iteration pattern (`v3.query(dataset, **filters)`) is identical
 across every dataset, so one parameterized function covers all of them.
-The per-dataset wrappers in `pull_wells.py` / `pull_production.py` are
-thin shims that just call `pull_dataset(...)` with the right name and
-conflict columns.
+The per-dataset wrapper `pull_wells.py` is a thin shim that just calls
+`pull_dataset(...)` with the right name and conflict columns.
 
 Incremental loads use `meta.etl_log` as the cursor: the timestamp of the
 last successful run for this dataset becomes the `updateddate=gt(...)`

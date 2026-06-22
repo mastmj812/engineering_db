@@ -6,17 +6,11 @@ DDL changes or when bringing a new source online.
 
 Per-source semantics:
 
-- **Enverus production** (the high-value case): pulls every Permian
-  production row whose `ProducingMonth` falls in
-  ``[--start-date, --end-date]``, bypassing the daily ``updateddate``
-  incremental cursor. Both date flags are required. Reuses the chunked
-  ``api_uwi_unformatted`` filter from ``pull_production.py`` so only
-  non-vertical wellbores are pulled.
-
 - **Enverus wells**: full non-incremental pull. Wells has no temporal
   column to bound on, so ``--start-date`` / ``--end-date`` are ignored
   (with a warning). Cheap enough to just refetch the whole Permian
-  universe.
+  universe. (Enverus *production* is no longer ingested — removed
+  2026-06-22 — so ``--source enverus --table production`` is rejected.)
 
 - **Novi wells / production**: Novi's bulk-download model only ever
   exposes the current snapshot — there is no historical "as of" query.
@@ -30,10 +24,6 @@ production backfill, the next daily run's incremental cutoff is the
 backfill's ``run_finished_at`` — no boundary double-processing.
 
 Examples:
-    # Pull 15 years of Permian production
-    python -m scripts.backfill --source enverus --table production \\
-        --start-date 2010-01-01 --end-date 2025-12-31
-
     # Refetch the full Permian wells universe
     python -m scripts.backfill --source enverus --table wells
 
@@ -118,48 +108,6 @@ def _backfill_enverus_wells() -> int:
     )
 
 
-def _backfill_enverus_production(start: date, end: date) -> int:
-    """Pull Permian production for ProducingMonth in [start, end].
-
-    Bypasses the ``updateddate`` incremental cursor and adds a
-    ``producingmonth=between(...)`` filter. Otherwise identical to the
-    daily ``pull_production`` path — same Permian scope, same chunked
-    api_uwi filter to skip vertical wellbores.
-    """
-    from etl.enverus.pull import pull_dataset
-    from etl.enverus.pull_production import (
-        CONFLICT_COLS,
-        PERMIAN_FILTERS,
-        _non_vertical_api_uwi_unformatted,
-    )
-
-    api_uwis = _non_vertical_api_uwi_unformatted()
-    if not api_uwis:
-        raise RuntimeError(
-            "No non-vertical api_uwi_unformatted in raw_enverus.wells; "
-            "run `enverus wells` (incremental or backfill) first."
-        )
-
-    filters: dict[str, str] = {
-        **PERMIAN_FILTERS,
-        "producingmonth": f"between({start.isoformat()},{end.isoformat()})",
-    }
-    logger.info(
-        "Enverus production backfill: %d wellbores, ProducingMonth %s to %s",
-        len(api_uwis),
-        start,
-        end,
-    )
-    return pull_dataset(
-        "production",
-        conflict_cols=CONFLICT_COLS,
-        incremental=False,
-        extra_filters=filters,
-        chunked_filter=("api_uwi_unformatted", api_uwis),
-        chunk_size=250,
-    )
-
-
 def _backfill_novi(novi_table: str) -> int:
     """TRUNCATE+COPY a single Novi raw table from its on-disk TSV.
 
@@ -203,25 +151,19 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if args.source == "enverus":
-        if args.table == "wells":
-            if args.start_date or args.end_date:
-                logger.warning(
-                    "--start-date/--end-date ignored: wells has no "
-                    "ProducingMonth column to bound on."
-                )
-            return _backfill_enverus_wells()
-        # enverus production
-        if args.start_date is None or args.end_date is None:
+        if args.table == "production":
             raise SystemExit(
-                "enverus production backfill requires both --start-date "
-                "and --end-date."
+                "Enverus production is no longer ingested (removed "
+                "2026-06-22). Use Novi production (WellMonths): "
+                "`--source novi --table production`."
             )
-        if args.start_date > args.end_date:
-            raise SystemExit(
-                f"--start-date ({args.start_date}) must be <= --end-date "
-                f"({args.end_date})."
+        # enverus wells
+        if args.start_date or args.end_date:
+            logger.warning(
+                "--start-date/--end-date ignored: wells has no "
+                "ProducingMonth column to bound on."
             )
-        return _backfill_enverus_production(args.start_date, args.end_date)
+        return _backfill_enverus_wells()
 
     # source == "novi"
     if args.start_date or args.end_date:

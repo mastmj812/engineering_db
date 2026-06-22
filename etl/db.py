@@ -155,9 +155,8 @@ class EtlRunHandle:
     """Mutable handle yielded by `log_etl_run` so callers can record row counts.
 
     `rows_inserted` is the canonical counter for ingest steps. `rows_deleted`
-    is set by cleanup-style steps that scrub rows out (e.g.,
-    `scripts/cleanup_vertical_production.py`). Both land in their
-    respective columns in `meta.etl_log`.
+    is reserved for cleanup-style steps that scrub rows out. Both land in
+    their respective columns in `meta.etl_log`.
     """
 
     def __init__(self) -> None:
