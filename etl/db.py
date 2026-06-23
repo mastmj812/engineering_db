@@ -14,6 +14,7 @@ import logging
 import os
 from contextlib import contextmanager
 from typing import Any, Iterable, Iterator, Mapping, Sequence
+from urllib.parse import quote
 
 import psycopg
 from dotenv import load_dotenv
@@ -35,37 +36,84 @@ def _required_env(name: str) -> str:
 
 
 def _db_kwargs() -> dict[str, str]:
-    """Collect DB connection parameters from environment variables."""
+    """Collect DB connection parameters from environment variables.
+
+    Beyond host/port/db/user/password, this carries SSL and TCP-keepalive
+    settings so the ETL connects reliably to a managed Postgres endpoint
+    (e.g. Supabase) as well as a local server:
+      - `sslmode` (env DB_SSLMODE, default 'prefer'; set 'require' for Supabase).
+      - keepalives so a long, quiet statement such as curated.refresh_all()
+        isn't dropped by the connection pooler / NAT during silent periods.
+    """
     return {
         "host": _required_env("DB_HOST"),
         "port": os.getenv("DB_PORT", "5432"),
         "dbname": _required_env("DB_NAME"),
         "user": _required_env("DB_USER"),
         "password": os.getenv("DB_PASSWORD", ""),
+        "sslmode": os.getenv("DB_SSLMODE", "prefer"),
+        "connect_timeout": os.getenv("DB_CONNECT_TIMEOUT", "30"),
+        "keepalives": "1",
+        "keepalives_idle": "30",
+        "keepalives_interval": "10",
+        "keepalives_count": "5",
     }
+
+
+# Applied to every new connection. statement_timeout=0 overrides Supabase's
+# 2-minute platform default — which the pooler won't let us change via ALTER
+# ROLE or startup options — so large COPYs and curated.refresh_all() can run.
+# search_path includes `extensions` so PostGIS (geometry / ST_*) resolves; on
+# Supabase, PostGIS lives in the extensions schema. Both are harmless locally.
+_SESSION_SETTINGS: tuple[str, ...] = (
+    "SET statement_timeout = 0",
+    "SET search_path TO public, extensions",
+)
+
+
+def _apply_session_settings(conn: PGConnection) -> None:
+    """Apply per-session GUCs (statement_timeout, search_path) and commit."""
+    with conn.cursor() as cur:
+        for stmt in _SESSION_SETTINGS:
+            cur.execute(stmt)
+    conn.commit()
 
 
 def get_engine() -> Engine:
     """Return a SQLAlchemy engine built from `.env` credentials.
 
-    The engine uses the psycopg (v3) driver and `pool_pre_ping=True` so that
-    stale connections get recycled transparently.
+    Uses the psycopg (v3) driver, `pool_pre_ping=True` to recycle stale
+    connections, and SSL + keepalives via connect_args. The password is
+    URL-encoded so special characters in managed-DB passwords don't break the
+    URL.
     """
     kw = _db_kwargs()
     url = (
-        f"postgresql+psycopg://{kw['user']}:{kw['password']}"
+        f"postgresql+psycopg://{kw['user']}:{quote(kw['password'], safe='')}"
         f"@{kw['host']}:{kw['port']}/{kw['dbname']}"
     )
-    return create_engine(url, pool_pre_ping=True, future=True)
+    connect_args = {
+        "sslmode": kw["sslmode"],
+        "connect_timeout": int(kw["connect_timeout"]),
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    }
+    return create_engine(
+        url, pool_pre_ping=True, future=True, connect_args=connect_args
+    )
 
 
 def get_connection() -> PGConnection:
-    """Return a raw psycopg (v3) connection.
+    """Return a raw psycopg (v3) connection with ETL session settings applied.
 
-    Use this when you need `cursor.executemany()` for bulk upserts; SQLAlchemy
-    is fine for everything else.
+    Use this when you need `cursor.executemany()` for bulk upserts or COPY;
+    SQLAlchemy is fine for everything else.
     """
-    return psycopg.connect(**_db_kwargs())
+    conn = psycopg.connect(**_db_kwargs())
+    _apply_session_settings(conn)
+    return conn
 
 
 @contextmanager
