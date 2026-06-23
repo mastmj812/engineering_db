@@ -34,6 +34,46 @@ version-portable `sql/*.sql` files.
 
 ---
 
+## 0b. Operational notes — VALIDATED on the 2026-06-23 migration
+
+The migration succeeded; these are the real gotchas (the abstract steps below
+assume they're handled):
+
+- **Supabase = PG 17.6; PostGIS 3.3.7 in the `extensions` schema (not relocatable).**
+  The dump hard-qualifies `public.geometry` (4 refs). Fix: `sed 's/public\.geometry/
+  extensions.geometry/g'` on the pre-data SQL, and `SET search_path TO public,
+  extensions` on every build session.
+- **`statement_timeout = 2min`** is a Supabase platform-config default. It kills big
+  COPYs and the matview builds. `ALTER ROLE … SET statement_timeout=0` registers but
+  is **NOT applied on pooler connections** (the pooler reuses server conns);
+  `PGOPTIONS` is **stripped by the pooler** too. Two ways that DO work:
+  - **Direct connection** (`db.<ref>.supabase.co:5432`, user `postgres`): honors
+    `ALTER ROLE … statement_timeout=0`, and supports parallel `pg_restore -j`. BUT it
+    is **IPv6-only** — needs working IPv6 from the client (was up, then went
+    unreachable mid-migration; unreliable).
+  - **Pooler** (`…pooler.supabase.com:5432`, user `postgres.<ref>`, IPv4, stable):
+    **session-level `SET statement_timeout=0` works.** `pg_restore` can't inject it,
+    so **stream the dump through psql** with a leading SET (single session):
+    ```
+    { echo "SET statement_timeout=0;"; \
+      pg_restore --no-owner --no-privileges --section=data -f - oilgas_….dump; } \
+      | psql "<pooler-uri>" -v ON_ERROR_STOP=1
+    ```
+    Single-threaded but reliable. Same pattern for `--section=post-data`.
+- **Disk:** the default 8 GB project disk **crashed** mid-restore ("database system is
+  not accepting connections / Hot standby disabled"). The ~27 GB warehouse needs
+  **~50–60 GB disk** (60 GB used, ~27 GB consumed). Resize disk+compute in the
+  dashboard BEFORE restoring; resizing also recovers a disk-full instance.
+- **`refresh_all()` over the pooler stalls** — it's one long *silent* statement
+  (~15 min of CONCURRENTLY refreshes, no network traffic), and the pooler drops it.
+  Run the nightly `refresh_all` from a host with a **stable/direct connection** or add
+  libpq TCP keepalives (`keepalives=1&keepalives_idle=30&keepalives_interval=10`). The
+  matviews are populated on build, so this only affects the *nightly* refresh.
+- **Don't trust `pg_restore`'s `|| echo` exit masking** — check the log for
+  `pg_restore: error`, not just the shell rc.
+
+---
+
 ## 1. Preconditions & decisions
 
 - [ ] **Confirm Supabase Postgres major version.** Source is 18; Supabase is
