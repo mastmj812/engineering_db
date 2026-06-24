@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from contextlib import contextmanager
 from typing import Any, Iterable, Iterator, Mapping, Sequence
 from urllib.parse import quote
@@ -212,20 +213,70 @@ class EtlRunHandle:
         self.rows_deleted: int = 0
 
 
-def refresh_curated() -> None:
-    """Execute `SELECT curated.refresh_all();` to rebuild curated views."""
-    conn = get_connection()
+def settle(seconds: int | None = None) -> int:
+    """Give a small managed instance a moment to flush before the next
+    memory-heavy step: a best-effort CHECKPOINT (skipped if the role lacks the
+    privilege) plus a short pause so the background writer/checkpointer can
+    drain dirty buffers. Duration via ETL_SETTLE_SECONDS (default 20; 0 = off).
+    Returns the seconds slept (so it can be used as a run_daily step)."""
+    secs = int(os.getenv("ETL_SETTLE_SECONDS", "20")) if seconds is None else seconds
+    if secs <= 0:
+        return 0
     try:
-        with conn.cursor() as cur:
-            cur.execute("SELECT curated.refresh_all();")
-        conn.commit()
-        logger.info("curated.refresh_all() completed")
+        conn = get_connection()
+        try:
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                cur.execute("CHECKPOINT")
+        except Exception:
+            logger.debug("CHECKPOINT unavailable; relying on background flush", exc_info=True)
+        finally:
+            conn.close()
     except Exception:
-        conn.rollback()
-        logger.exception("curated.refresh_all() failed")
-        raise
-    finally:
-        conn.close()
+        logger.debug("settle: checkpoint connection failed", exc_info=True)
+    time.sleep(secs)
+    return secs
+
+
+# Curated materialized views in dependency-refresh order (mirrors what
+# curated.refresh_all() does internally). refresh_curated() refreshes them one
+# at a time rather than via the single refresh_all() call.
+_CURATED_MATVIEWS: tuple[str, ...] = (
+    "curated.wells",
+    "curated.production",
+    "curated.production_normalized",
+    "curated.type_curve_cohorts",
+    "curated.production_forecast",
+    "curated.intel_locations",
+)
+
+
+def refresh_curated() -> None:
+    """Refresh the curated materialized views CONCURRENTLY, one at a time, in
+    dependency order, with a settle between each.
+
+    Refreshing individually (each in its own autocommit session) keeps the peak
+    memory footprint lower than a single curated.refresh_all() call — important
+    on a small managed instance — and means a failure part-way still leaves the
+    earlier matviews refreshed. CONCURRENTLY can't run inside a transaction
+    block, hence autocommit.
+    """
+    n = len(_CURATED_MATVIEWS)
+    for i, mv in enumerate(_CURATED_MATVIEWS):
+        conn = get_connection()
+        try:
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                cur.execute(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mv}")
+            logger.info("refreshed %s (%d/%d)", mv, i + 1, n)
+        except Exception:
+            logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
+            raise
+        finally:
+            conn.close()
+        if i < n - 1:
+            settle()
+    logger.info("curated refresh complete (%d matviews, individually)", n)
 
 
 def bulk_upsert(

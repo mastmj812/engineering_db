@@ -26,6 +26,7 @@ from typing import Callable
 
 from etl import notify as notify_step
 from etl import refresh as refresh_step
+from etl.db import settle as db_settle
 from etl.enverus import pull_wells as enverus_wells
 
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
@@ -150,8 +151,16 @@ def main() -> int:
     # always fire — even if a bug in the orchestrator itself (not the
     # individual steps, which are already _run_step-guarded) raises.
     try:
+        def step_settle() -> int:
+            # Flatten the post-load memory spike before the next steps so a
+            # small managed instance doesn't get pushed over (best-effort
+            # CHECKPOINT + short pause). See etl.db.settle.
+            db_settle()
+            return 0
+
         _run_step("novi.sync", step_novi_sync, report)
         _run_step("novi.load", step_novi_load, report)
+        _run_step("settle", step_settle, report)
         _run_step("enverus.pull_wells", enverus_wells.main, report)
         _run_step("curated.refresh", lambda: (refresh_step.main() or 0), report)
     finally:
