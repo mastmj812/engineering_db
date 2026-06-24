@@ -23,9 +23,10 @@
 --   - `canonical_code` : value from nomenclature.xlsx (e.g. WCA_1, BS3_S, OTHER).
 --   - `notes`       : free-text rationale / review flags.
 --
--- Run order: standalone reference data; apply before sql/04 rebuilds
--- curated.wells (the sql/15 migration enforces this ordering). \copy is
--- client-side and path-relative — run psql from the repo root.
+-- Run order: standalone reference data; apply before sql/16 builds
+-- curated.formation_blueox, which LEFT JOINs it (the sql/17 migration enforces
+-- this ordering). \copy is client-side and path-relative — run psql from the
+-- repo root.
 -- =============================================================================
 
 

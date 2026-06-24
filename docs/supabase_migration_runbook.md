@@ -160,19 +160,24 @@ session connection, in order:
 
 ```
 psql <session-conn> -c "create schema if not exists curated;"
-psql <session-conn> -f sql/04_curated.sql               # curated.wells (+ formation_blueox)
+psql <session-conn> -f sql/14_formation_crosswalk.sql   # ref.formation_crosswalk (needed by sql/16)
+psql <session-conn> -f sql/04_curated.sql               # curated.wells
+psql <session-conn> -f sql/16_formation_blueox.sql      # curated.formation_blueox (reads wells + crosswalk)
 psql <session-conn> -f sql/05_curated_production.sql    # curated.production
-psql <session-conn> -f sql/06_curated_derived.sql       # wells_enriched, production_normalized, type_curve_cohorts
+psql <session-conn> -f sql/06_curated_derived.sql       # wells_enriched (joins formation_blueox), production_normalized, type_curve_cohorts
 psql <session-conn> -f sql/10_curated_forecast.sql      # production_forecast, production_combined
 psql <session-conn> -f sql/12_curated_intel.sql         # intel_locations, intel_arps, intel_forecast
 psql <session-conn> -c "select curated.refresh_all();"
 ```
 
 Notes:
-- `curated.wells` (sql/04) `LEFT JOIN`s `ref.formation_crosswalk`, which was
-  restored in §3 — so `formation_blueox` populates on rebuild. (The CSV under
-  `seeds/` remains the source of truth; to re-seed instead of trusting the restore,
-  run `psql -f sql/14_formation_crosswalk.sql` from the repo root first.)
+- `formation_blueox` lives in its OWN matview (`curated.formation_blueox`, sql/16),
+  keyed by api10, joined into `curated.wells_enriched` (sql/06). It must be built
+  AFTER `curated.wells` (sql/04) and AFTER `ref.formation_crosswalk` (sql/14), and
+  BEFORE `sql/06`. Factored out of `curated.wells` so crosswalk/precedence edits
+  only REFRESH a ~90k-row matview instead of DROP-CASCADE rebuilding the
+  production chain. (The CSV under `seeds/` is the source of truth for the
+  crosswalk; `sql/14` reloads it.)
 - Each `CREATE MATERIALIZED VIEW … AS` populates on creation; the trailing
   `refresh_all()` is belt-and-suspenders and confirms the function resolves.
 

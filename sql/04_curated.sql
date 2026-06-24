@@ -199,27 +199,11 @@ SELECT
     COALESCE(wd."ReportedFormation", n."ReportedFormation")    AS reported_formation,
     COALESCE(wd."GridFormation", n."GridFormation")            AS grid_formation,
 
-    -- -------------------------------------------------------------------------
-    -- Blue Ox standardized formation (formation_blueox).
-    -- Source precedence (computed once in the `bx` LATERAL below): prefer the
-    -- Novi formation, EXCEPT for a set of coarse / unreliable Novi values where
-    -- Enverus ENVInterval is preferred — the finer Wolfcamp/Spraberry benches
-    -- (WOLFCAMP A, WOLFCAMP A (XY), WOLFCAMP A (XY) SHELF, WOLFCAMP B,
-    -- LOWER SPRABERRY SAND) plus the generic / unknown values where Novi has no
-    -- useful call (WOLFCAMP, BONE SPRING, BONE SPRINGS, SPRABERRY, UNKNOWN).
-    -- Either branch falls back to the other source when the preferred value is
-    -- NULL. The selected raw string is then standardized to the Blue Ox
-    -- nomenclature via ref.formation_crosswalk, keyed on (basin, raw_value).
-    -- Unmapped -> formation_blueox NULL; the raw value and is_mapped flag are
-    -- retained so crosswalk gaps surface for review. Basin resolves from Novi
-    -- Subbasin, falling back to Enverus ENVBasin; wells in neither Delaware nor
-    -- Midland (the only basins the nomenclature covers) stay NULL.
-    -- -------------------------------------------------------------------------
-    bx.raw_value                                               AS formation_blueox_raw,
-    bx.source                                                  AS formation_blueox_source,
-    bx.basin_token                                             AS basin_blueox,
-    fx.canonical_code                                          AS formation_blueox,
-    (fx.canonical_code IS NOT NULL)                            AS formation_blueox_is_mapped,
+    -- NOTE: the Blue Ox standardized formation (formation_blueox + basin_blueox
+    -- + raw/source/is_mapped) lives in curated.formation_blueox (sql/16) and is
+    -- joined into curated.wells_enriched (sql/06). It was factored out of this
+    -- matview so crosswalk / precedence edits don't force a DROP-CASCADE rebuild
+    -- of the 22M-row production chain. See sql/16_formation_blueox.sql.
 
     -- Trust flag for formation assignment. When TRUE, the directional
     -- survey on file is the operator's pre-drill PLAN, not the actual
@@ -358,53 +342,6 @@ LEFT JOIN raw_novi."WellSpacing" ws
       AND ws."DeletedAt" IS NULL
 LEFT JOIN enverus_latest e
        ON e.api10_join = n."API10"
--- -------------------------------------------------------------------------
--- Blue Ox formation source-selection, computed once per well so both the
--- raw value and the crosswalk join below can reference it without repeating
--- the precedence CASE. (SELECT-list aliases aren't visible to JOIN/ON, hence
--- the LATERAL.)
--- -------------------------------------------------------------------------
-LEFT JOIN LATERAL (
-    WITH base AS (
-        SELECT
-            COALESCE(wd."Formation", n."Formation") AS novi_formation,
-            e.envinterval                           AS env_interval,
-            -- Basin: Novi Subbasin first; fall back to Enverus ENVBasin when
-            -- Novi places the well outside Delaware/Midland (the only basins the
-            -- nomenclature covers). Catches the ~80 wells where the two vendors
-            -- disagree; everything Enverus also calls 'PERMIAN OTHER' stays NULL.
-            CASE
-                WHEN COALESCE(wd."Subbasin", n."Subbasin") ILIKE '%delaware%' THEN 'delaware'
-                WHEN COALESCE(wd."Subbasin", n."Subbasin") ILIKE '%midland%'  THEN 'midland'
-                WHEN e.envbasin = 'DELAWARE'                                  THEN 'delaware'
-                WHEN e.envbasin = 'MIDLAND'                                   THEN 'midland'
-            END                                     AS basin_token,
-            -- Coarse / unreliable Novi formation values where Enverus ENVInterval
-            -- is preferred (finer benches, or Novi has no useful call at all).
-            -- The crosswalk still maps the Novi value for the env-null residuals.
-            (COALESCE(wd."Formation", n."Formation") IN (
-                'WOLFCAMP A','WOLFCAMP A (XY)','WOLFCAMP A (XY) SHELF','WOLFCAMP B',
-                'LOWER SPRABERRY SAND',
-                'WOLFCAMP','BONE SPRING','BONE SPRINGS','SPRABERRY','UNKNOWN'
-            ))                                       AS is_trigger
-    )
-    SELECT
-        base.basin_token,
-        CASE WHEN base.is_trigger
-             THEN COALESCE(base.env_interval, base.novi_formation)
-             ELSE COALESCE(base.novi_formation, base.env_interval)
-        END AS raw_value,
-        CASE WHEN base.is_trigger
-             THEN CASE WHEN base.env_interval IS NOT NULL THEN 'enverus' ELSE 'novi' END
-             ELSE CASE WHEN base.novi_formation IS NOT NULL THEN 'novi'
-                       WHEN base.env_interval   IS NOT NULL THEN 'enverus'
-                       ELSE NULL END
-        END AS source
-    FROM base
-) bx ON TRUE
-LEFT JOIN ref.formation_crosswalk fx
-       ON fx.basin     = bx.basin_token
-      AND fx.raw_value = bx.raw_value
 WHERE n."DeletedAt" IS NULL
 ;
 
@@ -426,9 +363,6 @@ CREATE INDEX idx_curated_wells_current_operator
 
 CREATE INDEX idx_curated_wells_formation
     ON curated.wells (formation);
-
-CREATE INDEX idx_curated_wells_formation_blueox
-    ON curated.wells (formation_blueox);
 
 CREATE INDEX idx_curated_wells_first_production_date
     ON curated.wells (first_production_date);
@@ -452,12 +386,6 @@ COMMENT ON COLUMN curated.wells.directional_survey_is_planned IS
 
 COMMENT ON COLUMN curated.wells.wellstick_geom IS
 'LINESTRING (4326) built from the four Novi locations Surface Hole → Landing Point → Midpoint → Bottom Hole, in natural traverse order. NULL points are skipped; result is NULL if fewer than two valid points exist. Replaces what Enverus LateralLine WKT provided in the legacy type-curve app.';
-
-COMMENT ON COLUMN curated.wells.formation_blueox IS
-'Blue Ox standardized formation code. Precedence: Novi formation, except a set of coarse/unreliable Novi values that defer to Enverus ENVInterval — WOLFCAMP A / WOLFCAMP A (XY) / WOLFCAMP A (XY) SHELF / WOLFCAMP B / LOWER SPRABERRY SAND (finer benches) and WOLFCAMP / BONE SPRING / BONE SPRINGS / SPRABERRY / UNKNOWN (generic/unknown). Each branch falls back to the other source when the preferred value is NULL. The selected raw string (formation_blueox_raw) is mapped to the nomenclature via ref.formation_crosswalk on (basin_blueox, raw_value). NULL when unmapped — see formation_blueox_is_mapped. Basin resolves from Novi Subbasin, falling back to Enverus ENVBasin; wells in neither Delaware nor Midland remain NULL.';
-
-COMMENT ON COLUMN curated.wells.formation_blueox_raw IS
-'The source-selected formation string fed into the crosswalk (a Novi formation name or an Enverus ENVInterval string), before standardization. Retained for traceability and to surface unmapped values.';
 
 COMMENT ON COLUMN curated.wells.range_ IS
 'PLSS Range (NM-style land subdivision). Trailing underscore avoids the contextually-reserved SQL keyword. Populated only for PLSS states; ~0% in TX, ~20% Permian-wide.';

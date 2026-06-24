@@ -243,6 +243,7 @@ def settle(seconds: int | None = None) -> int:
 # at a time rather than via the single refresh_all() call.
 _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.wells",
+    "curated.formation_blueox",
     "curated.production",
     "curated.production_normalized",
     "curated.type_curve_cohorts",

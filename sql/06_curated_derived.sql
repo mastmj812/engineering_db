@@ -55,6 +55,17 @@ SELECT
     w.*,
 
     -- ------------------------------------------------------------------
+    -- Blue Ox standardized formation (curated.formation_blueox, sql/16).
+    -- Joined here rather than baked into curated.wells so the mapping can be
+    -- re-derived with a cheap REFRESH instead of a DROP-CASCADE rebuild.
+    -- ------------------------------------------------------------------
+    fb.formation_blueox,
+    fb.formation_blueox_raw,
+    fb.formation_blueox_source,
+    fb.basin_blueox,
+    fb.formation_blueox_is_mapped,
+
+    -- ------------------------------------------------------------------
     -- Vintage
     -- ------------------------------------------------------------------
     EXTRACT(YEAR FROM w.first_completion_date)::int    AS first_completion_year,
@@ -120,7 +131,9 @@ SELECT
        AND w.lateral_length_ft IS NOT NULL
        AND w.lateral_length_ft > 0)                    AS has_completion_intensity
 
-FROM curated.wells w;
+FROM curated.wells w
+LEFT JOIN curated.formation_blueox fb
+       ON fb.api10 = w.api10;
 
 
 COMMENT ON VIEW curated.wells_enriched IS
@@ -364,10 +377,11 @@ CREATE OR REPLACE FUNCTION curated.refresh_all()
 RETURNS void AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.wells;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_normalized;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.type_curve_cohorts;
-    RAISE NOTICE 'curated.refresh_all() complete: wells, production, production_normalized, type_curve_cohorts refreshed';
+    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, production, production_normalized, type_curve_cohorts refreshed';
 END;
 $$ LANGUAGE plpgsql;
 

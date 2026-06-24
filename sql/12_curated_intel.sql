@@ -139,11 +139,12 @@ CREATE OR REPLACE FUNCTION curated.refresh_all()
 RETURNS void AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.wells;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_normalized;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.type_curve_cohorts;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_forecast;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.intel_locations;
-    RAISE NOTICE 'curated.refresh_all() complete: wells, production, production_normalized, type_curve_cohorts, production_forecast, intel_locations';
+    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, production, production_normalized, type_curve_cohorts, production_forecast, intel_locations';
 END;
 $$ LANGUAGE plpgsql;

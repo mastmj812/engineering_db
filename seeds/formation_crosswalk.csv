@@ -154,3 +154,17 @@ midland,enverus,TEXAS SHELF ALL,OTHER,enverus shelf catch-all surfaced via UNKNO
 midland,enverus,EASTERN SHELF VERTICAL,OTHER,enverus vertical/shelf surfaced via env_basin fallback
 midland,enverus,VAL VERDE ALL,OTHER,enverus catch-all surfaced via UNKNOWN->enverus
 midland,enverus,LOWER MISSISSIPPIAN,MISS,enverus Mississippian surfaced via UNKNOWN->enverus
+cbp,enverus+novi,WOODFORD,WDFD,CBP deep unconventional step-out target
+cbp,enverus+novi,BARNETT,BRNT,CBP deep unconventional step-out target
+cbp,novi,BARNETT SHALE,BRNT,CBP deep unconventional step-out target
+cbp,novi,MISSISSIPPIAN,MISS,CBP deep unconventional step-out target
+cbp,enverus,LOWER MISSISSIPPIAN,MISS,CBP deep unconventional step-out target
+cbp,novi,STRAWN,STRN,CBP deep target (Strawn); same code as delaware/midland
+cbp,enverus,WOLFCAMP B UPPER,WCB_1,CBP Wolfcamp B upper
+cbp,enverus,WOLFCAMP B LOWER,WCB_2,CBP Wolfcamp B lower
+cbp,novi,SECOND BONE SPRING,BS2_S,CBP 2nd Bone Spring sand
+cbp,novi,SECOND BONE SPRING LIME,BS2_C,CBP 2nd Bone Spring carbonate
+cbp,novi,FIRST BONE SPRING,BS1_S,CBP 1st Bone Spring sand
+cbp,enverus,LOWER SPRABERRY,LSSH,CBP Lower Spraberry shale
+cbp,enverus+novi,MIDDLE SPRABERRY,MS,CBP Middle Spraberry
+cbp,enverus+novi,DEAN,DEAN,CBP Dean
