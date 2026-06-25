@@ -92,6 +92,7 @@ midland,novi,LOWER SPRABERRY SHALE,LSSH,5972 wells
 midland,enverus,WOLFCAMP B LOWER,WCB_2,2622 wells; REVIEW: _2=lower
 midland,enverus+novi,MIDDLE SPRABERRY,MS,1726 wells
 midland,enverus+novi,JO MILL,JM,1695 wells
+midland,novi,LOWER SPRABERRY SAND,JM,"Novi 'Lower Spraberry Sand' = Blue Ox Jo Mill (intel TVD ~790ft above LSSH); user call 2026-06-25; 2750 intel sticks"
 midland,enverus+novi,WOLFCAMP C,WCC,1532 wells
 midland,enverus+novi,WOLFCAMP D,WCD,1280 wells
 midland,enverus+novi,DEAN,DEAN,1203 wells
