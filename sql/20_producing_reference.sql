@@ -33,6 +33,11 @@ SELECT
     fb.basin_blueox                                   AS basin,
     fb.formation_blueox                               AS code,
     w.tvd_ft                                          AS tvd,
+    -- TRUE = the survey on file is the operator's pre-drill PLAN (permit), so
+    -- tvd is provisional and will change when the actual survey is filed. ~44%
+    -- of NM producers, ~0% of TX. Carried so the TVD-guard match can be flagged
+    -- as resting on a provisional depth. See reference_directional_survey_trust.
+    w.directional_survey_is_planned                   AS survey_planned,
     w.first_production_date,
     w.current_operator                                AS operator,
     w.lateral_length_ft                               AS ll_ft

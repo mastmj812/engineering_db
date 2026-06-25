@@ -58,6 +58,13 @@ def main() -> None:
                 "FROM curated.reconciled_inventory GROUP BY 1,2 ORDER BY 1,2"
             ).fetchall():
                 print(f"    {b:9} {s:22} {n}", flush=True)
+            print("  realized matches by matched_survey_planned (provisional TVD):", flush=True)
+            for b, p, n in cur.execute(
+                "SELECT basin_blueox, matched_survey_planned, COUNT(*) "
+                "FROM curated.reconciled_inventory WHERE status='realized_pud_to_pdp' "
+                "GROUP BY 1,2 ORDER BY 1,2"
+            ).fetchall():
+                print(f"    {b:9} survey_planned={str(p):5} {n}", flush=True)
             # realized count vs new-well anchor (Delaware)
             realized_del = cur.execute(
                 "SELECT COUNT(*) FROM curated.reconciled_inventory "

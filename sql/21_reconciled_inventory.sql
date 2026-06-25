@@ -65,6 +65,10 @@ SELECT
     pud.basin                               AS basin_blueox,
     pud.code                                AS formation_blueox,
     m.matched_api10,
+    -- TRUE => the realizing well is still on a pre-drill PLAN survey, so the
+    -- depth-confirmation behind this match rests on a provisional (permit) TVD
+    -- and should be re-checked when the actual survey lands (mostly NM).
+    m.matched_survey_planned,
     ROUND(m.best_overlap::numeric, 3)       AS match_overlap,
     COALESCE(m.n_strong, 0)                 AS n_overlapping,
     CASE
@@ -76,11 +80,12 @@ SELECT
 FROM pud
 LEFT JOIN LATERAL (
     SELECT
-        (array_agg(c.api10 ORDER BY c.overlap DESC))[1] AS matched_api10,
-        max(c.overlap)                                  AS best_overlap,
-        count(*) FILTER (WHERE c.overlap >= 0.5)        AS n_strong
+        (array_agg(c.api10 ORDER BY c.overlap DESC))[1]          AS matched_api10,
+        (array_agg(c.survey_planned ORDER BY c.overlap DESC))[1] AS matched_survey_planned,
+        max(c.overlap)                                           AS best_overlap,
+        count(*) FILTER (WHERE c.overlap >= 0.5)                 AS n_strong
     FROM (
-        SELECT pr.api10,
+        SELECT pr.api10, pr.survey_planned,
                ST_Length(ST_Intersection(pud.geom, pr.corridor)::geography)
                  / NULLIF(ST_Length(pud.geom::geography), 0) AS overlap
         FROM curated.producing_reference pr
@@ -106,4 +111,4 @@ CREATE INDEX idx_reconciled_inventory_api10
 
 
 COMMENT ON MATERIALIZED VIEW curated.reconciled_inventory IS
-'Novi PUD inventory reconciled against producing curated wells by co-extent overlap + same formation_blueox. status in (realized_pud_to_pdp, remaining_pud, conflict); matched_api10 + match_overlap record the realizing well. Keyed on stick_id (join curated.intel_locations / intel_formation_blueox for attributes). net_new_pdp (producing wells with no PUD) is a separate pass, not yet included. Refresh as wells come online.';
+'Novi PUD inventory reconciled against producing curated wells by co-extent overlap + same formation_blueox + TVD consistency (|well.tvd-pud.tvd|<=500ft, which kills wrong-depth formation-mistag matches). status in (realized_pud_to_pdp, remaining_pud, conflict); matched_api10 + match_overlap record the realizing well; matched_survey_planned flags realizations whose depth-confirmation rests on a provisional permit survey (re-check when the actual survey lands, mostly NM). Keyed on stick_id (join curated.intel_locations / intel_formation_blueox for attributes). net_new_pdp (producing wells with no PUD) is a separate pass, not yet included. Refresh as wells come online.';
