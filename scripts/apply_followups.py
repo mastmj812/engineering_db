@@ -37,12 +37,16 @@ def _exec(label: str, fname: str) -> None:
 
 def main() -> None:
     t = time.monotonic()
-    print("[1/3] rebuild curated.reconciled_inventory (corrected-bench match — heavy)", flush=True)
+    print("[1/4] rebuild curated.reconciled_inventory (corrected-bench match — heavy)", flush=True)
     _exec("reconciled_inventory", "21_reconciled_inventory.sql")
-    print("[2/3] build curated.net_new_pdp", flush=True)
+    print("[2/4] build curated.net_new_pdp", flush=True)
     _exec("net_new_pdp", "25_net_new_pdp.sql")
+    # The sql/21 rebuild DROP ... CASCADE drops curated.erebor_locations (it joins
+    # reconciled_inventory for recon_status), so recreate it.
+    print("[3/4] recreate curated.erebor_locations (CASCADE-dropped by the rebuild)", flush=True)
+    _exec("erebor_locations", "22_erebor_locations.sql")
 
-    print("[3/3] validation", flush=True)
+    print("[4/4] validation", flush=True)
     conn = get_connection()
     try:
         conn.autocommit = True
@@ -60,11 +64,11 @@ def main() -> None:
             ).fetchall():
                 print(f"    {b:9} {n}", flush=True)
 
-            print("  new-well anchor (since 3Q25 = realized distinct + net_new?):", flush=True)
+            print("  new-well anchor (since 3Q25 = realized_drift distinct + net_new?):", flush=True)
             for b in ("delaware", "midland"):
-                realized = cur.execute(
+                drift = cur.execute(
                     "SELECT COUNT(DISTINCT matched_api10) FROM curated.reconciled_inventory "
-                    "WHERE basin_blueox=%s AND status='realized_pud_to_pdp'", (b,)
+                    "WHERE basin_blueox=%s AND status='realized_drift'", (b,)
                 ).fetchone()[0]
                 netnew = cur.execute(
                     "SELECT COUNT(*) FROM curated.net_new_pdp WHERE basin_blueox=%s", (b,)
@@ -73,8 +77,8 @@ def main() -> None:
                     "SELECT COUNT(*) FROM curated.producing_reference "
                     "WHERE basin=%s AND first_production_date > DATE '2025-09-30'", (b,)
                 ).fetchone()[0]
-                print(f"    {b:9} new={newwells}  realized_distinct={realized}  net_new={netnew}  "
-                      f"(realized+net_new={realized + netnew})", flush=True)
+                print(f"    {b:9} new={newwells}  drift_distinct={drift}  net_new={netnew}  "
+                      f"(drift+net_new={drift + netnew})", flush=True)
 
             print("  3002550278 corrected-code win — PUDs it now realizes:", flush=True)
             rows = cur.execute(

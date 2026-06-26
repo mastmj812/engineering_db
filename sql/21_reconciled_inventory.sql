@@ -26,17 +26,19 @@
 -- mops up the residual producer-vs-PUD label disagreements. PUD codes come from
 -- the inferred/crosswalk tiers (sql/19), unaffected by the producing recolor.
 --
--- STATUS taxonomy:
---   realized_pud_to_pdp — one producing well covers >=50% of the PUD (drilled
---                         in its slot). matched_api10 / match_overlap recorded.
---   remaining_pud       — no producing well covers >20% (genuinely undeveloped).
---   conflict            — partial cover (20-50%), OR >=2 producing wells each
---                         cover >=50% (re-frac / ambiguous) -> review.
+-- STATUS taxonomy (realized is split by the realizing well's vintage):
+--   realized_drift   — one producing well covers >=50% AND came online AFTER the
+--                      3Q25 vintage: genuinely drilled since => real PUD->PDP shift.
+--   realized_phantom — same >=50% cover but the well came online BEFORE the vintage:
+--                      Novi listed a slot already drilled years ago (never real
+--                      inventory; Novi data hygiene — e.g. Eddy 324). matched_first_prod
+--                      records the realizing well's first production date.
+--   remaining_pud    — no producing well covers >20% (genuinely undeveloped).
+--   conflict         — partial cover (20-50%), OR >=2 producing wells each cover
+--                      >=50% (re-frac / ambiguous) -> review.
 -- net_new_pdp (a producing well with NO overlapping PUD — Novi missed it) is the
--- reverse pass and is NOT in this v1; added next. Cross-check: Delaware wells
--- online since the 3Q25 vintage (~1,761) ~= realized (~1,330) + net_new (~430),
--- which anchors the 0.5 overlap threshold (realized must stay under the new-well
--- count, the remainder being net_new).
+-- reverse pass, curated.net_new_pdp (sql/25). Cross-check: Delaware wells online
+-- since 3Q25 ~= realized_drift + net_new (phantoms are pre-vintage, so excluded).
 --
 -- Confidence is the overlap fraction itself for now (match_overlap); a richer
 -- match_confidence (azimuth, length ratio) comes with the calibration pass.
@@ -77,9 +79,16 @@ SELECT
     m.matched_survey_planned,
     ROUND(m.best_overlap::numeric, 3)       AS match_overlap,
     COALESCE(m.n_strong, 0)                 AS n_overlapping,
+    m.matched_first_prod,
     CASE
         WHEN COALESCE(m.n_strong, 0) >= 2  THEN 'conflict'
-        WHEN m.best_overlap >= 0.5          THEN 'realized_pud_to_pdp'
+        -- one well covers >=50% => realized. Split by vintage: a well online AFTER
+        -- the 3Q25 Novi vintage is genuine DRIFT (real PUD->PDP value shift); one
+        -- online BEFORE it means Novi listed an already-drilled slot => PHANTOM
+        -- inventory (never real; Novi data hygiene, e.g. Eddy 324).
+        WHEN m.best_overlap >= 0.5 AND m.matched_first_prod > DATE '2025-09-30'
+                                            THEN 'realized_drift'
+        WHEN m.best_overlap >= 0.5          THEN 'realized_phantom'
         WHEN m.best_overlap >= 0.2          THEN 'conflict'
         ELSE                                     'remaining_pud'
     END                                     AS status
@@ -88,10 +97,11 @@ LEFT JOIN LATERAL (
     SELECT
         (array_agg(c.api10 ORDER BY c.overlap DESC))[1]          AS matched_api10,
         (array_agg(c.survey_planned ORDER BY c.overlap DESC))[1] AS matched_survey_planned,
+        (array_agg(c.first_production_date ORDER BY c.overlap DESC))[1] AS matched_first_prod,
         max(c.overlap)                                           AS best_overlap,
         count(*) FILTER (WHERE c.overlap >= 0.5)                 AS n_strong
     FROM (
-        SELECT pr.api10, pr.survey_planned,
+        SELECT pr.api10, pr.survey_planned, pr.first_production_date,
                ST_Length(ST_Intersection(pud.geom, pr.corridor)::geography)
                  / NULLIF(ST_Length(pud.geom::geography), 0) AS overlap
         FROM curated.producing_reference pr
@@ -126,4 +136,4 @@ CREATE INDEX idx_reconciled_inventory_api10
 
 
 COMMENT ON MATERIALIZED VIEW curated.reconciled_inventory IS
-'Novi PUD inventory reconciled against producing curated wells by co-extent overlap + same formation_blueox + TVD consistency (|well.tvd-pud.tvd|<=500ft, which kills wrong-depth formation-mistag matches). status in (realized_pud_to_pdp, remaining_pud, conflict); matched_api10 + match_overlap record the realizing well; matched_survey_planned flags realizations whose depth-confirmation rests on a provisional permit survey (re-check when the actual survey lands, mostly NM). Keyed on stick_id (join curated.intel_locations / intel_formation_blueox for attributes). net_new_pdp (producing wells with no PUD) is a separate pass, not yet included. Refresh as wells come online.';
+'Novi PUD inventory reconciled against producing curated wells by co-extent overlap + same (corrected) formation_blueox-or-depth + TVD consistency. status in (realized_drift, realized_phantom, remaining_pud, conflict): realized is split by the realizing well''s vintage — drift = online after the 3Q25 vintage (real PUD->PDP), phantom = online before it (Novi listed an already-drilled slot). matched_api10 / match_overlap / matched_first_prod record the realizing well; matched_survey_planned flags realizations resting on a provisional permit survey (mostly NM). Keyed on stick_id. net_new_pdp (producing wells with no PUD) is curated.net_new_pdp (sql/25). Refresh as wells come online.';
