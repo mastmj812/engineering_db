@@ -12,14 +12,19 @@
 -- ±150 ft corridor) / (PUD lateral length). Min distance is NOT used — it
 -- false-positives on end-to-end laterals across section lines.
 --
--- TVD GUARD: a same-bench match must also be at the same depth — require
--- |well.tvd - pud.tvd| <= 500 ft. Without it, a well whose formation_blueox is
--- wrong (e.g. a Wolfcamp well that a vendor mis-tagged Bone Spring, adopted via
--- the WOLFCAMP A->Enverus trigger) passes the same-code filter and matches a
--- Bone Spring PUD it merely sits below (stacked). Calibration of existing
--- realized matches: TVD gap median 120 ft / p90 349 ft, with a 6.4% tail >500 ft
--- that is exactly these mis-tags (benches here are ~500 ft apart). Depth is the
--- independent check the formation tags lack.
+-- SAME-BENCH TEST (hybrid, code + depth):
+--   * same TVD-CORRECTED producing code (sql/23) within |well.tvd-pud.tvd| <= 500 ft
+--     — the permit-slop guard, kept because the code agreeing corroborates the match
+--     (calibration: realized TVD gap median 120 / p90 349 ft; the >500 tail is
+--     stacked mis-tags, benches ~500 ft apart); OR
+--   * essentially the same depth (<= 150 ft) regardless of code — the producing and
+--     PUD pipelines disagree on the LABEL for ~96 same-depth Delaware pairs (mostly
+--     sand/carb), which are the same bench actually drilled; depth is the physical
+--     arbiter the labels lack.
+-- The recolor (sql/23) fixes the producing side's gross Enverus-substitution
+-- mis-tags (Novi WOLFCAMP A -> Enverus "2nd Bone Spring"); the <=150 ft clause
+-- mops up the residual producer-vs-PUD label disagreements. PUD codes come from
+-- the inferred/crosswalk tiers (sql/19), unaffected by the producing recolor.
 --
 -- STATUS taxonomy:
 --   realized_pud_to_pdp — one producing well covers >=50% of the PUD (drilled
@@ -37,7 +42,8 @@
 -- match_confidence (azimuth, length ratio) comes with the calibration pass.
 --
 -- DEPENDS ON: curated.intel_locations (sql/12), curated.intel_formation_blueox
---   (sql/19), curated.producing_reference (sql/20).
+--   (sql/19), curated.producing_reference (sql/20), curated.formation_blueox_tvd
+--   (sql/23, for the corrected producing-side bench).
 -- REFRESH: as new wells come online (the producing set grows) + with the Novi
 --   load. Not nightly. REFRESH MATERIALIZED VIEW CONCURRENTLY.
 -- =============================================================================
@@ -89,11 +95,20 @@ LEFT JOIN LATERAL (
                ST_Length(ST_Intersection(pud.geom, pr.corridor)::geography)
                  / NULLIF(ST_Length(pud.geom::geography), 0) AS overlap
         FROM curated.producing_reference pr
+        LEFT JOIN curated.formation_blueox_tvd t ON t.api10 = pr.api10
         WHERE pr.basin = pud.basin
-          AND pr.code  = pud.code
           AND ST_Intersects(pud.geom, pr.corridor)   -- GiST pre-filter on corridor
           AND pr.tvd IS NOT NULL
-          AND abs(pr.tvd - pud.tvd) <= 500            -- TVD guard: same bench => same depth
+          -- SAME BENCH = same code within the 500 ft permit-slop guard, OR — when the
+          -- producing and PUD pipelines disagree on the LABEL — essentially the same
+          -- depth (<=150 ft, well under bench spacing). The producing code is the
+          -- TVD-corrected one (sql/23); depth arbitrates the label disagreements
+          -- (the two pipelines disagreed on ~96 same-depth Delaware pairs, mostly
+          -- sand/carb, which are the same bench drilled, not remaining inventory).
+          AND (
+                (COALESCE(t.corrected_code, pr.code) = pud.code AND abs(pr.tvd - pud.tvd) <= 500)
+             OR abs(pr.tvd - pud.tvd) <= 150
+              )
     ) c
     WHERE c.overlap > 0.05
 ) m ON TRUE
