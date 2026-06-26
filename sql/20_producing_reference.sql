@@ -57,6 +57,12 @@ CREATE UNIQUE INDEX idx_producing_reference_api10
 CREATE INDEX idx_producing_reference_corridor
     ON curated.producing_reference USING gist (corridor);
 
+-- Lateral geom GiST drives the <-> nearest-neighbour depth profile in sql/23
+-- (curated.formation_blueox_tvd). sql/23 also creates this IF NOT EXISTS so an
+-- in-place apply on an already-built reference still gets it.
+CREATE INDEX idx_producing_reference_geom
+    ON curated.producing_reference USING gist (geom);
+
 CREATE INDEX idx_producing_reference_grp
     ON curated.producing_reference (basin, code);
 

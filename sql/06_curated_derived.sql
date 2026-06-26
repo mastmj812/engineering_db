@@ -55,15 +55,25 @@ SELECT
     w.*,
 
     -- ------------------------------------------------------------------
-    -- Blue Ox standardized formation (curated.formation_blueox, sql/16).
-    -- Joined here rather than baked into curated.wells so the mapping can be
-    -- re-derived with a cheap REFRESH instead of a DROP-CASCADE rebuild.
+    -- Blue Ox standardized formation (curated.formation_blueox, sql/16), with
+    -- the TVD-sanity correction (curated.formation_blueox_tvd, sql/23) applied
+    -- ON TOP: for the ~0.4% of producing horizontals whose tag is a gross depth
+    -- outlier (e.g. an Enverus-substitution mis-tag — Wolfcamp landed in the
+    -- "2nd Bone Spring" band), formation_blueox becomes the depth-nearest bench
+    -- and the source becomes 'tvd_corrected'. The pre-correction value is kept as
+    -- formation_blueox_base for audit; non-producing wells and non-flips pass the
+    -- base through unchanged. Joined here (not baked into curated.wells) so the
+    -- whole mapping re-derives with a cheap REFRESH, not a DROP-CASCADE rebuild.
     -- ------------------------------------------------------------------
-    fb.formation_blueox,
+    CASE WHEN fbt.corrected THEN fbt.corrected_code
+         ELSE fb.formation_blueox END               AS formation_blueox,
+    fb.formation_blueox                             AS formation_blueox_base,
     fb.formation_blueox_raw,
-    fb.formation_blueox_source,
+    CASE WHEN fbt.corrected THEN 'tvd_corrected'
+         ELSE fb.formation_blueox_source END        AS formation_blueox_source,
     fb.basin_blueox,
     fb.formation_blueox_is_mapped,
+    COALESCE(fbt.corrected, FALSE)                  AS formation_blueox_tvd_corrected,
 
     -- ------------------------------------------------------------------
     -- Vintage
@@ -133,7 +143,9 @@ SELECT
 
 FROM curated.wells w
 LEFT JOIN curated.formation_blueox fb
-       ON fb.api10 = w.api10;
+       ON fb.api10 = w.api10
+LEFT JOIN curated.formation_blueox_tvd fbt
+       ON fbt.api10 = w.api10;
 
 
 COMMENT ON VIEW curated.wells_enriched IS
@@ -378,10 +390,14 @@ RETURNS void AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.wells;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox;
+    -- producing_reference + formation_blueox_tvd feed the wells_enriched view's
+    -- corrected formation_blueox, so they refresh with the base mapping.
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.producing_reference;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox_tvd;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_normalized;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.type_curve_cohorts;
-    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, production, production_normalized, type_curve_cohorts refreshed';
+    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, producing_reference, formation_blueox_tvd, production, production_normalized, type_curve_cohorts refreshed';
 END;
 $$ LANGUAGE plpgsql;
 
