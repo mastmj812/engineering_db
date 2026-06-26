@@ -18,7 +18,8 @@
 -- NULL -> the gun-barrel's existing spatial DSU-pad assignment resolves it.
 --
 -- DEPENDS ON: curated.intel_locations (sql/12), curated.intel_formation_blueox
---   (sql/19), curated.wells (sql/04), curated.formation_blueox (sql/16).
+--   (sql/19), curated.wells (sql/04), curated.formation_blueox (sql/16),
+--   curated.reconciled_inventory (sql/21), curated.net_new_pdp (sql/25).
 -- =============================================================================
 
 
@@ -36,6 +37,9 @@ SELECT
     fb.formation_blueox,
     fb.basin_blueox,
     fb.formation_blueox_source,
+    -- §6 reconciliation tag (curated.reconciled_inventory, sql/21): PUDs carry
+    -- realized_pud_to_pdp / remaining_pud / conflict; RES has no row -> NULL.
+    ri.status                          AS recon_status,
     il.operator,
     il.pad_name,
     il.tvd,
@@ -47,6 +51,7 @@ SELECT
     il.wellstick_geom
 FROM curated.intel_locations il
 LEFT JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
+LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
 WHERE il.category IN ('PUD', 'RES')
 
 UNION ALL
@@ -65,6 +70,9 @@ SELECT
     we.formation_blueox,
     we.basin_blueox,
     we.formation_blueox_source,
+    -- PDP reconciliation tag: 'net_new_pdp' if this producer realized no PUD
+    -- (curated.net_new_pdp, sql/25) — Novi missed the location; else NULL.
+    CASE WHEN nn.api10 IS NOT NULL THEN 'net_new_pdp' END AS recon_status,
     we.current_operator                AS operator,
     NULL::text                         AS pad_name,
     we.tvd_ft                          AS tvd,
@@ -81,6 +89,7 @@ SELECT
     NULL::double precision AS hh_diff,
     we.wellstick_geom
 FROM curated.wells_enriched we
+LEFT JOIN curated.net_new_pdp nn ON nn.api10 = we.api10
 WHERE we.first_production_date IS NOT NULL
   AND we.wellstick_geom IS NOT NULL
   AND we.is_horizontal IS TRUE
