@@ -78,6 +78,10 @@ SELECT
     -- realized_drift / realized_phantom / remaining_pud / conflict; RES has no
     -- row -> NULL.
     ri.status                          AS recon_status,
+    -- Novi PUD-quality depletion tier (Tier-1..4; Tier-4 = offset-depleted /
+    -- drained). Drives the map's depletion filter + color mode. RES/PUD only;
+    -- PDP arm is NULL (producing wells aren't scored).
+    il.deplet_t,
     il.operator,
     il.pad_name,
     il.tvd,
@@ -111,6 +115,7 @@ SELECT
     -- PDP reconciliation tag: 'net_new_pdp' if this producer realized no PUD
     -- (curated.net_new_pdp, sql/25) — Novi missed the location; else NULL.
     CASE WHEN nn.api10 IS NOT NULL THEN 'net_new_pdp' END AS recon_status,
+    NULL::text                         AS deplet_t,   -- producing wells aren't depletion-scored
     we.current_operator                AS operator,
     NULL::text                         AS pad_name,
     we.tvd_ft                          AS tvd,
