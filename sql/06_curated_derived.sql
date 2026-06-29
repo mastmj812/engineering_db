@@ -382,7 +382,8 @@ CREATE INDEX idx_curated_tcc_county_formation
 -- Update curated.refresh_all() to include the new objects.
 -- Refresh order encodes dependency: production_normalized depends on
 -- (wells, production); type_curve_cohorts depends on production_normalized.
--- wells_enriched is a regular view — no refresh.
+-- wells_enriched is a regular view — no refresh — but erebor_locations (sql/22)
+-- materializes over it, so it refreshes LAST (after every matview it reads).
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION curated.refresh_all()
@@ -397,7 +398,18 @@ BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_normalized;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.type_curve_cohorts;
-    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, producing_reference, formation_blueox_tvd, production, production_normalized, type_curve_cohorts refreshed';
+    -- erebor display spine (sql/22). Its PDP arm reads wells_enriched (over the
+    -- matviews just refreshed above), so it must come LAST. CONCURRENTLY keeps
+    -- the erebor app readable during the refresh. The Novi PUD/RES arm only moves
+    -- on the quarterly reload (which recreates this matview), so nightly this just
+    -- folds in newly-online producers. Guard so a missing matview (mid-quarterly
+    -- rebuild) degrades to a notice instead of failing the whole nightly run.
+    BEGIN
+        REFRESH MATERIALIZED VIEW CONCURRENTLY curated.erebor_locations;
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'curated.erebor_locations absent (mid-rebuild?) - skipped';
+    END;
+    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, producing_reference, formation_blueox_tvd, production, production_normalized, type_curve_cohorts, erebor_locations refreshed';
 END;
 $$ LANGUAGE plpgsql;
 

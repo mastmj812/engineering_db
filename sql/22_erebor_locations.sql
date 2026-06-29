@@ -7,9 +7,17 @@
 -- accurate, current, more-complete system of record — NOT the stale, error-prone
 -- novi_intel PDP layer (which only remains as a reconciliation-QC input).
 --
--- Plain VIEW (no refresh, always current). Two disjoint arms UNION ALL'd:
+-- MATERIALIZED (was a plain VIEW through 2026-06). The view re-ran a 7-way join
+-- (intel_locations + intel_formation_blueox + reconciled_inventory UNION ALL
+-- wells_enriched + net_new_pdp) on EVERY map tile. Against hosted Postgres
+-- (Supabase, us-east-1) that was ~390-650 ms/tile of pure join cost, dozens of
+-- tiles per pan. Materializing collapses it to a single GiST/btree-indexed scan
+-- (~40-75 ms/tile, matching curated.intel_locations). See
+-- docs/erebor_locations_materialization.md for the measured before/after.
+--
+-- Two disjoint arms UNION ALL'd (unchanged from the view):
 --   * PUD/RES  -> curated.intel_locations + curated.intel_formation_blueox
---   * PDP      -> curated.wells (producing) + curated.formation_blueox
+--   * PDP      -> curated.wells_enriched (producing) + curated.net_new_pdp
 --
 -- PDP rows carry display columns (geom / formation_blueox / tvd / operator) and
 -- NULL for Novi-only econ (npv/pv/eur/prices) — PDP is producing context, not
@@ -17,16 +25,45 @@
 -- a Novi stick_id and the frontend's promoteId selection still works. pad_name is
 -- NULL -> the gun-barrel's existing spatial DSU-pad assignment resolves it.
 --
+-- stick_id is UNIQUE across both arms (Novi ids are positive, PDP ids are
+-- -(api10); verified 0 dupes / 0 nulls over 262,581 rows) -> a UNIQUE index makes
+-- REFRESH ... CONCURRENTLY possible, so the nightly refresh never blocks the app.
+--
+-- REFRESH ORCHESTRATION (two cadences — see the docs file):
+--   * NIGHTLY  : appended to curated.refresh_all() (sql/06). The PDP arm
+--     (wells_enriched) changes nightly as wells come online; CONCURRENTLY refresh
+--     picks them up after wells/producing_reference/formation_blueox_tvd refresh.
+--   * QUARTERLY: the Novi reload DROPs curated.intel_locations CASCADE, which
+--     drops THIS matview too. The intel/reconciliation rebuild sequence must end
+--     by re-running this file (scripts/apply_erebor_locations.py) to recreate it
+--     WITH DATA + indexes.
+--
 -- DEPENDS ON: curated.intel_locations (sql/12), curated.intel_formation_blueox
---   (sql/19), curated.wells (sql/04), curated.formation_blueox (sql/16),
---   curated.reconciled_inventory (sql/21), curated.net_new_pdp (sql/25).
+--   (sql/19), curated.wells_enriched (sql/06), curated.reconciled_inventory
+--   (sql/21), curated.net_new_pdp (sql/25).
+-- Idempotent: type-aware drop (handles the one-time VIEW -> MATERIALIZED VIEW
+-- transition and re-runs) then CREATE ... WITH DATA.
 -- =============================================================================
 
 
-DROP VIEW IF EXISTS curated.erebor_locations CASCADE;
+-- Type-aware drop: IF EXISTS does NOT suppress a wrong-object-type error, so a
+-- bare DROP MATERIALIZED VIEW would fail while the object is still the old VIEW
+-- (and DROP VIEW would fail once it is a matview). Branch on relkind.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'curated' AND c.relname = 'erebor_locations' AND c.relkind = 'v'
+    ) THEN
+        DROP VIEW curated.erebor_locations CASCADE;
+    END IF;
+END $$;
+
+DROP MATERIALIZED VIEW IF EXISTS curated.erebor_locations CASCADE;
 
 
-CREATE VIEW curated.erebor_locations AS
+CREATE MATERIALIZED VIEW curated.erebor_locations AS
 -- ---- PUD / RES: the Novi forward inventory ----
 SELECT
     il.stick_id,
@@ -38,7 +75,8 @@ SELECT
     fb.basin_blueox,
     fb.formation_blueox_source,
     -- §6 reconciliation tag (curated.reconciled_inventory, sql/21): PUDs carry
-    -- realized_pud_to_pdp / remaining_pud / conflict; RES has no row -> NULL.
+    -- realized_drift / realized_phantom / remaining_pud / conflict; RES has no
+    -- row -> NULL.
     ri.status                          AS recon_status,
     il.operator,
     il.pad_name,
@@ -95,8 +133,22 @@ WHERE we.first_production_date IS NOT NULL
   AND we.is_horizontal IS TRUE
   AND we.api10 ~ '^[0-9]+$'
   AND we.basin_blueox IN ('delaware', 'midland')
-;
+WITH DATA;
 
 
-COMMENT ON VIEW curated.erebor_locations IS
-'erebor display spine (§6 PDP-from-curated): PUD/RES from curated.intel_locations + intel_formation_blueox; PDP from curated.wells (producing) + formation_blueox. Drop-in for curated.intel_locations in erebor''s map/gun-barrel/selection. PDP stick_id = -(api10); PDP econ columns NULL (producing context, not risked value). Replaces the stale novi_intel PDP display layer.';
+-- Unique key on stick_id REQUIRED for REFRESH ... CONCURRENTLY (non-blocking
+-- nightly refresh). Unique across both arms — see the header note.
+CREATE UNIQUE INDEX idx_erebor_locations_pk   ON curated.erebor_locations (stick_id);
+-- The hot path: per-tile AOI spatial filter (tiles.py / production.py / select.py
+-- all do `basin = :basin AND ST_Intersects(wellstick_geom, <env|aoi>)`).
+CREATE INDEX idx_erebor_locations_geom        ON curated.erebor_locations USING GIST (wellstick_geom);
+CREATE INDEX idx_erebor_locations_basin_cat   ON curated.erebor_locations (basin, category);
+-- Forecast/selection joins key on unique_id (= novi_wellname for PUD/RES).
+CREATE INDEX idx_erebor_locations_uid         ON curated.erebor_locations (unique_id);
+-- Blue Ox bench rollup (ResultsPanel cull, production curves) + §6 status legend.
+CREATE INDEX idx_erebor_locations_blueox      ON curated.erebor_locations (basin, formation_blueox);
+CREATE INDEX idx_erebor_locations_recon       ON curated.erebor_locations (basin, recon_status);
+
+
+COMMENT ON MATERIALIZED VIEW curated.erebor_locations IS
+'erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read latency on hosted Postgres: PUD/RES from curated.intel_locations + intel_formation_blueox + reconciled_inventory; PDP from curated.wells_enriched (producing) + net_new_pdp. Drop-in for curated.intel_locations in erebor''s map/gun-barrel/selection. PDP stick_id = -(api10); PDP econ columns NULL (producing context, not risked value). UNIQUE(stick_id) enables CONCURRENTLY refresh. Refresh: nightly via curated.refresh_all() (PDP arm) + recreate after the quarterly Novi reload (scripts/apply_erebor_locations.py).';
