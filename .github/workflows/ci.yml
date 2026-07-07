@@ -1,0 +1,26 @@
+# CI: ETL pure-function pytest + the SQL-file lint (every materialized view
+# must carry a UNIQUE index in the same file — the precondition for
+# REFRESH ... CONCURRENTLY). No database / Supabase access: the suite is pure
+# functions + static SQL parsing, so it runs anywhere. Mirrors the anduin
+# (permian_type_curve) ci.yml pattern; this repo has no frontend.
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      # Install the real runtime deps (etl.db imports psycopg/sqlalchemy) plus
+      # pytest. No connection is opened — the tests exercise pure logic only.
+      - run: pip install -r requirements.txt pytest
+      - run: pytest -q

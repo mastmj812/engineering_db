@@ -1,0 +1,6 @@
+# Minimal config: this repo ships as scripts/modules, not a pip package —
+# the only thing declared here is the pytest layout so `pytest -q` (locally
+# and in CI) finds tests/ and can import the top-level `etl` package.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
