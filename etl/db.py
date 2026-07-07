@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from contextlib import contextmanager
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence, TypeVar
+from urllib.parse import quote
 
 import psycopg
 from dotenv import load_dotenv
@@ -25,6 +27,8 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+_T = TypeVar("_T")
+
 
 def _required_env(name: str) -> str:
     """Return an environment variable or raise if missing/empty."""
@@ -35,37 +39,131 @@ def _required_env(name: str) -> str:
 
 
 def _db_kwargs() -> dict[str, str]:
-    """Collect DB connection parameters from environment variables."""
+    """Collect DB connection parameters from environment variables.
+
+    Beyond host/port/db/user/password, this carries SSL and TCP-keepalive
+    settings so the ETL connects reliably to a managed Postgres endpoint
+    (e.g. Supabase) as well as a local server:
+      - `sslmode` (env DB_SSLMODE, default 'prefer'; set 'require' for Supabase).
+      - keepalives so a long, quiet statement such as curated.refresh_all()
+        isn't dropped by the connection pooler / NAT during silent periods.
+    """
     return {
         "host": _required_env("DB_HOST"),
         "port": os.getenv("DB_PORT", "5432"),
         "dbname": _required_env("DB_NAME"),
         "user": _required_env("DB_USER"),
         "password": os.getenv("DB_PASSWORD", ""),
+        "sslmode": os.getenv("DB_SSLMODE", "prefer"),
+        "connect_timeout": os.getenv("DB_CONNECT_TIMEOUT", "30"),
+        "keepalives": "1",
+        "keepalives_idle": "30",
+        "keepalives_interval": "10",
+        "keepalives_count": "5",
     }
+
+
+# Applied to every new connection. statement_timeout=0 overrides Supabase's
+# 2-minute platform default — which the pooler won't let us change via ALTER
+# ROLE or startup options — so large COPYs and curated.refresh_all() can run.
+# search_path includes `extensions` so PostGIS (geometry / ST_*) resolves; on
+# Supabase, PostGIS lives in the extensions schema. Both are harmless locally.
+_SESSION_SETTINGS: tuple[str, ...] = (
+    "SET statement_timeout = 0",
+    "SET search_path TO public, extensions",
+)
+
+
+def _apply_session_settings(conn: PGConnection) -> None:
+    """Apply per-session GUCs (statement_timeout, search_path) and commit."""
+    with conn.cursor() as cur:
+        for stmt in _SESSION_SETTINGS:
+            cur.execute(stmt)
+    conn.commit()
 
 
 def get_engine() -> Engine:
     """Return a SQLAlchemy engine built from `.env` credentials.
 
-    The engine uses the psycopg (v3) driver and `pool_pre_ping=True` so that
-    stale connections get recycled transparently.
+    Uses the psycopg (v3) driver, `pool_pre_ping=True` to recycle stale
+    connections, and SSL + keepalives via connect_args. The password is
+    URL-encoded so special characters in managed-DB passwords don't break the
+    URL.
     """
     kw = _db_kwargs()
     url = (
-        f"postgresql+psycopg://{kw['user']}:{kw['password']}"
+        f"postgresql+psycopg://{kw['user']}:{quote(kw['password'], safe='')}"
         f"@{kw['host']}:{kw['port']}/{kw['dbname']}"
     )
-    return create_engine(url, pool_pre_ping=True, future=True)
+    connect_args = {
+        "sslmode": kw["sslmode"],
+        "connect_timeout": int(kw["connect_timeout"]),
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    }
+    return create_engine(
+        url, pool_pre_ping=True, future=True, connect_args=connect_args
+    )
+
+
+def _open_connection() -> PGConnection:
+    """One connection attempt (no retry): connect + apply session GUCs."""
+    conn = psycopg.connect(**_db_kwargs())
+    try:
+        _apply_session_settings(conn)
+    except Exception:
+        conn.close()
+        raise
+    return conn
+
+
+def _retry_on_conn_loss(fn: "Callable[[], _T]", *, what: str) -> "_T":
+    """Call `fn()`, retrying on `psycopg.OperationalError` with exponential
+    backoff. Covers a managed-Postgres restart/failover: the server refuses new
+    connections (or drops an in-flight one) for tens of seconds, then recovers
+    — exactly the `the database system is not accepting connections` /
+    `AdminShutdown` window that fails a daily run mid-flight.
+
+    Only connection-level `OperationalError`s are retried; anything else
+    (programming errors, constraint violations) propagates immediately. Callers
+    must therefore only wrap idempotent work — a fresh connect, or a
+    `REFRESH MATERIALIZED VIEW CONCURRENTLY` — never a half-done multi-batch
+    write. Tunable via env: DB_CONNECT_RETRIES (6), DB_CONNECT_RETRY_BASE (2s),
+    DB_CONNECT_RETRY_MAX (30s).
+    """
+    attempts = int(os.getenv("DB_CONNECT_RETRIES", "6"))
+    base = float(os.getenv("DB_CONNECT_RETRY_BASE", "2"))
+    cap = float(os.getenv("DB_CONNECT_RETRY_MAX", "30"))
+    last: psycopg.OperationalError | None = None
+    for i in range(1, attempts + 1):
+        try:
+            return fn()
+        except psycopg.OperationalError as exc:
+            last = exc
+            if i >= attempts:
+                break
+            delay = min(base * (2 ** (i - 1)), cap)
+            logger.warning(
+                "%s failed (attempt %d/%d): %s; retrying in %.0fs",
+                what, i, attempts, exc, delay,
+            )
+            time.sleep(delay)
+    assert last is not None
+    logger.error("%s failed after %d attempts", what, attempts)
+    raise last
 
 
 def get_connection() -> PGConnection:
-    """Return a raw psycopg (v3) connection.
+    """Return a raw psycopg (v3) connection with ETL session settings applied.
 
-    Use this when you need `cursor.executemany()` for bulk upserts; SQLAlchemy
-    is fine for everything else.
+    Use this when you need `cursor.executemany()` for bulk upserts or COPY;
+    SQLAlchemy is fine for everything else. The connect is retried with backoff
+    so a brief Supabase restart/failover during the daily run is ridden out
+    rather than failing the step instantly.
     """
-    return psycopg.connect(**_db_kwargs())
+    return _retry_on_conn_loss(_open_connection, what="db connect")
 
 
 @contextmanager
@@ -155,9 +253,8 @@ class EtlRunHandle:
     """Mutable handle yielded by `log_etl_run` so callers can record row counts.
 
     `rows_inserted` is the canonical counter for ingest steps. `rows_deleted`
-    is set by cleanup-style steps that scrub rows out (e.g.,
-    `scripts/cleanup_vertical_production.py`). Both land in their
-    respective columns in `meta.etl_log`.
+    is reserved for cleanup-style steps that scrub rows out. Both land in
+    their respective columns in `meta.etl_log`.
     """
 
     def __init__(self) -> None:
@@ -165,20 +262,99 @@ class EtlRunHandle:
         self.rows_deleted: int = 0
 
 
+# settle() forces a CHECKPOINT before a memory-heavy step, but the Supabase
+# `postgres` role isn't a superuser and (unless granted `pg_checkpoint`, PG15+)
+# CHECKPOINT raises insufficient_privilege. Latch that so we warn ONCE and stop
+# re-issuing a command the server logs as an error on every call. Reset each
+# process, so a later `GRANT pg_checkpoint TO postgres` is picked up next run.
+_checkpoint_unavailable = False
+
+
+def settle(seconds: int | None = None) -> int:
+    """Give a small managed instance a moment to flush before the next
+    memory-heavy step: a best-effort CHECKPOINT (skipped if the role lacks the
+    privilege) plus a short pause so the background writer/checkpointer can
+    drain dirty buffers. Duration via ETL_SETTLE_SECONDS (default 20; 0 = off).
+    Returns the seconds slept (so it can be used as a run_daily step)."""
+    global _checkpoint_unavailable
+    secs = int(os.getenv("ETL_SETTLE_SECONDS", "20")) if seconds is None else seconds
+    if secs <= 0:
+        return 0
+    if not _checkpoint_unavailable:
+        try:
+            conn = get_connection()
+            try:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cur.execute("CHECKPOINT")
+                logger.debug("settle: CHECKPOINT issued")
+            finally:
+                conn.close()
+        except psycopg.errors.InsufficientPrivilege:
+            _checkpoint_unavailable = True
+            logger.warning(
+                "settle(): CHECKPOINT denied for this role - forced flush is "
+                "DISABLED; relying on the %ds pause + background writer. To "
+                "enable it, GRANT pg_checkpoint TO the app role (see runbook).",
+                secs,
+            )
+        except Exception:
+            logger.warning(
+                "settle: CHECKPOINT failed; relying on background flush",
+                exc_info=True,
+            )
+    time.sleep(secs)
+    return secs
+
+
+# Curated materialized views in dependency-refresh order (mirrors what
+# curated.refresh_all() does internally). refresh_curated() refreshes them one
+# at a time rather than via the single refresh_all() call.
+_CURATED_MATVIEWS: tuple[str, ...] = (
+    "curated.wells",
+    "curated.formation_blueox",
+    "curated.production",
+    "curated.production_normalized",
+    "curated.type_curve_cohorts",
+    "curated.production_forecast",
+    "curated.intel_locations",
+)
+
+
 def refresh_curated() -> None:
-    """Execute `SELECT curated.refresh_all();` to rebuild curated views."""
-    conn = get_connection()
-    try:
-        with conn.cursor() as cur:
-            cur.execute("SELECT curated.refresh_all();")
-        conn.commit()
-        logger.info("curated.refresh_all() completed")
-    except Exception:
-        conn.rollback()
-        logger.exception("curated.refresh_all() failed")
-        raise
-    finally:
-        conn.close()
+    """Refresh the curated materialized views CONCURRENTLY, one at a time, in
+    dependency order, with a settle between each.
+
+    Refreshing individually (each in its own autocommit session) keeps the peak
+    memory footprint lower than a single curated.refresh_all() call — important
+    on a small managed instance — and means a failure part-way still leaves the
+    earlier matviews refreshed. CONCURRENTLY can't run inside a transaction
+    block, hence autocommit.
+    """
+    n = len(_CURATED_MATVIEWS)
+    for i, mv in enumerate(_CURATED_MATVIEWS):
+        # Each matview is refreshed in its own connection, retried on connection
+        # loss: a managed-Postgres restart between (or during) matviews is ridden
+        # out rather than failing the whole step. REFRESH ... CONCURRENTLY is
+        # idempotent, so re-running a matview after a dropped connection is safe.
+        def _refresh_one(mv: str = mv) -> None:
+            conn = _open_connection()
+            try:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cur.execute(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mv}")
+            finally:
+                conn.close()
+
+        try:
+            _retry_on_conn_loss(_refresh_one, what=f"refresh {mv}")
+            logger.info("refreshed %s (%d/%d)", mv, i + 1, n)
+        except Exception:
+            logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
+            raise
+        if i < n - 1:
+            settle()
+    logger.info("curated refresh complete (%d matviews, individually)", n)
 
 
 def bulk_upsert(

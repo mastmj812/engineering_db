@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 requests==2.32.3
 tenacity==9.0.0
 enverus-developer-api>=3.0.0
+pyshp>=2.3            # pure-Python shapefile reader for Novi Intelligence loads (no GDAL)

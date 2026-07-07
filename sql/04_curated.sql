@@ -198,6 +198,13 @@ SELECT
     COALESCE(wd."Formation", n."Formation")                    AS formation,
     COALESCE(wd."ReportedFormation", n."ReportedFormation")    AS reported_formation,
     COALESCE(wd."GridFormation", n."GridFormation")            AS grid_formation,
+
+    -- NOTE: the Blue Ox standardized formation (formation_blueox + basin_blueox
+    -- + raw/source/is_mapped) lives in curated.formation_blueox (sql/16) and is
+    -- joined into curated.wells_enriched (sql/06). It was factored out of this
+    -- matview so crosswalk / precedence edits don't force a DROP-CASCADE rebuild
+    -- of the 22M-row production chain. See sql/16_formation_blueox.sql.
+
     -- Trust flag for formation assignment. When TRUE, the directional
     -- survey on file is the operator's pre-drill PLAN, not the actual
     -- post-drill survey — and both Novi and Enverus use that planned

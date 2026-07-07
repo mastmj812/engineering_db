@@ -1,0 +1,171 @@
+basin,source,raw_value,canonical_code,notes
+delaware,novi,UNKNOWN,OTHER,12921 wells; REVIEW: Novi UNKNOWN
+delaware,enverus,WOLFCAMP A UPPER,WCA_1,5693 wells; REVIEW: _1=upper
+delaware,enverus,WOLFCAMP A LOWER,WCA_2,4651 wells; REVIEW: _2=lower
+delaware,novi,SECOND BONE SPRING,BS2_S,4147 wells; REVIEW: generic 2nd BS -> sand
+delaware,novi,THIRD BONE SPRING,BS3_S,2395 wells; REVIEW: generic 3rd BS -> sand
+delaware,enverus+novi,WOLFCAMP C,WCC,2233 wells
+delaware,enverus,WOLFCAMP B UPPER,WCB_1,2218 wells; REVIEW: _1=upper
+delaware,novi,THIRD BONE SPRING LIME,BS3_C,2028 wells
+delaware,enverus,WOLFCAMP XY,WCXY,1992 wells
+delaware,enverus,WOLFCAMP B LOWER,WCB_2,1412 wells; REVIEW: _2=lower
+delaware,novi,FIRST BONE SPRING,BS1_S,1108 wells
+delaware,novi,SECOND BONE SPRING LIME,BS2_C,827 wells
+delaware,novi,WOLFCAMP,OTHER,"706 wells; REVIEW: generic Wolfcamp, no bench"
+delaware,novi,AVALON MIDDLE CARBONATE,AVA_1,666 wells; REVIEW: avalon ordering
+delaware,enverus,3RD BONE SPRING SAND,BS3_S,567 wells
+delaware,enverus+novi,UPPER AVALON,AVA_0,493 wells; REVIEW: avalon ordering: upper->AVA_0?
+delaware,novi,BONE SPRING,OTHER,"477 wells; REVIEW: generic Bone Spring, no bench"
+delaware,novi,SUB-WOODFORD,OTHER,433 wells; default: not a target unconventional interval
+delaware,novi,PADDOCK,OTHER,422 wells; default: not a target unconventional interval
+delaware,novi,DELAWARE,OTHER,369 wells; default: not a target unconventional interval
+delaware,enverus+novi,LOWER AVALON,AVA_2,327 wells; REVIEW: avalon ordering
+delaware,novi,PENNSYLVANIAN,OTHER,309 wells; default: not a target unconventional interval
+delaware,enverus+novi,WOLFCAMP D,WCD,305 wells
+delaware,enverus+novi,WOODFORD,WDFD,172 wells
+delaware,novi,LEONARD,OTHER,148 wells; default: not a target unconventional interval
+delaware,novi,BLINEBRY,OTHER,140 wells; default: not a target unconventional interval
+delaware,enverus+novi,BARNETT,BRNT,112 wells
+delaware,enverus,3RD BONE SPRING,BS3_S,109 wells; REVIEW: generic 3rd BS -> sand
+delaware,enverus+novi,2ND BONE SPRING SAND,BS2_S,107 wells
+delaware,novi,SEVEN RIVERS,OTHER,100 wells; default: not a target unconventional interval
+delaware,novi,SAN ANDRES,OTHER,81 wells; default: not a target unconventional interval
+delaware,novi,MISSISSIPPIAN,MISS,77 wells
+delaware,novi,QUEEN,OTHER,47 wells; default: not a target unconventional interval
+delaware,enverus,VAL VERDE ALL,OTHER,47 wells; default: not a target unconventional interval
+delaware,novi,CANYON,OTHER,46 wells; default: not a target unconventional interval
+delaware,novi,ABO,OTHER,42 wells; default: not a target unconventional interval
+delaware,novi,GRAYBURG,OTHER,38 wells; default: not a target unconventional interval
+delaware,novi,TREND AREA,OTHER,36 wells; default: not a target unconventional interval
+delaware,novi,GLORIETA,OTHER,34 wells; default: not a target unconventional interval
+delaware,novi,WOLFCAMP B,WCB_1,32 wells; REVIEW: generic Wolfcamp B (no bench); env was null
+delaware,enverus,DELAWARE VERTICAL,OTHER,29 wells; default: not a target unconventional interval
+delaware,enverus,1ST BONE SPRING,BS1_S,20 wells
+delaware,novi,DELAWARE MOUNTAIN GROUP,OTHER,18 wells; default: not a target unconventional interval
+delaware,enverus,LOWER PENNSYLVANIAN,OTHER,18 wells; default: not a target unconventional interval
+delaware,enverus,2ND BONE SPRING,BS2_S,16 wells; REVIEW: generic 2nd BS -> sand
+delaware,novi,YATES,OTHER,15 wells; default: not a target unconventional interval
+delaware,novi,RUSTLER,OTHER,14 wells; default: not a target unconventional interval
+delaware,novi,WOLFCAMP A,WCA_1,13 wells; REVIEW: generic Wolfcamp A (no bench); env was null
+delaware,novi,TUBB,OTHER,11 wells; default: not a target unconventional interval
+delaware,novi,DRINKARD,OTHER,10 wells; default: not a target unconventional interval
+delaware,enverus,MIDDLE AVALON,AVA_1,10 wells; REVIEW: avalon ordering
+delaware,novi,YESO,OTHER,9 wells; default: not a target unconventional interval
+delaware,novi,STRAWN,STRN,8 wells
+delaware,novi,PERMIAN,OTHER,8 wells; default: not a target unconventional interval
+delaware,novi,MORROW,OTHER,8 wells; default: not a target unconventional interval
+delaware,novi,FORD,OTHER,8 wells; default: not a target unconventional interval
+delaware,novi,SPRABERRY,OTHER,7 wells; default: not a target unconventional interval
+delaware,enverus,ABOVE UPPER AVALON,AVA_0,7 wells; REVIEW: avalon ordering
+delaware,novi,CONSOLIDATED,OTHER,6 wells; default: not a target unconventional interval
+delaware,novi,ATOKA,OTHER,6 wells; default: not a target unconventional interval
+delaware,novi,UPPER PENNSYLVANIAN,OTHER,5 wells; default: not a target unconventional interval
+delaware,novi,MONTOYA,OTHER,5 wells; default: not a target unconventional interval
+delaware,novi,SALADO,OTHER,5 wells; default: not a target unconventional interval
+delaware,novi,BRUSHY CANYON,OTHER,5 wells; default: not a target unconventional interval
+delaware,enverus,LOWER DEVONIAN AND BELOW,OTHER,4 wells; default: not a target unconventional interval
+delaware,novi,CONS,OTHER,4 wells; default: not a target unconventional interval
+delaware,novi,OLDS,OTHER,3 wells; default: not a target unconventional interval
+delaware,novi,DEVONIAN,OTHER,3 wells; default: not a target unconventional interval
+delaware,novi,SILURIAN,OTHER,3 wells; default: not a target unconventional interval
+delaware,novi,ELLENBURGER,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,GLORIETA - YESO,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,BONE SPRING - WOLFCAMP,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,TOBORG,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,SOMA,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,SEVEN RIVERS - QUEEN - GRAYBURG,OTHER,2 wells; default: not a target unconventional interval
+delaware,novi,TANSILL - YATES - SEVEN RIVERS - QUEEN,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,TANSILL,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,BONE SPRINGS,OTHER,"1 wells; REVIEW: generic Bone Spring, no bench"
+delaware,novi,CLEARFORK,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,RAMSEY,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,CLEAR FORK,OTHER,1 wells; default: not a target unconventional interval
+delaware,enverus,PENNSYLVANIAN AND ABOVE,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,BUSHY CANYON,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,COLBY,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,GALLUP,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,LOWER BONE SPRING,OTHER,1 wells; default: not a target unconventional interval
+delaware,novi,MANZANITA,OTHER,1 wells; default: not a target unconventional interval
+midland,enverus+novi,WOLFCAMP A,WCA_1,7897 wells
+midland,enverus,WOLFCAMP B UPPER,WCB_1,6466 wells; REVIEW: _1=upper
+midland,novi,LOWER SPRABERRY SHALE,LSSH,5972 wells
+midland,enverus,WOLFCAMP B LOWER,WCB_2,2622 wells; REVIEW: _2=lower
+midland,enverus+novi,MIDDLE SPRABERRY,MS,1726 wells
+midland,enverus+novi,JO MILL,JM,1695 wells
+midland,novi,LOWER SPRABERRY SAND,JM,"Novi 'Lower Spraberry Sand' = Blue Ox Jo Mill (intel TVD ~790ft above LSSH); user call 2026-06-25; 2750 intel sticks"
+midland,enverus+novi,WOLFCAMP C,WCC,1532 wells
+midland,enverus+novi,WOLFCAMP D,WCD,1280 wells
+midland,enverus+novi,DEAN,DEAN,1203 wells
+midland,novi,SUB-WOODFORD,OTHER,1180 wells; default: not a target unconventional interval
+midland,novi,PENNSYLVANIAN,OTHER,1116 wells; default: not a target unconventional interval
+midland,novi,TREND AREA,OTHER,614 wells; default: not a target unconventional interval
+midland,novi,UNKNOWN,OTHER,545 wells; REVIEW: Novi UNKNOWN
+midland,novi,MISSISSIPPIAN,MISS,291 wells
+midland,novi,SAN ANDRES,OTHER,212 wells; default: not a target unconventional interval
+midland,novi,WOODFORD,WDFD,146 wells
+midland,enverus+novi,BARNETT,BRNT,139 wells
+midland,novi,WOLFCAMP,OTHER,"103 wells; REVIEW: generic Wolfcamp, no bench"
+midland,novi,DEVONIAN,OTHER,91 wells; default: not a target unconventional interval
+midland,enverus,LOWER SPRABERRY,LSSH,74 wells; REVIEW: lower spraberry -> shale code?
+midland,novi,SPRABERRY,OTHER,"57 wells; REVIEW: generic Spraberry, no member"
+midland,enverus+novi,UPPER SPRABERRY,US,55 wells
+midland,novi,CLINE,OTHER,43 wells; default: not a target unconventional interval
+midland,novi,SANTA ROSA,OTHER,38 wells; default: not a target unconventional interval
+midland,novi,CLEAR FORK,OTHER,38 wells; default: not a target unconventional interval
+midland,novi,GRAYBURG,OTHER,37 wells; default: not a target unconventional interval
+midland,novi,CONSOLIDATED,OTHER,37 wells; default: not a target unconventional interval
+midland,enverus,WOLFCAMP C AND ABOVE,OTHER,28 wells; default: not a target unconventional interval
+midland,novi,QUEEN,OTHER,27 wells; default: not a target unconventional interval
+midland,novi,STRAWN,STRN,23 wells
+midland,novi,CANYON,OTHER,15 wells; default: not a target unconventional interval
+midland,novi,ELLENBURGER,OTHER,15 wells; default: not a target unconventional interval
+midland,novi,FUSSELMAN,OTHER,15 wells; default: not a target unconventional interval
+midland,novi,YATES,OTHER,14 wells; default: not a target unconventional interval
+midland,novi,BARNETT SHALE,BRNT,12 wells
+midland,novi,LEONARD,OTHER,10 wells; default: not a target unconventional interval
+midland,enverus,MIDLAND VERTICAL,OTHER,9 wells; default: not a target unconventional interval
+midland,novi,SEVEN RIVERS,OTHER,8 wells; default: not a target unconventional interval
+midland,novi,WOLFCAMP B,WCB_1,7 wells; REVIEW: generic Wolfcamp B (no bench)
+midland,enverus,PENNSYLVANIAN AND ABOVE,OTHER,7 wells; default: not a target unconventional interval
+midland,enverus,LOWER DEVONIAN AND BELOW,OTHER,6 wells; default: not a target unconventional interval
+midland,novi,ATOKA,OTHER,6 wells; default: not a target unconventional interval
+midland,novi,GLORIETA,OTHER,6 wells; default: not a target unconventional interval
+midland,enverus,LOWER PENNSYLVANIAN AND MISSISSIPPIAN,OTHER,5 wells; default: not a target unconventional interval
+midland,novi,CISCO,OTHER,4 wells; default: not a target unconventional interval
+midland,enverus,LOWER PENNSYLVANIAN,OTHER,3 wells; default: not a target unconventional interval
+midland,novi,MONTOYA,OTHER,3 wells; default: not a target unconventional interval
+midland,enverus,ABOVE UPPER SPRABERRY,OTHER,2 wells; default: not a target unconventional interval
+midland,novi,FORD,OTHER,1 wells; default: not a target unconventional interval
+midland,novi,DETRITAL,OTHER,1 wells; default: not a target unconventional interval
+midland,novi,LIME,OTHER,1 wells; default: not a target unconventional interval
+midland,novi,RUSTLER,OTHER,1 wells; default: not a target unconventional interval
+delaware,enverus,ABOVE YESO,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,NM SHELF ALL,OTHER,enverus shelf catch-all surfaced via UNKNOWN->enverus
+delaware,enverus,NM SHELF VERTICAL,OTHER,enverus vertical/shelf surfaced via UNKNOWN->enverus
+delaware,enverus,LOWER YESO AND ABO,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,WOLFCAMP AND BELOW,OTHER,enverus coarse catch-all (ambiguous); -> OTHER
+delaware,enverus,LOWER BLINEBRY,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,LOWER MISSISSIPPIAN,MISS,enverus Mississippian surfaced via UNKNOWN->enverus
+delaware,enverus,UPPER PADDOCK,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,UPPER BLINEBRY,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,LOWER PADDOCK,OTHER,enverus zone surfaced via UNKNOWN->enverus; conventional
+delaware,enverus,CENTRAL BASIN PLATFORM VERTICAL,OTHER,enverus vertical surfaced via env_basin fallback
+midland,enverus,LOWER PENNSYLVANIAN AND BELOW,OTHER,enverus coarse catch-all; -> OTHER
+midland,enverus,TEXAS SHELF ALL,OTHER,enverus shelf catch-all surfaced via UNKNOWN->enverus
+midland,enverus,EASTERN SHELF VERTICAL,OTHER,enverus vertical/shelf surfaced via env_basin fallback
+midland,enverus,VAL VERDE ALL,OTHER,enverus catch-all surfaced via UNKNOWN->enverus
+midland,enverus,LOWER MISSISSIPPIAN,MISS,enverus Mississippian surfaced via UNKNOWN->enverus
+cbp,enverus+novi,WOODFORD,WDFD,CBP deep unconventional step-out target
+cbp,enverus+novi,BARNETT,BRNT,CBP deep unconventional step-out target
+cbp,novi,BARNETT SHALE,BRNT,CBP deep unconventional step-out target
+cbp,novi,MISSISSIPPIAN,MISS,CBP deep unconventional step-out target
+cbp,enverus,LOWER MISSISSIPPIAN,MISS,CBP deep unconventional step-out target
+cbp,novi,STRAWN,STRN,CBP deep target (Strawn); same code as delaware/midland
+cbp,enverus,WOLFCAMP B UPPER,WCB_1,CBP Wolfcamp B upper
+cbp,enverus,WOLFCAMP B LOWER,WCB_2,CBP Wolfcamp B lower
+cbp,novi,SECOND BONE SPRING,BS2_S,CBP 2nd Bone Spring sand
+cbp,novi,SECOND BONE SPRING LIME,BS2_C,CBP 2nd Bone Spring carbonate
+cbp,novi,FIRST BONE SPRING,BS1_S,CBP 1st Bone Spring sand
+cbp,enverus,LOWER SPRABERRY,LSSH,CBP Lower Spraberry shale
+cbp,enverus+novi,MIDDLE SPRABERRY,MS,CBP Middle Spraberry
+cbp,enverus+novi,DEAN,DEAN,CBP Dean

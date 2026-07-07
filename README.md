@@ -95,25 +95,18 @@ Individual steps for debugging:
 python -m etl.novi.sync
 python -m etl.novi.load                     # accepts --bulk-dir <path>
 python -m etl.enverus.pull_wells
-python -m etl.enverus.pull_production
 python -m etl.refresh
 ```
 
-Periodic maintenance: `scripts.cleanup_vertical_production` runs
-automatically inside `run_daily.py` on Sundays only (gated on
-`datetime.now().weekday() == 6`), positioned between the Enverus
-production pull and the curated refresh so Sunday's matview rebuild
-reflects the cleaned `raw_enverus.production`. The other six days of
-the week the step is skipped silently and doesn't appear in the run
-report. You can also invoke it ad-hoc:
-
-```powershell
-python -m scripts.cleanup_vertical_production
-```
-
-The incremental production pull skips the per-wellbore chunked filter
-on non-cold runs (huge speedup), so vertical-well production rows
-occasionally sneak in. This cleanup script deletes them.
+> **Note (2026-06-22):** Enverus *production* ingestion was removed. It was
+> pulled daily into `raw_enverus.production` but never consumed —
+> `curated.production` is built from Novi `WellMonths` only. The
+> `pull_production` step, the weekly `cleanup_vertical_production`
+> maintenance step, and the `raw_enverus.production` table were all
+> dropped. Enverus *wells* (which feeds completion intensity and
+> `formation_blueox`'s `env_interval`) is unaffected. To re-enable, re-add
+> `"production"` to `MVP_DATASETS` in `scripts/generate_enverus_ddl.py`,
+> regenerate `sql/03`, and restore the pull step in `run_daily.py`.
 
 One-time historical backfill:
 
@@ -241,9 +234,8 @@ The run pings `<url>/start` at the top of `run_daily.py` and either
   `deleteddate='null'` to skip soft-deletes.
 - **Enverus batching**: rows are buffered in batches of 5000 (`BATCH_SIZE`
   in `etl/enverus/pull.py`) and upserted via `etl.db.bulk_upsert`.
-- **Enverus key columns** in `pull_wells.py` / `pull_production.py` are
-  best-guesses (`API14`, `ProducingMonth`); verify them against the
-  generated DDL in `sql/03_raw_enverus_ddl.sql`.
+- **Enverus key columns** in `pull_wells.py` are best-guesses (`API14`);
+  verify them against the generated DDL in `sql/03_raw_enverus_ddl.sql`.
 - **Novi**: bulk-download model. The vendored SDK at `etl/novi/sdk.py`
   (see `NOTICE.md`) handles auth and downloads full + diff TSVs to
   `./data/`. `etl/novi/load.py` then `TRUNCATE`s and `COPY`s each TSV
@@ -299,7 +291,6 @@ engineering_db/
 │   ├── generate_novi_ddl.py
 │   ├── generate_enverus_ddl.py
 │   ├── run_daily.py
-│   ├── cleanup_vertical_production.py
 │   └── backfill.py
 ├── etl/
 │   ├── db.py
@@ -307,8 +298,7 @@ engineering_db/
 │   ├── enverus/
 │   │   ├── client.py                # DeveloperAPIv3 singleton factory
 │   │   ├── pull.py                  # generic parameterized pull_dataset()
-│   │   ├── pull_wells.py            # thin wrapper
-│   │   └── pull_production.py       # thin wrapper
+│   │   └── pull_wells.py            # thin wrapper
 │   └── novi/
 │       ├── sdk.py                   # vendored from Novi sample repo
 │       ├── sync.py                  # SDK wrapper → TSV tree on disk

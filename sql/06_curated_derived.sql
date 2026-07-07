@@ -55,6 +55,27 @@ SELECT
     w.*,
 
     -- ------------------------------------------------------------------
+    -- Blue Ox standardized formation (curated.formation_blueox, sql/16), with
+    -- the TVD-sanity correction (curated.formation_blueox_tvd, sql/23) applied
+    -- ON TOP: for the ~0.4% of producing horizontals whose tag is a gross depth
+    -- outlier (e.g. an Enverus-substitution mis-tag — Wolfcamp landed in the
+    -- "2nd Bone Spring" band), formation_blueox becomes the depth-nearest bench
+    -- and the source becomes 'tvd_corrected'. The pre-correction value is kept as
+    -- formation_blueox_base for audit; non-producing wells and non-flips pass the
+    -- base through unchanged. Joined here (not baked into curated.wells) so the
+    -- whole mapping re-derives with a cheap REFRESH, not a DROP-CASCADE rebuild.
+    -- ------------------------------------------------------------------
+    CASE WHEN fbt.corrected THEN fbt.corrected_code
+         ELSE fb.formation_blueox END               AS formation_blueox,
+    fb.formation_blueox                             AS formation_blueox_base,
+    fb.formation_blueox_raw,
+    CASE WHEN fbt.corrected THEN 'tvd_corrected'
+         ELSE fb.formation_blueox_source END        AS formation_blueox_source,
+    fb.basin_blueox,
+    fb.formation_blueox_is_mapped,
+    COALESCE(fbt.corrected, FALSE)                  AS formation_blueox_tvd_corrected,
+
+    -- ------------------------------------------------------------------
     -- Vintage
     -- ------------------------------------------------------------------
     EXTRACT(YEAR FROM w.first_completion_date)::int    AS first_completion_year,
@@ -120,7 +141,11 @@ SELECT
        AND w.lateral_length_ft IS NOT NULL
        AND w.lateral_length_ft > 0)                    AS has_completion_intensity
 
-FROM curated.wells w;
+FROM curated.wells w
+LEFT JOIN curated.formation_blueox fb
+       ON fb.api10 = w.api10
+LEFT JOIN curated.formation_blueox_tvd fbt
+       ON fbt.api10 = w.api10;
 
 
 COMMENT ON VIEW curated.wells_enriched IS
@@ -357,17 +382,34 @@ CREATE INDEX idx_curated_tcc_county_formation
 -- Update curated.refresh_all() to include the new objects.
 -- Refresh order encodes dependency: production_normalized depends on
 -- (wells, production); type_curve_cohorts depends on production_normalized.
--- wells_enriched is a regular view — no refresh.
+-- wells_enriched is a regular view — no refresh — but erebor_locations (sql/22)
+-- materializes over it, so it refreshes LAST (after every matview it reads).
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION curated.refresh_all()
 RETURNS void AS $$
 BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.wells;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox;
+    -- producing_reference + formation_blueox_tvd feed the wells_enriched view's
+    -- corrected formation_blueox, so they refresh with the base mapping.
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.producing_reference;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox_tvd;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.production_normalized;
     REFRESH MATERIALIZED VIEW CONCURRENTLY curated.type_curve_cohorts;
-    RAISE NOTICE 'curated.refresh_all() complete: wells, production, production_normalized, type_curve_cohorts refreshed';
+    -- erebor display spine (sql/22). Its PDP arm reads wells_enriched (over the
+    -- matviews just refreshed above), so it must come LAST. CONCURRENTLY keeps
+    -- the erebor app readable during the refresh. The Novi PUD/RES arm only moves
+    -- on the quarterly reload (which recreates this matview), so nightly this just
+    -- folds in newly-online producers. Guard so a missing matview (mid-quarterly
+    -- rebuild) degrades to a notice instead of failing the whole nightly run.
+    BEGIN
+        REFRESH MATERIALIZED VIEW CONCURRENTLY curated.erebor_locations;
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'curated.erebor_locations absent (mid-rebuild?) - skipped';
+    END;
+    RAISE NOTICE 'curated.refresh_all() complete: wells, formation_blueox, producing_reference, formation_blueox_tvd, production, production_normalized, type_curve_cohorts, erebor_locations refreshed';
 END;
 $$ LANGUAGE plpgsql;
 
