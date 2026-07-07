@@ -163,12 +163,34 @@ psql <session-conn> -c "create schema if not exists curated;"
 psql <session-conn> -f sql/14_formation_crosswalk.sql   # ref.formation_crosswalk (needed by sql/16)
 psql <session-conn> -f sql/04_curated.sql               # curated.wells
 psql <session-conn> -f sql/16_formation_blueox.sql      # curated.formation_blueox (reads wells + crosswalk)
+psql <session-conn> -f sql/18_bench_reference.sql       # curated.bench_reference (reads formation_blueox + wells)
+psql <session-conn> -f sql/20_producing_reference.sql   # curated.producing_reference (reads formation_blueox + wells)
+psql <session-conn> -f sql/23_formation_blueox_tvd.sql  # curated.formation_blueox_tvd (reads producing_reference) — REQUIRED before sql/06
 psql <session-conn> -f sql/05_curated_production.sql    # curated.production
-psql <session-conn> -f sql/06_curated_derived.sql       # wells_enriched (joins formation_blueox), production_normalized, type_curve_cohorts
-psql <session-conn> -f sql/10_curated_forecast.sql      # production_forecast, production_combined
+psql <session-conn> -f sql/06_curated_derived.sql       # wells_enriched (joins formation_blueox + formation_blueox_tvd), production_normalized, type_curve_cohorts
+psql <session-conn> -f sql/10_curated_forecast.sql      # production_forecast, production_combined (reads production_normalized)
 psql <session-conn> -f sql/12_curated_intel.sql         # intel_locations, intel_arps, intel_forecast
+psql <session-conn> -f sql/19_intel_formation_blueox.sql # curated.intel_formation_blueox (reads bench_reference + intel_locations)
+# refresh_all() is OPTIONAL here: every CREATE MATERIALIZED VIEW ... AS above
+# already populates on creation, so this is verification-only (confirms the
+# function resolves + all matviews refresh clean). It re-scans everything
+# CONCURRENTLY and cost ~1 hr in the 2026-07-07 drill — SKIP it to save that
+# hour on a cold rebuild; it matters only for the nightly refresh.
 psql <session-conn> -c "select curated.refresh_all();"
 ```
+
+> **Build order matters — validated by the 2026-07-07 restore drill.** `sql/18`,
+> `sql/20`, `sql/23`, `sql/19` were added by the novi-intelligence-ingestion
+> merge; `sql/06` now `LEFT JOIN`s `curated.formation_blueox_tvd` (from `sql/23`,
+> which needs `sql/20`), and `sql/19` needs `sql/18` + `intel_locations`. The
+> pre-merge order (04→16→05→06→10→12) dies at `sql/06` with
+> `relation "curated.formation_blueox_tvd" does not exist`. The order above is
+> the corrected, drill-verified sequence.
+>
+> The erebor-facing layer (`sql/21` reconciled_inventory, `sql/22`
+> erebor_locations, `sql/25` net_new_pdp, `sql/26` geography indexes) is built
+> **after** this, via the `scripts/apply_*.py` steps — see the
+> `novi-quarterly-reload` procedure, not this core rebuild.
 
 Notes:
 - `formation_blueox` lives in its OWN matview (`curated.formation_blueox`, sql/16),
@@ -262,3 +284,38 @@ select curated.refresh_all();
 - The local `oilgas` DB is untouched throughout — it remains the source of truth
   until Supabase passes §5. Re-restore from
   `C:\Users\MichaelMast\db_dumps\oilgas_20260622.dump` if needed.
+
+---
+
+## 8. Restore-drill log (validated on a local scratch DB)
+
+**2026-07-07** — full restore drill into a throwaable local database
+(`oilgas_restore_drill` on PostgreSQL **18**, `localhost:5432`), never touching
+Supabase or production `meta.etl_log`. Result: a queryable scratch DB whose §5
+counts matched the baseline exactly.
+
+**Wall-clock (laptop, PG 18, ~50 GB free):**
+
+| phase | duration |
+|---|---|
+| `pg_restore` (raw+ref+meta, 3.66 GB dump → ~16 GB) | **~10 min** |
+| curated build (sql files, matviews populate on CREATE) | **~50 min** |
+| `refresh_all()` CONCURRENTLY pass (optional — see §4) | **~1 hr** |
+| **total** | **~2 hr** (skip `refresh_all` → **~1 hr**) |
+
+Verified: `wells=91,312`, `wells_enriched=91,312`, `production=4,916,217`,
+`type_curve_cohorts=172,709`, `production_forecast=17,402,140`; PostGIS spatial
+query returns 89,328 non-null geoms; `meta.etl_log` cursor preserved (173 rows).
+
+**Local-restore divergences from the Supabase steps above (don't chase the
+Supabase workarounds on a local drill):**
+
+- **PostGIS lives in `public`** on a standard local install, so the
+  `public.geometry` → `extensions.geometry` sed (§2) and the `search_path`
+  gymnastics are **not needed** — the dump's `public.geometry` refs resolve as-is.
+- **No `statement_timeout`** locally (default 0), so the big-COPY / `refresh_all`
+  timeout workarounds (§0b) are Supabase-only.
+- **Auth is `scram-sha-256`**, not trust — the restore host needs a
+  `%APPDATA%\postgresql\pgpass.conf` entry (`127.0.0.1:5432:*:postgres:<pw>`) or
+  `PGPASSWORD`; connect with `-h 127.0.0.1` to match the pgpass line.
+- **Cleanup:** `DROP DATABASE oilgas_restore_drill;` when done (scratch only).
