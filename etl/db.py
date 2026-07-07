@@ -14,7 +14,7 @@ import logging
 import os
 import time
 from contextlib import contextmanager
-from typing import Any, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence, TypeVar
 from urllib.parse import quote
 
 import psycopg
@@ -26,6 +26,8 @@ from sqlalchemy import Engine, create_engine
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+_T = TypeVar("_T")
 
 
 def _required_env(name: str) -> str:
@@ -106,15 +108,62 @@ def get_engine() -> Engine:
     )
 
 
+def _open_connection() -> PGConnection:
+    """One connection attempt (no retry): connect + apply session GUCs."""
+    conn = psycopg.connect(**_db_kwargs())
+    try:
+        _apply_session_settings(conn)
+    except Exception:
+        conn.close()
+        raise
+    return conn
+
+
+def _retry_on_conn_loss(fn: "Callable[[], _T]", *, what: str) -> "_T":
+    """Call `fn()`, retrying on `psycopg.OperationalError` with exponential
+    backoff. Covers a managed-Postgres restart/failover: the server refuses new
+    connections (or drops an in-flight one) for tens of seconds, then recovers
+    — exactly the `the database system is not accepting connections` /
+    `AdminShutdown` window that fails a daily run mid-flight.
+
+    Only connection-level `OperationalError`s are retried; anything else
+    (programming errors, constraint violations) propagates immediately. Callers
+    must therefore only wrap idempotent work — a fresh connect, or a
+    `REFRESH MATERIALIZED VIEW CONCURRENTLY` — never a half-done multi-batch
+    write. Tunable via env: DB_CONNECT_RETRIES (6), DB_CONNECT_RETRY_BASE (2s),
+    DB_CONNECT_RETRY_MAX (30s).
+    """
+    attempts = int(os.getenv("DB_CONNECT_RETRIES", "6"))
+    base = float(os.getenv("DB_CONNECT_RETRY_BASE", "2"))
+    cap = float(os.getenv("DB_CONNECT_RETRY_MAX", "30"))
+    last: psycopg.OperationalError | None = None
+    for i in range(1, attempts + 1):
+        try:
+            return fn()
+        except psycopg.OperationalError as exc:
+            last = exc
+            if i >= attempts:
+                break
+            delay = min(base * (2 ** (i - 1)), cap)
+            logger.warning(
+                "%s failed (attempt %d/%d): %s; retrying in %.0fs",
+                what, i, attempts, exc, delay,
+            )
+            time.sleep(delay)
+    assert last is not None
+    logger.error("%s failed after %d attempts", what, attempts)
+    raise last
+
+
 def get_connection() -> PGConnection:
     """Return a raw psycopg (v3) connection with ETL session settings applied.
 
     Use this when you need `cursor.executemany()` for bulk upserts or COPY;
-    SQLAlchemy is fine for everything else.
+    SQLAlchemy is fine for everything else. The connect is retried with backoff
+    so a brief Supabase restart/failover during the daily run is ridden out
+    rather than failing the step instantly.
     """
-    conn = psycopg.connect(**_db_kwargs())
-    _apply_session_settings(conn)
-    return conn
+    return _retry_on_conn_loss(_open_connection, what="db connect")
 
 
 @contextmanager
@@ -213,27 +262,47 @@ class EtlRunHandle:
         self.rows_deleted: int = 0
 
 
+# settle() forces a CHECKPOINT before a memory-heavy step, but the Supabase
+# `postgres` role isn't a superuser and (unless granted `pg_checkpoint`, PG15+)
+# CHECKPOINT raises insufficient_privilege. Latch that so we warn ONCE and stop
+# re-issuing a command the server logs as an error on every call. Reset each
+# process, so a later `GRANT pg_checkpoint TO postgres` is picked up next run.
+_checkpoint_unavailable = False
+
+
 def settle(seconds: int | None = None) -> int:
     """Give a small managed instance a moment to flush before the next
     memory-heavy step: a best-effort CHECKPOINT (skipped if the role lacks the
     privilege) plus a short pause so the background writer/checkpointer can
     drain dirty buffers. Duration via ETL_SETTLE_SECONDS (default 20; 0 = off).
     Returns the seconds slept (so it can be used as a run_daily step)."""
+    global _checkpoint_unavailable
     secs = int(os.getenv("ETL_SETTLE_SECONDS", "20")) if seconds is None else seconds
     if secs <= 0:
         return 0
-    try:
-        conn = get_connection()
+    if not _checkpoint_unavailable:
         try:
-            conn.autocommit = True
-            with conn.cursor() as cur:
-                cur.execute("CHECKPOINT")
+            conn = get_connection()
+            try:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cur.execute("CHECKPOINT")
+                logger.debug("settle: CHECKPOINT issued")
+            finally:
+                conn.close()
+        except psycopg.errors.InsufficientPrivilege:
+            _checkpoint_unavailable = True
+            logger.warning(
+                "settle(): CHECKPOINT denied for this role - forced flush is "
+                "DISABLED; relying on the %ds pause + background writer. To "
+                "enable it, GRANT pg_checkpoint TO the app role (see runbook).",
+                secs,
+            )
         except Exception:
-            logger.debug("CHECKPOINT unavailable; relying on background flush", exc_info=True)
-        finally:
-            conn.close()
-    except Exception:
-        logger.debug("settle: checkpoint connection failed", exc_info=True)
+            logger.warning(
+                "settle: CHECKPOINT failed; relying on background flush",
+                exc_info=True,
+            )
     time.sleep(secs)
     return secs
 
@@ -264,17 +333,25 @@ def refresh_curated() -> None:
     """
     n = len(_CURATED_MATVIEWS)
     for i, mv in enumerate(_CURATED_MATVIEWS):
-        conn = get_connection()
+        # Each matview is refreshed in its own connection, retried on connection
+        # loss: a managed-Postgres restart between (or during) matviews is ridden
+        # out rather than failing the whole step. REFRESH ... CONCURRENTLY is
+        # idempotent, so re-running a matview after a dropped connection is safe.
+        def _refresh_one(mv: str = mv) -> None:
+            conn = _open_connection()
+            try:
+                conn.autocommit = True
+                with conn.cursor() as cur:
+                    cur.execute(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mv}")
+            finally:
+                conn.close()
+
         try:
-            conn.autocommit = True
-            with conn.cursor() as cur:
-                cur.execute(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mv}")
+            _retry_on_conn_loss(_refresh_one, what=f"refresh {mv}")
             logger.info("refreshed %s (%d/%d)", mv, i + 1, n)
         except Exception:
             logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
             raise
-        finally:
-            conn.close()
         if i < n - 1:
             settle()
     logger.info("curated refresh complete (%d matviews, individually)", n)
