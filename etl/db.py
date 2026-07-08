@@ -14,6 +14,7 @@ import logging
 import os
 import time
 from contextlib import contextmanager
+from datetime import datetime
 from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence, TypeVar
 from urllib.parse import quote
 
@@ -321,7 +322,56 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
 )
 
 
-def refresh_curated() -> None:
+# Matviews whose refresh is GATED on whether their source raw table changed
+# since the matview's last successful refresh. Value is a LIKE pattern matched
+# against meta.etl_log.table_name (covers both the "(incremental)" nightly load
+# and the "(reconcile)" run). Only curated.production_forecast (~7 GB, built
+# from raw_novi.ForecastWellMonths) is gated: it is the memory-heavy rebuild
+# that OOMs a small managed instance, and ForecastWellMonths is a faithful
+# change signal for it (a new well brings new forecast rows). The other matviews
+# are small and/or have multi-table inputs, so they refresh every run.
+_GATED_REFRESH: dict[str, str] = {
+    "curated.production_forecast": "ForecastWellMonths%",
+}
+
+
+def _needs_refresh(
+    last_refresh: datetime | None, last_source_change: datetime | None
+) -> bool:
+    """Pure gate decision: refresh a matview iff it has never been successfully
+    refreshed, OR its source changed at/after the last successful refresh.
+
+    Uses ``>=`` deliberately: a spurious extra refresh is safe (idempotent), a
+    missed one leaves stale data — so ties break toward refreshing. Gating on
+    last-*successful*-refresh (not "changed since last night") is what makes a
+    failed refresh self-heal: the failure isn't recorded as success, so the
+    source still reads as newer next run and the matview is rebuilt."""
+    if last_refresh is None:
+        return True
+    return last_source_change is not None and last_source_change >= last_refresh
+
+
+def _matview_is_stale(conn: PGConnection, matview: str, source_like: str) -> bool:
+    """Read meta.etl_log for `matview`'s last successful refresh and its source's
+    last change (rows inserted or deleted), then decide via _needs_refresh."""
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT max(run_finished_at) FROM meta.etl_log "
+            "WHERE table_name = %s AND status = 'success'",
+            (matview,),
+        )
+        last_refresh = cur.fetchone()[0]
+        cur.execute(
+            "SELECT max(run_finished_at) FROM meta.etl_log "
+            "WHERE table_name LIKE %s AND status = 'success' "
+            "AND (COALESCE(rows_inserted, 0) > 0 OR COALESCE(rows_deleted, 0) > 0)",
+            (source_like,),
+        )
+        last_change = cur.fetchone()[0]
+    return _needs_refresh(last_refresh, last_change)
+
+
+def refresh_curated(*, force: bool = False) -> None:
     """Refresh the curated materialized views CONCURRENTLY, one at a time, in
     dependency order, with a settle between each.
 
@@ -330,9 +380,33 @@ def refresh_curated() -> None:
     on a small managed instance — and means a failure part-way still leaves the
     earlier matviews refreshed. CONCURRENTLY can't run inside a transaction
     block, hence autocommit.
-    """
+
+    Gated matviews (``_GATED_REFRESH``) are SKIPPED when their source raw table
+    hasn't changed since the matview's last successful refresh — so the ~7 GB
+    curated.production_forecast rebuild (the operation that OOMs a 2 GB Supabase
+    box) does not run on the many nights ForecastWellMonths is unchanged. Each
+    refresh is recorded in meta.etl_log ("curated", <matview>) so the gate can
+    read the last successful refresh. Pass ``force=True`` to refresh everything
+    regardless — do this after a full_reconcile_table (deletes aren't flagged by
+    the incremental watermark) or a schema change."""
     n = len(_CURATED_MATVIEWS)
     for i, mv in enumerate(_CURATED_MATVIEWS):
+        source_like = _GATED_REFRESH.get(mv)
+        if source_like is not None and not force:
+            def _probe(mv: str = mv, source_like: str = source_like) -> bool:
+                conn = _open_connection()
+                try:
+                    return _matview_is_stale(conn, mv, source_like)
+                finally:
+                    conn.close()
+
+            if not _retry_on_conn_loss(_probe, what=f"staleness check {mv}"):
+                logger.info(
+                    "skipped %s (%d/%d): source unchanged since last refresh",
+                    mv, i + 1, n,
+                )
+                continue
+
         # Each matview is refreshed in its own connection, retried on connection
         # loss: a managed-Postgres restart between (or during) matviews is ridden
         # out rather than failing the whole step. REFRESH ... CONCURRENTLY is
@@ -347,7 +421,10 @@ def refresh_curated() -> None:
                 conn.close()
 
         try:
-            _retry_on_conn_loss(_refresh_one, what=f"refresh {mv}")
+            # log_etl_run records status=success on clean exit (the gate's
+            # last-successful-refresh marker) or status=failed on exception.
+            with log_etl_run("curated", mv):
+                _retry_on_conn_loss(_refresh_one, what=f"refresh {mv}")
             logger.info("refreshed %s (%d/%d)", mv, i + 1, n)
         except Exception:
             logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
