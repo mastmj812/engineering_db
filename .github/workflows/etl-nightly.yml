@@ -37,6 +37,11 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_SSLMODE: require
+      # Ride out a managed-Postgres restart/failover (Supabase "terminating
+      # connection due to administrator command" can take a few minutes): more
+      # attempts, longer cap than the etl/db.py defaults (6 / 30s).
+      DB_CONNECT_RETRIES: "12"
+      DB_CONNECT_RETRY_MAX: "60"
       ENVERUS_SECRET_KEY: ${{ secrets.ENVERUS_SECRET_KEY }}
       NOVI_EMAIL: ${{ secrets.NOVI_EMAIL }}
       NOVI_PASSWORD: ${{ secrets.NOVI_PASSWORD }}
