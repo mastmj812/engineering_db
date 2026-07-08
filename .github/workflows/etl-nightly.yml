@@ -1,0 +1,80 @@
+# Nightly oilgas ETL on GitHub Actions (moves scripts.run_daily off the laptop).
+#
+# ROLLOUT PHASES (see docs/cold_start.md):
+#   Phase 1 (NOW): manual trigger only (workflow_dispatch) + a read-only
+#                  preflight. Proves secrets + connectivity. Zero writes.
+#   Phase 2:       add the `python -m scripts.run_daily` step (still manual).
+#   Phase 3:       add the `schedule:` cron AND disable the laptop Task
+#                  Scheduler task in the SAME change, so they never both run
+#                  against prod.
+#
+# Connectivity: DB_HOST is the Supabase SESSION POOLER (IPv4, port 5432) - the
+# direct db.<ref>.supabase.co endpoint is IPv6-only and unreachable from Actions
+# runners. etl/db.py already sets TCP keepalives + `SET statement_timeout=0` per
+# session, so refresh_all() survives the pooler.
+name: etl-nightly
+
+on:
+  workflow_dispatch: {}   # manual "Run workflow" button only - NO schedule yet
+
+# Least privilege: talks to Supabase, needs no write access to the repo.
+permissions:
+  contents: read
+
+# Never let two ETL runs overlap against prod.
+concurrency:
+  group: etl-nightly
+  cancel-in-progress: false
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: "5432"
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_SSLMODE: require
+      ENVERUS_SECRET_KEY: ${{ secrets.ENVERUS_SECRET_KEY }}
+      NOVI_EMAIL: ${{ secrets.NOVI_EMAIL }}
+      NOVI_PASSWORD: ${{ secrets.NOVI_PASSWORD }}
+      NOVI_SCOPE: ${{ secrets.NOVI_SCOPE }}
+      NOVI_VERSION: ${{ secrets.NOVI_VERSION }}
+      NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+      NOTIFY_EMAIL_FROM: ${{ secrets.NOTIFY_EMAIL_FROM }}
+      NOTIFY_SMTP_HOST: ${{ secrets.NOTIFY_SMTP_HOST }}
+      NOTIFY_SMTP_PORT: ${{ secrets.NOTIFY_SMTP_PORT }}
+      NOTIFY_SMTP_USER: ${{ secrets.NOTIFY_SMTP_USER }}
+      NOTIFY_SMTP_PASS: ${{ secrets.NOTIFY_SMTP_PASS }}
+      HEALTHCHECKS_PING_URL: ${{ secrets.HEALTHCHECKS_PING_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+
+      # PHASE 1: read-only preflight. Confirms the runner can reach Supabase
+      # with the configured secrets and that the warehouse is populated. No
+      # writes, no ETL - safe to run any number of times.
+      - name: Preflight (read-only connectivity)
+        run: |
+          python - <<'PY'
+          from etl.db import get_connection
+          conn = get_connection()
+          cur = conn.cursor()
+          cur.execute("select max(run_finished_at) from meta.etl_log")
+          print("meta.etl_log latest run:", cur.fetchone()[0])
+          cur.execute("select count(*) from curated.wells")
+          print("curated.wells rows:", cur.fetchone()[0])
+          conn.close()
+          print("PREFLIGHT OK")
+          PY
+
+      # PHASE 2 (add later): the real nightly.
+      # - name: Run daily ETL
+      #   run: python -m scripts.run_daily
