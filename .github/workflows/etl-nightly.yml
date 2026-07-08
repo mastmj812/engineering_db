@@ -75,6 +75,8 @@ jobs:
           print("PREFLIGHT OK")
           PY
 
-      # PHASE 2 (add later): the real nightly.
-      # - name: Run daily ETL
-      #   run: python -m scripts.run_daily
+      # PHASE 2: the real nightly ETL. Writes to prod (raw_novi, curated,
+      # advances meta.etl_log). run_daily isolates each step in its own
+      # try/except and emails a summary + pings healthchecks at the end.
+      - name: Run daily ETL
+        run: python -m scripts.run_daily
