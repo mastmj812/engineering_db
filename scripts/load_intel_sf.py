@@ -64,10 +64,9 @@ def main() -> None:
         run_sql_file("29_curated_intel_sf.sql")
 
     if args.forecast:
-        from etl.intel_sf.extract import load_views
-        counts = load_views(["PRODUCTION_FORECAST"],
-                            [args.report] if args.report else None)
-        logger.info("forecast load complete: %s", counts)
+        from etl.intel_sf.extract import load_production_forecast
+        n = load_production_forecast([args.report] if args.report else None)
+        logger.info("forecast load complete: %d rows", n)
 
     if groups:
         from etl.intel_sf.config import MIRRORED_VIEWS

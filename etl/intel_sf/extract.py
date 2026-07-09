@@ -248,6 +248,114 @@ def load_views(views: list[str], reports: list[str] | None = None) -> dict[str, 
     return counts
 
 
+# ---------------------------------------------------------------------------
+# PRODUCTION_FORECAST — chunked load. A 36M-row slice in one transaction
+# generates enough WAL/buffer pressure to crash the 2 GB instance (observed
+# 2026-07-09: restart at ~27M rows). So: commit every CHUNK_ROWS with a
+# settle() between chunks, and drop/recreate the table's indexes around the
+# bulk load. Slice idempotency is preserved — a failed run leaves a partial
+# slice that the next run's DELETE clears.
+# ---------------------------------------------------------------------------
+
+FORECAST_CHUNK_ROWS = 5_000_000
+
+_FORECAST_INDEXES = (
+    ("idx_ri_forecast_planned",
+     "CREATE INDEX idx_ri_forecast_planned ON raw_intel.production_forecast (planned_well_id, forecast_day)"),
+    ("idx_ri_forecast_report",
+     "CREATE INDEX idx_ri_forecast_report ON raw_intel.production_forecast (report_name)"),
+)
+
+
+def load_production_forecast(reports: list[str] | None = None) -> int:
+    """Chunk-committed load of PRODUCTION_FORECAST for the given reports."""
+    from etl.db import settle
+
+    if reports is None:
+        reports = visible_reports()
+    view, table = "PRODUCTION_FORECAST", "production_forecast"
+    total = 0
+    sf = get_sf_connection()
+    try:
+        # indexes off during the bulk load; rebuilt below
+        with get_connection() as conn, conn.cursor() as cur:
+            for name, _ in _FORECAST_INDEXES:
+                cur.execute(sql.SQL("DROP INDEX IF EXISTS raw_intel.{}").format(sql.Identifier(name)))
+            conn.commit()
+
+        for report_name in reports:
+            slug, version = parse_report_name(report_name)
+            with log_etl_run("intel_sf", f"{table}:{report_name}") as run, \
+                    sf.cursor() as sf_cur:
+                conn = get_connection()
+                try:
+                    with conn.cursor() as cur:
+                        cols = _shared_columns(sf_cur, cur, view, table)
+                        cur.execute(
+                            sql.SQL("DELETE FROM raw_intel.{} WHERE report_name = %s")
+                            .format(sql.Identifier(table)), (report_name,))
+                        run.rows_deleted = cur.rowcount
+                        cur.execute(
+                            sql.SQL("ALTER TABLE raw_intel.{} "
+                                    "ALTER COLUMN basin_slug SET DEFAULT {}, "
+                                    "ALTER COLUMN report_version SET DEFAULT {}")
+                            .format(sql.Identifier(table), sql.Literal(slug), sql.Literal(version)))
+                    conn.commit()
+
+                    col_list = ", ".join(f'"{c}"' for c in cols)
+                    copy_sql = (f"COPY raw_intel.{table} ({col_list}) "
+                                f"FROM STDIN WITH (FORMAT CSV)")
+                    sf_cur.execute(
+                        f"SELECT {', '.join(cols)} FROM {view} WHERE report_name = %s",
+                        (report_name,))
+                    n = 0
+                    exhausted = False
+                    while not exhausted:
+                        with conn.cursor() as cur, cur.copy(copy_sql) as copy:
+                            chunk_n = 0
+                            while chunk_n < FORECAST_CHUNK_ROWS:
+                                batch = sf_cur.fetchmany(FETCH_BATCH)
+                                if not batch:
+                                    exhausted = True
+                                    break
+                                buf = io.StringIO()
+                                csv.writer(buf).writerows(batch)
+                                copy.write(buf.getvalue())
+                                chunk_n += len(batch)
+                        conn.commit()
+                        n += chunk_n
+                        logger.info("  %s [%s]: %d rows committed", table, report_name, n)
+                        if not exhausted:
+                            settle(5)
+
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            sql.SQL("ALTER TABLE raw_intel.{} "
+                                    "ALTER COLUMN basin_slug DROP DEFAULT, "
+                                    "ALTER COLUMN report_version DROP DEFAULT")
+                            .format(sql.Identifier(table)))
+                    conn.commit()
+                    run.rows_inserted = n
+                    total += n
+                finally:
+                    conn.close()
+            logger.info("%s [%s]: slice complete", table, report_name)
+
+        logger.info("rebuilding forecast indexes...")
+        conn = get_connection()
+        try:
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                for _, ddl in _FORECAST_INDEXES:
+                    cur.execute(ddl)
+                cur.execute("ANALYZE raw_intel.production_forecast")
+        finally:
+            conn.close()
+    finally:
+        sf.close()
+    return total
+
+
 def main() -> None:
     import argparse
     ap = argparse.ArgumentParser(description="Load INTEL share views into raw_intel.")
