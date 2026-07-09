@@ -7,7 +7,9 @@ Sequence:
     1. Sync Novi bulk TSVs to disk (etl.novi.sync.sync_bulk)
     2. COPY Novi TSVs into raw_novi.* (etl.novi.load.load_all)
     3. Pull Enverus wells deltas into raw_enverus.wells (etl.enverus.pull_wells)
-    4. Refresh curated materialized views (curated.refresh_all)
+    4. Check the Novi INTEL share for new quarterly reports (notify-only;
+       etl.intel_sf.detect — nonzero ROWS = reports awaiting a manual reload)
+    5. Refresh curated materialized views (curated.refresh_all)
 
 Each step is isolated in its own try/except so a single failure does not
 block the rest. The end-of-run summary table reports per-step status,
@@ -158,10 +160,21 @@ def main() -> int:
             db_settle()
             return 0
 
+        def step_intel_report_check() -> int:
+            # Notify-only: how many entitled Novi INTEL collections are visible
+            # in the Snowflake share but not yet loaded into raw_intel. Nonzero
+            # lands in the ROWS column + a loud WARNING in the log/email; the
+            # quarterly reload itself stays manual. Lazy import so a missing
+            # snowflake dependency can't break the rest of the pipeline.
+            from etl.intel_sf.detect import check_new_reports
+
+            return check_new_reports()
+
         _run_step("novi.sync", step_novi_sync, report)
         _run_step("novi.load", step_novi_load, report)
         _run_step("settle", step_settle, report)
         _run_step("enverus.pull_wells", enverus_wells.main, report)
+        _run_step("intel_sf.report_check", step_intel_report_check, report)
         _run_step("curated.refresh", lambda: (refresh_step.main() or 0), report)
     finally:
         _print_summary(report)
