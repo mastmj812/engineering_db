@@ -44,6 +44,31 @@ def main() -> None:
     finally:
         conn.close()
 
+    # sql/20's DROP ... CASCADE takes curated.formation_blueox_tvd (sql/23,
+    # depends on producing_reference) and curated.wells_enriched (sql/06 view,
+    # joins formation_blueox_tvd) down with it — and sql/21 below NEEDS
+    # formation_blueox_tvd. Rebuild both before the reconciliation pass.
+    print("[1b/3] rebuild formation_blueox_tvd (sql/23; cascade victim of sql/20)", flush=True)
+    _exec("formation_blueox_tvd", "23_formation_blueox_tvd.sql")
+
+    print("[1c/3] recreate curated.wells_enriched (sql/06 view block)", flush=True)
+    import re
+    sql06 = (SQL / "06_curated_derived.sql").read_text(encoding="utf-8")
+    m = re.search(
+        r"(DROP VIEW IF EXISTS curated\.wells_enriched CASCADE;.*?"
+        r"COMMENT ON VIEW curated\.wells_enriched IS\s*'[^']*';)",
+        sql06, re.DOTALL,
+    )
+    if not m:
+        raise RuntimeError("wells_enriched block not found in sql/06")
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(m.group(1))
+        conn.commit()
+    finally:
+        conn.close()
+
     print("[2/3] build curated.reconciled_inventory (overlap matching — heavy)", flush=True)
     _exec("reconciled_inventory", "21_reconciled_inventory.sql")
 

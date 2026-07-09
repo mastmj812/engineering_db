@@ -83,10 +83,12 @@ SELECT
     CASE
         WHEN COALESCE(m.n_strong, 0) >= 2  THEN 'conflict'
         -- one well covers >=50% => realized. Split by vintage: a well online AFTER
-        -- the 3Q25 Novi vintage is genuine DRIFT (real PUD->PDP value shift); one
-        -- online BEFORE it means Novi listed an already-drilled slot => PHANTOM
-        -- inventory (never real; Novi data hygiene, e.g. Eddy 324).
-        WHEN m.best_overlap >= 0.5 AND m.matched_first_prod > DATE '2025-09-30'
+        -- the loaded Novi vintage (curated.intel_vintage_date(), sql/29) is genuine
+        -- DRIFT (real PUD->PDP value shift); one online BEFORE it means Novi listed
+        -- an already-drilled slot => PHANTOM inventory (never real; e.g. Eddy 324).
+        -- scalar subquery (InitPlan) so the function runs ONCE, not per row —
+        -- a bare call is not inlinable (aggregate inside) and cost ~8h here.
+        WHEN m.best_overlap >= 0.5 AND m.matched_first_prod > (SELECT curated.intel_vintage_date())
                                             THEN 'realized_drift'
         WHEN m.best_overlap >= 0.5          THEN 'realized_phantom'
         WHEN m.best_overlap >= 0.2          THEN 'conflict'

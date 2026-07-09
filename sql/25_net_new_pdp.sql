@@ -69,7 +69,7 @@ LEFT JOIN LATERAL (
          OR abs(pr.tvd - il.tvd) <= 150
           )
 ) m ON TRUE
-WHERE pr.first_production_date > DATE '2025-09-30'   -- post the (3Q25) Novi vintage
+WHERE pr.first_production_date > (SELECT curated.intel_vintage_date())   -- post the loaded Novi vintage (sql/29); scalar subquery = InitPlan, runs once
   AND COALESCE(m.best_pud_overlap, 0) < 0.2          -- realized no PUD
 ;
 
