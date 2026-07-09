@@ -6,3 +6,4 @@ requests==2.32.3
 tenacity==9.0.0
 enverus-developer-api>=3.0.0
 pyshp>=2.3            # pure-Python shapefile reader for Novi Intelligence loads (no GDAL)
+snowflake-connector-python>=3.12   # Novi INTEL share (etl/intel_sf); PAT auth needs >=3.10
