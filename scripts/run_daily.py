@@ -29,6 +29,7 @@ from typing import Callable
 from etl import notify as notify_step
 from etl import refresh as refresh_step
 from etl.db import settle as db_settle
+from etl.db import sweep_stale_runs
 from etl.enverus import pull_wells as enverus_wells
 
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
@@ -170,6 +171,14 @@ def main() -> int:
 
             return check_new_reports()
 
+        def step_sweep_stale() -> int:
+            # Reconcile meta.etl_log rows stranded at 'running' by a prior
+            # hard-killed run (or a DB outage that outlasted the finish
+            # retries). Runs first so monitoring that counts 'running' rows
+            # sees only this run's own rows. Rows column = rows swept.
+            return sweep_stale_runs()
+
+        _run_step("etl_log.sweep_stale", step_sweep_stale, report)
         _run_step("novi.sync", step_novi_sync, report)
         _run_step("novi.load", step_novi_load, report)
         _run_step("settle", step_settle, report)

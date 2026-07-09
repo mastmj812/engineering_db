@@ -167,6 +167,71 @@ def get_connection() -> PGConnection:
     return _retry_on_conn_loss(_open_connection, what="db connect")
 
 
+def _open_run(source: str, table_name: str) -> int:
+    """Insert the status='running' row on a short-lived connection; return id."""
+    def _do() -> int:
+        conn = _open_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO meta.etl_log (source, table_name, run_started_at, status)
+                    VALUES (%s, %s, NOW(), 'running')
+                    RETURNING etl_log_id
+                    """,
+                    (source, table_name),
+                )
+                run_id: int = cur.fetchone()[0]
+            conn.commit()
+            return run_id
+        finally:
+            conn.close()
+
+    return _retry_on_conn_loss(
+        _do, what=f"etl_log open ({source}/{table_name})"
+    )
+
+
+def _finish_run(
+    run_id: int, status: str, handle: "EtlRunHandle", error_message: str | None
+) -> None:
+    """Close an etl_log row on a FRESH short-lived connection, with retry.
+
+    A fresh connection is the point: the run's own connections often die with
+    the run (a Supabase restart kills the pull AND any connection opened
+    alongside it), so finalizing on a connection that lived through the step
+    fails exactly when it matters most — leaving the row stranded at
+    'running'. Reconnecting here, through the same backoff that rides out a
+    managed-Postgres restart window, is what keeps meta.etl_log truthful."""
+    def _do() -> None:
+        conn = _open_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE meta.etl_log
+                       SET run_finished_at = NOW(),
+                           status = %s,
+                           rows_inserted = %s,
+                           rows_deleted = %s,
+                           error_message = %s
+                     WHERE etl_log_id = %s
+                    """,
+                    (
+                        status,
+                        handle.rows_inserted,
+                        handle.rows_deleted,
+                        error_message,
+                        run_id,
+                    ),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+
+    _retry_on_conn_loss(_do, what=f"etl_log finish (id={run_id}, {status})")
+
+
 @contextmanager
 def log_etl_run(source: str, table_name: str) -> Iterator["EtlRunHandle"]:
     """Context manager that records an ETL run to `meta.etl_log`.
@@ -176,36 +241,48 @@ def log_etl_run(source: str, table_name: str) -> Iterator["EtlRunHandle"]:
     `run_finished_at`, final status, row count, and (on failure) the
     exception message; the exception is then re-raised.
 
+    No connection is held across the step: the open and the finish each use
+    their own short-lived connection (see `_finish_run` for why). A row can
+    still be left at 'running' if the process is hard-killed mid-step —
+    `sweep_stale_runs()` at orchestrator startup reconciles those.
+
     Example:
         with log_etl_run("enverus", "wells") as run:
             ...
             run.rows_inserted = n
     """
     handle = EtlRunHandle()
-    conn = get_connection()
-    run_id: int | None = None
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO meta.etl_log (source, table_name, run_started_at, status)
-                VALUES (%s, %s, NOW(), 'running')
-                RETURNING etl_log_id
-                """,
-                (source, table_name),
-            )
-            row = cur.fetchone()
-            run_id = row[0] if row else None
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        conn.close()
-        raise
-
+    run_id = _open_run(source, table_name)
     try:
         yield handle
     except Exception as exc:
         logger.exception("ETL run failed: source=%s table=%s", source, table_name)
+        try:
+            _finish_run(run_id, "failed", handle, str(exc))
+        except Exception:
+            # Never mask the step's own exception with a bookkeeping failure.
+            logger.exception("Failed to record ETL failure in meta.etl_log")
+        raise
+    else:
+        try:
+            _finish_run(run_id, "success", handle, None)
+        except Exception:
+            logger.exception("Failed to record ETL success in meta.etl_log")
+            raise
+
+
+def sweep_stale_runs(max_age_hours: int = 12) -> int:
+    """Mark orphaned status='running' rows older than `max_age_hours` as failed.
+
+    Covers what `_finish_run` cannot: a hard-killed process (Task Scheduler
+    stop, power loss, CI job timeout) or a DB outage that outlasted the
+    finish-retry budget. Run at orchestrator startup, before any step opens
+    its own row; no legitimate run lasts anywhere near 12 h (the CI job
+    timeout is 3 h), so age alone is a safe discriminator. Returns the number
+    of rows swept — keeping this at zero is what makes any monitoring that
+    counts status='running' rows trustworthy."""
+    def _do() -> int:
+        conn = _open_connection()
         try:
             with conn.cursor() as cur:
                 cur.execute(
@@ -213,41 +290,29 @@ def log_etl_run(source: str, table_name: str) -> Iterator["EtlRunHandle"]:
                     UPDATE meta.etl_log
                        SET run_finished_at = NOW(),
                            status = 'failed',
-                           rows_inserted = %s,
-                           rows_deleted = %s,
-                           error_message = %s
-                     WHERE etl_log_id = %s
+                           error_message =
+                           'stale ''running'' row swept at orchestrator startup: '
+                           'the owning process was killed or could not reach the '
+                           'DB to record its outcome'
+                     WHERE status = 'running'
+                       AND run_started_at < NOW() - make_interval(hours => %s)
                     """,
-                    (handle.rows_inserted, handle.rows_deleted, str(exc), run_id),
+                    (max_age_hours,),
                 )
+                swept = cur.rowcount
             conn.commit()
-        except Exception:
-            conn.rollback()
-            logger.exception("Failed to record ETL failure in meta.etl_log")
+            return swept
         finally:
             conn.close()
-        raise
-    else:
-        try:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE meta.etl_log
-                       SET run_finished_at = NOW(),
-                           status = 'success',
-                           rows_inserted = %s,
-                           rows_deleted = %s
-                     WHERE etl_log_id = %s
-                    """,
-                    (handle.rows_inserted, handle.rows_deleted, run_id),
-                )
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            logger.exception("Failed to record ETL success in meta.etl_log")
-            raise
-        finally:
-            conn.close()
+
+    swept = _retry_on_conn_loss(_do, what="etl_log stale-run sweep")
+    if swept:
+        logger.warning(
+            "swept %d stale 'running' row(s) in meta.etl_log (older than %dh)",
+            swept,
+            max_age_hours,
+        )
+    return swept
 
 
 class EtlRunHandle:
