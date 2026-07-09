@@ -18,7 +18,7 @@ import logging
 from datetime import datetime
 from typing import Any, Sequence
 
-from etl.db import bulk_upsert, get_connection, log_etl_run
+from etl.db import get_connection, log_etl_run, upsert_batch_resilient
 from etl.enverus.client import get_client
 
 logger = logging.getLogger(__name__)
@@ -162,6 +162,12 @@ def pull_dataset(
         update_cols: list[str] | None = None
         total = 0
 
+        # Each batch is upserted AND committed on its own (via
+        # upsert_batch_resilient), so a mid-pull Supabase restart costs at most
+        # the in-flight batch, not the whole streamed pull — the failure mode
+        # that stranded the incremental cursor at 2026-06-22. The helper reconnects
+        # and replays a batch on connection loss; it may hand back a fresh
+        # connection, so we always reassign `conn`.
         conn = get_connection()
         try:
             for chunk_idx, filters in enumerate(query_filter_list, start=1):
@@ -191,14 +197,15 @@ def pull_dataset(
                             update_cols = [
                                 c for c in batch[0].keys() if c not in conflict_cols
                             ]
-                        total += bulk_upsert(
+                        conn, n = upsert_batch_resilient(
                             conn,
-                            schema=SCHEMA,
-                            table=dataset,
-                            rows=batch,
-                            conflict_cols=conflict_cols,
-                            update_cols=update_cols,
+                            SCHEMA,
+                            dataset,
+                            batch,
+                            conflict_cols,
+                            update_cols,
                         )
+                        total += n
                         batch = []
 
             if batch:
@@ -206,20 +213,18 @@ def pull_dataset(
                     update_cols = [
                         c for c in batch[0].keys() if c not in conflict_cols
                     ]
-                total += bulk_upsert(
+                conn, n = upsert_batch_resilient(
                     conn,
-                    schema=SCHEMA,
-                    table=dataset,
-                    rows=batch,
-                    conflict_cols=conflict_cols,
-                    update_cols=update_cols,
+                    SCHEMA,
+                    dataset,
+                    batch,
+                    conflict_cols,
+                    update_cols,
                 )
-
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
+                total += n
         finally:
+            # Batches self-commit, so there's no end-of-pull commit; close (which
+            # rolls back any incomplete final transaction) is all that's needed.
             conn.close()
 
         run.rows_inserted = total
