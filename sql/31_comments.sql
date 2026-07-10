@@ -399,7 +399,7 @@ COMMENT ON COLUMN curated.production_normalized.lateral_length_class IS 'Lateral
 -- ---------------------------------------------------------------------------
 -- curated.type_curve_cohorts (matview; sql/06)
 -- ---------------------------------------------------------------------------
-COMMENT ON MATERIALIZED VIEW curated.type_curve_cohorts IS 'Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. Percentiles are STATISTICAL orientation (p10 = low tail), opposite of SPE P10=high. Nightly etl.refresh.';
+COMMENT ON MATERIALIZED VIEW curated.type_curve_cohorts IS 'Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.';
 COMMENT ON COLUMN curated.type_curve_cohorts.state_code IS 'Cohort key: state FIPS code.';
 COMMENT ON COLUMN curated.type_curve_cohorts.county_code IS 'Cohort key: county FIPS code (5-char state+county).';
 COMMENT ON COLUMN curated.type_curve_cohorts.formation IS 'Cohort key: RAW Novi formation string (free-text) - NOT formation_blueox; blueox-grain cohorts must be computed upstream via wells_enriched.';
@@ -407,17 +407,17 @@ COMMENT ON COLUMN curated.type_curve_cohorts.completion_vintage_bucket IS 'Cohor
 COMMENT ON COLUMN curated.type_curve_cohorts.months_on_production IS 'Cohort key: months since first production, 1-indexed; capped at 1-240 (20 yr) - beyond that samples are too sparse for fitting.';
 COMMENT ON COLUMN curated.type_curve_cohorts.well_months IS 'Sample size: count of well-month rows aggregated in this cohort x MoP cell.';
 COMMENT ON COLUMN curated.type_curve_cohorts.well_count IS 'Sample size: distinct wells contributing at this MoP. Filter on this for a statistical floor (e.g. >= 10) before treating the cell as a type curve.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p10_oil_per_day_per_1000ft IS 'Statistical 10th percentile of oil rate, bbl/d per 1,000 ft - the LOW tail here; SPE convention (P10 = high case) is the OPPOSITE orientation.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p25_oil_per_day_per_1000ft IS 'Statistical 25th percentile of oil rate, bbl/d per 1,000 ft (low quartile).';
+COMMENT ON COLUMN curated.type_curve_cohorts.p10_oil_per_day_per_1000ft IS 'P10 oil rate (SPE: HIGH case, 10% chance of exceeding), bbl/d per 1,000 ft.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p25_oil_per_day_per_1000ft IS 'P25 oil rate (SPE: upper quartile), bbl/d per 1,000 ft.';
 COMMENT ON COLUMN curated.type_curve_cohorts.p50_oil_per_day_per_1000ft IS 'Median oil rate, bbl/d per 1,000 ft - the primary type-curve series.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p75_oil_per_day_per_1000ft IS 'Statistical 75th percentile of oil rate, bbl/d per 1,000 ft (high quartile).';
-COMMENT ON COLUMN curated.type_curve_cohorts.p90_oil_per_day_per_1000ft IS 'Statistical 90th percentile of oil rate, bbl/d per 1,000 ft - the HIGH tail here; SPE convention (P90 = low case) is the OPPOSITE orientation.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p75_oil_per_day_per_1000ft IS 'P75 oil rate (SPE: lower quartile), bbl/d per 1,000 ft.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p90_oil_per_day_per_1000ft IS 'P90 oil rate (SPE: LOW case, 90% chance of exceeding), bbl/d per 1,000 ft.';
 COMMENT ON COLUMN curated.type_curve_cohorts.mean_oil_per_day_per_1000ft IS 'Arithmetic mean oil rate, bbl/d per 1,000 ft; skews above p50 in right-tailed cohorts.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p10_boe_per_day_per_1000ft IS 'Statistical 10th percentile of BOE rate (oil + gas/6), bbl/d per 1,000 ft - LOW tail; opposite of SPE P10=high.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p25_boe_per_day_per_1000ft IS 'Statistical 25th percentile of BOE rate, bbl/d per 1,000 ft.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p10_boe_per_day_per_1000ft IS 'P10 BOE rate (oil + gas/6; SPE: HIGH case), bbl/d per 1,000 ft.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p25_boe_per_day_per_1000ft IS 'P25 BOE rate (SPE: upper quartile), bbl/d per 1,000 ft.';
 COMMENT ON COLUMN curated.type_curve_cohorts.p50_boe_per_day_per_1000ft IS 'Median BOE rate (oil + gas/6), bbl/d per 1,000 ft - secondary series for gas-weighted cohorts.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p75_boe_per_day_per_1000ft IS 'Statistical 75th percentile of BOE rate, bbl/d per 1,000 ft.';
-COMMENT ON COLUMN curated.type_curve_cohorts.p90_boe_per_day_per_1000ft IS 'Statistical 90th percentile of BOE rate, bbl/d per 1,000 ft - HIGH tail; opposite of SPE P90=low.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p75_boe_per_day_per_1000ft IS 'P75 BOE rate (SPE: lower quartile), bbl/d per 1,000 ft.';
+COMMENT ON COLUMN curated.type_curve_cohorts.p90_boe_per_day_per_1000ft IS 'P90 BOE rate (SPE: LOW case), bbl/d per 1,000 ft.';
 COMMENT ON COLUMN curated.type_curve_cohorts.mean_boe_per_day_per_1000ft IS 'Arithmetic mean BOE rate (oil + gas/6), bbl/d per 1,000 ft.';
 COMMENT ON COLUMN curated.type_curve_cohorts.p50_gas_per_day_per_1000ft IS 'Median gas rate, Mcf/d per 1,000 ft. Median only by design; other gas percentiles compute on the fly from production_normalized.';
 COMMENT ON COLUMN curated.type_curve_cohorts.p50_water_per_day_per_1000ft IS 'Median water rate, bbl/d per 1,000 ft. Median only by design.';

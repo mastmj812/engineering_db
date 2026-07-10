@@ -1909,9 +1909,9 @@ Novi PUD inventory reconciled against producing curated wells by co-extent overl
 
 ### `curated.type_curve_cohorts` (materialized view)
 
-Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. Percentiles are STATISTICAL orientation (p10 = low tail), opposite of SPE P10=high. Nightly etl.refresh.
+Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.
 
-~175,644 rows | nightly (etl.refresh, 7/10) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
+~175,709 rows | nightly (etl.refresh, 7/10) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
 
 | column | type | description |
 |---|---|---|
@@ -1922,17 +1922,17 @@ Pre-aggregated type-curve cohorts over production_normalized: one row per (state
 | `months_on_production` | integer | Cohort key: months since first production, 1-indexed; capped at 1-240 (20 yr) - beyond that samples are too sparse for fitting. |
 | `well_months` | bigint | Sample size: count of well-month rows aggregated in this cohort x MoP cell. |
 | `well_count` | bigint | Sample size: distinct wells contributing at this MoP. Filter on this for a statistical floor (e.g. >= 10) before treating the cell as a type curve. |
-| `p10_oil_per_day_per_1000ft` | double precision | Statistical 10th percentile of oil rate, bbl/d per 1,000 ft - the LOW tail here; SPE convention (P10 = high case) is the OPPOSITE orientation. |
-| `p25_oil_per_day_per_1000ft` | double precision | Statistical 25th percentile of oil rate, bbl/d per 1,000 ft (low quartile). |
+| `p10_oil_per_day_per_1000ft` | double precision | P10 oil rate (SPE: HIGH case, 10% chance of exceeding), bbl/d per 1,000 ft. |
+| `p25_oil_per_day_per_1000ft` | double precision | P25 oil rate (SPE: upper quartile), bbl/d per 1,000 ft. |
 | `p50_oil_per_day_per_1000ft` | double precision | Median oil rate, bbl/d per 1,000 ft - the primary type-curve series. |
-| `p75_oil_per_day_per_1000ft` | double precision | Statistical 75th percentile of oil rate, bbl/d per 1,000 ft (high quartile). |
-| `p90_oil_per_day_per_1000ft` | double precision | Statistical 90th percentile of oil rate, bbl/d per 1,000 ft - the HIGH tail here; SPE convention (P90 = low case) is the OPPOSITE orientation. |
+| `p75_oil_per_day_per_1000ft` | double precision | P75 oil rate (SPE: lower quartile), bbl/d per 1,000 ft. |
+| `p90_oil_per_day_per_1000ft` | double precision | P90 oil rate (SPE: LOW case, 90% chance of exceeding), bbl/d per 1,000 ft. |
 | `mean_oil_per_day_per_1000ft` | double precision | Arithmetic mean oil rate, bbl/d per 1,000 ft; skews above p50 in right-tailed cohorts. |
-| `p10_boe_per_day_per_1000ft` | double precision | Statistical 10th percentile of BOE rate (oil + gas/6), bbl/d per 1,000 ft - LOW tail; opposite of SPE P10=high. |
-| `p25_boe_per_day_per_1000ft` | double precision | Statistical 25th percentile of BOE rate, bbl/d per 1,000 ft. |
+| `p10_boe_per_day_per_1000ft` | double precision | P10 BOE rate (oil + gas/6; SPE: HIGH case), bbl/d per 1,000 ft. |
+| `p25_boe_per_day_per_1000ft` | double precision | P25 BOE rate (SPE: upper quartile), bbl/d per 1,000 ft. |
 | `p50_boe_per_day_per_1000ft` | double precision | Median BOE rate (oil + gas/6), bbl/d per 1,000 ft - secondary series for gas-weighted cohorts. |
-| `p75_boe_per_day_per_1000ft` | double precision | Statistical 75th percentile of BOE rate, bbl/d per 1,000 ft. |
-| `p90_boe_per_day_per_1000ft` | double precision | Statistical 90th percentile of BOE rate, bbl/d per 1,000 ft - HIGH tail; opposite of SPE P90=low. |
+| `p75_boe_per_day_per_1000ft` | double precision | P75 BOE rate (SPE: lower quartile), bbl/d per 1,000 ft. |
+| `p90_boe_per_day_per_1000ft` | double precision | P90 BOE rate (SPE: LOW case), bbl/d per 1,000 ft. |
 | `mean_boe_per_day_per_1000ft` | double precision | Arithmetic mean BOE rate (oil + gas/6), bbl/d per 1,000 ft. |
 | `p50_gas_per_day_per_1000ft` | double precision | Median gas rate, Mcf/d per 1,000 ft. Median only by design; other gas percentiles compute on the fly from production_normalized. |
 | `p50_water_per_day_per_1000ft` | double precision | Median water rate, bbl/d per 1,000 ft. Median only by design. |

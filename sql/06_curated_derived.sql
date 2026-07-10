@@ -311,22 +311,26 @@ SELECT
 
     -- ------------------------------------------------------------------
     -- Oil per-1000-ft percentiles (the primary type-curve series)
+    -- SPE orientation (flipped 2026-07-10): Pxx = probability of exceeding,
+    -- so p10 = HIGH case = statistical 90th percentile, p90 = LOW case.
+    -- p10 >= p25 >= p50 >= p75 >= p90 always.
     -- ------------------------------------------------------------------
-    percentile_cont(0.10) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p10_oil_per_day_per_1000ft,
-    percentile_cont(0.25) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p25_oil_per_day_per_1000ft,
+    percentile_cont(0.90) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p10_oil_per_day_per_1000ft,
+    percentile_cont(0.75) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p25_oil_per_day_per_1000ft,
     percentile_cont(0.50) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p50_oil_per_day_per_1000ft,
-    percentile_cont(0.75) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p75_oil_per_day_per_1000ft,
-    percentile_cont(0.90) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p90_oil_per_day_per_1000ft,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p75_oil_per_day_per_1000ft,
+    percentile_cont(0.10) WITHIN GROUP (ORDER BY oil_per_day_per_1000ft) AS p90_oil_per_day_per_1000ft,
     AVG(oil_per_day_per_1000ft)                                          AS mean_oil_per_day_per_1000ft,
 
     -- ------------------------------------------------------------------
     -- BOE per-1000-ft percentiles (secondary, for gas-weighted cohorts)
+    -- SPE orientation, as above.
     -- ------------------------------------------------------------------
-    percentile_cont(0.10) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p10_boe_per_day_per_1000ft,
-    percentile_cont(0.25) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p25_boe_per_day_per_1000ft,
+    percentile_cont(0.90) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p10_boe_per_day_per_1000ft,
+    percentile_cont(0.75) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p25_boe_per_day_per_1000ft,
     percentile_cont(0.50) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p50_boe_per_day_per_1000ft,
-    percentile_cont(0.75) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p75_boe_per_day_per_1000ft,
-    percentile_cont(0.90) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p90_boe_per_day_per_1000ft,
+    percentile_cont(0.25) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p75_boe_per_day_per_1000ft,
+    percentile_cont(0.10) WITHIN GROUP (ORDER BY boe_per_day_per_1000ft) AS p90_boe_per_day_per_1000ft,
     AVG(boe_per_day_per_1000ft)                                          AS mean_boe_per_day_per_1000ft,
 
     -- ------------------------------------------------------------------
@@ -360,7 +364,7 @@ GROUP BY
 
 
 COMMENT ON MATERIALIZED VIEW curated.type_curve_cohorts IS
-'Per-1000-ft rate percentiles by (state, county, formation, vintage bucket) x MoP 1-240. Pre-computed type-curve cohorts. Apps should filter on well_count for sample-size floor.';
+'Per-1000-ft rate percentiles by (state, county, formation, vintage bucket) x MoP 1-240. Pre-computed type-curve cohorts, SPE percentile orientation (P10 = HIGH case; flipped 2026-07-10). Apps should filter on well_count for sample-size floor.';
 
 
 -- ------------------------------------------------------------------
