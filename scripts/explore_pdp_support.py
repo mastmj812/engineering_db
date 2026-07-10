@@ -120,6 +120,11 @@ LEFT JOIN LATERAL (
             -- support (pdp_count_*) but drop out of the median (percentile_cont
             -- ignores NULL); n_offsets_5mi records the median's true sample size.
             w.eur_30yr_oil_bbl / NULLIF(w.lateral_length_ft, 0)     AS eur_ft,
+            -- Mature-well ACTUALS cross-check only (Novi Cum12MOil = FIRST-12-month
+            -- oil, not trailing). Deliberately still 12-mo (option (a)): with the
+            -- 6-mo qualification gate below, the newly-admitted 6-12 mo wells have
+            -- NULL Cum12MOil and drop out of this median automatically, so it stays
+            -- a settled-well yardstick even as the support gate reaches younger.
             w.cum_12m_oil_bbl  / NULLIF(w.lateral_length_ft, 0)     AS cum12_ft
         FROM curated.wells w
         JOIN curated.formation_blueox fb2        ON fb2.api10 = w.api10
@@ -128,7 +133,7 @@ LEFT JOIN LATERAL (
           AND COALESCE(w.novi_slant_calculated, w.enverus_trajectory) ILIKE 'H%'  -- TUNABLE: horizontal
           AND COALESCE(t.corrected_code, fb2.formation_blueox) = pud.code          -- TUNABLE: same formation_blueox
           AND abs(w.tvd_ft - pud.tvd) <= 500                                       -- TUNABLE: TVD guard +/- 500 ft
-          AND w.first_production_date <= current_date - interval '12 months'       -- TUNABLE: >=12 mo since first prod
+          AND w.first_production_date <= current_date - interval '6 months'        -- TUNABLE: >=6 mo since first prod (past flowback; tracks the edge without misflagging young offsets)
           AND w.lateral_length_ft > 0
     ) o
 ) agg ON TRUE
@@ -150,7 +155,7 @@ WHERE ST_DWithin(
         8045)
   AND COALESCE(w.novi_slant_calculated, w.enverus_trajectory) ILIKE 'H%%'
   AND abs(w.tvd_ft - (SELECT il.tvd FROM curated.intel_locations il WHERE il.stick_id = %s)) <= 500
-  AND w.first_production_date <= current_date - interval '12 months'
+  AND w.first_production_date <= current_date - interval '6 months'
   AND w.lateral_length_ft > 0
 ;
 """
