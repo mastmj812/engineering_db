@@ -9,7 +9,9 @@ docs/erebor_locations_materialization.md for rationale + measured before/after.
      The type-aware drop in sql/22 handles the one-time VIEW -> matview flip.
   2. CREATE OR REPLACE curated.refresh_all() extracted from the canonical sql/06
      (now ending with `REFRESH ... CONCURRENTLY curated.erebor_locations`).
-  3. validate: row counts by category, stick_id uniqueness (CONCURRENTLY needs it),
+  3. re-apply sql/31 data-dictionary comments: the quarterly CASCADE drops the
+     intel-derived matviews and their COMMENTs with them (sql/26-index pattern).
+  4. validate: row counts by category, stick_id uniqueness (CONCURRENTLY needs it),
      a CONCURRENTLY refresh smoke test, and an index-usage check on the tile query.
 
 This is ALSO the canonical "last step" of a quarterly Novi reload: that sequence
@@ -51,18 +53,26 @@ def main() -> None:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            print("[1/3] materialize curated.erebor_locations (sql/22) — "
+            print("[1/4] materialize curated.erebor_locations (sql/22) — "
                   "WITH DATA + indexes", flush=True)
             t = time.monotonic()
             cur.execute(erebor)
             print(f"    built in {time.monotonic() - t:.0f}s", flush=True)
 
-            print("[2/3] update curated.refresh_all() (sql/06)", flush=True)
+            print("[2/4] update curated.refresh_all() (sql/06)", flush=True)
             cur.execute(refresh_block)
+
+            comments = SQL / "31_comments.sql"
+            if comments.exists():
+                print("[3/4] re-apply data-dictionary comments (sql/31)",
+                      flush=True)
+                cur.execute(comments.read_text(encoding="utf-8"))
+            else:
+                print("[3/4] sql/31_comments.sql missing - skipped", flush=True)
     finally:
         conn.close()
 
-    print("[3/3] validation", flush=True)
+    print("[4/4] validation", flush=True)
     conn = get_connection()
     try:
         conn.autocommit = True
