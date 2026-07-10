@@ -60,11 +60,17 @@ refresh `CONCURRENTLY`.
 
 So:
 
-**Nightly** — `etl.refresh` → `curated.refresh_all()`. The appended
-`REFRESH … CONCURRENTLY` re-runs the UNION against the just-refreshed wells side and
-folds in new producers. `CONCURRENTLY` means the erebor app keeps reading during the
-refresh. (Cost: re-runs the ~0.6 s join + writes 262 k rows + index diff — a few
-seconds; negligible in the nightly window.)
+**Nightly** — `etl.refresh` → `refresh_curated()` (per-matview, the
+`_CURATED_MATVIEWS` tuple in `etl/db.py`), which refreshes `erebor_locations`
+after every matview it reads (wells side + `intel_locations`) and before the
+gated `production_forecast`. The `REFRESH … CONCURRENTLY` re-runs the UNION
+against the just-refreshed wells side and folds in new producers; the erebor app
+keeps reading during the refresh. A missing `erebor_locations` (mid-quarterly
+rebuild) is skipped with a warning, not a failure. (Cost: re-runs the ~0.6 s
+join + writes 262 k rows + index diff — a few seconds; negligible.)
+(History: the nightly used `curated.refresh_all()` until 2026-07; the per-view
+tuple initially omitted `producing_reference`, `formation_blueox_tvd`, and
+`erebor_locations` — reconciled 2026-07-10.)
 
 **Quarterly** — the Novi reload runs
 `DROP MATERIALIZED VIEW curated.intel_locations CASCADE`, which **drops

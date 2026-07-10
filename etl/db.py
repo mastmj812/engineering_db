@@ -308,18 +308,42 @@ def settle(seconds: int | None = None) -> int:
     return secs
 
 
-# Curated materialized views in dependency-refresh order (mirrors what
-# curated.refresh_all() does internally). refresh_curated() refreshes them one
-# at a time rather than via the single refresh_all() call.
+# Curated materialized views in dependency-refresh order. Mirrors
+# curated.refresh_all() (sql/06), plus the two matviews refresh_all() never
+# carried: curated.intel_locations and the gated curated.production_forecast.
+# refresh_curated() refreshes them one at a time rather than via the single
+# refresh_all() call.
+#
+# Ordering constraints:
+#   - producing_reference + formation_blueox_tvd feed wells_enriched's
+#     corrected formation_blueox, so they refresh right after the base mapping.
+#   - erebor_locations reads wells_enriched (over the matviews above) AND
+#     intel_locations, so it comes after both.
+#   - production_forecast goes LAST: nothing here depends on it, it is the
+#     one multi-hour refresh (22M-row CONCURRENTLY diff), and running it last
+#     means a slow night can't delay the display-layer views.
+#   - quarterly-owned matviews (intel_formation_blueox, reconciled_inventory,
+#     net_new_pdp, and the future intel_pdp_support) are deliberately NOT
+#     here — they rebuild via the apply_* scripts on the quarterly cadence,
+#     matching refresh_all()'s scope.
 _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.wells",
     "curated.formation_blueox",
+    "curated.producing_reference",
+    "curated.formation_blueox_tvd",
     "curated.production",
     "curated.production_normalized",
     "curated.type_curve_cohorts",
-    "curated.production_forecast",
     "curated.intel_locations",
+    "curated.erebor_locations",
+    "curated.production_forecast",
 )
+
+# Matviews allowed to be absent mid-quarterly-rebuild (the intel reload
+# DROP-CASCADEs them; apply_erebor_locations recreates them). A missing
+# optional matview logs a warning and is skipped instead of failing the run —
+# same degradation refresh_all() encodes for erebor_locations.
+_OPTIONAL_MATVIEWS: frozenset[str] = frozenset({"curated.erebor_locations"})
 
 
 # Matviews whose refresh is GATED on whether their source raw table changed
@@ -426,6 +450,15 @@ def refresh_curated(*, force: bool = False) -> None:
             with log_etl_run("curated", mv):
                 _retry_on_conn_loss(_refresh_one, what=f"refresh {mv}")
             logger.info("refreshed %s (%d/%d)", mv, i + 1, n)
+        except psycopg.errors.UndefinedTable:
+            if mv in _OPTIONAL_MATVIEWS:
+                logger.warning(
+                    "%s absent (mid-quarterly rebuild?) - skipped (%d/%d)",
+                    mv, i + 1, n,
+                )
+            else:
+                logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
+                raise
         except Exception:
             logger.exception("failed refreshing %s (%d/%d)", mv, i + 1, n)
             raise
