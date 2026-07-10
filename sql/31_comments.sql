@@ -739,11 +739,7 @@ COMMENT ON TABLE raw_intel.production_forecast IS 'Snowflake share PRODUCTION_FO
 -- raw_novi_intel (LEGACY quarterly Novi Intelligence file drop -- shapefiles +
 -- CSVs; superseded by the raw_intel Snowflake mirror and being retired, EXCEPT
 -- the frozen display geometries pads / land_grid / basin_outline)
-COMMENT ON TABLE raw_novi_intel.sticks IS 'LEGACY: union of the PDP/PUD/Resource economic stick shapefiles from the quarterly file drop, one row per lateral tagged (basin, report_version); BIGSERIAL stick_id renumbers per reload (why raw_intel.stick_id_map replaced it). Superseded by raw_intel.well_master + well_economics_summary; retained for reconciliation QC until retirement.';
 COMMENT ON TABLE raw_novi_intel.pads IS 'Novi DSU pad polygons + pad-level NPV rollup from the quarterly file drop, tagged (basin, report_version). STILL IN USE for display: the Snowflake share has no pad geometry as of 2025Q3.';
-COMMENT ON TABLE raw_novi_intel.analytics IS 'LEGACY: Novi Analytics File CSV (well geometry endpoints, TVD, completion loading) keyed by well_name, tagged (basin, report_version). Superseded by raw_intel.wellbore / well_completion; slated for retirement.';
-COMMENT ON TABLE raw_novi_intel.arps IS 'LEGACY: segmented Arps decline-parameter CSV from the file drop, key (novi_wellname, production_stream, segment); d_nom is NOMINAL per-year. Superseded by raw_intel.arps_forecast; slated for retirement.';
-COMMENT ON TABLE raw_novi_intel.pud_attrs IS 'LEGACY: PUD ML tier attributes (spacing/depletion/completion/rock-quality scores + Tier-1..4 labels) from the Other_ML / Rock_Quality shapefiles, key (basin, report_version, unique_id). Scores are sensitivities, NOT footage. Superseded by raw_intel.well_ml_score / well_rock_quality.';
 COMMENT ON TABLE raw_novi_intel.land_grid IS 'Novi-supplied land grid polygons (raw DBF attributes in JSONB) from the file drop, tagged (basin, report_version). STILL IN USE as a map overlay: the Snowflake share has no equivalent geometry.';
 COMMENT ON TABLE raw_novi_intel.basin_outline IS 'Novi-supplied basin outline polygons from the file drop, tagged (basin, report_version). STILL IN USE as a map overlay: the Snowflake share has no equivalent geometry.';
 

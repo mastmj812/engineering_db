@@ -1213,64 +1213,6 @@ Snowflake share lateral trajectories: geometry_wkt (LINESTRING, EPSG:4326) lande
 
 ## Schema `raw_novi_intel`
 
-### `raw_novi_intel.analytics` (table)
-
-LEGACY: Novi Analytics File CSV (well geometry endpoints, TVD, completion loading) keyed by well_name, tagged (basin, report_version). Superseded by raw_intel.wellbore / well_completion; slated for retirement.
-
-~205,751 rows | static (legacy file drop; being retired)
-
-| column | type | description |
-|---|---|---|
-| `well_name` | text |  |
-| `tvd` | double precision |  |
-| `midpoint_lat` | double precision |  |
-| `midpoint_lon` | double precision |  |
-| `bh_lat` | double precision |  |
-| `bh_lon` | double precision |  |
-| `heel_lat` | double precision |  |
-| `heel_lon` | double precision |  |
-| `target_formation` | text |  |
-| `lateral_length` | double precision |  |
-| `proppant_loading` | double precision |  |
-| `fluid_loading` | double precision |  |
-| `county` | text |  |
-| `subbasin` | text |  |
-| `proppant_mass` | double precision |  |
-| `fluid_volume` | double precision |  |
-| `md` | double precision |  |
-| `pad_name` | text |  |
-| `basin` | text |  |
-| `report_version` | text |  |
-| `ingested_at` | timestamp with time zone |  |
-
-### `raw_novi_intel.arps` (table)
-
-LEGACY: segmented Arps decline-parameter CSV from the file drop, key (novi_wellname, production_stream, segment); d_nom is NOMINAL per-year. Superseded by raw_intel.arps_forecast; slated for retirement.
-
-~1,851,759 rows | static (legacy file drop; being retired)
-
-| column | type | description |
-|---|---|---|
-| `job_name` | text |  |
-| `well_inventory_name` | text |  |
-| `planned_well_id` | text |  |
-| `production_stream` | text |  |
-| `segment` | integer |  |
-| `segment_curve_type` | text |  |
-| `b` | double precision |  |
-| `d_nom` | double precision |  |
-| `d_eff_secant` | double precision |  |
-| `d_eff_tangent` | double precision |  |
-| `q_start` | double precision |  |
-| `q_stop` | double precision |  |
-| `terminal_day` | double precision |  |
-| `day_start` | double precision |  |
-| `day_stop` | double precision |  |
-| `novi_wellname` | text |  |
-| `basin` | text |  |
-| `report_version` | text |  |
-| `ingested_at` | timestamp with time zone |  |
-
 ### `raw_novi_intel.basin_outline` (table)
 
 Novi-supplied basin outline polygons from the file drop, tagged (basin, report_version). STILL IN USE as a map overlay: the Snowflake share has no equivalent geometry.
@@ -1318,99 +1260,6 @@ Novi DSU pad polygons + pad-level NPV rollup from the quarterly file drop, tagge
 | `npv15` | double precision |  |
 | `npv20` | double precision |  |
 | `npv25` | double precision |  |
-| `geom` | geometry(Geometry,4326) |  |
-| `ingested_at` | timestamp with time zone |  |
-
-### `raw_novi_intel.pud_attrs` (table)
-
-LEGACY: PUD ML tier attributes (spacing/depletion/completion/rock-quality scores + Tier-1..4 labels) from the Other_ML / Rock_Quality shapefiles, key (basin, report_version, unique_id). Scores are sensitivities, NOT footage. Superseded by raw_intel.well_ml_score / well_rock_quality.
-
-~131,465 rows | static (legacy file drop; being retired)
-
-| column | type | description |
-|---|---|---|
-| `basin` | text |  |
-| `report_version` | text |  |
-| `unique_id` | text |  |
-| `spacing_s` | double precision |  |
-| `spacing_t` | text |  |
-| `deplet_s` | double precision |  |
-| `deplet_t` | text |  |
-| `complet_s` | double precision |  |
-| `complet_t` | text |  |
-| `rqs` | double precision |  |
-| `rqt` | text |  |
-| `ingested_at` | timestamp with time zone |  |
-
-### `raw_novi_intel.sticks` (table)
-
-LEGACY: union of the PDP/PUD/Resource economic stick shapefiles from the quarterly file drop, one row per lateral tagged (basin, report_version); BIGSERIAL stick_id renumbers per reload (why raw_intel.stick_id_map replaced it). Superseded by raw_intel.well_master + well_economics_summary; retained for reconciliation QC until retirement.
-
-~248,618 rows | static (legacy file drop; being retired)
-
-| column | type | description |
-|---|---|---|
-| `stick_id` | bigint |  |
-| `basin` | text |  |
-| `report_version` | text |  |
-| `src_layer` | text |  |
-| `unique_id` | text |  |
-| `api10` | text |  |
-| `category` | text |  |
-| `phase` | text |  |
-| `operator` | text |  |
-| `formation` | text |  |
-| `county` | text |  |
-| `pad_name` | text |  |
-| `fp_year` | integer |  |
-| `tvd` | double precision |  |
-| `md` | double precision |  |
-| `ll_ft` | double precision |  |
-| `prop_load` | double precision |  |
-| `oil_eur` | double precision |  |
-| `gas_eur` | double precision |  |
-| `dgas_eur` | double precision |  |
-| `ngl_eur` | double precision |  |
-| `water_eur` | double precision |  |
-| `oil_ip` | double precision |  |
-| `gas_ip` | double precision |  |
-| `dgas_ip` | double precision |  |
-| `ngl_ip` | double precision |  |
-| `water_ip` | double precision |  |
-| `ngl_yield` | double precision |  |
-| `ngl_shrink` | double precision |  |
-| `npv5` | double precision |  |
-| `npv10` | double precision |  |
-| `npv15` | double precision |  |
-| `npv20` | double precision |  |
-| `npv25` | double precision |  |
-| `pv5` | double precision |  |
-| `pv10` | double precision |  |
-| `pv15` | double precision |  |
-| `pv20` | double precision |  |
-| `pv25` | double precision |  |
-| `npv5_be` | double precision |  |
-| `npv10_be` | double precision |  |
-| `npv15_be` | double precision |  |
-| `npv20_be` | double precision |  |
-| `npv25_be` | double precision |  |
-| `be_1yr` | double precision |  |
-| `be_2yr` | double precision |  |
-| `be_3yr` | double precision |  |
-| `irr_pct` | double precision |  |
-| `pp_months` | double precision |  |
-| `ttpt` | double precision |  |
-| `dc_cost` | double precision |  |
-| `dcet_cost` | double precision |  |
-| `norm_dc` | double precision |  |
-| `norm_dcet` | double precision |  |
-| `wti_price` | double precision |  |
-| `hh_price` | double precision |  |
-| `ngl_price` | double precision |  |
-| `wti_diff` | double precision |  |
-| `hh_diff` | double precision |  |
-| `has_econ` | text |  |
-| `conf_int` | double precision |  |
 | `geom` | geometry(Geometry,4326) |  |
 | `ingested_at` | timestamp with time zone |  |
 
@@ -1672,6 +1521,26 @@ Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from t
 | `bh_lat` | double precision | Bottom-hole latitude, WGS84 decimal degrees. |
 | `bh_lon` | double precision | Bottom-hole longitude, WGS84 decimal degrees. |
 | `wellstick_geom` | geometry(Geometry,4326) | Lateral stick geometry (LINESTRING, EPSG:4326) from the share WKT. GIST-indexed; the map/selection geometry. |
+
+### `curated.intel_pdp_support` (materialized view)
+
+Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locations), keyed on stick_id. A VERIFIABILITY screen (not quality): tiered qualifying-PDP counts (1/3/5 mi), nearest/3rd-nearest distance (the halo width), support lateral footage, offset EUR/ft median, and inflation_ratio (Novi PUD forecast /ft vs the median of history-matched in-bench offsets). Qualifying offset = horizontal + same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced + within 5 mi (PDP universe never county-scoped). pdp_count_* = 0 means scored-and-unsupported; NULL scores mean not-scorable (unmapped bench / missing TVD or geometry). Quarterly refresh only (NOT nightly); staleness under-states support, never over-states. sql/30.
+
+~203,886 rows | on demand | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.wells`
+
+| column | type | description |
+|---|---|---|
+| `stick_id` | bigint |  |
+| `pdp_count_1mi` | bigint |  |
+| `pdp_count_3mi` | bigint |  |
+| `pdp_count_5mi` | bigint |  |
+| `dist_nearest_ft` | double precision |  |
+| `dist_3rd_nearest_ft` | double precision |  |
+| `support_lateral_ft_5mi` | bigint |  |
+| `n_offsets_5mi` | bigint |  |
+| `offset_median_eur_ft` | double precision |  |
+| `offset_median_cum12m_oil_per_ft` | double precision |  |
+| `inflation_ratio` | double precision |  |
 
 ### `curated.net_new_pdp` (materialized view)
 
