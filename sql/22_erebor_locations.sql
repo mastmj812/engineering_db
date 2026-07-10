@@ -38,7 +38,7 @@
 --     by re-running this file (scripts/apply_erebor_locations.py) to recreate it
 --     WITH DATA + indexes.
 --
--- DEPENDS ON: curated.intel_locations (sql/12), curated.intel_formation_blueox
+-- DEPENDS ON: curated.intel_locations (sql/29), curated.intel_formation_blueox
 --   (sql/19), curated.wells_enriched (sql/06), curated.reconciled_inventory
 --   (sql/21), curated.net_new_pdp (sql/25).
 -- Idempotent: type-aware drop (handles the one-time VIEW -> MATERIALIZED VIEW

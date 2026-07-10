@@ -67,7 +67,7 @@ def _cadence(rel: str, kind: str) -> str:
     if schema == "raw_intel":
         return "quarterly (scripts.load_intel_sf, Novi Snowflake share)"
     if schema == "raw_novi_intel":
-        return "static (legacy file drop; being retired)"
+        return "static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)"
     if schema == "meta":
         return "continuous (ETL bookkeeping)"
     if schema == "ref":

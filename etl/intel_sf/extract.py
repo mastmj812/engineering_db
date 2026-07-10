@@ -5,7 +5,7 @@ One transaction per (view, report_name) slice:
     COPY raw_intel.<t> (<shared cols>) FROM STDIN (FORMAT CSV)
     post-load hooks (WKT -> geom, stick_id_map upsert) + ANALYZE
 so a mid-flight failure leaves that one slice absent and is fully repaired by
-re-running the view (same idempotency contract as the old load_csvs.py).
+re-running the view (same idempotency contract as the retired file-drop loaders).
 
 basin_slug / report_version are applied via a per-load column DEFAULT (the
 COPY column list omits them), mirroring the old loader's basin/report_version

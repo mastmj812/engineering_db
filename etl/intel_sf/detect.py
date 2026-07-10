@@ -85,7 +85,7 @@ def check_new_reports() -> int:
             logger.warning(
                 "NEW NOVI INTEL REPORT(S) AVAILABLE: %s — on go-ahead run "
                 "`python -m scripts.load_intel_sf --all` then the curated rebuild "
-                "sequence (see docs/novi_intel_snowflake_runbook.md / the reload skill)",
+                "sequence (see .claude/skills/novi-quarterly-reload/SKILL.md)",
                 ", ".join(pending),
             )
         else:

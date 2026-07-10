@@ -1,14 +1,16 @@
 """Orchestrate the Novi INTEL Snowflake share load into raw_intel.
 
-Phased like scripts/load_novi_intel.py (which this replaces at cutover):
+THE quarterly intel reload path (replaced the file-drop scripts/load_novi_intel.py
+at the 2026-07 cutover; that script now only loads the overlay geometries).
+Full reload sequence: .claude/skills/novi-quarterly-reload/SKILL.md.
 
     python -m scripts.load_intel_sf --ddl        # sql/27 + sql/28 (Supabase DDL — needs authorization)
     python -m scripts.load_intel_sf --core       # spine + entities + dims (11 views)
     python -m scripts.load_intel_sf --ml         # WELL_ML_SCORE + WELL_ROCK_QUALITY
     python -m scripts.load_intel_sf --econ       # cost/economics/price decks
     python -m scripts.load_intel_sf --arps       # ARPS_FORECAST
-    python -m scripts.load_intel_sf --forecast   # PRODUCTION_FORECAST (deferred to the phase-4 gate)
-    python -m scripts.load_intel_sf --curated    # locked until phase-6 cutover
+    python -m scripts.load_intel_sf --forecast   # PRODUCTION_FORECAST (73M rows — off-hours)
+    python -m scripts.load_intel_sf --curated    # sql/29 — CASCADE-drops the intel matview chain
     python -m scripts.load_intel_sf --report basin_research__Midland_Basin__2025Q3   # restrict slice
 
 Default report set = every report with visible (entitled) data in WELL_MASTER.
@@ -44,7 +46,8 @@ def main() -> None:
     ap.add_argument("--econ", action="store_true", help="cost / economics / price deck views")
     ap.add_argument("--arps", action="store_true", help="Arps decline segments")
     ap.add_argument("--forecast", action="store_true", help="PRODUCTION_FORECAST (deferred)")
-    ap.add_argument("--curated", action="store_true", help="rebuild curated intel layer (locked)")
+    ap.add_argument("--curated", action="store_true",
+                    help="rebuild curated intel layer (sql/29; CASCADE — follow with the apply_* chain)")
     ap.add_argument("--all", action="store_true", help="core + ml + econ + arps")
     ap.add_argument("--report", default=None, help="restrict to one report_name")
     args = ap.parse_args()
