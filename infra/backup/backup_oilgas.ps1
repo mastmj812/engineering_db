@@ -9,10 +9,18 @@
 #     Register-ScheduledTask -TaskName "OilgasBackup" -Action $a -Trigger $t -Principal $p
 #
 # SCOPE: dumps the SOURCE schemas only (raw_novi, raw_enverus, raw_novi_intel,
-# ref, meta) - the same set the migration dump used. `curated.*` is excluded on
-# purpose: it is 100% rebuildable from raw+ref via sql/*.sql + refresh_all(), so
-# dumping ~11 GB of matviews weekly over the WAN is wasted bytes. Restore path:
+# ref, meta, raw_intel) - `curated.*` is excluded on purpose: it is 100%
+# rebuildable from raw+ref via sql/*.sql + refresh_all(), so dumping ~11 GB of
+# matviews weekly over the WAN is wasted bytes. Restore path:
 # docs/supabase_migration_runbook.md.
+#
+# raw_intel (decided 2026-07-10): schema included WITHOUT production_forecast
+# DATA (16 GB, 73M rows - re-pullable from the Novi Snowflake share; DDL still
+# dumped). The rest is ~2 GB and kept so a restore is self-contained even if
+# the share lapses or restates. raw_intel.stick_id_map is the one table that is
+# NOT re-pullable at all: append-only local registry pinning the stable
+# positive stick_id per well_ref that curated.intel_locations and erebor key
+# on - losing it re-numbers every stick. Never exclude it.
 #
 # CONNECTION: tries the DIRECT connection first (db.<ref>.supabase.co:5432,
 # user postgres) because it honors `statement_timeout=0` via PGOPTIONS - the
@@ -65,7 +73,8 @@ $env:PGPASSWORD = $DbPass  # in-process only; never on the command line
 $DumpArgs = @(
     "--no-owner", "--no-privileges", "--no-tablespaces", "-Fc",
     "--schema=raw_novi", "--schema=raw_enverus", "--schema=raw_novi_intel",
-    "--schema=ref", "--schema=meta",
+    "--schema=ref", "--schema=meta", "--schema=raw_intel",
+    "--exclude-table-data=raw_intel.production_forecast",
     "-d", $DbName, "-f", $OutFile
 )
 
