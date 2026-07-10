@@ -82,8 +82,16 @@ python -m scripts.load_novi_intel --curated      # intel_locations
 python -m scripts.apply_intel_formation_blueox    # intel_formation_blueox
 python -m scripts.apply_reconciled_inventory      # producing_reference + reconciled_inventory
 # (net_new_pdp rebuild)
-python -m scripts.apply_erebor_locations          # <-- NEW canonical last step
+python -m scripts.apply_intel_pdp_support         # intel_pdp_support (sql/30) — offset-PDP support scores
+python -m scripts.apply_erebor_locations          # <-- canonical last step
 ```
+
+> `apply_intel_pdp_support` (sql/30) rebuilds `curated.intel_pdp_support`, which
+> also DROP-CASCADEs with `intel_locations`. It must run **before**
+> `apply_erebor_locations`: once sql/22 folds the support columns into
+> `erebor_locations` (Phase 3), that final rebuild joins `intel_pdp_support` and
+> needs it present. It is **quarterly-only** — deliberately absent from the
+> nightly `_CURATED_MATVIEWS` (staleness only ever under-states support).
 
 > Note: this last step is **already required today** for the view (the CASCADE drop
 > leaves `erebor_locations` gone until sql/22 is re-run) — it was just implicit. This

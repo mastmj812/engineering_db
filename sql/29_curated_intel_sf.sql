@@ -31,7 +31,8 @@
 --
 -- RUN: scripts/load_intel_sf.py --curated   (phase-6 cutover only; DROPs
 --      CASCADE through intel_formation_blueox, reconciled_inventory,
---      net_new_pdp, erebor_locations — rebuild order per the runbook).
+--      net_new_pdp, intel_pdp_support (sql/30), erebor_locations — rebuild order
+--      per the runbook: apply_intel_pdp_support precedes apply_erebor_locations).
 -- Idempotent: DROP ... IF EXISTS then CREATE.
 -- =============================================================================
 
