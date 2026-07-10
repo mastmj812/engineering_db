@@ -43,6 +43,27 @@ def main() -> None:
     _exec("net_new_pdp", "25_net_new_pdp.sql")
     # The sql/21 rebuild DROP ... CASCADE drops curated.erebor_locations (it joins
     # reconciled_inventory for recon_status), so recreate it.
+    # sql/22 now also joins curated.intel_pdp_support (sql/30). The sql/21 rebuild
+    # does NOT drop it (it depends on intel_locations, not reconciled_inventory),
+    # but a full quarterly reload WOULD — fail clearly here rather than let the
+    # sql/22 CREATE error deep inside on a missing relation.
+    conn = get_connection()
+    try:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            has_support = cur.execute(
+                "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = 'curated' AND c.relname = 'intel_pdp_support' "
+                "AND c.relkind = 'm'"
+            ).fetchone()
+    finally:
+        conn.close()
+    if not has_support:
+        raise RuntimeError(
+            "curated.intel_pdp_support is missing but sql/22 joins it. Run "
+            "`python -m scripts.apply_intel_pdp_support` first (it is dropped by a "
+            "quarterly intel_locations CASCADE)."
+        )
     print("[3/4] recreate curated.erebor_locations (CASCADE-dropped by the rebuild)", flush=True)
     _exec("erebor_locations", "22_erebor_locations.sql")
 
