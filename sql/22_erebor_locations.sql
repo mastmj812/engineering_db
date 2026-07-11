@@ -71,6 +71,12 @@ SELECT
     il.stick_id,
     il.unique_id,
     il.category,
+    -- Novi's native inventory tier (PDP / BASE_CASE / EMERGING). `category` is the
+    -- legacy suite alias (BASE_CASE->PUD, EMERGING->RES). Reconstructed here from
+    -- the bijective category relabel (lossless); becomes a straight il.inventory_class
+    -- passthrough once sql/29 carries it at the next quarterly reload.
+    CASE il.category WHEN 'PUD' THEN 'BASE_CASE' WHEN 'RES' THEN 'EMERGING'
+         ELSE il.category END          AS inventory_class,
     il.basin,
     il.formation,
     fb.formation_blueox,
@@ -121,6 +127,7 @@ SELECT
     -(we.api10::bigint)                AS stick_id,    -- never collides with Novi ids
     we.api10                           AS unique_id,
     'PDP'::text                        AS category,
+    'PDP'::text                        AS inventory_class,   -- native == legacy for PDP
     we.basin_blueox                    AS basin,
     we.formation,
     we.formation_blueox,
@@ -179,6 +186,9 @@ CREATE INDEX idx_erebor_locations_recon       ON curated.erebor_locations (basin
 
 COMMENT ON MATERIALIZED VIEW curated.erebor_locations IS
 'erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read latency on hosted Postgres: PUD/RES from curated.intel_locations + intel_formation_blueox + reconciled_inventory; PDP from curated.wells_enriched (producing) + net_new_pdp. Drop-in for curated.intel_locations in erebor''s map/gun-barrel/selection. PDP stick_id = -(api10); PDP econ columns NULL (producing context, not risked value). UNIQUE(stick_id) enables CONCURRENTLY refresh. Refresh: nightly via curated.refresh_all() (PDP arm) + recreate after the quarterly Novi reload (scripts/apply_erebor_locations.py). PUD/RES rows also carry the offset-PDP support score family (curated.intel_pdp_support, sql/30) — see per-column COMMENTs; PDP rows are NULL there (not applicable).';
+
+COMMENT ON COLUMN curated.erebor_locations.inventory_class IS
+'Novi native inventory tier: PDP / BASE_CASE / EMERGING. `category` is the legacy suite alias (BASE_CASE=PUD, EMERGING=RES) kept for back-compat — prefer inventory_class for new consumers. Currently reconstructed from the bijective category relabel; becomes a straight passthrough from curated.intel_locations at the next quarterly reload (sql/29).';
 
 -- -----------------------------------------------------------------------------
 -- Offset-support score family (curated.intel_pdp_support, sql/30) — documented
