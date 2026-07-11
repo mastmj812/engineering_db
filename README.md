@@ -98,6 +98,17 @@ python -m etl.enverus.pull_wells
 python -m etl.refresh
 ```
 
+**Quarterly — Novi Intelligence.** A third source alongside the two nightly
+ones: `raw_intel` mirrors the Novi INTEL Snowflake share (sql/27), loaded per
+report vintage by `python -m scripts.load_intel_sf`; the curated intel layer
+(`curated.intel_*`, sql/29) and the erebor/narvi matview chain rebuild on top.
+A nightly `intel_sf.report_check` step alerts when a new report is visible in
+the share; the reload itself is manual — full sequence in
+`.claude/skills/novi-quarterly-reload/SKILL.md`. The share carries no
+geometry, so the DSU pad / land-grid / basin-outline overlays still load from
+Novi's shapefile drop into `raw_novi_intel` via
+`python -m scripts.load_novi_intel --shapefiles`.
+
 > **Note (2026-06-22):** Enverus *production* ingestion was removed. It was
 > pulled daily into `raw_enverus.production` but never consumed —
 > `curated.production` is built from Novi `WellMonths` only. The

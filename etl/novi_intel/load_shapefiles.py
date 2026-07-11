@@ -1,12 +1,16 @@
-"""Load Novi Intelligence shapefiles (sticks / pads / land grid / outline) into
-raw_novi_intel via pyshp + PostGIS ST_GeomFromGeoJSON. No GDAL dependency.
+"""Load Novi Intelligence overlay shapefiles (pads / land grid / basin outline)
+into raw_novi_intel via pyshp + PostGIS ST_GeomFromGeoJSON. No GDAL dependency.
+
+OVERLAYS ONLY: the stick/economics loader was retired when the data moved to the
+Snowflake share (etl/intel_sf -> raw_intel). These three layers are the display
+geometries the share does not carry.
 
 All Novi layers are EPSG:4326; geometry is forced 2D for spatial selection.
 Loaders are idempotent per (basin, report_version): they DELETE that slice first.
 
 Run as a module:
-    python -m etl.novi_intel.load_shapefiles            # all basins, sticks+pads+grid+outline
-    python -m etl.novi_intel.load_shapefiles --sticks-only
+    python -m etl.novi_intel.load_shapefiles            # all basins, pads+grid+outline
+    python -m etl.novi_intel.load_shapefiles --basin midland
 """
 
 from __future__ import annotations
@@ -24,33 +28,6 @@ from etl.novi_intel import paths
 
 logger = logging.getLogger(__name__)
 
-# target stick column -> candidate source DBF field names (handles per-basin drift)
-STICK_SRC: dict[str, list[str]] = {
-    "phase": ["Phase"], "operator": ["Operator"], "formation": ["Formation"],
-    "county": ["County"], "pad_name": ["Pad Name", "PadName"], "has_econ": ["Has Econom"],
-    "fp_year": ["FP_Year"], "tvd": ["TVD"], "md": ["MD"], "ll_ft": ["LL_ft"],
-    "prop_load": ["Prop_Load"],
-    "oil_eur": ["Oil_EUR"], "gas_eur": ["Gas_EUR"], "dgas_eur": ["DGas_EUR"],
-    "ngl_eur": ["NGL_EUR"], "water_eur": ["Water_EUR"],
-    "oil_ip": ["Oil_IP"], "gas_ip": ["Gas_IP"], "dgas_ip": ["DGas_IP"],
-    "ngl_ip": ["NGL_IP"], "water_ip": ["Water_IP"],
-    "ngl_yield": ["NGL_Yield"], "ngl_shrink": ["NGL_Shrink"],
-    "npv5": ["NPV5"], "npv10": ["NPV10"], "npv15": ["NPV15"], "npv20": ["NPV20"], "npv25": ["NPV25"],
-    "pv5": ["PV5"], "pv10": ["PV10"], "pv15": ["PV15"], "pv20": ["PV20"], "pv25": ["PV25"],
-    "npv5_be": ["NPV5_B_e"], "npv10_be": ["NPV10_B_e"], "npv15_be": ["NPV15_B_e"],
-    "npv20_be": ["NPV20_B_e"], "npv25_be": ["NPV25_B_e"],
-    "be_1yr": ["1 Yr B_e"], "be_2yr": ["2 Yr B_e"], "be_3yr": ["3 Yr B_e"],
-    "irr_pct": ["IRR_pct"], "pp_months": ["PP_Months"], "ttpt": ["TTPT"],
-    "dc_cost": ["D_C_Cost"], "dcet_cost": ["DCET_Cost"], "norm_dc": ["Norm_DC"],
-    "norm_dcet": ["Norm_DCET"],
-    "wti_price": ["WTI_Price"], "hh_price": ["HH_Price"], "ngl_price": ["NGL_Price"],
-    "wti_diff": ["WTI_Diff"], "hh_diff": ["HH_Diff"], "conf_int": ["Conf_Int", "Conf_int"],
-}
-TEXT_COLS = {"phase", "operator", "formation", "county", "pad_name", "has_econ"}
-INT_COLS = {"fp_year"}
-# full ordered column list written to raw_novi_intel.sticks (geom appended separately)
-STICK_COLS = ["basin", "report_version", "src_layer", "unique_id", "api10", "category"] + list(STICK_SRC.keys())
-
 CHUNK = 5000
 
 
@@ -61,11 +38,6 @@ def _safe_float(v):
         return float(v)
     except (TypeError, ValueError):
         return None
-
-
-def _safe_int(v):
-    f = _safe_float(v)
-    return int(f) if f is not None else None
 
 
 def _open_reader(zip_path: Path) -> shapefile.Reader:
@@ -101,56 +73,6 @@ def _insert_chunk(cur, table: str, cols: list[str], rows: list[tuple]) -> None:
         f"VALUES ({placeholders}, ST_Force2D(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)))"
     )
     cur.executemany(sql, rows)
-
-
-# -----------------------------------------------------------------------------
-# sticks
-# -----------------------------------------------------------------------------
-def load_sticks(basin: str, version: str = paths.REPORT_VERSION) -> int:
-    total = 0
-    with log_etl_run("novi_intel", f"sticks:{basin}") as run:
-        with get_connection() as conn, conn.cursor() as cur:
-            cur.execute(
-                "DELETE FROM raw_novi_intel.sticks WHERE basin=%s AND report_version=%s",
-                (basin, version),
-            )
-            for category in ("PDP", "PUD", "RES"):
-                zp = paths.stick_zip(basin, category)
-                if not zp:
-                    logger.warning("No %s stick zip for %s", category, basin)
-                    continue
-                r = _open_reader(zp)
-                src_layer = zp.stem
-                batch: list[tuple] = []
-                n = 0
-                for sr in r.iterShapeRecords():
-                    rec = sr.record.as_dict()
-                    cat = (str(rec.get("PUD/PDP/RE")).strip() if rec.get("PUD/PDP/RE") else category)
-                    uid_raw = rec.get("Unique ID")
-                    uid = None if uid_raw is None else str(uid_raw).strip()
-                    api10 = uid if (cat == "PDP" and uid and uid.isdigit()) else None
-                    row = [basin, version, src_layer, uid, api10, cat]
-                    for col, srcs in STICK_SRC.items():
-                        val = next((rec[s] for s in srcs if s in rec and rec[s] not in (None, "")), None)
-                        if col in TEXT_COLS:
-                            row.append(None if val is None else str(val).strip())
-                        elif col in INT_COLS:
-                            row.append(_safe_int(val))
-                        else:
-                            row.append(_safe_float(val))
-                    row.append(_geojson(sr.shape))
-                    batch.append(tuple(row))
-                    if len(batch) >= CHUNK:
-                        _insert_chunk(cur, "sticks", STICK_COLS, batch)
-                        n += len(batch); batch = []
-                if batch:
-                    _insert_chunk(cur, "sticks", STICK_COLS, batch)
-                    n += len(batch)
-                total += n
-                logger.info("sticks %s/%s: %d rows from %s", basin, category, n, src_layer)
-            conn.commit()
-        run.rows_inserted = total
-    return total
 
 
 # -----------------------------------------------------------------------------
@@ -232,17 +154,14 @@ def load_outline(basin: str, version: str = paths.REPORT_VERSION) -> int:
 
 def main() -> None:
     import argparse
-    ap = argparse.ArgumentParser(description="Load Novi Intelligence shapefiles into raw_novi_intel.")
-    ap.add_argument("--sticks-only", action="store_true")
+    ap = argparse.ArgumentParser(description="Load Novi Intelligence overlay shapefiles into raw_novi_intel.")
     ap.add_argument("--basin", choices=["delaware", "midland"], default=None)
     args = ap.parse_args()
     basins = [args.basin] if args.basin else ["delaware", "midland"]
     for b in basins:
-        load_sticks(b)
-        if not args.sticks_only:
-            load_pads(b)
-            load_grid(b)
-            load_outline(b)
+        load_pads(b)
+        load_grid(b)
+        load_outline(b)
 
 
 if __name__ == "__main__":

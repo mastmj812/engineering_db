@@ -1,16 +1,21 @@
-"""Read-only profiling of the Novi INTEL Snowflake share (phase-1 gate).
+"""Read-only profiling of the Novi INTEL Snowflake share.
 
-Answers the open data questions before any DDL is designed:
+Originally the phase-1 migration gate; retained as the pre-load sanity check
+for each new quarterly report (run it before scripts/load_intel_sf on a fresh
+collection). Sections:
   1. session context (proves PAT auth + reader-account wiring)
-  2. visible collections (entitled basins; is a 3Q25-matching vintage visible?)
-  3. per-view row counts vs the known static-drop counts
+  2. visible collections (entitled basins / vintages)
+  3. per-view row counts
   4. PRODUCTION_FORECAST grain (daily vs 30-day vs calendar-month) + volume
-  5. WELL.UWI_API length histogram (api10 vs api14 truncation decision)
+  5. WELL.UWI_API length histogram (api10 vs api14 truncation check)
   6. ARPS_FORECAST stream/segment coverage
   7. formation strings vs ref.formation_crosswalk (sql/19 tier-3 coverage)
-  8. key semantics: PLANNED_WELL.NAME vs old sticks.unique_id, EUR horizon
-     match, IRR units, PV columns, price decks, PAD lat/lon population
-  9. trajectory geometry sanity vs old sticks geoms
+  8. key semantics: EUR/PV columns, IRR units, price decks, PAD lat/lon
+  9. trajectory geometry sanity (WKT type / CRS)
+
+The comparisons against the legacy raw_novi_intel file-drop tables were removed
+2026-07-10 when those tables were dropped (phase 8); the phase-1 answers they
+produced live in logs/intel_sf_profile_20260708.md and the migration plan.
 
 Read-only on BOTH sides (Snowflake share + Postgres warehouse). Emits a
 markdown report to stdout and logs/intel_sf_profile_<date>.md.
@@ -30,8 +35,8 @@ from etl.intel_sf.client import get_sf_connection
 
 logger = logging.getLogger(__name__)
 
-# Known row counts of the current static-drop raw layer (both basins, 3Q25),
-# for order-of-magnitude comparison in section 3.
+# Historical row counts of the retired static-drop raw layer (both basins,
+# 3Q25) — kept as an order-of-magnitude yardstick in section 3.
 _STATIC_COUNTS = {
     "sticks": 248_000,
     "pud_attrs": 131_000,
@@ -101,7 +106,7 @@ def section_row_counts(cur, pg) -> list[str]:
         rows.append((v, n))
     out = _md_table(["view", "rows"], rows)
     out.append("")
-    out.append("Static-drop reference (both basins, 3Q25): "
+    out.append("Retired static-drop reference (both basins, 3Q25; historical yardstick): "
                + ", ".join(f"{k} ~{v:,}" for k, v in _STATIC_COUNTS.items()))
     out.append("")
     out.append("WELL_MASTER by report / inventory class:")
@@ -169,12 +174,7 @@ def section_arps_coverage(cur, pg) -> list[str]:
                count(DISTINCT well_ref) AS wells,
                round(count(*) / nullif(count(DISTINCT well_ref), 0), 2) AS seg_per_well
         FROM ARPS_FORECAST GROUP BY 1, 2 ORDER BY 1, 2""")
-    out = _md_table(["inventory_class", "stream", "segments", "wells", "seg/well"], rows)
-    old = _pg(pg, "SELECT production_stream, count(*), count(DISTINCT novi_wellname) "
-                  "FROM raw_novi_intel.arps GROUP BY 1 ORDER BY 1")
-    out += ["", "Old raw_novi_intel.arps for comparison:"]
-    out += _md_table(["stream", "segments", "wells"], old)
-    return out
+    return _md_table(["inventory_class", "stream", "segments", "wells", "seg/well"], rows)
 
 
 def section_formations(cur, pg) -> list[str]:
@@ -203,19 +203,7 @@ def section_formations(cur, pg) -> list[str]:
 def section_key_semantics(cur, pg) -> list[str]:
     out: list[str] = []
 
-    # PLANNED_WELL.NAME vs old sticks.unique_id (50-name sample)
-    names = [str(r[0]) for r in _sf(
-        cur, "SELECT name FROM PLANNED_WELL "
-             "WHERE inventory_class = 'BASE_CASE' AND name IS NOT NULL LIMIT 50")]
-    if names:
-        n_match = _pg(pg, "SELECT count(*) FROM raw_novi_intel.sticks "
-                          "WHERE category = 'PUD' AND unique_id = ANY(%s)",
-                      (names,))[0][0]
-        out.append(f"- PLANNED_WELL.NAME sample: {n_match}/{len(names)} match "
-                   "old sticks.unique_id (category=PUD)"
-                   + ("  ** MISMATCH - arps/forecast joins at risk**" if n_match < len(names) * 0.9 else ""))
-
-    # Column inventory first (the live view drifts from the PDF dictionary).
+    # Column inventory (the live view drifts from the PDF dictionary).
     cols = [str(r[0]) for r in _sf(cur, """
         SELECT column_name FROM NOVI_DATA_ACCESS.INFORMATION_SCHEMA.COLUMNS
         WHERE table_schema = 'NOVI_INTEL' AND table_name = 'WELL_ECONOMICS_SUMMARY'
@@ -224,44 +212,18 @@ def section_key_semantics(cur, pg) -> list[str]:
     eur_oil_cols = [c for c in cols if c.startswith("EUR_OIL")]
     out += ["", f"- WELL_ECONOMICS_SUMMARY: {len(cols)} columns: {', '.join(cols)}",
             f"- PV columns present: {pv_cols or 'NONE - pv5..pv25 will carry NULLs'}",
-            f"- EUR oil columns present: {eur_oil_cols or 'NONE'}"]
+            f"- EUR oil columns present: {eur_oil_cols or 'NONE'} "
+            "(sql/29 maps EUR_*_30YR — the only horizon shipped as of 2025Q3; "
+            "a new/vanished horizon here means sql/29 needs a look)"]
 
-    # EUR horizon: which horizon reproduces old oil_eur (PDP join on api10)
-    if eur_oil_cols:
-        col_list = ", ".join(f"es.{c}" for c in eur_oil_cols)
-        sf_eur = _sf(cur, f"""
-            SELECT w.uwi_api, {col_list}
-            FROM WELL_ECONOMICS_SUMMARY es JOIN WELL w ON w.well_id = es.well_id
-            WHERE es.{eur_oil_cols[0]} IS NOT NULL LIMIT 500""")
-        api10s = [str(r[0])[:10] for r in sf_eur]
-        old = dict(_pg(pg, "SELECT api10, oil_eur FROM raw_novi_intel.sticks "
-                           "WHERE category = 'PDP' AND api10 = ANY(%s) "
-                           "AND oil_eur IS NOT NULL", (api10s,)))
-        ratios: dict[str, list[float]] = {c: [] for c in eur_oil_cols}
-        for r in sf_eur:
-            o = old.get(str(r[0])[:10])
-            if not o:
-                continue
-            for label, v in zip(eur_oil_cols, r[1:]):
-                if v:
-                    ratios[label].append(float(o) / float(v))
-        rows = []
-        for label, vals in ratios.items():
-            if vals:
-                vals.sort()
-                rows.append((label, len(vals), round(vals[len(vals) // 2], 4)))
-        out.append("")
-        out.append(f"EUR horizon check ({len(old)} PDP wells joined on api10; "
-                   "median old_oil_eur / new_<col> - the column with ratio ~1.0 wins):")
-        out += _md_table(["column", "n", "median ratio old/new"], rows)
-
-    # IRR units
+    # IRR units (share bug as of 2025Q3: unit inconsistent by slice — sql/29
+    # keeps a slice-median calibration that self-heals if Novi fixes it)
     irr = _sf(cur, "SELECT median(abs(irr)), min(irr), max(irr), count(irr) "
                    "FROM WELL_ECONOMICS_SUMMARY")[0]
     unit = "FRACTION (multiply by 100 for irr_pct)" if irr[0] is not None and float(irr[0]) < 5 \
         else "PERCENT (pass through)"
     out += ["", f"- IRR: median|irr|={irr[0]}, range [{irr[1]}, {irr[2]}], n={irr[3]} "
-                f"- **{unit}**; the sql/12 slice_irr self-calibration dies either way"]
+                f"- **{unit}** (global median; sql/29 calibrates per slice)"]
 
     # price decks
     decks = _sf(cur, """
@@ -290,21 +252,8 @@ def section_geometry(cur, pg) -> list[str]:
     out = [f"- sample of {len(sample)} PDP trajectories; CRS values: "
            f"{sorted({str(r[2]) for r in sample})}"]
     kinds = {str(r[1]).split("(")[0].strip().upper() for r in sample}
-    out.append(f"- WKT geometry types: {sorted(kinds)}")
-    dists = []
-    for uwi, wkt, _ in sample:
-        row = _pg(pg, """
-            SELECT round((ST_HausdorffDistance(
-                       s.geom, ST_Force2D(ST_GeomFromText(%s, 4326))) * 111000)::numeric, 1)
-            FROM raw_novi_intel.sticks s
-            WHERE s.category = 'PDP' AND s.api10 = %s LIMIT 1""",
-            (str(wkt), str(uwi)[:10]))
-        if row:
-            dists.append((str(uwi)[:10], row[0][0]))
-    if dists:
-        out.append("")
-        out.append("Hausdorff distance vs old sticks geom (approx meters, ~111km/deg):")
-        out += _md_table(["api10", "hausdorff_m"], dists)
+    out.append(f"- WKT geometry types: {sorted(kinds)} "
+               "(expect LINESTRING, EPSG:4326 — anything else breaks the sql/27 WKT->geom hook)")
     return out
 
 
@@ -316,7 +265,7 @@ _SECTIONS: tuple[tuple[str, Callable], ...] = (
     ("5. UWI_API length", section_uwi_length),
     ("6. ARPS_FORECAST coverage", section_arps_coverage),
     ("7. Formation crosswalk coverage", section_formations),
-    ("8. Key semantics (unique_id, EUR horizon, IRR, PV, decks, PAD)", section_key_semantics),
+    ("8. Key semantics (EUR/PV columns, IRR units, decks, PAD)", section_key_semantics),
     ("9. Trajectory geometry sanity", section_geometry),
 )
 

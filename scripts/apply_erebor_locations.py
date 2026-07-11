@@ -16,8 +16,9 @@ docs/erebor_locations_materialization.md for rationale + measured before/after.
 
 This is ALSO the canonical "last step" of a quarterly Novi reload: that sequence
 DROPs curated.intel_locations CASCADE (dropping this matview), so re-run this
-script after load_novi_intel / apply_intel_formation_blueox /
-apply_reconciled_inventory / net_new_pdp to rebuild it.
+script after load_intel_sf --curated / apply_intel_formation_blueox /
+apply_reconciled_inventory / net_new_pdp / apply_intel_pdp_support to rebuild it
+(full sequence: .claude/skills/novi-quarterly-reload/SKILL.md).
 
 Run from repo root in the venv:
     python -m scripts.apply_erebor_locations

@@ -1,13 +1,17 @@
-"""Orchestrate the Novi Intelligence (raw_novi_intel) load.
+"""Load the Novi Intelligence OVERLAY geometries (raw_novi_intel pads / land_grid /
+basin_outline) from the shapefile drop.
 
-Phased so the multi-GB CSV COPY can be run separately from the fast shapefile load.
-psql is not required — .sql files are executed via psycopg.
+Overlays only. The intel data itself (sticks, ML attrs, arps, forecast, economics)
+loads from the Snowflake share via scripts/load_intel_sf.py; the file-drop loaders
+for those were retired 2026-07-10 when their raw_novi_intel tables were dropped.
+The share ships no DSU/pad/land-grid/basin-outline geometry, so this shapefile
+route remains the only ingest path for the map overlays.
 
-    python -m scripts.load_novi_intel --ddl --shapefiles      # schema + geometry/economics
-    python -m scripts.load_novi_intel --pud-attrs             # PUD ML tier/score attrs
-    python -m scripts.load_novi_intel --csvs                  # analytics/arps/forecast (slow)
-    python -m scripts.load_novi_intel --curated               # build/refresh curated.intel_*
-    python -m scripts.load_novi_intel --all                   # everything, in order
+    python -m scripts.load_novi_intel --ddl          # (re)create the overlay trio (sql/11)
+    python -m scripts.load_novi_intel --shapefiles   # load pads/land_grid/basin_outline
+
+CAUTION: --ddl DROP+CREATEs the overlay tables, so it wipes the currently loaded
+geometries — always follow with --shapefiles from a file drop on disk.
 """
 
 from __future__ import annotations
@@ -33,43 +37,23 @@ def run_sql_file(name: str) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Load Novi Intelligence into engineering_db.")
-    ap.add_argument("--ddl", action="store_true", help="create/rebuild raw_novi_intel schema (sql/11 + 13)")
-    ap.add_argument("--shapefiles", action="store_true", help="load sticks/pads/grid/outline")
-    ap.add_argument("--pud-attrs", action="store_true", help="load PUD ML tier/score attrs (sql/13 table)")
-    ap.add_argument("--csvs", action="store_true", help="load analytics/arps/forecast (slow)")
-    ap.add_argument("--curated", action="store_true", help="build/refresh curated.intel_* (sql/12)")
-    ap.add_argument("--all", action="store_true", help="ddl + shapefiles + pud-attrs + csvs + curated")
+    ap = argparse.ArgumentParser(description="Load Novi Intelligence overlay shapefiles.")
+    ap.add_argument("--ddl", action="store_true",
+                    help="rebuild the raw_novi_intel overlay tables (sql/11 — wipes loaded geometry)")
+    ap.add_argument("--shapefiles", action="store_true", help="load pads/land_grid/basin_outline")
     args = ap.parse_args()
 
-    do_ddl = args.ddl or args.all
-    do_shp = args.shapefiles or args.all
-    do_pud = args.pud_attrs or args.all
-    do_csv = args.csvs or args.all
-    do_cur = args.curated or args.all
-    if not any((do_ddl, do_shp, do_pud, do_csv, do_cur)):
-        ap.error("specify at least one of --ddl/--shapefiles/--pud-attrs/--csvs/--curated/--all")
+    if not (args.ddl or args.shapefiles):
+        ap.error("specify --ddl and/or --shapefiles")
 
-    if do_ddl:
+    if args.ddl:
         run_sql_file("11_raw_novi_intel.sql")
-        run_sql_file("13_pud_attrs.sql")
-    if do_shp:
+    if args.shapefiles:
         from etl.novi_intel import load_shapefiles
         for b in ("delaware", "midland"):
-            load_shapefiles.load_sticks(b)
             load_shapefiles.load_pads(b)
             load_shapefiles.load_grid(b)
             load_shapefiles.load_outline(b)
-    if do_pud:
-        from etl.novi_intel import load_pud_attrs
-        for b in ("delaware", "midland"):
-            load_pud_attrs.load_pud_attrs(b)
-    if do_csv:
-        from etl.novi_intel import load_csvs
-        for b in ("delaware", "midland"):
-            load_csvs.load_all(b)
-    if do_cur:
-        run_sql_file("12_curated_intel.sql")
 
 
 if __name__ == "__main__":

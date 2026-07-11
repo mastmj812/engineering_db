@@ -13,6 +13,11 @@
 # rebuildable from raw+ref via sql/*.sql + refresh_all(), so dumping ~11 GB of
 # matviews weekly over the WAN is wasted bytes. Restore path:
 # docs/supabase_migration_runbook.md.
+# NOTE (2026-07-10): raw_novi_intel is now just the small frozen overlay trio
+# (pads/land_grid/basin_outline) - the big intel tables moved to raw_intel
+# (Novi Snowflake share mirror), which is NOT in this dump's scope: re-pullable
+# from the share EXCEPT the append-only raw_intel.stick_id_map, which pins the
+# stick_ids that downstream matviews and erebor key on. Scope decision pending.
 #
 # raw_intel (decided 2026-07-10): schema included WITHOUT production_forecast
 # DATA (16 GB, 73M rows - re-pullable from the Novi Snowflake share; DDL still
@@ -24,10 +29,10 @@
 #
 # CONNECTION: tries the DIRECT connection first (db.<ref>.supabase.co:5432,
 # user postgres) because it honors `statement_timeout=0` via PGOPTIONS - the
-# pooler STRIPS PGOPTIONS, so its 2-min statement_timeout kills the 73M-row
-# raw_novi_intel.forecast COPY. If the direct host is unreachable (it is
-# IPv6-only and has been flaky), it falls back to the pooler from .env and
-# WARNS that the big-table COPY may time out there.
+# pooler STRIPS PGOPTIONS, so its 2-min statement_timeout kills any multi-GB
+# COPY (historically the 73M-row raw_novi_intel.forecast, since dropped). If
+# the direct host is unreachable (it is IPv6-only and has been flaky), it
+# falls back to the pooler from .env and WARNS that a big COPY may time out.
 [CmdletBinding()]
 param(
     [int]$KeepWeeks = 4,

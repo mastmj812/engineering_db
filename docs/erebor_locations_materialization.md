@@ -78,13 +78,16 @@ tuple initially omitted `producing_reference`, `formation_blueox_tvd`, and
 rebuild sequence must therefore **end** by recreating it:
 
 ```
-python -m scripts.load_novi_intel --curated      # intel_locations
+python -m scripts.load_intel_sf --curated         # intel_locations (sql/29, from the Snowflake mirror)
 python -m scripts.apply_intel_formation_blueox    # intel_formation_blueox
 python -m scripts.apply_reconciled_inventory      # producing_reference + reconciled_inventory
-# (net_new_pdp rebuild)
+# (net_new_pdp rebuild — sql/25)
 python -m scripts.apply_intel_pdp_support         # intel_pdp_support (sql/30) — offset-PDP support scores
 python -m scripts.apply_erebor_locations          # <-- canonical last step
+# then re-run sql/26_geography_indexes.sql
 ```
+
+Full reload runbook: `.claude/skills/novi-quarterly-reload/SKILL.md`.
 
 > `apply_intel_pdp_support` (sql/30) rebuilds `curated.intel_pdp_support`, which
 > also DROP-CASCADEs with `intel_locations`. It must run **before**
