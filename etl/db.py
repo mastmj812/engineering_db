@@ -521,6 +521,127 @@ def bulk_upsert(
     return len(values)
 
 
+def upsert_batch_resilient(
+    conn: PGConnection,
+    schema: str,
+    table: str,
+    rows: Sequence[Mapping[str, Any]],
+    conflict_cols: Sequence[str],
+    update_cols: Sequence[str],
+    *,
+    reconnect: "Callable[[], PGConnection]" = get_connection,
+) -> tuple[PGConnection, int]:
+    """`bulk_upsert` + commit ONE batch, surviving a mid-pull connection drop.
+
+    On a connection-level ``psycopg.OperationalError`` — the Supabase
+    restart/failover / dropped-socket window (`consuming input failed ... could
+    not receive data (10053)`, `AdminShutdown`, `the database system is not
+    accepting connections`) that kills a long nightly pull mid-`executemany` —
+    the poisoned connection is discarded, a fresh one obtained via ``reconnect``
+    (``get_connection``, which already backs off across the restart), and the
+    SAME batch replayed.
+
+    This is the narrow case the ``_retry_on_conn_loss`` docstring's "callers must
+    only wrap idempotent work" caveat permits for a *write*: the statement is
+    ``INSERT ... ON CONFLICT DO UPDATE`` (idempotent), committed as a single
+    self-contained unit, so replaying a batch that may have partially landed
+    converges to the exact same row state. A half-done *multi*-batch transaction
+    would NOT qualify — which is precisely why each batch is committed on its own
+    here rather than in one commit at end-of-pull (so a drop costs the in-flight
+    batch, not hours of streamed work).
+
+    Only a *connection-level* failure is retried; a genuine data/constraint
+    error is not transient and propagates immediately. A mid-restart drop
+    surfaces two different psycopg exception types — an ``OperationalError``
+    (`consuming input failed ... 10053`, `server closed the connection`) AND a
+    ``DatabaseError`` protocol desync (`lost synchronization with server`,
+    `message contents do not agree with length`) when the socket dies
+    mid-result-message. ``DatabaseError`` is the *parent* of ``OperationalError``
+    (not a subclass), so catching only ``OperationalError`` silently misses the
+    desync — an observed real failure. Both are retried; a server-side data error
+    (which carries a SQLSTATE and leaves the connection usable) is re-raised.
+    Returns the (possibly reconnected) connection plus rows upserted, so the
+    caller keeps streaming on a live connection.
+
+    Budget is ``DB_UPSERT_BATCH_RETRIES`` (default 10) — deliberately more
+    generous than the connect-level ``DB_CONNECT_RETRIES`` (6), because an
+    observed Supabase restart is *flappy*: it accepts a connection, then drops it
+    again mid-``executemany`` seconds later, and can churn like that for many
+    minutes (a 2026-07-09 restart flapped >10 min). Each flap consumes one
+    attempt, so the batch loop needs headroom the single connect budget lacks.
+    Both failure points are absorbed: a dropped ``executemany`` AND a reconnect
+    that can't yet reach the recovering server both back off and retry within
+    this budget, so neither aborts the pull while the server is still coming up.
+    """
+    attempts = int(os.getenv("DB_UPSERT_BATCH_RETRIES", "10"))
+    base = float(os.getenv("DB_CONNECT_RETRY_BASE", "2"))
+    cap = float(os.getenv("DB_CONNECT_RETRY_MAX", "30"))
+    live: PGConnection | None = conn
+    last: psycopg.Error | None = None
+    for i in range(1, attempts + 1):
+        # Re-establish a connection if a prior attempt dropped or couldn't
+        # reconnect. reconnect() (get_connection) has its own connect-level
+        # backoff; if the server is still refusing connections it may exhaust
+        # that and raise — absorbed here so the restart window is ridden out
+        # rather than aborting the whole pull.
+        if live is None:
+            try:
+                live = reconnect()
+            except psycopg.OperationalError as exc:
+                last = exc
+                if i >= attempts:
+                    break
+                logger.warning(
+                    "batch upsert to %s.%s: reconnect failed (attempt %d/%d): %s; "
+                    "backing off",
+                    schema, table, i, attempts, exc,
+                )
+                time.sleep(min(base * (2 ** (i - 1)), cap))
+                continue
+        try:
+            n = bulk_upsert(live, schema, table, rows, conflict_cols, update_cols)
+            live.commit()
+            return live, n
+        except psycopg.Error as exc:
+            # Retry ONLY a connection-level failure. A server-side data/constraint
+            # error carries a SQLSTATE (e.g. 22xxx/23xxx) and leaves the
+            # connection usable — re-raise it, or we'd replay a non-transient
+            # failure until the budget is exhausted. Everything else raised by
+            # executemany during a restart is a broken connection: an
+            # OperationalError, or a DatabaseError protocol desync (no SQLSTATE,
+            # connection goes BAD). Guard on all three signals.
+            conn_dead = (
+                isinstance(exc, psycopg.OperationalError)
+                or getattr(exc, "sqlstate", None) is None
+                or getattr(live, "broken", False)
+                or bool(getattr(live, "closed", False))
+            )
+            if not conn_dead:
+                raise
+            last = exc
+            # The connection/transaction is dead; drop it before replaying.
+            # rollback/close are best-effort — the socket may already be gone.
+            for cleanup in (live.rollback, live.close):
+                try:
+                    cleanup()
+                except Exception:
+                    pass
+            live = None
+            if i >= attempts:
+                break
+            logger.warning(
+                "batch upsert to %s.%s lost the connection (attempt %d/%d): %s; "
+                "reconnecting and replaying the batch",
+                schema, table, i, attempts, exc,
+            )
+            time.sleep(min(base * (2 ** (i - 1)), cap))
+    logger.error(
+        "batch upsert to %s.%s failed after %d attempts", schema, table, attempts
+    )
+    assert last is not None
+    raise last
+
+
 def iter_chunks(items: Iterable[Any], size: int) -> Iterator[list[Any]]:
     """Yield successive `size`-length chunks from an iterable.
 
