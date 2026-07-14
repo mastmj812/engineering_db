@@ -1852,7 +1852,7 @@ One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpaci
 | `landing_point_lon` | double precision | Landing point longitude, WGS84 deg (Novi WellDetails only). |
 | `midpoint_lat` | double precision | Lateral midpoint latitude, WGS84 deg (Novi WellDetails only). |
 | `midpoint_lon` | double precision | Lateral midpoint longitude, WGS84 deg (Novi WellDetails only). |
-| `wellstick_geom` | geometry | LINESTRING (4326) built from the four Novi locations Surface Hole -> Landing Point -> Midpoint -> Bottom Hole, in natural traverse order. NULL points are skipped; NULL if fewer than two valid points. Cast to geography only via the sql/26 expression GiST indexes. |
+| `wellstick_geom` | geometry | LINESTRING (4326) through Surface Hole -> Landing Point -> Midpoint -> Bottom Hole, natural traverse order. Vertex precedence Novi WellDetails -> Novi Wells -> Enverus (SHL/BHL); a Novi BHL/MP exactly equal to the Novi SHL is a vendor placeholder (skipped; BHL falls to Enverus). NULL when fewer than two DISTINCT vertices remain - guaranteed non-degenerate since sql/32 (2026-07). Cast to geography only via the sql/26 expression GiST indexes. |
 | `formation` | character varying(64) | Novi formation call (WellDetails preferred, Wells fallback). RAW FREE-TEXT, inconsistent granularity - never group or filter on this; use formation_blueox (wells_enriched). |
 | `reported_formation` | character varying(64) | Operator-reported formation from the regulatory filing (Novi); free-text, often coarser than the model call. |
 | `grid_formation` | character varying(64) | Formation implied by Novi structure grids at the landing depth (Novi); free-text, model-derived. |
@@ -1969,7 +1969,7 @@ Analytics view over curated.wells (one row per api10): joins the Blue Ox formati
 | `landing_point_lon` | double precision | Landing point longitude, WGS84 deg (Novi WellDetails only). |
 | `midpoint_lat` | double precision | Lateral midpoint latitude, WGS84 deg (Novi WellDetails only). |
 | `midpoint_lon` | double precision | Lateral midpoint longitude, WGS84 deg (Novi WellDetails only). |
-| `wellstick_geom` | geometry | LINESTRING (4326) built from the four Novi locations Surface Hole -> Landing Point -> Midpoint -> Bottom Hole, in natural traverse order. NULL points are skipped; NULL if fewer than two valid points. Cast to geography only via the sql/26 expression GiST indexes. |
+| `wellstick_geom` | geometry | LINESTRING (4326) through Surface Hole -> Landing Point -> Midpoint -> Bottom Hole, natural traverse order. Vertex precedence Novi WellDetails -> Novi Wells -> Enverus (SHL/BHL); a Novi BHL/MP exactly equal to the Novi SHL is a vendor placeholder (skipped; BHL falls to Enverus). NULL when fewer than two DISTINCT vertices remain - guaranteed non-degenerate since sql/32 (2026-07). Cast to geography only via the sql/26 expression GiST indexes. |
 | `formation` | character varying(64) | Novi formation call (WellDetails preferred, Wells fallback). RAW FREE-TEXT, inconsistent granularity - never group or filter on this; use formation_blueox (wells_enriched). |
 | `reported_formation` | character varying(64) | Operator-reported formation from the regulatory filing (Novi); free-text, often coarser than the model call. |
 | `grid_formation` | character varying(64) | Formation implied by Novi structure grids at the landing depth (Novi); free-text, model-derived. |
