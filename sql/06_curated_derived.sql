@@ -146,8 +146,8 @@ SELECT
     -- Novi WellSpacing: same-zone lateral offset distance (ft, XY plane).
     -- Joined here (not baked into curated.wells) so surfacing it never
     -- forces the curated.wells DROP-CASCADE (production_forecast rebuild).
-    -- Temporal semantics believed AS-OF-FIRST-PRODUCTION — pending Novi
-    -- confirmation; do NOT treat as current spacing. NULL = well absent
+    -- Temporal semantics: AS-OF-FIRST-PRODUCTION (confirmed with Novi
+    -- 2026-07-14); do NOT treat as current spacing. NULL = well absent
     -- from WellSpacing (standalone candidate). Standalone/tight/represent-
     -- ative classification happens at runtime against each deal's planned
     -- spacing — never precomputed here. wellspacing_vintage = ingested_at

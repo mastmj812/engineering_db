@@ -9,7 +9,7 @@
 | Production vintage (nightly loads) | {etl_log run_finished_at} |
 | Novi Intelligence vintage | {report_name} |
 | erebor_locations as-of | {report_name / refresh date} |
-| wellspacing_vintage | {wells_enriched.wellspacing_vintage — or "UNVERIFIED: read from raw_novi.WellSpacing, semantics pending Novi confirmation"} |
+| wellspacing_vintage | {wells_enriched.wellspacing_vintage — as-of-first-production, Novi-confirmed 2026-07-14} |
 | Units | {n} — {names} |
 | Allowed benches (Land terms, resolved) | {bench codes} — **reviewer confirm** |
 

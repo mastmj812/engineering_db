@@ -149,11 +149,11 @@ only GUI-coupled surface; the dossier doesn't use it.
    `wells_enriched.lateral_closer_xy_ft`:
    standalone = NULL or > standalone cutoff; tight = `< tight_below_frac ×
    planned_spacing` (660' wells drop when planning 1320'). Remove both.
-   NOTE: the column lands with `scripts/apply_lateral_closer_xy.py`, which
-   is HELD until Novi confirms LateralCloserXY is as-of-first-production —
-   until applied, query `raw_novi."WellSpacing"."LateralCloserXY"` directly
-   (join `"API10" = api10`, `"DeletedAt" IS NULL`) and stamp the dossier
-   with the unverified-semantics caveat.
+   Semantics: AS-OF-FIRST-PRODUCTION (Novi-confirmed 2026-07-14) — the
+   spacing when the offset came online, not current infill state. If the
+   column isn't in the warehouse yet, `scripts/apply_lateral_closer_xy.py`
+   applies it (explicit authorization required — the view recreate
+   CASCADE-drops erebor_locations).
 3. **Count check** — need ≥ `min_wells`. Under-count and NOT near-edge →
    extend the radius concentrically and re-select. Near-edge → propose a
    strike-biased selection (this is the geological gate: show the map, the
@@ -201,7 +201,5 @@ revision after the first real deal.
 
 ## Known unknowns (do not assume — re-check before relying)
 
-- `LateralCloserXY` as-of-first-production semantics: pending Novi
-  confirmation; the sql/06 column + apply script are HELD on it.
 - `di_bounds_per_stream`, edge-trigger thresholds: provisional/TBD.
 - `intel_forecast_accuracy` calibration of the inflation band: future work.

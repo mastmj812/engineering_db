@@ -9,8 +9,8 @@ DROP-CASCADE would force the ~22M-row production_forecast rebuild). The
 wells_enriched DDL is EXTRACTED from the canonical sql/06 (single source of
 truth); erebor_locations from sql/22.
 
-HOLD: do not run until the as-of-first-production semantics of LateralCloserXY
-are confirmed with Novi (the sql/06 comment tracks the same caveat).
+LateralCloserXY semantics: as-of-first-production, confirmed with Novi
+2026-07-14 (the sql/06 comment tracks the same).
 
 Run from repo root in the venv:
     python -m scripts.apply_lateral_closer_xy
