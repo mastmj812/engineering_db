@@ -42,9 +42,13 @@ edge_trigger:                     # gate 5.4 — developed-extent proxy (no
 spacing:                          # gate 5.2 — classified at RUNTIME vs the
   tight_below_frac: 0.65          # deal's planned spacing, never precomputed
   standalone_lateralcloserxy_null: true
-  standalone_above_ft: 2640       # PROVISIONAL half-mile cutoff — calibrate
+  sentinel_ft: 2800               # Novi default/cap when no same-zone neighbor
+                                  # at first production (12.2% of non-null rows,
+                                  # also the column max — verified 2026-07-14);
+                                  # >= sentinel_ft classifies as standalone
   # lateral_closer_xy_ft is AS-OF-FIRST-PRODUCTION (Novi-confirmed
   # 2026-07-14): spacing when the offset came online, not current infill.
+  # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
 
 qc_flags:                         # gate 6
   peak_month_tolerance: 2

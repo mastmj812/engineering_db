@@ -148,10 +148,13 @@ SELECT
     -- forces the curated.wells DROP-CASCADE (production_forecast rebuild).
     -- Temporal semantics: AS-OF-FIRST-PRODUCTION (confirmed with Novi
     -- 2026-07-14); do NOT treat as current spacing. NULL = well absent
-    -- from WellSpacing (standalone candidate). Standalone/tight/represent-
-    -- ative classification happens at runtime against each deal's planned
-    -- spacing — never precomputed here. wellspacing_vintage = ingested_at
-    -- of the nightly TRUNCATE+COPY snapshot (uniform per load).
+    -- from WellSpacing (standalone candidate). SENTINEL: exactly 2800.0
+    -- (also the column max, ~12% of rows) is Novi's default/cap when no
+    -- same-zone neighbor exists at first production — not real spacing.
+    -- Standalone/tight/representative classification happens at runtime
+    -- against each deal's planned spacing — never precomputed here.
+    -- wellspacing_vintage = ingested_at of the nightly TRUNCATE+COPY
+    -- snapshot (uniform per load).
     -- ------------------------------------------------------------------
     ws."LateralCloserXY"                               AS lateral_closer_xy_ft,
     ws.ingested_at                                     AS wellspacing_vintage

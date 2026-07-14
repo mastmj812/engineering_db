@@ -71,13 +71,22 @@ def main() -> None:
             print(f"    wells {n_total}, with LateralCloserXY {n_ls}, "
                   f"distinct vintages {n_vint} (expect 1 after a clean nightly)",
                   flush=True)
+            # 2800.0 is Novi's no-neighbor-at-first-production sentinel/cap
+            # (~12% of rows) — exclude it or the P90 reads as the sentinel.
+            n_sent = cur.execute(
+                "SELECT COUNT(*) FROM curated.wells_enriched "
+                "WHERE lateral_closer_xy_ft >= 2800"
+            ).fetchone()[0]
             lo, med, hi = cur.execute(
                 "SELECT percentile_cont(0.1) WITHIN GROUP (ORDER BY lateral_closer_xy_ft), "
                 "percentile_cont(0.5) WITHIN GROUP (ORDER BY lateral_closer_xy_ft), "
                 "percentile_cont(0.9) WITHIN GROUP (ORDER BY lateral_closer_xy_ft) "
-                "FROM curated.wells_enriched WHERE lateral_closer_xy_ft IS NOT NULL"
+                "FROM curated.wells_enriched "
+                "WHERE lateral_closer_xy_ft IS NOT NULL AND lateral_closer_xy_ft < 2800"
             ).fetchone()
-            print(f"    P10/P50/P90 lateral_closer_xy_ft: {lo:.0f} / {med:.0f} / "
+            print(f"    sentinel rows (>= 2800 ft, no neighbor at first prod): {n_sent}",
+                  flush=True)
+            print(f"    P10/P50/P90 excl. sentinel: {lo:.0f} / {med:.0f} / "
                   f"{hi:.0f} ft (sanity: Permian development spacing ~400-1500 ft)",
                   flush=True)
             n_ereb = cur.execute(

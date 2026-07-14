@@ -147,7 +147,9 @@ only GUI-coupled surface; the dossier doesn't use it.
 2. **Spacing curation (runtime, never precomputed)** — classify each
    candidate against the DEAL's planned spacing using
    `wells_enriched.lateral_closer_xy_ft`:
-   standalone = NULL or > standalone cutoff; tight = `< tight_below_frac ×
+   standalone = NULL or `>= sentinel_ft` (Novi records a 2,800-ft
+   default/cap when no same-zone neighbor exists at first production —
+   never treat 2,800 as real spacing); tight = `< tight_below_frac ×
    planned_spacing` (660' wells drop when planning 1320'). Remove both.
    Semantics: AS-OF-FIRST-PRODUCTION (Novi-confirmed 2026-07-14) — the
    spacing when the offset came online, not current infill state. If the
