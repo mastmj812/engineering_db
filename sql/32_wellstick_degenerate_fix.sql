@@ -61,16 +61,29 @@
 -- restore, sql/31 re-apply, validation queries — psql \ir cannot replicate).
 -- =============================================================================
 
+-- INDEX ORDERING IS LOAD-BEARING (learned on the 2026-07-14 first run): the
+-- expression geography indexes must exist BEFORE any spatial builder that
+-- filters with ST_DWithin(geom::geography, ...) or those builds seq-scan —
+-- sql/23 ran 49 min instead of ~3 and sql/30 had to be cancelled after ~15 h
+-- (it rebuilt in minutes once indexed). Hence the inline wells index right
+-- after sql/04 (sql/26 can't run that early — it also indexes
+-- intel_locations, which doesn't exist until sql/29), and sql/26 immediately
+-- after sql/29, before every intel spatial builder.
+
 \echo --- wells branch -------------------------------------------------------
 \ir 04_curated.sql
+CREATE INDEX IF NOT EXISTS idx_curated_wells_wellstick_geog
+    ON curated.wells USING GIST ((wellstick_geom::geography));
+ANALYZE curated.wells;
 \ir 16_formation_blueox.sql
 \ir 20_producing_reference.sql
 \ir 23_formation_blueox_tvd.sql
 \ir 06_curated_derived.sql
 \ir 10_curated_forecast.sql
 
-\echo --- intel branch (quarterly-reload step-5 order) ------------------------
+\echo --- intel branch (quarterly-reload step-5 order, indexes first) ---------
 \ir 29_curated_intel_sf.sql
+\ir 26_geography_indexes.sql
 \ir 14_formation_crosswalk.sql
 \ir 18_bench_reference.sql
 \ir 19_intel_formation_blueox.sql
@@ -78,7 +91,6 @@
 \ir 25_net_new_pdp.sql
 \ir 30_intel_pdp_support.sql
 \ir 22_erebor_locations.sql
-\ir 26_geography_indexes.sql
 \ir 31_comments.sql
 
 -- =============================================================================
