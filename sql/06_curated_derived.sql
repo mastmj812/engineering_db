@@ -11,6 +11,7 @@
 --      - first_completion_year      (int)
 --      - stages_per_1000ft, proppant_lbs_per_stage, fluid_bbl_per_stage
 --      - has_completion_intensity   (bool: are key intensity cols all populated?)
+--      - lateral_closer_xy_ft, wellspacing_vintage (Novi WellSpacing pass-through)
 --      Regular view; stays in sync with curated.wells automatically (no refresh).
 --
 --   2. curated.production_normalized (MATERIALIZED VIEW)
@@ -139,17 +140,37 @@ SELECT
        AND w.fluid_bbl IS NOT NULL
        AND w.frac_stages IS NOT NULL
        AND w.lateral_length_ft IS NOT NULL
-       AND w.lateral_length_ft > 0)                    AS has_completion_intensity
+       AND w.lateral_length_ft > 0)                    AS has_completion_intensity,
+
+    -- ------------------------------------------------------------------
+    -- Novi WellSpacing: same-zone lateral offset distance (ft, XY plane).
+    -- Joined here (not baked into curated.wells) so surfacing it never
+    -- forces the curated.wells DROP-CASCADE (production_forecast rebuild).
+    -- Temporal semantics: AS-OF-FIRST-PRODUCTION (confirmed with Novi
+    -- 2026-07-14); do NOT treat as current spacing. NULL = well absent
+    -- from WellSpacing (standalone candidate). SENTINEL: exactly 2800.0
+    -- (also the column max, ~12% of rows) is Novi's default/cap when no
+    -- same-zone neighbor exists at first production — not real spacing.
+    -- Standalone/tight/representative classification happens at runtime
+    -- against each deal's planned spacing — never precomputed here.
+    -- wellspacing_vintage = ingested_at of the nightly TRUNCATE+COPY
+    -- snapshot (uniform per load).
+    -- ------------------------------------------------------------------
+    ws."LateralCloserXY"                               AS lateral_closer_xy_ft,
+    ws.ingested_at                                     AS wellspacing_vintage
 
 FROM curated.wells w
 LEFT JOIN curated.formation_blueox fb
        ON fb.api10 = w.api10
 LEFT JOIN curated.formation_blueox_tvd fbt
-       ON fbt.api10 = w.api10;
+       ON fbt.api10 = w.api10
+LEFT JOIN raw_novi."WellSpacing" ws
+       ON ws."API10" = w.api10
+      AND ws."DeletedAt" IS NULL;
 
 
 COMMENT ON VIEW curated.wells_enriched IS
-'curated.wells + per-well derived columns (vintage bucket, lateral length class, is_horizontal, per-stage intensity). Regular view; auto-syncs with wells.';
+'curated.wells + per-well derived columns (vintage bucket, lateral length class, is_horizontal, per-stage intensity, Novi WellSpacing lateral_closer_xy_ft + wellspacing_vintage). Regular view; auto-syncs with wells.';
 
 
 -- =============================================================================

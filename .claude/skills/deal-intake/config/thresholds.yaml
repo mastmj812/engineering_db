@@ -1,0 +1,56 @@
+# deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
+# change and record it in the dossier snapshot; never hardcode a threshold in
+# pipeline logic. Provisional values are marked; calibrate, don't trust.
+config_version: 1
+
+alignment:                        # gate 2 — location source
+  iou_min: 0.90
+  outside_endpoint_frac_max: 0.05
+  gray_band: [0.80, 0.90]         # escalate to reviewer
+  # IoU uses raw_novi_intel.pads (frozen 3Q25 display trio) — advisory if
+  # stale; outside_endpoint_frac from live erebor_locations sticks governs.
+
+bench_inclusion:                  # gate 3
+  pdp_count_3mi_min: 3            # >= 3; raw-producer support count, NOT
+                                  # type-curve-qualified (see SKILL.md gate 3)
+  # depth restriction = explicit allowed bench-code list from Land (gate 1)
+
+forecast_source:                  # gate 4 — hybrid mode (settled)
+  inflation_ratio_band: [0.80, 1.10]  # asymmetric; calibrate vs intel_forecast_accuracy
+  aggregation: median_per_dsu_bench
+  dispersion_flag_maxmin: 1.3
+  null_behavior: anduin_required  # true NULL -> build Anduin, no wait
+  in_range_optional_anduin: true  # one-click build
+
+type_curve:                       # gate 5 — anduin selection
+  first_prod_after: 2016-01-01
+  min_months_data: 6              # post-filter; not a /wells/select param
+  min_lateral_ft: 6000            # assumes ~10k development
+  min_wells: 10
+  default_radius_mi: 5
+  extension:
+    basinward: concentric_radius
+    near_edge: strike_biased      # reviewer confirms — geological gate
+
+edge_trigger:                     # gate 5.4 — developed-extent proxy (no
+  method: density_gradient        # structure surface / play polygon exists)
+  dist_nearest_ft_max: 15840      # PROVISIONAL (3 mi to nearest qualifying
+                                  # in-bench PDP) — calibrate
+  ring_decay_min: 0.04            # PROVISIONAL pdp_count_1mi / pdp_count_5mi
+                                  # (uniform density ~= 1/25 by area) — calibrate
+
+spacing:                          # gate 5.2 — classified at RUNTIME vs the
+  tight_below_frac: 0.65          # deal's planned spacing, never precomputed
+  standalone_lateralcloserxy_null: true
+  sentinel_ft: 2800               # Novi default/cap when no same-zone neighbor
+                                  # at first production (12.2% of non-null rows,
+                                  # also the column max — verified 2026-07-14);
+                                  # >= sentinel_ft classifies as standalone
+  # lateral_closer_xy_ft is AS-OF-FIRST-PRODUCTION (Novi-confirmed
+  # 2026-07-14): spacing when the offset came online, not current infill.
+  # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
+
+qc_flags:                         # gate 6
+  peak_month_tolerance: 2
+  di_bounds_per_stream: TBD       # leave configurable; set with Michael
+  eur_vs_offset_p50_tolerance: 0.25
