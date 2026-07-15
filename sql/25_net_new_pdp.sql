@@ -85,4 +85,4 @@ CREATE INDEX idx_net_new_pdp_geom
 
 
 COMMENT ON MATERIALIZED VIEW curated.net_new_pdp IS
-'§6 reverse pass: post-vintage (first_production_date > 2025-09-30) producing horizontals whose lateral overlaps no same-(corrected)-bench PUD at the same depth (best_pud_overlap < 0.2) — incremental locations the static Novi vintage did not inventory. Closes the arithmetic new-wells ≈ realized_pud_to_pdp + net_new_pdp. Keyed on api10; carries wellstick_geom for mapping. Overlap vs PUD only (RES exclusion is a future refinement). Refresh with the Novi load / as wells come online.';
+'§6 reverse pass: post-vintage (first_production_date > 2025-09-30) producing horizontals whose lateral overlaps no same-(corrected)-bench PUD at the same depth (best_pud_overlap < 0.2) — incremental locations the static Novi vintage did not inventory. Closes the arithmetic new-wells ≈ realized_drift + net_new_pdp. Keyed on api10; carries wellstick_geom for mapping. Overlap vs PUD only (RES exclusion is a future refinement). Refresh with the Novi load / as wells come online.';

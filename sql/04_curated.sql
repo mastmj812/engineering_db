@@ -150,46 +150,19 @@ SELECT
     wd."MPLongitude"                                           AS midpoint_lon,
 
     -- -------------------------------------------------------------------------
-    -- Wellstick: 4-point LINESTRING built from the Novi locations
-    -- (Surface Hole → Landing Point → Midpoint → Bottom Hole), in the
-    -- well's natural traverse order. NULL points are skipped; result is
-    -- NULL if fewer than two valid points exist. Replaces what Enverus's
-    -- LateralLine WKT used to provide in the type-curve app.
+    -- Wellstick: LINESTRING through Surface Hole → Landing Point → Midpoint →
+    -- Bottom Hole in the well's natural traverse order. Vertices are built in
+    -- the `stick` LATERAL at the bottom of this FROM clause; see the vendor-
+    -- placeholder and degeneracy rules documented there. NULL when the
+    -- surviving vertices carry no directional information (all identical, or
+    -- fewer than two): ST_MaxDistance(line, line) is the vertex-set diameter,
+    -- 0 for both degenerate shapes the old presence-count guard let through
+    -- (859 Novi placeholder wells + 2 single-vertex lines as of 2026-07).
+    -- ST_RemoveRepeatedPoints collapses duplicate consecutive vertices so no
+    -- zero-length segment survives. One-time migration: sql/32.
     -- -------------------------------------------------------------------------
-    CASE
-        WHEN (
-            (COALESCE(wd."SHLLatitude", n."SHLLatitude") IS NOT NULL)::int
-          + (wd."LPLatitude"  IS NOT NULL)::int
-          + (wd."MPLatitude"  IS NOT NULL)::int
-          + (COALESCE(wd."BHLLatitude", n."BHLLatitude") IS NOT NULL)::int
-        ) >= 2
-        THEN ST_SetSRID(
-            ST_MakeLine(
-                ARRAY_REMOVE(ARRAY[
-                    CASE WHEN COALESCE(wd."SHLLatitude",  n."SHLLatitude")  IS NOT NULL
-                          AND COALESCE(wd."SHLLongitude", n."SHLLongitude") IS NOT NULL
-                         THEN ST_Point(
-                                COALESCE(wd."SHLLongitude", n."SHLLongitude"),
-                                COALESCE(wd."SHLLatitude",  n."SHLLatitude"))
-                    END,
-                    CASE WHEN wd."LPLatitude" IS NOT NULL
-                          AND wd."LPLongitude" IS NOT NULL
-                         THEN ST_Point(wd."LPLongitude", wd."LPLatitude")
-                    END,
-                    CASE WHEN wd."MPLatitude" IS NOT NULL
-                          AND wd."MPLongitude" IS NOT NULL
-                         THEN ST_Point(wd."MPLongitude", wd."MPLatitude")
-                    END,
-                    CASE WHEN COALESCE(wd."BHLLatitude",  n."BHLLatitude")  IS NOT NULL
-                          AND COALESCE(wd."BHLLongitude", n."BHLLongitude") IS NOT NULL
-                         THEN ST_Point(
-                                COALESCE(wd."BHLLongitude", n."BHLLongitude"),
-                                COALESCE(wd."BHLLatitude",  n."BHLLatitude"))
-                    END
-                ], NULL)
-            ),
-            4326
-        )
+    CASE WHEN ST_MaxDistance(stick.raw_line, stick.raw_line) > 0
+         THEN ST_SetSRID(ST_RemoveRepeatedPoints(stick.raw_line), 4326)
     END                                                        AS wellstick_geom,
 
     -- =========================================================================
@@ -342,6 +315,56 @@ LEFT JOIN raw_novi."WellSpacing" ws
       AND ws."DeletedAt" IS NULL
 LEFT JOIN enverus_latest e
        ON e.api10_join = n."API10"
+-- -----------------------------------------------------------------------------
+-- Wellstick vertex assembly (consumed by the wellstick_geom CASE above).
+-- Source precedence per vertex mirrors the surface_lat / bhl_lat header
+-- columns: Novi WellDetails → Novi Wells → Enverus. Two placeholder rules on
+-- top of plain COALESCE (Novi ships BHL == MP == SHL when it has no real
+-- bottomhole — 859 wells as of 2026-07, 77 of them Delaware/Midland
+-- horizontals, so plain COALESCE would keep the bogus non-NULL values):
+--   * BHL: a Novi BHL exactly equal to the Novi SHL is a placeholder — fall
+--     through to the Enverus BHL instead (rescued 854 of the 859 in the
+--     2026-07 A/B; the header bhl_lat/bhl_lon columns intentionally keep the
+--     plain COALESCE and may still carry the placeholder value).
+--   * MP: a Novi MP exactly equal to the Novi SHL is likewise skipped — kept
+--     between a real LP and BHL it would zigzag the stick back to surface,
+--     and ST_RemoveRepeatedPoints only collapses CONSECUTIVE duplicates.
+-- IS DISTINCT FROM (not <>) so a NULL coordinate on either side counts as
+-- "different" — a real Novi BHL is never discarded just because the SHL has
+-- a NULL longitude (the BOLL WEEVIL single-vertex bug class).
+-- -----------------------------------------------------------------------------
+CROSS JOIN LATERAL (
+    SELECT ST_MakeLine(ARRAY_REMOVE(ARRAY[
+               CASE WHEN COALESCE(wd."SHLLatitude",  n."SHLLatitude",  e.env_surface_lat) IS NOT NULL
+                     AND COALESCE(wd."SHLLongitude", n."SHLLongitude", e.env_surface_lon) IS NOT NULL
+                    THEN ST_Point(
+                           COALESCE(wd."SHLLongitude", n."SHLLongitude", e.env_surface_lon),
+                           COALESCE(wd."SHLLatitude",  n."SHLLatitude",  e.env_surface_lat))
+               END,
+               CASE WHEN wd."LPLatitude" IS NOT NULL
+                     AND wd."LPLongitude" IS NOT NULL
+                    THEN ST_Point(wd."LPLongitude", wd."LPLatitude")
+               END,
+               CASE WHEN wd."MPLatitude" IS NOT NULL
+                     AND wd."MPLongitude" IS NOT NULL
+                     AND (   wd."MPLatitude"  IS DISTINCT FROM COALESCE(wd."SHLLatitude",  n."SHLLatitude")
+                          OR wd."MPLongitude" IS DISTINCT FROM COALESCE(wd."SHLLongitude", n."SHLLongitude"))
+                    THEN ST_Point(wd."MPLongitude", wd."MPLatitude")
+               END,
+               CASE WHEN COALESCE(wd."BHLLatitude",  n."BHLLatitude")  IS NOT NULL
+                     AND COALESCE(wd."BHLLongitude", n."BHLLongitude") IS NOT NULL
+                     AND (   COALESCE(wd."BHLLatitude",  n."BHLLatitude")
+                               IS DISTINCT FROM COALESCE(wd."SHLLatitude",  n."SHLLatitude")
+                          OR COALESCE(wd."BHLLongitude", n."BHLLongitude")
+                               IS DISTINCT FROM COALESCE(wd."SHLLongitude", n."SHLLongitude"))
+                    THEN ST_Point(
+                           COALESCE(wd."BHLLongitude", n."BHLLongitude"),
+                           COALESCE(wd."BHLLatitude",  n."BHLLatitude"))
+                    WHEN e.env_bhl_lat IS NOT NULL AND e.env_bhl_lon IS NOT NULL
+                    THEN ST_Point(e.env_bhl_lon, e.env_bhl_lat)
+               END
+           ], NULL)) AS raw_line
+) stick
 WHERE n."DeletedAt" IS NULL
 ;
 
@@ -385,7 +408,7 @@ COMMENT ON COLUMN curated.wells.directional_survey_is_planned IS
 'TRUE = the directional survey is the operator''s pre-drill PLAN, not the actual post-drill survey. Both Novi and Enverus use planned surveys to assign Formation / ENVInterval via their proprietary structure models, which can mis-land the well. Self-corrects when the operator files the actual survey; NM regulators are notoriously slow, so NM wells often carry provisional formation assignments for an extended period.';
 
 COMMENT ON COLUMN curated.wells.wellstick_geom IS
-'LINESTRING (4326) built from the four Novi locations Surface Hole → Landing Point → Midpoint → Bottom Hole, in natural traverse order. NULL points are skipped; result is NULL if fewer than two valid points exist. Replaces what Enverus LateralLine WKT provided in the legacy type-curve app.';
+'LINESTRING (4326) through Surface Hole → Landing Point → Midpoint → Bottom Hole in natural traverse order. Vertex precedence Novi WellDetails → Novi Wells → Enverus (SHL/BHL); a Novi BHL or MP exactly equal to the Novi SHL is a vendor placeholder and is skipped/replaced by the Enverus BHL. NULL when the vertices carry no directional information (fewer than two distinct points) — guaranteed non-degenerate: ST_LineMerge is always a LineString and every segment has length > 0. Replaces what Enverus LateralLine WKT provided in the legacy type-curve app. Fixed in sql/32 (2026-07).';
 
 COMMENT ON COLUMN curated.wells.range_ IS
 'PLSS Range (NM-style land subdivision). Trailing underscore avoids the contextually-reserved SQL keyword. Populated only for PLSS states; ~0% in TX, ~20% Permian-wide.';

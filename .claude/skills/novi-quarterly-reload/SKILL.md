@@ -86,7 +86,11 @@ python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geog
 
 sql/26 is non-negotiable after any matview drop-recreate: without the
 expression geography indexes, `ST_DWithin(geom::geography, ...)` seq-scans and
-erebor/narvi go multi-second per query.
+erebor/narvi go multi-second per query. It is safe (idempotent) to run sql/26
+immediately after `--curated` instead of last — and if `curated.wells` was
+ALSO dropped (not the quarterly case; see sql/32), its geography index MUST be
+recreated before sql/23 / sql/30 run, or those builds seq-scan for hours
+(sql/30 was cancelled at ~15 h on 2026-07-14; minutes once indexed).
 
 ## 6. Overlay geometries (only if Novi shipped new shapefiles)
 
@@ -103,9 +107,11 @@ Otherwise the frozen 3Q25 trio in `raw_novi_intel` stays.
 ## 7. Verify
 
 - `python -m etl.refresh --force` green (includes `erebor_locations`).
-- Row-count sanity: `intel_locations` ~248k (grows with vintage),
-  `reconciled_inventory` ~183k, `erebor_locations` ~262k, `intel_pdp_support`
-  ~204k.
+- Row-count sanity: `intel_locations` ~252k (grows with vintage),
+  `reconciled_inventory` = the mapped-PUD universe exactly (~131k as of
+  2026-07; one row per PUD with non-null formation_blueox — verify the
+  identity, not the constant), `erebor_locations` ~262k, `intel_pdp_support`
+  ~204k (= PUD+RES universe).
 - EXPLAIN the erebor tile query (pattern in `apply_erebor_locations.py`) —
   must show the GiST/geography index, not a seq scan.
 - Load the erebor map + narvi inventory page against the live warehouse.

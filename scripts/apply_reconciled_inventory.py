@@ -83,21 +83,26 @@ def main() -> None:
                 "FROM curated.reconciled_inventory GROUP BY 1,2 ORDER BY 1,2"
             ).fetchall():
                 print(f"    {b:9} {s:22} {n}", flush=True)
+            # NOTE: sql/21 split the old 'realized_pud_to_pdp' status into
+            # realized_drift (online after the vintage) / realized_phantom
+            # (online before it); querying the retired name silently returns 0.
             print("  realized matches by matched_survey_planned (provisional TVD):", flush=True)
             for b, p, n in cur.execute(
                 "SELECT basin_blueox, matched_survey_planned, COUNT(*) "
-                "FROM curated.reconciled_inventory WHERE status='realized_pud_to_pdp' "
+                "FROM curated.reconciled_inventory "
+                "WHERE status IN ('realized_drift','realized_phantom') "
                 "GROUP BY 1,2 ORDER BY 1,2"
             ).fetchall():
                 print(f"    {b:9} survey_planned={str(p):5} {n}", flush=True)
-            # realized count vs new-well anchor (Delaware)
+            # drift count vs new-well anchor (Delaware); phantoms are
+            # pre-vintage by definition, so the anchor uses drift only.
             realized_del = cur.execute(
                 "SELECT COUNT(*) FROM curated.reconciled_inventory "
-                "WHERE basin_blueox='delaware' AND status='realized_pud_to_pdp'"
+                "WHERE basin_blueox='delaware' AND status='realized_drift'"
             ).fetchone()[0]
             distinct_wells = cur.execute(
                 "SELECT COUNT(DISTINCT matched_api10) FROM curated.reconciled_inventory "
-                "WHERE basin_blueox='delaware' AND status='realized_pud_to_pdp'"
+                "WHERE basin_blueox='delaware' AND status='realized_drift'"
             ).fetchone()[0]
             new_del = cur.execute(
                 "SELECT COUNT(*) FROM curated.wells w JOIN curated.formation_blueox fb ON fb.api10=w.api10 "
