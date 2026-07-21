@@ -624,6 +624,15 @@ Enverus DirectAccess v3 wells dataset mirror; one row per completion event, upse
 | `wellsymbols` | text |  |
 | `wellboreid` | bigint |  |
 | `ingested_at` | timestamp with time zone |  |
+| `envcompanytype` | text |  |
+| `enveffectivelaterallength` | real |  |
+| `enveffectivelaterallengthsource` | text |  |
+| `envwellborestatus` | text |  |
+| `firstinjdate` | timestamp without time zone |  |
+| `injectorwellclass` | text |  |
+| `lastinjdate` | timestamp without time zone |  |
+| `numberofwellbores` | integer |  |
+| `survey` | text |  |
 
 ## Schema `raw_intel`
 
@@ -1391,7 +1400,7 @@ TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-benc
 
 Novi Intelligence Arps decline parameters per stick and stream (from raw_intel.arps_forecast). d_nom is NOMINAL per-year decline. Rebuilt quarterly by the intel reload chain.
 
-~0 rows | quarterly (Novi intel reload chain) | reads: `raw_intel.arps_forecast`, `raw_intel.planned_well`
+~0 rows | quarterly (Novi intel reload chain) | reads: `raw_intel.arps_forecast`, `raw_intel.planned_well`, `raw_intel.stick_id_map`
 
 | column | type | description |
 |---|---|---|
@@ -1411,12 +1420,13 @@ Novi Intelligence Arps decline parameters per stick and stream (from raw_intel.a
 | `day_stop` | integer | Last producing day covered by this segment. |
 | `planned_well_id` | text | Share well_ref of the planned well (text, format PW-{id}); lineage back to raw_intel. |
 | `well_inventory_name` | text | Always NULL: no source in the Snowflake share. Column retained for the legacy output contract. |
+| `stick_id` | bigint | Stable suite stick key (raw_intel.stick_id_map); joins curated.erebor_locations.stick_id / curated.intel_locations.stick_id. NULL for forecast names with no well_master stick. |
 
 ### `curated.intel_forecast` (view)
 
 Novi Intelligence monthly production forecast per stick (P50, 30-day months, planned wells only; from raw_intel.production_forecast). Rebuilt quarterly by the intel reload chain.
 
-~0 rows | quarterly (Novi intel reload chain) | reads: `raw_intel.planned_well`, `raw_intel.production_forecast`
+~0 rows | quarterly (Novi intel reload chain) | reads: `raw_intel.planned_well`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`
 
 | column | type | description |
 |---|---|---|
@@ -1427,6 +1437,7 @@ Novi Intelligence monthly production forecast per stick (P50, 30-day months, pla
 | `oil` | double precision | Forecast oil rate for the month, bbl/d (Novi P50). |
 | `gas` | double precision | Forecast gas rate for the month, Mcf/d (Novi P50). |
 | `water` | double precision | Forecast water rate for the month, bbl/d (Novi P50). |
+| `stick_id` | bigint | Stable suite stick key (raw_intel.stick_id_map); joins curated.erebor_locations.stick_id / curated.intel_locations.stick_id. NULL for forecast names with no well_master stick. |
 
 ### `curated.intel_formation_blueox` (materialized view)
 
@@ -1678,7 +1689,7 @@ Regular VIEW (no storage, always fresh): production_normalized actuals UNION ALL
 
 Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M rows) JOINed to curated.wells and normalized per 1,000 ft; column-identical to production_normalized for clean UNION. Key (api10, prod_year, prod_month); MoP 1-600. Nightly refresh is gated on ForecastWellMonths source change and runs LAST.
 
-~18,773,940 rows | nightly (etl.refresh, 10/10) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
+~18,847,160 rows | nightly (etl.refresh, 10/10) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
 
 | column | type | description |
 |---|---|---|
