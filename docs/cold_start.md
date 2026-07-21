@@ -1,9 +1,11 @@
 # ETL cold-start — stand up the `oilgas` nightly on any machine
 
-The warehouse (`oilgas`) now lives on **Supabase** (managed Postgres). The only
-thing tied to a physical machine is the **nightly ETL runner** (`run_daily`) —
-currently a Windows laptop. This doc makes that host **a config, not a machine**:
-follow it and a clean box is running the nightly in an afternoon.
+The warehouse (`oilgas`) now lives on **Supabase** (managed Postgres). The
+**nightly ETL runner** (`run_daily`) lives on **GitHub Actions** (see §6) —
+nothing is tied to a physical machine anymore. This doc remains the runbook for
+standing up a *manual/fallback* host (a clean box runs the nightly in an
+afternoon), which you'd want if Actions is down, for the quarterly Novi
+Intelligence reload, or for ad-hoc backfills.
 
 > Scope: this stands up the *ETL runner* against the existing Supabase warehouse.
 > It does **not** migrate or restore the database — for that see
@@ -100,9 +102,27 @@ exercised by the first real run in §7.)
 
 ---
 
-## 6. Register the nightly (Windows Task Scheduler)
+## 6. The nightly of record: GitHub Actions
 
-Matches the current host's task (`engineering_db_daily_etl`, daily 06:00):
+Since 2026-07-21 the nightly runs as the **`etl-nightly` workflow**
+(`.github/workflows/etl-nightly.yml`) on a cron of `15 11 * * *` UTC
+(06:15 CDT / 05:15 CST — the laptop task's old 06:00 CT slot). Secrets live in
+the repo's **Actions secrets** (`gh secret list`) and mirror `.env`; the full
+run log is uploaded as a workflow artifact, and the email summary +
+healthchecks.io dead-man switch work exactly as they did on the laptop.
+
+- Manual/catch-up run: *Actions → etl-nightly → Run workflow* (or
+  `gh workflow run etl-nightly.yml`).
+- The rollout was phased: manual read-only preflight → manual full run →
+  cron + laptop task disabled **in the same change** (so laptop and Actions
+  never both ran against prod). The workflow file header records the history.
+- The old Windows task (`engineering_db_daily_etl`) is **disabled, not
+  deleted** — it is the tested fallback. Re-enable it (and disable the cron)
+  only as a pair.
+
+## 6b. Fallback: register the nightly on a host (Windows Task Scheduler)
+
+Matches the retired laptop task (`engineering_db_daily_etl`, daily 06:00):
 
 ```powershell
 $py   = "C:\Users\MichaelMast\Projects\engineering_db\.venv\Scripts\python.exe"

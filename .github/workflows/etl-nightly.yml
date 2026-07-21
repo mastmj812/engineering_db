@@ -1,21 +1,35 @@
-# Nightly oilgas ETL on GitHub Actions (moves scripts.run_daily off the laptop).
+# Nightly oilgas ETL on GitHub Actions (moved scripts.run_daily off the laptop).
 #
-# ROLLOUT PHASES (see docs/cold_start.md):
-#   Phase 1 (NOW): manual trigger only (workflow_dispatch) + a read-only
-#                  preflight. Proves secrets + connectivity. Zero writes.
-#   Phase 2:       add the `python -m scripts.run_daily` step (still manual).
-#   Phase 3:       add the `schedule:` cron AND disable the laptop Task
-#                  Scheduler task in the SAME change, so they never both run
-#                  against prod.
+# ROLLOUT (see docs/cold_start.md §6):
+#   Phase 1 (2026-07-08): manual trigger + read-only preflight. DONE.
+#   Phase 2 (2026-07-08): manual `python -m scripts.run_daily`. DONE — first
+#                         attempts hit the pre-hardening Supabase restart
+#                         window; upsert_batch_resilient / Enverus timeouts /
+#                         the gated production_forecast refresh landed after.
+#   Phase 3 (2026-07-21): `schedule:` cron live; the laptop Task Scheduler
+#                         task (`engineering_db_daily_etl`) was DISABLED in
+#                         the same change so they never both run against prod.
+#
+# Schedule: 11:15 UTC = 06:15 CDT / 05:15 CST — same slot the laptop task
+# used (daily 06:00 CT), so vendor nightly exports (Novi bulk, Enverus) are
+# already landed. Cron is UTC; the winter hour shift is accepted. Minute :15
+# avoids GitHub's top-of-the-hour scheduling congestion.
 #
 # Connectivity: DB_HOST is the Supabase SESSION POOLER (IPv4, port 5432) - the
 # direct db.<ref>.supabase.co endpoint is IPv6-only and unreachable from Actions
 # runners. etl/db.py already sets TCP keepalives + `SET statement_timeout=0` per
-# session, so refresh_all() survives the pooler.
+# session, so curated refreshes survive the pooler.
+#
+# Timeout: a normal night is ~15 min; a new Novi forecast vintage adds the
+# curated.production_forecast refresh (~45 min observed 2026-07-14/21), and a
+# fresh runner always does the full ~1.6 GB Novi bulk download. 180 min covers
+# all of that with margin while still killing a genuinely wedged run.
 name: etl-nightly
 
 on:
-  workflow_dispatch: {}   # manual "Run workflow" button only - NO schedule yet
+  workflow_dispatch: {}   # manual re-run / catch-up
+  schedule:
+    - cron: "15 11 * * *"
 
 # Least privilege: talks to Supabase, needs no write access to the repo.
 permissions:
@@ -47,6 +61,11 @@ jobs:
       NOVI_PASSWORD: ${{ secrets.NOVI_PASSWORD }}
       NOVI_SCOPE: ${{ secrets.NOVI_SCOPE }}
       NOVI_VERSION: ${{ secrets.NOVI_VERSION }}
+      # Novi INTEL Snowflake share — read-only new-report check
+      # (etl/intel_sf/detect.py; step fails without these).
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_PAT: ${{ secrets.SNOWFLAKE_PAT }}
       NOTIFY_EMAIL_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
       NOTIFY_EMAIL_FROM: ${{ secrets.NOTIFY_EMAIL_FROM }}
       NOTIFY_SMTP_HOST: ${{ secrets.NOTIFY_SMTP_HOST }}
@@ -63,9 +82,9 @@ jobs:
           cache-dependency-path: requirements.txt
       - run: pip install -r requirements.txt
 
-      # PHASE 1: read-only preflight. Confirms the runner can reach Supabase
-      # with the configured secrets and that the warehouse is populated. No
-      # writes, no ETL - safe to run any number of times.
+      # Read-only preflight: confirms the runner can reach Supabase with the
+      # configured secrets before any write happens. Cheap, and separates
+      # "secrets/connectivity broke" from "the ETL itself broke" at a glance.
       - name: Preflight (read-only connectivity)
         run: |
           python - <<'PY'
@@ -80,8 +99,19 @@ jobs:
           print("PREFLIGHT OK")
           PY
 
-      # PHASE 2: the real nightly ETL. Writes to prod (raw_novi, curated,
+      # The real nightly ETL. Writes to prod (raw_novi, raw_enverus, curated,
       # advances meta.etl_log). run_daily isolates each step in its own
       # try/except and emails a summary + pings healthchecks at the end.
       - name: Run daily ETL
         run: python -m scripts.run_daily
+
+      # The dated run log, kept even (especially) on failure. The email
+      # summary covers the happy path; this is the full trace for debugging.
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-daily-log
+          path: logs/*.log
+          retention-days: 30
+          if-no-files-found: ignore
