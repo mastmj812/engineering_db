@@ -621,6 +621,7 @@ COMMENT ON COLUMN curated.intel_arps.day_start IS 'First producing day covered b
 COMMENT ON COLUMN curated.intel_arps.day_stop IS 'Last producing day covered by this segment.';
 COMMENT ON COLUMN curated.intel_arps.planned_well_id IS 'Share well_ref of the planned well (text, format PW-{id}); lineage back to raw_intel.';
 COMMENT ON COLUMN curated.intel_arps.well_inventory_name IS 'Always NULL: no source in the Snowflake share. Column retained for the legacy output contract.';
+COMMENT ON COLUMN curated.intel_arps.stick_id IS 'Stable suite stick key (raw_intel.stick_id_map); joins curated.erebor_locations.stick_id / curated.intel_locations.stick_id. NULL for forecast names with no well_master stick. Added sql/34.';
 
 -- curated.intel_forecast (view, sql/29)
 COMMENT ON COLUMN curated.intel_forecast.basin IS 'Basin slug: delaware or midland.';
@@ -630,6 +631,7 @@ COMMENT ON COLUMN curated.intel_forecast.mop IS 'Approximate month on production
 COMMENT ON COLUMN curated.intel_forecast.oil IS 'Forecast oil rate for the month, bbl/d (Novi P50).';
 COMMENT ON COLUMN curated.intel_forecast.gas IS 'Forecast gas rate for the month, Mcf/d (Novi P50).';
 COMMENT ON COLUMN curated.intel_forecast.water IS 'Forecast water rate for the month, bbl/d (Novi P50).';
+COMMENT ON COLUMN curated.intel_forecast.stick_id IS 'Stable suite stick key (raw_intel.stick_id_map); joins curated.erebor_locations.stick_id / curated.intel_locations.stick_id. NULL for forecast names with no well_master stick. Added sql/34.';
 
 -- curated.intel_formation_blueox (matview, sql/19)
 COMMENT ON COLUMN curated.intel_formation_blueox.stick_id IS 'Novi Intelligence stick id (curated.intel_locations.stick_id); unique key.';

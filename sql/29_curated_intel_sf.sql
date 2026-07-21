@@ -273,7 +273,9 @@ COMMENT ON MATERIALIZED VIEW curated.intel_locations IS
 -- novi_wellname resolves through planned_well (share arps covers planned wells
 -- only, same as the old layer's effective coverage). planned_well_id exposes
 -- the share's well_ref (text, lineage); well_inventory_name has no share
--- source -> NULL.
+-- source -> NULL. stick_id (sql/34) is the stable suite key -> joins
+-- erebor_locations.stick_id; LEFT JOIN so orphan forecast names (no
+-- well_master stick) keep their rows with stick_id NULL.
 -- -----------------------------------------------------------------------------
 DROP VIEW IF EXISTS curated.intel_arps CASCADE;
 CREATE VIEW curated.intel_arps AS
@@ -292,11 +294,14 @@ SELECT af.basin_slug                     AS basin,
        af.day_start,
        af.day_stop,
        af.well_ref                       AS planned_well_id,
-       NULL::text                        AS well_inventory_name
+       NULL::text                        AS well_inventory_name,
+       sid.stick_id
 FROM raw_intel.arps_forecast af
 JOIN raw_intel.planned_well pw
   ON af.well_ref = 'PW-' || pw.planned_well_id::text
- AND af.report_name = pw.report_name;
+ AND af.report_name = pw.report_name
+LEFT JOIN raw_intel.stick_id_map sid
+  ON sid.well_ref = af.well_ref;
 
 -- -----------------------------------------------------------------------------
 -- intel_forecast — monthly production forecast passthrough (planned wells).
@@ -312,11 +317,14 @@ SELECT pf.basin_slug        AS basin,
        (pf.forecast_day / 30)::int AS mop,
        pf.oil_per_day       AS oil,
        pf.gas_per_day       AS gas,
-       pf.water_per_day     AS water
+       pf.water_per_day     AS water,
+       sid.stick_id
 FROM raw_intel.production_forecast pf
 JOIN raw_intel.planned_well pw
   ON pw.planned_well_id = pf.planned_well_id
- AND pw.report_name = pf.report_name;
+ AND pw.report_name = pf.report_name
+LEFT JOIN raw_intel.stick_id_map sid
+  ON sid.well_ref = 'PW-' || pw.planned_well_id::text;
 
 -- -----------------------------------------------------------------------------
 -- curated.refresh_all() is deliberately NOT redefined here (sql/12 used to,
