@@ -16,6 +16,16 @@
 >   compute-from-final-sheets rule).
 > This supersedes §1.1's "all-zero only if the deal genuinely has no NGL" and the `ngl_basis`
 > value list in §1.7 for our drops until Blue Ox issues a revised contract.
+>
+> **Amendment (2026-07-22, M. Mast — pending Blue Ox ack) — zone `reserve_category`
+> vocabulary:** the zone-level value `RES` is renamed **`UPSIDE`**, so the zone label uses the
+> same PUD/UPSIDE vocabulary as the per-well inventory `category` column (the earlier category
+> amendment: `PDP` / `PUD` / `UPSIDE`) and as narvi's per-well handoff declaration. Semantics
+> are unchanged — `UPSIDE` = non-proven, carried as unscheduled upside, exactly what `RES`
+> meant. In terms of the contract text below: wherever §1 or the acceptance gates say
+> `reserve_category` ∈ {`PUD`, `RES`}, read {`PUD`, `UPSIDE`}. anduin emits `PUD | UPSIDE`
+> from 2026-07-22 drops onward and refuses `RES` at build time; Blue Ox's loader must accept
+> `UPSIDE` wherever it accepted `RES`.
 
 Instructions for the engineering deliverable that feeds a Blue Ox deal underwrite and
 reproduces the engineering exhibit deck (type-curve and historical-production slides). This is
