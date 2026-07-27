@@ -26,6 +26,24 @@
 > `reserve_category` ∈ {`PUD`, `RES`}, read {`PUD`, `UPSIDE`}. anduin emits `PUD | UPSIDE`
 > from 2026-07-22 drops onward and refuses `RES` at build time; Blue Ox's loader must accept
 > `UPSIDE` wherever it accepted `RES`.
+>
+> **Amendment (2026-07-24, M. Mast — pending Blue Ox ack) — declared geologic risking:**
+> after geologic review the engineer may apply per-stream scalar multipliers (oil / gas /
+> water MULs, e.g. 0.85) to a zone's type curve. Risked volumes are **baked into the
+> delivered zone sheets** so the economic model inherits the geologic haircut with no action
+> on Blue Ox's side — and the risking is always **declared, never silent**:
+> - `manifest` `risking` reads `unrisked` (verbatim as before) when every curve ships at
+>   MUL 1.0, and **`geologic_multipliers_applied`** when any zone's volumes carry a MUL.
+> - `curve_params` gains a **`risk_mult`** column (between `dmin` and `notes`; 1.0 on
+>   unrisked rows) and `qi_basis` reads **`fitted_qi_risked`** on risked rows — the delivered
+>   `qi` already includes the MUL, consistent with the zone-sheet volumes and Block B sums.
+> - Block B EURs are computed from the delivered (risked) columns per the
+>   compute-from-final-sheets rule, so the ±0.1% reconciliation gate is unchanged.
+> - The MUL scales magnitude only: `b_factor`, `di`, `dmin` are the unrisked shape params
+>   (Arps is homogeneous in qi, so param-level and volume-level scaling agree exactly).
+> This narrows Principle 3's "no risking" and §1.7's `risking = unrisked` to mean **no
+> commercial risking and no undeclared risking** — declared geologic MULs ride the drop.
+> Blue Ox's loader must tolerate the extra `curve_params` column and the new `risking` token.
 
 Instructions for the engineering deliverable that feeds a Blue Ox deal underwrite and
 reproduces the engineering exhibit deck (type-curve and historical-production slides). This is
