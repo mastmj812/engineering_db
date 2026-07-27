@@ -258,6 +258,7 @@ CREATE TABLE raw_novi."WellDetails" (
     "LowerPerforation" int8 NULL,
     "PerforationInterval" int8 NULL,
     "WellboreLateralLength" int4 NULL,
+    "IsSyntheticApi" bool NOT NULL,
     "CreatedAt" timestamp NULL,
     "ModifiedAt" timestamp NULL,
     "DeletedAt" timestamp NULL,

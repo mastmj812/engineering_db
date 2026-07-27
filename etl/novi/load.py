@@ -257,9 +257,44 @@ def full_reconcile_table(bulk_dir: Path, table_name: str) -> dict[str, int]:
     return {"upserted": upserted, "deleted": deleted}
 
 
+def check_schema_drift(bulk_dir: Path) -> None:
+    """Fail fast, with the full drift picture, before any table is touched.
+
+    Novi adds columns to the bulk export without notice (WellDetails gained
+    IsSyntheticApi with the 2026-07-24 export). The COPY column list comes
+    from the TSV header, so the load fails on the first drifted table —
+    hiding any drift in tables that load after it. Compare every TSV header
+    against the live raw_novi columns up front and report all drift in one
+    error, so a single nightly failure yields the complete ALTER list
+    (sql/33 / sql/36 pattern).
+    """
+    drift: dict[str, list[str]] = {}
+    with get_connection() as conn, conn.cursor() as cur:
+        for t in MVP_TABLES:
+            cur.execute(
+                "SELECT column_name FROM information_schema.columns "
+                "WHERE table_schema = 'raw_novi' AND table_name = %s",
+                (t,),
+            )
+            live = {r[0] for r in cur.fetchall()}
+            if not live:
+                continue  # table not created yet; the load itself surfaces that
+            new = [c for c in _read_header(_tsv_path(bulk_dir, t)) if c not in live]
+            if new:
+                drift[t] = new
+    if drift:
+        detail = "; ".join(f"{t}: {', '.join(cols)}" for t, cols in sorted(drift.items()))
+        raise RuntimeError(
+            f"Novi export has columns missing from raw_novi ({detail}). "
+            f"Add them with an ALTER TABLE migration (see sql/36) and "
+            f"regenerate sql/02 before loading."
+        )
+
+
 def load_all(bulk_dir: Path, *, force_full: bool = False) -> dict[str, int]:
     """Load every MVP table; incremental for the large tables (unless
     `force_full`), full TRUNCATE+COPY for the rest. Returns {table: rows}."""
+    check_schema_drift(bulk_dir)
     out: dict[str, int] = {}
     for t in MVP_TABLES:
         if t in _INCREMENTAL_KEYS and not force_full:
