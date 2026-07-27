@@ -43,15 +43,22 @@
 --   defined and simply errors until the matview is recreated (no rebuild-order
 --   change needed).
 --
--- Idempotent: CREATE OR REPLACE.
+-- Idempotent: CREATE OR REPLACE (+ a guard dropping the retired numeric
+-- overload — psycopg binds Python floats as float8, and float8->numeric
+-- is not an implicit cast, so the numeric signature was unreachable from
+-- both narvi and anduin; numeric->float8 IS implicit, so float8 params
+-- accept every caller).
 -- =============================================================================
+
+DROP FUNCTION IF EXISTS curated.intel_representative_sticks(
+    geometry, text, numeric, numeric, numeric);
 
 CREATE OR REPLACE FUNCTION curated.intel_representative_sticks(
     subject_geom       geometry,                 -- planned location sticks/legs, SRID 4326
     subject_bench      text,                     -- formation_blueox code, e.g. 'BS1_S'
-    subject_lateral_ft numeric,                  -- completed lateral of the planned well
-    radius_m           numeric DEFAULT 1609,     -- 1 mi
-    lateral_tol        numeric DEFAULT 0.25      -- +/- fraction of subject lateral
+    subject_lateral_ft double precision,         -- completed lateral of the planned well
+    radius_m           double precision DEFAULT 1609,  -- 1 mi
+    lateral_tol        double precision DEFAULT 0.25   -- +/- fraction of subject lateral
 ) RETURNS TABLE (
     stick_id  bigint,
     unique_id text,
@@ -80,7 +87,7 @@ CREATE OR REPLACE FUNCTION curated.intel_representative_sticks(
     ORDER BY dist_m
 $$ LANGUAGE sql STABLE;
 
-COMMENT ON FUNCTION curated.intel_representative_sticks(geometry, text, numeric, numeric, numeric) IS
+COMMENT ON FUNCTION curated.intel_representative_sticks(geometry, text, double precision, double precision, double precision) IS
 'Representative novi_intel PUD/RES sticks for one planned location: same formation_blueox bench, within radius_m (geography, default 1 mi), intel ll_ft within +/- lateral_tol (default 25%) of subject_lateral_ft (band skipped when subject lateral is NULL/<=0). Nearest-first. Single source of truth for the Blue Ox TC-vs-Novi comparison selection: narvi persists results per generated well at scenario save (detail->novi_rep, mode=neighborhood; curated pud/res sticks are their own set, mode=self); anduin calls it as a legacy fallback. n<3 = caller-side low-n flag; the function never widens the radius. Record curated.intel_vintage_date() beside persisted results. sql/35.';
 
 -- Verification (EXPLAIN must show idx_intel_locations_wellstick_geog):
