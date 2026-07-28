@@ -24,6 +24,7 @@ Run as a module:
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -257,18 +258,62 @@ def full_reconcile_table(bulk_dir: Path, table_name: str) -> dict[str, int]:
     return {"upserted": upserted, "deleted": deleted}
 
 
-def check_schema_drift(bulk_dir: Path) -> None:
-    """Fail fast, with the full drift picture, before any table is touched.
+# Column types the auto-add path will accept from Novi's shipped schema.
+# Anything outside this list falls back to the manual sql/NN migration path.
+_SAFE_TYPE_RE = re.compile(
+    r"^(bool|date|text|uuid|int2|int4|int8|float4|float8"
+    r"|numeric(\(\d+,\s*\d+\))?|varchar(\(\d+\))?"
+    r"|timestamp(tz)?|timestamp with(out)? time zone)$"
+)
+_IDENT_RE = re.compile(r"^[A-Za-z0-9_]+$")
 
-    Novi adds columns to the bulk export without notice (WellDetails gained
-    IsSyntheticApi with the 2026-07-24 export). The COPY column list comes
-    from the TSV header, so the load fails on the first drifted table —
-    hiding any drift in tables that load after it. Compare every TSV header
-    against the live raw_novi columns up front and report all drift in one
-    error, so a single nightly failure yields the complete ALTER list
-    (sql/33 / sql/36 pattern).
+
+def _shipped_column_types(bulk_dir: Path) -> dict[str, dict[str, str]]:
+    """Parse Novi's shipped schema.postgres.sql into {table: {column: base_type}}.
+
+    The base type is the declared type with NOT NULL / DEFAULT stripped —
+    auto-added columns are always nullable (the raw layer is TRUNCATE+COPY'd
+    nightly, so they are fully populated from the next load; sql/33 convention).
     """
-    drift: dict[str, list[str]] = {}
+    schema_path = bulk_dir / "schema.postgres.sql"
+    if not schema_path.exists():
+        return {}
+    schema = schema_path.read_text(encoding="utf-8")
+    out: dict[str, dict[str, str]] = {}
+    for m in re.finditer(r'CREATE TABLE\s+"(\w+)"\s*\((.*?)\n\);', schema, re.S):
+        cols: dict[str, str] = {}
+        for line in m.group(2).splitlines():
+            cm = re.match(r'\s*"(\w+)"\s+(.+?),?\s*$', line)
+            if cm:
+                base = re.sub(
+                    r"\s+(NOT\s+NULL|NULL|DEFAULT\s+.*)$", "", cm.group(2), flags=re.I
+                ).strip()
+                cols[cm.group(1)] = base
+        out[m.group(1)] = cols
+    return out
+
+
+def reconcile_schema_drift(bulk_dir: Path) -> dict[str, list[str]]:
+    """Detect vendor schema drift up front and auto-apply additive columns.
+
+    Novi adds columns to the bulk export without notice (IsSyntheticApi
+    2026-07-24, LastRefracDate 2026-07-28). The COPY column list comes from
+    the TSV header, so a missing column fails the load. Before any table is
+    touched, compare every TSV header against the live raw_novi columns:
+
+    - NEW column, declared in the shipped schema.postgres.sql with a
+      whitelisted type -> ALTER TABLE ADD COLUMN IF NOT EXISTS, nullable,
+      logged loudly. Returns {table: [added columns]}. Regenerate sql/02 and
+      commit a numbered sql/NN mirror of the ALTER when convenient — the
+      live DB is already correct.
+    - NEW column absent from the shipped schema or with an unexpected
+      type -> RuntimeError (manual sql/NN migration; sql/36 pattern).
+    - Column REMOVED from the TSV -> RuntimeError. A vendor dropping a
+      column is a contract change that needs eyes, not automation.
+    """
+    shipped = _shipped_column_types(bulk_dir)
+    added: dict[str, list[str]] = {}
+    problems: list[str] = []
     with get_connection() as conn, conn.cursor() as cur:
         for t in MVP_TABLES:
             cur.execute(
@@ -279,22 +324,45 @@ def check_schema_drift(bulk_dir: Path) -> None:
             live = {r[0] for r in cur.fetchall()}
             if not live:
                 continue  # table not created yet; the load itself surfaces that
-            new = [c for c in _read_header(_tsv_path(bulk_dir, t)) if c not in live]
-            if new:
-                drift[t] = new
-    if drift:
-        detail = "; ".join(f"{t}: {', '.join(cols)}" for t, cols in sorted(drift.items()))
+            header = _read_header(_tsv_path(bulk_dir, t))
+            removed = live - set(header) - {"ingested_at"}
+            if removed:
+                problems.append(f"{t}: columns removed from export: {sorted(removed)}")
+            for c in header:
+                if c in live:
+                    continue
+                declared = shipped.get(t, {}).get(c)
+                if declared is None:
+                    problems.append(f"{t}.{c}: new in TSV but not in shipped schema")
+                elif not _SAFE_TYPE_RE.match(declared) or not _IDENT_RE.match(c):
+                    problems.append(f"{t}.{c}: unexpected declared type {declared!r}")
+                else:
+                    cur.execute(
+                        f'ALTER TABLE raw_novi."{t}" '
+                        f'ADD COLUMN IF NOT EXISTS "{c}" {declared}'
+                    )
+                    added.setdefault(t, []).append(c)
+                    logger.warning(
+                        "Novi schema drift: auto-added raw_novi.%s.%s (%s, nullable). "
+                        "Regenerate sql/02 and commit a numbered ALTER to match.",
+                        t,
+                        c,
+                        declared,
+                    )
+        conn.commit()
+    if problems:
         raise RuntimeError(
-            f"Novi export has columns missing from raw_novi ({detail}). "
-            f"Add them with an ALTER TABLE migration (see sql/36) and "
-            f"regenerate sql/02 before loading."
+            "Novi export drift needs manual review (" + "; ".join(problems) + "). "
+            "Handle with a numbered sql/NN migration (sql/36 pattern) and "
+            "regenerate sql/02 before loading."
         )
+    return added
 
 
 def load_all(bulk_dir: Path, *, force_full: bool = False) -> dict[str, int]:
     """Load every MVP table; incremental for the large tables (unless
     `force_full`), full TRUNCATE+COPY for the rest. Returns {table: rows}."""
-    check_schema_drift(bulk_dir)
+    reconcile_schema_drift(bulk_dir)
     out: dict[str, int] = {}
     for t in MVP_TABLES:
         if t in _INCREMENTAL_KEYS and not force_full:
