@@ -135,8 +135,32 @@ comparison figure in the dossier is reproducible from the drop.
   The Novi series is a **screen/benchmark only** — the zone-sheet vectors
   remain the sole economic input (no change to §3 gates).
 
+## 8. Analog-sheet well coordinates — **NEW (2026-07-29)** (tolerated)
+
+Added so Blue Ox can map the type-curve (analog) wells without a separate
+header pull.
+
+- **What:** every per-zone analog sheet (`<Zone> meta`, the
+  `per_well_summary` block) gains six columns appended after the existing
+  twelve (existing names/order unchanged):
+
+  | Column | Units | Meaning |
+  |---|---|---|
+  | `surface_lat`, `surface_lon` | deg (WGS84) | surface hole location |
+  | `heel_lat`, `heel_lon` | deg (WGS84) | landing point (start of lateral; wellstick SHL→LP→MP→BHL vertex 2) |
+  | `toe_lat`, `toe_lon` | deg (WGS84) | bottomhole location |
+
+  Values rounded to 6 decimals (~0.1 m). Wells with no wellstick geometry
+  carry blank heel cells but keep surface/toe; wells with no geometry at all
+  carry six blanks — blank cells inside the block are sanctioned, matching
+  the §6 inventory-geometry precedent. Note the lat-before-lon ordering
+  (differs from §6's `heel_a_lon, heel_a_lat` — that block's ordering was
+  already shipped and stands).
+- **Loader impact:** extra analog-sheet columns *tolerated* (ignore
+  unknowns). The api-column-uniqueness rule (§1.4) is unaffected.
+
 ---
 
-*Column/sheet/key names in §6–§7 are final once the first workbook carrying
+*Column/sheet/key names in §6–§8 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
