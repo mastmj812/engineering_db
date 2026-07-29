@@ -146,16 +146,19 @@ header pull.
 
   | Column | Units | Meaning |
   |---|---|---|
-  | `surface_lat`, `surface_lon` | deg (WGS84) | surface hole location |
-  | `heel_lat`, `heel_lon` | deg (WGS84) | landing point (start of lateral; wellstick SHL→LP→MP→BHL vertex 2) |
-  | `toe_lat`, `toe_lon` | deg (WGS84) | bottomhole location |
+  | `surface_lon`, `surface_lat` | deg (WGS84) | surface hole location |
+  | `heel_lon`, `heel_lat` | deg (WGS84) | landing point (start of lateral; wellstick SHL→LP→MP→BHL vertex 2) |
+  | `toe_lon`, `toe_lat` | deg (WGS84) | bottomhole location |
 
   Values rounded to 6 decimals (~0.1 m). Wells with no wellstick geometry
   carry blank heel cells but keep surface/toe; wells with no geometry at all
   carry six blanks — blank cells inside the block are sanctioned, matching
-  the §6 inventory-geometry precedent. Note the lat-before-lon ordering
-  (differs from §6's `heel_a_lon, heel_a_lat` — that block's ordering was
-  already shipped and stands).
+  the §6 inventory-geometry precedent. **Ordering standardized 2026-07-29
+  (anduin PR #32):** lon-first pairs drop-wide, matching §6's
+  `heel_a_lon, heel_a_lat` and WKT's inherent `lon lat` order. The first §8
+  drops (2026-07-29 toucan/bro_time re-exports) shipped lat-first
+  (`surface_lat, surface_lon, …`) — a loader that read those must key on the
+  renamed headers from the next drop onward.
 - **Loader impact:** extra analog-sheet columns *tolerated* (ignore
   unknowns). The api-column-uniqueness rule (§1.4) is unaffected.
 
