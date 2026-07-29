@@ -159,6 +159,30 @@ header pull.
 - **Loader impact:** extra analog-sheet columns *tolerated* (ignore
   unknowns). The api-column-uniqueness rule (§1.4) is unaffected.
 
+**2026-07-29 follow-up — mid-lateral heel defect + `wellstick_wkt` column**
+(reported by S. Murray on the bro_time drop; anduin PR #31):
+
+- **Defect:** the warehouse wellstick builder removes NULL vertices, so a
+  well whose Novi landing point is missing carries a 3-vertex SHL→MP→BHL
+  stick — the first drops' "heel" (stick vertex 2) was the **mid-lateral
+  point** on those wells (2,443 of ~61.7k sticks; e.g. Echo B 2254H heel→toe
+  5,132 ft vs 10,675 ft stated lateral). 110 further 2-vertex sticks put the
+  toe at vertex 2.
+- **Fix (values, not names):** `heel_lat`/`heel_lon` now emit only when the
+  stick carries all 4 vertices (vertex 2 = landing point guaranteed);
+  otherwise blank per the sanctioned-blanks rule. Do not trust heel columns
+  from workbooks exported before 2026-07-29 (toucan, bro_time) — re-drops
+  supersede them.
+- **New column `wellstick_wkt`** appended after `toe_lon`: the full wellbore
+  polyline as WKT `LINESTRING(lon lat, …)`, WGS84, 6 decimals — the
+  authoritative geometry (identical to the anduin map render), faithful at
+  any vertex count. Parse with `shapely.wkt.loads`; prefer it over the
+  scalar pairs wherever the actual path matters. Blank when the well has no
+  stick at all.
+- **Loader impact:** *tolerated* (one more unknown column). Plotting
+  guidance: use `wellstick_wkt` verbatim; heel→toe scalar segments are only
+  valid where the heel cells are populated.
+
 ---
 
 *Column/sheet/key names in §6–§8 are final once the first workbook carrying
