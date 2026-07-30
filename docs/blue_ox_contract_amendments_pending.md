@@ -186,8 +186,33 @@ header pull.
   guidance: use `wellstick_wkt` verbatim; heel→toe scalar segments are only
   valid where the heel cells are populated.
 
+## 9. Per-basin lateral-length tolerance for the Novi representative set — **NEW (2026-07-30)** (tolerated)
+
+Amends the §7 selection rule. Midland per-foot productivity is near
+length-invariant with increasing lateral length, so shorter analogs remain
+representative there; Delaware per-foot degrades with length and keeps the
+tight band. Motivating case: a Midland deal planning 3-mile laterals
+(15,800 ft) over Novi inventory that is entirely ≤2-mile within 1 mi — the
+flat ±25 % band matched zero sticks in every zone.
+
+- **What:** the intel-lateral tolerance in the §7 neighborhood rule is now
+  **per-basin**: ±25 % (Delaware, and any unresolved basin) / **±40 %
+  (Midland)**. Basin resolves from the modal `basin` of the novi_intel
+  sticks within 5 mi of the subject well. Radius (1 mi), the same-bench
+  rule, the n < 3 `low_n` flag, and never-silently-widened semantics are
+  unchanged — the band is basin-calibrated, not removed.
+- **Declaration:** `novi_comparison_meta.lateral_tol` (per zone) is the
+  authoritative value and now varies by basin. Manifest
+  `novi_selection_lateral_tol` still declares the single value on a
+  single-basin deal (the practical case); a mixed-basin deal declares the
+  sentinel string `per_zone_see_novi_comparison_meta` instead of one
+  zone's number.
+- **Loader impact:** *tolerated* — the meta column always carries the real
+  per-zone value; a loader reading the manifest key must accept the
+  sentinel string (or prefer the meta column).
+
 ---
 
-*Column/sheet/key names in §6–§8 are final once the first workbook carrying
+*Column/sheet/key names in §6–§9 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
