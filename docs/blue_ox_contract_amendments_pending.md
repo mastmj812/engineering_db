@@ -211,8 +211,40 @@ flat ±25 % band matched zero sticks in every zone.
   per-zone value; a loader reading the manifest key must accept the
   sentinel string (or prefer the meta column).
 
+## 10. Per-well as-drilled `lateral_azimuth_deg` on adopted rows — **NEW (2026-08-03)** (tolerated)
+
+Follow-up to the toucan azimuth reissue (Blue Ox query 2026-07-31). Blue Ox
+observed that `inventory.lateral_azimuth_deg` carried zero spread within each
+unit — one number stamped per unit rather than a per-well as-drilled figure.
+That read was correct; the semantics change in their favor.
+
+- **What — `inventory.lateral_azimuth_deg`:** on **adopted rows** (PDP
+  producers and curated Novi PUD/RES sticks) the column now carries each
+  well's **own as-built bearing** (geodesic-consistent, computed from the
+  well's actual leg geometry in a conformal projection, folded to
+  [0°, 180°)). Expect real spread within a unit (e.g. toucan_2 PDPs
+  55.5–57.4°). Generated (planned-new) rows keep the uniform plan azimuth
+  as before.
+- **What — `dsu_meta.azimuth_deg`:** now defined as the azimuth of the
+  **planned sticks** (generated + adopted PUD/RES — the development
+  direction), never steered by legacy producers that happen to sit in the
+  unit (existing wells only define it on a pure-PDP unit with no plan). It
+  remains **the** projection frame: every `gunbarrel_offset_ft` /
+  `gunbarrel_offset_b_ft` in the unit — including adopted rows whose own
+  bearing differs — is the §6 signed projection on this single axis, so the
+  §6 reproducibility rule is now guaranteed even on units where existing
+  wells run off the plan direction.
+- **Consequence:** `inventory.lateral_azimuth_deg` may legitimately differ
+  from `dsu_meta.azimuth_deg` on adopted rows. For projection math always
+  use `dsu_meta.azimuth_deg`; the per-well column is descriptive
+  (as-drilled orientation).
+- **Loader impact:** *tolerated* — no columns added, renamed, or moved.
+  Only a consumer that assumed per-well azimuth == unit azimuth (or used
+  the per-well column as the projection axis) needs to switch to
+  `dsu_meta.azimuth_deg` for reconstruction.
+
 ---
 
-*Column/sheet/key names in §6–§9 are final once the first workbook carrying
+*Column/sheet/key names in §6–§10 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
