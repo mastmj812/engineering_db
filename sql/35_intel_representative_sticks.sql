@@ -36,6 +36,12 @@
 --   idx_intel_locations_wellstick_geog (wellstick_geom::geography). LANGUAGE
 --   sql STABLE so the planner inlines the body; EXPLAIN on a call must show
 --   that index, never a Seq Scan of curated.intel_locations.
+--   PostGIS references are schema-qualified (extensions.geography /
+--   extensions.ST_*): PG 17 runs CREATE/REFRESH MATERIALIZED VIEW under a
+--   restricted search_path (pg_catalog only), and the body is re-parsed at
+--   inlining time — unqualified names break any matview calling this
+--   function (sql/38 was the first). Same types/operators, same index match,
+--   inlining preserved.
 --
 -- DEPENDS ON: curated.intel_locations (sql/29), curated.intel_formation_blueox
 --   (sql/19), sql/26 expression index. Plain function — survives matview
@@ -71,13 +77,15 @@ CREATE OR REPLACE FUNCTION curated.intel_representative_sticks(
         il.unique_id,
         il.category,
         il.ll_ft::numeric,
-        ST_Distance(il.wellstick_geom::geography, subject_geom::geography)::numeric AS dist_m
+        extensions.ST_Distance(il.wellstick_geom::extensions.geography,
+                               subject_geom::extensions.geography)::numeric AS dist_m
     FROM curated.intel_locations il
     JOIN curated.intel_formation_blueox fb USING (stick_id)
     WHERE il.category IN ('PUD', 'RES')
       AND fb.formation_blueox = subject_bench
       AND il.wellstick_geom IS NOT NULL
-      AND ST_DWithin(il.wellstick_geom::geography, subject_geom::geography, radius_m)
+      AND extensions.ST_DWithin(il.wellstick_geom::extensions.geography,
+                                subject_geom::extensions.geography, radius_m)
       AND (
             COALESCE(subject_lateral_ft, 0) <= 0     -- no lateral -> skip the band (documented)
             OR (il.ll_ft IS NOT NULL

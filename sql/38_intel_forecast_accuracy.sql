@@ -204,18 +204,31 @@ rep_counts AS (
     GROUP BY api10
 ),
 actual AS (
-    SELECT p.api10,
+    -- Novi repeats months_on_production when a well's first calendar month has
+    -- zero producing days (403 duplicate (api10, mop) pairs as of 2026-08):
+    -- keep the LATEST calendar row per mop — its cumulative columns include
+    -- the dead month's zeros, which is the cum-through-month the comparison
+    -- wants.
+    SELECT DISTINCT ON (p.api10, p.months_on_production)
+           p.api10,
            p.months_on_production AS mop,
            p.cumulative_oil_bbl::double precision   AS actual_cum_oil,
            p.cumulative_gas_mcf::double precision   AS actual_cum_gas,
            p.cumulative_water_bbl::double precision AS actual_cum_water,
-           p.cumulative_producing_days,
+           -- producing-day cum, self-computed: Novi's cumulative_producing_days
+           -- is 0 on ~74% of well-months (producing_days reported sparsely by
+           -- state). Guard: valid only when every month to date reported it.
+           sum(p.producing_days) OVER w_cum         AS cum_producing_days,
+           count(*) FILTER (WHERE p.producing_days IS NULL) OVER w_cum
+                                                    AS n_pd_null,
            (p.months_on_production =
               max(p.months_on_production) OVER (PARTITION BY p.api10))
                                             AS is_latest_reported
     FROM curated.production p
     JOIN blind b ON b.api10 = p.api10
     WHERE p.months_on_production BETWEEN 1 AND 24
+    WINDOW w_cum AS (PARTITION BY p.api10 ORDER BY p.prod_date)
+    ORDER BY p.api10, p.months_on_production, p.prod_date DESC
 )
 SELECT
     b.api10,
@@ -269,7 +282,9 @@ SELECT
       / NULLIF(COALESCE(fd.cum_water / NULLIF(fd.novi_ll_ft, 0), fp.med_cum_water_perft), 0) - 1
                                                   AS pct_err_water_perft,
     -- diagnostics ----------------------------------------------------------
-    a.cumulative_producing_days / NULLIF(a.mop * 30.44, 0) AS producing_day_frac,
+    CASE WHEN a.n_pd_null = 0
+         THEN a.cum_producing_days / NULLIF(a.mop * 30.44, 0)
+    END                                           AS producing_day_frac,
     a.is_latest_reported
 FROM blind b
 JOIN actual a       ON a.api10  = b.api10
@@ -304,5 +319,5 @@ COMMENT ON COLUMN curated.intel_forecast_accuracy.low_n IS 'Proxy tier with n_re
 COMMENT ON COLUMN curated.intel_forecast_accuracy.ll_ratio IS 'Direct tier: drilled_ll_ft / novi_ll_ft. Decomposition identity: pct_err_perft = (1 + pct_err)/ll_ratio - 1.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil IS 'Direct tier raw cum error: (actual_cum_oil - fcst_cum_oil)/fcst_cum_oil. NULL on proxy rows (rep sticks are not the well).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil_perft IS 'Per-1,000-ft-basis cum error (actually per-ft; the ratio is scale-free): actual bbl/ft vs forecast bbl/ft. The primary bias metric — valid on both tiers.';
-COMMENT ON COLUMN curated.intel_forecast_accuracy.producing_day_frac IS 'cumulative_producing_days / (mop x 30.44): uptime + partial-first-month diagnostic. Low values explain low actual cums without a forecast miss.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.producing_day_frac IS 'sum(producing_days through this month) / (mop x 30.44): uptime + partial-first-month diagnostic. Low values explain low actual cums without a forecast miss. NULL when any month to date lacks reported producing_days (~74% of Novi well-months).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.is_latest_reported IS 'This is the well''s newest posted production month — often incomplete under reporting lag. EXCLUDE from aggregates.';
