@@ -56,6 +56,7 @@ _CONSUMERS = {
     "curated.intel_locations": "erebor Highgrade/facets/export",
     "curated.reconciled_inventory": "narvi remaining inventory, erebor recon status",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
+    "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
 }
 
 
@@ -77,7 +78,11 @@ def _cadence(rel: str, kind: str) -> str:
         gated = " — refresh gated on source change" if rel in _GATED_REFRESH else ""
         note = (
             " (also DROP+recreated by the quarterly intel reload)"
-            if rel in ("curated.intel_locations", "curated.erebor_locations")
+            if rel in (
+                "curated.intel_locations",
+                "curated.erebor_locations",
+                "curated.intel_forecast_accuracy",
+            )
             else ""
         )
         return f"nightly (etl.refresh, {pos}/{len(_CURATED_MATVIEWS)}){gated}{note}"

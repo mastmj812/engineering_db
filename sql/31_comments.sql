@@ -748,3 +748,30 @@ COMMENT ON TABLE raw_novi_intel.basin_outline IS 'Novi-supplied basin outline po
 -- Table-level comments authored at assembly (missing from part C).
 COMMENT ON VIEW curated.intel_arps IS 'Novi Intelligence Arps decline parameters per stick and stream (from raw_intel.arps_forecast). d_nom is NOMINAL per-year decline. Rebuilt quarterly by the intel reload chain.';
 COMMENT ON VIEW curated.intel_forecast IS 'Novi Intelligence monthly production forecast per stick (P50, 30-day months, planned wells only; from raw_intel.production_forecast). Rebuilt quarterly by the intel reload chain.';
+
+
+-- ---------------------------------------------------------------------------
+-- sql/38 mirror: curated.intel_forecast_accuracy + intel_pdp_cliff_date()
+-- (canonical copies live in sql/38; mirrored here so a comment reapply covers
+-- the full catalog)
+-- ---------------------------------------------------------------------------
+
+COMMENT ON FUNCTION curated.intel_pdp_cliff_date() IS
+'Empirical Novi Intelligence PDP recognition cliff: earliest first-prod month where the loaded vintage''s PDP class covers <10% of producing_reference wells (after the last month covered >=50%). 2024-12-01 on the 2025Q3 vintage — ~10 months before the report-label vintage date. Companion to intel_vintage_date(), which stays the reconciled_inventory drift/phantom boundary of record; this function bounds the forecast-accuracy population (sql/38) instead. Recomputes per vintage.';
+
+COMMENT ON MATERIALIZED VIEW curated.intel_forecast_accuracy IS
+'Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer per aligned month (api10, mop 1-24). Population: producing horizontals with first prod >= curated.intel_pdp_cliff_date() (2024-12-01 on 2025Q3 — the vendor''s empirical PDP data cut, ~10 months before the report-label vintage) absent from the Novi PDP class. tier=direct compares against the co-extent-realized stick''s own forecast (raw + per-ft errors); tier=proxy against the per-ft median of intel_representative_sticks (per-ft only; n_rep<3 = low_n). Cum-based percent errors; 30-day forecast months vs calendar actual months (~0.8% drift at mop 6) and the partial first calendar month are documented, accepted biases — mute mop 1-2 in displays and exclude is_latest_reported rows from aggregates. Novi forecast is P50: mean error = bias is the calibration number. Refreshed nightly; DROP-CASCADEd + rebuilt by the quarterly intel reload (apply_intel_forecast_accuracy, before apply_erebor_locations). Calibration target for deal-intake inflation_ratio_band. sql/38.';
+
+COMMENT ON COLUMN curated.intel_forecast_accuracy.api10 IS 'Well key (universal 10-digit API). One blind producer per api10.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.mop IS 'Aligned month index, 1-based: production.months_on_production = intel_forecast.mop (forecast months are 30-day; ~1.6%/yr drift vs calendar, accepted).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.tier IS 'direct = well co-extent-realized a PUD stick (its own forecast; raw + per-ft errors). proxy = no co-extent stick; forecast is the per-ft median of the representative infill set (per-ft errors only).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.stick_id IS 'Direct tier: the matched Novi stick (best match_overlap when the well realizes several). NULL on proxy rows.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.match_overlap IS 'Direct tier: co-extent overlap fraction of the matched stick (reconciled_inventory).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.n_sticks_for_well IS 'Direct tier: number of realized sticks matching this well; >1 = Novi planned more sticks than were drilled (kept on the best match, flagged not summed).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.n_rep IS 'Proxy tier: representative sticks in the benchmark set (same bench, 1 mi, lateral tol 25% delaware / 40% midland). 0 = no benchmark -> NULL errors.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.low_n IS 'Proxy tier with n_rep < 3: benchmark is thin — flag in displays, never hide.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.ll_ratio IS 'Direct tier: drilled_ll_ft / novi_ll_ft. Decomposition identity: pct_err_perft = (1 + pct_err)/ll_ratio - 1.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil IS 'Direct tier raw cum error: (actual_cum_oil - fcst_cum_oil)/fcst_cum_oil. NULL on proxy rows (rep sticks are not the well).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil_perft IS 'Per-1,000-ft-basis cum error (actually per-ft; the ratio is scale-free): actual bbl/ft vs forecast bbl/ft. The primary bias metric — valid on both tiers.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.producing_day_frac IS 'cumulative_producing_days / (mop x 30.44): uptime + partial-first-month diagnostic. Low values explain low actual cums without a forecast miss.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.is_latest_reported IS 'This is the well''s newest posted production month — often incomplete under reporting lag. EXCLUDE from aggregates.';

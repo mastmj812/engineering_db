@@ -70,9 +70,9 @@ report_name slice before loading the new one rather than double-holding.
 
 sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
 `reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
-`erebor_locations`); sql/20 inside apply_reconciled_inventory additionally
-kills sql/23 + `wells_enriched` (the script rebuilds them in order — keep that
-if it's ever refactored).
+`intel_forecast_accuracy`, `erebor_locations`); sql/20 inside
+apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` (the
+script rebuilds them in order — keep that if it's ever refactored).
 
 ```powershell
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast
@@ -80,6 +80,7 @@ python -m scripts.apply_intel_formation_blueox         # sql/19
 python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/21
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
+python -m scripts.apply_intel_forecast_accuracy        # sql/38 (self-applies sql/26 first)
 python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all()
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```

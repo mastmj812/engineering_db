@@ -384,6 +384,9 @@ def settle(seconds: int | None = None) -> int:
 #     corrected formation_blueox, so they refresh right after the base mapping.
 #   - erebor_locations reads wells_enriched (over the matviews above) AND
 #     intel_locations, so it comes after both.
+#   - intel_forecast_accuracy reads producing_reference, production and
+#     intel_locations (plus the quarterly-owned reconciled_inventory), so it
+#     follows erebor_locations; nightly refresh keeps its actuals current.
 #   - production_forecast goes LAST: nothing here depends on it, it is the
 #     one multi-hour refresh (22M-row CONCURRENTLY diff), and running it last
 #     means a slow night can't delay the display-layer views.
@@ -401,6 +404,7 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.type_curve_cohorts",
     "curated.intel_locations",
     "curated.erebor_locations",
+    "curated.intel_forecast_accuracy",
     "curated.production_forecast",
 )
 
@@ -408,7 +412,9 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
 # DROP-CASCADEs them; apply_erebor_locations recreates them). A missing
 # optional matview logs a warning and is skipped instead of failing the run —
 # same degradation refresh_all() encodes for erebor_locations.
-_OPTIONAL_MATVIEWS: frozenset[str] = frozenset({"curated.erebor_locations"})
+_OPTIONAL_MATVIEWS: frozenset[str] = frozenset(
+    {"curated.erebor_locations", "curated.intel_forecast_accuracy"}
+)
 
 
 # Matviews whose refresh is GATED on whether their source raw table changed
