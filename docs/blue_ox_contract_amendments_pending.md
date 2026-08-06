@@ -243,8 +243,47 @@ That read was correct; the semantics change in their favor.
   the per-well column as the projection axis) needs to switch to
   `dsu_meta.azimuth_deg` for reconstruction.
 
+## 11. Same-bench zone splits (WEST/EAST curves on one bench) — **NEW (2026-08-06)** (tolerated, re-drop supersession note)
+
+A wide deal may need two different type curves for the SAME bench because the
+geology differs across the acreage (motivating case: bro_time, where the
+westward and eastward parcels each warranted their own WCB_2 curve built from
+differentiated analog sets). The drop framework has supported this since §4
+(scenario-scoped zones); this section fixes the naming convention and the
+re-drop semantics so a split is an expected shape, not a surprise.
+
+- **What — zone naming:** a split bench ships as two (or more) zones with
+  **distinct zone names**: the bench code plus a short qualifying suffix,
+  e.g. `WCB_2_W` / `WCB_2_E` (≤26 chars, Principle 2 charset). Zone names
+  remain labels; the `bench` column (§6) carries the SAME bench code
+  (`WCB_2`) on both zones' inventory rows — `bench`, not the zone name, is
+  the geologic identity.
+- **What — partition guarantees (build-refused, not conventions):** anduin
+  hard-errors a drop where (a) two zones claim one bench with OVERLAPPING
+  scenario scopes (no location can be double-counted), or (b) a planned well
+  of a claimed bench sits in a scenario NO claiming zone covers (scope can
+  never silently shrink the location count). Every split drop that builds is
+  therefore a clean partition: each planned well of that bench appears in
+  exactly one zone.
+- **What — declaration:** both zones declare `zone_scenario_scope[<zone>]`
+  in manifest Block A (§4) listing the DSUs each curve covers. The §7
+  `novi_comparison` carries one row-set per split zone, each computed only
+  from that zone's scoped wells' representative sets — the benchmark
+  respects the split.
+- **Re-drop supersession:** introducing a split on a previously-shipped deal
+  REPLACES the old single zone (e.g. `WCB_2`) with the suffixed zones
+  (`WCB_2_W` + `WCB_2_E`) — the old sheet/`area` value does not reappear.
+  This is the one sanctioned case where a re-drop's zone list changes
+  without a curve being added or removed economically; the drop email calls
+  it out whenever it happens.
+- **Loader impact:** *tolerated* for a loader that enumerates zones from the
+  workbook (the standing assumption). A loader that keys on zone names being
+  stable across re-drops must treat a declared split as supersession of the
+  old zone name — total location count and Block B reconciliation are
+  unchanged (the split partitions rows; it never adds or drops any).
+
 ---
 
-*Column/sheet/key names in §6–§10 are final once the first workbook carrying
+*Column/sheet/key names in §6–§11 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
