@@ -45,17 +45,31 @@ signals.
 
 ## Gate 1 — Ingest & validate
 
-Input: shapefile of one or more units + the Land depth-restriction terms.
-- Upload via narvi `POST /api/parcels/upload` (.zip) — it reprojects to
-  WGS84 and names parcels. Fail loud on: missing/unknown CRS, invalid or
-  self-intersecting geometry, multipolygon units (split and report), missing
-  required attributes (unit name).
-- Parse depth restrictions into an **explicit allowed-bench list**
-  (`formation_blueox` codes). Land's terms are typically "everything
-  above/below X" — resolve against the basin strat column and echo the
-  resolved list in the dossier for the reviewer to confirm. Example: Midland
-  shallow rights above Wolfcamp A = `AVA_0, AVA_1, AVA_2, BS1_S, BS2_C,
-  BS2_S, BS3_C, BS3_S`.
+Input: unit geometry (shapefile .zip OR GeoPackage .gpkg) + the Land
+depth-restriction terms.
+- Upload via narvi `POST /api/parcels/upload` — it reprojects to WGS84 and
+  names parcels. A .gpkg following the Land convention (single layer,
+  `Type` column DSU/Tract, Toucan v2 schema) maps the DSU rows as parcels,
+  attaches Tract rows spatially, and carries the declared attributes
+  (Min/Max_Depth text, WI/NRI) onto the parcel card. Fail loud on:
+  missing/unknown CRS, invalid or self-intersecting geometry, multipolygon
+  units (split and report), missing required attributes (unit name).
+- Depth restrictions: **declared depths in the land file are NOT local
+  depths** — they are frequently stratigraphic-equivalent depths of a
+  reference log miles away (Toucan: declared 9,515' = ~9,950' correlated
+  on-parcel, ref log 17 mi out). narvi displays the declared text verbatim
+  and never computes on it. The engineer/geologist enters the CORRELATED
+  numeric window (ft TVD from surface) in narvi's deal-terms card with a
+  basis note (who correlated, from what); narvi then soft-flags
+  out-of-window benches (greyed, seeded off, still selectable — enabling
+  one is the recorded override).
+- The reviewer still owns the **explicit allowed-bench list**
+  (`formation_blueox` codes) — narvi's flags are the starting point to
+  confirm/adjust, not the decision. Resolve "everything above/below X"
+  against the basin strat column and echo the resolved list in the dossier.
+  Example: Midland shallow rights above Wolfcamp A = `AVA_0, AVA_1, AVA_2,
+  BS1_S, BS2_C, BS2_S, BS3_C, BS3_S`. Record the correlated window + basis
+  in the dossier decision log alongside the list.
 
 ## Gate 2 — Location source (Novi vs narvi) — EXECUTES
 
