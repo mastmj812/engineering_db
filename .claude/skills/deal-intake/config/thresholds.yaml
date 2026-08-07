@@ -13,7 +13,10 @@ alignment:                        # gate 2 — location source
 bench_inclusion:                  # gate 3
   pdp_count_3mi_min: 3            # >= 3; raw-producer support count, NOT
                                   # type-curve-qualified (see SKILL.md gate 3)
-  # depth restriction = explicit allowed bench-code list from Land (gate 1)
+  # depth restriction = explicit allowed bench-code list, reviewer-owned
+  # (gate 1). narvi's depth-window soft flags (engineer-entered CORRELATED
+  # ft TVD, never the land file's declared text — often a distant ref-log
+  # stratigraphic equivalent) are the starting point, not the decision.
 
 forecast_source:                  # gate 4 — hybrid mode (settled)
   inflation_ratio_band: [0.80, 1.10]  # asymmetric; calibrate vs intel_forecast_accuracy
