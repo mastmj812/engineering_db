@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-07-21 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-08-10 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -20,7 +20,7 @@
 
 Novi unified history+forecast time series. IsForecasted=false rows duplicate raw_novi."WellMonths" actuals; IsForecasted=true rows are Novi's algorithmic decline forecast. Curated layer should filter on IsForecasted=TRUE to isolate new information.
 
-~23,737,238 rows | nightly (scripts.run_daily raw load)
+~23,630,572 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -48,7 +48,7 @@ Novi unified history+forecast time series. IsForecasted=false rows duplicate raw
 
 Novi Insights extended per-well attributes (completion intensity, cums, EURs, spacing, peak rates), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV. Primary source behind curated.wells.
 
-~93,078 rows | nightly (scripts.run_daily raw load)
+~93,495 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -171,12 +171,14 @@ Novi Insights extended per-well attributes (completion intensity, cums, EURs, sp
 | `ModifiedAt` | timestamp without time zone |  |
 | `DeletedAt` | timestamp without time zone |  |
 | `ingested_at` | timestamp with time zone |  |
+| `IsSyntheticApi` | boolean |  |
+| `LastRefracDate` | date |  |
 
 ### `raw_novi.WellMonths` (table)
 
 Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly INCREMENTAL upsert of rows newer than the live max(ModifiedAt) watermark (full snapshot rewrite is too heavy for the instance); deletions caught by on-demand reconcile.
 
-~5,049,011 rows | nightly (scripts.run_daily raw load)
+~5,015,151 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -242,7 +244,7 @@ Novi Insights per-well spacing metrics (closest-well distance ft, wells in radiu
 
 Novi Insights well header mirror, one row per wellbore keyed API10 (some synthetic Novi APIs). Nightly full TRUNCATE + COPY from the bulk TSV (etl/novi/load.py; sync forces no_diffs=True). Column names are quoted PascalCase as shipped.
 
-~93,078 rows | nightly (scripts.run_daily raw load)
+~93,495 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -319,6 +321,7 @@ Novi Insights well header mirror, one row per wellbore keyed API10 (some synthet
 | `ModifiedAt` | timestamp without time zone |  |
 | `DeletedAt` | timestamp without time zone |  |
 | `ingested_at` | timestamp with time zone |  |
+| `LastRefracDate` | date |  |
 
 ## Schema `raw_enverus`
 
@@ -326,7 +329,7 @@ Novi Insights well header mirror, one row per wellbore keyed API10 (some synthet
 
 Enverus DirectAccess v3 wells dataset mirror; one row per completion event, upsert key (wellid, completionid). Nightly incremental pull (updateddate cursor from meta.etl_log; etl/enverus/pull.py). Intake lowercases Enverus PascalCase keys and converts literal "NULL" strings to SQL NULL.
 
-~638,531 rows | nightly (scripts.run_daily raw load)
+~755,909 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -1294,7 +1297,7 @@ Maps raw upstream formation strings (Novi formation names or Enverus ENVInterval
 
 Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitting benches (Delaware AVA/WCA/WCB, Midland WCB; ~30k rows), one row per api10, pre-joined to formation_blueox and GiST-indexed on geom. Feeds curated.intel_formation_blueox (sql/19). Not in the nightly etl.refresh list - refresh manually alongside curated.formation_blueox / on the quarterly intel rebuild.
 
-~37,663 rows | on demand | reads: `curated.formation_blueox`, `curated.wells`
+~37,663 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1309,42 +1312,42 @@ Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitt
 
 erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read latency on hosted Postgres: PUD/RES from curated.intel_locations + intel_formation_blueox + reconciled_inventory; PDP from curated.wells_enriched (producing) + net_new_pdp. Drop-in for curated.intel_locations in erebor's map/gun-barrel/selection. PDP stick_id = -(api10); PDP econ columns NULL (producing context, not risked value). UNIQUE(stick_id) enables CONCURRENTLY refresh. Refresh: nightly via curated.refresh_all() (PDP arm) + recreate after the quarterly Novi reload (scripts/apply_erebor_locations.py). PUD/RES rows also carry the offset-PDP support score family (curated.intel_pdp_support, sql/30) — see per-column COMMENTs; PDP rows are NULL there (not applicable).
 
-~262,830 rows | nightly (etl.refresh, 9/10) (also DROP+recreated by the quarterly intel reload) | reads: `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.intel_pdp_support`, `curated.net_new_pdp`, `curated.reconciled_inventory`, `curated.wells_enriched` | consumers: erebor tiles/selection, land team direct GIS
+~262,996 rows | nightly (etl.refresh, 9/11) (also DROP+recreated by the quarterly intel reload) | reads: `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.intel_pdp_support`, `curated.net_new_pdp`, `curated.reconciled_inventory`, `curated.wells_enriched` | consumers: erebor tiles/selection, land team direct GIS
 
 | column | type | description |
 |---|---|---|
-| `stick_id` | bigint | Row id. Positive = a Novi Intelligence stick (PUD/RES undrilled location); NEGATIVE = a producing well (PDP), where the id is minus its 10-digit API number. |
-| `unique_id` | text | 10-digit API number for producing (PDP) rows; Novi well name for PUD/RES rows. |
-| `category` | text | PDP = producing well (from the warehouse, what physically exists), PUD = Novi base-case undrilled location, RES = Novi emerging/resource location. |
+| `stick_id` | bigint |  |
+| `unique_id` | text |  |
+| `category` | text |  |
 | `inventory_class` | text | Novi native inventory tier: PDP / BASE_CASE / EMERGING. `category` is the legacy suite alias (BASE_CASE=PUD, EMERGING=RES) kept for back-compat — prefer inventory_class for new consumers. Currently reconstructed from the bijective category relabel; becomes a straight passthrough from curated.intel_locations at the next quarterly reload (sql/29). |
-| `basin` | text | Basin slug: delaware or midland. |
-| `formation` | text | Raw vendor formation name (free text, inconsistent casing) -- display only. Group and filter on formation_blueox instead. |
-| `formation_blueox` | text | Standardized Blue Ox bench code (e.g. WCA_1, WCB_2, BS2) -- the formation field of record for grouping/filtering. NULL = unmapped. |
-| `basin_blueox` | text | Blue Ox basin slug (delaware/midland), aligned with formation_blueox. |
-| `formation_blueox_source` | text | How the bench code was assigned: pdp_join / inferred / crosswalk (Novi sticks, sql/19) or the wells crosswalk chain (PDP rows). |
-| `recon_status` | text | Reconciliation tag: remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift / realized_phantom = PUD slots already drilled (not inventory); net_new_pdp = a producing well Novi never inventoried; NULL = RES stick or ordinary PDP. |
-| `deplet_t` | text | Novi depletion tier for PUD/RES: Tier-1..Tier-4, where Tier-4 = most depleted (drained by offset production). NULL on PDP rows (producing wells are not depletion-scored). |
-| `operator` | text | Operator name: Novi-reported for PUD/RES, current operator from the warehouse for PDP. |
-| `pad_name` | text | Novi DSU pad name (Delaware PUD only as of 2025Q3). NULL for PDP -- the gun-barrel assigns pads spatially instead. |
-| `tvd` | double precision | True vertical depth, ft. |
-| `ll_ft` | double precision | Lateral length, ft. |
-| `npv5` | double precision | Novi pre-computed NPV at 5% discount, USD, flat deck. Vendor SCREEN only, not authoritative economics. NULL on PDP rows. |
-| `npv10` | double precision | Novi pre-computed NPV at 10% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv15` | double precision | Novi pre-computed NPV at 15% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv20` | double precision | Novi pre-computed NPV at 20% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv25` | double precision | Novi pre-computed NPV at 25% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `pv5` | double precision | Novi pre-computed present value at 5% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv10` | double precision | Novi pre-computed present value at 10% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv15` | double precision | Novi pre-computed present value at 15% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv20` | double precision | Novi pre-computed present value at 20% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv25` | double precision | Novi pre-computed present value at 25% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `oil_eur` | double precision | Novi 30-yr oil EUR, bbl (vendor forecast horizon, not the suite's 50-yr technical EUR). NULL on PDP rows. |
-| `gas_eur` | double precision | Novi 30-yr gas EUR, Mcf. NULL on PDP rows. |
-| `wti_price` | double precision | Flat WTI oil price behind the Novi economics, USD/bbl. NULL on PDP rows. |
-| `hh_price` | double precision | Flat Henry Hub gas price behind the Novi economics, USD/MMBtu. NULL on PDP rows. |
-| `ngl_price` | double precision | Flat NGL price behind the Novi economics, USD/bbl. NULL on PDP rows. |
-| `wti_diff` | double precision | Oil price differential vs WTI in the Novi deck, USD/bbl. NULL on PDP rows. |
-| `hh_diff` | double precision | Gas price differential vs Henry Hub in the Novi deck, USD/MMBtu. NULL on PDP rows. |
+| `basin` | text |  |
+| `formation` | text |  |
+| `formation_blueox` | text |  |
+| `basin_blueox` | text |  |
+| `formation_blueox_source` | text |  |
+| `recon_status` | text |  |
+| `deplet_t` | text |  |
+| `operator` | text |  |
+| `pad_name` | text |  |
+| `tvd` | double precision |  |
+| `ll_ft` | double precision |  |
+| `npv5` | double precision |  |
+| `npv10` | double precision |  |
+| `npv15` | double precision |  |
+| `npv20` | double precision |  |
+| `npv25` | double precision |  |
+| `pv5` | double precision |  |
+| `pv10` | double precision |  |
+| `pv15` | double precision |  |
+| `pv20` | double precision |  |
+| `pv25` | double precision |  |
+| `oil_eur` | double precision |  |
+| `gas_eur` | double precision |  |
+| `wti_price` | double precision |  |
+| `hh_price` | double precision |  |
+| `ngl_price` | double precision |  |
+| `wti_diff` | double precision |  |
+| `hh_diff` | double precision |  |
 | `pdp_count_1mi` | bigint | Qualifying PDP offsets within 1 mi. 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Gate: horizontal + same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced. curated.intel_pdp_support (sql/30). |
 | `pdp_count_3mi` | bigint | Qualifying PDP offsets within 3 mi (primary support tier). 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Same gate as pdp_count_1mi. |
 | `pdp_count_5mi` | bigint | Qualifying PDP offsets within 5 mi (the full neighbor set). 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Same gate as pdp_count_1mi. |
@@ -1354,13 +1357,13 @@ erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read late
 | `n_offsets_5mi` | bigint | Count of 5-mi qualifying offsets carrying a non-null EUR — the sample size behind offset_median_eur_ft / inflation_ratio. NULL(PDP) = N/A. |
 | `offset_median_eur_ft` | double precision | Median qualifying-offset Novi 30-yr oil EUR per lateral ft within 5 mi (bbl/ft) — history-matched offset productivity. NULL(PDP) = N/A. |
 | `inflation_ratio` | double precision | Novi PUD oil EUR/ft / offset_median_eur_ft (rounded 2 dp): the PUD forecast vs its history-matched offsets. >1 = PUD forecasts above offset history; NULL = no offset basis or not scorable; NULL(PDP) = N/A. |
-| `wellstick_geom` | geometry | Lateral stick geometry (LINESTRING, EPSG:4326): the drawn/planned lateral for PUD/RES, the warehouse wellstick for PDP. GIST-indexed map geometry. |
+| `wellstick_geom` | geometry |  |
 
 ### `curated.formation_blueox` (materialized view)
 
 Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Sources: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values; mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk edits are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh / curated.refresh_all().
 
-~92,908 rows | nightly (etl.refresh, 2/10) | reads: `curated.wells`, `ref.formation_crosswalk`
+~93,495 rows | nightly (etl.refresh, 2/11) | reads: `curated.wells`, `ref.formation_crosswalk`
 
 | column | type | description |
 |---|---|---|
@@ -1375,7 +1378,7 @@ Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k ro
 
 TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers (e.g. Enverus-substitution mis-tags). Audit object - the override is applied downstream in curated.wells_enriched. Refreshed nightly by etl.refresh / curated.refresh_all() after producing_reference.
 
-~59,222 rows | nightly (etl.refresh, 4/10) | reads: `curated.producing_reference`
+~59,374 rows | nightly (etl.refresh, 4/11) | reads: `curated.producing_reference`
 
 | column | type | description |
 |---|---|---|
@@ -1439,6 +1442,52 @@ Novi Intelligence monthly production forecast per stick (P50, 30-day months, pla
 | `water` | double precision | Forecast water rate for the month, bbl/d (Novi P50). |
 | `stick_id` | bigint | Stable suite stick key (raw_intel.stick_id_map); joins curated.erebor_locations.stick_id / curated.intel_locations.stick_id. NULL for forecast names with no well_master stick. |
 
+### `curated.intel_forecast_accuracy` (materialized view)
+
+Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer per aligned month (api10, mop 1-24). Population: producing horizontals with first prod >= curated.intel_pdp_cliff_date() (2024-12-01 on 2025Q3 — the vendor's empirical PDP data cut, ~10 months before the report-label vintage) absent from the Novi PDP class. tier=direct compares against the co-extent-realized stick's own forecast (raw + per-ft errors); tier=proxy against the per-ft median of intel_representative_sticks (per-ft only; n_rep<3 = low_n). Cum-based percent errors; 30-day forecast months vs calendar actual months (~0.8% drift at mop 6) and the partial first calendar month are documented, accepted biases — mute mop 1-2 in displays and exclude is_latest_reported rows from aggregates. Novi forecast is P50: mean error = bias is the calibration number. Refreshed nightly; DROP-CASCADEd + rebuilt by the quarterly intel reload (apply_intel_forecast_accuracy, before apply_erebor_locations). Calibration target for deal-intake inflation_ratio_band. sql/38.
+
+~81,900 rows | nightly (etl.refresh, 10/11) (also DROP+recreated by the quarterly intel reload) | reads: `curated.formation_blueox_tvd`, `curated.intel_forecast`, `curated.intel_locations`, `curated.producing_reference`, `curated.production`, `curated.reconciled_inventory` | consumers: erebor Accuracy tab, deal-intake inflation-band calibration
+
+| column | type | description |
+|---|---|---|
+| `api10` | character varying(32) | Well key (universal 10-digit API). One blind producer per api10. |
+| `mop` | integer | Aligned month index, 1-based: production.months_on_production = intel_forecast.mop (forecast months are 30-day; ~1.6%/yr drift vs calendar, accepted). |
+| `tier` | text | direct = well co-extent-realized a PUD stick (its own forecast; raw + per-ft errors). proxy = no co-extent stick; forecast is the per-ft median of the representative infill set (per-ft errors only). |
+| `basin` | text |  |
+| `formation_blueox` | text |  |
+| `operator` | character varying(64) |  |
+| `first_production_date` | date |  |
+| `stick_id` | bigint | Direct tier: the matched Novi stick (best match_overlap when the well realizes several). NULL on proxy rows. |
+| `match_overlap` | numeric | Direct tier: co-extent overlap fraction of the matched stick (reconciled_inventory). |
+| `n_sticks_for_well` | bigint | Direct tier: number of realized sticks matching this well; >1 = Novi planned more sticks than were drilled (kept on the best match, flagged not summed). |
+| `pad_name` | text |  |
+| `n_rep` | integer | Proxy tier: representative sticks in the benchmark set (same bench, 1 mi, lateral tol 25% delaware / 40% midland). 0 = no benchmark -> NULL errors. |
+| `low_n` | boolean | Proxy tier with n_rep < 3: benchmark is thin — flag in displays, never hide. |
+| `drilled_ll_ft` | double precision |  |
+| `novi_ll_ft` | double precision |  |
+| `rep_median_ll_ft` | double precision |  |
+| `ll_ratio` | double precision | Direct tier: drilled_ll_ft / novi_ll_ft. Decomposition identity: pct_err_perft = (1 + pct_err)/ll_ratio - 1. |
+| `fcst_cum_oil` | double precision |  |
+| `actual_cum_oil` | double precision |  |
+| `pct_err_oil` | double precision | Direct tier raw cum error: (actual_cum_oil - fcst_cum_oil)/fcst_cum_oil. NULL on proxy rows (rep sticks are not the well). |
+| `fcst_cum_oil_perft` | double precision |  |
+| `actual_cum_oil_perft` | double precision |  |
+| `pct_err_oil_perft` | double precision | Per-1,000-ft-basis cum error (actually per-ft; the ratio is scale-free): actual bbl/ft vs forecast bbl/ft. The primary bias metric — valid on both tiers. |
+| `fcst_cum_gas` | double precision |  |
+| `actual_cum_gas` | double precision |  |
+| `pct_err_gas` | double precision |  |
+| `fcst_cum_gas_perft` | double precision |  |
+| `actual_cum_gas_perft` | double precision |  |
+| `pct_err_gas_perft` | double precision |  |
+| `fcst_cum_water` | double precision |  |
+| `actual_cum_water` | double precision |  |
+| `pct_err_water` | double precision |  |
+| `fcst_cum_water_perft` | double precision |  |
+| `actual_cum_water_perft` | double precision |  |
+| `pct_err_water_perft` | double precision |  |
+| `producing_day_frac` | numeric | sum(producing_days through this month) / (mop x 30.44): uptime + partial-first-month diagnostic. Low values explain low actual cums without a forecast miss. NULL when any month to date lacks reported producing_days (~74% of Novi well-months). |
+| `is_latest_reported` | boolean | This is the well's newest posted production month — often incomplete under reporting lag. EXCLUDE from aggregates. |
+
 ### `curated.intel_formation_blueox` (materialized view)
 
 Blue Ox formation code per Novi Intelligence stick (curated.intel_locations), keyed on stick_id. Four-tier: PDP api10-join -> spatial+TVD inference (off curated.bench_reference) for coarse parents that split (Delaware Avalon/WolfcampA/WolfcampB, Midland WolfcampB) -> ref.formation_crosswalk -> NULL. Inference v1 = TVD-aware k=1 (12-lateral horizontal neighbourhood, then TVD-nearest; ~84.5% leave-one-out). formation_blueox_source in (pdp_join, inferred, crosswalk, NULL). Refresh with the biannual Novi Intelligence load, not nightly.
@@ -1458,7 +1507,7 @@ Blue Ox formation code per Novi Intelligence stick (curated.intel_locations), ke
 
 Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from the INTEL Snowflake share mirror (raw_intel, sql/27). Same output contract as the retired sql/12 version: irr_pct in percent, pad NPV rollup (SUM of member sticks), api10 crosswalk to curated.wells (PDP), gunbarrel points (all classes), GIST-indexed wellstick_geom, stable stick_id via raw_intel.stick_id_map. Economics are Novi pre-computed on a flat deck — a screen, not the authoritative deal value.
 
-~251,902 rows | nightly (etl.refresh, 8/10) (also DROP+recreated by the quarterly intel reload) | reads: `curated.wells`, `raw_intel.econ_price_assumption`, `raw_intel.stick_id_map`, `raw_intel.well`, `raw_intel.well_completion`, `raw_intel.well_cost_summary`, `raw_intel.well_economics_summary`, `raw_intel.well_master`, `raw_intel.well_ml_score`, `raw_intel.well_rock_quality`, `raw_intel.wellbore` | consumers: erebor Highgrade/facets/export
+~251,902 rows | nightly (etl.refresh, 8/11) (also DROP+recreated by the quarterly intel reload) | reads: `curated.wells`, `raw_intel.econ_price_assumption`, `raw_intel.stick_id_map`, `raw_intel.well`, `raw_intel.well_completion`, `raw_intel.well_cost_summary`, `raw_intel.well_economics_summary`, `raw_intel.well_master`, `raw_intel.well_ml_score`, `raw_intel.well_rock_quality`, `raw_intel.wellbore` | consumers: erebor Highgrade/facets/export
 
 | column | type | description |
 |---|---|---|
@@ -1547,7 +1596,7 @@ Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from t
 
 Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locations), keyed on stick_id. A VERIFIABILITY screen (not quality): tiered qualifying-PDP counts (1/3/5 mi), nearest/3rd-nearest distance (the halo width), support lateral footage, offset EUR/ft median, and inflation_ratio (Novi PUD forecast /ft vs the median of history-matched in-bench offsets). Qualifying offset = horizontal + same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced + within 5 mi (PDP universe never county-scoped). pdp_count_* = 0 means scored-and-unsupported; NULL scores mean not-scorable (unmapped bench / missing TVD or geometry). Quarterly refresh only (NOT nightly); staleness under-states support, never over-states. sql/30.
 
-~203,886 rows | on demand | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.wells`
+~203,886 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1586,7 +1635,7 @@ Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locat
 
 Producing curated wells (first_production_date NOT NULL, delaware/midland, mapped bench), one row per api10, pre-buffered into a +/-150 ft corridor and GiST-indexed. The spatial system of record for PUD reconciliation (curated.reconciled_inventory) and the sql/23 TVD audit: realized = co-extent overlap in-corridor, same bench, TVD-guarded. Refreshed nightly by etl.refresh / curated.refresh_all().
 
-~59,261 rows | nightly (etl.refresh, 3/10) | reads: `curated.formation_blueox`, `curated.wells`
+~59,261 rows | nightly (etl.refresh, 3/11) | reads: `curated.formation_blueox`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1605,7 +1654,7 @@ Producing curated wells (first_production_date NOT NULL, delaware/midland, mappe
 
 Well-month production actuals from raw_novi.WellMonths (soft-deleted rows excluded), ~5M rows. Grain: one row per well-month; key (api10, prod_year, prod_month). Refreshed nightly by etl.refresh via curated.refresh_all(), per-view with settle().
 
-~4,965,105 rows | nightly (etl.refresh, 5/10) | reads: `raw_novi.WellMonths`
+~5,042,109 rows | nightly (etl.refresh, 5/11) | reads: `raw_novi.WellMonths`
 
 | column | type | description |
 |---|---|---|
@@ -1689,7 +1738,7 @@ Regular VIEW (no storage, always fresh): production_normalized actuals UNION ALL
 
 Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M rows) JOINed to curated.wells and normalized per 1,000 ft; column-identical to production_normalized for clean UNION. Key (api10, prod_year, prod_month); MoP 1-600. Nightly refresh is gated on ForecastWellMonths source change and runs LAST.
 
-~18,847,160 rows | nightly (etl.refresh, 10/10) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
+~18,998,308 rows | nightly (etl.refresh, 11/11) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
 
 | column | type | description |
 |---|---|---|
@@ -1736,7 +1785,7 @@ Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M 
 
 Actuals well-months: curated.production INNER JOIN curated.wells, adding BOE (oil + gas/6) and per-1,000-ft normalized rates plus cohort keys. Grain well-month; key (api10, prod_year, prod_month); MoP filtered 1-600. Refreshed nightly by etl.refresh after wells and production.
 
-~5,011,524 rows | nightly (etl.refresh, 6/10) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
+~5,032,418 rows | nightly (etl.refresh, 6/11) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
 
 | column | type | description |
 |---|---|---|
@@ -1801,7 +1850,7 @@ Novi PUD inventory reconciled against producing curated wells by co-extent overl
 
 Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.
 
-~176,617 rows | nightly (etl.refresh, 7/10) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
+~175,367 rows | nightly (etl.refresh, 7/11) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
 
 | column | type | description |
 |---|---|---|
@@ -1833,7 +1882,7 @@ Pre-aggregated type-curve cohorts over production_normalized: one row per (state
 
 One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpacing LEFT JOINed to the latest Enverus completion event via LEFT(api14, 10) = api10; per-column source precedence is Novi preferred, Enverus fallback unless noted. Permian-wide (~90k rows). Refreshed nightly by etl.refresh / curated.refresh_all() after the vendor loads.
 
-~93,078 rows | nightly (etl.refresh, 1/10) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
+~93,495 rows | nightly (etl.refresh, 1/11) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
 
 | column | type | description |
 |---|---|---|
@@ -1948,137 +1997,139 @@ One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpaci
 
 ### `curated.wells_enriched` (view)
 
-Analytics view over curated.wells (one row per api10): joins the Blue Ox formation mapping (curated.formation_blueox) with the sql/23 TVD correction applied on top, and adds vintage, lateral-length-class, horizontal-flag and per-stage intensity derivations. Regular view - no refresh; current as of the nightly matview refreshes it reads.
+curated.wells + per-well derived columns (vintage bucket, lateral length class, is_horizontal, per-stage intensity, Novi WellSpacing lateral_closer_xy_ft + wellspacing_vintage). Regular view; auto-syncs with wells.
 
-~0 rows | n/a (plain view, always current) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: anduin sync, erebor, narvi, ad-hoc analysis
+~0 rows | n/a (plain view, always current) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells`, `raw_novi.WellSpacing` | consumers: anduin sync, erebor, narvi, ad-hoc analysis
 
 | column | type | description |
 |---|---|---|
-| `api10` | character varying(32) | 10-digit API wellbore id (Novi); the universal well key across the suite. PK / unique index. Novi-Enverus join convention: LEFT(api14, 10) = api10. |
-| `api14` | text | Formatted 14-digit API/UWI from the latest Enverus completion row; legacy cross-reference only (api10 is the key). NULL when no Enverus match. |
-| `api14_unformatted` | text | Digits-only Enverus 14-digit API; LEFT(api14_unformatted, 10) is the join key back to api10. |
-| `enverus_wellid` | bigint | Enverus WellID of the matched wellbore; NULL when the well has no Enverus row. |
-| `enverus_latest_completionid` | bigint | Enverus CompletionID of the latest completion event per wellbore (DISTINCT ON api10 ordered by completiondate DESC). |
-| `well_name` | character varying | Well name; Novi WellDetails preferred, then Novi Wells, then Enverus. |
-| `well_pad_id` | text | Enverus WellPadID grouping wells drilled from a shared pad; NULL without an Enverus match. |
-| `current_operator` | character varying(64) | Current operator (Novi authoritative; tracks operator changes across A&D). |
-| `original_operator` | character varying(64) | Operator at drill time (Novi). |
-| `operator_entity` | character varying(64) | Parent operator entity (Novi CurrentOperatorEntity) for corporate-level rollups across subsidiary names. |
-| `state` | character varying(16) | State (Novi WellDetails preferred, Novi Wells fallback). |
-| `state_code` | integer | State FIPS code (Novi); 42 = TX, 30 = NM. |
-| `county` | character varying(32) | County name, title-cased per Novi convention (e.g. Reeves) - note Enverus filter values are UPPERCASE (LOVING), so do not reuse these strings in Enverus API filters. |
-| `county_unique` | character varying(32) | County name disambiguated across states (Novi CountyUnique). |
-| `county_code` | character varying(5) | 5-digit county FIPS code (Novi); a primary cohort key downstream. |
-| `basin` | character varying(36) | Novi basin classification (Novi WellDetails preferred). Vendor taxonomy; the standardized token is basin_blueox in wells_enriched. |
-| `subbasin` | character varying(36) | Novi sub-basin (Delaware / Midland / Central Basin Platform ...); the primary input for resolving basin_blueox. |
-| `env_region` | text | Enverus ENVRegion (warehouse scope filter is envregion = PERMIAN). |
-| `env_basin` | text | Enverus ENVBasin - sub-basin grain (DELAWARE / MIDLAND / PERMIAN OTHER; no umbrella PERMIAN value). Fallback for basin_blueox resolution. |
-| `env_play` | text | Enverus ENVPlay classification (vendor taxonomy, UPPERCASE). |
-| `env_sub_play` | text | Enverus ENVSubPlay classification (vendor taxonomy, UPPERCASE). |
-| `env_interval` | text | Enverus ENVInterval landing-interval call from their structure model (UPPERCASE); the substitute source for formation_blueox when the Novi formation is coarse/unreliable. |
-| `section` | integer | Land-survey section number (Novi WellDetails); populated for both NM PLSS and TX survey systems. |
-| `township` | character varying(5) | PLSS Township (Novi WellDetails); NM-style land subdivision, empty in TX. |
-| `range_` | character varying(5) | PLSS Range (NM-style land subdivision). Trailing underscore avoids the contextually-reserved SQL keyword. Populated only for PLSS states; ~0% in TX, ~20% Permian-wide. |
-| `tx_block` | character varying(36) | TX Spanish-grant land system: Block (Novi WellDetails); NULL for NM/PLSS wells. |
-| `tx_survey` | character varying(36) | TX Spanish-grant land system: Survey name (Novi WellDetails); NULL for NM/PLSS wells. |
-| `tx_abstract` | character varying(36) | TX Spanish-grant land system: Abstract number (Novi WellDetails); NULL for NM/PLSS wells. |
-| `surface_lat` | double precision | Surface hole latitude, WGS84 deg (Novi preferred, Enverus fallback). |
-| `surface_lon` | double precision | Surface hole longitude, WGS84 deg (Novi preferred, Enverus fallback). |
-| `bhl_lat` | double precision | Bottom hole latitude, WGS84 deg (Novi preferred, Enverus fallback). |
-| `bhl_lon` | double precision | Bottom hole longitude, WGS84 deg (Novi preferred, Enverus fallback). |
-| `landing_point_lat` | double precision | Landing point latitude, WGS84 deg (Novi WellDetails only; Enverus has no LP). |
-| `landing_point_lon` | double precision | Landing point longitude, WGS84 deg (Novi WellDetails only). |
-| `midpoint_lat` | double precision | Lateral midpoint latitude, WGS84 deg (Novi WellDetails only). |
-| `midpoint_lon` | double precision | Lateral midpoint longitude, WGS84 deg (Novi WellDetails only). |
-| `wellstick_geom` | geometry | LINESTRING (4326) through Surface Hole -> Landing Point -> Midpoint -> Bottom Hole, natural traverse order. Vertex precedence Novi WellDetails -> Novi Wells -> Enverus (SHL/BHL); a Novi BHL/MP exactly equal to the Novi SHL is a vendor placeholder (skipped; BHL falls to Enverus). NULL when fewer than two DISTINCT vertices remain - guaranteed non-degenerate since sql/32 (2026-07). Cast to geography only via the sql/26 expression GiST indexes. |
-| `formation` | character varying(64) | Novi formation call (WellDetails preferred, Wells fallback). RAW FREE-TEXT, inconsistent granularity - never group or filter on this; use formation_blueox (wells_enriched). |
-| `reported_formation` | character varying(64) | Operator-reported formation from the regulatory filing (Novi); free-text, often coarser than the model call. |
-| `grid_formation` | character varying(64) | Formation implied by Novi structure grids at the landing depth (Novi); free-text, model-derived. |
-| `directional_survey_is_planned` | boolean | TRUE = the directional survey is the operator's pre-drill PLAN, not the actual post-drill survey. Both Novi and Enverus land the well off that plan, so formation / env_interval are likely misassigned; ~46% of NM wells. Self-corrects when the actual survey is filed. |
-| `tvd_ft` | integer | True vertical depth, ft (Novi WellDetails > Novi Wells > Enverus). Exact multiples of 100 ft are usually permit/plan depths, not real landings - see curated.formation_blueox_tvd. |
-| `md_ft` | integer | Measured depth, ft (Novi preferred, Enverus fallback). |
-| `lateral_length_ft` | integer | Completed lateral length, ft (Novi preferred, Enverus fallback); the denominator for every per-1000-ft normalization downstream. |
-| `wellbore_lateral_length_ft` | integer | Novi WellboreLateralLength, ft - geometric wellbore lateral, as distinct from the completed lateral_length_ft. |
-| `enverus_trajectory` | text | Enverus Trajectory string (e.g. HORIZONTAL); fallback source for wells_enriched.is_horizontal. |
-| `novi_slant_calculated` | character varying(32) | Novi SlantCalculated slant string (H... = horizontal); preferred source for wells_enriched.is_horizontal. |
-| `spud_date` | date | Spud date (Novi preferred, Enverus fallback). |
-| `drilling_end_date` | date | Drilling end (rig release) date (Novi preferred, Enverus fallback). |
-| `first_completion_date` | date | First completion date (Novi preferred, Enverus fallback); drives completion_vintage_bucket. |
-| `first_production_date` | date | First production date (Novi-calculated preferred, Enverus fallback). NULL = not yet producing; the producing_reference / reconciliation population keys on NOT NULL here. |
-| `has_accurate_first_prod_date` | boolean | Novi confidence flag that first_production_date is accurate rather than inferred. |
-| `last_reported_month` | date | Most recent month with reported production (Novi preferred, Enverus fallback). |
-| `plugged_date` | date | Plug date (Novi preferred, Enverus fallback); NULL = not plugged. |
-| `proppant_lbs` | bigint | Total proppant placed, lbs (Enverus preferred; Novi FirstCompletionProppantMass fallback). |
-| `fluid_bbl` | bigint | Total frac fluid pumped, bbl (Enverus preferred; Novi FirstCompletionFluidVolume reported in gallons is divided by 42 in the fallback). |
-| `frac_stages` | integer | Frac stage count (Enverus preferred, Novi FirstCompletionStages fallback). |
-| `proppant_lbs_per_ft` | real | Proppant intensity, lbs per lateral ft (Enverus only; no Novi fallback). |
-| `fluid_bbl_per_ft` | real | Fluid intensity, bbl per lateral ft (Enverus only; no Novi fallback). |
-| `proppant_lbs_per_gal` | real | Proppant loading, lbs per gallon of fluid (Enverus preferred, Novi fallback). |
-| `avg_stage_spacing_ft` | integer | Average frac stage spacing, ft (Enverus preferred, Novi fallback). |
-| `clusters_per_stage` | integer | Perforation clusters per frac stage (Enverus). |
-| `clusters_per_1000ft` | integer | Perforation clusters per 1000 ft of lateral (Enverus). |
-| `soak_time_days` | integer | Soak time, days, between stimulation and turn-in-line (Novi WellDetails SoakTimeDays). |
-| `cum_12m_oil_bbl` | integer | Cumulative oil through production month 12, bbl (Novi WellDetails pass-through). |
-| `cum_12m_gas_mcf` | integer | Cumulative gas through production month 12, Mcf (Novi WellDetails pass-through). |
-| `cum_12m_water_bbl` | integer | Cumulative water through production month 12, bbl (Novi WellDetails pass-through). |
-| `cum_12m_boe` | integer | Cumulative BOE through production month 12, bbl at 6:1 gas conversion (Novi WellDetails pass-through). |
-| `cum_24m_oil_bbl` | integer | Cumulative oil through production month 24, bbl (Novi WellDetails pass-through). |
-| `cum_24m_gas_mcf` | integer | Cumulative gas through production month 24, Mcf (Novi WellDetails pass-through). |
-| `cum_24m_water_bbl` | integer | Cumulative water through production month 24, bbl (Novi WellDetails pass-through). |
-| `cum_24m_boe` | integer | Cumulative BOE through production month 24, bbl at 6:1 (Novi WellDetails pass-through). |
-| `cum_life_oil_bbl` | integer | Life-to-date cumulative oil, bbl (Novi WellDetails pass-through). |
-| `cum_life_gas_mcf` | integer | Life-to-date cumulative gas, Mcf (Novi WellDetails pass-through). |
-| `cum_life_water_bbl` | integer | Life-to-date cumulative water, bbl (Novi WellDetails pass-through). |
-| `cum_life_boe` | integer | Life-to-date cumulative BOE, bbl at 6:1 (Novi WellDetails pass-through). |
-| `cum_life_gor` | double precision | Life-to-date gas-oil ratio, Mcf/bbl (= cum_life_gas_mcf / cum_life_oil_bbl; multiply by 1000 for scf/bbl). Novi WellDetails CumLifeGOR pass-through. |
-| `eur_20yr_oil_bbl` | integer | Novi-forecast oil EUR at a 20-yr horizon, bbl (WellDetails pass-through). Vendor screen; the suite's EUR of record is the raw 50-yr integral fit in anduin. |
-| `eur_20yr_gas_mcf` | integer | Novi-forecast gas EUR at a 20-yr horizon, Mcf (WellDetails pass-through); vendor screen. |
-| `eur_20yr_water_bbl` | integer | Novi-forecast water EUR at a 20-yr horizon, bbl (WellDetails pass-through); vendor screen. |
-| `eur_20yr_boe` | integer | Novi-forecast BOE EUR at a 20-yr horizon, bbl at 6:1 (WellDetails pass-through); vendor screen. |
-| `eur_30yr_oil_bbl` | integer | Novi-forecast oil EUR at a 30-yr horizon, bbl (WellDetails pass-through); vendor screen. |
-| `eur_30yr_gas_mcf` | integer | Novi-forecast gas EUR at a 30-yr horizon, Mcf (WellDetails pass-through); vendor screen. |
-| `eur_30yr_water_bbl` | integer | Novi-forecast water EUR at a 30-yr horizon, bbl (WellDetails pass-through); vendor screen. |
-| `eur_30yr_boe` | integer | Novi-forecast BOE EUR at a 30-yr horizon, bbl at 6:1 (WellDetails pass-through); vendor screen. |
-| `eur_50yr_oil_bbl` | integer | Novi-forecast oil EUR at a 50-yr horizon, bbl (WellDetails pass-through). Same horizon as the suite convention, but this is Novi's number, not the anduin fit. |
-| `eur_50yr_gas_mcf` | integer | Novi-forecast gas EUR at a 50-yr horizon, Mcf (WellDetails pass-through); vendor number, not the anduin fit. |
-| `eur_50yr_water_bbl` | integer | Novi-forecast water EUR at a 50-yr horizon, bbl (WellDetails pass-through); vendor number, not the anduin fit. |
-| `eur_50yr_boe` | integer | Novi-forecast BOE EUR at a 50-yr horizon, bbl at 6:1 (WellDetails pass-through); vendor number, not the anduin fit. |
-| `peak_month_oil` | integer | Month-on-production index of the peak OIL month (Novi). Streams peak independently - gas typically ~4 months after oil, water in flowback - so each stream anchors on its own peak. |
-| `peak_month_gas` | integer | Month-on-production index of the peak GAS month (Novi); commonly ~4 months after the oil peak - never force gas to the oil peak. |
-| `peak_month_water` | integer | Month-on-production index of the peak WATER month (Novi); typically month 1 (flowback). |
-| `peak_month_boe` | integer | Month-on-production index of the peak BOE month (Novi). |
-| `peak_oil_rate_bblpd` | integer | Oil rate in the peak oil month, bbl/d (Novi PeakMonthOilRate pass-through). |
-| `peak_gas_rate_mcfpd` | integer | Gas rate in the peak gas month, Mcf/d (Novi PeakMonthGasRate pass-through). |
-| `peak_water_rate_bblpd` | integer | Water rate in the peak water month, bbl/d (Novi PeakMonthWaterRate pass-through). |
-| `peak_boe_rate_boepd` | integer | BOE rate in the peak BOE month, BOE/d at 6:1 (Novi PeakMonthBOERate pass-through). |
-| `months_to_peak_production` | bigint | Months from first production to peak production (Enverus MonthsToPeakProduction). |
-| `closest_well_xy_ft` | double precision | Horizontal (XY) distance to the closest neighbouring well, ft (Novi WellSpacing). |
-| `wells_in_radius` | integer | Count of wells inside Novi WellSpacing's neighbourhood search radius. |
-| `closest_two_avg_xy_ft` | double precision | Mean XY distance to the two closest neighbouring wells, ft (Novi WellSpacing). |
-| `is_child` | boolean | Novi WellSpacing flag: TRUE = child well, offset to at least one pre-existing (parent) producer at drill time. |
-| `parent_count` | integer | Number of parent wells already producing in the neighbourhood when this well came online (Novi WellSpacing). |
-| `boundedness_score` | bigint | Novi WellSpacing boundedness score - vendor score of how bounded the well is by neighbours; a rank, not footage. |
-| `well_status` | text | Well status (Novi preferred, Enverus ENVWellStatus fallback); vendor strings, not standardized. |
-| `well_type` | character varying | Well type, e.g. OIL / GAS (Novi preferred, Enverus ENVWellType fallback). |
-| `has_production_sharing` | boolean | Novi flag: TRUE = production is shared/allocated across wells (allocation reporting), so per-well monthly volumes are allocated estimates, not measured. |
-| `novi_synthetic_api` | boolean | TRUE = Novi minted a synthetic api10 (no state-assigned API on file yet); the key can change when the real API is assigned. |
-| `formation_blueox` | text | Blue Ox canonical bench code WITH the TVD-outlier correction applied (sql/23 flips gross depth outliers). THE grouping/filter key - never raw formation. NULL = unmapped (report as (unmapped)); OTHER = CBP conventional shelf by design. |
-| `formation_blueox_base` | text | Pre-correction Blue Ox code straight from curated.formation_blueox; kept for audit of TVD-corrected flips. Differs from formation_blueox only when formation_blueox_tvd_corrected. |
-| `formation_blueox_raw` | character varying | Raw formation string that fed the crosswalk (Novi formation or Enverus ENVInterval, per the sql/16 precedence rule). |
-| `formation_blueox_source` | text | Winning source for the bench code: novi, enverus, or tvd_corrected when the sql/23 depth audit overrode both. |
-| `basin_blueox` | text | Blue Ox basin token: delaware, midland or cbp (from Novi Subbasin, Enverus ENVBasin fallback); NULL when the well is outside all three. |
-| `formation_blueox_is_mapped` | boolean | TRUE = the raw string matched ref.formation_crosswalk. FALSE = genuine crosswalk gap in delaware/midland, but intentional OTHER bucketing in cbp (not a gap). |
-| `formation_blueox_tvd_corrected` | boolean | TRUE = curated.formation_blueox_tvd flipped the bench because the well is a gross local depth outlier (~0.4% of producers); base value preserved in formation_blueox_base. |
-| `first_completion_year` | integer | Calendar year of first_completion_date. |
-| `first_completion_quarter` | integer | Calendar quarter (1-4) of first_completion_date. |
-| `first_production_year` | integer | Calendar year of first_production_date. |
-| `completion_vintage_bucket` | text | Completion vintage cohort: pre-2017 / 2017-2019 / 2020-2022 / 2023+ (from first_completion_date); a standard type-curve cohort key. |
-| `lateral_length_class` | text | Lateral length bin, ft: <5000 / 5000-7499 / 7500-9999 / 10000-14999 / 15000+; NULL when lateral_length_ft is missing or non-positive. |
-| `is_horizontal` | boolean | TRUE when the slant string starts with H (Novi SlantCalculated preferred, Enverus trajectory fallback); NULL when both sources are missing. |
-| `stages_per_1000ft` | numeric | Frac stages per 1000 ft of lateral (frac_stages * 1000 / lateral_length_ft); NULL when either input is missing/non-positive. |
-| `proppant_lbs_per_stage` | numeric | Proppant per frac stage, lbs (proppant_lbs / frac_stages). |
-| `fluid_bbl_per_stage` | numeric | Frac fluid per stage, bbl (fluid_bbl / frac_stages). |
-| `has_completion_intensity` | boolean | TRUE when proppant_lbs, fluid_bbl, frac_stages and a positive lateral_length_ft are all populated - the cohort filter for completion-intensity studies. |
+| `api10` | character varying(32) |  |
+| `api14` | text |  |
+| `api14_unformatted` | text |  |
+| `enverus_wellid` | bigint |  |
+| `enverus_latest_completionid` | bigint |  |
+| `well_name` | character varying |  |
+| `well_pad_id` | text |  |
+| `current_operator` | character varying(64) |  |
+| `original_operator` | character varying(64) |  |
+| `operator_entity` | character varying(64) |  |
+| `state` | character varying(16) |  |
+| `state_code` | integer |  |
+| `county` | character varying(32) |  |
+| `county_unique` | character varying(32) |  |
+| `county_code` | character varying(5) |  |
+| `basin` | character varying(36) |  |
+| `subbasin` | character varying(36) |  |
+| `env_region` | text |  |
+| `env_basin` | text |  |
+| `env_play` | text |  |
+| `env_sub_play` | text |  |
+| `env_interval` | text |  |
+| `section` | integer |  |
+| `township` | character varying(5) |  |
+| `range_` | character varying(5) |  |
+| `tx_block` | character varying(36) |  |
+| `tx_survey` | character varying(36) |  |
+| `tx_abstract` | character varying(36) |  |
+| `surface_lat` | double precision |  |
+| `surface_lon` | double precision |  |
+| `bhl_lat` | double precision |  |
+| `bhl_lon` | double precision |  |
+| `landing_point_lat` | double precision |  |
+| `landing_point_lon` | double precision |  |
+| `midpoint_lat` | double precision |  |
+| `midpoint_lon` | double precision |  |
+| `wellstick_geom` | geometry |  |
+| `formation` | character varying(64) |  |
+| `reported_formation` | character varying(64) |  |
+| `grid_formation` | character varying(64) |  |
+| `directional_survey_is_planned` | boolean |  |
+| `tvd_ft` | integer |  |
+| `md_ft` | integer |  |
+| `lateral_length_ft` | integer |  |
+| `wellbore_lateral_length_ft` | integer |  |
+| `enverus_trajectory` | text |  |
+| `novi_slant_calculated` | character varying(32) |  |
+| `spud_date` | date |  |
+| `drilling_end_date` | date |  |
+| `first_completion_date` | date |  |
+| `first_production_date` | date |  |
+| `has_accurate_first_prod_date` | boolean |  |
+| `last_reported_month` | date |  |
+| `plugged_date` | date |  |
+| `proppant_lbs` | bigint |  |
+| `fluid_bbl` | bigint |  |
+| `frac_stages` | integer |  |
+| `proppant_lbs_per_ft` | real |  |
+| `fluid_bbl_per_ft` | real |  |
+| `proppant_lbs_per_gal` | real |  |
+| `avg_stage_spacing_ft` | integer |  |
+| `clusters_per_stage` | integer |  |
+| `clusters_per_1000ft` | integer |  |
+| `soak_time_days` | integer |  |
+| `cum_12m_oil_bbl` | integer |  |
+| `cum_12m_gas_mcf` | integer |  |
+| `cum_12m_water_bbl` | integer |  |
+| `cum_12m_boe` | integer |  |
+| `cum_24m_oil_bbl` | integer |  |
+| `cum_24m_gas_mcf` | integer |  |
+| `cum_24m_water_bbl` | integer |  |
+| `cum_24m_boe` | integer |  |
+| `cum_life_oil_bbl` | integer |  |
+| `cum_life_gas_mcf` | integer |  |
+| `cum_life_water_bbl` | integer |  |
+| `cum_life_boe` | integer |  |
+| `cum_life_gor` | double precision |  |
+| `eur_20yr_oil_bbl` | integer |  |
+| `eur_20yr_gas_mcf` | integer |  |
+| `eur_20yr_water_bbl` | integer |  |
+| `eur_20yr_boe` | integer |  |
+| `eur_30yr_oil_bbl` | integer |  |
+| `eur_30yr_gas_mcf` | integer |  |
+| `eur_30yr_water_bbl` | integer |  |
+| `eur_30yr_boe` | integer |  |
+| `eur_50yr_oil_bbl` | integer |  |
+| `eur_50yr_gas_mcf` | integer |  |
+| `eur_50yr_water_bbl` | integer |  |
+| `eur_50yr_boe` | integer |  |
+| `peak_month_oil` | integer |  |
+| `peak_month_gas` | integer |  |
+| `peak_month_water` | integer |  |
+| `peak_month_boe` | integer |  |
+| `peak_oil_rate_bblpd` | integer |  |
+| `peak_gas_rate_mcfpd` | integer |  |
+| `peak_water_rate_bblpd` | integer |  |
+| `peak_boe_rate_boepd` | integer |  |
+| `months_to_peak_production` | bigint |  |
+| `closest_well_xy_ft` | double precision |  |
+| `wells_in_radius` | integer |  |
+| `closest_two_avg_xy_ft` | double precision |  |
+| `is_child` | boolean |  |
+| `parent_count` | integer |  |
+| `boundedness_score` | bigint |  |
+| `well_status` | text |  |
+| `well_type` | character varying |  |
+| `has_production_sharing` | boolean |  |
+| `novi_synthetic_api` | boolean |  |
+| `formation_blueox` | text |  |
+| `formation_blueox_base` | text |  |
+| `formation_blueox_raw` | character varying |  |
+| `formation_blueox_source` | text |  |
+| `basin_blueox` | text |  |
+| `formation_blueox_is_mapped` | boolean |  |
+| `formation_blueox_tvd_corrected` | boolean |  |
+| `first_completion_year` | integer |  |
+| `first_completion_quarter` | integer |  |
+| `first_production_year` | integer |  |
+| `completion_vintage_bucket` | text |  |
+| `lateral_length_class` | text |  |
+| `is_horizontal` | boolean |  |
+| `stages_per_1000ft` | numeric |  |
+| `proppant_lbs_per_stage` | numeric |  |
+| `fluid_bbl_per_stage` | numeric |  |
+| `has_completion_intensity` | boolean |  |
+| `lateral_closer_xy_ft` | double precision |  |
+| `wellspacing_vintage` | timestamp with time zone |  |
 
 ## Schema `meta`
 
@@ -2086,7 +2137,7 @@ Analytics view over curated.wells (one row per api10): joins the Blue Ox formati
 
 One row per ETL step run (source x table_name), written by etl/db.py log_etl_run: status running/success/failed, row counts, timings. Doubles as the incremental cursor for Enverus pulls (updateddate > last success) and the curated refresh gate.
 
-~517 rows | continuous (ETL bookkeeping)
+~871 rows | continuous (ETL bookkeeping)
 
 | column | type | description |
 |---|---|---|
