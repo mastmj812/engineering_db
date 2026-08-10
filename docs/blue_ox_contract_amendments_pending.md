@@ -253,11 +253,15 @@ differentiated analog sets). The drop framework has supported this since §4
 re-drop semantics so a split is an expected shape, not a surprise.
 
 - **What — zone naming:** a split bench ships as two (or more) zones with
-  **distinct zone names**: the bench code plus a short qualifying suffix,
-  e.g. `WCB_2_W` / `WCB_2_E` (≤26 chars, Principle 2 charset). Zone names
-  remain labels; the `bench` column (§6) carries the SAME bench code
-  (`WCB_2`) on both zones' inventory rows — `bench`, not the zone name, is
-  the geologic identity.
+  **distinct zone names**: the bench code plus a short qualifying suffix
+  (≤26 chars, Principle 2 charset). **Shipped form of record (bro_time
+  re-drop, accepted by the Blue Ox loader): `WCB_2 West` / `WCB_2 East`** —
+  space-separated qualifiers, now final per Principle 2; future splits
+  follow this shape. (This file's first draft illustrated `WCB_2_W` /
+  `WCB_2_E`; the shipped names supersede the example.) Zone names remain
+  labels; the `bench` column (§6) carries the SAME bench code (`WCB_2`) on
+  both zones' inventory rows — `bench`, not the zone name, is the geologic
+  identity.
 - **What — partition guarantees (build-refused, not conventions):** anduin
   hard-errors a drop where (a) two zones claim one bench with OVERLAPPING
   scenario scopes (no location can be double-counted), or (b) a planned well
@@ -272,10 +276,13 @@ re-drop semantics so a split is an expected shape, not a surprise.
   respects the split.
 - **Re-drop supersession:** introducing a split on a previously-shipped deal
   REPLACES the old single zone (e.g. `WCB_2`) with the suffixed zones
-  (`WCB_2_W` + `WCB_2_E`) — the old sheet/`area` value does not reappear.
-  This is the one sanctioned case where a re-drop's zone list changes
-  without a curve being added or removed economically; the drop email calls
-  it out whenever it happens.
+  (`WCB_2 West` + `WCB_2 East`) — the old sheet/`area` value does not
+  reappear. This is the one sanctioned case where a re-drop's zone list
+  changes without a curve being added or removed economically; the drop
+  email calls it out whenever it happens. **Exercised on the bro_time
+  re-drop (2026-08): split shipped, supersession called out, Blue Ox
+  analysis completed on the new file — this section is now practice, not
+  proposal.**
 - **Loader impact:** *tolerated* for a loader that enumerates zones from the
   workbook (the standing assumption). A loader that keys on zone names being
   stable across re-drops must treat a declared split as supersession of the
