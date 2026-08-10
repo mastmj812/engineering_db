@@ -45,6 +45,8 @@ _QUARTERLY = {
     "curated.net_new_pdp",
     "curated.intel_arps",
     "curated.intel_forecast",
+    "curated.bench_reference",  # sql/18, rebuilt by apply_intel_formation_blueox
+    "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
