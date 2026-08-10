@@ -51,6 +51,7 @@ _QUARTERLY = {
 
 # Primary downstream consumers, maintained by hand (small on purpose).
 _CONSUMERS = {
+    "curated.enverus_lateral_lines": "anduin sync (COALESCEd over wellstick_geom)",
     "curated.wells_enriched": "anduin sync, erebor, narvi, ad-hoc analysis",
     "curated.production_normalized": "anduin type-curve fitting",
     "curated.production_forecast": "anduin (Novi ML forecast overlay)",
