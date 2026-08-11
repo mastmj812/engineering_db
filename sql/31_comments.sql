@@ -257,7 +257,7 @@ COMMENT ON COLUMN curated.wells_enriched.first_completion_quarter IS 'Calendar q
 COMMENT ON COLUMN curated.wells_enriched.first_production_year IS 'Calendar year of first_production_date.';
 COMMENT ON COLUMN curated.wells_enriched.completion_vintage_bucket IS 'Completion vintage cohort: pre-2017 / 2017-2019 / 2020-2022 / 2023+ (from first_completion_date); a standard type-curve cohort key.';
 COMMENT ON COLUMN curated.wells_enriched.lateral_length_class IS 'Lateral length bin, ft: <5000 / 5000-7499 / 7500-9999 / 10000-14999 / 15000+; NULL when lateral_length_ft is missing or non-positive.';
-COMMENT ON COLUMN curated.wells_enriched.is_horizontal IS 'TRUE when the slant string starts with H (Novi SlantCalculated preferred, Enverus trajectory fallback); NULL when both sources are missing.';
+COMMENT ON COLUMN curated.wells_enriched.is_horizontal IS 'TRUE when the slant string contains "horizontal" (Novi SlantCalculated preferred, Enverus trajectory fallback) - substring, not prefix, so Novi''s U-Turn (Horizontal) horseshoe code qualifies (sql/40 fix, 2026-08). NULL when both sources are missing.';
 COMMENT ON COLUMN curated.wells_enriched.stages_per_1000ft IS 'Frac stages per 1000 ft of lateral (frac_stages * 1000 / lateral_length_ft); NULL when either input is missing/non-positive.';
 COMMENT ON COLUMN curated.wells_enriched.proppant_lbs_per_stage IS 'Proppant per frac stage, lbs (proppant_lbs / frac_stages).';
 COMMENT ON COLUMN curated.wells_enriched.fluid_bbl_per_stage IS 'Frac fluid per stage, bbl (fluid_bbl / frac_stages).';
