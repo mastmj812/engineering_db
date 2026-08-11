@@ -92,11 +92,17 @@ def validate() -> None:
         raise SystemExit(
             f"FAILED: matview {mv} exceeds its source identity {distinct_txt}"
         )
-    # The stub guard (length >= max(500 ft, 0.5×lateral)) rejects ~2,100
-    # rows (1.2% at guard time) on top of parse rejects — warn only if the
-    # combined reject rate drifts well past that baseline.
-    if rejects > distinct_txt * 0.03:
-        print(f"    WARNING: {rejects} rejects (> 3%) — inspect raw "
+    # Reject composition measured at first guarded apply (2026-08-11,
+    # 74,984 / 170,896 = 44%): VERTICAL 71,531 + DIRECTIONAL 1,561 —
+    # non-lateral wells whose "LateralLine" is a sub-500-ft surface stub
+    # (correctly excluded from a lateral-path matview; anduin syncs
+    # horizontals only, so zero consumer impact) — plus 1,871 HORIZONTAL
+    # stubs, which are the defect the guard exists for (they fall back
+    # to the 4-point stick). Warn only if the rate drifts well past that
+    # structural baseline; the horizontal-coverage check below is the
+    # consumer-facing guard.
+    if rejects > distinct_txt * 0.55:
+        print(f"    WARNING: {rejects} rejects (> 55%) — inspect raw "
               "LateralLine quality", flush=True)
 
     bad = _scalar(
