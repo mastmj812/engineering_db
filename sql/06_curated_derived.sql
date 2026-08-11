@@ -104,11 +104,16 @@ SELECT
 
     -- ------------------------------------------------------------------
     -- Horizontal flag (Novi SlantCalculated preferred; Enverus trajectory
-    -- fallback). Both encode horizontal as a string starting with 'H'.
+    -- fallback). Substring match, NOT prefix: Novi codes horseshoe wells
+    -- as 'U-Turn (Horizontal)' — the old ILIKE 'H%' flagged all 263 of
+    -- them non-horizontal and every is_horizontal consumer (anduin sync,
+    -- erebor_locations, intel_pdp_support, narvi) dropped them (sql/40,
+    -- 2026-08-11). Live vocabulary: Horizontal / Vertical /
+    -- U-Turn (Horizontal); Enverus fallback HORIZONTAL/DIRECTIONAL/etc.
     -- ------------------------------------------------------------------
     CASE
-        WHEN COALESCE(w.novi_slant_calculated, w.enverus_trajectory) ILIKE 'H%' THEN TRUE
-        WHEN COALESCE(w.novi_slant_calculated, w.enverus_trajectory) IS NULL    THEN NULL
+        WHEN COALESCE(w.novi_slant_calculated, w.enverus_trajectory) ILIKE '%horizontal%' THEN TRUE
+        WHEN COALESCE(w.novi_slant_calculated, w.enverus_trajectory) IS NULL              THEN NULL
         ELSE FALSE
     END                                                AS is_horizontal,
 
