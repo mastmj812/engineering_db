@@ -85,16 +85,19 @@ def validate() -> None:
     )
     rejects = distinct_txt - mv
     print(f"    matview rows {mv} / distinct api10 with textual line {distinct_txt} "
-          f"(post-parse rejects: {rejects})", flush=True)
+          f"(parse + stub-guard rejects: {rejects})", flush=True)
     if mv == 0:
         raise SystemExit("FAILED: matview is empty")
     if mv > distinct_txt:
         raise SystemExit(
             f"FAILED: matview {mv} exceeds its source identity {distinct_txt}"
         )
-    if rejects > distinct_txt * 0.01:
-        print(f"    WARNING: {rejects} post-parse rejects (> 1%) — inspect "
-              "raw LateralLine quality", flush=True)
+    # The stub guard (length >= max(500 ft, 0.5×lateral)) rejects ~2,100
+    # rows (1.2% at guard time) on top of parse rejects — warn only if the
+    # combined reject rate drifts well past that baseline.
+    if rejects > distinct_txt * 0.03:
+        print(f"    WARNING: {rejects} rejects (> 3%) — inspect raw "
+              "LateralLine quality", flush=True)
 
     bad = _scalar(
         "SELECT COUNT(*) FROM curated.enverus_lateral_lines "
@@ -104,6 +107,14 @@ def validate() -> None:
     print(f"    invalid/degenerate geometries: {bad} (expect 0)", flush=True)
     if bad:
         raise SystemExit(f"FAILED: {bad} invalid geometries survived the WHERE")
+
+    stubs = _scalar(
+        "SELECT COUNT(*) FROM curated.enverus_lateral_lines "
+        "WHERE extensions.ST_Length(lateral_geom::extensions.geography) * 3.28084 < 500"
+    )
+    print(f"    surviving stubs under the 500-ft floor: {stubs} (expect 0)", flush=True)
+    if stubs:
+        raise SystemExit(f"FAILED: {stubs} sub-500-ft stubs survived the guard")
 
     idx = _scalar(
         "SELECT COUNT(*) FROM pg_indexes WHERE schemaname = 'curated' "
