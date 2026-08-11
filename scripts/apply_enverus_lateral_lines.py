@@ -67,7 +67,10 @@ def _scalar(q: str, params: tuple = ()) -> int:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            return cur.execute(q, params).fetchone()[0]
+            # Pass None when there are no params — psycopg parses %-
+            # placeholders whenever a params sequence is supplied (even
+            # empty), and the LIKE 'LINESTRING%' predicate would trip it.
+            return cur.execute(q, params or None).fetchone()[0]
     finally:
         conn.close()
 
