@@ -380,6 +380,8 @@ def settle(seconds: int | None = None) -> int:
 # refresh_all() call.
 #
 # Ordering constraints:
+#   - enverus_lateral_lines goes first: raw_enverus-only input, nothing
+#     depends on it, tiny (~85k rows) — a fast win before the heavy chain.
 #   - producing_reference + formation_blueox_tvd feed wells_enriched's
 #     corrected formation_blueox, so they refresh right after the base mapping.
 #   - erebor_locations reads wells_enriched (over the matviews above) AND
@@ -395,6 +397,7 @@ def settle(seconds: int | None = None) -> int:
 #     here — they rebuild via the apply_* scripts on the quarterly cadence,
 #     matching refresh_all()'s scope.
 _CURATED_MATVIEWS: tuple[str, ...] = (
+    "curated.enverus_lateral_lines",
     "curated.wells",
     "curated.formation_blueox",
     "curated.producing_reference",

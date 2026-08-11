@@ -775,3 +775,15 @@ COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil IS 'Direct tier ra
 COMMENT ON COLUMN curated.intel_forecast_accuracy.pct_err_oil_perft IS 'Per-1,000-ft-basis cum error (actually per-ft; the ratio is scale-free): actual bbl/ft vs forecast bbl/ft. The primary bias metric — valid on both tiers.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.producing_day_frac IS 'sum(producing_days through this month) / (mop x 30.44): uptime + partial-first-month diagnostic. Low values explain low actual cums without a forecast miss. NULL when any month to date lacks reported producing_days (~74% of Novi well-months).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.is_latest_reported IS 'This is the well''s newest posted production month — often incomplete under reporting lag. EXCLUDE from aggregates.';
+
+-- =============================================================================
+-- 31 (part D) -- curated.enverus_lateral_lines (sql/39). Duplicated from
+-- sql/39 (which also carries them) so a re-run of this file after any rebuild
+-- restores the catalog entries, per the header rule.
+-- =============================================================================
+COMMENT ON MATERIALIZED VIEW curated.enverus_lateral_lines IS
+'Enverus survey-derived lateral path (LateralLine WKT parsed to LINESTRING 4326), one row per api10 -- latest completion event that has a usable line (deliberately not latest-overall, so a newer completion row without a LateralLine cannot null out the well). Guards: literal-string ''NULL'' sentinel rejected, LINESTRING% textual pre-filter, ST_NPoints >= 2, ST_IsValid. Built to fix u-turn/horseshoe sticks: the 4-point Novi SHL/LP/MP/BHL wellstick_geom in curated.wells degenerates when the lateral doubles back. Consumer: anduin header sync COALESCEs this over wells_enriched.wellstick_geom. Nightly refresh; standalone so sql/04 never rebuilds for stick-geometry work.';
+COMMENT ON COLUMN curated.enverus_lateral_lines.api10 IS
+'10-digit API wellbore id (LEFT(Enverus api14, 10)); the universal well key. PK / unique index.';
+COMMENT ON COLUMN curated.enverus_lateral_lines.lateral_geom IS
+'Full lateral path as LINESTRING (SRID 4326) from Enverus LateralLine WKT; typically 60-120 vertices, traces u-turn/horseshoe geometry the 4-point wellstick cannot. Vertex direction (heel->toe vs reverse) is unspecified by Enverus -- consumers must not depend on order.';
