@@ -403,6 +403,7 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.producing_reference",
     "curated.formation_blueox_tvd",
     "curated.production",
+    "curated.water_data_quality",
     "curated.production_normalized",
     "curated.type_curve_cohorts",
     "curated.intel_locations",
