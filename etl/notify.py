@@ -152,6 +152,7 @@ def build_email(
     freshness: dict[str, Any],
     novi_export_date: str | None,
     log_path: Path | None,
+    drift_lines: list[str] | None = None,
 ) -> tuple[str, str]:
     """Build the subject + plain-text body.
 
@@ -214,6 +215,12 @@ def build_email(
     if novi_export_date:
         lines.append(f"  Novi ExportDate = {novi_export_date}")
 
+    # Drift report (scripts/check_drift.py) — repo sql/ vs live warehouse
+    # plus estate hygiene. Optional; already fully degraded to plain lines.
+    if drift_lines:
+        lines.append("")
+        lines.extend(drift_lines)
+
     if log_path is not None:
         lines.append("")
         lines.append(f"Log file: {log_path}")
@@ -265,9 +272,29 @@ def send_email(subject: str, body: str) -> None:
         logger.exception("email send failed (non-fatal)")
 
 
+def collect_drift_lines() -> list[str]:
+    """Run the drift check (scripts/check_drift.py) for the email summary.
+
+    MUST NEVER fail the nightly: the import and the call are both guarded, so
+    any exception degrades to a single "drift check errored: <msg>" line.
+    ``drift_email_section`` additionally degrades its two halves (warehouse
+    drift, GitHub hygiene) independently. Set DRIFT_CHECK_DISABLED=1 to skip
+    the section entirely.
+    """
+    if os.getenv("DRIFT_CHECK_DISABLED"):
+        return []
+    try:
+        from scripts.check_drift import drift_email_section
+
+        return drift_email_section()
+    except Exception as exc:
+        logger.exception("drift check failed (non-fatal)")
+        return [f"drift check errored: {exc}"]
+
+
 def notify_run(report_steps: list[Any], log_path: Path | None = None) -> None:
-    """High-level: collect freshness + Novi date, build email, send +
-    ping healthcheck.
+    """High-level: collect freshness + Novi date + drift report, build email,
+    send + ping healthcheck.
 
     ``report_steps`` is the orchestrator's list of StepResult items.
     ``log_path`` is the day's log file (included in the email so a
@@ -275,7 +302,10 @@ def notify_run(report_steps: list[Any], log_path: Path | None = None) -> None:
     """
     freshness = collect_freshness()
     novi_date = collect_novi_export_date()
-    subject, body = build_email(report_steps, freshness, novi_date, log_path)
+    drift_lines = collect_drift_lines()
+    subject, body = build_email(
+        report_steps, freshness, novi_date, log_path, drift_lines=drift_lines
+    )
 
     all_ok = all(s.status == "success" for s in report_steps)
     ping_healthcheck("" if all_ok else "/fail")
