@@ -60,6 +60,7 @@ _CONSUMERS = {
     "curated.reconciled_inventory": "narvi remaining inventory, erebor recon status",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
+    "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
 }
 
 

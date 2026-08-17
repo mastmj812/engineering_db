@@ -787,3 +787,27 @@ COMMENT ON COLUMN curated.enverus_lateral_lines.api10 IS
 '10-digit API wellbore id (LEFT(Enverus api14, 10)); the universal well key. PK / unique index.';
 COMMENT ON COLUMN curated.enverus_lateral_lines.lateral_geom IS
 'Full lateral path as LINESTRING (SRID 4326) from Enverus LateralLine WKT; typically 60-120 vertices, traces u-turn/horseshoe geometry the 4-point wellstick cannot. Vertex direction (heel->toe vs reverse) is unspecified by Enverus -- consumers must not depend on order.';
+
+-- =============================================================================
+-- 31 (part E) -- curated.water_data_quality (sql/41). Duplicated from sql/41
+-- (which also carries them) so a re-run of this file after any rebuild
+-- restores the catalog entries, per the header rule.
+-- =============================================================================
+COMMENT ON MATERIALIZED VIEW curated.water_data_quality IS
+'Per-well water-stream provenance: measured vs vendor-calculated water, one row per api10 in curated.production. TX RRC has no monthly well-level water -- vendors backfill a static WOR from an initial filing (water = k*oil; 83.6% of TX public-water horizontals FP>=2019 have WOR CV < 2% over mop 1-24), while operator-share months (production.is_water_proprietary) and NM C-115 water are real. Signals: water_prop_share + wor_cv over mop 1-24 (oil>0 AND water>0 months). Labels: insufficient (<6 usable months) / measured (prop_share>=0.9 OR cv>=0.15) / calculated (prop_share<=0.1 AND cv<0.05) / indeterminate. Convention 2026-08-17: FLAG-ONLY surfacing -- apps badge and filter, nothing excluded by default. Piecewise-flat re-filed WORs can escape to indeterminate/measured (known v1 limit). No state column by design -- join wells_enriched. Nightly refresh after curated.production. sql/41.';
+COMMENT ON COLUMN curated.water_data_quality.api10 IS
+'10-digit API well key; one row per distinct api10 in curated.production. PK / unique index.';
+COMMENT ON COLUMN curated.water_data_quality.n_prod_months IS
+'All production months on file for the well (any mop, any volumes) -- context only.';
+COMMENT ON COLUMN curated.water_data_quality.n_wor_months IS
+'Months usable for WOR stats: months_on_production 1-24 with oil>0 AND water>0. <6 => water_source=insufficient.';
+COMMENT ON COLUMN curated.water_data_quality.water_prop_share IS
+'Share of usable months flagged is_water_proprietary (Novi operator production share = real measured water). NULL when n_wor_months=0.';
+COMMENT ON COLUMN curated.water_data_quality.wor_mean IS
+'Mean monthly WOR (water_per_month_bbl / oil_per_month_bbl) over usable months, bbl/bbl.';
+COMMENT ON COLUMN curated.water_data_quality.wor_median IS
+'Median monthly WOR over usable months, bbl/bbl.';
+COMMENT ON COLUMN curated.water_data_quality.wor_cv IS
+'Coefficient of variation of monthly WOR (stddev/mean) over usable months. ~0 = water is a fixed multiple of oil (vendor-calculated); measured water runs ~0.4-0.5.';
+COMMENT ON COLUMN curated.water_data_quality.water_source IS
+'Classification of record (2026-08-17): insufficient | measured | calculated | indeterminate. Flag-only convention -- consumers badge/filter, never auto-exclude.';
