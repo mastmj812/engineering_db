@@ -4,7 +4,8 @@ Clone of scripts/apply_reconciled_inventory.py / apply_erebor_locations.py:
 exec the DDL on the 5432 session (statement_timeout=0), then validate.
 
   1. exec sql/30 — DROP ... CASCADE + CREATE MATERIALIZED VIEW ... WITH DATA +
-     the UNIQUE index (basin-wide, PUD+RES; ~25-45 min on the 2 GB instance).
+     the UNIQUE index (basin-wide, PUD+RES; was ~25-45 min on the 2 GB instance,
+     expect ~1.5x since the 2026-09 depth-context lateral was added).
   2. validate: row count == PUD/RES count; 0 duplicate/NULL stick_id; per-basin
      scored / unscorable / unsupported / NULL-ratio shape; EXPLAIN index
      assertion (idx_curated_wells_wellstick_geog, no Seq Scan); CONCURRENTLY
@@ -93,6 +94,39 @@ def validate(conn) -> None:
             nr = f"{100*nullr/tot:.1f}%"
             print(f"      {basin:9} {cat:4} n={tot:>7}  unscorable={unscore:>5}  "
                   f"unsupported@3mi={unsup:>6} ({up} of scored)  NULL-ratio={nullr:>6} ({nr})", flush=True)
+
+        # Depth-context shape (2026-09 WCB_2 deep-TVD audit). Expected magnitudes
+        # from the 2026-09-10 read-only audit (PUD+RES, same predicates): delaware
+        # WCB_2 ~1,000 sticks with tvd_excess_3mi_ft > 200 (996 measured), midland
+        # ~0; NULL excess on a scored stick = frontier (no same-bench PDP in 3 mi;
+        # delaware WCB_2 measured 933). Numbers drift with vintage — sanity-check
+        # the order of magnitude, don't pin constants.
+        print("    depth context per basin: scored / excess>200 / excess>500 / frontier(NULL excess) / wca-anchored", flush=True)
+        for basin, scored, e200, e500, frontier, wca in cur.execute("""
+            SELECT il.basin,
+                   COUNT(*) FILTER (WHERE s.pdp_count_3mi IS NOT NULL),
+                   COUNT(*) FILTER (WHERE s.tvd_excess_3mi_ft > 200),
+                   COUNT(*) FILTER (WHERE s.tvd_excess_3mi_ft > 500),
+                   COUNT(*) FILTER (WHERE s.pdp_count_3mi IS NOT NULL
+                                      AND s.tvd_excess_3mi_ft IS NULL),
+                   COUNT(*) FILTER (WHERE s.wca_delta_ft IS NOT NULL)
+            FROM curated.intel_pdp_support s
+            JOIN curated.intel_locations il USING (stick_id)
+            GROUP BY 1 ORDER BY 1
+        """).fetchall():
+            print(f"      {basin:9} scored={scored:>7}  excess>200={e200:>6}  excess>500={e500:>6}  "
+                  f"frontier={frontier:>6}  wca_anchored={wca:>7}", flush=True)
+        wcb2 = cur.execute("""
+            SELECT COUNT(*) FILTER (WHERE s.tvd_excess_3mi_ft > 200),
+                   percentile_cont(0.5) WITHIN GROUP (ORDER BY s.wca_delta_ft)
+            FROM curated.intel_pdp_support s
+            JOIN curated.intel_locations il USING (stick_id)
+            JOIN curated.intel_formation_blueox fb USING (stick_id)
+            WHERE il.basin = 'delaware' AND fb.formation_blueox = 'WCB_2'
+        """).fetchone()
+        wca_med = f"{wcb2[1]:.0f}" if wcb2[1] is not None else "NULL"
+        print(f"      delaware WCB_2: excess>200={wcb2[0]} (audit baseline ~996)  "
+              f"median wca_delta_ft={wca_med} (PDP convention: 400-700 band)", flush=True)
 
         # EXPLAIN the lateral body for one scorable stick — assert the geography
         # expression index (no Seq Scan of curated.wells).

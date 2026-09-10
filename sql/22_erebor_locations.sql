@@ -109,6 +109,10 @@ SELECT
     sup.support_lateral_ft_5mi, sup.n_offsets_5mi,
     sup.offset_median_eur_ft,
     round(sup.inflation_ratio::numeric, 2)::double precision AS inflation_ratio,
+    -- depth context (sql/30, 2026-09 WCB_2 deep-TVD audit): guarded-set median
+    -- depth + delta, unguarded same-bench excess + below-WCA delta
+    sup.offset_median_tvd, sup.tvd_delta_ft,
+    sup.tvd_excess_3mi_ft, sup.wca_delta_ft,
     il.wellstick_geom
 FROM curated.intel_locations il
 LEFT JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
@@ -159,6 +163,8 @@ SELECT
     NULL::bigint AS support_lateral_ft_5mi, NULL::bigint AS n_offsets_5mi,
     NULL::double precision AS offset_median_eur_ft,
     NULL::double precision AS inflation_ratio,
+    NULL::double precision AS offset_median_tvd, NULL::double precision AS tvd_delta_ft,
+    NULL::double precision AS tvd_excess_3mi_ft, NULL::double precision AS wca_delta_ft,
     we.wellstick_geom
 FROM curated.wells_enriched we
 LEFT JOIN curated.net_new_pdp nn ON nn.api10 = we.api10
@@ -218,3 +224,11 @@ COMMENT ON COLUMN curated.erebor_locations.offset_median_eur_ft IS
 'Median qualifying-offset Novi 30-yr oil EUR per lateral ft within 5 mi (bbl/ft) — history-matched offset productivity. NULL(PDP) = N/A.';
 COMMENT ON COLUMN curated.erebor_locations.inflation_ratio IS
 'Novi PUD oil EUR/ft / offset_median_eur_ft (rounded 2 dp): the PUD forecast vs its history-matched offsets. >1 = PUD forecasts above offset history; NULL = no offset basis or not scorable; NULL(PDP) = N/A.';
+COMMENT ON COLUMN curated.erebor_locations.offset_median_tvd IS
+'Median TVD (ft) of the SAME guarded offset set behind offset_median_eur_ft / inflation_ratio — the depth the ratio was actually computed against. NULL = no qualifying offsets or not scorable; NULL(PDP) = N/A.';
+COMMENT ON COLUMN curated.erebor_locations.tvd_delta_ft IS
+'Stick TVD minus offset_median_tvd (ft): how far the stick sits from its own comparison set''s depth (the +/-500 ft guard bounds this to roughly [-500, 500]). NULL(PDP) = N/A.';
+COMMENT ON COLUMN curated.erebor_locations.tvd_excess_3mi_ft IS
+'Stick TVD minus the deepest same-bench producing horizontal within 3 mi, UNGUARDED (no +/-500 ft, no 6-mo gate). Positive = deeper than anything ever produced in this bench locally; >200 ft = depth-anomaly line (suspect Novi landing, 2026-09 WCB_2 audit). NULL on a scored stick = NO same-bench producer within 3 mi (frontier — also unverifiable). NULL(PDP) = N/A.';
+COMMENT ON COLUMN curated.erebor_locations.wca_delta_ft IS
+'Stick TVD minus the median WCA (WCA_1/WCA_2) producing-horizontal TVD within 3 mi, unguarded. WCB_2 landing convention: real WCB_2 PDP sits 400-700 ft below local WCA (med 516 Delaware / 460 Midland) — the land-team screen band. NULL = no WCA producer within 3 mi; NULL(PDP) = N/A.';
