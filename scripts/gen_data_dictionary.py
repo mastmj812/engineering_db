@@ -58,6 +58,7 @@ _CONSUMERS = {
     "curated.type_curve_cohorts": "legacy delaware_basin_eval",
     "curated.intel_locations": "erebor Highgrade/facets/export",
     "curated.reconciled_inventory": "narvi remaining inventory, erebor recon status",
+    "curated.intel_pdp_support": "erebor Highgrade filters + xlsx export, folded into erebor_locations (sql/22)",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
