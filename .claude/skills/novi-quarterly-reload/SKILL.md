@@ -66,7 +66,7 @@ python -m scripts.load_intel_sf --forecast --report <report_name>
 ~16 GB per vintage; ask the user whether to DELETE the superseded
 report_name slice before loading the new one rather than double-holding.
 Retained superseded slices are what `curated.intel_forecast_accuracy_vintage`
-(sql/42) scores as actuals accrue — deleting a slice removes that vintage from
+(sql/43) scores as actuals accrue — deleting a slice removes that vintage from
 the accuracy record permanently (irreplaceable; Michael-only decision).
 
 ## 5. Curated CASCADE rebuild — FIXED ORDER (see memory: quarterly-rebuild-cascade-order)
@@ -75,7 +75,7 @@ sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
 `reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
 `intel_forecast_accuracy`, `erebor_locations`); sql/20 inside
 apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` +
-`intel_forecast_accuracy_vintage` (sql/42; restored by
+`intel_forecast_accuracy_vintage` (sql/43; restored by
 apply_intel_forecast_accuracy below) — the script rebuilds sql/23 +
 wells_enriched in order (keep that if it's ever refactored).
 
@@ -85,7 +85,7 @@ python -m scripts.apply_intel_formation_blueox         # sql/19
 python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/21
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
-python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/42 (self-applies sql/26 first)
+python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
 python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all()
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```
