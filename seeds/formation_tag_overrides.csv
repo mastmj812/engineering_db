@@ -15,6 +15,7 @@ api10,corrected_code,was,note
 3002546619,WCB_2,WCB_1,consensus flag ratified by MM (chat review 2026-09-15/16); 34 ft off destination band
 3002546641,WCB_1,WCB_2,consensus flag ratified by MM (chat review 2026-09-15/16); 40 ft off destination band
 3002547670,WCA_2,WCB_1,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 51 ft off destination band, jury n=19"
+3002547676,WCB_1,WCB_2,"MM final gunbarrel ratification 2026-09-17 (Merciless 13 Federal Com 742H); consensus jury preferred WCA_2 (39 ft, n=30) over WCB_1 (204 ft) - MM overrode on gunbarrel read"
 3002547677,WCB_1,WCC,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 57 ft off destination band, jury n=17"
 3002547755,WCB_1,WCB_2,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 52 ft off destination band, jury n=12"
 3002547757,WCB_2,WCB_1,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 92 ft off destination band, jury n=4"
@@ -45,6 +46,7 @@ api10,corrected_code,was,note
 4237140377,WCA_1,WCB_2,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 15 ft off destination band, jury n=5"
 4238935503,WCA_2,WCB_1,"consensus v2 flag ratified by MM (workbook comment 2026-09-16); 72 ft off destination band, jury n=8"
 4238936310,WCB_2,WCB_1,consensus flag ratified by MM (chat review 2026-09-15/16); 9 ft off destination band
+4238937194,WCB_1,WCB_2,"MM final gunbarrel ratification 2026-09-17 (Tycoon D 770H); neighborhood jury silent (no B-section wells within 1.5 mi), geologist grid concurs (B1 zone, 281 ft above top-B2)"
 4238937611,WCB_1,WCB_2,consensus flag ratified by MM (chat review 2026-09-15/16); 33 ft off destination band
 4238939418,WCB_2,WCB_1,"gold label: MM drilled this well (Kesey Unit 10-7E 8H), WCB_2 target; consensus round-2 case (jury contaminated by ratified 4238939421 mis-tag)"
 4238939421,WCB_2,WCB_1,consensus flag ratified by MM (chat review 2026-09-15/16); 51 ft off destination band
