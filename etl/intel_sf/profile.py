@@ -237,6 +237,19 @@ def section_key_semantics(cur, pg) -> list[str]:
     pad = _sf(cur, "SELECT count(*), count(latitude), count(longitude) FROM PAD")[0]
     out.append(f"- PAD: {pad[0]} rows, latitude populated on {pad[1]}, longitude on {pad[2]} "
                "(expected 0 - frozen legacy polygons stay)")
+
+    # EXCLUDE_COLS still justified? The loader deliberately skips the
+    # forecast condensate + cumulative columns (etl/intel_sf/config.py:
+    # cumulatives derivable, condensate all-NULL for Permian, ~5 GB saved
+    # — re-verified 0/93M non-null on 2026Q3). If Novi ever starts
+    # populating condensate, this line flips and the mirror decision
+    # re-opens on evidence.
+    cond = _sf(cur, "SELECT count(*), count(condensate_per_day), "
+                    "COUNT_IF(condensate_per_day <> 0) FROM PRODUCTION_FORECAST")[0]
+    verdict = ("still all-NULL - EXCLUDE_COLS skip stands" if cond[1] == 0 else
+               "**POPULATED - revisit EXCLUDE_COLS / sql/27 mirror decision**")
+    out.append(f"- forecast condensate_per_day: {cond[1]} non-null / {cond[2]} non-zero "
+               f"of {cond[0]} rows - {verdict}")
     return out
 
 
