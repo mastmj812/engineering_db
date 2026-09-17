@@ -814,15 +814,15 @@ COMMENT ON COLUMN curated.water_data_quality.water_source IS
 
 -- =============================================================================
 -- 31 (part F) -- curated.intel_forecast_accuracy_vintage +
--- intel_pdp_cliff_date(text, text) (sql/42). Duplicated from sql/42 (which
+-- intel_pdp_cliff_date(text, text) (sql/43). Duplicated from sql/43 (which
 -- also carries them) so a re-run of this file after any rebuild restores the
 -- catalog entries, per the header rule.
 -- =============================================================================
 COMMENT ON FUNCTION curated.intel_pdp_cliff_date(text, text) IS
-'Per-(vintage, basin) Novi Intelligence PDP recognition cliff, read from raw_intel directly (works for superseded vintages the curated views no longer serve). Same detection rule as the zero-arg sql/38 function, which remains the boundary for the live-vintage accuracy matview. 2024-12-01 on 2025Q3 for both basins. Bounds the per-vintage blind population of curated.intel_forecast_accuracy_vintage (sql/42).';
+'Per-(vintage, basin) Novi Intelligence PDP recognition cliff, read from raw_intel directly (works for superseded vintages the curated views no longer serve). Same detection rule as the zero-arg sql/38 function, which remains the boundary for the live-vintage accuracy matview. 2024-12-01 on 2025Q3 for both basins. Bounds the per-vintage blind population of curated.intel_forecast_accuracy_vintage (sql/43).';
 
 COMMENT ON MATERIALIZED VIEW curated.intel_forecast_accuracy_vintage IS
-'Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage''s own blind-producer population (first prod >= that vintage''s per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload''s sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/42.';
+'Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage''s own blind-producer population (first prod >= that vintage''s per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload''s sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.';
 
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.report_version IS
 'Novi report vintage this row scores, e.g. 2025Q3. The same well may be blind under several vintages and is scored against each.';
