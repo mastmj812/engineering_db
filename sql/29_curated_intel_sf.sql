@@ -145,7 +145,9 @@ slice_irr AS (
 ),
 pad_npv AS (
     -- pad rollup recomputed from member-stick economics (share has no
-    -- pad-level rollup). Delaware BASE_CASE only as of 2025Q3.
+    -- pad-level rollup). Coverage follows the share's pad_name gap: Delaware
+    -- BASE_CASE only as of 2025Q3, Midland only as of 2026Q3 (0 Delaware
+    -- pads shipped — raised with Novi).
     SELECT wm.report_name, wm.pad_name, SUM(e.npv25) AS pad_npv25
     FROM raw_intel.well_master wm
     JOIN econ e ON e.well_ref = wm.well_ref AND e.report_name = wm.report_name
