@@ -811,3 +811,30 @@ COMMENT ON COLUMN curated.water_data_quality.wor_cv IS
 'Coefficient of variation of monthly WOR (stddev/mean) over usable months. ~0 = water is a fixed multiple of oil (vendor-calculated); measured water runs ~0.4-0.5.';
 COMMENT ON COLUMN curated.water_data_quality.water_source IS
 'Classification of record (2026-08-17): insufficient | measured | calculated | indeterminate. Flag-only convention -- consumers badge/filter, never auto-exclude.';
+
+-- =============================================================================
+-- 31 (part F) -- curated.intel_forecast_accuracy_vintage +
+-- intel_pdp_cliff_date(text, text) (sql/42). Duplicated from sql/42 (which
+-- also carries them) so a re-run of this file after any rebuild restores the
+-- catalog entries, per the header rule.
+-- =============================================================================
+COMMENT ON FUNCTION curated.intel_pdp_cliff_date(text, text) IS
+'Per-(vintage, basin) Novi Intelligence PDP recognition cliff, read from raw_intel directly (works for superseded vintages the curated views no longer serve). Same detection rule as the zero-arg sql/38 function, which remains the boundary for the live-vintage accuracy matview. 2024-12-01 on 2025Q3 for both basins. Bounds the per-vintage blind population of curated.intel_forecast_accuracy_vintage (sql/42).';
+
+COMMENT ON MATERIALIZED VIEW curated.intel_forecast_accuracy_vintage IS
+'Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage''s own blind-producer population (first prod >= that vintage''s per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload''s sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/42.';
+
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.report_version IS
+'Novi report vintage this row scores, e.g. 2025Q3. The same well may be blind under several vintages and is scored against each.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.tier IS
+'direct = co-extent-realized BASE_CASE stick of this vintage (raw + per-ft errors). unmatched = no qualifying stick; forecast columns NULL. No proxy tier (sql/38 only).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.cliff_date IS
+'This (vintage, basin)''s empirical PDP recognition cliff (curated.intel_pdp_cliff_date(report_version, basin)); lower bound of the blind population.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.novi_well_ref IS
+'Matched stick''s well_ref (PW-<planned_well_id>) in raw_intel for this vintage. Novi renumbers planned wells every vintage — never join sticks across vintages.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.stick_id IS
+'Stable stick_id of the matched well_ref via raw_intel.stick_id_map (append-only, so superseded vintages keep their ids).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.pct_err_oil_perft IS
+'Per-ft cum error at this mop: (actual bbl/ft)/(forecast bbl/ft) - 1. The primary bias metric; mean = bias, cf. sql/38.';
+COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.is_latest_reported IS
+'Well''s newest posted production month (often incomplete under reporting lag). EXCLUDE from aggregates.';

@@ -61,6 +61,7 @@ _CONSUMERS = {
     "curated.intel_pdp_support": "erebor Highgrade filters + xlsx export, folded into erebor_locations (sql/22)",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
+    "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
 }
 
@@ -87,6 +88,7 @@ def _cadence(rel: str, kind: str) -> str:
                 "curated.intel_locations",
                 "curated.erebor_locations",
                 "curated.intel_forecast_accuracy",
+                "curated.intel_forecast_accuracy_vintage",
             )
             else ""
         )

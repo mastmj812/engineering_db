@@ -409,6 +409,7 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.intel_locations",
     "curated.erebor_locations",
     "curated.intel_forecast_accuracy",
+    "curated.intel_forecast_accuracy_vintage",
     "curated.production_forecast",
 )
 
@@ -417,7 +418,11 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
 # optional matview logs a warning and is skipped instead of failing the run —
 # same degradation refresh_all() encodes for erebor_locations.
 _OPTIONAL_MATVIEWS: frozenset[str] = frozenset(
-    {"curated.erebor_locations", "curated.intel_forecast_accuracy"}
+    {
+        "curated.erebor_locations",
+        "curated.intel_forecast_accuracy",
+        "curated.intel_forecast_accuracy_vintage",
+    }
 )
 
 
