@@ -24,6 +24,7 @@ from pathlib import Path
 
 from dealintake import config as cfgmod
 from dealintake import pipeline
+from dealintake.clients.anduin import AnduinError
 from dealintake.render import dossier
 
 
@@ -73,8 +74,12 @@ def main(argv: list[str] | None = None) -> int:
         (run_dir / "proposal.md").write_text(dossier.proposal_md(prop), encoding="utf-8")
         print(f"wrote {run_dir / 'proposal.md'} — review benches/window/spacing, then run evaluate")
     elif a.cmd == "evaluate":
-        pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
-                          use_anduin=not a.no_anduin)
+        try:
+            pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
+                              use_anduin=not a.no_anduin)
+        except AnduinError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            return 2
         print(f"wrote {dossier.render(run_dir)}")
     else:
         print(f"wrote {dossier.render(run_dir)}")

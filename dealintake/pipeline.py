@@ -207,14 +207,18 @@ def evaluate(
     if lls and min(lls) > 0 and max(lls) / min(lls) > 1.25:
         res["flags"].append(f"unit planned laterals differ >25% ({min(lls):,.0f}-{max(lls):,.0f} ft): consider per-unit TC bands")
 
+    # anduin requested -> it must work. A silent degrade made a run with no
+    # forecast/QC/TC look successful (2026-09-18); only --no-anduin skips it.
     ad: Anduin | None = None
     if use_anduin:
+        ad = anduin or Anduin()
         try:
-            ad = anduin or Anduin()
             ad.login()
         except AnduinError as e:
-            res["flags"].append(f"anduin skipped: {e}")
-            ad = None
+            raise AnduinError(f"{e} (or pass --no-anduin to run warehouse-only signals)") from e
+    else:
+        res["flags"].append("anduin not run (--no-anduin): no forecast, Di QC or TC preview; "
+                            "split test uses the Novi EUR screen")
 
     with wh.connect() as conn:
         for bench in stack:
