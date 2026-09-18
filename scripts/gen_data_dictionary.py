@@ -47,6 +47,7 @@ _QUARTERLY = {
     "curated.intel_forecast",
     "curated.bench_reference",  # sql/18, rebuilt by apply_intel_formation_blueox
     "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
+    "curated.intel_pad_geom",  # sql/45, rebuilt by apply_intel_pad_geom
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -59,6 +60,7 @@ _CONSUMERS = {
     "curated.intel_locations": "erebor Highgrade/facets/export",
     "curated.reconciled_inventory": "narvi remaining inventory, erebor recon status",
     "curated.intel_pdp_support": "erebor Highgrade filters + xlsx export, folded into erebor_locations (sql/22)",
+    "curated.intel_pad_geom": "erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
