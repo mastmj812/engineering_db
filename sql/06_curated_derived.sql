@@ -12,6 +12,7 @@
 --      - stages_per_1000ft, proppant_lbs_per_stage, fluid_bbl_per_stage
 --      - has_completion_intensity   (bool: are key intensity cols all populated?)
 --      - lateral_closer_xy_ft, wellspacing_vintage (Novi WellSpacing pass-through)
+--      - stack_closer_z_ft, stagger_closer_tangent_ft, parent_days_online (sql/48)
 --      Regular view; stays in sync with curated.wells automatically (no refresh).
 --
 --   2. curated.production_normalized (MATERIALIZED VIEW)
@@ -162,7 +163,24 @@ SELECT
     -- snapshot (uniform per load).
     -- ------------------------------------------------------------------
     ws."LateralCloserXY"                               AS lateral_closer_xy_ft,
-    ws.ingested_at                                     AS wellspacing_vintage
+    ws.ingested_at                                     AS wellspacing_vintage,
+
+    -- ------------------------------------------------------------------
+    -- Novi WellSpacing vertical / stagger / parent timing (sql/48, 2026-09,
+    -- deal-intake v2 cross-check on curated.codev_context). Raw pass-
+    -- through, same AS-OF-FIRST-PRODUCTION semantics as LateralCloserXY.
+    -- APPENDED at the end of the column list on purpose: CREATE OR REPLACE
+    -- VIEW may only add trailing columns, and that is what keeps this a
+    -- no-CASCADE change for erebor_locations / intel_pdp_support.
+    -- SENTINELS (verified live 2026-09-18) — caps, not measurements:
+    --   stack_closer_z_ft          = 1000   (~72% of rows; real max 999)
+    --   stagger_closer_tangent_ft  = 2973.21 (~17%; real max ~2,639)
+    --   parent_days_online         = -1     (exactly the IsChild = FALSE /
+    --                                          ParentCount = 0 rows)
+    -- ------------------------------------------------------------------
+    ws."StackCloserZ"                                  AS stack_closer_z_ft,
+    ws."StaggerCloserTangent"                          AS stagger_closer_tangent_ft,
+    ws."ParentDaysOnline"                              AS parent_days_online
 
 FROM curated.wells w
 LEFT JOIN curated.formation_blueox fb
@@ -175,7 +193,7 @@ LEFT JOIN raw_novi."WellSpacing" ws
 
 
 COMMENT ON VIEW curated.wells_enriched IS
-'curated.wells + per-well derived columns (vintage bucket, lateral length class, is_horizontal, per-stage intensity, Novi WellSpacing lateral_closer_xy_ft + wellspacing_vintage). Regular view; auto-syncs with wells.';
+'curated.wells + per-well derived columns (vintage bucket, lateral length class, is_horizontal, per-stage intensity, Novi WellSpacing lateral_closer_xy_ft + wellspacing_vintage + stack_closer_z_ft / stagger_closer_tangent_ft / parent_days_online). Regular view; auto-syncs with wells.';
 
 
 -- =============================================================================
