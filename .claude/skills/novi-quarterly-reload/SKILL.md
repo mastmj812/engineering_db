@@ -77,15 +77,15 @@ sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
 `reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
 `intel_forecast_accuracy`, `intel_pad_geom`, `erebor_locations`); sql/20 inside
 apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` +
-`intel_forecast_accuracy_vintage` (sql/43; restored by
-apply_intel_forecast_accuracy below) — the script rebuilds sql/23 +
-wells_enriched in order (keep that if it's ever refactored).
+`codev_context` (sql/46) + `intel_forecast_accuracy_vintage` (sql/43; restored
+by apply_intel_forecast_accuracy below) — the script rebuilds sql/23 +
+wells_enriched + codev_context in order (keep that if it's ever refactored).
 
 ```powershell
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast
 python -m scripts.apply_intel_pad_geom                 # sql/45: pad polygons from stick hulls (erebor Highgrade)
 python -m scripts.apply_intel_formation_blueox         # sql/19
-python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/21
+python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/46 -> sql/21
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
 python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
