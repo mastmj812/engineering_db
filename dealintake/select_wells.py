@@ -23,9 +23,10 @@ A single-bench plan has no adjacent bench: every candidate is tier
 ORDER: default codev -> stack_standalone -> topfill_underfill; flips to
 topfill_underfill -> codev -> stack_standalone when the DSU already has PDP
 in an adjacent bench (the planned sticks ARE topfill/underfill then).
-FILL: take tiers in order; a whole tier is taken while the running count is
-below min_wells, and the tier that crosses min_wells contributes only its
-nearest wells (by distance to the unit) up to min_wells.
+FILL (Michael, 2026-09-18): the FIRST tier contributes its nearest wells
+(by distance to the unit) up to type_curve.max_wells; each later tier only
+tops up, nearest first, until min_wells is reached. Wells beyond the cap stay
+in eligible_not_selected (they still feed the tier medians).
 """
 
 from __future__ import annotations
@@ -151,7 +152,7 @@ def select(
     adjacent = adjacent_benches(bench, planned_stack)
     cx = cfg["codev"]
     if deal_has_pdp_in_adjacent_bench and adjacent:
-        order, why = list(cx["tier_order_when_pdp_adjacent"]), "DSU already has PDP in an adjacent bench"
+        order, why = list(cx["tier_order_when_pdp_adjacent"]), "majority of deal units already have PDP in an adjacent bench"
     else:
         order, why = list(cx["tier_order_default"]), "default"
     sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=why)
@@ -175,20 +176,19 @@ def select(
             eligible.append(c)
 
     min_wells = int(cfg["type_curve"]["min_wells"])
+    max_wells = int(cfg["type_curve"]["max_wells"])
     for t in order:
         tier_wells = sorted(
             (c for c in eligible if c["tier"] == t),
             key=lambda c: (c.get("dist_ft") is None, c.get("dist_ft") or 0.0, c["api10"]),
         )
-        if len(sel.selected) >= min_wells:
-            sel.eligible_not_selected.extend(tier_wells)
-            continue
-        if len(sel.selected) + len(tier_wells) <= min_wells or t == order[0]:
-            sel.selected.extend(tier_wells)
-        else:
-            need = min_wells - len(sel.selected)
-            sel.selected.extend(tier_wells[:need])
-            sel.eligible_not_selected.extend(tier_wells[need:])
+        target = max_wells if t == order[0] else min_wells
+        take = max(0, target - len(sel.selected))
+        sel.selected.extend(tier_wells[:take])
+        sel.eligible_not_selected.extend(tier_wells[take:])
+    first = sum(1 for c in eligible if c["tier"] == order[0])
+    if first > max_wells:
+        sel.flags.append(f"first tier capped: {max_wells} nearest of {first} {order[0]} wells")
 
     if len(sel.selected) < min_wells:
         sel.flags.append(f"under_count: {len(sel.selected)} < min_wells {min_wells} (extend radius / strike-biased — reviewer)")

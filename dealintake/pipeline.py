@@ -292,12 +292,14 @@ def evaluate(
             edge, edge_sig = _edge_fired(support_all, cfg)
             B["edge_trigger"] = {"fired": edge, **edge_sig}
             pdp_adj_units = [lb for lb, ub in B["units"].items() if ub["has_pdp_in_adjacent_bench"]]
+            # Tier-order flip by STRICT MAJORITY of units (Michael, 2026-09-18); tie -> default.
+            flip = len(pdp_adj_units) * 2 > len(B["units"])
             sel = None
             for radius in RADIUS_STEPS_MI:
                 cands = cands0 if radius == RADIUS_STEPS_MI[0] else wh.candidates(conn, union, bench, radius)
                 sel = select(
                     cands, cfg, bench=bench, planned_stack=stack, planned_lateral_ft=planned_ll,
-                    basin=basin, planned_spacing_ft=sp, deal_has_pdp_in_adjacent_bench=bool(pdp_adj_units),
+                    basin=basin, planned_spacing_ft=sp, deal_has_pdp_in_adjacent_bench=flip,
                 )
                 sel.flags.append(f"radius {radius} mi, basin {basin}, lateral tol {tol:.0%}")
                 if len(sel.selected) >= int(cfg["type_curve"]["min_wells"]) or edge:
@@ -306,7 +308,9 @@ def evaluate(
             if edge and len(sel.selected) < int(cfg["type_curve"]["min_wells"]):
                 sel.flags.append("EDGE trigger fired: no concentric extension — propose strike-biased set (reviewer confirms)")
             if pdp_adj_units and len(pdp_adj_units) < len(B["units"]):
-                sel.flags.append(f"tier order flipped for all units; only {', '.join(pdp_adj_units)} have adjacent-bench PDP")
+                sel.flags.append(
+                    f"adjacent-bench PDP in {len(pdp_adj_units)}/{len(B['units'])} units "
+                    f"({', '.join(pdp_adj_units)}): {'majority -> order flipped' if flip else 'no majority -> default order'}")
             B["selection"] = {
                 "adjacent_planned": sel.adjacent, "tier_order": sel.tier_order, "order_reason": sel.order_reason,
                 "tier_counts": sel.tier_counts(), "tier_medians_novi_eur_per_1000ft": tier_medians(sel),

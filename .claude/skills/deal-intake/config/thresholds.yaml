@@ -40,6 +40,8 @@ type_curve:                       # gate 5 — well selection
   first_prod_after: 2016-01-01
   min_months_data: 6              # post-filter; not a /wells/select param
   min_wells: 10
+  max_wells: 20                   # cap on the FIRST tier (nearest first); lower tiers
+                                  # only top up to min_wells (Michael, 2026-09-18)
   default_radius_mi: 5
   extension:
     basinward: concentric_radius
@@ -71,6 +73,8 @@ codev:                            # gate 5.2b — co-development tiering
   overlap_min_frac: 0.30
   tier_order_default: [codev, stack_standalone, topfill_underfill]
   tier_order_when_pdp_adjacent: [topfill_underfill, codev, stack_standalone]
+  # flip decided by STRICT MAJORITY of deal units with adjacent-bench PDP
+  # (Michael, 2026-09-18); a tie keeps the default order.
   min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no

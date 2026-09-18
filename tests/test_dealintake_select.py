@@ -105,3 +105,23 @@ def test_low_first_tier_share_flag():
     cands = [cand("c0", "codev")] + [cand(f"s{i}", "standalone") for i in range(9)]
     sel = _select(cands)
     assert any("first_tier_share" in f for f in sel.flags)
+
+
+def test_first_tier_capped_at_max_wells_nearest_first():
+    cands = [cand(f"c{i:02d}", "codev", dist=float(i)) for i in range(30)]
+    sel = _select(cands)
+    assert len(sel.selected) == CFG["type_curve"]["max_wells"] == 20
+    assert [c["api10"] for c in sel.selected] == [f"c{i:02d}" for i in range(20)]
+    assert len(sel.eligible_not_selected) == 10
+    assert any(f.startswith("first tier capped") for f in sel.flags)
+
+
+def test_config_rejects_max_below_min():
+    import copy
+
+    from dealintake.config import ConfigError, validate
+
+    raw = copy.deepcopy(CFG.raw)
+    raw["type_curve"]["max_wells"] = 5
+    with pytest.raises(ConfigError):
+        validate(raw)

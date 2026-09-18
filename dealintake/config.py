@@ -24,7 +24,7 @@ _REQUIRED = {
     "alignment": ("stick_inside_tolerance_ft", "fallback_scope"),
     "depth": ("edge_margin_ft",),
     "bench_inclusion": ("pdp_count_3mi_min",),
-    "type_curve": ("first_prod_after", "min_months_data", "min_wells", "lateral_tolerance_by_basin"),
+    "type_curve": ("first_prod_after", "min_months_data", "min_wells", "max_wells", "lateral_tolerance_by_basin"),
     "planned_lateral": ("setback_ft", "chord_step_ft"),
     "codev": ("xy_ft", "window_days", "overlap_min_frac", "tier_order_default",
               "tier_order_when_pdp_adjacent", "min_tier1_frac_warn"),
@@ -74,6 +74,8 @@ def validate(raw: dict[str, Any]) -> None:
         order = raw["codev"][key]
         if sorted(order) != sorted(TIERS):
             raise ConfigError(f"codev.{key} must be a permutation of {TIERS}, got {order}")
+    if int(raw["type_curve"]["max_wells"]) < int(raw["type_curve"]["min_wells"]):
+        raise ConfigError("type_curve.max_wells must be >= min_wells")
     if raw["alignment"]["fallback_scope"] not in ("bench", "unit"):
         raise ConfigError("alignment.fallback_scope must be 'bench' or 'unit'")
 
