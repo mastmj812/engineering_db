@@ -138,6 +138,18 @@ def run(
     if big and sig:
         res.recommendation = "split_by_polygon"
         res.clusters = cluster_units(usable, units, elig, metric, ratio_thr, alpha, min_n)
+        if len(res.clusters) == 1:
+            # The pool differs end to end, but no adjacent step clears both
+            # criteria: a continuous GRADIENT, not separable populations
+            # (Toucan WCA_2 2026-09-18: 51k -> 87k in steps < 1.25x). Neither a
+            # silent single TC nor an arbitrary cut — the reviewer decides.
+            res.recommendation = "escalate"
+            meds = sorted((g["median"], g["unit"]) for g in elig)
+            res.notes.append(
+                f"continuous gradient, no clean break: {' < '.join(f'{u} {m:,.0f}' for m, u in meds)} "
+                f"(end-to-end ratio {res.median_ratio:.2f}, every adjacent step <= {ratio_thr}); "
+                "reviewer: one TC with the gradient noted, or cut where geology says"
+            )
         return res
     elif big or sig:
         res.recommendation = "escalate"

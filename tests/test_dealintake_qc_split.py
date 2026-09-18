@@ -135,3 +135,20 @@ def test_split_merges_indistinguishable_units_and_borrows_small_ones():
 def test_single_tc_has_one_cluster_of_all_units():
     wells = _wells(1000, 7, 50.0, jitter=3.0) + _wells(11500, 7, 51.0, jitter=3.0)
     assert split_test.run(wells, UNITS, CFG).clusters == [["west", "east"]]
+
+
+def test_continuous_gradient_escalates_instead_of_silent_single_tc():
+    # Toucan WCA_2 shape: medians 51 < 63 < 71 < 87, wide spread in the top
+    # unit, so no adjacent step clears BOTH criteria but the ends differ 1.7x.
+    levels, spreads, ns = [51, 63, 71, 87], [30, 30, 30, 90], [10, 10, 10, 6]
+    units = {f"u{i}": rect_ft(i * 10560, 0, i * 10560 + 5280, 10560) for i in range(4)}
+    wells = []
+    for i in range(4):
+        for j in range(ns[i]):
+            lon, lat = point_lonlat_ft(i * 10560 + 500 + 200 * j, 5000)
+            wells.append({"api10": f"{i}-{j}", "lon": lon, "lat": lat,
+                          "eur_per_1000ft": levels[i] + spreads[i] * (j - (ns[i] - 1) / 2) / (ns[i] - 1)})
+    res = split_test.run(wells, units, CFG)
+    assert res.recommendation == "escalate"
+    assert res.clusters == [["u0", "u1", "u2", "u3"]]
+    assert any("continuous gradient" in n for n in res.notes)
