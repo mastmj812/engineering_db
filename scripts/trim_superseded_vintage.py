@@ -118,6 +118,7 @@ def main() -> None:
             return
 
         print("[2/3] verify sql/43 accuracy grain unaffected (refresh + counts)", flush=True)
+        conn.commit()  # close the count-query transaction before autocommit
         conn.autocommit = True
         with conn.cursor() as cur:
             cur.execute("SELECT report_version, COUNT(DISTINCT api10) "
