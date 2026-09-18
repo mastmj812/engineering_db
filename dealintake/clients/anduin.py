@@ -40,13 +40,31 @@ class Anduin:
         self.s.headers["Authorization"] = f"Bearer {r['access_token']}"
         self._authed = True
 
+    # Paths safe to repeat after a dropped connection: reads, plus the TC
+    # compute PREVIEW (persists nothing). /forecasts/batch is NOT here — a
+    # repeat would enqueue a second job; login is cheap to redo by hand.
+    _IDEMPOTENT_POST = ("/api/type-curves/compute",)
+
     def _req(self, method: str, path: str, *, auth: bool = True, **kw: Any) -> Any:
         if auth and not self._authed:
             self.login()
-        try:
-            r = self.s.request(method, f"{self.base}{path}", timeout=self.timeout, **kw)
-        except requests.ConnectionError as e:
-            raise AnduinError(f"anduin not reachable at {self.base} — docker compose up") from e
+        retryable = method == "GET" or path in self._IDEMPOTENT_POST
+        attempts = 3 if retryable else 1
+        for i in range(attempts):
+            try:
+                r = self.s.request(method, f"{self.base}{path}", timeout=self.timeout, **kw)
+                break
+            except requests.ConnectionError as e:
+                # uvicorn closes idle keep-alive sockets after 5 s; a request
+                # that reuses one at that instant sees "Connection aborted"
+                # (2026-09-18 incident) — not an outage. Retry the safe ones.
+                if i + 1 < attempts:
+                    time.sleep(1.0 + i)
+                    continue
+                raise AnduinError(
+                    f"{method} {path}: connection to {self.base} failed ({e.__class__.__name__}: {e})"
+                    + ("" if retryable else " — not retried (not idempotent); check GET /api/sync/status before re-running")
+                ) from e
         if r.status_code >= 400:
             raise AnduinError(f"{method} {path} -> {r.status_code}: {r.text[:500]}")
         return r.json() if r.content else None
@@ -67,7 +85,7 @@ class Anduin:
         api10s: list[str],
         *,
         only_missing: bool = True,
-        poll_s: float = 5.0,
+        poll_s: float = 3.0,   # < uvicorn's 5 s keep-alive timeout
         max_wait_s: float = 3600.0,
     ) -> dict[str, Any]:
         """POST /api/forecasts/batch (<=500/call), poll GET /api/sync/jobs/{id}.
