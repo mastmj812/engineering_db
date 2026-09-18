@@ -49,6 +49,15 @@ def test_mixed_b_compared_in_effective_space():
     assert res.streams["oil"].n_de_flagged == 0
 
 
+def test_gas_spread_reported_but_gas_outliers_still_flagged():
+    rows = [row(f"w{i}", 0.55, stream="gas", eur=5_000_000 + 50_000 * i) for i in range(8)]
+    rows += [row("lowde", 0.30, stream="gas", eur=5_200_000), row("big", 0.55, stream="gas", eur=15_000_000)]
+    res = cohort_qc.run(rows, CFG)
+    assert not [f for f in res.well_flags if f["flag"] == "di_dispersion"]
+    assert res.streams["gas"].n_de_flagged == 1 and res.streams["gas"].flagged is False
+    assert {f["api10"] for f in res.well_flags if f["flag"] == "eur_per_1000ft_outlier"} == {"big"}
+
+
 def test_water_reported_not_flagged():
     rows = [row(f"w{i}", 0.70, stream="water") for i in range(6)] + [row("x", 0.40, stream="water")]
     res = cohort_qc.run(rows, CFG)

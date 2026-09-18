@@ -9,8 +9,9 @@ yr-1 typical) varies by area/bench and is not a flag. DISPERSION within the
 cohort is: 50% beside 70% means a different reservoir (unlikely over a small
 area) or an unreliable autoforecast. Measured on 1-yr EFFECTIVE decline,
 which folds b in — comparing nominal Di across different b misleads.
-Water is reported, never flagged (TX water is often a vendor-calculated
-flat WOR — sql/41).
+Di SPREAD is flagged for oil only; gas and water spreads are reported
+(gas: real GOR behavior, 2026-09-18; water: TX vendor-calculated flat WOR,
+sql/41). EUR outliers + peak-month flags run on outlier_flags_streams.
 """
 
 from __future__ import annotations
@@ -56,7 +57,8 @@ class StreamQC:
     n_de_flagged: int = 0
     cohort_flag: str | None = None
     eur_per_1000ft_median: float | None = None
-    flagged: bool = True  # False for report-only streams (water)
+    flagged: bool = True  # Di-spread flagged (False = report-only: gas, water)
+    outliers_flagged: bool = True  # EUR/1,000 ft outlier + peak-month flags
 
 
 @dataclass
@@ -70,11 +72,13 @@ def run(rows: list[dict[str, Any]], cfg: Config) -> QCResult:
     dd = q["di_dispersion"]
     pts = float(dd["well_points_from_median"]) / 100.0
     flag_streams = set(dd["streams_flagged"])
+    outlier_streams = set(q.get("outlier_flags_streams", dd["streams_flagged"]))
     out = QCResult()
 
     for stream in STREAMS:
         rs = [r for r in rows if r.get("stream") == stream]
-        sq = StreamQC(stream=stream, n=len(rs), flagged=stream in flag_streams)
+        sq = StreamQC(stream=stream, n=len(rs), flagged=stream in flag_streams,
+                      outliers_flagged=stream in outlier_streams)
         out.streams[stream] = sq
         if not rs:
             continue
@@ -124,7 +128,7 @@ def run(rows: list[dict[str, Any]], cfg: Config) -> QCResult:
         ]
         if per:
             sq.eur_per_1000ft_median = statistics.median(v for _, v in per)
-            if len(per) >= 4 and sq.flagged:
+            if len(per) >= 4 and sq.outliers_flagged:
                 zmax = float(q["eur_ft_mad_z"])
                 for (r, v), z in zip(per, robust_z([v for _, v in per])):
                     if z is not None and abs(z) > zmax:
@@ -137,7 +141,7 @@ def run(rows: list[dict[str, Any]], cfg: Config) -> QCResult:
         # Peak month vs the cohort's median peak for THIS stream (each stream
         # anchors on its own peak — gas commonly ~4 mo after oil).
         pk = [r for r in rs if r.get("peak_index_months") is not None]
-        if pk and sq.flagged:
+        if pk and sq.outliers_flagged:
             med_pk = statistics.median(int(r["peak_index_months"]) for r in pk)
             tol = int(q["peak_month_tolerance"])
             for r in pk:
