@@ -23,6 +23,9 @@ A single-bench plan has no adjacent bench: every candidate is tier
 ORDER: default codev -> stack_standalone -> topfill_underfill; flips to
 topfill_underfill -> codev -> stack_standalone when the DSU already has PDP
 in an adjacent bench (the planned sticks ARE topfill/underfill then).
+ORDER OF OPERATIONS (Michael, 2026-09-18): classify the whole eligible pool
+FIRST, run the TC split test on it, THEN fill a cohort per TC group. Filling
+before splitting starved remote units of wells and hid a real split (Toucan).
 FILL (Michael, 2026-09-18): the FIRST tier contributes its nearest wells
 (by distance to the unit) up to type_curve.max_wells; each later tier only
 tops up, nearest first, until min_wells is reached. Wells beyond the cap stay
@@ -138,6 +141,84 @@ class Selection:
         return self.tier_counts()[self.tier_order[0]] / len(self.selected)
 
 
+def tier_order(cfg: Config, adjacent: list[str], flip: bool) -> tuple[list[str], str]:
+    cx = cfg["codev"]
+    if flip and adjacent:
+        return list(cx["tier_order_when_pdp_adjacent"]), "majority of deal units already have PDP in an adjacent bench"
+    return list(cx["tier_order_default"]), "default"
+
+
+def classify(
+    candidates: list[dict[str, Any]],
+    cfg: Config,
+    *,
+    bench: str,
+    planned_stack: list[str],
+    planned_lateral_ft: float,
+    basin: str | None,
+    planned_spacing_ft: float,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    """Tag every candidate with spacing class + codev tier and split into
+    (eligible, excluded-with-reasons, adjacent planned benches). No capping —
+    the eligible POOL feeds the split test before any cohort is filled."""
+    adjacent = adjacent_benches(bench, planned_stack)
+    tol = cfg.lateral_tolerance(basin)
+    eligible, excluded = [], []
+    for c in candidates:
+        c = dict(c)
+        c["spacing_class"] = spacing_class(c.get("lateral_closer_xy_ft"), planned_spacing_ft, cfg)
+        c["tier"] = codev_tier(c, adjacent)
+        reasons = exclusion_reasons(
+            c, cfg, planned_lateral_ft=planned_lateral_ft, lateral_tol=tol,
+            planned_spacing_ft=planned_spacing_ft,
+        )
+        if reasons:
+            c["exclusion"] = ";".join(reasons)
+            excluded.append(c)
+        else:
+            eligible.append(c)
+    return eligible, excluded, adjacent
+
+
+def fill(
+    eligible: list[dict[str, Any]],
+    cfg: Config,
+    *,
+    bench: str,
+    adjacent: list[str],
+    order: list[str],
+    order_reason: str,
+    dist_key: str = "dist_ft",
+) -> Selection:
+    """Fill one TC cohort from an eligible pool (see FILL in the module doc).
+    `dist_key` = distance used for nearest-first (to the whole deal for a
+    pooled TC, to the unit itself for a per-polygon TC)."""
+    sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=order_reason)
+    if not adjacent:
+        sel.flags.append("single_bench_plan: codev tiering not applicable")
+    min_wells = int(cfg["type_curve"]["min_wells"])
+    max_wells = int(cfg["type_curve"]["max_wells"])
+    for t in order:
+        tier_wells = sorted(
+            (c for c in eligible if c["tier"] == t),
+            key=lambda c: (c.get(dist_key) is None, c.get(dist_key) or 0.0, c["api10"]),
+        )
+        target = max_wells if t == order[0] else min_wells
+        take = max(0, target - len(sel.selected))
+        sel.selected.extend(tier_wells[:take])
+        sel.eligible_not_selected.extend(tier_wells[take:])
+    first = sum(1 for c in eligible if c["tier"] == order[0])
+    if first > max_wells:
+        sel.flags.append(f"first tier capped: {max_wells} nearest of {first} {order[0]} wells")
+    if len(sel.selected) < min_wells:
+        sel.flags.append(f"under_count: {len(sel.selected)} < min_wells {min_wells} (extend radius / strike-biased — reviewer)")
+    frac = sel.first_tier_frac()
+    cx = cfg["codev"]
+    if adjacent and frac is not None and frac < float(cx["min_tier1_frac_warn"]):
+        sel.flags.append(f"first_tier_share {frac:.0%} < {float(cx['min_tier1_frac_warn']):.0%} ({order[0]})")
+    return sel
+
+
 def select(
     candidates: list[dict[str, Any]],
     cfg: Config,
@@ -149,52 +230,14 @@ def select(
     planned_spacing_ft: float,
     deal_has_pdp_in_adjacent_bench: bool,
 ) -> Selection:
-    adjacent = adjacent_benches(bench, planned_stack)
-    cx = cfg["codev"]
-    if deal_has_pdp_in_adjacent_bench and adjacent:
-        order, why = list(cx["tier_order_when_pdp_adjacent"]), "majority of deal units already have PDP in an adjacent bench"
-    else:
-        order, why = list(cx["tier_order_default"]), "default"
-    sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=why)
-    if not adjacent:
-        sel.flags.append("single_bench_plan: codev tiering not applicable")
-
-    tol = cfg.lateral_tolerance(basin)
-    eligible = []
-    for c in candidates:
-        c = dict(c)
-        c["spacing_class"] = spacing_class(c.get("lateral_closer_xy_ft"), planned_spacing_ft, cfg)
-        c["tier"] = codev_tier(c, adjacent)
-        reasons = exclusion_reasons(
-            c, cfg, planned_lateral_ft=planned_lateral_ft, lateral_tol=tol,
-            planned_spacing_ft=planned_spacing_ft,
-        )
-        if reasons:
-            c["exclusion"] = ";".join(reasons)
-            sel.excluded.append(c)
-        else:
-            eligible.append(c)
-
-    min_wells = int(cfg["type_curve"]["min_wells"])
-    max_wells = int(cfg["type_curve"]["max_wells"])
-    for t in order:
-        tier_wells = sorted(
-            (c for c in eligible if c["tier"] == t),
-            key=lambda c: (c.get("dist_ft") is None, c.get("dist_ft") or 0.0, c["api10"]),
-        )
-        target = max_wells if t == order[0] else min_wells
-        take = max(0, target - len(sel.selected))
-        sel.selected.extend(tier_wells[:take])
-        sel.eligible_not_selected.extend(tier_wells[take:])
-    first = sum(1 for c in eligible if c["tier"] == order[0])
-    if first > max_wells:
-        sel.flags.append(f"first tier capped: {max_wells} nearest of {first} {order[0]} wells")
-
-    if len(sel.selected) < min_wells:
-        sel.flags.append(f"under_count: {len(sel.selected)} < min_wells {min_wells} (extend radius / strike-biased — reviewer)")
-    frac = sel.first_tier_frac()
-    if adjacent and frac is not None and frac < float(cx["min_tier1_frac_warn"]):
-        sel.flags.append(f"first_tier_share {frac:.0%} < {float(cx['min_tier1_frac_warn']):.0%} ({order[0]})")
+    """classify + fill in one call (single pooled cohort)."""
+    eligible, excluded, adjacent = classify(
+        candidates, cfg, bench=bench, planned_stack=planned_stack, planned_lateral_ft=planned_lateral_ft,
+        basin=basin, planned_spacing_ft=planned_spacing_ft,
+    )
+    order, why = tier_order(cfg, adjacent, deal_has_pdp_in_adjacent_bench)
+    sel = fill(eligible, cfg, bench=bench, adjacent=adjacent, order=order, order_reason=why)
+    sel.excluded = excluded
     return sel
 
 

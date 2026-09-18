@@ -37,7 +37,14 @@ from dealintake.clients.narvi import Narvi, legs
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import long_axis_azimuth, planned_lateral, stick_relation
-from dealintake.select_wells import adjacent_benches, bench_code, select, tier_medians
+from dealintake.select_wells import (
+    adjacent_benches,
+    bench_code,
+    classify,
+    fill,
+    tier_medians,
+    tier_order,
+)
 
 DEFAULT_SPACING_FT = 880.0  # narvi's fallback when no in-unit de-facto gap exists
 RADIUS_STEPS_MI = (5.0, 7.5, 10.0)
@@ -228,7 +235,6 @@ def evaluate(
             B["spacing_ft"] = sp
             B["spacing_source"] = "reviewer" if bench in spacing_ft else f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
             support_all: list[dict[str, Any]] = []
-            novi_ids: list[int] = []
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
             # in-bench producers within the first selection radius.
@@ -248,6 +254,7 @@ def evaluate(
                 tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
                 g2 = u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
                                                "pud_inside": 0, "pud_crossing": 0}
+                unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u,
                                       "tvd_source": "unit local median" if local_tvd is not None else "cross-unit median (no local control)"}
                 if g2["source"] == "novi":
@@ -259,7 +266,7 @@ def evaluate(
                     sup = [{k: s.get(k) for k in ("pdp_count_1mi", "pdp_count_3mi", "pdp_count_5mi",
                                                   "dist_nearest_ft", "offset_median_eur_ft",
                                                   "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
-                    novi_ids += [s["stick_id"] for s in sticks]
+                    unit_novi += [s["stick_id"] for s in sticks]
                 else:
                     gen = narvi.generate(
                         geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp}],
@@ -272,7 +279,7 @@ def evaluate(
                                         "wkt": leg["geom"].wkt} for i, leg in enumerate(lg)]
                     sup = [wh.pdp_support(conn, leg["geom"], bench, tvd_u) for leg in lg]
                     for leg in lg:
-                        novi_ids += wh.representative_sticks(
+                        unit_novi += wh.representative_sticks(
                             conn, leg["geom"], bench, float(leg.get("completed_lateral_ft") or planned_ll), tol)
                 c3 = [r.get("pdp_count_3mi") for r in sup if r.get("pdp_count_3mi") is not None]
                 UB["gate3"] = {
@@ -289,75 +296,103 @@ def evaluate(
                 UB["gate3"]["status"] = ("escalate (unscorable)" if med is None
                                          else "pass" if med >= thr else "escalate (marginal: live re-count before excluding)")
                 UB["has_pdp_in_adjacent_bench"] = any(p["bench"] in adj for p in u["pdp_in_unit"])
+                UB["novi_ids"] = sorted(set(unit_novi))
                 support_all += sup
                 B["units"][label] = UB
 
-            # ---- Gate 5: selection -------------------------------------------------
+            # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
             B["edge_trigger"] = {"fired": edge, **edge_sig}
             pdp_adj_units = [lb for lb, ub in B["units"].items() if ub["has_pdp_in_adjacent_bench"]]
             # Tier-order flip by STRICT MAJORITY of units (Michael, 2026-09-18); tie -> default.
             flip = len(pdp_adj_units) * 2 > len(B["units"])
-            sel = None
+            min_wells = int(cfg["type_curve"]["min_wells"])
+            pool_flags: list[str] = []
             for radius in RADIUS_STEPS_MI:
                 cands = cands0 if radius == RADIUS_STEPS_MI[0] else wh.candidates(conn, union, bench, radius)
-                sel = select(
+                eligible, excluded, adjacent = classify(
                     cands, cfg, bench=bench, planned_stack=stack, planned_lateral_ft=planned_ll,
-                    basin=basin, planned_spacing_ft=sp, deal_has_pdp_in_adjacent_bench=flip,
+                    basin=basin, planned_spacing_ft=sp,
                 )
-                sel.flags.append(f"radius {radius} mi, basin {basin}, lateral tol {tol:.0%}")
-                if len(sel.selected) >= int(cfg["type_curve"]["min_wells"]) or edge:
+                if len(eligible) >= min_wells or edge:
                     break
-            assert sel is not None
-            if edge and len(sel.selected) < int(cfg["type_curve"]["min_wells"]):
-                sel.flags.append("EDGE trigger fired: no concentric extension — propose strike-biased set (reviewer confirms)")
+            pool_flags.append(f"radius {radius} mi, basin {basin}, lateral tol {tol:.0%}, eligible pool {len(eligible)}")
+            if edge and len(eligible) < min_wells:
+                pool_flags.append("EDGE trigger fired: no concentric extension — propose strike-biased set (reviewer confirms)")
             if pdp_adj_units and len(pdp_adj_units) < len(B["units"]):
-                sel.flags.append(
+                pool_flags.append(
                     f"adjacent-bench PDP in {len(pdp_adj_units)}/{len(B['units'])} units "
                     f"({', '.join(pdp_adj_units)}): {'majority -> order flipped' if flip else 'no majority -> default order'}")
-            B["selection"] = {
-                "adjacent_planned": sel.adjacent, "tier_order": sel.tier_order, "order_reason": sel.order_reason,
-                "tier_counts": sel.tier_counts(), "tier_medians_novi_eur_per_1000ft": tier_medians(sel),
-                "flags": sel.flags,
-                "n_excluded": len(sel.excluded),
-                "exclusion_reasons": Counter(r for c in sel.excluded for r in c["exclusion"].split(";")),
+            order, order_reason = tier_order(cfg, adjacent, flip)
+            B["pool"] = {
+                "n_eligible": len(eligible), "n_excluded": len(excluded), "flags": pool_flags,
+                "adjacent_planned": adjacent, "tier_order": order, "order_reason": order_reason,
+                "exclusion_reasons": Counter(r for c in excluded for r in c["exclusion"].split(";")),
             }
-            B["tc_wells"] = sel.selected
-            B["eligible_not_selected"] = sel.eligible_not_selected
-            api10s = [c["api10"] for c in sel.selected]
 
-            # ---- Gate 5.5 / 6: anduin forecast + QC + TC preview ------------------
-            if ad and api10s:
-                B["anduin_forecast"] = ad.forecast(api10s)
-                rows = ad.forecasts(api10s)
-                qc = cohort_qc.run(rows, cfg)
-                B["qc"] = {"streams": {k: asdict(v) for k, v in qc.streams.items()}, "well_flags": qc.well_flags}
+            # ---- Gate 5.5: anduin fits for the WHOLE pool (split test needs them) --
+            rows_all: list[dict[str, Any]] = []
+            if ad and eligible:
+                B["anduin_forecast"] = ad.forecast([c["api10"] for c in eligible])
+                rows_all = ad.forecasts([c["api10"] for c in eligible])
                 eur_ft = {r["api10"]: float(r["eur"]) / float(r["well_lateral_ft"]) * 1000.0
-                          for r in rows if r["stream"] == "oil" and r.get("eur") and r.get("well_lateral_ft")}
-                for c in sel.selected:
+                          for r in rows_all if r["stream"] == "oil" and r.get("eur") and r.get("well_lateral_ft")}
+                for c in eligible:
                     c["anduin_oil_eur_per_1000ft"] = eur_ft.get(c["api10"])
-                B["anduin_oil"] = {
-                    r["api10"]: {k: r.get(k) for k in ("di_initial", "b", "di_effective", "peak_index_months",
-                                                      "fit_at_bound", "eur", "well_lateral_ft")}
-                    for r in rows if r["stream"] == "oil"
-                }
-                tc = ad.compute_type_curve(api10s)
-                B["tc_preview"] = {s: v.get("fitted") for s, v in (tc.get("streams") or {}).items()}
-                B["tc_preview_n_wells"] = tc.get("n_wells")
                 metric = "anduin_oil_eur_per_1000ft"
             else:
                 metric = "eur_per_1000ft"
 
-            # ---- Gate 5b: split test ----------------------------------------------
-            sr = split_test.run([dict(c) for c in sel.selected + sel.eligible_not_selected], units, cfg, metric=metric)
+            # ---- Gate 5b: split test on the POOL, before any cohort is filled -----
+            sr = split_test.run(eligible, units, cfg, metric=metric)   # tags c["unit"], c["unit_dist_ft"]
             B["split"] = asdict(sr)
             if metric == "eur_per_1000ft":
                 B["split"]["notes"].append("metric = Novi 30-yr EUR/1,000 ft SCREEN (anduin fits unavailable)")
 
-            # ---- Gate 4/7: Novi comparison -----------------------------------------
-            params = wh.novi_params(conn, sorted(set(novi_ids)))
-            B["novi"] = _novi_summary(params)
-            B["novi"]["n_sticks"] = len(set(novi_ids))
+            # ---- TC groups ---------------------------------------------------------
+            # One TC per cluster (split_test merges indistinguishable units and
+            # attaches under-sampled units to the nearest cluster — borrowed).
+            own = {g["unit"] for g in sr.groups if g["eligible"]}
+            groups = []
+            for cl in (sr.clusters or [list(units)]):
+                borrowed = [u for u in cl if u not in own] if sr.recommendation == "split_by_polygon" else []
+                multi = sr.recommendation == "split_by_polygon"
+                groups.append({
+                    "name": " + ".join(cl) if multi else "all units",
+                    "units": cl,
+                    "pool": [c for c in eligible if c.get("unit") in cl] if multi else eligible,
+                    "dist_key": "unit_dist_ft" if multi else "dist_ft",
+                    "note": (f"{', '.join(borrowed)}: below {cfg['split']['min_wells_per_group']} pool wells — "
+                             "borrows this group's TC (document a multiplier if the reviewer sees a difference)")
+                            if borrowed else None,
+                })
+            B["tc_groups"] = []
+            for g in groups:
+                sel = fill(g["pool"], cfg, bench=bench, adjacent=adjacent, order=order,
+                           order_reason=order_reason, dist_key=g["dist_key"])
+                G: dict[str, Any] = {
+                    "name": g["name"], "units": g["units"], "note": g.get("note"),
+                    "tier_counts": sel.tier_counts(), "tier_medians_novi_eur_per_1000ft": tier_medians(sel),
+                    "flags": sel.flags, "tc_wells": sel.selected,
+                }
+                api10s = [c["api10"] for c in sel.selected]
+                if ad and api10s:
+                    rows = [r for r in rows_all if r["api10"] in set(api10s)]
+                    qc = cohort_qc.run(rows, cfg)
+                    G["qc"] = {"streams": {k: asdict(v) for k, v in qc.streams.items()}, "well_flags": qc.well_flags}
+                    G["anduin_oil"] = {
+                        r["api10"]: {k: r.get(k) for k in ("di_initial", "b", "di_effective", "peak_index_months",
+                                                          "fit_at_bound", "eur", "well_lateral_ft")}
+                        for r in rows if r["stream"] == "oil"
+                    }
+                    tc = ad.compute_type_curve(api10s)
+                    G["tc_preview"] = {st: v.get("fitted") for st, v in (tc.get("streams") or {}).items()}
+                    G["tc_preview_n_wells"] = tc.get("n_wells")
+                ids = sorted({i for u in g["units"] for i in B["units"][u]["novi_ids"]})
+                G["novi"] = _novi_summary(wh.novi_params(conn, ids))
+                G["novi"]["n_sticks"] = len(ids)
+                B["tc_groups"].append(G)
+            B["eligible_pool"] = eligible
     write_json(run_dir / "signals.json", res)
     return res
 

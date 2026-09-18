@@ -106,3 +106,23 @@ def test_single_polygon_reports_gradient():
     assert res.recommendation == "single_tc"
     assert res.gradient_r2 == pytest.approx(1.0, abs=1e-6)
     assert abs(res.gradient_per_mile) == pytest.approx(0.8 * 5280 / 200, rel=0.01)
+
+
+def test_split_merges_indistinguishable_units_and_borrows_small_ones():
+    units = {
+        "south": rect_ft(0, -40000, 5280, -29440),
+        "n1": rect_ft(0, 0, 5280, 10560),
+        "n2": rect_ft(10560, 0, 15840, 10560),
+        "tiny": rect_ft(21120, 0, 26400, 10560),
+    }
+    wells = _wells(1000, 8, 40.0) + _wells(1500, 8, 70.0) + _wells(11500, 8, 72.0) + _wells(22000, 2, 71.0)
+    for w in wells[:8]:  # move the "south" wells into the south unit
+        w["lon"], w["lat"] = point_lonlat_ft(2000, -35000)
+    res = split_test.run(wells, units, CFG)
+    assert res.recommendation == "split_by_polygon"
+    assert sorted(sorted(c) for c in res.clusters) == [["n1", "n2", "tiny"], ["south"]]
+
+
+def test_single_tc_has_one_cluster_of_all_units():
+    wells = _wells(1000, 7, 50.0, jitter=3.0) + _wells(11500, 7, 51.0, jitter=3.0)
+    assert split_test.run(wells, UNITS, CFG).clusters == [["west", "east"]]

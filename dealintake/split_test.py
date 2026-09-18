@@ -43,6 +43,10 @@ class SplitResult:
     gradient_per_mile: float | None = None
     gradient_r2: float | None = None
     notes: list[str] = field(default_factory=list)
+    # TC groups: lists of unit names. One group unless split_by_polygon; then
+    # statistically indistinguishable units are MERGED (see cluster_units) and
+    # units below min_wells_per_group join the geographically nearest group.
+    clusters: list[list[str]] = field(default_factory=list)
 
 
 def assign_units(wells: list[dict[str, Any]], units: dict[str, Polygon]) -> None:
@@ -133,10 +137,50 @@ def run(
     big, sig = res.median_ratio > ratio_thr, res.p_value < alpha
     if big and sig:
         res.recommendation = "split_by_polygon"
+        res.clusters = cluster_units(usable, units, elig, metric, ratio_thr, alpha, min_n)
+        return res
     elif big or sig:
         res.recommendation = "escalate"
         res.notes.append(
             f"median ratio {res.median_ratio:.2f} {'>' if big else '<='} {ratio_thr}; "
             f"p {res.p_value:.3f} {'<' if sig else '>='} {alpha} — criteria disagree, reviewer call"
         )
+    res.clusters = [list(units)]
     return res
+
+
+def cluster_units(
+    usable: list[dict[str, Any]],
+    units: dict[str, Polygon],
+    elig: list[dict[str, Any]],
+    metric: str,
+    ratio_thr: float,
+    alpha: float,
+    min_n: int,
+) -> list[list[str]]:
+    """Merge statistically indistinguishable units into shared TCs.
+
+    Eligible groups are sorted by median; walking upward, a group STARTS a
+    new cluster only when it differs from the current cluster by BOTH
+    criteria (median ratio > ratio_thr AND Mann-Whitney p < alpha against the
+    cluster's pooled wells) — the same two-criteria rule as the split itself,
+    applied pairwise. Units below min_n join the cluster of the nearest
+    eligible unit (centroid distance): borrowed, documented in the dossier.
+    """
+    vals = {g["unit"]: [w[metric] for w in usable if w["unit"] == g["unit"]] for g in elig}
+    order = sorted(vals, key=lambda u: statistics.median(vals[u]))
+    clusters: list[list[str]] = [[order[0]]]
+    for u in order[1:]:
+        cur = [v for m in clusters[-1] for v in vals[m]]
+        ratio = statistics.median(vals[u]) / statistics.median(cur) if statistics.median(cur) > 0 else math.inf
+        p = float(stats.mannwhitneyu(vals[u], cur, alternative="two-sided").pvalue)
+        if ratio > ratio_thr and p < alpha:
+            clusters.append([u])
+        else:
+            clusters[-1].append(u)
+    frame = LocalFrame.around(unary_union(list(units.values())))
+    cent = {k: frame.to_local(v).centroid for k, v in units.items()}
+    for small in (u for u in units if u not in vals):
+        nearest = min(vals, key=lambda e: cent[small].distance(cent[e]))
+        next(c for c in clusters if nearest in c).append(small)
+    return clusters

@@ -97,59 +97,68 @@ def render(run_dir: Path) -> Path:
             rows.append([label, bench, f"{g3['n_locations']} ({ub['gate2']['source']})",
                          g3["pdp_count_3mi_median"], g3["status"], g3["tvd_excess_3mi_ft_max"],
                          "yes" if ub["has_pdp_in_adjacent_bench"] else "no",
-                         len(B["tc_wells"]), "yes" if B["edge_trigger"]["fired"] else "no"])
+                         next((G["name"] for G in B["tc_groups"] if label in G["units"]), "—"),
+                         "yes" if B["edge_trigger"]["fired"] else "no"])
     s.append(md(["Unit", "Bench", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
-                 "PDP in adjacent bench", "TC wells", "Edge"], rows))
+                 "PDP in adjacent bench", "TC group", "Edge"], rows))
 
     for bench, B in sig["benches"].items():
         s.append(f"\n## {bench} — TVD {B['tvd_ft']:,.0f} ft, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
         maps.bench_map(run_dir / f"map_{bench}.png", bench, prop["units"], B)
         s.append(f"![{bench} map](map_{bench}.png)\n")
-        sel = B["selection"]
-        s.append(f"**Co-development tiering** — adjacent planned benches: {', '.join(sel['adjacent_planned']) or 'none'}; "
-                 f"order {' → '.join(sel['tier_order'])} ({sel['order_reason']}).\n")
-        s.append(md(["Tier", "TC wells", "Median Novi EUR/1,000 ft (selected + eligible)"],
-                    [[t, sel["tier_counts"].get(t, 0), sel["tier_medians_novi_eur_per_1000ft"].get(t)]
-                     for t in sel["tier_order"]]))
-        for f in sel["flags"]:
+        pool = B["pool"]
+        s.append(f"**Eligible pool:** {pool['n_eligible']} wells ({pool['n_excluded']} excluded: " + ", ".join(
+            f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1])) + "). "
+            f"Adjacent planned benches: {', '.join(pool['adjacent_planned']) or 'none'}; tier order "
+            f"{' → '.join(pool['tier_order'])} ({pool['order_reason']}).")
+        for f in pool["flags"]:
             s.append(f"\n> {f}")
-        s.append(f"\nExcluded {sel['n_excluded']} candidates: " + ", ".join(
-            f"{k} {v}" for k, v in sorted(sel["exclusion_reasons"].items(), key=lambda kv: -kv[1])))
-
-        s.append("\n### Buildup table\n")
-        oil = B.get("anduin_oil") or {}
-        write_csv(run_dir / f"buildup_{bench}.csv", B["tc_wells"])
-        s.append(md(BUILDUP_HEADERS, buildup_rows(B["tc_wells"], oil)))
-
-        s.append("\n### Three-stream comparison — Novi vs anduin TC\n")
-        s.append(md(["Stream", "Source", "qi /1,000 ft (cal-day)", "Di nom /yr", "Di eff yr-1", "b",
-                     "EUR /1,000 ft"], _stream_rows(B)) or "_no comparison data_")
-
-        qc = B.get("qc")
-        s.append("\n### Autoforecast QC (flags only)\n")
-        if qc:
-            s.append(md(["Stream", "n", "Median Di eff", "IQR eff", "Median Di nom", "Median b", "Cohort flag"],
-                        [[k, v["n"], pct(v["de_median"]),
-                          None if v["de_p25"] is None else f"{pct(v['de_p25'])}–{pct(v['de_p75'])}",
-                          v["di_nominal_median"], v["b_median"],
-                          v["cohort_flag"] or ("—" if v["flagged"] else "report-only")]
-                         for k, v in qc["streams"].items()]))
-            if qc["well_flags"]:
-                s.append("\n" + md(["api10", "Stream", "Flag", "Value", "Threshold"],
-                                   [[f["api10"], f["stream"], f["flag"], f["value"], f["threshold"]]
-                                    for f in qc["well_flags"]]))
-        else:
-            s.append("_anduin not run — set ANDUIN_EMAIL / ANDUIN_PASSWORD and re-run evaluate._")
 
         sp = B["split"]
-        s.append(f"\n### TC granularity (gate 5b): **{sp['recommendation']}** — metric {sp['metric']}\n")
+        s.append(f"\n### TC granularity (gate 5b, run on the whole pool): **{sp['recommendation']}** "
+                 f"— metric {sp['metric']}\n")
         if sp["groups"]:
-            s.append(md(["Unit", "n", "Median", "Eligible"],
+            s.append(md(["Unit", "Pool wells", "Median /1,000 ft", "Eligible for own TC"],
                         [[g["unit"], g["n"], g["median"], g["eligible"]] for g in sp["groups"]]))
         s.append(f"\nMedian ratio {sp['median_ratio']}, {sp['test']} p {sp['p_value']}; gradient "
                  f"{sp['gradient_per_mile']} per mile along the cohort axis (R² {sp['gradient_r2']}).")
         for n in sp["notes"]:
             s.append(f"\n> {n}")
+
+        for G in B["tc_groups"]:
+            s.append(f"\n### TC group: {G['name']} — units {', '.join(G['units'])}\n")
+            if G.get("note"):
+                s.append(f"> {G['note']}\n")
+            s.append(md(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
+                        [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)]
+                         for t in pool["tier_order"]]))
+            for f in G["flags"]:
+                s.append(f"\n> {f}")
+            slug = f"{bench}_{G['name']}".replace(" ", "_").replace("(", "").replace(")", "")
+            write_csv(run_dir / f"buildup_{slug}.csv", G["tc_wells"])
+            s.append("\n**Buildup table**\n")
+            s.append(md(BUILDUP_HEADERS, buildup_rows(G["tc_wells"], G.get("anduin_oil") or {})))
+            s.append("\n**Three-stream comparison — Novi vs anduin TC**\n")
+            s.append("Novi Di = segment 1 (days 0-540; spans year 1, so its 1-yr effective compares directly); "
+                     "Novi pins segment-1 Di at 3.65/yr on many sticks — the cap share is shown. "
+                     "Segment-2 Di beside it.\n")
+            s.append(md(["Stream", "Source", "qi /1,000 ft (cal-day)", "Di nom /yr", "Di eff yr-1", "b",
+                         "EUR /1,000 ft"], _stream_rows(G)))
+            qc = G.get("qc")
+            s.append("\n**Autoforecast QC (flags only)**\n")
+            if qc:
+                s.append(md(["Stream", "n", "Median Di eff", "IQR eff", "Median Di nom", "Median b", "Cohort flag"],
+                            [[k, v["n"], pct(v["de_median"]),
+                              None if v["de_p25"] is None else f"{pct(v['de_p25'])}–{pct(v['de_p75'])}",
+                              v["di_nominal_median"], v["b_median"],
+                              v["cohort_flag"] or ("—" if v["flagged"] else "report-only")]
+                             for k, v in qc["streams"].items()]))
+                if qc["well_flags"]:
+                    s.append("\n" + md(["api10", "Stream", "Flag", "Value", "Threshold"],
+                                       [[f["api10"], f["stream"], f["flag"], f["value"], f["threshold"]]
+                                        for f in qc["well_flags"]]))
+            else:
+                s.append("_anduin not run (--no-anduin)._")
 
     s.append("\n## Decision log\n")
     s.append(md(["#", "Gate", "Signal", "Rule said", "Decision", "By", "Why"], []))
