@@ -182,9 +182,15 @@ def evaluate(
     benches: list[str],
     spacing_ft: dict[str, float] | None = None,
     use_anduin: bool = True,
+    tc_group_overrides: dict[str, list[list[str]]] | None = None,
     narvi: Narvi | None = None,
     anduin: Anduin | None = None,
 ) -> dict[str, Any]:
+    """tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
+    replaces the split test's grouping for that bench (e.g. an escalated
+    gradient). Units not named form one remaining group. Recorded in
+    signals.json + the dossier decision log; the split test still runs and is
+    reported beside it."""
     prop = json.loads((run_dir / "proposal.json").read_text(encoding="utf-8"))
     narvi = narvi or Narvi()
     spacing_ft = spacing_ft or {}
@@ -354,7 +360,34 @@ def evaluate(
             # attaches under-sampled units to the nearest cluster — borrowed).
             own = {g["unit"] for g in sr.groups if g["eligible"]}
             groups = []
-            for cl in (sr.clusters or [list(units)]):
+            override = (tc_group_overrides or {}).get(bench)
+            if override:
+                named = [u for grp in override for u in grp]
+                unknown = sorted(set(named) - set(units))
+                if unknown:
+                    raise ValueError(f"--tc-groups {bench}: unknown unit(s) {unknown}; units are {sorted(units)}")
+                rest = [u for u in units if u not in named]
+                clusters = [list(grp) for grp in override] + ([rest] if rest else [])
+                B["split"]["reviewer_override"] = {
+                    "groups": clusters, "test_said": sr.recommendation,
+                    "note": "reviewer grouping replaces the split test for this bench",
+                }
+                res["decision_log"].append({
+                    "gate": "5b TC granularity", "bench": bench,
+                    "signal": f"{sr.recommendation} (ratio {sr.median_ratio}, p {sr.p_value})",
+                    "decision": " | ".join(" + ".join(c) for c in clusters), "by": "reviewer",
+                })
+                for cl in clusters:
+                    small = [u for u in cl if u not in own]
+                    groups.append({
+                        "name": " + ".join(cl), "units": cl,
+                        "pool": [c for c in eligible if c.get("unit") in cl],
+                        "dist_key": "unit_dist_ft",
+                        "note": "reviewer grouping" + (
+                            f"; {', '.join(small)} below {cfg['split']['min_wells_per_group']} pool wells "
+                            "(borrow this group's TC)" if small else ""),
+                    })
+            for cl in ([] if override else (sr.clusters or [list(units)])):
                 borrowed = [u for u in cl if u not in own] if sr.recommendation == "split_by_polygon" else []
                 multi = sr.recommendation == "split_by_polygon"
                 groups.append({

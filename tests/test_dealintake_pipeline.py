@@ -42,3 +42,12 @@ def test_edge_trigger():
     assert _edge_fired(far, CFG)[0] is True
     fired, sig = _edge_fired(near, CFG)
     assert fired is False and sig["ring_decay"] == pytest.approx(0.1)
+
+
+def test_tc_groups_cli_parsing():
+    from dealintake.cli import _tc_groups
+
+    assert _tc_groups(["WCA_2=toucan_1"]) == {"WCA_2": [["toucan_1"]]}
+    assert _tc_groups(["WCA_1=a,b;c"]) == {"WCA_1": [["a", "b"], ["c"]]}
+    with pytest.raises(SystemExit):
+        _tc_groups(["WCA_2"])

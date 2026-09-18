@@ -38,6 +38,16 @@ def _spacing(items: list[str]) -> dict[str, float]:
     return out
 
 
+def _tc_groups(items: list[str]) -> dict[str, list[list[str]]]:
+    out: dict[str, list[list[str]]] = {}
+    for it in items or []:
+        bench, _, spec = it.partition("=")
+        if not spec:
+            raise SystemExit(f"--tc-groups expects BENCH=unitA,unitB[;unitC], got {it!r}")
+        out[bench.strip()] = [[u.strip() for u in g.split(",") if u.strip()] for g in spec.split(";") if g.strip()]
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m dealintake", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -56,6 +66,8 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--benches", nargs="+", required=True, help="reviewer-confirmed formation_blueox codes")
     e.add_argument("--spacing", nargs="*", default=[], help="per-bench planned spacing, BENCH=FT")
     e.add_argument("--no-anduin", action="store_true", help="skip anduin forecast/QC/TC preview")
+    e.add_argument("--tc-groups", nargs="*", default=[],
+                   help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")
 
     r = sub.add_parser("render")
     r.add_argument("--run-dir", required=True)
@@ -76,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     elif a.cmd == "evaluate":
         try:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
-                              use_anduin=not a.no_anduin)
+                              use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups))
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2

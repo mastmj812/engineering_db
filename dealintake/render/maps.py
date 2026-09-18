@@ -37,14 +37,18 @@ def bench_map(path: Path, bench: str, units: list[dict[str, Any]], B: dict[str, 
             line = shp_wkt.loads(loc["wkt"])
             x, y = line.xy
             ax.plot(x, y, color="#7c3aed" if loc["src"] == "novi" else "#db2777", linewidth=1.6)
-    for w in B.get("eligible_not_selected", []):
+    # Type-curve wells = union of every TC group's cohort; the rest of the
+    # eligible pool is drawn hollow.
+    tc = [w for G in B.get("tc_groups") or [] for w in G["tc_wells"]]
+    tc_ids = {w["api10"] for w in tc}
+    for w in (x for x in B.get("eligible_pool", []) if x["api10"] not in tc_ids):
         if w.get("lon") is not None:
             ax.scatter(w["lon"], w["lat"], s=18, facecolors="none",
                        edgecolors=TIER_COLOR.get(w["tier"], "#6b7280"), linewidths=0.8)
-    for w in B.get("tc_wells", []):
+    for w in tc:
         if w.get("lon") is not None:
             ax.scatter(w["lon"], w["lat"], s=26, color=TIER_COLOR.get(w["tier"], "#6b7280"), zorder=3)
-    handles = [plt.Line2D([], [], color=c, marker="o", linestyle="", label=f"TC well â€” {t}")
+    handles = [plt.Line2D([], [], color=c, marker="o", linestyle="", label=f"TC well — {t}")
                for t, c in TIER_COLOR.items()]
     handles += [plt.Line2D([], [], color="#7c3aed", label="Novi BASE_CASE (inside)"),
                 plt.Line2D([], [], color="#db2777", label="narvi preview stick"),
@@ -53,7 +57,7 @@ def bench_map(path: Path, bench: str, units: list[dict[str, Any]], B: dict[str, 
     ax.legend(handles=handles, fontsize=7, loc="upper right")
     if lat0:
         ax.set_aspect(1 / math.cos(math.radians(lat0)))
-    ax.set_title(f"{bench} â€” TC wells by co-development tier", fontsize=10)
+    ax.set_title(f"{bench} — TC wells by co-development tier", fontsize=10)
     ax.tick_params(labelsize=7)
     fig.tight_layout()
     fig.savefig(path)

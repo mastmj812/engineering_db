@@ -124,6 +124,10 @@ def render(run_dir: Path) -> Path:
                  f"{sp['gradient_per_mile']} per mile along the cohort axis (R² {sp['gradient_r2']}).")
         for n in sp["notes"]:
             s.append(f"\n> {n}")
+        ov = sp.get("reviewer_override")
+        if ov:
+            s.append(f"\n> **Reviewer grouping** (test said {ov['test_said']}): "
+                     + " | ".join(" + ".join(c) for c in ov["groups"]))
 
         for G in B["tc_groups"]:
             s.append(f"\n### TC group: {G['name']} — units {', '.join(G['units'])}\n")
@@ -161,7 +165,9 @@ def render(run_dir: Path) -> Path:
                 s.append("_anduin not run (--no-anduin)._")
 
     s.append("\n## Decision log\n")
-    s.append(md(["#", "Gate", "Signal", "Rule said", "Decision", "By", "Why"], []))
+    s.append(md(["#", "Gate", "Bench", "Signal", "Decision", "By"],
+                [[i + 1, d["gate"], d.get("bench"), d["signal"], d["decision"], d["by"]]
+                 for i, d in enumerate(sig.get("decision_log", []))]))
     s.append("\n## Handoff\n\n- anduin TC: preview only — save in anduin after review (`included_api10s` = buildup CSV)."
              "\n- narvi scenario: generated benches are previews — build + save the scenario in narvi."
              "\n- Forecast to finance: Michael's call per bench.")
