@@ -170,7 +170,7 @@ def validate_codev(cur) -> bool:
     body = re.search(
         r"CREATE MATERIALIZED VIEW curated\.codev_context AS\n(.*?)\nWITH DATA;",
         (SQL / "46_codev_context.sql").read_text(encoding="utf-8"),
-        re.S,
+        re.DOTALL,
     ).group(1)
     plan = "\n".join(r[0] for r in cur.execute("EXPLAIN " + body).fetchall())
     hit = GEOG_INDEX in plan
