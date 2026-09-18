@@ -838,3 +838,16 @@ COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.pct_err_oil_perft IS
 'Per-ft cum error at this mop: (actual bbl/ft)/(forecast bbl/ft) - 1. The primary bias metric; mean = bias, cf. sql/38.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.is_latest_reported IS
 'Well''s newest posted production month (often incomplete under reporting lag). EXCLUDE from aggregates.';
+
+-- =============================================================================
+-- 31 (part G) -- curated.intel_pad_geom (sql/45). Duplicated from sql/45 so a
+-- re-run of this file after any rebuild restores the catalog entries.
+-- =============================================================================
+COMMENT ON MATERIALIZED VIEW curated.intel_pad_geom IS
+'Novi Intelligence pad/DSU polygons DERIVED from member sticks: one row per (basin, pad_name) over the latest vintage (curated.intel_locations), convex hull of every member stick (PUD + RES) buffered 330 ft geodesically. The Snowflake share ships no pad polygons (raw_intel.pad lat/lon all NULL) and Novi renames pads every vintage, so the legacy raw_novi_intel.pads shapefile no longer matches. 330 ft calibrated against 4,585 Delaware 2025Q3 legacy polygons: median area ratio 1.02 (P10-P90 0.91-1.08), median IoU 0.86. Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Coverage follows the share''s pad_name gap (2026Q3: Midland only). Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/45.';
+COMMENT ON COLUMN curated.intel_pad_geom.acres IS
+'Geodesic area of geom in acres. Approximation of Novi''s DSU acreage (median ratio 1.02 vs legacy polygons) — erebor Highgrade per-acre $ divides by this.';
+COMMENT ON COLUMN curated.intel_pad_geom.n_sticks IS
+'Member sticks (PUD + RES) with geometry that built the hull; n_pud + n_res.';
+COMMENT ON COLUMN curated.intel_pad_geom.geom_source IS
+'Provenance of geom: stick_hull_330ft (derived, not a Novi-drawn polygon).';
