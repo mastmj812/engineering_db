@@ -1,0 +1,7 @@
+# deal-intake v2 runner (dealintake/) — NOT needed by the nightly ETL, which
+# installs only requirements.txt. CI installs both so the dealintake tests run.
+shapely>=2.0
+pyproj>=3.6
+pyyaml>=6.0
+scipy>=1.11
+matplotlib>=3.8
