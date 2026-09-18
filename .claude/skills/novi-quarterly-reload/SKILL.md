@@ -63,11 +63,13 @@ python -m scripts.load_intel_sf --forecast --report <report_name>
 ```
 
 ~73M rows / ~50 min. **Disk check first:** `raw_intel.production_forecast` is
-~16 GB per vintage; ask the user whether to DELETE the superseded
-report_name slice before loading the new one rather than double-holding.
-Retained superseded slices are what `curated.intel_forecast_accuracy_vintage`
-(sql/43) scores as actuals accrue — deleting a slice removes that vintage from
-the accuracy record permanently (irreplaceable; Michael-only decision).
+~16 GB per vintage. Retention policy of record (Michael, 2026-09-18): the
+superseded vintage is TRIMMED, not deleted — step 8 below keeps its accuracy
+core (all core/arps slices + forecast mop <= 24, ~1 GB) so
+`curated.intel_forecast_accuracy_vintage` (sql/43) keeps scoring it as actuals
+accrue, and drops the long-horizon bulk so the database stops growing
+vintage-over-vintage. Full deletion of a vintage remains irreplaceable and
+Michael-only (removes it from the accuracy record permanently).
 
 ## 5. Curated CASCADE rebuild — FIXED ORDER (see memory: quarterly-rebuild-cascade-order)
 
@@ -124,3 +126,19 @@ Otherwise the frozen 3Q25 trio in `raw_novi_intel` stays.
 - Next nightly `intel_sf.report_check` auto-acknowledges the watermark once
   the report_name appears in `raw_intel.well_master` — the alert clears
   itself; no manual ack.
+
+## 8. Trim the superseded vintage (retention policy, after verification)
+
+```powershell
+python -m scripts.trim_superseded_vintage --all-superseded --dry-run   # counts first
+python -m scripts.trim_superseded_vintage --all-superseded
+```
+
+Deletes the superseded vintage's forecast rows with mop > 24 (chunked, with
+settle() pauses; verifies the sql/43 accuracy grain is untouched by refreshing
+it and comparing per-vintage direct-well counts; plain VACUUM at the end makes
+the freed pages reusable for the NEXT reload instead of growing provisioned
+disk). Everything else (core slices, arps, forecast mop <= 24) stays, so the
+vintage keeps scoring in `intel_forecast_accuracy_vintage`. Known effect: the
+anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
+forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).
