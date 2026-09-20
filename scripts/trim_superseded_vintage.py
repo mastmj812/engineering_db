@@ -118,6 +118,7 @@ def main() -> None:
             return
 
         print("[2/3] verify sql/43 accuracy grain unaffected (refresh + counts)", flush=True)
+        conn.commit()  # close the count-query transaction before autocommit
         conn.autocommit = True
         with conn.cursor() as cur:
             cur.execute("SELECT report_version, COUNT(DISTINCT api10) "
@@ -130,10 +131,19 @@ def main() -> None:
                         "FROM curated.intel_forecast_accuracy_vintage "
                         "WHERE tier = 'direct' GROUP BY 1 ORDER BY 1")
             after = cur.fetchall()
+        # Invariant: the trim must never SHRINK a vintage's scored population
+        # (it only removes forecast rows past the mop-24 grain). GROWTH is
+        # normal — the refresh also picks up actuals loaded since the last
+        # one, so new blind wells crossing the threshold show up here.
+        shrunk = [
+            (rv, nb, dict(after).get(rv, 0))
+            for rv, nb in before
+            if dict(after).get(rv, 0) < nb
+        ]
         print(f"    direct wells per vintage before={before} after={after} "
-              f"{'[OK]' if before == after else '[MISMATCH]'}", flush=True)
-        if before != after:
-            raise SystemExit("sql/43 counts changed after trim — investigate")
+              f"{'[MISMATCH — SHRANK]' if shrunk else '[OK]'}", flush=True)
+        if shrunk:
+            raise SystemExit(f"sql/43 population shrank after trim: {shrunk}")
 
         if not args.skip_vacuum:
             print("[3/3] VACUUM (ANALYZE) raw_intel.production_forecast "
