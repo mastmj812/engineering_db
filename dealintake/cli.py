@@ -6,6 +6,7 @@
       Gate 2. Writes proposal.json + proposal.md, then STOPS for review.
 
   evaluate --run-dir ... --benches WCA_1 WCA_2 WCB_1 [--spacing WCA_1=880 ...]
+           [--radius BS2_S=10 ...] [--tc-groups WCA_2=unitA,unitB ...]
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
@@ -35,6 +36,19 @@ def _spacing(items: list[str]) -> dict[str, float]:
         if not v:
             raise SystemExit(f"--spacing expects BENCH=FT, got {it!r}")
         out[k.strip()] = float(v)
+    return out
+
+
+def _radius(items: list[str]) -> dict[str, float]:
+    out = {}
+    for it in items or []:
+        k, _, v = it.partition("=")
+        try:
+            out[k.strip()] = float(v)
+        except ValueError:
+            raise SystemExit(f"--radius expects BENCH=MILES, got {it!r}") from None
+        if out[k.strip()] <= 0:
+            raise SystemExit(f"--radius must be > 0 mi, got {it!r}")
     return out
 
 
@@ -73,6 +87,9 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--run-dir", required=True)
     e.add_argument("--benches", nargs="+", required=True, help="reviewer-confirmed formation_blueox codes")
     e.add_argument("--spacing", nargs="*", default=[], help="per-bench planned spacing, BENCH=FT")
+    e.add_argument("--radius", nargs="*", default=[],
+                   help="reviewer pool radius, BENCH=MILES — exactly that concentric radius, bypassing the "
+                        "5/7.5/10 mi steps and the edge-trigger block (e.g. an emerging bench); decision-logged")
     e.add_argument("--no-anduin", action="store_true", help="skip anduin forecast/QC/TC preview")
     e.add_argument("--tc-groups", nargs="*", default=[],
                    help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")
@@ -103,7 +120,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
                               use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups),
-                              short_history_transfer=_transfer_cutoff(a, cfg))
+                              short_history_transfer=_transfer_cutoff(a, cfg),
+                              radius_overrides=_radius(a.radius))
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2
