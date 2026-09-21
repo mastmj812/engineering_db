@@ -447,8 +447,56 @@ def evaluate(
                 G["novi"]["n_sticks"] = len(ids)
                 B["tc_groups"].append(G)
             B["eligible_pool"] = eligible
+            if ad and B.get("short_history_transfer", {}).get("written"):
+                B["transfer_compare"] = _compare_without_transfer(
+                    ad, B, eligible, short_history_transfer)
     write_json(run_dir / "signals.json", res)
     return res
+
+
+def _compare_without_transfer(
+    ad: Anduin, B: dict[str, Any], eligible: list[dict[str, Any]], cutoff: int
+) -> dict[str, Any]:
+    """With/without short-history transfer, per TC group (Michael, 2026-09-21).
+
+    The transfer OVERWRITES the short wells' own fits in anduin, so the
+    'without' TC needs them back. Sequence (anduin ends in the default,
+    transferred state):
+      1. refit ONLY the transferred wells that sit in a TC cohort (own fits),
+      2. compute each affected group's TC preview -> G['tc_preview_no_transfer'],
+      3. re-run the transfer on the same bench pool. Lenders are untouched, so
+         the donor medians must reproduce; a mismatch is recorded as a flag.
+    Groups with no transferred wells get no comparison (identical by
+    construction).
+    """
+    written = set(B["short_history_transfer"]["written"])
+    in_cohorts = sorted({c["api10"] for G in B["tc_groups"] for c in G["tc_wells"] if c["api10"] in written})
+    out: dict[str, Any] = {"refit_wells": in_cohorts, "groups": {}}
+    if not in_cohorts:
+        out["note"] = "no transferred wells in any TC cohort — with/without identical"
+        return out
+    before = {(d["stream"], round(d["cohort_di"], 6), round(d["cohort_b"], 6))
+              for d in B["short_history_transfer"].get("donors", [])}
+    try:
+        ad.forecast(in_cohorts, only_missing=False)            # 1. own fits back
+        for G in B["tc_groups"]:
+            api10s = [c["api10"] for c in G["tc_wells"]]
+            shorts = [a for a in api10s if a in written]
+            if not shorts:
+                continue
+            tc = ad.compute_type_curve(api10s)                     # 2. without
+            G["tc_preview_no_transfer"] = {st: v.get("fitted") for st, v in (tc.get("streams") or {}).items()}
+            G["n_transferred_in_cohort"] = len(shorts)
+            out["groups"][G["name"]] = shorts
+    finally:
+        again = _transfer(ad, eligible, cutoff)                    # 3. restore default
+        after = {(d["stream"], round(d["cohort_di"], 6), round(d["cohort_b"], 6))
+                 for d in again.get("donors", [])}
+        out["restored"] = "error" not in again
+        if again.get("error") or before != after:
+            out["flag"] = ("transfer re-run did not reproduce the donor medians — anduin may NOT be in the "
+                           f"default state: {again.get('error') or 'medians changed'}")
+    return out
 
 
 VINTAGE_GAP_FLAG_YEARS = 3  # lenders this much older than the short wells -> flag

@@ -118,3 +118,67 @@ def test_short_history_transfer_on_by_default():
     assert _transfer_cutoff(ns(), CFG) == CFG["type_curve"]["short_history_transfer_months"] == 9
     assert _transfer_cutoff(ns(12), CFG) == 12
     assert _transfer_cutoff(ns(12, off=True), CFG) is None
+
+
+class _CompareAnduin:
+    """Records the with/without sequence: refit -> compute -> transfer re-run."""
+
+    def __init__(self, donors_after):
+        self.log = []
+        self.donors_after = donors_after
+
+    def forecast(self, api10s, only_missing=True):
+        self.log.append(("forecast", sorted(api10s), only_missing))
+        return {}
+
+    def compute_type_curve(self, api10s, **kw):
+        self.log.append(("compute", sorted(api10s)))
+        return {"streams": {"oil": {"fitted": {"qi": 100.0, "Di": 2.5, "b": 1.0, "eur_per_unit": 50_000.0}}}}
+
+    def transfer_cohort(self, api10s, cutoff):
+        self.log.append(("transfer", len(api10s), cutoff))
+        return {"long_api10s": [], "short_api10s": ["S0", "S1"], "written_api10s": ["S0", "S1"],
+                "donors": self.donors_after}
+
+
+_DONORS = [{"stream": "oil", "donor_count": 6, "cohort_di": 2.6, "cohort_b": 1.0}]
+
+
+def _bench():
+    return {
+        "short_history_transfer": {"written": ["S0", "S1"], "donors": _DONORS},
+        "tc_groups": [
+            {"name": "g1", "tc_wells": [{"api10": "L0"}, {"api10": "S0"}]},
+            {"name": "g2", "tc_wells": [{"api10": "L1"}, {"api10": "L2"}]},   # no transferred wells
+        ],
+    }
+
+
+def test_with_without_refits_only_cohort_shorts_and_restores_transfer():
+    from dealintake.pipeline import _compare_without_transfer
+
+    B, fake = _bench(), _CompareAnduin(_DONORS)
+    out = _compare_without_transfer(fake, B, _pool(), 9)
+    assert fake.log[0] == ("forecast", ["S0"], False)          # S1 not in any cohort: untouched
+    assert fake.log[1] == ("compute", ["L0", "S0"])            # only the affected group
+    assert fake.log[-1] == ("transfer", len(_pool()), 9)       # restored on the whole pool
+    assert "tc_preview_no_transfer" in B["tc_groups"][0] and "tc_preview_no_transfer" not in B["tc_groups"][1]
+    assert out["restored"] and "flag" not in out
+
+
+def test_with_without_flags_when_donor_medians_change():
+    from dealintake.pipeline import _compare_without_transfer
+
+    changed = [{"stream": "oil", "donor_count": 6, "cohort_di": 2.9, "cohort_b": 1.0}]
+    out = _compare_without_transfer(_CompareAnduin(changed), _bench(), _pool(), 9)
+    assert "did not reproduce" in out["flag"]
+
+
+def test_transfer_rows_show_eur_delta():
+    from dealintake.render.dossier import _transfer_rows
+
+    G = {"tc_preview": {"oil": {"qi": 100.0, "Di": 2.5, "b": 1.0, "eur_per_unit": 55_000.0}},
+         "tc_preview_no_transfer": {"oil": {"qi": 100.0, "Di": 2.2, "b": 1.0, "eur_per_unit": 50_000.0}}}
+    rows = _transfer_rows(G)
+    assert [r[1] for r in rows] == ["with transfer (default)", "own fits (without)"]
+    assert rows[0][7] == "+10.0%" and rows[1][7] == "—"
