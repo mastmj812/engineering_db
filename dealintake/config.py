@@ -13,7 +13,7 @@ DEFAULT_PATH = (
     / ".claude" / "skills" / "deal-intake" / "config" / "thresholds.yaml"
 )
 
-# Constants BAKED into curated.codev_context (sql/46). The runner refuses a
+# Constants BAKED into curated.codev_context (sql/47). The runner refuses a
 # config that disagrees: the matview cannot be re-sliced at other values.
 CODEV_BAKED = {"xy_ft": 1320, "window_days": 180, "overlap_min_frac": 0.30}
 
@@ -67,8 +67,8 @@ def validate(raw: dict[str, Any]) -> None:
     for k, v in CODEV_BAKED.items():
         if float(raw["codev"][k]) != float(v):
             raise ConfigError(
-                f"codev.{k}={raw['codev'][k]} but curated.codev_context (sql/46) bakes {v}; "
-                "change sql/46 and the config together or not at all"
+                f"codev.{k}={raw['codev'][k]} but curated.codev_context (sql/47) bakes {v}; "
+                "change sql/47 and the config together or not at all"
             )
     for key in ("tier_order_default", "tier_order_when_pdp_adjacent"):
         order = raw["codev"][key]

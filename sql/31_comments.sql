@@ -262,6 +262,11 @@ COMMENT ON COLUMN curated.wells_enriched.stages_per_1000ft IS 'Frac stages per 1
 COMMENT ON COLUMN curated.wells_enriched.proppant_lbs_per_stage IS 'Proppant per frac stage, lbs (proppant_lbs / frac_stages).';
 COMMENT ON COLUMN curated.wells_enriched.fluid_bbl_per_stage IS 'Frac fluid per stage, bbl (fluid_bbl / frac_stages).';
 COMMENT ON COLUMN curated.wells_enriched.has_completion_intensity IS 'TRUE when proppant_lbs, fluid_bbl, frac_stages and a positive lateral_length_ft are all populated - the cohort filter for completion-intensity studies.';
+COMMENT ON COLUMN curated.wells_enriched.lateral_closer_xy_ft IS 'Novi WellSpacing LateralCloserXY: XY distance (ft) to the closest same-zone lateral, AS-OF-FIRST-PRODUCTION (Novi-confirmed 2026-07-14) - the spacing when this well came online, not current infill state. SENTINEL: exactly 2800.0 (also the column max, ~12% of rows) = no same-zone neighbor at first production, NOT a measurement; NULL = absent from WellSpacing. NULL and 2800 together form the standalone/unbounded class. Classified tight/standalone at runtime against a deal''s planned spacing (deal-intake Gate 5.2), never precomputed.';
+COMMENT ON COLUMN curated.wells_enriched.wellspacing_vintage IS 'ingested_at of the raw_novi.WellSpacing nightly TRUNCATE+COPY snapshot this row came from (uniform per load). Stamp it beside any spacing-based selection for re-runnability.';
+COMMENT ON COLUMN curated.wells_enriched.stack_closer_z_ft IS 'Novi WellSpacing StackCloserZ: vertical distance (ft) to the closest stacked well, AS-OF-FIRST-PRODUCTION. SENTINEL: exactly 1000 (~72% of rows; real max 999) = no stacked neighbor within Novi''s range, NOT a measurement. Corroborating signal only - curated.codev_context (sql/47) is the primary co-development record. sql/49.';
+COMMENT ON COLUMN curated.wells_enriched.stagger_closer_tangent_ft IS 'Novi WellSpacing StaggerCloserTangent: lateral (tangent) stagger distance (ft) to the closest stacked neighbor, AS-OF-FIRST-PRODUCTION. SENTINEL: exactly 2973.21 (~17% of rows; real max ~2,639) = no stacked neighbor, NOT a measurement. sql/49.';
+COMMENT ON COLUMN curated.wells_enriched.parent_days_online IS 'Novi WellSpacing ParentDaysOnline: days the parent well(s) had been producing when this well came online. -1 exactly on the IsChild = FALSE / parent_count = 0 rows (verified 2026-09-18) - a flag value, not a duration. sql/49.';
 
 -- curated.formation_blueox -------------------------------------------------
 COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS 'Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Sources: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values; mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk edits are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh / curated.refresh_all().';
@@ -863,3 +868,25 @@ COMMENT ON COLUMN curated.intel_pad_geom.n_sticks IS
 'Member sticks (PUD + RES) with geometry that built the hull; n_pud + n_res.';
 COMMENT ON COLUMN curated.intel_pad_geom.geom_source IS
 'Provenance of geom: stick_hull_330ft (derived, not a Novi-drawn polygon).';
+
+-- =============================================================================
+-- 31 (part H) -- curated.codev_context (sql/47) + curated.pdp_support_for_geom
+-- (sql/48). Matview/function-level comments live in their own files; the
+-- column catalog lives here so a re-run after any rebuild restores it.
+-- =============================================================================
+COMMENT ON COLUMN curated.codev_context.api10 IS 'Subject well (producing horizontal, sql/40 is_horizontal semantics, first_production_date NOT NULL). UNIQUE; row set = every producing horizontal in curated.wells.';
+COMMENT ON COLUMN curated.codev_context.bench IS 'Subject bench: TVD-corrected formation_blueox (formation_blueox_tvd.corrected_code over formation_blueox); NULL -> ''(unmapped)'' (same key server- and client-side).';
+COMMENT ON COLUMN curated.codev_context.first_production_date IS 'Subject first production date (curated.wells); the t0 every neighbor dfp_days is measured from.';
+COMMENT ON COLUMN curated.codev_context.tvd_ft IS 'Subject TVD, ft (curated.wells.tvd_ft); median_dtvd_ft in bench_context is neighbor minus this.';
+COMMENT ON COLUMN curated.codev_context.scorable IS 'FALSE when the subject has no wellstick_geom; every context column is then NULL (no basis), distinct from empty arrays (checked, no neighbors).';
+COMMENT ON COLUMN curated.codev_context.n_neighbors IS 'Co-extent neighbors, all benches: producing horizontals within 1,320 ft (stick-to-stick geography) whose lateral covers >= 30% of the subject lateral when projected onto it. 0 = standalone.';
+COMMENT ON COLUMN curated.codev_context.bench_context IS 'jsonb keyed by neighbor bench: {n, n_codev (|dfp| <= 180 d), n_parent (neighbor online > 180 d EARLIER), n_child (> 180 d LATER), min_abs_dfp_days, median_dist_ft, median_dtvd_ft (neighbor minus subject; negative = shallower)}. Includes the subject''s own bench. Child counts are right-censored for young wells.';
+COMMENT ON COLUMN curated.codev_context.codev_benches IS 'Benches (sorted, incl. own) with >= 1 neighbor online within 180 d of the subject. Empty array = none. GIN-indexed for @> containment.';
+COMMENT ON COLUMN curated.codev_context.parent_benches IS 'Benches with >= 1 neighbor online > 180 d BEFORE the subject (subject is a topfill/underfill/infill child of that bench).';
+COMMENT ON COLUMN curated.codev_context.child_benches IS 'Benches with >= 1 neighbor online > 180 d AFTER the subject (subject was later infilled from that bench). Right-censored for young wells.';
+COMMENT ON COLUMN curated.codev_context.n_codev_same_bench IS 'Codev neighbors in the subject''s own bench (pad-mates at the same landing).';
+COMMENT ON COLUMN curated.codev_context.n_codev_other_bench IS 'Codev neighbors in any OTHER bench (stacked co-development). Adjacency to a planned stack is decided by dealintake, not here.';
+COMMENT ON COLUMN curated.codev_context.n_parent_other_bench IS 'Parent neighbors (online > 180 d earlier) in any other bench.';
+COMMENT ON COLUMN curated.codev_context.n_child_other_bench IS 'Child neighbors (online > 180 d later) in any other bench. Right-censored for young wells.';
+COMMENT ON FUNCTION curated.pdp_support_for_geom(geometry, text, double precision) IS
+'sql/30 offset-PDP support score family for an arbitrary stick geometry (deal-intake Gate 3 for narvi-generated locations): pdp_count_1/3/5mi, dist_nearest/3rd_nearest_ft, support_lateral_ft_5mi, n_offsets_5mi, offset_median_eur_ft, offset_median_cum12m_oil_per_ft, offset_median_tvd, tvd_delta_ft, tvd_excess_3mi_ft, wca_delta_ft. Same predicates as curated.intel_pdp_support (horizontal, same TVD-corrected formation_blueox, TVD +/-500 ft, >=6 mo produced, ll>0, 5-mi outer gate; unguarded 3-mi depth context). Any NULL input -> all scores NULL (not scorable); count 0 = scored and unsupported. LIVE against curated.wells (the matview is quarterly), so it can read slightly higher than intel_pdp_support between vintages. No inflation_ratio (needs a Novi forecast). sql/48.';

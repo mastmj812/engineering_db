@@ -69,6 +69,13 @@ def main() -> None:
     finally:
         conn.close()
 
+    # curated.codev_context (sql/47, nightly) reads formation_blueox_tvd, so
+    # sql/20's CASCADE drops it too. Rebuild here (~1.5 min, needs the sql/26
+    # wells geography index, which sql/20 does not touch) so the next nightly
+    # refreshes it instead of skipping it as an absent optional matview.
+    print("[1d/3] rebuild curated.codev_context (sql/47; cascade victim of sql/23)", flush=True)
+    _exec("codev_context", "47_codev_context.sql")
+
     print("[2/3] build curated.reconciled_inventory (overlap matching — heavy)", flush=True)
     _exec("reconciled_inventory", "21_reconciled_inventory.sql")
 

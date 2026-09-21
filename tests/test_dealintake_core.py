@@ -36,7 +36,7 @@ def test_config_loads_v2():
 def test_config_rejects_codev_drift_from_sql46():
     raw = copy.deepcopy(cfgmod.load().raw)
     raw["codev"]["window_days"] = 90
-    with pytest.raises(cfgmod.ConfigError, match="sql/46"):
+    with pytest.raises(cfgmod.ConfigError, match="sql/47"):
         cfgmod.validate(raw)
 
 
