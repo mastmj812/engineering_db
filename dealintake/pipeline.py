@@ -35,7 +35,7 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 from dealintake import benches as benchmod
-from dealintake import cohort_qc, split_test
+from dealintake import cohort_qc, split_test, strat, unit_benches
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
@@ -89,9 +89,11 @@ def propose(
     if not parcels:
         raise ValueError(f"narvi returned no parcels for {deal_path}")
 
+    col = strat.load()
     out: dict[str, Any] = {
         "deal_file": str(deal_path),
         "config_version": cfg.version,
+        "strat_version": col.version,
         "config_path": str(cfg.path),
         "correlated_window": correlated_window,
         "window_basis": window_basis,
@@ -104,10 +106,13 @@ def propose(
             u = pc["geom"]
             if u.geom_type == "MultiPolygon":
                 # Gate 1: multipolygon units are split and reported, never merged silently.
+                # (A gpkg layer typed MULTIPOLYGON wraps single-part units too — not a warning.)
                 parts = sorted(u.geoms, key=lambda g: -g.area)
-                out.setdefault("warnings", []).append(
-                    f"{pc['label']}: MultiPolygon with {len(parts)} parts — using the largest; split the unit in the land file"
-                )
+                if len(parts) > 1:
+                    out.setdefault("warnings", []).append(
+                        f"{pc['label']}: MultiPolygon with {len(parts)} parts — using the largest "
+                        f"({parts[0].area / u.area:.0%} of the area); split the unit in the land file"
+                    )
                 u = parts[0]
             az = narvi.azimuth(u)
             if az.get("confident") and az.get("azimuth_deg") is not None:
@@ -120,11 +125,30 @@ def propose(
                 chord_step_ft=float(cfg["planned_lateral"]["chord_step_ft"]),
                 azimuth_source=az_src,
             )
-            dmin, dmax, draw = benchmod.declared_window(pc["attributes"])
-            window = correlated_window or ((dmin, dmax) if (dmin is not None or dmax is not None) else None)
             local = wh.local_benches(conn, u)
+            basin = strat.infer_basin([b["bench"] for b in local])
+            # Rights bounds: Surface / COE / a depth / a FORMATION PHRASE (resolved by
+            # stratigraphic order, never into a depth). The numeric window only
+            # ever comes from depth bounds.
+            _, _, draw = benchmod.declared_window(pc["attributes"])
+            if correlated_window:
+                lo, hi = (strat.Bound("depth", None, v) if v is not None else strat.Bound("missing")
+                          for v in correlated_window)
+            else:
+                lo = strat.parse_bound(draw["Min_Depth"], col, basin)
+                hi = strat.parse_bound(draw["Max_Depth"], col, basin)
+            for side, bd in (("Min_Depth", lo), ("Max_Depth", hi)):
+                if bd.kind == "unknown":
+                    out.setdefault("warnings", []).append(
+                        f"{pc['label']}: {side} {bd.text!r} not understood (basin {basin}) — treated as open; reviewer resolves")
+            dmin = lo.depth_ft if lo.kind == "depth" else 0.0 if lo.kind == "surface" else None
+            dmax = hi.depth_ft if hi.kind == "depth" else None
+            window = (dmin, dmax) if (dmin is not None or dmax is not None) else None
             zones = narvi.zones(u, [b["bench"] for b in local]) if local else {"stats": []}
             proposal = benchmod.propose(zones.get("stats", []), window, float(cfg["depth"]["edge_margin_ft"]))
+            low_attrs = {k.lower(): v for k, v in (pc["attributes"] or {}).items()}
+            dsu_name = low_attrs.get("dsu_num")
+            bench_seed = unit_benches.seed_unit(dsu_name, lo, hi, proposal, col, basin)
 
             sticks = wh.novi_sticks(conn, u)
             rel: dict[str, Counter] = {}
@@ -147,10 +171,17 @@ def propose(
                 "area_ac": pc["area_ac"],
                 "geometry": mapping(u),
                 "attributes": pc["attributes"],
+                "basin": basin,
+                "dsu_name": dsu_name,
                 "declared_window_raw": draw,
                 "declared_window": [dmin, dmax],
                 "window_used": list(window) if window else None,
                 "window_source": "correlated" if correlated_window else ("declared (NOT local — correlate)" if window else None),
+                "bounds": {"min": asdict(lo), "max": asdict(hi)},
+                "rights": f"{lo.describe()} -> {hi.describe()}"
+                          + (" [correlated]" if correlated_window else
+                             " [declared depths are NOT local]" if "depth" in (lo.kind, hi.kind) else ""),
+                "bench_seed": bench_seed,
                 "planned_lateral": pl.as_dict(),
                 "bench_proposal": proposal,
                 "gate2": gate2,
@@ -158,6 +189,14 @@ def propose(
                 "pdp_in_unit": wh.pdp_in_unit(conn, u),
             })
     write_json(run_dir / "proposal.json", out)
+    # The reviewer's file is never overwritten: a re-propose writes the fresh
+    # seed beside it for comparison.
+    target = run_dir / unit_benches.FILENAME
+    if target.exists():
+        target = run_dir / "benches.seed.yaml"
+        out.setdefault("warnings", []).append(
+            f"{unit_benches.FILENAME} already exists (reviewer edits kept) — fresh seed written to {target.name}")
+    target.write_text(unit_benches.render(out), encoding="utf-8")
     return out
 
 
@@ -203,11 +242,28 @@ def _select_pool(
     return radius, eligible, excluded, adjacent
 
 
+def lateral_classes(ll_by_unit: dict[str, float], ratio: float) -> list[list[str]]:
+    """Group units by planned lateral, shortest first: a unit joins the current
+    class while its lateral is within `ratio` of the class's SHORTEST member,
+    else it opens a new class. One pool / split test / type curve per (bench x
+    class), lateral band centered on the class median — a 3-mile unit is not
+    type-curved from a band centered on 2-mile wells (Michael, 2026-09-21)."""
+    out: list[list[str]] = []
+    base = 0.0
+    for label, ll in sorted(ll_by_unit.items(), key=lambda kv: (kv[1], kv[0])):
+        if out and ll <= base * ratio:
+            out[-1].append(label)
+        else:
+            out.append([label])
+            base = ll
+    return out
+
+
 def evaluate(
     run_dir: Path,
     cfg: Config,
     *,
-    benches: list[str],
+    benches: list[str] | None = None,
     spacing_ft: dict[str, float] | None = None,
     use_anduin: bool = True,
     tc_group_overrides: dict[str, list[list[str]]] | None = None,
@@ -232,19 +288,34 @@ def evaluate(
     prop = json.loads((run_dir / "proposal.json").read_text(encoding="utf-8"))
     narvi = narvi or Narvi()
     spacing_ft = spacing_ft or {}
-    units = {u["label"]: shape(u["geometry"]) for u in prop["units"]}
-    union = unary_union(list(units.values()))
-    benches = [bench_code(b) for b in benches]
+    all_units = {u["label"]: shape(u["geometry"]) for u in prop["units"]}
 
-    # Planned stack order (shallow -> deep) from the units' local bench medians.
+    # Per-unit plan: which benches each unit evaluates + its planned lateral.
+    # --benches = one deal-wide list (simple deals); otherwise the reviewer's
+    # benches.yaml (depth-severed stacked DSUs need a list per unit).
+    if benches:
+        deal_wide = [bench_code(b) for b in benches]
+        plan = {u["label"]: {"benches": deal_wide, "planned_lateral_ft": float(u["planned_lateral"]["median_ft"]),
+                             "seed_benches": deal_wide, "edited": False} for u in prop["units"]}
+        plan_source = "--benches (deal-wide)"
+    else:
+        plan = unit_benches.read(run_dir, prop)
+        plan_source = unit_benches.FILENAME
+    benches = list(dict.fromkeys(b for p in plan.values() for b in p["benches"]))
+    if not benches:
+        raise ValueError(f"no bench enabled in any unit ({plan_source})")
+
+    # Planned stack order (shallow -> deep) from the local medians of the units
+    # that actually plan each bench.
     tvd_by_bench: dict[str, list[float]] = {}
     for u in prop["units"]:
         for r in u["bench_proposal"]:
-            if r["median_tvd_ft"] is not None:
-                tvd_by_bench.setdefault(bench_code(r["bench"]), []).append(r["median_tvd_ft"])
+            b = bench_code(r["bench"])
+            if r["median_tvd_ft"] is not None and b in plan[u["label"]]["benches"]:
+                tvd_by_bench.setdefault(b, []).append(r["median_tvd_ft"])
     missing = [b for b in benches if b not in tvd_by_bench]
     if missing:
-        raise ValueError(f"no local median TVD for {missing} — not in any unit's bench proposal")
+        raise ValueError(f"no local median TVD for {missing} in the units that enable them ({plan_source})")
     radius_overrides = {bench_code(b): float(r) for b, r in (radius_overrides or {}).items()}
     stray = [b for b in radius_overrides if b not in benches]
     if stray:
@@ -254,15 +325,31 @@ def evaluate(
     stack = sorted(benches, key=lambda b: statistics.median(tvd_by_bench[b]))
     bench_tvd = {b: statistics.median(tvd_by_bench[b]) for b in stack}
 
-    planned_ll = _median([u["planned_lateral"]["median_ft"] for u in prop["units"]]) or 0.0
-    lls = [u["planned_lateral"]["median_ft"] for u in prop["units"]]
+    ll_by_unit = {lb: p["planned_lateral_ft"] for lb, p in plan.items() if p["benches"]}
+    class_ratio = float(cfg["planned_lateral"].get("class_ratio", 1.10))
     res: dict[str, Any] = {
         "run_dir": str(run_dir), "config_version": cfg.version, "snapshot": prop["snapshot"],
-        "planned_stack": stack, "bench_tvd_ft": bench_tvd, "planned_lateral_ft": planned_ll,
+        "planned_stack": stack, "bench_tvd_ft": bench_tvd,
+        "planned_lateral_ft": _median(list(ll_by_unit.values())) or 0.0,
+        "lateral_classes": [{"units": c, "planned_lateral_ft": _median([ll_by_unit[u] for u in c])}
+                            for c in lateral_classes(ll_by_unit, class_ratio)],
+        "unit_plan": plan, "plan_source": plan_source,
         "flags": [], "benches": {}, "decision_log": [],
     }
-    if lls and min(lls) > 0 and max(lls) / min(lls) > 1.25:
-        res["flags"].append(f"unit planned laterals differ >25% ({min(lls):,.0f}-{max(lls):,.0f} ft): consider per-unit TC bands")
+    if len(res["lateral_classes"]) > 1:
+        res["flags"].append(
+            "planned laterals fall into " + str(len(res["lateral_classes"])) + " classes ("
+            + ", ".join(f"{c['planned_lateral_ft']:,.0f} ft x{len(c['units'])}" for c in res["lateral_classes"])
+            + f"; units within {class_ratio - 1:.0%} share a class): each bench is pooled, split-tested and "
+              "type-curved PER CLASS, with the lateral band centered on the class")
+    for lb, p in plan.items():
+        res["decision_log"].append({
+            "gate": "1 unit benches + lateral", "bench": lb,
+            "signal": f"seed: {', '.join(p['seed_benches']) or 'none'}",
+            "decision": (f"{', '.join(p['benches']) or 'NOT EVALUATED'}; planned lateral {p['planned_lateral_ft']:,.0f} ft"
+                         + (" (edited vs seed)" if p["edited"] else "")),
+            "by": f"reviewer ({plan_source})",
+        })
 
     # anduin requested -> it must work. A silent degrade made a run with no
     # forecast/QC/TC look successful (2026-09-18); only --no-anduin skips it.
@@ -277,10 +364,28 @@ def evaluate(
         res["flags"].append("anduin not run (--no-anduin): no forecast, Di QC or TC preview; "
                             "split test uses the Novi EUR screen")
 
+    # One job per (bench x lateral class of the units that plan that bench).
+    jobs: list[tuple[str, list[str], str]] = []
+    for bench in stack:
+        ll_b = {lb: ll_by_unit[lb] for lb, p in plan.items() if bench in p["benches"]}
+        classes = lateral_classes(ll_b, class_ratio)
+        for cl in classes:
+            ll_c = _median([ll_b[u] for u in cl])
+            jobs.append((bench, cl, bench if len(classes) == 1 else f"{bench} @ {ll_c:,.0f} ft"))
+    known_units = set(all_units)
+
     with wh.connect() as conn:
-        for bench in stack:
-            B: dict[str, Any] = {"bench": bench, "units": {}, "tvd_ft": bench_tvd[bench]}
-            res["benches"][bench] = B
+        for bench, class_units, key in jobs:
+            units = {lb: all_units[lb] for lb in class_units}
+            union = unary_union(list(units.values()))
+            planned_ll = _median([ll_by_unit[lb] for lb in class_units]) or 0.0
+            local_tvds = [r["median_tvd_ft"] for u in prop["units"] if u["label"] in units
+                          for r in u["bench_proposal"]
+                          if bench_code(r["bench"]) == bench and r["median_tvd_ft"] is not None]
+            B: dict[str, Any] = {"bench": bench, "key": key, "units": {}, "class_units": class_units,
+                                 "planned_lateral_ft": planned_ll,
+                                 "tvd_ft": _median(local_tvds) or bench_tvd[bench]}
+            res["benches"][key] = B
             sp = float(spacing_ft.get(bench, DEFAULT_SPACING_FT))
             B["spacing_ft"] = sp
             B["spacing_source"] = "reviewer" if bench in spacing_ft else f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
@@ -295,6 +400,8 @@ def evaluate(
             tol = cfg.lateral_tolerance(basin)
 
             for u in prop["units"]:
+                if u["label"] not in units:
+                    continue
                 label, geom = u["label"], units[u["label"]]
                 # Landing TVD = THIS unit's local offset median (units can sit
                 # >1,000 ft apart structurally — Toucan WCA_1 9,735 vs 10,852 ft);
@@ -360,9 +467,10 @@ def evaluate(
             pool_flags: list[str] = []
             r_over = radius_overrides.get(bench)
             radius, eligible, excluded, adjacent = _select_pool(
-                lambda r, _b=bench, _c=cands0: _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, union, _b, r),
-                lambda cands, _b=bench, _bn=basin, _sp=sp: classify(
-                    cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=planned_ll,
+                lambda r, _b=bench, _c=cands0, _un=union: (
+                    _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r)),
+                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll: classify(
+                    cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=_ll,
                     basin=_bn, planned_spacing_ft=_sp),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
@@ -372,7 +480,7 @@ def evaluate(
                 if edge:
                     pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")
                 res["decision_log"].append({
-                    "gate": "5a pool radius", "bench": bench,
+                    "gate": "5a pool radius", "bench": key,
                     "signal": (f"edge trigger {'FIRED' if edge else 'not fired'} (median dist to nearest PDP "
                                f"{_fmt(edge_sig['dist_nearest_ft_median'], ',.0f')} ft, ring decay "
                                f"{_fmt(edge_sig['ring_decay'], '.2f')}); "
@@ -421,9 +529,14 @@ def evaluate(
             override = (tc_group_overrides or {}).get(bench)
             if override:
                 named = [u for grp in override for u in grp]
-                unknown = sorted(set(named) - set(units))
+                unknown = sorted(set(named) - known_units)
                 if unknown:
-                    raise ValueError(f"--tc-groups {bench}: unknown unit(s) {unknown}; units are {sorted(units)}")
+                    raise ValueError(f"--tc-groups {bench}: unknown unit(s) {unknown}; units are {sorted(known_units)}")
+                # a reviewer group may name units outside this lateral class — keep the ones in it
+                override = [[u for u in grp if u in units] for grp in override]
+                override = [grp for grp in override if grp]
+            if override:
+                named = [u for grp in override for u in grp]
                 rest = [u for u in units if u not in named]
                 clusters = [list(grp) for grp in override] + ([rest] if rest else [])
                 B["split"]["reviewer_override"] = {
@@ -431,7 +544,7 @@ def evaluate(
                     "note": "reviewer grouping replaces the split test for this bench",
                 }
                 res["decision_log"].append({
-                    "gate": "5b TC granularity", "bench": bench,
+                    "gate": "5b TC granularity", "bench": key,
                     "signal": f"{sr.recommendation} (ratio {_fmt(sr.median_ratio, '.2f')}, p {p_value(sr.p_value)})",
                     "decision": " | ".join(" + ".join(c) for c in clusters), "by": "reviewer",
                 })

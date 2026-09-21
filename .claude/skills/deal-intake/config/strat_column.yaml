@@ -1,0 +1,44 @@
+# Stratigraphic column, SHALLOW -> DEEP, per basin, in formation_blueox codes.
+# MIRROR of "Blue Ox Resources\Engineering - General\nomenclature.xlsx"
+# (sheets `nomenclature` + `land_nomenclature`, read 2026-09-21). The workbook
+# is the source of truth: change it there, then mirror here, and bump
+# strat_version. Used ONLY to resolve land-file formation phrases ("Top of
+# Wolfcamp Formation") into an allowed bench list — never to compute a depth.
+strat_version: 1
+
+column:
+  delaware: [AVA_0, AVA_1, AVA_2, BS1_S, BS2_C, BS2_S, BS3_C, BS3_S,
+             WCXY, WCA_1, WCA_2, WCB_1, WCB_2, WCC, WCD, STRN, BRNT, MISS, WDFD]
+  midland:  [US, MS, JM, LSSH, DEAN, WCA_1, WCB_1, WCB_2, WCC, WCD,
+             STRN, BRNT, MRMC, MISS, WDFD]
+
+# Formation groups a land phrase can name. `benches` must be contiguous in the
+# basin column. Avalon sits INSIDE Bone Spring (Michael, 2026-09-21: "Top of
+# Bone Spring -> Top of Wolfcamp" = AVA_0..BS3_S); WCXY is the top of Wolfcamp
+# (land group WCA). Longer aliases win, so "wolfcamp b" beats "wolfcamp".
+groups:
+  delaware:
+    bone_spring: {aliases: [bone spring, bonespring, bone springs], benches: [AVA_0, AVA_1, AVA_2, BS1_S, BS2_C, BS2_S, BS3_C, BS3_S]}
+    avalon:      {aliases: [avalon],                                benches: [AVA_0, AVA_1, AVA_2]}
+    bs1:         {aliases: [1st bone spring, first bone spring],    benches: [BS1_S]}
+    bs2:         {aliases: [2nd bone spring, second bone spring],   benches: [BS2_C, BS2_S]}
+    bs3:         {aliases: [3rd bone spring, third bone spring],    benches: [BS3_C, BS3_S]}
+    wolfcamp:    {aliases: [wolfcamp],                              benches: [WCXY, WCA_1, WCA_2, WCB_1, WCB_2, WCC, WCD]}
+    wolfcamp_a:  {aliases: [wolfcamp a, wca],                       benches: [WCXY, WCA_1, WCA_2]}
+    wolfcamp_b:  {aliases: [wolfcamp b, wcb],                       benches: [WCB_1, WCB_2]}
+    wolfcamp_c:  {aliases: [wolfcamp c, wcc],                       benches: [WCC]}
+    wolfcamp_d:  {aliases: [wolfcamp d, wcd],                       benches: [WCD]}
+    strawn:      {aliases: [strawn],                                benches: [STRN]}
+    barnett:     {aliases: [barnett],                               benches: [BRNT]}
+    woodford:    {aliases: [woodford],                              benches: [WDFD]}
+  midland:
+    spraberry:   {aliases: [spraberry],                             benches: [US, MS, JM, LSSH]}
+    dean:        {aliases: [dean],                                  benches: [DEAN]}
+    wolfcamp:    {aliases: [wolfcamp],                              benches: [WCA_1, WCB_1, WCB_2, WCC, WCD]}
+    wolfcamp_a:  {aliases: [wolfcamp a, wca],                       benches: [WCA_1]}
+    wolfcamp_b:  {aliases: [wolfcamp b, wcb],                       benches: [WCB_1, WCB_2]}
+    wolfcamp_c:  {aliases: [wolfcamp c, wcc],                       benches: [WCC]}
+    wolfcamp_d:  {aliases: [wolfcamp d, wcd],                       benches: [WCD]}
+    strawn:      {aliases: [strawn],                                benches: [STRN]}
+    barnett:     {aliases: [barnett],                               benches: [BRNT]}
+    woodford:    {aliases: [woodford],                              benches: [WDFD]}

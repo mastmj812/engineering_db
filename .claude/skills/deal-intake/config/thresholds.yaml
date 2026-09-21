@@ -1,7 +1,8 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 3                 # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
+config_version: 4                 # v4 2026-09-21: per-unit benches.yaml + lateral classes (planned_lateral.class_ratio)
+                                  # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
                                   # v2 2026-09-18: codev tiering, cohort Di dispersion,
                                   # TC split test, planned-lateral estimate, stick-inside rule
 
@@ -71,6 +72,13 @@ planned_lateral:                  # gate 1 — per-unit planned lateral estimate
   setback_ft: 330
   chord_step_ft: 100              # chord spacing across the unit, along-azimuth
   statistic: median               # median chord of the inward-buffered unit
+  # Lateral classes (Michael, 2026-09-21 — VaULt mixes 2-, 2.5-, 3- and 3.5-mile
+  # units): units whose planned laterals are within this ratio of the class's
+  # shortest unit share one pool / split test / type curve per bench, with the
+  # lateral band centered on the class median. 1.10 keeps a 9,900-ft and a
+  # 12,600-ft unit apart. The reviewer can override a unit's planned lateral
+  # in benches.yaml (the chord estimate misreads odd-shaped units).
+  class_ratio: 1.10
   # azimuth source: narvi baseline trust order when available, else the
   # unit's minimum-rotated-rectangle long axis (reported which).
 

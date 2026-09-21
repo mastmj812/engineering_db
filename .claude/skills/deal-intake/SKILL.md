@@ -89,6 +89,26 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   declared ≈ 9,950′ correlated). `--window` passes the engineer's
   CORRELATED window and requires `--window-basis`. Without it the declared
   numbers are used and labelled "declared (NOT local — correlate)".
+- **Rights bounds (current land SOP):** each DSU row's `Min_Depth` /
+  `Max_Depth` is `Surface`, `COE` ("center of earth" = unbounded below), a
+  depth, or a **formation phrase** ("Top of Wolfcamp Formation"). A phrase is
+  a position in the stratigraphic column (`config/strat_column.yaml`, a
+  MIRROR of Engineering's `nomenclature.xlsx` — change the workbook first,
+  then the mirror, bump `strat_version`), so the allowed benches follow by
+  ORDER and no depth is ever invented: *Top of Bone Spring → Top of Wolfcamp
+  = AVA_0 … BS3_S* (Avalon sits inside Bone Spring; WCXY is the top of
+  Wolfcamp). An unrecognized phrase is a WARNING and that side stays open.
+- **Per-unit bench seed → `benches.yaml`:** current-SOP packages carry
+  **depth-severed stacked DSUs** (identical polygons, different rights and
+  WI/NRI — VaULt "2-11 (Bone Spring)" over "2-11 (WCB)"), so benches are
+  decided PER UNIT. `propose` seeds `benches.yaml` with a reason on every
+  row: off when outside the rights by stratigraphic order, no local control,
+  or thin control; numeric windows judged on LOCAL medians (in → on, out →
+  off); a bench within 200 ft of a window edge is decided by the formation
+  in the DSU NAME when there is one ("(WCB)"), else inside-edge on /
+  outside-edge off. The file also carries each unit's `planned_lateral_ft`
+  for the reviewer to correct. A re-run of `propose` never overwrites it
+  (fresh seed → `benches.seed.yaml`).
 - **Bench proposal:** each local bench's offset-median TVD vs the window →
   `in_window | edge (within 200 ft of a boundary) | out | no_window |
   no_depth`. Landing TVD is always offset-well medians, never tops. A bench
@@ -101,14 +121,17 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
 - PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
 **Reviewer gate — do not run `evaluate` until Michael confirms:** the
-allowed bench list (his call; the window statuses are a starting point),
-the correlated window + basis, per-bench planned spacing, and any emerging
-bench he wants included despite thin control.
+per-unit bench list and planned laterals (he edits `benches.yaml` — the
+seed is a starting point, the file is the decision of record), the
+correlated window + basis, per-bench planned spacing, and any emerging
+bench he wants included despite thin control. Walk him through the
+"Needs a look" column of the proposal's summary table first.
 
 ## Stage 2 — `evaluate` (Gates 2–7)
 
 ```
-python -m dealintake.cli evaluate --run-dir runs/<deal>-<date> --benches WCA_1 WCA_2 ...
+python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
+       [--benches WCA_1 WCA_2 ...]       ONE deal-wide list (simple deals); omit to use benches.yaml
        [--spacing BENCH=FT ...]          per-bench planned spacing (default 880 ft narvi fallback)
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
@@ -120,6 +143,16 @@ python -m dealintake.cli render --run-dir ...        re-render dossier.md from s
 Writes `signals.json`, `dossier.md`, `map_<bench>.png`,
 `buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
 first to keep a comparison. (`runs/` is git-ignored.)
+
+**Lateral classes:** units whose planned laterals are within
+`planned_lateral.class_ratio` (1.10) of the class's shortest unit share a
+class. Every bench is pooled, split-tested and type-curved **per class**,
+with the lateral band (± per-basin tolerance) centered on the class median
+— a 3-mile unit is not type-curved from a band centered on 2-mile wells.
+A bench planned in several classes appears as `WCB_1 @ 12,620 ft`, etc.
+`--radius` / `--tc-groups` are keyed by bench and apply to each of its
+classes. Every unit's benches + lateral land in the decision log (gate 1),
+marked when edited vs the seed.
 
 Order of operations is fixed and matters: **classify the pool → fit the
 whole pool in anduin → transfer → split test → fill each group's cohort**.
@@ -259,6 +292,14 @@ Reviewer levers, all decision-logged or visible in the dossier:
 - Provisional / uncalibrated: edge-trigger thresholds, `min_wells: 10`,
   `di_bounds_per_stream`. Residual +6–11 % transfer bias is unexplained
   (vintage-matched lenders did not remove it).
+- Adjacency for the co-development tiers uses the DEAL-wide planned stack,
+  not each footprint's — with stacked DSUs a bench can count as "adjacent"
+  because another unit plans it. Overlapping units that enable the SAME
+  bench (VaULt 2-11-14-23 over the 2-11 pair) each get locations for it —
+  the reviewer owns that double count in `benches.yaml`.
+- The planned-lateral chord estimate misreads odd-shaped units and units
+  whose azimuth fell back to the long axis (VaULt 44-45 S2: 4,620 ft) —
+  correct it in `benches.yaml`; `propose` has no azimuth override.
 - A bench's planned-stack TVD can rest on one well (thin control) — it is
   printed in the proposal; say so when it happens.
 - `pdp_support_for_geom` is live while `intel_pdp_support` is quarterly —

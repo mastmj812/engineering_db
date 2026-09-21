@@ -27,6 +27,15 @@ no economics.
 `> FLAG:` lines under it are deal-level (e.g. unit planned laterals differ
 > 25 % → consider per-unit TC bands).
 
+## 1b. Unit plan (reviewer)
+
+One row per unit from `benches.yaml` (or `--benches`): DSU name, rights as
+resolved (depths are declared-not-local; formation phrases by stratigraphic
+order), benches evaluated, planned lateral, its lateral class, and whether
+the reviewer edited the seed. A `FLAG` above it lists the lateral classes
+when there is more than one — each bench section is then per class
+(`WCB_1 @ 12,620 ft`), with a "Units: …" line naming the class's units.
+
 ## 2. Bench matrix (unit × bench)
 
 | Column | Read it as |
@@ -77,7 +86,9 @@ branch, not a fit result (tracked in anduin).
 | # | Gate | Bench | Signal | Decision | By |
 |---|---|---|---|---|---|
 
-One row per reviewer override the runner was given: `5a pool radius`
+One row per unit for `1 unit benches + lateral` (seed vs decision, "edited
+vs seed" when the reviewer changed it), plus one row per reviewer override
+the runner was given: `5a pool radius`
 (`--radius`, with the edge signal it overrode) and `5b TC granularity`
 (`--tc-groups`, with what the test said). Decisions taken outside the
 runner — allowed benches, correlated window + basis, spacing, wells culled
