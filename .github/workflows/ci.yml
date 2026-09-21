@@ -19,8 +19,10 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: requirements*.txt
       # Install the real runtime deps (etl.db imports psycopg/sqlalchemy) plus
       # pytest. No connection is opened — the tests exercise pure logic only.
-      - run: pip install -r requirements.txt pytest
+      # requirements-dealintake.txt: the deal-intake runner's geo/stats deps (its
+      # tests run here; the nightly ETL installs requirements.txt only).
+      - run: pip install -r requirements.txt -r requirements-dealintake.txt pytest
       - run: pytest -q
