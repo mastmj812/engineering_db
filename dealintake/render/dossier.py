@@ -55,6 +55,24 @@ def proposal_md(prop: dict[str, Any]) -> str:
     return "\n".join(s)
 
 
+def _transfer_rows(G: dict[str, Any]) -> list[list[Any]]:
+    """Oil + gas TC with (default) vs without the short-history transfer."""
+    wo_all = G.get("tc_preview_no_transfer") or {}
+    rows = []
+    for stream in ("oil", "gas"):
+        w, wo = (G.get("tc_preview") or {}).get(stream), wo_all.get(stream)
+        if not w or not wo:
+            continue
+        for label, p in (("with transfer (default)", w), ("own fits (without)", wo)):
+            dn, de = di_pair(p.get("Di"), p.get("b"))
+            delta = None
+            if label.startswith("with") and wo.get("eur_per_unit"):
+                delta = f"{w['eur_per_unit'] / wo['eur_per_unit'] - 1:+.1%}"
+            rows.append([stream, label, p.get("qi"), dn, de, p.get("b"), p.get("eur_per_unit"),
+                         delta if delta is not None else "—"])
+    return rows
+
+
 def _stream_rows(B: dict[str, Any]) -> list[list[Any]]:
     rows = []
     for stream in ("oil", "gas", "water"):
@@ -143,6 +161,11 @@ def render(run_dir: Path) -> Path:
                     s.append(f"\n> {tr['flag']}")
                 if tr["written"]:
                     s.append(f"\nRewritten: {', '.join(tr['written'])}")
+            cmp_ = B.get("transfer_compare") or {}
+            if cmp_.get("note"):
+                s.append(f"\n> With/without: {cmp_['note']}.")
+            if cmp_.get("flag"):
+                s.append(f"\n> **{cmp_['flag']}**")
 
         sp = B["split"]
         s.append(f"\n### TC granularity (gate 5b, run on the whole pool): **{sp['recommendation']}** "
@@ -178,6 +201,12 @@ def render(run_dir: Path) -> Path:
                      "Segment-2 Di beside it.\n")
             s.append(md(["Stream", "Source", "qi /1,000 ft (cal-day)", "Di nom /yr", "Di eff yr-1", "b",
                          "EUR /1,000 ft"], _stream_rows(G)))
+            wo = _transfer_rows(G)
+            if wo:
+                s.append(f"\n**With vs without short-history transfer** — {G['n_transferred_in_cohort']} of "
+                         f"{len(G['tc_wells'])} cohort wells carry borrowed Di/b (default = with)\n")
+                s.append(md(["Stream", "TC", "qi /1,000 ft (cal-day)", "Di nom /yr", "Di eff yr-1", "b",
+                             "EUR /1,000 ft", "EUR vs without"], wo))
             qc = G.get("qc")
             s.append("\n**Autoforecast QC (flags only)**\n")
             if qc:
