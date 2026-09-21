@@ -183,6 +183,11 @@ only GUI-coupled surface; the dossier doesn't use it.
    `pdp_count_1mi / pdp_count_5mi < edge_trigger.ring_decay_min`
    (thresholds are provisional — calibrate; the trigger only routes to the
    reviewer-confirmed strike proposal, it decides nothing itself).
+   **Emerging benches false-positive**: thin in-bench development trips the
+   density proxy with no basin edge anywhere near (Toucan BS2_S, 2026-09-21:
+   pool stuck at 2 wells / 5 mi). Reviewer remedy: `evaluate --radius
+   BENCH=MILES` — exactly that concentric radius, edge block bypassed,
+   decision-logged as gate 5a.
 5. **Forecast** — `POST /api/forecasts/batch` (api10s ≤ 500/call,
    `alignment` stays `peak_ramp`), poll `GET /api/sync/status`. Respect the
    manual-override guard: never refit rows with `manual_override=TRUE,

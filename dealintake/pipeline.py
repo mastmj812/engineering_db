@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import statistics
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from pathlib import Path
@@ -179,6 +180,28 @@ def _edge_fired(support_rows: list[dict[str, Any]], cfg: Config) -> tuple[bool, 
     return fired, {"dist_nearest_ft_median": dn, "ring_decay": decay}
 
 
+def _fmt(v: float | None, spec: str) -> str:
+    return "n/a" if v is None else format(v, spec)
+
+
+def _select_pool(
+    fetch: Callable[[float], list[dict[str, Any]]],
+    classify_fn: Callable[[list[dict[str, Any]]], tuple[list, list, list]],
+    *, min_wells: int, edge: bool, radius_override: float | None = None,
+) -> tuple[float, list, list, list]:
+    """Gate 5a radius walk. Default: step RADIUS_STEPS_MI until the pool reaches
+    min_wells; a fired edge trigger stops at the first step (strike-biased set
+    is the reviewer's call). radius_override = REVIEWER decision: exactly that
+    concentric radius, edge block bypassed (an emerging bench trips the edge
+    proxy on thin development, not basin position)."""
+    steps = (radius_override,) if radius_override is not None else RADIUS_STEPS_MI
+    for radius in steps:
+        eligible, excluded, adjacent = classify_fn(fetch(radius))
+        if radius_override is None and (len(eligible) >= min_wells or edge):
+            break
+    return radius, eligible, excluded, adjacent
+
+
 def evaluate(
     run_dir: Path,
     cfg: Config,
@@ -188,10 +211,14 @@ def evaluate(
     use_anduin: bool = True,
     tc_group_overrides: dict[str, list[list[str]]] | None = None,
     short_history_transfer: int | None = None,
+    radius_overrides: dict[str, float] | None = None,
     narvi: Narvi | None = None,
     anduin: Anduin | None = None,
 ) -> dict[str, Any]:
-    """tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
+    """radius_overrides: {bench: miles} — REVIEWER decision: the eligible pool
+    is drawn at exactly that concentric radius, bypassing the radius steps and
+    the edge-trigger block. Recorded in the pool flags + decision log.
+    tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
     replaces the split test's grouping for that bench (e.g. an escalated
     gradient).
     short_history_transfer: post-peak-month cutoff; the CLI passes the config default (9) unless disabled.
@@ -217,6 +244,12 @@ def evaluate(
     missing = [b for b in benches if b not in tvd_by_bench]
     if missing:
         raise ValueError(f"no local median TVD for {missing} — not in any unit's bench proposal")
+    radius_overrides = {bench_code(b): float(r) for b, r in (radius_overrides or {}).items()}
+    stray = [b for b in radius_overrides if b not in benches]
+    if stray:
+        raise ValueError(f"--radius names {stray}, not in the evaluated benches {benches}")
+    if any(r <= 0 for r in radius_overrides.values()):
+        raise ValueError(f"--radius must be > 0 mi, got {radius_overrides}")
     stack = sorted(benches, key=lambda b: statistics.median(tvd_by_bench[b]))
     bench_tvd = {b: statistics.median(tvd_by_bench[b]) for b in stack}
 
@@ -324,16 +357,28 @@ def evaluate(
             flip = len(pdp_adj_units) * 2 > len(B["units"])
             min_wells = int(cfg["type_curve"]["min_wells"])
             pool_flags: list[str] = []
-            for radius in RADIUS_STEPS_MI:
-                cands = cands0 if radius == RADIUS_STEPS_MI[0] else wh.candidates(conn, union, bench, radius)
-                eligible, excluded, adjacent = classify(
-                    cands, cfg, bench=bench, planned_stack=stack, planned_lateral_ft=planned_ll,
-                    basin=basin, planned_spacing_ft=sp,
-                )
-                if len(eligible) >= min_wells or edge:
-                    break
-            pool_flags.append(f"radius {radius} mi, basin {basin}, lateral tol {tol:.0%}, eligible pool {len(eligible)}")
-            if edge and len(eligible) < min_wells:
+            r_over = radius_overrides.get(bench)
+            radius, eligible, excluded, adjacent = _select_pool(
+                lambda r, _b=bench, _c=cands0: _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, union, _b, r),
+                lambda cands, _b=bench, _bn=basin, _sp=sp: classify(
+                    cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=planned_ll,
+                    basin=_bn, planned_spacing_ft=_sp),
+                min_wells=min_wells, edge=edge, radius_override=r_over,
+            )
+            pool_flags.append(f"radius {radius} mi{' (REVIEWER override)' if r_over is not None else ''}, "
+                              f"basin {basin}, lateral tol {tol:.0%}, eligible pool {len(eligible)}")
+            if r_over is not None:
+                if edge:
+                    pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")
+                res["decision_log"].append({
+                    "gate": "5a pool radius", "bench": bench,
+                    "signal": (f"edge trigger {'FIRED' if edge else 'not fired'} (median dist to nearest PDP "
+                               f"{_fmt(edge_sig['dist_nearest_ft_median'], ',.0f')} ft, ring decay "
+                               f"{_fmt(edge_sig['ring_decay'], '.2f')}); "
+                               f"auto steps {'/'.join(f'{s:g}' for s in RADIUS_STEPS_MI)} mi"),
+                    "decision": f"{r_over:g} mi concentric, eligible pool {len(eligible)}", "by": "reviewer",
+                })
+            elif edge and len(eligible) < min_wells:
                 pool_flags.append("EDGE trigger fired: no concentric extension — propose strike-biased set (reviewer confirms)")
             if pdp_adj_units and len(pdp_adj_units) < len(B["units"]):
                 pool_flags.append(

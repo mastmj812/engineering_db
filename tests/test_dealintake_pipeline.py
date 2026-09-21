@@ -53,6 +53,46 @@ def test_tc_groups_cli_parsing():
         _tc_groups(["WCA_2"])
 
 
+def test_radius_cli_parsing():
+    from dealintake.cli import _radius
+
+    assert _radius(["BS2_S=10", "WCA_1=7.5"]) == {"BS2_S": 10.0, "WCA_1": 7.5}
+    for bad in ("BS2_S", "BS2_S=ten", "BS2_S=0"):
+        with pytest.raises(SystemExit):
+            _radius([bad])
+
+
+def _walk(edge, override=None, per_radius=None):
+    """_select_pool over a fake warehouse: eligible-pool size per radius."""
+    from dealintake.pipeline import _select_pool
+
+    per_radius = per_radius or {5.0: 2, 7.5: 6, 10.0: 21}
+    fetched: list[float] = []
+
+    def fetch(r):
+        fetched.append(r)
+        return [{"api10": i} for i in range(per_radius[r])]
+
+    radius, eligible, _, _ = _select_pool(fetch, lambda c: (c, [], []), min_wells=10, edge=edge,
+                                          radius_override=override)
+    return radius, len(eligible), fetched
+
+
+def test_pool_radius_steps_until_min_wells():
+    assert _walk(edge=False) == (10.0, 21, [5.0, 7.5, 10.0])
+
+
+def test_pool_edge_trigger_blocks_extension():
+    assert _walk(edge=True) == (5.0, 2, [5.0])
+
+
+def test_pool_radius_override_bypasses_edge_block_and_steps():
+    # the Toucan BS2_S case: emerging bench trips the edge proxy; reviewer sets 10 mi
+    assert _walk(edge=True, override=10.0) == (10.0, 21, [10.0])
+    # exact radius even when a smaller step would already satisfy min_wells
+    assert _walk(edge=False, override=10.0, per_radius={5.0: 15, 10.0: 40}) == (10.0, 40, [10.0])
+
+
 def test_dossier_shows_gas_arps_and_ratio_side_by_side():
     from dealintake.render.dossier import _stream_rows
 
