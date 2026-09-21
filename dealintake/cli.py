@@ -68,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--no-anduin", action="store_true", help="skip anduin forecast/QC/TC preview")
     e.add_argument("--tc-groups", nargs="*", default=[],
                    help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")
+    e.add_argument("--short-history-transfer", type=int, metavar="POST_PEAK_MONTHS",
+                   help="OPT-IN: anduin cohort transfer (e.g. 9) — short wells get the pool's long-well "
+                        "median Di/b + own peak qi; overwrites their unlocked anduin forecasts")
 
     r = sub.add_parser("render")
     r.add_argument("--run-dir", required=True)
@@ -88,7 +91,8 @@ def main(argv: list[str] | None = None) -> int:
     elif a.cmd == "evaluate":
         try:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
-                              use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups))
+                              use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups),
+                              short_history_transfer=a.short_history_transfer)
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2

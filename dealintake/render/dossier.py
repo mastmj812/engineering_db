@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from dealintake.decline import effective_from_nominal
 from dealintake.render import maps
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
@@ -122,6 +123,26 @@ def render(run_dir: Path) -> Path:
             f"{' → '.join(pool['tier_order'])} ({pool['order_reason']}).")
         for f in pool["flags"]:
             s.append(f"\n> {f}")
+
+        tr = B.get("short_history_transfer")
+        if tr:
+            s.append(f"\n### Short-history cohort transfer (opt-in, cutoff {tr['cutoff_months']} post-peak months)\n")
+            if tr.get("error"):
+                s.append(f"> {tr['flag']}: {tr['error']}")
+            else:
+                donors = "; ".join(
+                    f"{d['stream']} Di {d['cohort_di']:.2f}/yr ({pct(effective_from_nominal(d['cohort_di'], d['cohort_b']))} eff) "
+                    f"b {d['cohort_b']:.2f} from {d['donor_count']} wells" for d in tr["donors"])
+                s.append(f"{tr['n_long']} long wells lent median decline to {tr['n_short']} short wells "
+                         f"({len(tr['written'])} anduin forecasts rewritten; {len(tr['skipped_locked'])} locked rows "
+                         f"kept; {len(tr['skipped_no_peak'])} with no peak). Lender medians: {donors}.")
+                s.append(f"\nVintage: lenders' median first prod {tr['long_fp_year_median']} vs short wells "
+                         f"{tr['short_fp_year_median']}; proppant {tr['long_proppant_lbs_ft_median']} vs "
+                         f"{tr['short_proppant_lbs_ft_median']} lb/ft.")
+                if tr.get("flag"):
+                    s.append(f"\n> {tr['flag']}")
+                if tr["written"]:
+                    s.append(f"\nRewritten: {', '.join(tr['written'])}")
 
         sp = B["split"]
         s.append(f"\n### TC granularity (gate 5b, run on the whole pool): **{sp['recommendation']}** "
