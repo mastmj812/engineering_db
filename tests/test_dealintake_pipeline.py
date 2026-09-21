@@ -107,3 +107,14 @@ def test_transfer_thin_donors_is_recorded_not_fatal():
 
     out = _transfer(_FakeAnduin(err="POST ... -> 422: insufficient_donor_cohort"), _pool(), 9)
     assert "NOT applied" in out["flag"] and "422" in out["error"]
+
+
+def test_short_history_transfer_on_by_default():
+    import argparse
+
+    from dealintake.cli import _transfer_cutoff
+
+    ns = lambda n=None, off=False: argparse.Namespace(short_history_transfer=n, no_short_history_transfer=off)
+    assert _transfer_cutoff(ns(), CFG) == CFG["type_curve"]["short_history_transfer_months"] == 9
+    assert _transfer_cutoff(ns(12), CFG) == 12
+    assert _transfer_cutoff(ns(12, off=True), CFG) is None

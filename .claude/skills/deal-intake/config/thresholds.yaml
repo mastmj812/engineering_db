@@ -1,7 +1,8 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 2                 # v2 2026-09-18: codev tiering, cohort Di dispersion,
+config_version: 3                 # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
+                                  # v2 2026-09-18: codev tiering, cohort Di dispersion,
                                   # TC split test, planned-lateral estimate, stick-inside rule
 
 alignment:                        # gate 2 — location source (v2 rule, 2026-09-18)
@@ -42,6 +43,14 @@ type_curve:                       # gate 5 — well selection
   min_wells: 10
   max_wells: 20                   # cap on the FIRST tier (nearest first); lower tiers
                                   # only top up to min_wells (Michael, 2026-09-18)
+  # Short-history cohort transfer (anduin POST /forecasts/transfer-cohort-params),
+  # ON BY DEFAULT (Michael, 2026-09-21): wells with < N months AFTER PEAK get
+  # the eligible pool's long-well median Di/b + their own peak qi. Hindcast
+  # (Toucan + BS2_C/BS3_C Lea, next-12-mo oil): own-fit bias +12-16% at 9 mo
+  # -> transfer +6-11%; 9 within ~1-2 pts of 12. Overwrites unlocked anduin
+  # rows for those wells (listed in the dossier). --no-short-history-transfer
+  # turns it off for a run.
+  short_history_transfer_months: 9
   default_radius_mi: 5
   extension:
     basinward: concentric_radius

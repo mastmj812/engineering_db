@@ -6,7 +6,7 @@
       Gate 2. Writes proposal.json + proposal.md, then STOPS for review.
 
   evaluate --run-dir ... --benches WCA_1 WCA_2 WCB_1 [--spacing WCA_1=880 ...]
-           [--no-anduin]
+           [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
   render   --run-dir ...        re-render dossier.md from signals.json.
@@ -48,6 +48,14 @@ def _tc_groups(items: list[str]) -> dict[str, list[list[str]]]:
     return out
 
 
+def _transfer_cutoff(a: argparse.Namespace, cfg: cfgmod.Config) -> int | None:
+    """Short-history transfer cutoff (post-peak months): ON BY DEFAULT from the
+    config; --short-history-transfer N overrides; --no-... disables."""
+    if a.no_short_history_transfer:
+        return None
+    return a.short_history_transfer or cfg["type_curve"].get("short_history_transfer_months")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m dealintake", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -69,8 +77,11 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--tc-groups", nargs="*", default=[],
                    help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")
     e.add_argument("--short-history-transfer", type=int, metavar="POST_PEAK_MONTHS",
-                   help="OPT-IN: anduin cohort transfer (e.g. 9) — short wells get the pool's long-well "
-                        "median Di/b + own peak qi; overwrites their unlocked anduin forecasts")
+                   help="ON BY DEFAULT at type_curve.short_history_transfer_months (9): anduin cohort "
+                        "transfer — short wells get the pool's long-well median Di/b + own peak qi; "
+                        "overwrites their unlocked anduin forecasts. Pass N to override the cutoff")
+    e.add_argument("--no-short-history-transfer", action="store_true",
+                   help="keep the short wells' own autofits (no anduin writes beyond missing fits)")
 
     r = sub.add_parser("render")
     r.add_argument("--run-dir", required=True)
@@ -92,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
                               use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups),
-                              short_history_transfer=a.short_history_transfer)
+                              short_history_transfer=_transfer_cutoff(a, cfg))
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2

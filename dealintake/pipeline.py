@@ -14,8 +14,10 @@ Writes nothing to the warehouse. narvi is called in PREVIEW mode only
 (/api/generate persists nothing). anduin fits only wells with no forecast yet
 (see clients.anduin.forecast) and TCs are computed as a PREVIEW — saving the
 TC and the narvi scenario stay reviewer actions. The one exception is the
-OPT-IN --short-history-transfer, which overwrites the short wells' unlocked
-anduin forecasts with cohort-transfer rows (listed in the dossier).
+short-history cohort transfer — ON BY DEFAULT (config
+type_curve.short_history_transfer_months; --no-short-history-transfer turns it
+off) — which overwrites the short wells' unlocked anduin forecasts with
+cohort-transfer rows (listed in the dossier).
 """
 
 from __future__ import annotations
@@ -192,7 +194,7 @@ def evaluate(
     """tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
     replaces the split test's grouping for that bench (e.g. an escalated
     gradient).
-    short_history_transfer: OPT-IN post-peak-month cutoff (Michael uses 9).
+    short_history_transfer: post-peak-month cutoff; the CLI passes the config default (9) unless disabled.
     Runs anduin's cohort transfer on each bench's whole eligible pool: wells
     with fewer post-peak months get the long wells' median Di/b + their own
     peak rate. WRITES/overwrites those wells' unlocked anduin rows — the

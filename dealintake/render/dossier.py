@@ -126,7 +126,7 @@ def render(run_dir: Path) -> Path:
 
         tr = B.get("short_history_transfer")
         if tr:
-            s.append(f"\n### Short-history cohort transfer (opt-in, cutoff {tr['cutoff_months']} post-peak months)\n")
+            s.append(f"\n### Short-history cohort transfer (default on, cutoff {tr['cutoff_months']} post-peak months)\n")
             if tr.get("error"):
                 s.append(f"> {tr['flag']}: {tr['error']}")
             else:
