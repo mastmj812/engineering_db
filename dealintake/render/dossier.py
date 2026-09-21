@@ -19,6 +19,8 @@ from dealintake.render.tables import (
     buildup_rows,
     di_pair,
     md,
+    num,
+    p_value,
     pct,
     write_csv,
 )
@@ -154,9 +156,13 @@ def render(run_dir: Path) -> Path:
                 s.append(f"{tr['n_long']} long wells lent median decline to {tr['n_short']} short wells "
                          f"({len(tr['written'])} anduin forecasts rewritten; {len(tr['skipped_locked'])} locked rows "
                          f"kept; {len(tr['skipped_no_peak'])} with no peak). Lender medians: {donors}.")
-                s.append(f"\nVintage: lenders' median first prod {tr['long_fp_year_median']} vs short wells "
-                         f"{tr['short_fp_year_median']}; proppant {tr['long_proppant_lbs_ft_median']} vs "
-                         f"{tr['short_proppant_lbs_ft_median']} lb/ft.")
+                if tr["n_short"]:
+                    s.append(f"\nVintage: lenders' median first prod {num(tr['long_fp_year_median'], '.1f')} vs "
+                             f"short wells {num(tr['short_fp_year_median'], '.1f')}; proppant "
+                             f"{num(tr['long_proppant_lbs_ft_median'], ',.0f')} vs "
+                             f"{num(tr['short_proppant_lbs_ft_median'], ',.0f')} lb/ft.")
+                else:
+                    s.append("\nNo short wells in the pool — nothing borrowed, nothing rewritten.")
                 if tr.get("flag"):
                     s.append(f"\n> {tr['flag']}")
                 if tr["written"]:
@@ -173,8 +179,10 @@ def render(run_dir: Path) -> Path:
         if sp["groups"]:
             s.append(md(["Unit", "Pool wells", "Median /1,000 ft", "Eligible for own TC"],
                         [[g["unit"], g["n"], g["median"], g["eligible"]] for g in sp["groups"]]))
-        s.append(f"\nMedian ratio {sp['median_ratio']}, {sp['test']} p {sp['p_value']}; gradient "
-                 f"{sp['gradient_per_mile']} per mile along the cohort axis (R² {sp['gradient_r2']}).")
+        test = f"{sp['test']} p {p_value(sp['p_value'])}" if sp.get("test") else "no rank test (< 2 eligible groups)"
+        s.append(f"\nMedian ratio {num(sp['median_ratio'])}, {test}; gradient "
+                 f"{num(sp['gradient_per_mile'], '+,.0f')} bbl/1,000 ft per mile along the cohort axis "
+                 f"(R² {num(sp['gradient_r2'])}).")
         for n in sp["notes"]:
             s.append(f"\n> {n}")
         ov = sp.get("reviewer_override")

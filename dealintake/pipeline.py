@@ -42,6 +42,7 @@ from dealintake.clients.narvi import Narvi, legs
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import long_axis_azimuth, planned_lateral, stick_relation
+from dealintake.render.tables import p_value
 from dealintake.select_wells import (
     adjacent_benches,
     bench_code,
@@ -431,7 +432,7 @@ def evaluate(
                 }
                 res["decision_log"].append({
                     "gate": "5b TC granularity", "bench": bench,
-                    "signal": f"{sr.recommendation} (ratio {sr.median_ratio}, p {sr.p_value})",
+                    "signal": f"{sr.recommendation} (ratio {_fmt(sr.median_ratio, '.2f')}, p {p_value(sr.p_value)})",
                     "decision": " | ".join(" + ".join(c) for c in clusters), "by": "reviewer",
                 })
                 for cl in clusters:
