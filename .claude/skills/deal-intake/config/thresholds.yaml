@@ -66,8 +66,8 @@ planned_lateral:                  # gate 1 — per-unit planned lateral estimate
   # unit's minimum-rotated-rectangle long axis (reported which).
 
 codev:                            # gate 5.2b — co-development tiering
-  # Constants BAKED in curated.codev_context (sql/46); the runner asserts
-  # equality — change sql/46 and these together or not at all.
+  # Constants BAKED in curated.codev_context (sql/47); the runner asserts
+  # equality — change sql/47 and these together or not at all.
   xy_ft: 1320
   window_days: 180
   overlap_min_frac: 0.30

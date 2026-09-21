@@ -12,7 +12,7 @@
 --      - stages_per_1000ft, proppant_lbs_per_stage, fluid_bbl_per_stage
 --      - has_completion_intensity   (bool: are key intensity cols all populated?)
 --      - lateral_closer_xy_ft, wellspacing_vintage (Novi WellSpacing pass-through)
---      - stack_closer_z_ft, stagger_closer_tangent_ft, parent_days_online (sql/48)
+--      - stack_closer_z_ft, stagger_closer_tangent_ft, parent_days_online (sql/49)
 --      Regular view; stays in sync with curated.wells automatically (no refresh).
 --
 --   2. curated.production_normalized (MATERIALIZED VIEW)
@@ -166,7 +166,7 @@ SELECT
     ws.ingested_at                                     AS wellspacing_vintage,
 
     -- ------------------------------------------------------------------
-    -- Novi WellSpacing vertical / stagger / parent timing (sql/48, 2026-09,
+    -- Novi WellSpacing vertical / stagger / parent timing (sql/49, 2026-09,
     -- deal-intake v2 cross-check on curated.codev_context). Raw pass-
     -- through, same AS-OF-FIRST-PRODUCTION semantics as LateralCloserXY.
     -- APPENDED at the end of the column list on purpose: CREATE OR REPLACE

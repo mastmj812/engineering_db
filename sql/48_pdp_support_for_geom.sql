@@ -1,5 +1,5 @@
 -- =============================================================================
--- 47 — curated.pdp_support_for_geom(geom, bench, tvd)  (sql/30 offset-PDP
+-- 48 — curated.pdp_support_for_geom(geom, bench, tvd)  (sql/30 offset-PDP
 --      support scores for an ARBITRARY stick — deal-intake Gate 3 for
 --      narvi-generated locations)
 --
@@ -144,7 +144,7 @@ CREATE OR REPLACE FUNCTION curated.pdp_support_for_geom(
 $$ LANGUAGE sql STABLE;
 
 COMMENT ON FUNCTION curated.pdp_support_for_geom(geometry, text, double precision) IS
-'sql/30 offset-PDP support score family for an arbitrary stick geometry (deal-intake Gate 3 for narvi-generated locations): pdp_count_1/3/5mi, dist_nearest/3rd_nearest_ft, support_lateral_ft_5mi, n_offsets_5mi, offset_median_eur_ft, offset_median_cum12m_oil_per_ft, offset_median_tvd, tvd_delta_ft, tvd_excess_3mi_ft, wca_delta_ft. Same predicates as curated.intel_pdp_support (horizontal, same TVD-corrected formation_blueox, TVD +/-500 ft, >=6 mo produced, ll>0, 5-mi outer gate; unguarded 3-mi depth context). Any NULL input -> all scores NULL (not scorable); count 0 = scored and unsupported. LIVE against curated.wells (the matview is quarterly), so it can read slightly higher than intel_pdp_support between vintages. No inflation_ratio (needs a Novi forecast). sql/47.';
+'sql/30 offset-PDP support score family for an arbitrary stick geometry (deal-intake Gate 3 for narvi-generated locations): pdp_count_1/3/5mi, dist_nearest/3rd_nearest_ft, support_lateral_ft_5mi, n_offsets_5mi, offset_median_eur_ft, offset_median_cum12m_oil_per_ft, offset_median_tvd, tvd_delta_ft, tvd_excess_3mi_ft, wca_delta_ft. Same predicates as curated.intel_pdp_support (horizontal, same TVD-corrected formation_blueox, TVD +/-500 ft, >=6 mo produced, ll>0, 5-mi outer gate; unguarded 3-mi depth context). Any NULL input -> all scores NULL (not scorable); count 0 = scored and unsupported. LIVE against curated.wells (the matview is quarterly), so it can read slightly higher than intel_pdp_support between vintages. No inflation_ratio (needs a Novi forecast). sql/48.';
 
 -- Verification (EXPLAIN must show idx_curated_wells_wellstick_geog):
 --

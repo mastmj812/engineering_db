@@ -1,5 +1,5 @@
 -- =============================================================================
--- 48 — Novi WellSpacing vertical/stagger/parent pass-through on
+-- 49 — Novi WellSpacing vertical/stagger/parent pass-through on
 --      curated.wells_enriched (one-time migration; sql/06 is canonical)
 --
 -- Appends three raw_novi."WellSpacing" columns to the END of the view:
@@ -9,7 +9,7 @@
 --   parent_days_online         ParentDaysOnline      (-1 <=> IsChild FALSE)
 -- Same AS-OF-FIRST-PRODUCTION semantics as lateral_closer_xy_ft. Purpose:
 -- Novi's own vertical-development context, a cheap cross-check on
--- curated.codev_context (sql/46) for deal-intake v2 TC selection. Because
+-- curated.codev_context (sql/47) for deal-intake v2 TC selection. Because
 -- the caps cover most rows (72% for StackCloserZ), treat these as a
 -- corroborating signal, never the primary one.
 --
@@ -19,7 +19,7 @@
 -- availability window. The body below is a verbatim copy of sql/06's; if the
 -- two ever diverge, sql/06 is the truth.
 --
--- Apply: python -m scripts.apply_codev_context   (runs sql/48, 46, 47, then
+-- Apply: python -m scripts.apply_codev_context   (runs sql/49, 47, 48, then
 --   the sql/31 comment block, then validates)
 -- =============================================================================
 
@@ -138,7 +138,7 @@ SELECT
     ws.ingested_at                                     AS wellspacing_vintage,
 
     -- ------------------------------------------------------------------
-    -- Novi WellSpacing vertical / stagger / parent timing (sql/48, 2026-09,
+    -- Novi WellSpacing vertical / stagger / parent timing (sql/49, 2026-09,
     -- deal-intake v2 cross-check on curated.codev_context). Raw pass-
     -- through, same AS-OF-FIRST-PRODUCTION semantics as LateralCloserXY.
     -- APPENDED at the end of the column list on purpose: CREATE OR REPLACE

@@ -153,7 +153,7 @@ def candidates(
 
 
 def pdp_support(conn, stick: BaseGeometry, bench: str, tvd_ft: float) -> dict[str, Any]:
-    """sql/47 score family for a generated stick (live, not quarterly)."""
+    """sql/48 score family for a generated stick (live, not quarterly)."""
     rows = _rows(conn, "SELECT * FROM curated.pdp_support_for_geom(%s::geometry, %s, %s)",
                  (f"SRID=4326;{stick.wkt}", bench, tvd_ft))
     return rows[0] if rows else {}

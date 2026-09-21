@@ -3,13 +3,13 @@
 Pattern of scripts/apply_intel_pad_geom.py: exec DDL on the 5432 session
 (statement_timeout=0), then validate by identity, never by constant.
 
-  1. sql/48 — CREATE OR REPLACE VIEW curated.wells_enriched, appending
+  1. sql/49 — CREATE OR REPLACE VIEW curated.wells_enriched, appending
      stack_closer_z_ft / stagger_closer_tangent_ft / parent_days_online.
      Trailing-column add => no CASCADE; asserts erebor_locations and
      intel_pdp_support still exist afterwards.
-  2. sql/46 — curated.codev_context (DROP ... CASCADE + CREATE ... WITH DATA;
+  2. sql/47 — curated.codev_context (DROP ... CASCADE + CREATE ... WITH DATA;
      ~1.5 min basin-wide, measured by read-only dry run 2026-09-18).
-  3. sql/47 — curated.pdp_support_for_geom(geometry, text, float8).
+  3. sql/48 — curated.pdp_support_for_geom(geometry, text, float8).
   4. sql/31 — full comment catalog (idempotent; carries the new columns).
   5. validate:
      - wells_enriched: new columns present, row count == curated.wells,
@@ -41,7 +41,7 @@ from etl.db import get_connection
 SQL = Path(__file__).resolve().parent.parent / "sql"
 GEOG_INDEX = "idx_curated_wells_wellstick_geog"
 
-# Producing-horizontal identity — must match sql/46's subj CTE predicate.
+# Producing-horizontal identity — must match sql/47's subj CTE predicate.
 _HZ_WHERE = """
     COALESCE(w.novi_slant_calculated, w.enverus_trajectory) ILIKE '%horizontal%'
     AND w.first_production_date IS NOT NULL
@@ -68,12 +68,12 @@ def _relkind(cur, schema: str, name: str) -> str | None:
 
 
 def build(conn) -> None:
-    print("[1/5] sql/48 — wells_enriched WellSpacing pass-through", flush=True)
-    _exec(conn, "CREATE OR REPLACE VIEW (trailing columns only)", "48_wellspacing_passthrough.sql")
-    print("[2/5] sql/46 — curated.codev_context", flush=True)
-    _exec(conn, "DROP + CREATE MATERIALIZED VIEW WITH DATA", "46_codev_context.sql")
-    print("[3/5] sql/47 — curated.pdp_support_for_geom", flush=True)
-    _exec(conn, "CREATE OR REPLACE FUNCTION", "47_pdp_support_for_geom.sql")
+    print("[1/5] sql/49 — wells_enriched WellSpacing pass-through", flush=True)
+    _exec(conn, "CREATE OR REPLACE VIEW (trailing columns only)", "49_wellspacing_passthrough.sql")
+    print("[2/5] sql/47 — curated.codev_context", flush=True)
+    _exec(conn, "DROP + CREATE MATERIALIZED VIEW WITH DATA", "47_codev_context.sql")
+    print("[3/5] sql/48 — curated.pdp_support_for_geom", flush=True)
+    _exec(conn, "CREATE OR REPLACE FUNCTION", "48_pdp_support_for_geom.sql")
     print("[4/5] sql/31 — comment catalog", flush=True)
     _exec(conn, "COMMENT ON (idempotent)", "31_comments.sql")
 
@@ -169,7 +169,7 @@ def validate_codev(cur) -> bool:
     # EXPLAIN the matview body (from the file) — the build must be index-served.
     body = re.search(
         r"CREATE MATERIALIZED VIEW curated\.codev_context AS\n(.*?)\nWITH DATA;",
-        (SQL / "46_codev_context.sql").read_text(encoding="utf-8"),
+        (SQL / "47_codev_context.sql").read_text(encoding="utf-8"),
         re.DOTALL,
     ).group(1)
     plan = "\n".join(r[0] for r in cur.execute("EXPLAIN " + body).fetchall())

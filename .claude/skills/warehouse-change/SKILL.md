@@ -46,7 +46,7 @@ dictionary).
   `scripts/apply_wellstick_fix.py` (14 steps).
 - sql/29 CASCADE-drops the whole intel chain incl. `erebor_locations`; sql/20 additionally kills
   sql/23 + `wells_enriched`. Quarterly chain of record: sql/29 →
-  `apply_intel_formation_blueox` → `apply_reconciled_inventory` (20 → 23 → wells_enriched → 46 codev_context → 21) →
+  `apply_intel_formation_blueox` → `apply_reconciled_inventory` (20 → 23 → wells_enriched → 47 codev_context → 21) →
   sql/25 → `apply_intel_pdp_support` (must precede erebor_locations) →
   `apply_intel_forecast_accuracy` → `apply_erebor_locations` (FINAL) → sql/26.
 - Check dependencies live if unsure: `pg_depend`/`pg_rewrite` (the data-dictionary generator has

@@ -384,7 +384,7 @@ def settle(seconds: int | None = None) -> int:
 #     depends on it, tiny (~85k rows) — a fast win before the heavy chain.
 #   - producing_reference + formation_blueox_tvd feed wells_enriched's
 #     corrected formation_blueox, so they refresh right after the base mapping.
-#   - codev_context (sql/46) reads wells + formation_blueox +
+#   - codev_context (sql/47) reads wells + formation_blueox +
 #     formation_blueox_tvd (its last input), so it follows them directly;
 #     ~1.5 min basin-wide, no downstream matview dependents.
 #   - erebor_locations reads wells_enriched (over the matviews above) AND
@@ -426,7 +426,7 @@ _OPTIONAL_MATVIEWS: frozenset[str] = frozenset(
         "curated.erebor_locations",
         "curated.intel_forecast_accuracy",
         "curated.intel_forecast_accuracy_vintage",
-        # sql/46 — CASCADE victim of the quarterly sql/20 -> sql/23 rebuild;
+        # sql/47 — CASCADE victim of the quarterly sql/20 -> sql/23 rebuild;
         # apply_reconciled_inventory recreates it (step 1d).
         "curated.codev_context",
     }
