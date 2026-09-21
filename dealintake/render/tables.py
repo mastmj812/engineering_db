@@ -26,6 +26,17 @@ def pct(v: float | None) -> str:
     return "—" if v is None else f"{v * 100:.1f}%"
 
 
+def num(v: float | None, spec: str = ",.2f") -> str:
+    return "—" if v is None else format(v, spec)
+
+
+def p_value(p: float | None) -> str:
+    """3 significant figures; tiny values as '<0.0001' (never 0.002373333787193668)."""
+    if p is None:
+        return "—"
+    return "<0.0001" if p < 1e-4 else f"{p:.3g}"
+
+
 def di_pair(di_nom: float | None, b: float | None) -> tuple[str, str]:
     if di_nom is None or b is None:
         return "—", "—"

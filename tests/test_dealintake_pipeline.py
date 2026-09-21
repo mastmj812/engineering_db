@@ -108,6 +108,46 @@ def test_dossier_shows_gas_arps_and_ratio_side_by_side():
     assert rows[1][4] == "52.0%" and rows[1][6] == 600_000.0
 
 
+def test_p_value_and_num_formatting():
+    from dealintake.render.tables import num, p_value
+
+    assert p_value(0.002373333787193668) == "0.00237"
+    assert p_value(3e-7) == "<0.0001" and p_value(0.41) == "0.41" and p_value(None) == "—"
+    assert num(None) == "—" and num(1.6234) == "1.62" and num(-926.63, "+,.0f") == "-927"
+
+
+def test_rendered_dossier_has_no_none_or_raw_floats(tmp_path, monkeypatch):
+    """Re-render a minimal signals.json: a bench with no short wells and an
+    escalated split must not print 'None' or an unrounded p-value."""
+    import json
+
+    from dealintake.render import dossier, maps
+
+    unit = {"label": "u1", "geometry": {"type": "Polygon", "coordinates": [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]}}
+    (tmp_path / "proposal.json").write_text(json.dumps({"deal_file": "deal.gpkg", "units": [unit]}), encoding="utf-8")
+    bench = {
+        "tvd_ft": 9584.0, "spacing_ft": 880.0, "spacing_source": "default", "basin": "delaware",
+        "units": {}, "edge_trigger": {"fired": False}, "tc_groups": [],
+        "pool": {"n_eligible": 10, "n_excluded": 0, "exclusion_reasons": {}, "adjacent_planned": [],
+                 "tier_order": ["codev"], "order_reason": "default", "flags": []},
+        "short_history_transfer": {
+            "cutoff_months": 9, "n_long": 10, "n_short": 0, "written": [], "skipped_locked": [],
+            "skipped_no_peak": [], "long_fp_year_median": 2022.7, "short_fp_year_median": None,
+            "long_proppant_lbs_ft_median": 2542.4, "short_proppant_lbs_ft_median": None,
+            "donors": [{"stream": "oil", "donor_count": 10, "cohort_di": 3.04, "cohort_b": 1.0}]},
+        "split": {"recommendation": "escalate", "metric": "anduin_oil_eur_per_1000ft", "groups": [],
+                  "median_ratio": 1.62, "test": "kruskal_wallis", "p_value": 0.002373333787193668,
+                  "gradient_per_mile": -926.6301958235966, "gradient_r2": 0.1375425664671187, "notes": []},
+    }
+    (tmp_path / "signals.json").write_text(json.dumps({
+        "snapshot": {}, "config_version": 3, "planned_stack": ["BS2_S"], "planned_lateral_ft": 9998.0,
+        "flags": [], "benches": {"BS2_S": bench}, "decision_log": []}), encoding="utf-8")
+    monkeypatch.setattr(maps, "bench_map", lambda *a, **k: None)   # text check only, no matplotlib
+    text = dossier.render(tmp_path).read_text(encoding="utf-8")
+    assert "None" not in text and "0.00237" in text and "0.0023733" not in text
+    assert "No short wells in the pool" in text and "-927" in text and "R² 0.14" in text
+
+
 class _FakeAnduin:
     def __init__(self, resp=None, err=None):
         self.resp, self.err, self.calls = resp, err, []

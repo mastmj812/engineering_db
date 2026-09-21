@@ -3,224 +3,263 @@ name: deal-intake
 description: Process a Land-department deal (unit shapefile + depth restrictions) through the seven-gate pipeline — narvi locations, erebor Novi forecasts, anduin type curves — into a per-bench forecast-comparison dossier with a decision log. Use when a deal package arrives from Land or the user asks to run/re-run a deal evaluation.
 ---
 
-# Deal intake — seven-gate pipeline (Land → dossier)
+# Deal intake v2 — the `dealintake` runner (Land → dossier)
 
-Michael is the **reviewer of exceptions, not the executor of steps**. Every
-gate emits a computed signal, a rule-based recommendation, and a
-pass/escalate status. Deterministic steps execute; judgment heuristics become
-computed flags; geology-driven decisions (strike extension, structural calls)
-are auto-surfaced with evidence and **never auto-decided**.
+Michael is the **reviewer of exceptions, not the executor of steps**. The
+runner (`python -m dealintake`, package `dealintake/` in engineering_db)
+computes every signal reproducibly per `config_version`; this playbook says
+how to drive it, where it stops for him, and how to read what it writes.
+Geology and land calls (benches, correlated window, spacing, strike
+extension, TC grouping, culling wells) are surfaced with evidence and
+**never auto-decided**.
 
-The deal is a matrix of `(unit x bench)` rows. All thresholds live in
-`config/thresholds.yaml` (versioned — bump `config_version` on any change,
-never edit values in logic). The dossier template is
-`templates/dossier.md`.
+All thresholds live in `config/thresholds.yaml` (versioned — bump
+`config_version` on ANY value change, never hardcode a value in logic; the
+run snapshots the file as `thresholds.snapshot.yaml`). The dossier is
+rendered by `dealintake/render/dossier.py`; `templates/dossier.md` is the
+reading guide to its sections.
 
 **Hard rules (inherit the workspace conventions):**
-- Warehouse access is READ-ONLY except narvi's own save endpoints
-  (`narvi.*` schema). No DDL, ever, from this pipeline.
-- No economics anywhere. EUR is the raw 50-yr integral. Novi NPV columns are
-  a screen, never authoritative.
+- Warehouse access is READ-ONLY. No DDL, ever, from this pipeline.
+- No economics anywhere. EUR is the raw 50-yr integral. Novi EUR columns
+  are a screen, never authoritative.
 - Whenever Di appears (dossier, flags, chat), state nominal (per-year) AND
   1-yr effective % side by side. SPE percentile orientation (P10 = HIGH).
-- Formation grouping is `formation_blueox` only. api10 is the well key;
-  Novi Intelligence sticks are `stick_id` (PDP rows = `-(api10)`).
+- Formation grouping is `formation_blueox` only (narvi's `_b` split suffix
+  is stripped by `bench_code`). api10 is the well key; Novi sticks are
+  `stick_id` (PDP rows = `-(api10)`).
+- Novi comparison figures are the **median of representative sticks** —
+  not a P50, and not the erebor export's cohort mean.
+- Nothing auto-drops a well. Every exclusion carries a reason, every
+  outlier is a flag, and culling happens in anduin by the reviewer.
 
-## Gate 0 — Snapshot the run (auditability)
+## What the run writes, and where
 
-Before anything, record in the dossier header:
-- `run_id` (deal name + date), `config_version` from the yaml.
-- Production vintage: latest `meta.etl_log` `run_finished_at` for the
-  novi/enverus nightly loads.
-- Novi Intelligence vintage: current `report_name` (per
-  `meta.intel_report_watermark` / `raw_intel.well_master`) — this stamps
-  `curated.erebor_locations`.
-- `wellspacing_vintage` (from `curated.wells_enriched`, once the
-  LateralCloserXY column is applied — see Gate 5 spacing note).
-- Every override the reviewer makes lands in the decision log with the gate,
-  the computed signal, and the reason.
+| System | What the runner does | Persists? |
+|---|---|---|
+| oilgas warehouse | SELECTs only | never |
+| narvi | parcel upload, azimuth, zones, `/api/generate` PREVIEW | nothing saved (no scenario) |
+| anduin | fits wells that have NO forecast row yet; TC `compute` previews | new forecast rows only |
+| anduin — short-history transfer (ON by default) | overwrites the short wells' **unlocked** forecast rows with cohort-transfer rows | **yes — listed per bench in the dossier** |
 
-A dossier must be re-runnable: same inputs + same config version → same
-signals.
+The manual-override guard holds by construction: existing fits are reused,
+never refreshed; a refit is refused when a target has `manual_override=TRUE,
+locked=FALSE`; locked rows are skipped by the transfer. The transfer resets
+`manual_override` on the rows it rewrites (anduin's behavior). Saving the
+type curve and the narvi scenario stay reviewer actions.
 
-## Gate 1 — Ingest & validate
+## Prerequisites
 
-Input: unit geometry (shapefile .zip OR GeoPackage .gpkg) + the Land
-depth-restriction terms.
-- Upload via narvi `POST /api/parcels/upload` — it reprojects to WGS84 and
-  names parcels. A .gpkg following the Land convention (single layer,
-  `Type` column DSU/Tract, Toucan v2 schema) maps the DSU rows as parcels,
-  attaches Tract rows spatially, and carries the declared attributes
-  (Min/Max_Depth text, WI/NRI) onto the parcel card. Fail loud on:
-  missing/unknown CRS, invalid or self-intersecting geometry, multipolygon
-  units (split and report), missing required attributes (unit name).
-- Depth restrictions: **declared depths in the land file are NOT local
-  depths** — they are frequently stratigraphic-equivalent depths of a
-  reference log miles away (Toucan: declared 9,515' = ~9,950' correlated
-  on-parcel, ref log 17 mi out). narvi displays the declared text verbatim
-  and never computes on it. The engineer/geologist enters the CORRELATED
-  numeric window (ft TVD from surface) in narvi's deal-terms card with a
-  basis note (who correlated, from what); narvi then soft-flags
-  out-of-window benches (greyed, seeded off, still selectable — enabling
-  one is the recorded override).
-- The reviewer still owns the **explicit allowed-bench list**
-  (`formation_blueox` codes) — narvi's flags are the starting point to
-  confirm/adjust, not the decision. Resolve "everything above/below X"
-  against the basin strat column and echo the resolved list in the dossier.
-  Example: Midland shallow rights above Wolfcamp A = `AVA_0, AVA_1, AVA_2,
-  BS1_S, BS2_C, BS2_S, BS3_C, BS3_S`. Record the correlated window + basis
-  in the dossier decision log alongside the list.
+- engineering_db `.venv` with `requirements-dealintake.txt` installed.
+- narvi backend on :8078 (`NARVI_URL` to override); anduin on :8000
+  (`ANDUIN_URL`). anduin credentials come ONLY from the environment —
+  `ANDUIN_EMAIL` / `ANDUIN_PASSWORD` — so **Michael runs `evaluate` in his
+  own shell**; never ask for or handle the password. If anduin is requested
+  and unavailable the run fails loudly (exit 2) — that is deliberate: a
+  silent skip once made a credential-less run look successful.
+- `curated.codev_context` (sql/47), `pdp_support_for_geom` (sql/48) and the
+  WellSpacing pass-through (sql/49) must exist live. "relation
+  codev_context does not exist" = a quarterly rebuild ran from a checkout
+  that predates them; re-apply via `scripts/apply_codev_context.py` (needs
+  explicit authorization — it is a warehouse write).
+- The codev constants (1,320 ft / 180 d / 30 % overlap) are baked into
+  sql/47 and mirrored in the yaml; change both or neither.
 
-## Gate 2 — Location source (Novi vs narvi) — EXECUTES
+## Stage 1 — `propose` (Gates 0–2 inputs), then STOP
 
-Signal: alignment between the deal polygon and Novi's assumed DSU:
-- IoU of deal polygon vs the Novi DSU pad polygon
-  (`raw_novi_intel.pads` — display trio, frozen at the 3Q25 drop; treat IoU
-  as advisory if the vintage predates the current intel report).
-- Fraction of Novi stick endpoints (`curated.erebor_locations` PUD/RES
-  `wellstick_geom`, live vintage) falling outside the unit — the primary
-  signal, computed from live geometry.
+```
+python -m dealintake.cli propose <deal.gpkg|.zip> --run-dir runs/<deal>-<date>
+       [--window MIN_FT MAX_FT --window-basis "who correlated, from what log"]
+```
 
-Rule: `iou >= iou_min` AND `outside_frac <= outside_endpoint_frac_max` →
-use Novi locations. Below the gray band → generate in narvi. In
-`gray_band` → escalate with a map of both geometries.
+Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
 
-narvi generation is fully scriptable — no GUI required:
-- Preview: `POST /api/generate` (`GenerateRequest`: parcel, per-bench
-  `zones[]` with `target_tvd_ft`/`spacing_ft`, `well_type` single|uturn,
-  setbacks, azimuth auto/override).
-- Persist: `POST /api/scenarios/composed` (merges kept Novi baseline +
-  generated wells, saves to `narvi.scenario` / `narvi.inventory_well`).
-  Equivalent headless path: `narvi.generate_scenario`/`generate_wine_rack`
-  → `persist.save_scenario` (see `demo.py ... save`).
-- Per-bench spacing is user-set; 1-section DSU rule `(5280−660)/(n−1)`.
-  Landing TVD from the header-table median per bench (narvi's
-  `/api/warehouse/zones`), never from tops/grids.
+- **Snapshot (Gate 0):** production vintage, Novi Intelligence vintage,
+  wellspacing vintage, codev_context refresh time, config_version.
+- **Ingest (Gate 1):** narvi reprojects and names the parcels. A
+  MultiPolygon unit uses its largest part and is reported as a WARNING —
+  have Land split it.
+- **Planned lateral:** median chord along the planned azimuth inside the
+  unit buffered **330 ft inward on every side** (2-mi DSU → ~9,900 ft).
+  Estimate only — narvi's generation setbacks are unchanged. Azimuth =
+  narvi's neighborhood grid when confident, else the unit long axis; the
+  source is printed.
+- **Depth window:** declared land depths are echoed verbatim and are **NOT
+  local depths** (often a reference-log pick miles away — Toucan 9,515′
+  declared ≈ 9,950′ correlated). `--window` passes the engineer's
+  CORRELATED window and requires `--window-basis`. Without it the declared
+  numbers are used and labelled "declared (NOT local — correlate)".
+- **Bench proposal:** each local bench's offset-median TVD vs the window →
+  `in_window | edge (within 200 ft of a boundary) | out | no_window |
+  no_depth`. Landing TVD is always offset-well medians, never tops. A bench
+  with < 3 real-depth wells is marked thin control.
+- **Gate 2 — location source per (unit × bench):** every Novi BASE_CASE
+  (PUD) stick inside the unit (50-ft digitizing tolerance) → keep Novi
+  locations; **any stick crossing the unit line → narvi generates that
+  WHOLE bench** (never a mixed bench). Pad IoU vs `intel_pad_geom` is
+  advisory only (2026Q3 covers Midland only).
+- PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
-## Gate 3 — Bench inclusion — EXECUTES
+**Reviewer gate — do not run `evaluate` until Michael confirms:** the
+allowed bench list (his call; the window statuses are a starting point),
+the correlated window + basis, per-bench planned spacing, and any emerging
+bench he wants included despite thin control.
 
-Hard filter first: bench ∈ allowed-bench list (Gate 1). Then the support
-screen `pdp_count_3mi >= pdp_count_3mi_min`.
+## Stage 2 — `evaluate` (Gates 2–7)
 
-**`pdp_count_3mi` semantics (verified against sql/30 — read before changing
-this gate):**
-- It counts RAW qualifying producers, NOT type-curve-qualified wells:
-  horizontal, same TVD-corrected `formation_blueox`, TVD ±500 ft,
-  `first_production_date` ≥ 6 months old, `lateral_length_ft > 0`, min
-  stick-to-stick geography distance ≤ 3 mi. **No 2016+ vintage floor, no
-  6,000-ft lateral minimum, no months-of-actual-data check** — so Gate 3
-  passing never guarantees Gate 5 finds 10 type-curve wells; they are
-  different populations by design.
-- `0` = scored and genuinely unsupported (the flag population).
-  `NULL` on a PUD/RES row = not scorable (unmapped bench / missing TVD or
-  geometry) → escalate, don't treat as fail. `NULL` on a PDP row = N/A.
-- The matview refreshes QUARTERLY only — between vintages it conservatively
-  UNDER-states support (a newly-online well only adds support). A marginal
-  fail (e.g. count 2) warrants a live re-count, not an auto-exclude.
-- The column exists only for Novi sticks. **narvi-generated locations have
-  no pdp_count_3mi** — compute it at runtime with the same sql/30 predicate
-  set against the generated stick geometry (read-only lateral query;
-  `idx_curated_wells_wellstick_geog` must serve it — EXPLAIN, never accept a
-  seq scan).
+```
+python -m dealintake.cli evaluate --run-dir runs/<deal>-<date> --benches WCA_1 WCA_2 ...
+       [--spacing BENCH=FT ...]          per-bench planned spacing (default 880 ft narvi fallback)
+       [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
+       [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
+       [--short-history-transfer N | --no-short-history-transfer]
+       [--no-anduin]                     warehouse + narvi only; split test falls back to the Novi EUR screen
+python -m dealintake.cli render --run-dir ...        re-render dossier.md from signals.json
+```
 
-Per-bench aggregation: a bench passes if its locations' median count passes;
-report min/median/max per DSU-bench in the dossier.
+Writes `signals.json`, `dossier.md`, `map_<bench>.png`,
+`buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
+first to keep a comparison. (`runs/` is git-ignored.)
 
-## Gate 4 — Forecast source (hybrid, settled) — EXECUTES
+Order of operations is fixed and matters: **classify the pool → fit the
+whole pool in anduin → transfer → split test → fill each group's cohort**.
+Filling before splitting starved remote units and hid a real split (Toucan).
 
-Always take the Novi forecast (from `curated.erebor_locations` +
-`raw_intel` arps/forecast series — the same rows erebor displays).
+### Gate 3 — bench support
 
-`inflation_ratio` gate (per-location `Novi PUD oil EUR/ft ÷
-offset_median_eur_ft`, 2 dp):
-- Aggregate per DSU-bench as the **median**; add a dispersion flag when
-  `max/min > dispersion_flag_maxmin` (inconsistent local calibration even
-  when the median passes).
-- Asymmetric band `inflation_ratio_band` (starting `[0.80, 1.10]` — tighter
-  on optimism; calibrate later vs `intel_forecast_accuracy`).
-- **True NULL → Anduin-required immediately** (unanchored forecast), not
-  escalate-and-wait. NULL correlates with play-edge geography — expect the
-  Gate 5 edge trigger to fire on these benches. `NULL(PDP)` never enters
-  the gate.
-- Ratio is OIL-ONLY. The dossier comparison must show all three streams so
-  the gas/NGL blind spot stays visible.
-- In-range benches get the one-click "also build Anduin" option
-  (`in_range_optional_anduin`).
+Per location: `pdp_count_3mi` (Novi sticks carry it; narvi-generated sticks
+get it live from `pdp_support_for_geom`, same sql/30 predicate set). Bench
+status per unit = median vs `bench_inclusion.pdp_count_3mi_min`:
+`pass | escalate (marginal: live re-count before excluding) | escalate
+(unscorable)`. It counts RAW producers (no vintage floor, no lateral band,
+no months check) — passing Gate 3 never guarantees Gate 5 finds 10 TC wells.
+The quarterly matview under-states support between vintages; a marginal
+fail is a re-count, never an auto-exclude. TVD excess vs 3-mi offsets is
+shown beside it (WCB_2 deep-TVD context).
 
-## Gate 5 — Type-curve construction (anduin) — EXECUTES
+### Gate 5a — eligible pool
 
-anduin is fully scriptable over HTTP (bearer JWT via `POST /api/auth/login`;
-user provisioned with `python -m app.cli.create_user`). PPTX export is the
-only GUI-coupled surface; the dossier doesn't use it.
+Candidates = producing horizontals in the TVD-corrected bench within the
+radius. Excluded WITH REASONS (a well can carry several): first production
+before `first_prod_after`; lateral outside the planned lateral ± the
+per-basin tolerance (delaware 25 % / midland 40 % — mirrors ledger §9);
+`months < min_months_data`; spacing class `standalone` (NULL or ≥ 2,800
+sentinel) or `tight` (< 0.65 × planned spacing), judged AS-OF-FIRST-
+PRODUCTION; no codev context.
 
-1. **Select** — `POST /api/wells/select` with the buffered deal polygon and
-   filters `{formations: [bench], statuses: [PDP], first_prod_start:
-   first_prod_after, lateral_min_ft: min_lateral_ft}`. The ≥
-   `min_months_data` filter is NOT a selection param — post-filter the
-   returned api10s on months of production before proceeding.
-2. **Spacing curation (runtime, never precomputed)** — classify each
-   candidate against the DEAL's planned spacing using
-   `wells_enriched.lateral_closer_xy_ft`:
-   standalone = NULL or `>= sentinel_ft` (Novi records a 2,800-ft
-   default/cap when no same-zone neighbor exists at first production —
-   never treat 2,800 as real spacing); tight = `< tight_below_frac ×
-   planned_spacing` (660' wells drop when planning 1320'). Remove both.
-   Semantics: AS-OF-FIRST-PRODUCTION (Novi-confirmed 2026-07-14) — the
-   spacing when the offset came online, not current infill state. If the
-   column isn't in the warehouse yet, `scripts/apply_lateral_closer_xy.py`
-   applies it (explicit authorization required — the view recreate
-   CASCADE-drops erebor_locations).
-3. **Count check** — need ≥ `min_wells`. Under-count and NOT near-edge →
-   extend the radius concentrically and re-select. Near-edge → propose a
-   strike-biased selection (this is the geological gate: show the map, the
-   edge signal, and the proposed well set; **reviewer confirms before the
-   forecast runs**).
-4. **Edge trigger (computed, `method: density_gradient`)** — there is no
-   structure surface or play-extent polygon in the warehouse; the practical
-   signal is developed-extent density, reusing the sql/30 lateral at the
-   unit's benches: fire when `dist_nearest_ft >
-   edge_trigger.dist_nearest_ft_max` OR the ring-count decay
-   `pdp_count_1mi / pdp_count_5mi < edge_trigger.ring_decay_min`
-   (thresholds are provisional — calibrate; the trigger only routes to the
-   reviewer-confirmed strike proposal, it decides nothing itself).
-   **Emerging benches false-positive**: thin in-bench development trips the
-   density proxy with no basin edge anywhere near (Toucan BS2_S, 2026-09-21:
-   pool stuck at 2 wells / 5 mi). Reviewer remedy: `evaluate --radius
-   BENCH=MILES` — exactly that concentric radius, edge block bypassed,
-   decision-logged as gate 5a.
-5. **Forecast** — `POST /api/forecasts/batch` (api10s ≤ 500/call,
-   `alignment` stays `peak_ramp`), poll `GET /api/sync/status`. Respect the
-   manual-override guard: never refit rows with `manual_override=TRUE,
-   locked=FALSE` — triage first.
-6. **Aggregate + save** — `POST /api/type-curves/compute` (peak_ramp) to
-   preview, `POST /api/type-curves` to persist (`included_api10s` is the
-   durable record), `GET /api/type-curves/{id}/export` for the CSV bundle.
+Radius steps 5 → 7.5 → 10 mi until the pool reaches `min_wells`. The
+**edge trigger** (median distance to nearest in-bench PDP > 15,840 ft, or
+ring decay `pdp_count_1mi / pdp_count_5mi` < 0.04 — both PROVISIONAL)
+blocks concentric extension and routes to a reviewer-confirmed
+strike-biased set. **Emerging benches false-positive it**: thin in-bench
+development reads as a basin edge (Toucan BS2_S: stuck at 2 wells / 5 mi).
+Remedy: `--radius BENCH=MILES` — exactly that radius, edge block bypassed,
+decision-logged. `min_wells: 10` is an uncalibrated scaffold value; under
+it the cohort gets an `under_count` flag, not a block.
 
-## Gate 6 — Autoforecast QC — flags only
+### Gate 5 — co-development tiers and the fill
 
-Auto-flag per well per stream; **reviewer sees flagged wells only**:
-- Peak month deviates > `peak_month_tolerance` from the stream's own
-  detected peak (per-stream peaks — gas commonly peaks ~4 mo after oil;
-  never force streams to the oil peak).
-- Di or b outside `di_bounds_per_stream` (TBD — leave configurable). A fit
-  pinned at a bound (anduin's `fit_at_bound`) is flagged for review, never
-  auto-accepted, never "fixed" by widening bounds.
-- Well EUR vs offset P50 deviation > `eur_vs_offset_p50_tolerance`.
-Report Di nominal AND 1-yr effective in every flag.
+Tier of each pool well vs the ADJACENT planned benches (one above / one
+below in the planned stack): `codev` (adjacent bench online within ±180 d,
+no earlier parent) · `stack_standalone` (no adjacent neighbor) ·
+`topfill_underfill` (an adjacent bench was a parent > 180 d earlier, or
+only a later child). Default order codev → stack_standalone →
+topfill_underfill; **flips** to topfill_underfill first when a STRICT
+MAJORITY of deal units already have PDP in an adjacent bench (tie keeps the
+default). Fill: first tier nearest-first up to `max_wells` (20); later
+tiers only top up to `min_wells`. Flags: `first tier capped`,
+`under_count`, `first_tier_share < 50 %`. Per-tier median Novi EUR/1,000 ft
+is shown so the bias direction of the tier mix is visible.
 
-## Gate 7 — Assemble the dossier
+### Gate 5.5 — anduin fits + short-history transfer
 
-Render `templates/dossier.md`: snapshot header, unit map(s), per-gate
-signal/recommendation/status table with approve/override, the per-bench
-**three-stream** Novi-vs-Anduin comparison (qi, Di nominal + effective, b,
-EUR, EUR/1,000 ft, peak month), flags, and the decision log. Which forecast
-goes to finance is Michael's call, informed by `inflation_ratio` — the
-dossier presents both, it does not pick.
+Missing fits are created for the whole pool; existing fits are reused.
+Then, ON BY DEFAULT (`type_curve.short_history_transfer_months: 9`): wells
+with < 9 months AFTER PEAK receive the pool's long-well **median Di/b** per
+stream, keeping their own peak qi. Hindcast basis: own-fit next-12-month
+oil bias +12–16 % at 9 months → +6–11 % with the transfer; it adds
+per-well scatter, so it is for type curves, not single-well forecasts.
+The dossier lists lenders, lender medians (nominal + effective), rewritten
+api10s, locked rows kept, and a **vintage-gap flag** when lenders are ≥ 3
+years older than the short wells. anduin refuses (422, no writes) below 5
+long-well lenders — recorded, not fatal; the short wells keep their own fits.
 
-Format will iterate — match the existing map/PDF output patterns and expect
-revision after the first real deal.
+**With vs without:** for each TC group that contains transferred wells the
+runner refits only those wells, computes the without-transfer TC, then
+re-runs the transfer so anduin ends in the default state. A bold
+**"did not reproduce the donor medians"** flag means anduin may NOT be in
+the default state — stop and check before anything else touches those wells.
 
-## Known unknowns (do not assume — re-check before relying)
+### Gate 5b — one type curve or several
 
-- `di_bounds_per_stream`, edge-trigger thresholds: provisional/TBD.
-- `intel_forecast_accuracy` calibration of the inflation band: future work.
+Run on the whole pool, metric = anduin oil EUR/1,000 ft (Novi EUR screen
+under `--no-anduin`). Units with ≥ 6 pool wells are testable. **Split only
+when BOTH** max/min unit median > 1.25 AND the rank test is significant at
+0.05 (Mann-Whitney for 2, Kruskal-Wallis for > 2); exactly one → `escalate`;
+neither → `single_tc`. Indistinguishable units are merged into clusters;
+units under 6 wells never split — they borrow the nearest cluster's curve
+(document a multiplier if the reviewer sees a difference). The along-axis
+gradient (bbl/1,000 ft per mile, R²) is always reported. On `escalate` with
+a continuous gradient and no clean break, Michael decides: one TC with the
+gradient noted, or a cut where geology says — pass it back as `--tc-groups`
+(named groups; the unnamed rest pool together). It is decision-logged with
+what the test said.
+
+### Gate 6 — autoforecast QC (flags only)
+
+Per TC group: cohort table per stream (n, median 1-yr effective, IQR,
+median nominal Di, median b) and per-well flags — `fit_at_bound` (anduin's own
+bound check, passed through — flagged, never "fixed" by widening), `di_dispersion` (|De − cohort median|
+> 10 pts), `eur_per_1000ft_outlier` (robust z > 3.5), `peak_month_vs_cohort`
+(± 2 months, per-stream peaks). **The Di LEVEL is never a flag** — 65–75 %
+effective is typical but varies by area/bench; SPREAD within a cohort is
+the signal (different reservoir or an unreliable autofit). Di spread flags
+oil only; gas and water spreads are report-only (gas tracks real GOR
+behavior; TX water is often a vendor-calculated flat WOR).
+
+### Gate 7 — the comparison
+
+Per TC group, all three streams: Novi (median of the unit's representative
+sticks; segment-1 Di with the share pinned at Novi's 3.65 /yr cap, segment-2
+Di beside it) vs the anduin TC preview, plus **gas two ways** — independent
+Arps and ratio-to-cum-oil on the TC's own oil curve (GOR fit R² shown).
+Hindcast context: gas Arps runs low (−6 % → −14 % with more history, GOR
+rises in the holdout); the ratio method inherits the oil forecast's error.
+Arps stays the default until more deals are compared. Which forecast goes
+to finance is Michael's call per bench — the dossier presents, never picks.
+
+## Reading the result with Michael
+
+Lead with numbers and units; walk the dossier in this order:
+1. Deal-level FLAGs (e.g. planned laterals differ > 25 % → per-unit bands).
+2. Bench matrix: any `escalate`, any `generate`, Edge = yes.
+3. Per bench: pool size + radius, transfer block (mismatch flag?), split
+   recommendation, then each TC group's comparison and QC flags.
+4. Weak or odd wells: name them (api10, operator, EUR/1,000 ft vs cohort
+   median, what Novi's screen says) and ask **cull or keep** — never decide.
+5. Decision log: every reviewer override must appear there.
+
+Reviewer levers, all decision-logged or visible in the dossier:
+`--benches`, `--spacing`, `--radius`, `--tc-groups`,
+`--short-history-transfer N` / `--no-short-history-transfer`.
+
+## Known gaps (state them, don't paper over)
+
+- **anduin oil b = 1.00 is an ARTIFACT**, not a fit: the cum-fit's harmonic
+  branch has zero gradient in b at the 1.0 start value. Every TC and lender
+  median shows it. Being handled in a separate anduin session — do not fix
+  or compensate from here.
+- **Gate 4's `inflation_ratio` band is NOT in the v2 dossier.** The runner
+  reads the column but reports the TC-vs-Novi three-stream comparison
+  instead; the yaml `forecast_source` section is unused by the runner. The
+  ratio is still visible in erebor's Highgrade tab.
+- The strike-biased well set is not generated — on an edge trigger the
+  runner flags and stops extending; the reviewer supplies a radius or a
+  manual set.
+- Provisional / uncalibrated: edge-trigger thresholds, `min_wells: 10`,
+  `di_bounds_per_stream`. Residual +6–11 % transfer bias is unexplained
+  (vintage-matched lenders did not remove it).
+- A bench's planned-stack TVD can rest on one well (thin control) — it is
+  printed in the proposal; say so when it happens.
+- `pdp_support_for_geom` is live while `intel_pdp_support` is quarterly —
+  small count differences between them are data drift, not a defect.
