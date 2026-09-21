@@ -840,11 +840,23 @@ COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.is_latest_reported IS
 'Well''s newest posted production month (often incomplete under reporting lag). EXCLUDE from aggregates.';
 
 -- =============================================================================
--- 31 (part G) -- curated.intel_pad_geom (sql/45). Duplicated from sql/45 so a
--- re-run of this file after any rebuild restores the catalog entries.
+-- 31 (part G) -- curated.intel_pad_member + curated.intel_pad_geom (sql/46).
+-- Duplicated from sql/46 so a re-run of this file after any rebuild restores
+-- the catalog entries.
 -- =============================================================================
+COMMENT ON MATERIALIZED VIEW curated.intel_pad_member IS
+'Padded Novi Intelligence sticks (latest vintage, PUD + RES with geometry) mapped to a SPATIAL pad group: within each (basin, pad_name), sticks are single-linkage clustered at 1 mile (ST_ClusterDBSCAN, UTM 13N). Novi reuses pad names across unrelated groups in Delaware (2026Q3: 34% of names, mostly Woodford groups), so pad_name alone is not a pad. pad_key = pad_name when the name is one group, else pad_name || '' [k/n]'' (k = 1 for the largest group). Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/46.';
+COMMENT ON COLUMN curated.intel_pad_member.pad_key IS
+'Spatial pad identifier, unique per basin: pad_name when Novi''s name forms one 1-mile group, else pad_name || '' [k/n]''. Join key to curated.intel_pad_geom (basin, pad_key).';
+COMMENT ON COLUMN curated.intel_pad_member.pad_part IS
+'Group number within pad_name, 1 = largest (ties -> lowest stick_id).';
+COMMENT ON COLUMN curated.intel_pad_member.n_parts IS
+'Number of separate 1-mile groups Novi''s pad_name spans; > 1 means Novi reused the name.';
+
 COMMENT ON MATERIALIZED VIEW curated.intel_pad_geom IS
-'Novi Intelligence pad/DSU polygons DERIVED from member sticks: one row per (basin, pad_name) over the latest vintage (curated.intel_locations), convex hull of every member stick (PUD + RES) buffered 330 ft geodesically. The Snowflake share ships no pad polygons (raw_intel.pad lat/lon all NULL) and Novi renames pads every vintage, so the legacy raw_novi_intel.pads shapefile no longer matches. 330 ft calibrated against 4,585 Delaware 2025Q3 legacy polygons: median area ratio 1.02 (P10-P90 0.91-1.08), median IoU 0.86. Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Coverage follows the share''s pad_name gap (2026Q3: Midland only). Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/45.';
+'Novi Intelligence pad/DSU polygons DERIVED from member sticks: one row per (basin, pad_key) from curated.intel_pad_member, i.e. per spatial group of a Novi pad_name, not per name. Convex hull of member sticks (PUD + RES) buffered 330 ft geodesically. The Snowflake share ships no pad polygons (raw_intel.pad lat/lon all NULL). 330 ft calibrated against 4,585 Delaware 2025Q3 legacy polygons: median area ratio 1.02 (P10-P90 0.91-1.08), median IoU 0.86. Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/46 (supersedes sql/45).';
+COMMENT ON COLUMN curated.intel_pad_geom.pad_key IS
+'Spatial pad identifier (see curated.intel_pad_member.pad_key). Unique per basin.';
 COMMENT ON COLUMN curated.intel_pad_geom.acres IS
 'Geodesic area of geom in acres. Approximation of Novi''s DSU acreage (median ratio 1.02 vs legacy polygons) — erebor Highgrade per-acre $ divides by this.';
 COMMENT ON COLUMN curated.intel_pad_geom.n_sticks IS
