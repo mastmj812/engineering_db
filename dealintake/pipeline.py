@@ -421,6 +421,15 @@ def evaluate(
                     tc = ad.compute_type_curve(api10s)
                     G["tc_preview"] = {st: v.get("fitted") for st, v in (tc.get("streams") or {}).items()}
                     G["tc_preview_n_wells"] = tc.get("n_wells")
+                    # Side-by-side gas: same cohort, gas as ratio-to-cum-oil on
+                    # this TC's oil curve (Michael, 2026-09-21 — evaluate on a
+                    # few deals before choosing a default; Arps stays default).
+                    tcr = ad.compute_type_curve(api10s, stream_modes={"gas": "ratio"})
+                    gr = ((tcr.get("streams") or {}).get("gas") or {}).get("fitted") or {}
+                    G["tc_preview_gas_ratio"] = {
+                        k: gr.get(k) for k in ("mode", "sub_mode", "alpha", "beta", "r2", "n_months",
+                                               "r_const", "eur_per_unit", "implied_effective_decline_yr1")
+                    } if gr else None
                 ids = sorted({i for u in g["units"] for i in B["units"][u]["novi_ids"]})
                 G["novi"] = _novi_summary(wh.novi_params(conn, ids))
                 G["novi"]["n_sticks"] = len(ids)
