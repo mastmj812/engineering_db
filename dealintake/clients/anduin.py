@@ -128,6 +128,22 @@ class Anduin:
         return result
 
     # -- type curves -------------------------------------------------------
+    def transfer_cohort(self, api10s: list[str], cutoff_months: int, min_donor_count: int = 5) -> dict[str, Any]:
+        """POST /api/forecasts/transfer-cohort-params — anduin's short-history
+        workflow, WRITES forecast rows. Splits the batch by POST-PEAK months
+        (>= cutoff = long), takes the long wells' per-stream median Di/b and
+        writes a `cohort_transfer` forecast for every short well (qi = its own
+        peak rate; ramp prefix its own). Overwrites unlocked short-well rows
+        (anduin resets manual_override=False); locked rows are skipped. The
+        whole batch is ONE donor pool, so it is never chunked. 422 when the
+        oil donor pool is thinner than min_donor_count (no writes). Not
+        retried on a dropped connection (not idempotent)."""
+        if len(api10s) > BATCH_MAX:
+            raise AnduinError(f"transfer batch of {len(api10s)} > {BATCH_MAX}: the donor pool must be one batch")
+        return self._req("POST", "/api/forecasts/transfer-cohort-params", json={
+            "api10s": api10s, "short_history_cutoff_months": cutoff_months, "min_donor_count": min_donor_count,
+        })
+
     def compute_type_curve(
         self,
         api10s: list[str],

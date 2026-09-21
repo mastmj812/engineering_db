@@ -66,3 +66,55 @@ def test_dossier_shows_gas_arps_and_ratio_side_by_side():
     assert [r[1].split(" (")[0] for r in rows] == ["anduin TC preview", "anduin TC — ratio to cum oil"]
     assert "1.50x Arps EUR" in rows[1][1] and "R² 0.71" in rows[1][1]
     assert rows[1][4] == "52.0%" and rows[1][6] == 600_000.0
+
+
+class _FakeAnduin:
+    def __init__(self, resp=None, err=None):
+        self.resp, self.err, self.calls = resp, err, []
+
+    def transfer_cohort(self, api10s, cutoff):
+        self.calls.append((list(api10s), cutoff))
+        if self.err:
+            from dealintake.clients.anduin import AnduinError
+            raise AnduinError(self.err)
+        return self.resp
+
+
+def _pool():
+    from datetime import date
+    old = [{"api10": f"L{i}", "first_production_date": date(2021, 6, 1), "proppant_lbs_per_ft": 2000.0} for i in range(6)]
+    new = [{"api10": f"S{i}", "first_production_date": date(2025, 3, 1), "proppant_lbs_per_ft": 2800.0} for i in range(2)]
+    return old + new
+
+
+def test_transfer_summary_uses_whole_pool_and_flags_vintage_gap():
+    from dealintake.pipeline import _transfer
+
+    fake = _FakeAnduin(resp={
+        "written_api10s": ["S0", "S1"], "skipped_locked": [], "skipped_no_peak": [],
+        "long_api10s": [f"L{i}" for i in range(6)], "short_api10s": ["S0", "S1"],
+        "donors": [{"stream": "oil", "donor_count": 6, "cohort_di": 2.8, "cohort_b": 1.0}],
+    })
+    out = _transfer(fake, _pool(), 9)
+    assert fake.calls == [([c["api10"] for c in _pool()], 9)]       # one batch = one donor pool
+    assert (out["n_long"], out["n_short"], out["written"]) == (6, 2, ["S0", "S1"])
+    assert out["long_proppant_lbs_ft_median"] == 2000.0 and out["short_proppant_lbs_ft_median"] == 2800.0
+    assert "yr gap" in out["flag"]                                   # 2021.4 vs 2025.2 >= 3 yr
+
+
+def test_transfer_thin_donors_is_recorded_not_fatal():
+    from dealintake.pipeline import _transfer
+
+    out = _transfer(_FakeAnduin(err="POST ... -> 422: insufficient_donor_cohort"), _pool(), 9)
+    assert "NOT applied" in out["flag"] and "422" in out["error"]
+
+
+def test_short_history_transfer_on_by_default():
+    import argparse
+
+    from dealintake.cli import _transfer_cutoff
+
+    ns = lambda n=None, off=False: argparse.Namespace(short_history_transfer=n, no_short_history_transfer=off)
+    assert _transfer_cutoff(ns(), CFG) == CFG["type_curve"]["short_history_transfer_months"] == 9
+    assert _transfer_cutoff(ns(12), CFG) == 12
+    assert _transfer_cutoff(ns(12, off=True), CFG) is None

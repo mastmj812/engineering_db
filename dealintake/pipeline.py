@@ -13,7 +13,11 @@
 Writes nothing to the warehouse. narvi is called in PREVIEW mode only
 (/api/generate persists nothing). anduin fits only wells with no forecast yet
 (see clients.anduin.forecast) and TCs are computed as a PREVIEW — saving the
-TC and the narvi scenario stay reviewer actions.
+TC and the narvi scenario stay reviewer actions. The one exception is the
+short-history cohort transfer — ON BY DEFAULT (config
+type_curve.short_history_transfer_months; --no-short-history-transfer turns it
+off) — which overwrites the short wells' unlocked anduin forecasts with
+cohort-transfer rows (listed in the dossier).
 """
 
 from __future__ import annotations
@@ -183,12 +187,18 @@ def evaluate(
     spacing_ft: dict[str, float] | None = None,
     use_anduin: bool = True,
     tc_group_overrides: dict[str, list[list[str]]] | None = None,
+    short_history_transfer: int | None = None,
     narvi: Narvi | None = None,
     anduin: Anduin | None = None,
 ) -> dict[str, Any]:
     """tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
     replaces the split test's grouping for that bench (e.g. an escalated
-    gradient). Units not named form one remaining group. Recorded in
+    gradient).
+    short_history_transfer: post-peak-month cutoff; the CLI passes the config default (9) unless disabled.
+    Runs anduin's cohort transfer on each bench's whole eligible pool: wells
+    with fewer post-peak months get the long wells' median Di/b + their own
+    peak rate. WRITES/overwrites those wells' unlocked anduin rows — the
+    dossier lists them. Units not named form one remaining group. Recorded in
     signals.json + the dossier decision log; the split test still runs and is
     reported beside it."""
     prop = json.loads((run_dir / "proposal.json").read_text(encoding="utf-8"))
@@ -340,6 +350,8 @@ def evaluate(
             rows_all: list[dict[str, Any]] = []
             if ad and eligible:
                 B["anduin_forecast"] = ad.forecast([c["api10"] for c in eligible])
+                if short_history_transfer:
+                    B["short_history_transfer"] = _transfer(ad, eligible, short_history_transfer)
                 rows_all = ad.forecasts([c["api10"] for c in eligible])
                 eur_ft = {r["api10"]: float(r["eur"]) / float(r["well_lateral_ft"]) * 1000.0
                           for r in rows_all if r["stream"] == "oil" and r.get("eur") and r.get("well_lateral_ft")}
@@ -437,6 +449,49 @@ def evaluate(
             B["eligible_pool"] = eligible
     write_json(run_dir / "signals.json", res)
     return res
+
+
+VINTAGE_GAP_FLAG_YEARS = 3  # lenders this much older than the short wells -> flag
+
+
+def _transfer(ad: Anduin, eligible: list[dict[str, Any]], cutoff: int) -> dict[str, Any]:
+    """Run anduin's short-history cohort transfer on the bench's eligible POOL
+    (widest same-bench lender set, not the 20-well cohort) and summarize who
+    lent and who was rewritten. Lender vs short vintage + proppant/ft are
+    compared: long wells are older by construction, and in emerging benches an
+    earlier completion generation can decline differently."""
+    api10s = [c["api10"] for c in eligible]
+    try:
+        r = ad.transfer_cohort(api10s, cutoff)
+    except AnduinError as e:
+        return {"cutoff_months": cutoff, "error": str(e),
+                "flag": "transfer NOT applied (see error) — short wells keep their own fits"}
+    by = {c["api10"]: c for c in eligible}
+
+    def med(ids: list[str], key: str) -> float | None:
+        vals = [by[a][key] for a in ids if a in by and by[a].get(key) is not None]
+        if key == "first_production_date":
+            vals = [v.year + (v.month - 1) / 12 for v in vals]
+        return round(statistics.median(vals), 1) if vals else None
+
+    long_ids, short_ids = list(r.get("long_api10s") or []), list(r.get("short_api10s") or [])
+    out = {
+        "cutoff_months": cutoff,
+        "n_long": len(long_ids), "n_short": len(short_ids),
+        "written": list(r.get("written_api10s") or []),
+        "skipped_locked": r.get("skipped_locked") or [],
+        "skipped_no_peak": r.get("skipped_no_peak") or [],
+        "donors": r.get("donors") or [],
+        "long_fp_year_median": med(long_ids, "first_production_date"),
+        "short_fp_year_median": med(short_ids, "first_production_date"),
+        "long_proppant_lbs_ft_median": med(long_ids, "proppant_lbs_per_ft"),
+        "short_proppant_lbs_ft_median": med(short_ids, "proppant_lbs_per_ft"),
+    }
+    ly, sy = out["long_fp_year_median"], out["short_fp_year_median"]
+    if ly and sy and sy - ly >= VINTAGE_GAP_FLAG_YEARS:
+        out["flag"] = (f"lenders median first prod {ly:.0f} vs short wells {sy:.0f} "
+                       f"({sy - ly:.1f} yr gap): borrowed Di/b may reflect an older completion design")
+    return out
 
 
 NOVI_SEG1_DI_CAP = 3.65  # /yr (0.01/day) — Novi's segment-1 Di cap (see warehouse.novi_params)
