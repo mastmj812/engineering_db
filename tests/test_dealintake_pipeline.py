@@ -51,3 +51,18 @@ def test_tc_groups_cli_parsing():
     assert _tc_groups(["WCA_1=a,b;c"]) == {"WCA_1": [["a", "b"], ["c"]]}
     with pytest.raises(SystemExit):
         _tc_groups(["WCA_2"])
+
+
+def test_dossier_shows_gas_arps_and_ratio_side_by_side():
+    from dealintake.render.dossier import _stream_rows
+
+    G = {
+        "tc_preview_n_wells": 20,
+        "tc_preview": {"gas": {"qi": 500.0, "Di": 1.2, "b": 1.0, "eur_per_unit": 400_000.0}},
+        "tc_preview_gas_ratio": {"mode": "ratio", "sub_mode": "exp_cum", "r2": 0.71,
+                                 "eur_per_unit": 600_000.0, "implied_effective_decline_yr1": 0.52},
+    }
+    rows = [r for r in _stream_rows(G) if r[0] == "gas"]
+    assert [r[1].split(" (")[0] for r in rows] == ["anduin TC preview", "anduin TC — ratio to cum oil"]
+    assert "1.50x Arps EUR" in rows[1][1] and "R² 0.71" in rows[1][1]
+    assert rows[1][4] == "52.0%" and rows[1][6] == 600_000.0

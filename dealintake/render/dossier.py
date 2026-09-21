@@ -71,6 +71,15 @@ def _stream_rows(B: dict[str, Any]) -> list[list[Any]]:
             dn, de = di_pair(tc.get("Di"), tc.get("b"))
             rows.append([stream, f"anduin TC preview (n={B.get('tc_preview_n_wells')})", tc.get("qi"),
                          dn, de, tc.get("b"), tc.get("eur_per_unit")])
+        gr = B.get("tc_preview_gas_ratio") if stream == "gas" else None
+        if gr and gr.get("eur_per_unit") is not None:
+            arps = ((B.get("tc_preview") or {}).get("gas") or {}).get("eur_per_unit")
+            vs = f"; {gr['eur_per_unit'] / arps:.2f}x Arps EUR" if arps else ""
+            fit = (f"GOR fit {gr.get('sub_mode')}, R² {gr['r2']:.2f}" if gr.get("r2") is not None
+                   else f"GOR fit {gr.get('sub_mode')}")
+            rows.append([stream, f"anduin TC — ratio to cum oil ({fit}{vs})", None,
+                         "— (derived)", pct(gr.get("implied_effective_decline_yr1")), None,
+                         gr["eur_per_unit"]])
     return rows
 
 
