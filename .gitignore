@@ -7,3 +7,6 @@ __pycache__/
 .idea/
 .vscode/
 .DS_Store
+
+# deal-intake run directories (deal geometry + signals — never commit)
+runs/
