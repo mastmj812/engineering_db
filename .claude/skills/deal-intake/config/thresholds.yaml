@@ -1,14 +1,25 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 1
+config_version: 2                 # v2 2026-09-18: codev tiering, cohort Di dispersion,
+                                  # TC split test, planned-lateral estimate, stick-inside rule
 
-alignment:                        # gate 2 — location source
-  iou_min: 0.90
-  outside_endpoint_frac_max: 0.05
-  gray_band: [0.80, 0.90]         # escalate to reviewer
-  # IoU uses raw_novi_intel.pads (frozen 3Q25 display trio) — advisory if
-  # stale; outside_endpoint_frac from live erebor_locations sticks governs.
+alignment:                        # gate 2 — location source (v2 rule, 2026-09-18)
+  # PRIMARY: per (unit x bench), every Novi PUD/RES stick must lie inside the
+  # unit. Any stick crossing the boundary -> narvi generates that WHOLE bench
+  # (never a mixed bench: a generated stick beside Novi sticks inherits no
+  # consistent spacing). Benches with every stick inside keep Novi locations.
+  stick_inside_tolerance_ft: 50   # Novi DSU vs Land polygon digitizing slack
+  fallback_scope: bench           # bench | unit
+  # ADVISORY only: IoU vs curated.intel_pad_geom (derived hulls; 2026Q3 covers
+  # Midland only). Reported, never decides.
+  iou_advisory_min: 0.80
+
+depth:                            # gate 1 — bench PROPOSAL from a depth window
+  edge_margin_ft: 200             # bench median TVD within 200 ft of a window
+                                  # boundary -> 'edge' (reviewer look)
+  # Declared land depths are often distant ref-log picks; the CORRELATED
+  # window (narvi deal-terms card) overrides them when supplied.
 
 bench_inclusion:                  # gate 3
   pdp_count_3mi_min: 3            # >= 3; raw-producer support count, NOT
@@ -25,15 +36,46 @@ forecast_source:                  # gate 4 — hybrid mode (settled)
   null_behavior: anduin_required  # true NULL -> build Anduin, no wait
   in_range_optional_anduin: true  # one-click build
 
-type_curve:                       # gate 5 — anduin selection
+type_curve:                       # gate 5 — well selection
   first_prod_after: 2016-01-01
   min_months_data: 6              # post-filter; not a /wells/select param
-  min_lateral_ft: 6000            # assumes ~10k development
   min_wells: 10
+  max_wells: 20                   # cap on the FIRST tier (nearest first); lower tiers
+                                  # only top up to min_wells (Michael, 2026-09-18)
   default_radius_mi: 5
   extension:
     basinward: concentric_radius
     near_edge: strike_biased      # reviewer confirms — geological gate
+  # Lateral band around the unit's PLANNED lateral (lateral section below),
+  # per basin — mirrors the Novi-rep tolerance of ledger §9 so the TC and the
+  # Novi analogs are selected on the same lateral. Replaces v1 min_lateral_ft.
+  lateral_tolerance_by_basin:
+    delaware: 0.25
+    midland: 0.40
+    default: 0.25
+
+planned_lateral:                  # gate 1 — per-unit planned lateral estimate
+  # Uniform setback on EVERY side (Michael, 2026-09-18): more representative
+  # of achievable lateral than narvi's orientation-dependent 330/100 setbacks
+  # (perfect 2-mi DSU: 9,900 ft vs 10,360 ft). Estimate only — narvi's
+  # generation setbacks are unchanged.
+  setback_ft: 330
+  chord_step_ft: 100              # chord spacing across the unit, along-azimuth
+  statistic: median               # median chord of the inward-buffered unit
+  # azimuth source: narvi baseline trust order when available, else the
+  # unit's minimum-rotated-rectangle long axis (reported which).
+
+codev:                            # gate 5.2b — co-development tiering
+  # Constants BAKED in curated.codev_context (sql/46); the runner asserts
+  # equality — change sql/46 and these together or not at all.
+  xy_ft: 1320
+  window_days: 180
+  overlap_min_frac: 0.30
+  tier_order_default: [codev, stack_standalone, topfill_underfill]
+  tier_order_when_pdp_adjacent: [topfill_underfill, codev, stack_standalone]
+  # flip decided by STRICT MAJORITY of deal units with adjacent-bench PDP
+  # (Michael, 2026-09-18); a tie keeps the default order.
+  min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no
   method: density_gradient        # structure surface / play polygon exists)
@@ -53,7 +95,30 @@ spacing:                          # gate 5.2 — classified at RUNTIME vs the
   # 2026-07-14): spacing when the offset came online, not current infill.
   # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
 
-qc_flags:                         # gate 6
+qc_flags:                         # gate 6 — flags only, never auto-drop
   peak_month_tolerance: 2
-  di_bounds_per_stream: TBD       # leave configurable; set with Michael
   eur_vs_offset_p50_tolerance: 0.25
+  eur_ft_mad_z: 3.5               # robust z on EUR/1,000 ft within the cohort
+  # Di (Michael, 2026-09-18): typical 1-yr EFFECTIVE decline ~65-75%, but the
+  # LEVEL varies by area/bench and is NOT a flag. What is a flag: DISPERSION
+  # within one cohort (50% beside 70% => different reservoir, unlikely over a
+  # small area, or an unreliable autoforecast). Measured in effective space
+  # (folds in b), reported nominal /yr + effective % side by side.
+  di_dispersion:
+    well_points_from_median: 10   # |De - cohort median De| > 10 pts -> well flag
+    cohort_flag_frac: 0.20        # >= 20% of wells flagged -> cohort flag
+    cohort_iqr_points: 10         # or IQR of De > 10 pts -> cohort flag
+    streams_flagged: [oil]        # Di SPREAD flags oil only (Michael, 2026-09-18):
+                                  # gas spread is reported, not flagged — it tracks
+                                  # real GOR behavior (ratio-mode test: switching gas
+                                  # to ratio-vs-cum-oil did not tighten it). Water is
+                                  # reported (TX water often a flat vendor WOR, sql/41).
+  outlier_flags_streams: [oil, gas]  # EUR/1,000 ft outliers + peak-month flags
+  typical_effective_range: [0.65, 0.75]  # context in the dossier, not a bound
+
+split:                            # gate 5b — one TC or per-polygon TCs
+  min_wells_per_group: 6
+  median_ratio: 1.25              # max/min group median EUR/1,000 ft
+  alpha: 0.05                     # Mann-Whitney (2 groups) / Kruskal-Wallis (>2)
+  # split only when BOTH hold; exactly one -> escalate; neither -> single_tc.
+  # Groups below min_wells_per_group never split: borrow + documented multiplier.
