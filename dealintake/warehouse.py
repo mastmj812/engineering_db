@@ -176,6 +176,23 @@ def local_benches(conn, unit: BaseGeometry, radius_mi: float = 3.0) -> list[dict
     """, {"u": unit.wkt, "r": radius_mi * M_PER_MI})
 
 
+def pdp_laterals_near(conn, unit: BaseGeometry, radius_mi: float = 1.5) -> list[dict[str, Any]]:
+    """Producing horizontals within `radius_mi` of the unit WITH geometry — the
+    offset-PDP layer of the review page (display only; selection is Gate 5)."""
+    rows = _rows(conn, f"""
+        SELECT w.api10, COALESCE(we.formation_blueox, '(unmapped)') AS bench, w.tvd_ft,
+               w.first_production_date, extensions.ST_AsText(w.wellstick_geom) AS wkt
+        FROM curated.wells w
+        CROSS JOIN (SELECT extensions.ST_GeomFromText(%(u)s, 4326) AS g) u
+        JOIN curated.wells_enriched we ON we.api10 = w.api10
+        WHERE extensions.ST_DWithin(w.wellstick_geom::extensions.geography,
+                                    u.g::extensions.geography, %(r)s)
+          AND {_HZ}
+          AND w.first_production_date IS NOT NULL
+    """, {"u": unit.wkt, "r": radius_mi * M_PER_MI})
+    return rows
+
+
 def pad_iou(conn, unit: BaseGeometry) -> dict[str, Any] | None:
     """ADVISORY Gate 2 signal: best IoU of the unit vs a derived Novi pad hull
     (curated.intel_pad_geom; 2026Q3 covers Midland only). None = no pad."""

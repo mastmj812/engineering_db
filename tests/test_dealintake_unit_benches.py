@@ -122,3 +122,38 @@ def test_lateral_classes_vault():
     assert lateral_classes(ll, 1.10) == [["h"], ["a", "c", "b"], ["d", "e"], ["f"], ["g"]]
     assert lateral_classes({"x": 9883, "y": 10488}, 1.10) == [["x", "y"]]
     assert lateral_classes({}, 1.10) == []
+
+
+def test_review_page_renders_from_proposal(tmp_path):
+    """review.html is the reviewer's surface: one panel per DSU, no DB needed."""
+    import json
+
+    pytest.importorskip("matplotlib")
+    from dealintake.render import review
+
+    poly = {"type": "Polygon", "coordinates": [[[-103.32, 31.73], [-103.30, 31.73], [-103.30, 31.76], [-103.32, 31.76], [-103.32, 31.73]]]}
+    unit = {
+        "label": "u1", "dsu_name": "2-11 (WCB)", "area_ac": 625.0, "geometry": poly, "basin": "delaware",
+        "rights": "12,224 ft -> COE (unbounded below)", "declared_window_raw": {"Min_Depth": "12,224", "Max_Depth": "COE"},
+        "bounds": {"min": {"kind": "depth", "depth_ft": 12224.0}, "max": {"kind": "coe"}},
+        "planned_lateral": {"median_ft": 9912.0, "min_ft": 3969.0, "max_ft": 9912.0, "azimuth_deg": 162.5,
+                            "azimuth_source": "neighborhood grid"},
+        "bench_proposal": [{"bench": "WCA_1", "median_tvd_ft": 12125.0, "wells": 23, "status": "edge", "margin_ft": -99, "note": None},
+                           {"bench": "WCB_1", "median_tvd_ft": 12394.0, "wells": 10, "status": "edge", "margin_ft": 170, "note": None}],
+        "bench_seed": {"WCA_1": {"evaluate": False, "why": "edge: 99 ft OUTSIDE ..."},
+                       "WCB_1": {"evaluate": True, "why": "edge: 170 ft inside ..."}},
+        "gate2": {"WCB_1": {"pud_inside": 2, "pud_crossing": 0, "res_inside": 0, "res_crossing": 0, "source": "novi", "reason": "x"}},
+        "pdp_in_unit": [{"bench": "WCA_1"}], "offset_pdp_3mi": {"WCA_1": 64, "WCB_1": 14},
+    }
+    twin = dict(unit, label="u2", dsu_name="2-11 (Bone Spring)", bench_seed={}, gate2={})
+    prop = {"deal_file": "VaULt.gpkg", "config_version": 4, "strat_version": 1, "snapshot": {"intel_vintage_date": "2026-09-30"},
+            "units": [unit, twin]}
+    (tmp_path / "proposal.json").write_text(json.dumps(prop), encoding="utf-8")
+    (tmp_path / "review_geoms.json").write_text(json.dumps({"u1": {
+        "pdp": [{"api10": "1", "bench": "WCA_1", "wkt": "LINESTRING(-103.315 31.735, -103.312 31.755)"}],
+        "novi": [{"stick_id": 5, "bench": "WCB_1", "category": "PUD", "relation": "inside",
+                  "wkt": "LINESTRING(-103.31 31.735, -103.307 31.755)"}]}}), encoding="utf-8")
+    text = review.render(tmp_path).read_text(encoding="utf-8")
+    assert text.count("<svg") == 5                       # overview + (map + strip) x 2 units
+    assert "same footprint as 2-11 (Bone Spring)" in text and "12,224' declared" in text
+    assert "None" not in text and ">ON<" in text and ">off<" in text
