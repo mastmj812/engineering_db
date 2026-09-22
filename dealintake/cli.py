@@ -5,7 +5,8 @@
       Upload units to narvi, snapshot, planned lateral, bench proposal,
       Gate 2. Writes proposal.json + proposal.md, then STOPS for review.
 
-  evaluate --run-dir ... --benches WCA_1 WCA_2 WCB_1 [--spacing WCA_1=880 ...]
+  evaluate --run-dir ... [--benches WCA_1 WCA_2 WCB_1] [--spacing WCA_1=880 ...]
+           (no --benches = the reviewer's per-unit benches.yaml from propose)
            [--radius BS2_S=10 ...] [--tc-groups WCA_2=unitA,unitB ...]
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
@@ -85,7 +86,9 @@ def main(argv: list[str] | None = None) -> int:
 
     e = sub.add_parser("evaluate")
     e.add_argument("--run-dir", required=True)
-    e.add_argument("--benches", nargs="+", required=True, help="reviewer-confirmed formation_blueox codes")
+    e.add_argument("--benches", nargs="+",
+                   help="ONE deal-wide bench list (simple deals). Omit it to use the reviewer's per-unit "
+                        "benches.yaml in the run dir — required for depth-severed stacked DSUs")
     e.add_argument("--spacing", nargs="*", default=[], help="per-bench planned spacing, BENCH=FT")
     e.add_argument("--radius", nargs="*", default=[],
                    help="reviewer pool radius, BENCH=MILES — exactly that concentric radius, bypassing the "
@@ -115,7 +118,10 @@ def main(argv: list[str] | None = None) -> int:
                                 window_basis=a.window_basis)
         shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")
         (run_dir / "proposal.md").write_text(dossier.proposal_md(prop), encoding="utf-8")
-        print(f"wrote {run_dir / 'proposal.md'} — review benches/window/spacing, then run evaluate")
+        for w in prop.get("warnings", []):
+            print(f"WARNING: {w}")
+        print(f"wrote {run_dir / 'proposal.md'} + benches.yaml — review/edit the per-unit benches, "
+              "planned laterals and spacing, then run evaluate")
     elif a.cmd == "evaluate":
         try:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
@@ -125,6 +131,7 @@ def main(argv: list[str] | None = None) -> int:
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2
+        shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")   # the config evaluate actually ran under
         print(f"wrote {dossier.render(run_dir)}")
     else:
         print(f"wrote {dossier.render(run_dir)}")

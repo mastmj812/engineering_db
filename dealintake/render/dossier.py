@@ -9,6 +9,8 @@ No economics.
 from __future__ import annotations
 
 import json
+import re
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +26,7 @@ from dealintake.render.tables import (
     pct,
     write_csv,
 )
+from dealintake.select_wells import bench_code
 
 
 def proposal_md(prop: dict[str, Any]) -> str:
@@ -32,23 +35,49 @@ def proposal_md(prop: dict[str, Any]) -> str:
         f"{k} {v}" for k, v in prop["snapshot"].items()))
     for w in prop.get("warnings", []):
         s.append(f"\n> WARNING: {w}")
-    s.append("\n**Reviewer confirms before `evaluate`: allowed benches, correlated window, per-bench spacing.** "
-             "Declared land depths are NOT local depths (often a distant reference-log pick).\n")
+    s.append("\n**Reviewer confirms before `evaluate`: the per-unit bench list and planned laterals in "
+             "`benches.yaml` (seeded below — edit that file), the correlated window, per-bench spacing.** "
+             "Declared land depths are NOT local depths (often a distant reference-log pick); formation "
+             "phrases are resolved by stratigraphic order, never into a depth.\n")
+    if any("bench_seed" in u for u in prop["units"]):
+        s.append(md(["Unit", "DSU", "Rights", "Planned lateral ft", "Seeded ON", "Needs a look (edge / thin)"],
+                    [[u["label"], u.get("dsu_name"), u.get("rights"), f"{u['planned_lateral']['median_ft']:,.0f}",
+                      ", ".join(b for b, r in u["bench_seed"].items() if r["evaluate"]) or "—",
+                      ", ".join(b for b, r in u["bench_seed"].items()
+                                if r["why"].startswith(("edge", "thin"))) or "—"]
+                     for u in prop["units"]]))
+        s.append("")
     for u in prop["units"]:
         pl = u["planned_lateral"]
-        s.append(f"## {u['label']} — {u['area_ac']:,.0f} ac")
+        s.append(f"## {u['label']} — {u['area_ac']:,.0f} ac" + (f" — DSU {u['dsu_name']}" if u.get("dsu_name") else ""))
         s.append(f"- Planned lateral: **{pl['median_ft']:,.0f} ft** median chord "
                  f"({pl['min_ft']:,.0f}–{pl['max_ft']:,.0f}), {pl['setback_ft']:.0f}-ft setback all sides, "
                  f"azimuth {pl['azimuth_deg']}° ({pl['azimuth_source']})")
-        s.append(f"- Depth window: declared {u['declared_window_raw']} → used {u['window_used']} "
-                 f"({u['window_source']})")
+        raw = u.get("declared_window_raw") or {}
+        if u.get("rights"):
+            s.append(f"- Rights: land file Min `{raw.get('Min_Depth')}` / Max `{raw.get('Max_Depth')}` → "
+                     f"**{u['rights']}** (basin {u.get('basin')})")
+        elif u.get("window_used"):
+            s.append(f"- Depth window: declared {raw} → used {u['window_used']} ({u['window_source']})")
+        else:
+            s.append("- Depth window: no declared depths in the land file — no window applied")
         iou = u.get("pad_iou_advisory")
         s.append(f"- Novi pad IoU (advisory): {'—' if not iou else f'{iou['iou']:.2f} ({iou['pad_name']})'}")
         pdp = sorted({p["bench"] for p in u["pdp_in_unit"]})
         s.append(f"- PDP already in unit (>=30% inside): {', '.join(pdp) or 'none'}\n")
-        s.append(md(["Bench", "Local median TVD ft", "Wells", "Status vs window", "Margin ft", "Note"],
-                    [[r["bench"], r["median_tvd_ft"], r["wells"], r["status"], r.get("margin_ft"), r.get("note")]
-                     for r in u["bench_proposal"]]))
+        seed = u.get("bench_seed") or {}
+        if seed:
+            seen = {bench_code(r["bench"]) for r in u["bench_proposal"]}
+            s.append(md(["Bench", "Local median TVD ft", "Wells", "Status vs window", "Seed", "Why"],
+                        [[r["bench"], r["median_tvd_ft"], r["wells"], r["status"],
+                          "ON" if seed.get(bench_code(r["bench"]), {}).get("evaluate") else "off",
+                          seed.get(bench_code(r["bench"]), {}).get("why", "not a target bench")]
+                         for r in u["bench_proposal"]]
+                        + [[b, None, 0, "—", "off", v["why"]] for b, v in seed.items() if b not in seen]))
+        else:
+            s.append(md(["Bench", "Local median TVD ft", "Wells", "Status vs window", "Margin ft", "Note"],
+                        [[r["bench"], r["median_tvd_ft"], r["wells"], r["status"], r.get("margin_ft"), r.get("note")]
+                         for r in u["bench_proposal"]]))
         s.append("\n**Gate 2 — location source per bench** (BASE_CASE = PUD; RES shown for context)\n")
         s.append(md(["Bench", "PUD inside", "PUD crossing", "RES inside", "RES crossing", "Source", "Why"],
                     [[b, g["pud_inside"], g["pud_crossing"], g["res_inside"], g["res_crossing"],
@@ -104,6 +133,14 @@ def _stream_rows(B: dict[str, Any]) -> list[list[Any]]:
     return rows
 
 
+def _slug(text: str) -> str:
+    """File-name-safe key: 'WCB_1 @ 12,620 ft' -> 'WCB_1_12620ft'. Long group
+    names (many units joined by ' + ') are capped — Windows paths are finite."""
+    out = re.sub(r"[^A-Za-z0-9_+-]+", "_", text.replace(",", "").replace(" ft", "ft").replace("@", "")).strip("_")
+    out = re.sub(r"_+", "_", out)
+    return out if len(out) <= 80 else f"{out[:64]}_{zlib.crc32(out.encode()):08x}"
+
+
 def render(run_dir: Path) -> Path:
     prop = json.loads((run_dir / "proposal.json").read_text(encoding="utf-8"))
     sig = json.loads((run_dir / "signals.json").read_text(encoding="utf-8"))
@@ -119,6 +156,17 @@ def render(run_dir: Path) -> Path:
     for f in sig["flags"]:
         s.append(f"> FLAG: {f}")
 
+    plan = sig.get("unit_plan")
+    if plan:
+        by = {u["label"]: u for u in prop["units"]}
+        cls_of = {u: c["planned_lateral_ft"] for c in sig.get("lateral_classes", []) for u in c["units"]}
+        s.append(f"\n## Unit plan (reviewer — {sig.get('plan_source')})\n")
+        s.append(md(["Unit", "DSU", "Rights", "Benches evaluated", "Planned lateral ft", "Lateral class ft", "Edited vs seed"],
+                    [[lb, by.get(lb, {}).get("dsu_name"), by.get(lb, {}).get("rights"),
+                      ", ".join(p["benches"]) or "NOT EVALUATED", f"{p['planned_lateral_ft']:,.0f}",
+                      f"{cls_of[lb]:,.0f}" if lb in cls_of else "—", "yes" if p["edited"] else "no"]
+                     for lb, p in plan.items()]))
+
     s.append("\n## Bench matrix (unit x bench)\n")
     rows = []
     for bench, B in sig["benches"].items():
@@ -132,10 +180,15 @@ def render(run_dir: Path) -> Path:
     s.append(md(["Unit", "Bench", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
                  "PDP in adjacent bench", "TC group", "Edge"], rows))
 
-    for bench, B in sig["benches"].items():
+    for bench, B in sig["benches"].items():            # key: "WCB_1" or "WCB_1 @ 12,620 ft" (lateral class)
         s.append(f"\n## {bench} — TVD {B['tvd_ft']:,.0f} ft, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
-        maps.bench_map(run_dir / f"map_{bench}.png", bench, prop["units"], B)
-        s.append(f"![{bench} map](map_{bench}.png)\n")
+        cls = B.get("class_units")
+        if cls:
+            s.append(f"Units: {', '.join(cls)} — planned lateral {B['planned_lateral_ft']:,.0f} ft "
+                     "(centers the lateral band for this pool).\n")
+        png = f"map_{_slug(bench)}.png"
+        maps.bench_map(run_dir / png, bench, [u for u in prop["units"] if not cls or u["label"] in cls], B)
+        s.append(f"![{bench} map]({png})\n")
         pool = B["pool"]
         s.append(f"**Eligible pool:** {pool['n_eligible']} wells ({pool['n_excluded']} excluded: " + ", ".join(
             f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1])) + "). "
@@ -199,8 +252,7 @@ def render(run_dir: Path) -> Path:
                          for t in pool["tier_order"]]))
             for f in G["flags"]:
                 s.append(f"\n> {f}")
-            slug = f"{bench}_{G['name']}".replace(" ", "_").replace("(", "").replace(")", "")
-            write_csv(run_dir / f"buildup_{slug}.csv", G["tc_wells"])
+            write_csv(run_dir / f"buildup_{_slug(f'{bench}_{G['name']}')}.csv", G["tc_wells"])
             s.append("\n**Buildup table**\n")
             s.append(md(BUILDUP_HEADERS, buildup_rows(G["tc_wells"], G.get("anduin_oil") or {})))
             s.append("\n**Three-stream comparison — Novi vs anduin TC**\n")
