@@ -103,6 +103,7 @@ def propose(
         "units": [],
     }
     tol = float(cfg["alignment"]["stick_inside_tolerance_ft"])
+    review_geoms: dict[str, Any] = {}
     with wh.connect() as conn:
         out["snapshot"] = wh.snapshot(conn)
         for pc in parcels:
@@ -158,6 +159,12 @@ def propose(
             for s in sticks:
                 s["relation"] = stick_relation(s["geom"], u, tol)
                 rel.setdefault(s["formation_blueox"] or "(unmapped)", Counter())[(s["category"], s["relation"])] += 1
+            # Review-page layers (display only): Novi sticks near the unit + offset PDP laterals.
+            review_geoms[pc["label"]] = {
+                "novi": [{"stick_id": s["stick_id"], "bench": s["formation_blueox"] or "(unmapped)",
+                          "category": s["category"], "relation": s["relation"], "wkt": s["geom"].wkt} for s in sticks],
+                "pdp": wh.pdp_laterals_near(conn, u),
+            }
             gate2 = {}
             for b, c in sorted(rel.items()):
                 pud_in, pud_x = c[("PUD", "inside")], c[("PUD", "crossing")]
@@ -185,6 +192,7 @@ def propose(
                           + (" [correlated]" if correlated_window else
                              " [declared depths are NOT local]" if "depth" in (lo.kind, hi.kind) else ""),
                 "bench_seed": bench_seed,
+                "offset_pdp_3mi": {b["bench"]: int(b["n_wells"]) for b in local},
                 "planned_lateral": pl.as_dict(),
                 "bench_proposal": proposal,
                 "gate2": gate2,
@@ -192,6 +200,7 @@ def propose(
                 "pdp_in_unit": wh.pdp_in_unit(conn, u),
             })
     write_json(run_dir / "proposal.json", out)
+    write_json(run_dir / "review_geoms.json", review_geoms)
     # The reviewer's file is never overwritten: a re-propose writes the fresh
     # seed beside it for comparison.
     target = run_dir / unit_benches.FILENAME

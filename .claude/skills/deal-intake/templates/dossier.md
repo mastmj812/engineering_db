@@ -1,5 +1,8 @@
 # Deal dossier — section guide (v2)
 
+(Stage 1's review surface is `review.html` — see SKILL.md; this guide covers
+the Stage 2 dossier.)
+
 The dossier is RENDERED by `dealintake/render/dossier.py` from
 `signals.json`; this file is not filled in by hand. It documents each
 section in render order: what it shows, and what the reviewer does with it.
