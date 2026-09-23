@@ -37,7 +37,8 @@ the full sql/26 right after sql/29, before every intel spatial builder.
 LATER STANDALONE MATVIEWS ON curated.wells (added after this script was
 written; the sql/04 CASCADE drops them too, and this script does NOT rebuild
 them — run after step 14): `python -m scripts.apply_codev_context` (sql/47,
-needs the step-2 geography index; ~1.5 min). sql/49's wells_enriched columns
+needs the step-2 geography index; ~1.5 min; also restores the sql/50
+curated.dev_scenario view). sql/49's wells_enriched columns
 are already in sql/06 (step 6) and sql/48's function survives the drop.
 
 Availability: the dropped objects DO NOT EXIST until their step completes —

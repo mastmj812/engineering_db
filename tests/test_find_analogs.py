@@ -1,0 +1,98 @@
+"""scripts/find_analogs.py — pure query builder + input parsing (DB-free)."""
+
+from __future__ import annotations
+
+import json
+import re
+from datetime import date
+
+import pytest
+
+from scripts.find_analogs import SCENARIOS, build_query, parse_near, polygon_geometry
+
+
+def test_no_filters_is_scorable_only_and_ordered():
+    sql, p = build_query()
+    assert p == {}
+    assert "FROM curated.dev_scenario d" in sql
+    assert "WHERE d.scorable" in sql
+    assert sql.rstrip().endswith("ORDER BY d.first_production_date DESC, d.api10")
+
+
+def test_values_are_bound_never_interpolated():
+    sql, p = build_query(
+        benches=["WCB_2"], scenarios=["underfill"], parent_benches=["WCA_1"],
+        min_parent_age_days=730, near=(31.304, -101.816), radius_mi=8,
+        fp_from=date(2019, 1, 1), min_months=12,
+    )
+    for literal in ("WCB_2", "underfill", "WCA_1", "730", "31.304", "101.816", "2019"):
+        assert literal not in sql, literal
+    assert p["benches"] == ["WCB_2"]
+    assert p["scenarios"] == ["underfill"]
+    assert p["parent_benches"] == ["WCA_1"]
+    assert p["min_parent_age_days"] == 730
+    assert (p["lat"], p["lon"]) == (31.304, -101.816)
+    assert p["radius_m"] == pytest.approx(8 * 1609.344)
+    assert p["min_months_m1"] == 11
+    assert "dist_mi" in sql
+    # every placeholder has a param and vice versa
+    assert set(re.findall(r"%\((\w+)\)s", sql)) == set(p)
+
+
+def test_near_uses_index_expression_text():
+    # sql/26 indexes (wellstick_geom::geography); the filter must use that text.
+    sql, _ = build_query(near=(31.3, -101.8), radius_mi=1)
+    assert "ST_DWithin(w.wellstick_geom::extensions.geography," in sql
+
+
+def test_parent_bench_matches_above_or_below():
+    sql, _ = build_query(parent_benches=["WCA_1", "WCA_2"])
+    assert "parent_benches_below && %(parent_benches)s::text[]" in sql
+    assert "parent_benches_above && %(parent_benches)s::text[]" in sql
+
+
+@pytest.mark.parametrize("kw, msg", [
+    ({"scenarios": ["infill"]}, "unknown scenario"),
+    ({"near": (31.3, -101.8)}, "go together"),
+    ({"radius_mi": 5.0}, "go together"),
+    ({"near": (31.3, -101.8), "radius_mi": 0}, "> 0"),
+    ({"near": (31.3, -101.8), "radius_mi": 5, "polygon": "{}"}, "mutually exclusive"),
+])
+def test_bad_filter_combinations_raise(kw, msg):
+    with pytest.raises(ValueError, match=msg):
+        build_query(**kw)
+
+
+def test_scenario_whitelist_matches_sql50_classes():
+    from pathlib import Path
+
+    body = (Path(__file__).resolve().parent.parent / "sql" / "50_dev_scenario.sql").read_text(encoding="utf-8")
+    classes = set(re.findall(r"THEN '(\w+)'", body)) | set(re.findall(r"ELSE '(\w+)'", body))
+    assert classes == set(SCENARIOS)
+
+
+def test_parse_near_order_and_range():
+    assert parse_near("31.304,-101.816") == (31.304, -101.816)
+    with pytest.raises(ValueError, match="out of range"):
+        parse_near("-101.816,31.304")  # LON,LAT swapped
+    with pytest.raises(ValueError, match="LAT,LON"):
+        parse_near("31.3")
+
+
+SQUARE = {"type": "Polygon", "coordinates": [[[-102, 31], [-101, 31], [-101, 32], [-102, 32], [-102, 31]]]}
+
+
+def test_polygon_geometry_accepts_geometry_feature_collection():
+    assert json.loads(polygon_geometry(SQUARE)) == SQUARE
+    assert json.loads(polygon_geometry({"type": "Feature", "geometry": SQUARE, "properties": {}})) == SQUARE
+    fc = {"type": "FeatureCollection", "features": [
+        {"type": "Feature", "geometry": SQUARE}, {"type": "Feature", "geometry": SQUARE}]}
+    g = json.loads(polygon_geometry(fc))
+    assert g["type"] == "GeometryCollection" and len(g["geometries"]) == 2
+
+
+def test_polygon_geometry_rejects_non_areas():
+    with pytest.raises(ValueError, match="Polygon/MultiPolygon only"):
+        polygon_geometry({"type": "Point", "coordinates": [-101.8, 31.3]})
+    with pytest.raises(ValueError, match="no geometry"):
+        polygon_geometry({"type": "FeatureCollection", "features": []})
