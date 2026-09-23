@@ -72,6 +72,9 @@ def build(conn) -> None:
     _exec(conn, "CREATE OR REPLACE VIEW (trailing columns only)", "49_wellspacing_passthrough.sql")
     print("[2/5] sql/47 — curated.codev_context", flush=True)
     _exec(conn, "DROP + CREATE MATERIALIZED VIEW WITH DATA", "47_codev_context.sql")
+    # sql/50 curated.dev_scenario is a plain view on codev_context — the
+    # CASCADE above drops it; restore it before sql/31 re-comments it.
+    _exec(conn, "DROP + CREATE VIEW curated.dev_scenario", "50_dev_scenario.sql")
     print("[3/5] sql/48 — curated.pdp_support_for_geom", flush=True)
     _exec(conn, "CREATE OR REPLACE FUNCTION", "48_pdp_support_for_geom.sql")
     print("[4/5] sql/31 — comment catalog", flush=True)

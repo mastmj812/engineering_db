@@ -75,6 +75,11 @@ def main() -> None:
     # refreshes it instead of skipping it as an absent optional matview.
     print("[1d/3] rebuild curated.codev_context (sql/47; cascade victim of sql/23)", flush=True)
     _exec("codev_context", "47_codev_context.sql")
+    # curated.dev_scenario (sql/50) is a plain view on codev_context and died
+    # with sql/47's DROP ... CASCADE. Column comments come back with the
+    # skill's end-of-chain sql/31 re-run.
+    print("[1e/3] recreate curated.dev_scenario (sql/50; view on codev_context)", flush=True)
+    _exec("dev_scenario", "50_dev_scenario.sql")
 
     print("[2/3] build curated.reconciled_inventory (overlap matching — heavy)", flush=True)
     _exec("reconciled_inventory", "21_reconciled_inventory.sql")

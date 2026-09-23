@@ -1329,7 +1329,7 @@ Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitt
 
 Per producing horizontal (api10): adjacent-bench development context at first production, for deal-intake v2 co-development-aware type-curve selection. Neighbor = any producing horizontal (any TVD-corrected formation_blueox bench, NULL -> '(unmapped)') whose stick is within 1,320 ft (geography) AND whose lateral covers >= 30% of the subject lateral when projected onto it (co-extent, not min-distance). Per neighbor bench (bench_context jsonb): counts of codev (|dfp| <= 180 d), parent (neighbor online > 180 d earlier) and child (> 180 d later) neighbors, min |dfp| days, median stick distance ft, median TVD delta ft (neighbor minus subject). Arrays codev_/parent_/child_benches list benches per relation; helper counts split same vs other bench. Constants (1,320 ft, 180 d, 30%) are baked; the runner asserts its config matches. Empty arrays on a scorable well = genuinely no neighbors (stack standalone); scorable=FALSE (no stick geometry) -> NULL context. Tiering into codev / stack_standalone / topfill_underfill is deal-specific and done by dealintake, not here. Nightly refresh. sql/47.
 
-~64,054 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py)
+~64,060 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)
 
 | column | type | description |
 |---|---|---|
@@ -1339,7 +1339,7 @@ Per producing horizontal (api10): adjacent-bench development context at first pr
 | `tvd_ft` | integer | Subject TVD, ft (curated.wells.tvd_ft); median_dtvd_ft in bench_context is neighbor minus this. |
 | `scorable` | boolean | FALSE when the subject has no wellstick_geom; every context column is then NULL (no basis), distinct from empty arrays (checked, no neighbors). |
 | `n_neighbors` | integer | Co-extent neighbors, all benches: producing horizontals within 1,320 ft (stick-to-stick geography) whose lateral covers >= 30% of the subject lateral when projected onto it. 0 = standalone. |
-| `bench_context` | jsonb | jsonb keyed by neighbor bench: {n, n_codev (\|dfp\| <= 180 d), n_parent (neighbor online > 180 d EARLIER), n_child (> 180 d LATER), min_abs_dfp_days, median_dist_ft, median_dtvd_ft (neighbor minus subject; negative = shallower)}. Includes the subject's own bench. Child counts are right-censored for young wells. |
+| `bench_context` | jsonb | jsonb keyed by neighbor bench: {n, n_codev (\|dfp\| <= 180 d), n_parent (neighbor online > 180 d EARLIER), n_child (> 180 d LATER), min_abs_dfp_days, median_dist_ft, median_dtvd_ft (neighbor minus subject; negative = shallower), and parent-only parent_min_offset_ft (closest parent lateral MIDPOINT to the subject lateral, ft), parent_nearest_dtvd_ft (that parent's TVD delta), parent_min_age_days / parent_max_age_days (youngest / oldest parent, days online before subject FP) - JSON null when n_parent = 0}. Includes the subject's own bench. Child counts are right-censored for young wells. Parent-only keys feed curated.dev_scenario (sql/50). |
 | `codev_benches` | text[] | Benches (sorted, incl. own) with >= 1 neighbor online within 180 d of the subject. Empty array = none. GIN-indexed for @> containment. |
 | `parent_benches` | text[] | Benches with >= 1 neighbor online > 180 d BEFORE the subject (subject is a topfill/underfill/infill child of that bench). |
 | `child_benches` | text[] | Benches with >= 1 neighbor online > 180 d AFTER the subject (subject was later infilled from that bench). Right-censored for young wells. |
@@ -1347,6 +1347,33 @@ Per producing horizontal (api10): adjacent-bench development context at first pr
 | `n_codev_other_bench` | integer | Codev neighbors in any OTHER bench (stacked co-development). Adjacency to a planned stack is decided by dealintake, not here. |
 | `n_parent_other_bench` | integer | Parent neighbors (online > 180 d earlier) in any other bench. |
 | `n_child_other_bench` | integer | Child neighbors (online > 180 d later) in any other bench. Right-censored for young wells. |
+
+### `curated.dev_scenario` (view)
+
+Per producing horizontal (api10; row set = curated.codev_context): vertical development scenario at first production, derived from codev_context (house co-extent rule). Vertical parent bench = other mapped bench with a parent online > 180 d earlier whose lateral midpoint is within 660 ft of the subject lateral and whose TVD delta is within 1,000 ft; above/below by the sign of that parent's TVD delta. scenario_class: sandwich (parents above and below) > topfill (below) > underfill (above) > codev_stack (other-bench neighbor within +-180 d) > standalone; NULL when not scorable. Same-bench (lateral infill) parents flagged separately. Class is parent-side and not censored; child_benches_other is right-censored (child_censored). Thresholds baked in the view body. sql/50.
+
+~0 rows | n/a (plain view, always current) | reads: `curated.codev_context` | consumers: scripts/find_analogs.py; anduin header sync (warehouse_client/wells.py)
+
+| column | type | description |
+|---|---|---|
+| `api10` | character varying(32) | Subject well; row set = curated.codev_context (every producing horizontal). |
+| `bench` | text | Subject bench (TVD-corrected formation_blueox, NULL -> '(unmapped)'), from codev_context. |
+| `first_production_date` | date | Subject first production date; parent ages are measured back from it. |
+| `tvd_ft` | integer | Subject TVD, ft; dtvd columns are neighbor minus this. |
+| `scorable` | boolean | FALSE when the subject has no stick geometry; scenario columns are then NULL (no basis). |
+| `scenario_class` | text | sandwich (vertical parents above AND below) > topfill (below only) > underfill (above only) > codev_stack (other mapped bench neighbor within +-180 d) > standalone. Vertical parent = other mapped bench, parent online > 180 d before subject FP, closest parent lateral midpoint <= 660 ft from the subject lateral, \|TVD delta\| <= 1,000 ft. NULL when not scorable. Parent-side: NOT censored. |
+| `parent_benches_below` | text[] | Vertical-parent benches DEEPER than the subject (subject is a topfill over them). Sorted; empty = none. |
+| `parent_benches_above` | text[] | Vertical-parent benches SHALLOWER than the subject (subject is an underfill beneath them). Sorted; empty = none. |
+| `nearest_parent_below_dtvd_ft` | numeric | Smallest positive TVD delta (neighbor minus subject, ft) among qualifying parent benches below. NULL = none. |
+| `nearest_parent_above_dtvd_ft` | numeric | TVD delta closest to zero among qualifying parent benches above (negative, ft). NULL = none. |
+| `nearest_parent_offset_ft` | numeric | Smallest lateral-midpoint offset (ft) among qualifying vertical parents. NULL = none. |
+| `youngest_parent_age_days` | integer | Min over qualifying vertical-parent benches of the youngest parent age: days that parent was online before subject FP (> 180 by construction). Covers every parent in a qualifying bench, not only the <= 660 ft one. |
+| `oldest_parent_age_days` | integer | Max over qualifying vertical-parent benches of the oldest parent age (days online before subject FP). |
+| `has_same_bench_parent` | boolean | TRUE when a co-extent neighbor in the subject's OWN bench came on > 180 d earlier (lateral infill child). Independent of scenario_class. NULL when not scorable. |
+| `codev_benches_other` | text[] | Other mapped benches with >= 1 neighbor within +-180 d of subject FP (no offset gate). |
+| `child_benches_other` | text[] | Other mapped benches with >= 1 neighbor online > 180 d AFTER subject FP (subject later got a vertical child). Right-censored: see child_censored. |
+| `child_censored` | boolean | TRUE when subject FP is within 180 d of the newest first_production_date in the load: it cannot have a child yet, so child_benches_other reads short. Does NOT affect scenario_class. |
+| `bench_context` | jsonb | Pass-through of codev_context.bench_context for per-bench queries (e.g. underfill beneath WCA_1 specifically). |
 
 ### `curated.enverus_lateral_lines` (materialized view)
 
