@@ -297,7 +297,8 @@ def reconcile_schema_drift(bulk_dir: Path) -> dict[str, list[str]]:
     """Detect vendor schema drift up front and auto-apply additive columns.
 
     Novi adds columns to the bulk export without notice (IsSyntheticApi
-    2026-07-24, LastRefracDate 2026-07-28). The COPY column list comes from
+    2026-07-24, LastRefracDate 2026-07-28, WellDetails Latest*Gravity x4
+    2026-09-22 -> sql/51). The COPY column list comes from
     the TSV header, so a missing column fails the load. Before any table is
     touched, compare every TSV header against the live raw_novi columns:
 
