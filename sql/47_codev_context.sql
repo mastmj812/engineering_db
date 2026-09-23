@@ -71,6 +71,11 @@
 --                       parent_min_age_days / parent_max_age_days  youngest /
 --                         oldest parent: days the parent was online before
 --                         the subject's first production (all bench parents)
+--                     plus CODEV-ONLY (JSON null when n_codev = 0):
+--                       codev_nearest_dtvd_ft   dtvd of the bench's codev
+--                         neighbor closest to the subject vertically — sql/50
+--                         uses it to SHIELD a vertical parent when a
+--                         co-developed well sits between subject and parent
 --                     consumed by sql/50 curated.dev_scenario (plain view).
 --   codev_benches     text[] benches with >= 1 codev neighbor (incl. own bench)
 --   parent_benches    text[] benches with >= 1 parent neighbor
@@ -174,7 +179,9 @@ LEFT JOIN LATERAL (
             'parent_min_offset_ft',   round(b.parent_min_offset_ft::numeric, 0),
             'parent_nearest_dtvd_ft', round(b.parent_nearest_dtvd_ft::numeric, 0),
             'parent_min_age_days',    b.parent_min_age_days,
-            'parent_max_age_days',    b.parent_max_age_days))                AS bench_context,
+            'parent_max_age_days',    b.parent_max_age_days,
+            -- codev-only (sql/50 shielding); JSON null when n_codev = 0
+            'codev_nearest_dtvd_ft',  round(b.codev_nearest_dtvd_ft::numeric, 0)))  AS bench_context,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_codev  > 0) AS codev_benches,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_parent > 0) AS parent_benches,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_child  > 0) AS child_benches,
@@ -196,7 +203,10 @@ LEFT JOIN LATERAL (
             (array_agg(nb.dtvd_ft ORDER BY po.par_off_ft)
                  FILTER (WHERE nb.dfp_days < -180))[1]               AS parent_nearest_dtvd_ft,
             min(-nb.dfp_days) FILTER (WHERE nb.dfp_days < -180)      AS parent_min_age_days,
-            max(-nb.dfp_days) FILTER (WHERE nb.dfp_days < -180)      AS parent_max_age_days
+            max(-nb.dfp_days) FILTER (WHERE nb.dfp_days < -180)      AS parent_max_age_days,
+            (array_agg(nb.dtvd_ft ORDER BY abs(nb.dtvd_ft))
+                 FILTER (WHERE abs(nb.dfp_days) <= 180
+                           AND nb.dtvd_ft IS NOT NULL))[1]           AS codev_nearest_dtvd_ft
         FROM (
             SELECT
                 COALESCE(t2.corrected_code, fb2.formation_blueox, '(unmapped)')  AS bench,

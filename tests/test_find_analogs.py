@@ -8,7 +8,13 @@ from datetime import date
 
 import pytest
 
-from scripts.find_analogs import SCENARIOS, build_query, parse_near, polygon_geometry
+from scripts.find_analogs import (
+    OFFSET_GATE_FT,
+    SCENARIOS,
+    build_query,
+    parse_near,
+    polygon_geometry,
+)
 
 
 def test_no_filters_is_scorable_only_and_ordered():
@@ -45,10 +51,41 @@ def test_near_uses_index_expression_text():
     assert "ST_DWithin(w.wellstick_geom::extensions.geography," in sql
 
 
-def test_parent_bench_matches_above_or_below():
-    sql, _ = build_query(parent_benches=["WCA_1", "WCA_2"])
-    assert "parent_benches_below && %(parent_benches)s::text[]" in sql
-    assert "parent_benches_above && %(parent_benches)s::text[]" in sql
+def test_parent_bench_reads_bench_context_without_vertical_window():
+    sql, p = build_query(parent_benches=["LSSH"], benches=["WCA_1"])
+    assert "EXISTS (SELECT 1 FROM jsonb_each(d.bench_context) j WHERE" in sql
+    assert "j.key = ANY(%(parent_benches)s)" in sql
+    assert "parent_min_offset_ft')::numeric <= %(max_offset_ft)s" in sql
+    assert p["max_offset_ft"] == OFFSET_GATE_FT
+    # naming the pair IS the vertical spec: no dTVD cap, no side, not the gated arrays
+    assert "max_dtvd_ft" not in p
+    assert "parent_benches_below" not in sql.split("WHERE d.scorable")[1]
+    assert "parent_nearest_dtvd_ft')::numeric >" not in sql
+
+
+@pytest.mark.parametrize("side, frag", [("above", "::numeric < 0"), ("below", "::numeric > 0")])
+def test_parent_side_and_dtvd_cap(side, frag):
+    sql, p = build_query(parent_benches=["LSSH"], parent_side=side, max_dtvd_ft=700)
+    assert f"(j.value ->> 'parent_nearest_dtvd_ft'){frag}" in sql
+    assert "abs((j.value ->> 'parent_nearest_dtvd_ft')::numeric) <= %(max_dtvd_ft)s" in sql
+    assert p["max_dtvd_ft"] == 700.0
+    assert set(re.findall(r"%\((\w+)\)s", sql)) == set(p)
+
+
+def test_parent_age_scopes_to_named_bench_or_class():
+    sql, _ = build_query(parent_benches=["LSSH"], min_parent_age_days=730)
+    assert "(j.value ->> 'parent_min_age_days')::int >= %(min_parent_age_days)s" in sql
+    assert "d.youngest_parent_age_days" not in sql.split("WHERE d.scorable")[1]
+    sql, _ = build_query(min_parent_age_days=730, max_parent_age_days=3000)
+    assert "d.youngest_parent_age_days >= %(min_parent_age_days)s" in sql
+    assert "d.oldest_parent_age_days <= %(max_parent_age_days)s" in sql
+
+
+def test_offset_gate_constant_matches_sql50():
+    from pathlib import Path
+
+    body = (Path(__file__).resolve().parent.parent / "sql" / "50_dev_scenario.sql").read_text(encoding="utf-8")
+    assert re.search(rf"parent_min_offset_ft'\)::numeric <= {OFFSET_GATE_FT}\s", body)
 
 
 @pytest.mark.parametrize("kw, msg", [
@@ -57,6 +94,9 @@ def test_parent_bench_matches_above_or_below():
     ({"radius_mi": 5.0}, "go together"),
     ({"near": (31.3, -101.8), "radius_mi": 0}, "> 0"),
     ({"near": (31.3, -101.8), "radius_mi": 5, "polygon": "{}"}, "mutually exclusive"),
+    ({"parent_side": "beside"}, "parent_side must be"),
+    ({"parent_side": "above"}, "need --parent-bench"),
+    ({"max_dtvd_ft": 700}, "need --parent-bench"),
 ])
 def test_bad_filter_combinations_raise(kw, msg):
     with pytest.raises(ValueError, match=msg):

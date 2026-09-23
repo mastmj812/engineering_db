@@ -26,6 +26,17 @@
 -- sign of parent_nearest_dtvd_ft (neighbor - subject): > 0 parent BELOW
 -- (subject is a topfill), < 0 parent ABOVE (subject is an underfill); 0 = no
 -- direction, ignored.
+-- SHIELDING (Michael 2026-09-23, after the Hellfire East E 8HU case: WCA_1
+-- 884 ft over an older WCC, co-developed with a WCB_2 well in between): the
+-- nearest vertical parent BELOW is shielded when a CO-DEVELOPED other-bench
+-- neighbor (|dfp| <= 180 d, any offset within the co-extent rule) sits
+-- strictly between subject and that parent (0 < codev dtvd < parent dtvd);
+-- mirrored above. A shielded side does not make the subject a topfill /
+-- underfill. 2025Q3 hindcast, Midland mop-6 Novi/actual rel. to codev:
+-- unshielded topfill 1.21x (n=33) vs shielded 0.91x (n=36); mop 9 1.11x vs
+-- 0.97x. Delaware flat either way. A vertical-band cut instead (700 ft)
+-- showed no gradient by distance and removed 20-42% of topfills.
+--
 -- WHY the offset gate: without it the 1,320-ft membership gate admits
 -- next-bench parents ~1,000 ft away laterally and dilutes the Midland topfill
 -- signal (2025Q3 hindcast mop-6 Novi/actual rel. to codev: 1.05x ungated vs
@@ -33,14 +44,18 @@
 -- reproduce the exact per-parent rule on 99.7% of a 1,936-well sample.
 --
 -- CLASS (precedence top-down; NULL when codev_context.scorable = FALSE):
---   sandwich     vertical parent benches both below AND above
---   topfill      vertical parent below only
---   underfill    vertical parent above only
+--   sandwich     UNSHIELDED vertical parent both below AND above
+--   topfill      unshielded vertical parent below only
+--   underfill    unshielded vertical parent above only
 --   codev_stack  no vertical parent; >= 1 other-bench (mapped) neighbor came
 --                on within +-180 d (no offset gate — co-developed pad-mates)
 --   standalone   none of the above (parents may exist beyond 660 ft / 1,000 ft,
 --                or only in the own bench — see has_same_bench_parent)
 -- Same-bench parents (LATERAL infill) are a separate flag, not a class.
+-- parent_benches_below/above list every qualifying vertical parent bench
+-- BEFORE shielding (the detail survives; shielded_below/above say whether it
+-- counted). Bench-pair questions ("WCA_1 beneath LSSH") should read
+-- bench_context directly — no vertical window (find_analogs --parent-bench).
 --
 -- CENSORING: the class is PARENT-side and fully observed at first production
 -- — not censored. The child side IS right-censored: a well online < 180 d
@@ -76,9 +91,9 @@ SELECT
     c.scorable,
     CASE
         WHEN NOT c.scorable                           THEN NULL
-        WHEN v.n_below > 0 AND v.n_above > 0          THEN 'sandwich'
-        WHEN v.n_below > 0                            THEN 'topfill'
-        WHEN v.n_above > 0                            THEN 'underfill'
+        WHEN v.live_below AND v.live_above            THEN 'sandwich'
+        WHEN v.live_below                             THEN 'topfill'
+        WHEN v.live_above                             THEN 'underfill'
         WHEN cardinality(v.codev_benches_other) > 0   THEN 'codev_stack'
         ELSE 'standalone'
     END                                                             AS scenario_class,
@@ -86,6 +101,10 @@ SELECT
     v.parent_benches_above,
     v.nearest_parent_below_dtvd_ft,
     v.nearest_parent_above_dtvd_ft,
+    v.shielded_below,
+    v.shielded_above,
+    v.nearest_codev_below_dtvd_ft,
+    v.nearest_codev_above_dtvd_ft,
     v.nearest_parent_offset_ft,
     v.youngest_parent_age_days,
     v.oldest_parent_age_days,
@@ -101,35 +120,47 @@ SELECT
 FROM curated.codev_context c
 LEFT JOIN LATERAL (
     SELECT
-        count(*) FILTER (WHERE e.vp AND e.dz > 0)                                   AS n_below,
-        count(*) FILTER (WHERE e.vp AND e.dz < 0)                                   AS n_above,
-        COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.vp AND e.dz > 0), '{}') AS parent_benches_below,
-        COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.vp AND e.dz < 0), '{}') AS parent_benches_above,
-        min(e.dz) FILTER (WHERE e.vp AND e.dz > 0)                                  AS nearest_parent_below_dtvd_ft,
-        max(e.dz) FILTER (WHERE e.vp AND e.dz < 0)                                  AS nearest_parent_above_dtvd_ft,
-        min(e.off) FILTER (WHERE e.vp AND e.dz <> 0)                                AS nearest_parent_offset_ft,
-        min(e.age_min) FILTER (WHERE e.vp AND e.dz <> 0)                            AS youngest_parent_age_days,
-        max(e.age_max) FILTER (WHERE e.vp AND e.dz <> 0)                            AS oldest_parent_age_days,
-        COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.n_codev > 0), '{}') AS codev_benches_other,
-        COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.n_child > 0), '{}') AS child_benches_other
+        a.*,
+        -- shielded: a codev well sits strictly between subject and the nearest parent
+        (a.nearest_codev_below_dtvd_ft < a.nearest_parent_below_dtvd_ft)  IS TRUE AS shielded_below,
+        (a.nearest_codev_above_dtvd_ft > a.nearest_parent_above_dtvd_ft)  IS TRUE AS shielded_above,
+        a.nearest_parent_below_dtvd_ft IS NOT NULL
+          AND (a.nearest_codev_below_dtvd_ft < a.nearest_parent_below_dtvd_ft) IS NOT TRUE AS live_below,
+        a.nearest_parent_above_dtvd_ft IS NOT NULL
+          AND (a.nearest_codev_above_dtvd_ft > a.nearest_parent_above_dtvd_ft) IS NOT TRUE AS live_above
     FROM (
         SELECT
-            j.key                                              AS nbr,
-            (j.value ->> 'n_codev')::int                       AS n_codev,
-            (j.value ->> 'n_child')::int                       AS n_child,
-            (j.value ->> 'parent_min_offset_ft')::numeric      AS off,
-            (j.value ->> 'parent_nearest_dtvd_ft')::numeric    AS dz,
-            (j.value ->> 'parent_min_age_days')::int           AS age_min,
-            (j.value ->> 'parent_max_age_days')::int           AS age_max,
-            COALESCE((j.value ->> 'n_parent')::int, 0) > 0
-              AND (j.value ->> 'parent_min_offset_ft')::numeric <= 660             -- BAKED offset gate, ft
-              AND abs((j.value ->> 'parent_nearest_dtvd_ft')::numeric) <= 1000     -- BAKED vertical band, ft
-                                                               AS vp
-        FROM jsonb_each(c.bench_context) j
-        WHERE j.key <> c.bench
-          AND j.key <> '(unmapped)'
-    ) e
+            COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.vp AND e.dz > 0), '{}') AS parent_benches_below,
+            COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.vp AND e.dz < 0), '{}') AS parent_benches_above,
+            min(e.dz)  FILTER (WHERE e.vp AND e.dz > 0)                                 AS nearest_parent_below_dtvd_ft,
+            max(e.dz)  FILTER (WHERE e.vp AND e.dz < 0)                                 AS nearest_parent_above_dtvd_ft,
+            min(e.cdz) FILTER (WHERE e.n_codev > 0 AND e.cdz > 0)                       AS nearest_codev_below_dtvd_ft,
+            max(e.cdz) FILTER (WHERE e.n_codev > 0 AND e.cdz < 0)                       AS nearest_codev_above_dtvd_ft,
+            min(e.off) FILTER (WHERE e.vp AND e.dz <> 0)                                AS nearest_parent_offset_ft,
+            min(e.age_min) FILTER (WHERE e.vp AND e.dz <> 0)                            AS youngest_parent_age_days,
+            max(e.age_max) FILTER (WHERE e.vp AND e.dz <> 0)                            AS oldest_parent_age_days,
+            COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.n_codev > 0), '{}') AS codev_benches_other,
+            COALESCE(array_agg(e.nbr ORDER BY e.nbr) FILTER (WHERE e.n_child > 0), '{}') AS child_benches_other
+        FROM (
+            SELECT
+                j.key                                              AS nbr,
+                (j.value ->> 'n_codev')::int                       AS n_codev,
+                (j.value ->> 'n_child')::int                       AS n_child,
+                (j.value ->> 'parent_min_offset_ft')::numeric      AS off,
+                (j.value ->> 'parent_nearest_dtvd_ft')::numeric    AS dz,
+                (j.value ->> 'codev_nearest_dtvd_ft')::numeric     AS cdz,
+                (j.value ->> 'parent_min_age_days')::int           AS age_min,
+                (j.value ->> 'parent_max_age_days')::int           AS age_max,
+                COALESCE((j.value ->> 'n_parent')::int, 0) > 0
+                  AND (j.value ->> 'parent_min_offset_ft')::numeric <= 660             -- BAKED offset gate, ft
+                  AND abs((j.value ->> 'parent_nearest_dtvd_ft')::numeric) <= 1000     -- BAKED vertical band, ft
+                                                                   AS vp
+            FROM jsonb_each(c.bench_context) j
+            WHERE j.key <> c.bench
+              AND j.key <> '(unmapped)'
+        ) e
+    ) a
 ) v ON c.scorable;
 
 COMMENT ON VIEW curated.dev_scenario IS
-'Per producing horizontal (api10; row set = curated.codev_context): vertical development scenario at first production, derived from codev_context (house co-extent rule). Vertical parent bench = other mapped bench with a parent online > 180 d earlier whose lateral midpoint is within 660 ft of the subject lateral and whose TVD delta is within 1,000 ft; above/below by the sign of that parent''s TVD delta. scenario_class: sandwich (parents above and below) > topfill (below) > underfill (above) > codev_stack (other-bench neighbor within +-180 d) > standalone; NULL when not scorable. Same-bench (lateral infill) parents flagged separately. Class is parent-side and not censored; child_benches_other is right-censored (child_censored). Thresholds baked in the view body. sql/50.';
+'Per producing horizontal (api10; row set = curated.codev_context): vertical development scenario at first production, derived from codev_context (house co-extent rule). Vertical parent bench = other mapped bench with a parent online > 180 d earlier whose lateral midpoint is within 660 ft of the subject lateral and whose TVD delta is within 1,000 ft; above/below by the sign of that parent''s TVD delta. A side is SHIELDED (does not count) when a co-developed other-bench well sits strictly between subject and the nearest parent on that side. scenario_class: sandwich (unshielded parents above and below) > topfill (below) > underfill (above) > codev_stack (other-bench neighbor within +-180 d) > standalone; NULL when not scorable. Same-bench (lateral infill) parents flagged separately. Class is parent-side and not censored; child_benches_other is right-censored (child_censored). Thresholds baked in the view body. sql/50.';

@@ -7,9 +7,9 @@ Development-scenario filter return the same wells.
 Examples (repo root, venv):
     python -m scripts.find_analogs --bench WCB_2 --scenario underfill \\
         --near 31.304,-101.816 --radius-mi 8
-    python -m scripts.find_analogs --bench LSSH --scenario topfill \\
-        --parent-bench WCA_1 --min-parent-age-days 730 --fp-from 2019-01-01 \\
-        --min-months 12 --csv out.csv
+    python -m scripts.find_analogs --bench WCA_1 --parent-bench LSSH \\
+        --parent-side above --min-parent-age-days 730 --fp-from 2019-01-01 \\
+        --min-months 12 --csv out.csv          # WCA_1 underfilled beneath LSSH
     python -m scripts.find_analogs --bench WCA_1 --scenario topfill sandwich \\
         --polygon unit.geojson
 
@@ -20,12 +20,22 @@ Semantics (all from sql/50 — see its header for the reasoning):
                      Vertical parent = other mapped bench, online > 180 d
                      before the subject, closest parent lateral midpoint
                      <= 660 ft from the subject lateral, |dTVD| <= 1,000 ft.
-  --parent-bench     the subject has a qualifying vertical parent in that
-                     bench (above or below). Repeatable (any-of).
-  --min-parent-age-days N   youngest qualifying parent was online >= N days
-                     before the subject's FP (i.e. ALL qualifying parents are
-                     at least that old). --max-parent-age-days likewise on the
-                     oldest.
+                     Shielded sides (a co-developed well sits between subject
+                     and the nearest parent) don't count toward the class.
+  --parent-bench     BENCH-PAIR query, read from bench_context - NO vertical
+                     window (naming the pair is the vertical spec) and no
+                     shielding: the subject has a parent (online > 180 d
+                     before its FP) in that bench whose lateral midpoint is
+                     within --max-offset-ft (default 660, sql/50's gate) of
+                     the subject lateral. Repeatable (any-of).
+    --parent-side    above | below | any (default any): the parent bench's
+                     nearest-offset parent is shallower / deeper.
+    --max-dtvd FT    optional |dTVD| cap on that parent.
+  --min-parent-age-days N   youngest parent was online >= N days before the
+                     subject's FP (ALL counted parents at least that old).
+                     --max-parent-age-days likewise on the oldest. With
+                     --parent-bench: that bench's parents; otherwise the
+                     class's qualifying vertical parents.
   --near LAT,LON --radius-mi R   stick within R miles of the point
                      (geography ST_DWithin — a search area, not well matching).
   --polygon FILE     stick intersects the GeoJSON polygon (Geometry, Feature
@@ -48,6 +58,8 @@ from pathlib import Path
 from typing import Any
 
 SCENARIOS = ("sandwich", "topfill", "underfill", "codev_stack", "standalone")
+PARENT_SIDES = ("above", "below", "any")
+OFFSET_GATE_FT = 660  # sql/50's baked vertical-parent offset gate (test pins it)
 M_PER_MI = 1609.344
 
 _SELECT = """
@@ -64,6 +76,8 @@ SELECT
     d.parent_benches_above,
     d.nearest_parent_below_dtvd_ft,
     d.nearest_parent_above_dtvd_ft,
+    d.shielded_below,
+    d.shielded_above,
     d.nearest_parent_offset_ft,
     d.youngest_parent_age_days,
     d.oldest_parent_age_days,
@@ -120,6 +134,9 @@ def build_query(
     benches: list[str] | None = None,
     scenarios: list[str] | None = None,
     parent_benches: list[str] | None = None,
+    parent_side: str = "any",
+    max_dtvd_ft: float | None = None,
+    max_offset_ft: float = OFFSET_GATE_FT,
     min_parent_age_days: int | None = None,
     max_parent_age_days: int | None = None,
     near: tuple[float, float] | None = None,
@@ -134,6 +151,11 @@ def build_query(
         unknown = sorted(set(scenarios) - set(SCENARIOS))
         if unknown:
             raise ValueError(f"unknown scenario(s) {unknown}; choose from {SCENARIOS}")
+    if parent_side not in PARENT_SIDES:
+        raise ValueError(f"parent_side must be one of {PARENT_SIDES}")
+    if not parent_benches and (parent_side != "any" or max_dtvd_ft is not None
+                               or max_offset_ft != OFFSET_GATE_FT):
+        raise ValueError("--parent-side / --max-dtvd / --max-offset-ft need --parent-bench")
     if near is not None and polygon is not None:
         raise ValueError("--near and --polygon are mutually exclusive")
     if (near is None) != (radius_mi is None):
@@ -151,14 +173,35 @@ def build_query(
         where.append("d.scenario_class = ANY(%(scenarios)s)")
         p["scenarios"] = list(scenarios)
     if parent_benches:
-        where.append("(d.parent_benches_below && %(parent_benches)s::text[]"
-                     " OR d.parent_benches_above && %(parent_benches)s::text[])")
+        # Bench-pair: raw per-bench facts, no vertical window, no shielding.
+        pb = ["j.key = ANY(%(parent_benches)s)",
+              "j.key <> d.bench",
+              "(j.value ->> 'n_parent')::int > 0",
+              "(j.value ->> 'parent_min_offset_ft')::numeric <= %(max_offset_ft)s"]
         p["parent_benches"] = list(parent_benches)
+        p["max_offset_ft"] = float(max_offset_ft)
+        dz = "(j.value ->> 'parent_nearest_dtvd_ft')::numeric"
+        if parent_side == "below":
+            pb.append(f"{dz} > 0")
+        elif parent_side == "above":
+            pb.append(f"{dz} < 0")
+        if max_dtvd_ft is not None:
+            pb.append(f"abs({dz}) <= %(max_dtvd_ft)s")
+            p["max_dtvd_ft"] = float(max_dtvd_ft)
+        if min_parent_age_days is not None:
+            pb.append("(j.value ->> 'parent_min_age_days')::int >= %(min_parent_age_days)s")
+        if max_parent_age_days is not None:
+            pb.append("(j.value ->> 'parent_max_age_days')::int <= %(max_parent_age_days)s")
+        where.append("EXISTS (SELECT 1 FROM jsonb_each(d.bench_context) j WHERE "
+                     + " AND ".join(pb) + ")")
+    else:
+        if min_parent_age_days is not None:
+            where.append("d.youngest_parent_age_days >= %(min_parent_age_days)s")
+        if max_parent_age_days is not None:
+            where.append("d.oldest_parent_age_days <= %(max_parent_age_days)s")
     if min_parent_age_days is not None:
-        where.append("d.youngest_parent_age_days >= %(min_parent_age_days)s")
         p["min_parent_age_days"] = int(min_parent_age_days)
     if max_parent_age_days is not None:
-        where.append("d.oldest_parent_age_days <= %(max_parent_age_days)s")
         p["max_parent_age_days"] = int(max_parent_age_days)
     if near is not None:
         # Same text as the sql/26 expression index -> index-served.
@@ -195,6 +238,9 @@ def _args(argv: list[str] | None) -> argparse.Namespace:
     ap.add_argument("--bench", nargs="+")
     ap.add_argument("--scenario", nargs="+", choices=SCENARIOS)
     ap.add_argument("--parent-bench", nargs="+")
+    ap.add_argument("--parent-side", choices=PARENT_SIDES, default="any")
+    ap.add_argument("--max-dtvd", type=float, metavar="FT")
+    ap.add_argument("--max-offset-ft", type=float, default=OFFSET_GATE_FT)
     ap.add_argument("--min-parent-age-days", type=int)
     ap.add_argument("--max-parent-age-days", type=int)
     ap.add_argument("--near", type=parse_near, metavar="LAT,LON")
@@ -215,6 +261,7 @@ def main(argv: list[str] | None = None) -> None:
         polygon = polygon_geometry(json.loads(a.polygon.read_text(encoding="utf-8")))
     sql, params = build_query(
         benches=a.bench, scenarios=a.scenario, parent_benches=a.parent_bench,
+        parent_side=a.parent_side, max_dtvd_ft=a.max_dtvd, max_offset_ft=a.max_offset_ft,
         min_parent_age_days=a.min_parent_age_days, max_parent_age_days=a.max_parent_age_days,
         near=a.near, radius_mi=a.radius_mi, polygon=polygon,
         fp_from=a.fp_from, fp_to=a.fp_to, min_months=a.min_months,
