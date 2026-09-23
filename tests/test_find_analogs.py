@@ -8,7 +8,13 @@ from datetime import date
 
 import pytest
 
-from scripts.find_analogs import OFFSET_GATE_FT, SCENARIOS, build_query, parse_near, polygon_geometry
+from scripts.find_analogs import (
+    OFFSET_GATE_FT,
+    SCENARIOS,
+    build_query,
+    parse_near,
+    polygon_geometry,
+)
 
 
 def test_no_filters_is_scorable_only_and_ordered():
