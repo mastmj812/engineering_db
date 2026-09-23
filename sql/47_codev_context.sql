@@ -61,6 +61,17 @@
 --   bench_context     jsonb {bench: {n, n_codev, n_parent, n_child,
 --                     min_abs_dfp_days, median_dist_ft, median_dtvd_ft}},
 --                     dtvd = neighbor.tvd - subject.tvd (negative = shallower)
+--                     plus PARENT-ONLY facts (JSON null when n_parent = 0):
+--                       parent_min_offset_ft    min over the bench's parents of
+--                         the distance from the parent lateral's MIDPOINT to
+--                         the subject lateral (LP->BHL), ft
+--                       parent_nearest_dtvd_ft  dtvd of that closest-offset
+--                         parent (reproduces the per-parent vertical rule on
+--                         99.7% of wells, 2026-09-23 sample of 1,936)
+--                       parent_min_age_days / parent_max_age_days  youngest /
+--                         oldest parent: days the parent was online before
+--                         the subject's first production (all bench parents)
+--                     consumed by sql/50 curated.dev_scenario (plain view).
 --   codev_benches     text[] benches with >= 1 codev neighbor (incl. own bench)
 --   parent_benches    text[] benches with >= 1 parent neighbor
 --   child_benches     text[] benches with >= 1 child neighbor
@@ -88,6 +99,9 @@
 --       nightly to a warning, not a red run.
 --     * sql/04 wells rebuild: re-run this file after sql/26
 --       (scripts/apply_wellstick_fix.py docstring note).
+--   DEPENDENT: curated.dev_scenario (sql/50, plain view) dies with this
+--   file's DROP ... CASCADE. Every re-run must be followed by sql/50 (+ sql/31);
+--   apply_codev_context / apply_dev_scenario / apply_reconciled_inventory do.
 --
 -- PostGIS references schema-qualified (extensions.*): PG17 runs matview
 --   CREATE/REFRESH under a restricted search_path.
@@ -155,7 +169,12 @@ LEFT JOIN LATERAL (
             'n_child',          b.n_child,
             'min_abs_dfp_days', b.min_abs_dfp_days,
             'median_dist_ft',   round(b.median_dist_ft::numeric, 0),
-            'median_dtvd_ft',   round(b.median_dtvd_ft::numeric, 0)))       AS bench_context,
+            'median_dtvd_ft',   round(b.median_dtvd_ft::numeric, 0),
+            -- parent-only facts (sql/50 dev_scenario); JSON null when n_parent = 0
+            'parent_min_offset_ft',   round(b.parent_min_offset_ft::numeric, 0),
+            'parent_nearest_dtvd_ft', round(b.parent_nearest_dtvd_ft::numeric, 0),
+            'parent_min_age_days',    b.parent_min_age_days,
+            'parent_max_age_days',    b.parent_max_age_days))                AS bench_context,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_codev  > 0) AS codev_benches,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_parent > 0) AS parent_benches,
         array_agg(b.nbr_bench ORDER BY b.nbr_bench) FILTER (WHERE b.n_child  > 0) AS child_benches,
@@ -172,7 +191,12 @@ LEFT JOIN LATERAL (
             count(*) FILTER (WHERE nb.dfp_days >  180)               AS n_child,
             min(abs(nb.dfp_days))                                    AS min_abs_dfp_days,
             percentile_cont(0.5) WITHIN GROUP (ORDER BY nb.dist_ft)  AS median_dist_ft,
-            percentile_cont(0.5) WITHIN GROUP (ORDER BY nb.dtvd_ft)  AS median_dtvd_ft
+            percentile_cont(0.5) WITHIN GROUP (ORDER BY nb.dtvd_ft)  AS median_dtvd_ft,
+            min(po.par_off_ft)                                       AS parent_min_offset_ft,
+            (array_agg(nb.dtvd_ft ORDER BY po.par_off_ft)
+                 FILTER (WHERE nb.dfp_days < -180))[1]               AS parent_nearest_dtvd_ft,
+            min(-nb.dfp_days) FILTER (WHERE nb.dfp_days < -180)      AS parent_min_age_days,
+            max(-nb.dfp_days) FILTER (WHERE nb.dfp_days < -180)      AS parent_max_age_days
         FROM (
             SELECT
                 COALESCE(t2.corrected_code, fb2.formation_blueox, '(unmapped)')  AS bench,
@@ -200,6 +224,17 @@ LEFT JOIN LATERAL (
               AND COALESCE(w2.novi_slant_calculated, w2.enverus_trajectory) ILIKE '%horizontal%'
               AND w2.first_production_date IS NOT NULL
         ) nb
+        -- parent lateral offset: neighbor-lateral MIDPOINT to the subject lateral
+        -- (geography, ft). Parents only (NULL otherwise) — it is the drainage-
+        -- relevant sustained offset; min stick-to-stick distance (dist_ft) is a
+        -- closest approach, usually at the heel/curve, and carried no signal
+        -- in the 2026-09-23 reconciliation.
+        CROSS JOIN LATERAL (
+            SELECT CASE WHEN nb.dfp_days < -180
+                        THEN extensions.ST_Distance(s.lat::extensions.geography,
+                                 extensions.ST_LineInterpolatePoint(nb.nlat, 0.5)::extensions.geography) * 3.28084
+                   END AS par_off_ft
+        ) po
         -- co-extent: neighbor lateral projected onto the subject lateral covers >= 30% (BAKED)
         WHERE abs(extensions.ST_LineLocatePoint(s.lat, extensions.ST_StartPoint(nb.nlat))
                 - extensions.ST_LineLocatePoint(s.lat, extensions.ST_EndPoint(nb.nlat))) >= 0.30

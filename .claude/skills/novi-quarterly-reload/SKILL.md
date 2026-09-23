@@ -77,9 +77,9 @@ sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
 `reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
 `intel_forecast_accuracy`, `intel_pad_member`, `intel_pad_geom`, `erebor_locations`); sql/20 inside
 apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` +
-`codev_context` (sql/47) + `intel_forecast_accuracy_vintage` (sql/43; restored
+`codev_context` (sql/47) + its `dev_scenario` view (sql/50) + `intel_forecast_accuracy_vintage` (sql/43; restored
 by apply_intel_forecast_accuracy below) — the script rebuilds sql/23 +
-wells_enriched + codev_context in order (keep that if it's ever refactored).
+wells_enriched + codev_context + dev_scenario in order (keep that if it's ever refactored).
 
 ```powershell
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast

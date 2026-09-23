@@ -882,7 +882,7 @@ COMMENT ON COLUMN curated.codev_context.first_production_date IS 'Subject first 
 COMMENT ON COLUMN curated.codev_context.tvd_ft IS 'Subject TVD, ft (curated.wells.tvd_ft); median_dtvd_ft in bench_context is neighbor minus this.';
 COMMENT ON COLUMN curated.codev_context.scorable IS 'FALSE when the subject has no wellstick_geom; every context column is then NULL (no basis), distinct from empty arrays (checked, no neighbors).';
 COMMENT ON COLUMN curated.codev_context.n_neighbors IS 'Co-extent neighbors, all benches: producing horizontals within 1,320 ft (stick-to-stick geography) whose lateral covers >= 30% of the subject lateral when projected onto it. 0 = standalone.';
-COMMENT ON COLUMN curated.codev_context.bench_context IS 'jsonb keyed by neighbor bench: {n, n_codev (|dfp| <= 180 d), n_parent (neighbor online > 180 d EARLIER), n_child (> 180 d LATER), min_abs_dfp_days, median_dist_ft, median_dtvd_ft (neighbor minus subject; negative = shallower)}. Includes the subject''s own bench. Child counts are right-censored for young wells.';
+COMMENT ON COLUMN curated.codev_context.bench_context IS 'jsonb keyed by neighbor bench: {n, n_codev (|dfp| <= 180 d), n_parent (neighbor online > 180 d EARLIER), n_child (> 180 d LATER), min_abs_dfp_days, median_dist_ft, median_dtvd_ft (neighbor minus subject; negative = shallower), and parent-only parent_min_offset_ft (closest parent lateral MIDPOINT to the subject lateral, ft), parent_nearest_dtvd_ft (that parent''s TVD delta), parent_min_age_days / parent_max_age_days (youngest / oldest parent, days online before subject FP) - JSON null when n_parent = 0}. Includes the subject''s own bench. Child counts are right-censored for young wells. Parent-only keys feed curated.dev_scenario (sql/50).';
 COMMENT ON COLUMN curated.codev_context.codev_benches IS 'Benches (sorted, incl. own) with >= 1 neighbor online within 180 d of the subject. Empty array = none. GIN-indexed for @> containment.';
 COMMENT ON COLUMN curated.codev_context.parent_benches IS 'Benches with >= 1 neighbor online > 180 d BEFORE the subject (subject is a topfill/underfill/infill child of that bench).';
 COMMENT ON COLUMN curated.codev_context.child_benches IS 'Benches with >= 1 neighbor online > 180 d AFTER the subject (subject was later infilled from that bench). Right-censored for young wells.';
@@ -892,3 +892,27 @@ COMMENT ON COLUMN curated.codev_context.n_parent_other_bench IS 'Parent neighbor
 COMMENT ON COLUMN curated.codev_context.n_child_other_bench IS 'Child neighbors (online > 180 d later) in any other bench. Right-censored for young wells.';
 COMMENT ON FUNCTION curated.pdp_support_for_geom(geometry, text, double precision) IS
 'sql/30 offset-PDP support score family for an arbitrary stick geometry (deal-intake Gate 3 for narvi-generated locations): pdp_count_1/3/5mi, dist_nearest/3rd_nearest_ft, support_lateral_ft_5mi, n_offsets_5mi, offset_median_eur_ft, offset_median_cum12m_oil_per_ft, offset_median_tvd, tvd_delta_ft, tvd_excess_3mi_ft, wca_delta_ft. Same predicates as curated.intel_pdp_support (horizontal, same TVD-corrected formation_blueox, TVD +/-500 ft, >=6 mo produced, ll>0, 5-mi outer gate; unguarded 3-mi depth context). Any NULL input -> all scores NULL (not scorable); count 0 = scored and unsupported. LIVE against curated.wells (the matview is quarterly), so it can read slightly higher than intel_pdp_support between vintages. No inflation_ratio (needs a Novi forecast). sql/48.';
+
+-- =============================================================================
+-- 31 (part I) -- curated.dev_scenario (sql/50, plain view over codev_context).
+-- View-level comment lives in sql/50. Dropped with every sql/47 re-run; the
+-- appliers re-run sql/50 then this catalog.
+-- =============================================================================
+COMMENT ON COLUMN curated.dev_scenario.api10 IS 'Subject well; row set = curated.codev_context (every producing horizontal).';
+COMMENT ON COLUMN curated.dev_scenario.bench IS 'Subject bench (TVD-corrected formation_blueox, NULL -> ''(unmapped)''), from codev_context.';
+COMMENT ON COLUMN curated.dev_scenario.first_production_date IS 'Subject first production date; parent ages are measured back from it.';
+COMMENT ON COLUMN curated.dev_scenario.tvd_ft IS 'Subject TVD, ft; dtvd columns are neighbor minus this.';
+COMMENT ON COLUMN curated.dev_scenario.scorable IS 'FALSE when the subject has no stick geometry; scenario columns are then NULL (no basis).';
+COMMENT ON COLUMN curated.dev_scenario.scenario_class IS 'sandwich (vertical parents above AND below) > topfill (below only) > underfill (above only) > codev_stack (other mapped bench neighbor within +-180 d) > standalone. Vertical parent = other mapped bench, parent online > 180 d before subject FP, closest parent lateral midpoint <= 660 ft from the subject lateral, |TVD delta| <= 1,000 ft. NULL when not scorable. Parent-side: NOT censored.';
+COMMENT ON COLUMN curated.dev_scenario.parent_benches_below IS 'Vertical-parent benches DEEPER than the subject (subject is a topfill over them). Sorted; empty = none.';
+COMMENT ON COLUMN curated.dev_scenario.parent_benches_above IS 'Vertical-parent benches SHALLOWER than the subject (subject is an underfill beneath them). Sorted; empty = none.';
+COMMENT ON COLUMN curated.dev_scenario.nearest_parent_below_dtvd_ft IS 'Smallest positive TVD delta (neighbor minus subject, ft) among qualifying parent benches below. NULL = none.';
+COMMENT ON COLUMN curated.dev_scenario.nearest_parent_above_dtvd_ft IS 'TVD delta closest to zero among qualifying parent benches above (negative, ft). NULL = none.';
+COMMENT ON COLUMN curated.dev_scenario.nearest_parent_offset_ft IS 'Smallest lateral-midpoint offset (ft) among qualifying vertical parents. NULL = none.';
+COMMENT ON COLUMN curated.dev_scenario.youngest_parent_age_days IS 'Min over qualifying vertical-parent benches of the youngest parent age: days that parent was online before subject FP (> 180 by construction). Covers every parent in a qualifying bench, not only the <= 660 ft one.';
+COMMENT ON COLUMN curated.dev_scenario.oldest_parent_age_days IS 'Max over qualifying vertical-parent benches of the oldest parent age (days online before subject FP).';
+COMMENT ON COLUMN curated.dev_scenario.has_same_bench_parent IS 'TRUE when a co-extent neighbor in the subject''s OWN bench came on > 180 d earlier (lateral infill child). Independent of scenario_class. NULL when not scorable.';
+COMMENT ON COLUMN curated.dev_scenario.codev_benches_other IS 'Other mapped benches with >= 1 neighbor within +-180 d of subject FP (no offset gate).';
+COMMENT ON COLUMN curated.dev_scenario.child_benches_other IS 'Other mapped benches with >= 1 neighbor online > 180 d AFTER subject FP (subject later got a vertical child). Right-censored: see child_censored.';
+COMMENT ON COLUMN curated.dev_scenario.child_censored IS 'TRUE when subject FP is within 180 d of the newest first_production_date in the load: it cannot have a child yet, so child_benches_other reads short. Does NOT affect scenario_class.';
+COMMENT ON COLUMN curated.dev_scenario.bench_context IS 'Pass-through of codev_context.bench_context for per-bench queries (e.g. underfill beneath WCA_1 specifically).';
