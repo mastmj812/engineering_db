@@ -38,6 +38,10 @@
 --     by re-running this file (scripts/apply_erebor_locations.py) to recreate it
 --     WITH DATA + indexes.
 --
+-- ROCK QUALITY (2026-09): rqs/rqt (Novi ML rock-quality score/tier, oil) ride
+--   BOTH arms — PUD/RES straight from intel_locations, PDP via a LEFT JOIN to
+--   intel_locations' Novi PDP class on api10 (unique per api10 there; a fan-out
+--   would surface as duplicate stick_ids in the apply script's validation).
 -- DEPENDS ON: curated.intel_locations (sql/29), curated.intel_formation_blueox
 --   (sql/19), curated.wells_enriched (sql/06), curated.reconciled_inventory
 --   (sql/21), curated.net_new_pdp (sql/25), curated.intel_pdp_support (sql/30 —
@@ -90,6 +94,11 @@ SELECT
     -- drained). Drives the map's depletion filter + color mode. RES/PUD only;
     -- PDP arm is NULL (producing wells aren't scored).
     il.deplet_t,
+    -- Novi ML rock-quality score + tier (oil stream, sql/29 rqs/rqt). Quartiles are
+    -- cut per basin over Novi's full scored population (PDP + BASE_CASE), so the
+    -- PUD and PDP arms share one scale. EMERGING (RES) is not scored by Novi -> NULL.
+    il.rqs,
+    il.rqt,
     il.operator,
     il.pad_name,
     il.tvd,
@@ -141,6 +150,11 @@ SELECT
     -- (curated.net_new_pdp, sql/25) — Novi missed the location; else NULL.
     CASE WHEN nn.api10 IS NOT NULL THEN 'net_new_pdp' END AS recon_status,
     NULL::text                         AS deplet_t,   -- producing wells aren't depletion-scored
+    -- Rock quality IS scored on drilled wells (Novi's "drilled wells" map): joined
+    -- from the Novi PDP class by api10 (unique there — one PDP row per api10, so
+    -- the join cannot fan out). NULL = not in / not scored by the Novi PDP class.
+    npdp.rqs,
+    npdp.rqt,
     we.current_operator                AS operator,
     NULL::text                         AS pad_name,
     we.tvd_ft                          AS tvd,
@@ -168,6 +182,8 @@ SELECT
     we.wellstick_geom
 FROM curated.wells_enriched we
 LEFT JOIN curated.net_new_pdp nn ON nn.api10 = we.api10
+LEFT JOIN curated.intel_locations npdp
+       ON npdp.api10 = we.api10 AND npdp.category = 'PDP'
 WHERE we.first_production_date IS NOT NULL
   AND we.wellstick_geom IS NOT NULL
   AND we.is_horizontal IS TRUE
