@@ -4,6 +4,7 @@ curated.dev_scenario + sql/31, then validate (Supabase oilgas).
 Pattern of scripts/apply_codev_context.py (whose validate_codev is reused):
 exec DDL on the 5432 session (statement_timeout=0), validate by identity.
 
+  Re-run 2026-09-23 (#2): + codev_nearest_dtvd_ft key and sql/50 shielding.
   0. preflight — the only object depending on codev_context may be
      dev_scenario (sql/47's DROP ... CASCADE must not take anything else);
      snapshot the live bench_context into a session TEMP table.
@@ -34,8 +35,10 @@ import time
 from etl.db import get_connection
 from scripts.apply_codev_context import _exec, _relkind, validate_codev
 
-NEW_KEYS = ("parent_min_offset_ft", "parent_nearest_dtvd_ft",
-            "parent_min_age_days", "parent_max_age_days")
+# Keys added by the CURRENT sql/47 change; stripped from both sides of the
+# backward-compat check (2026-09-23 #2: shielding). History: the four
+# parent_* keys landed in eng_db #65.
+NEW_KEYS = ("codev_nearest_dtvd_ft",)
 PAD_C233 = (-101.816, 31.304)   # lon, lat — Developed Pad C 233 centroid (Upton)
 
 
@@ -64,7 +67,8 @@ def preflight(cur) -> None:
 def validate_compat(cur) -> bool:
     drift = cur.execute(f"""
         WITH a AS (
-            SELECT b.api10, e.key AS bench, e.value AS v
+            SELECT b.api10, e.key AS bench,
+                   e.value - ARRAY[{", ".join(f"'{k}'" for k in NEW_KEYS)}] AS v
             FROM _cc_before b CROSS JOIN LATERAL jsonb_each(b.bench_context) e),
         n AS (
             SELECT c.api10, e.key AS bench,
@@ -91,7 +95,15 @@ def validate_compat(cur) -> bool:
     """).fetchone()
     print(f"    parent keys: set without parents={bad_present}, "
           f"missing with parents={bad_missing} (both must be 0)", flush=True)
-    return ok and bad_present == 0 and bad_missing == 0
+    c_bad_present, c_bad_missing = cur.execute("""
+        SELECT COUNT(*) FILTER (WHERE (e.value->>'n_codev')::int = 0
+                                  AND e.value->'codev_nearest_dtvd_ft' <> 'null'::jsonb),
+               COUNT(*) FILTER (WHERE (e.value->>'n_codev')::int > 0 AND NOT e.value ? 'codev_nearest_dtvd_ft')
+        FROM curated.codev_context c CROSS JOIN LATERAL jsonb_each(c.bench_context) e
+    """).fetchone()
+    print(f"    codev key: set without codev={c_bad_present}, missing with codev={c_bad_missing} "
+          f"(both must be 0)", flush=True)
+    return ok and bad_present == 0 and bad_missing == 0 and c_bad_present == 0 and c_bad_missing == 0
 
 
 def validate_view(cur) -> bool:
@@ -126,7 +138,8 @@ def validate_view(cur) -> bool:
                d.api10, we.well_name, d.bench, d.first_production_date, d.scenario_class,
                d.parent_benches_below, d.parent_benches_above,
                d.nearest_parent_below_dtvd_ft, d.nearest_parent_above_dtvd_ft,
-               d.nearest_parent_offset_ft, d.youngest_parent_age_days, d.codev_benches_other
+               d.nearest_parent_offset_ft, d.youngest_parent_age_days, d.codev_benches_other,
+               d.shielded_below, d.shielded_above
         FROM curated.dev_scenario d
         JOIN curated.wells w USING (api10)
         JOIN curated.wells_enriched we USING (api10)
@@ -135,10 +148,21 @@ def validate_view(cur) -> bool:
                 extensions.ST_SetSRID(extensions.ST_Point(%s, %s), 4326)::extensions.geography, 4828)
         ORDER BY d.bench, d.scenario_class, d.first_production_date DESC
     """, PAD_C233).fetchall():
-        (api10, name, bench, fp, cls, below, above, dzb, dza, off, age, codev) = row
+        (api10, name, bench, fp, cls, below, above, dzb, dza, off, age, codev, shb, sha) = row
         print(f"      {api10} {name!s:28.28s} {bench:6s} fp={fp} {cls:11s} below={below} "
-              f"above={above} dz={dzb}/{dza} off={off} youngest_parent={age}d codev={codev}",
+              f"above={above} dz={dzb}/{dza} off={off} youngest_parent={age}d codev={codev} "
+              f"shielded={shb}/{sha}",
               flush=True)
+
+    # Case of record for shielding: Hellfire East E 8HU (WCA_1, 884 ft over an
+    # older WCC, co-developed with a WCB_2 well 343 ft below).
+    row = cur.execute(
+        "SELECT scenario_class, shielded_below FROM curated.dev_scenario WHERE api10 = '4246142732'"
+    ).fetchone()
+    hit = row == ("codev_stack", True)
+    print(f"    shielding case of record 4246142732 (Hellfire East E 8HU): {row}  "
+          f"[{'OK' if hit else 'CHECK'}]", flush=True)
+    ok &= hit
     return ok
 
 
