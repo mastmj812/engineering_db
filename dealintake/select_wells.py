@@ -13,10 +13,13 @@ the deal's planned stack, ordered by landing TVD):
                      the original development was co-developed, and child
                      counts are right-censored anyway.
   stack_standalone   no adjacent-planned-bench neighbor at all.
-  topfill_underfill  an adjacent planned bench was a PARENT (online > 180 d
-                     earlier — depletion present, even if a codev pad-mate
-                     also exists), OR was only a later CHILD (infilled from
-                     that bench afterwards, no codev).
+  topfill_underfill  an adjacent planned bench was an UNSHIELDED VERTICAL
+                     PARENT by the house rule of record (curated.dev_scenario,
+                     sql/50: online > 180 d earlier, lateral midpoint within
+                     660 ft, TVD within 1,000 ft, not shielded by a codev
+                     well in between — Michael 2026-09-23), OR was only a
+                     later CHILD (infilled from that bench afterwards). A
+                     parent beyond the gate does not make a topfill.
 A single-bench plan has no adjacent bench: every candidate is tier
 `stack_standalone` and tiering is reported as not applicable.
 
@@ -73,18 +76,43 @@ def spacing_class(lateral_closer_xy_ft: float | None, planned_spacing_ft: float,
     return "representative"
 
 
+def vertical_parents(c: dict[str, Any]) -> set[str]:
+    """Benches that acted as an UNSHIELDED vertical parent to this well, per
+    the house rule of record (curated.dev_scenario, sql/50): a parent online
+    > 180 d earlier whose lateral midpoint is within 660 ft and whose TVD is
+    within 1,000 ft. The gate is applied IN the view (parent_benches_below /
+    _above) — no threshold is copied here. Shielding is re-read per bench
+    from bench_context: a co-developed other-bench well strictly between the
+    subject and that bench's nearest parent hides it (Hellfire East E 8HU)."""
+    bc = c.get("bench_context") or {}
+    cb, ca = c.get("nearest_codev_below_dtvd_ft"), c.get("nearest_codev_above_dtvd_ft")
+    out: set[str] = set()
+    for b in c.get("parent_benches_below") or []:
+        dz = (bc.get(b) or {}).get("parent_nearest_dtvd_ft")
+        if not (cb is not None and dz is not None and float(cb) < float(dz)):
+            out.add(b)
+    for b in c.get("parent_benches_above") or []:
+        dz = (bc.get(b) or {}).get("parent_nearest_dtvd_ft")
+        if not (ca is not None and dz is not None and float(ca) > float(dz)):
+            out.add(b)
+    return out
+
+
 def codev_tier(c: dict[str, Any], adjacent: list[str]) -> str:
+    """Tier vs the ADJACENT PLANNED benches. topfill_underfill = an adjacent
+    bench was an unshielded vertical parent (dev_scenario rule, see
+    vertical_parents) OR only a later child; codev = an adjacent bench came
+    on within +-180 d; else stack_standalone. A parent beyond the 660-ft /
+    1,000-ft gate is NOT a parent here (it diluted the Midland topfill
+    hindcast signal — Michael, 2026-09-23)."""
     if not adjacent:
         return "stack_standalone"
     adj = set(adjacent)
-    codev = adj & set(c.get("codev_benches") or [])
-    parent = adj & set(c.get("parent_benches") or [])
-    child = adj & set(c.get("child_benches") or [])
-    if parent:
+    if adj & vertical_parents(c):
         return "topfill_underfill"
-    if codev:
+    if adj & set(c.get("codev_benches") or []):
         return "codev"
-    if child:
+    if adj & set(c.get("child_benches") or []):
         return "topfill_underfill"
     return "stack_standalone"
 

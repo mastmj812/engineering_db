@@ -45,8 +45,9 @@ def di_pair(di_nom: float | None, b: float | None) -> tuple[str, str]:
 
 BUILDUP_COLS = [
     "api10", "operator", "first_production_date", "lateral_length_ft", "bench", "spacing_class",
-    "tier", "months_produced", "eur_per_1000ft", "anduin_oil_eur_per_1000ft", "proppant_lbs_per_ft",
-    "dist_ft", "codev_benches", "parent_benches", "child_benches",
+    "tier", "scenario_class", "months_produced", "eur_per_1000ft", "anduin_oil_eur_per_1000ft",
+    "proppant_lbs_per_ft", "dist_ft", "codev_benches", "parent_benches_below", "parent_benches_above",
+    "child_benches",
 ]
 
 
@@ -58,7 +59,7 @@ def buildup_rows(wells: list[dict[str, Any]], qc_rows: dict[str, dict[str, Any]]
         di_n, di_e = di_pair(f.get("di_initial"), f.get("b"))
         out.append([
             w["api10"], w.get("operator"), w.get("first_production_date"), w.get("lateral_length_ft"),
-            w.get("bench"), w.get("spacing_class"), w.get("tier"), w.get("months_produced"),
+            w.get("bench"), w.get("spacing_class"), w.get("tier"), w.get("scenario_class"), w.get("months_produced"),
             w.get("eur_per_1000ft"), w.get("anduin_oil_eur_per_1000ft"), di_n, di_e,
             f.get("b"), f.get("peak_index_months"), w.get("proppant_lbs_per_ft"),
         ])
@@ -66,7 +67,7 @@ def buildup_rows(wells: list[dict[str, Any]], qc_rows: dict[str, dict[str, Any]]
 
 
 BUILDUP_HEADERS = [
-    "api10", "Operator", "First prod", "Lateral ft", "Bench", "Spacing", "Codev tier", "Months",
+    "api10", "Operator", "First prod", "Lateral ft", "Bench", "Spacing", "Codev tier", "Scenario", "Months",
     "Novi EUR/1,000 ft (screen)", "anduin oil EUR/1,000 ft", "Di nom /yr", "Di eff yr-1", "b",
     "Peak mo", "Proppant lb/ft",
 ]

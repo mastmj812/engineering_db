@@ -114,7 +114,10 @@ def candidates(
 ) -> list[dict[str, Any]]:
     """TC candidates for one bench: producing horizontals in the TVD-corrected
     bench within `radius_mi` of the unit (stick-to-unit geography), joined to
-    curated.codev_context. Raw — filtering/tiering is select_wells' job."""
+    curated.codev_context (neighbor arrays) and curated.dev_scenario (sql/50:
+    the house vertical-parent rule — 660-ft midpoint offset gate, 1,000-ft
+    band, shielding — already applied; scenario_class + gated parent bench
+    lists). Raw — filtering/tiering is select_wells' job."""
     rows = _rows(conn, f"""
         SELECT w.api10, we.current_operator AS operator, we.formation_blueox AS bench,
                we.basin_blueox AS basin, w.first_production_date, w.last_reported_month,
@@ -131,11 +134,16 @@ def candidates(
                extensions.ST_Y(extensions.ST_LineInterpolatePoint(
                    extensions.ST_LineMerge(w.wellstick_geom), 0.5))    AS lat,
                cc.scorable AS codev_scorable, cc.codev_benches, cc.parent_benches,
-               cc.child_benches, cc.bench_context
+               cc.child_benches, cc.bench_context,
+               ds.scenario_class, ds.parent_benches_below, ds.parent_benches_above,
+               ds.nearest_codev_below_dtvd_ft::float8 AS nearest_codev_below_dtvd_ft,
+               ds.nearest_codev_above_dtvd_ft::float8 AS nearest_codev_above_dtvd_ft,
+               ds.has_same_bench_parent
         FROM curated.wells w
         CROSS JOIN (SELECT extensions.ST_GeomFromText(%(u)s, 4326) AS g) u
         JOIN curated.wells_enriched we ON we.api10 = w.api10
         LEFT JOIN curated.codev_context cc ON cc.api10 = w.api10
+        LEFT JOIN curated.dev_scenario  ds ON ds.api10 = w.api10
         WHERE extensions.ST_DWithin(w.wellstick_geom::extensions.geography,
                                     u.g::extensions.geography, %(r)s)
           AND {_HZ}
