@@ -73,7 +73,7 @@ when there is more than one — each bench section is then per class
 | Block | What the reviewer checks |
 |---|---|
 | Tier table | TC wells per tier + per-tier median Novi EUR/1,000 ft (bias direction of the mix); flags `first tier capped`, `under_count`, `first_tier_share < 50 %` |
-| Buildup table (= `buildup_{bench}_{group}.csv`) | one row per TC well: operator, first prod, lateral, spacing class, tier, months, Novi EUR/1,000 ft (screen), anduin oil EUR/1,000 ft, Di nom + eff, b, peak month, proppant. The CSV is the `included_api10s` record for saving the TC in anduin |
+| Buildup table (= `buildup_{bench}_{group}.csv`) | one row per TC well: operator, first prod, lateral, spacing class, tier (vs the deal's adjacent benches, parent test = sql/50), scenario class (vs any bench), months, Novi EUR/1,000 ft (screen), anduin oil EUR/1,000 ft, Di nom + eff, b, peak month, proppant. The CSV is the `included_api10s` record for saving the TC in anduin |
 | Three-stream comparison | Novi median vs anduin TC preview: qi/1,000 ft (cal-day), Di nom (with share at Novi's 3.65 cap; seg-2 Di), Di eff yr-1, b, EUR/1,000 ft. Gas shown twice — Arps and ratio-to-cum-oil (GOR fit R², × Arps EUR). Equal EUR does not mean equal shape: compare qi and decline too |
 | With vs without short-history transfer | only when the cohort holds transferred wells: oil + gas TC both ways, EUR delta |
 | Autoforecast QC | cohort table per stream (oil flagged; gas/water report-only) + per-well flags: `fit_at_bound`, `di_dispersion`, `eur_per_1000ft_outlier`, `peak_month_vs_cohort`. Flags only — cull-or-keep is the reviewer's call, executed in anduin |

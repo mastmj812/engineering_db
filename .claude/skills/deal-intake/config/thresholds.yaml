@@ -85,6 +85,9 @@ planned_lateral:                  # gate 1 — per-unit planned lateral estimate
 codev:                            # gate 5.2b — co-development tiering
   # Constants BAKED in curated.codev_context (sql/47); the runner asserts
   # equality — change sql/47 and these together or not at all.
+  # The topfill_underfill tier's PARENT test is curated.dev_scenario's (sql/50,
+  # Michael 2026-09-23): 660-ft midpoint offset gate, 1,000-ft band, shielding.
+  # Those live only in the view (read, never copied here).
   xy_ft: 1320
   window_days: 180
   overlap_min_frac: 0.30

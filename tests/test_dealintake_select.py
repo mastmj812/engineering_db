@@ -18,11 +18,26 @@ from dealintake.select_wells import (
 CFG = load()
 STACK = ["WCA_1", "WCA_2", "WCB_1", "WCB_2"]
 
+# codev_context arrays + dev_scenario (sql/50) outputs, as warehouse.candidates returns them
 _ARRAYS = {
-    "codev": {"codev_benches": ["WCA_2", "WCB_1"], "parent_benches": [], "child_benches": []},
-    "standalone": {"codev_benches": ["WCB_1"], "parent_benches": [], "child_benches": []},
-    "parent": {"codev_benches": ["WCA_2"], "parent_benches": ["WCA_2"], "child_benches": []},
-    "child": {"codev_benches": [], "parent_benches": [], "child_benches": ["WCB_2"]},
+    "codev": {"codev_benches": ["WCA_2", "WCB_1"], "parent_benches": [], "child_benches": [],
+              "parent_benches_below": [], "parent_benches_above": [], "scenario_class": "codev_stack"},
+    "standalone": {"codev_benches": ["WCB_1"], "parent_benches": [], "child_benches": [],
+                   "parent_benches_below": [], "parent_benches_above": [], "scenario_class": "standalone"},
+    # gated parent above (WCA_2 sits above WCB_1): dev_scenario lists it
+    "parent": {"codev_benches": ["WCA_2"], "parent_benches": ["WCA_2"], "child_benches": [],
+               "parent_benches_below": [], "parent_benches_above": ["WCA_2"], "scenario_class": "underfill",
+               "bench_context": {"WCA_2": {"parent_nearest_dtvd_ft": -250}}},
+    # a parent exists in codev_context but FAILED the 660/1,000 gate: absent from the view's lists
+    "far_parent": {"codev_benches": [], "parent_benches": ["WCA_2"], "child_benches": [],
+                   "parent_benches_below": [], "parent_benches_above": [], "scenario_class": "standalone"},
+    # gated parent above, but a codev WCB_2 well sits between (shielded): does not count
+    "shielded": {"codev_benches": ["WCB_2"], "parent_benches": ["WCA_2"], "child_benches": [],
+                 "parent_benches_below": [], "parent_benches_above": ["WCA_2"], "scenario_class": "codev_stack",
+                 "bench_context": {"WCA_2": {"parent_nearest_dtvd_ft": -600}},
+                 "nearest_codev_above_dtvd_ft": -200},
+    "child": {"codev_benches": [], "parent_benches": [], "child_benches": ["WCB_2"],
+              "parent_benches_below": [], "parent_benches_above": [], "scenario_class": "standalone"},
 }
 
 
@@ -56,6 +71,11 @@ def test_tiers():
     assert codev_tier(cand("a", "standalone"), adj) == "stack_standalone"  # only own-bench codev
     assert codev_tier(cand("a", "parent"), adj) == "topfill_underfill"  # parent beats codev
     assert codev_tier(cand("a", "child"), adj) == "topfill_underfill"
+    # sql/50 rule of record: an ungated parent is no parent; a shielded one neither
+    assert codev_tier(cand("a", "far_parent"), adj) == "stack_standalone"
+    assert codev_tier(cand("a", "shielded"), adj) == "codev"
+    # shielding is per side: a codev well BELOW does not shield a parent ABOVE
+    assert codev_tier(cand("a", "parent", nearest_codev_below_dtvd_ft=150), adj) == "topfill_underfill"
 
 
 def _select(cands, pdp_adjacent=False):

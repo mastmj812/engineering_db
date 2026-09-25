@@ -63,7 +63,11 @@ type curve and the narvi scenario stay reviewer actions.
   that predates them; re-apply via `scripts/apply_codev_context.py` (needs
   explicit authorization — it is a warehouse write).
 - The codev constants (1,320 ft / 180 d / 30 % overlap) are baked into
-  sql/47 and mirrored in the yaml; change both or neither.
+  sql/47 and mirrored in the yaml; change both or neither. The vertical-
+  parent gate (660 ft / 1,000 ft) and shielding live ONLY in sql/50
+  (`curated.dev_scenario`, a plain view re-created by every sql/47 apply) —
+  the runner reads the view; `scripts/find_analogs.py` and anduin
+  `wells_api/filters.py` pin the 660 (workspace cross-repo contract).
 
 ## Stage 1 — `propose` (Gates 0–2 inputs), then STOP
 
@@ -193,16 +197,44 @@ it the cohort gets an `under_count` flag, not a block.
 ### Gate 5 — co-development tiers and the fill
 
 Tier of each pool well vs the ADJACENT planned benches (one above / one
-below in the planned stack): `codev` (adjacent bench online within ±180 d,
-no earlier parent) · `stack_standalone` (no adjacent neighbor) ·
-`topfill_underfill` (an adjacent bench was a parent > 180 d earlier, or
-only a later child). Default order codev → stack_standalone →
-topfill_underfill; **flips** to topfill_underfill first when a STRICT
-MAJORITY of deal units already have PDP in an adjacent bench (tie keeps the
-default). Fill: first tier nearest-first up to `max_wells` (20); later
-tiers only top up to `min_wells`. Flags: `first tier capped`,
+below in the planned stack): `codev` (adjacent bench online within ±180 d)
+· `stack_standalone` (no adjacent neighbor) · `topfill_underfill` (an
+adjacent bench was an **unshielded vertical parent**, or only a later
+child). "Vertical parent" is the **house rule of record, `curated.dev_scenario`
+(sql/50, Michael 2026-09-23)**: online > 180 d earlier, closest parent's
+lateral MIDPOINT within **660 ft** of the subject lateral, TVD within
+**1,000 ft**, and not **shielded** — a co-developed other-bench well sitting
+between subject and parent hides it (Hellfire East E 8HU). The runner reads
+the view's gated parent lists and re-checks shielding per adjacent bench
+from `bench_context`; it copies no threshold. A parent beyond the gate is
+NOT a parent (the ungated co-extent rule diluted the Midland topfill
+hindcast signal 1.23× → 1.05×; gated 1.12–1.22×). Default order codev →
+stack_standalone → topfill_underfill; **flips** to topfill_underfill first
+when a STRICT MAJORITY of deal units already have PDP in an adjacent bench
+(tie keeps the default). Fill: first tier nearest-first up to `max_wells`
+(20); later tiers only top up to `min_wells`. Flags: `first tier capped`,
 `under_count`, `first_tier_share < 50 %`. Per-tier median Novi EUR/1,000 ft
-is shown so the bias direction of the tier mix is visible.
+is shown so the bias direction of the tier mix is visible. The buildup
+table and CSV carry each well's `scenario_class` (sandwich > topfill >
+underfill > codev_stack > standalone) beside its deal tier — the tier is
+relative to the DEAL's adjacent benches; the class is relative to ANY bench.
+
+**Scenario-matched analogs outside the runner** (same rule, same answers):
+- `python -m scripts.find_analogs --bench WCB_2 --scenario underfill
+  --polygon unit.geojson` (or `--near LAT,LON --radius-mi R`) — API10 list +
+  scenario detail + cum per 1,000 ft; `--parent-bench LSSH --parent-side
+  above` for a bench-pair pull ("WCA_1 beneath LSSH", no vertical window,
+  no shielding); `--min-parent-age-days` for parent age. Use it when the
+  reviewer wants "wells that saw what these sticks will see" for a cohort
+  the tiers don't express (e.g. sandwich only, or a specific parent bench).
+- anduin's **Development scenario** filter section (class, subject bench,
+  parent bench + side + age) is the same view synced onto `wells.scenario_*`;
+  a `find_analogs` pull and an anduin lasso with the same filters return the
+  same API10s (49/49 parity, 2026-09-25). The buildup waterfall has a
+  `scenario` stage after spacing, so a scenario-filtered TC saved in anduin
+  documents its culls. Both are the reviewer's tools for building the REAL
+  curve after the runner's preview; the runner itself does not filter by
+  class — it tiers and fills.
 
 ### Gate 5.5 — anduin fits + short-history transfer
 
@@ -292,6 +324,9 @@ Reviewer levers, all decision-logged or visible in the dossier:
 - Provisional / uncalibrated: edge-trigger thresholds, `min_wells: 10`,
   `di_bounds_per_stream`. Residual +6–11 % transfer bias is unexplained
   (vintage-matched lenders did not remove it).
+- Tiers are relative to the deal's ADJACENT planned benches; a well's
+  `scenario_class` can say `topfill` from a bench the deal doesn't plan. Read
+  the class column as context, the tier as the selection driver.
 - Adjacency for the co-development tiers uses the DEAL-wide planned stack,
   not each footprint's — with stacked DSUs a bench can count as "adjacent"
   because another unit plans it. Overlapping units that enable the SAME

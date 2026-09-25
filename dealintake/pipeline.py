@@ -28,6 +28,7 @@ from collections import Counter
 from collections.abc import Callable
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -59,6 +60,8 @@ RADIUS_STEPS_MI = (5.0, 7.5, 10.0)
 def _json_default(o: Any) -> Any:
     if isinstance(o, (date, datetime)):
         return o.isoformat()
+    if isinstance(o, Decimal):                 # numeric columns (dev_scenario dtvd) arrive as Decimal
+        return float(o)
     if is_dataclass(o):
         return asdict(o)
     if hasattr(o, "geom_type"):
