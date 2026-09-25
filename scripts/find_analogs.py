@@ -36,10 +36,16 @@ Semantics (all from sql/50 — see its header for the reasoning):
                      --max-parent-age-days likewise on the oldest. With
                      --parent-bench: that bench's parents; otherwise the
                      class's qualifying vertical parents.
-  --near LAT,LON --radius-mi R   stick within R miles of the point
+  --near LAT,LON --radius-mi R   well within R miles of the point
                      (geography ST_DWithin — a search area, not well matching).
-  --polygon FILE     stick intersects the GeoJSON polygon (Geometry, Feature
+  --polygon FILE     well intersects the GeoJSON polygon (Geometry, Feature
                      or FeatureCollection; EPSG:4326).
+                     AOI geometry = anduin's, exactly (so a pull here and an
+                     anduin lasso agree at the polygon edge): Enverus
+                     survey-derived lateral path -> Novi 4-point wellstick ->
+                     straight SHL->BHL line -> SHL point. This is ONLY the
+                     "is it in the area" test; the scenario classification
+                     itself is the warehouse's (Novi-stick co-extent, sql/47).
   --min-months N     months from FP through last_reported_month >= N.
 Rates are per 1,000 ft of lateral (lateral_length_ft); cum12/24 are Novi's
 calendar cums from wells_enriched. child_censored wells (FP within 180 d of
@@ -93,8 +99,29 @@ SELECT
 FROM curated.dev_scenario d
 JOIN curated.wells w            ON w.api10  = d.api10
 JOIN curated.wells_enriched we  ON we.api10 = d.api10
+LEFT JOIN curated.enverus_lateral_lines ell ON ell.api10 = d.api10
 WHERE d.scorable
 """
+
+# AOI membership geometry — mirrors anduin exactly: its header sync builds
+# wells.wellstick as COALESCE(Enverus lateral path, Novi wellstick_geom,
+# straight SHL->BHL line when the endpoints differ) (warehouse_client/wells.py
+# _STICK_COALESCE_SQL), and its lasso tests COALESCE(wellstick, sh_geom)
+# (wells_api/selection.py). Keep the two in step or the 2026-09-25 acceptance
+# boundary mismatches (Enverus path inside, Novi stick 50-441 ft outside) return.
+_AOI_GEOM_SQL = """COALESCE(
+        ell.lateral_geom,
+        w.wellstick_geom,
+        CASE WHEN we.surface_lon IS NOT NULL AND we.surface_lat IS NOT NULL
+              AND we.bhl_lon IS NOT NULL AND we.bhl_lat IS NOT NULL
+              AND (we.surface_lon <> we.bhl_lon OR we.surface_lat <> we.bhl_lat)
+             THEN extensions.ST_MakeLine(
+                    extensions.ST_SetSRID(extensions.ST_MakePoint(we.surface_lon, we.surface_lat), 4326),
+                    extensions.ST_SetSRID(extensions.ST_MakePoint(we.bhl_lon, we.bhl_lat), 4326))
+        END,
+        CASE WHEN we.surface_lon IS NOT NULL AND we.surface_lat IS NOT NULL
+             THEN extensions.ST_SetSRID(extensions.ST_MakePoint(we.surface_lon, we.surface_lat), 4326)
+        END)"""
 
 
 def parse_near(s: str) -> tuple[float, float]:
@@ -204,15 +231,18 @@ def build_query(
     if max_parent_age_days is not None:
         p["max_parent_age_days"] = int(max_parent_age_days)
     if near is not None:
-        # Same text as the sql/26 expression index -> index-served.
+        # AOI geometry (anduin's) — not index-served, but the candidate set
+        # is the dev_scenario view (~64k rows), evaluated in full anyway.
         pt = ("extensions.ST_SetSRID(extensions.ST_Point(%(lon)s, %(lat)s), 4326)"
               "::extensions.geography")
-        where.append(f"extensions.ST_DWithin(w.wellstick_geom::extensions.geography, {pt}, %(radius_m)s)")
-        dist = (",\n    round((extensions.ST_Distance(w.wellstick_geom::extensions.geography, "
+        where.append(
+            f"extensions.ST_DWithin(({_AOI_GEOM_SQL})::extensions.geography, {pt}, %(radius_m)s)"
+        )
+        dist = (f",\n    round((extensions.ST_Distance(({_AOI_GEOM_SQL})::extensions.geography, "
                 f"{pt}) / {M_PER_MI})::numeric, 2) AS dist_mi")
         p.update(lat=near[0], lon=near[1], radius_m=float(radius_mi) * M_PER_MI)
     if polygon is not None:
-        where.append("extensions.ST_Intersects(w.wellstick_geom, "
+        where.append(f"extensions.ST_Intersects({_AOI_GEOM_SQL}, "
                      "extensions.ST_SetSRID(extensions.ST_GeomFromGeoJSON(%(polygon)s), 4326))")
         p["polygon"] = polygon
     if fp_from is not None:

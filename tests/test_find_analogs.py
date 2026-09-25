@@ -45,10 +45,22 @@ def test_values_are_bound_never_interpolated():
     assert set(re.findall(r"%\((\w+)\)s", sql)) == set(p)
 
 
-def test_near_uses_index_expression_text():
-    # sql/26 indexes (wellstick_geom::geography); the filter must use that text.
-    sql, _ = build_query(near=(31.3, -101.8), radius_mi=1)
-    assert "ST_DWithin(w.wellstick_geom::extensions.geography," in sql
+def test_aoi_geometry_mirrors_anduin_for_near_and_polygon():
+    # anduin: wells.wellstick = COALESCE(Enverus lateral path, Novi stick,
+    # straight SHL->BHL); lasso tests COALESCE(wellstick, sh_geom). Both AOI
+    # forms here must use that same geometry, in that order.
+    order = ["ell.lateral_geom", "w.wellstick_geom", "extensions.ST_MakeLine(", "ST_MakePoint(we.surface_lon"]
+    for kw in ({"near": (31.3, -101.8), "radius_mi": 1}, {"polygon": "{}"}):
+        sql, _ = build_query(**kw)
+        assert "LEFT JOIN curated.enverus_lateral_lines ell ON ell.api10 = d.api10" in sql
+        clause = sql.split("WHERE d.scorable", 1)[1]
+        idx = [clause.index(tok) for tok in order]
+        assert idx == sorted(idx), kw
+        assert "COALESCE(" in clause
+    near_sql, _ = build_query(near=(31.3, -101.8), radius_mi=1)
+    assert "extensions.ST_DWithin((COALESCE(" in near_sql
+    poly_sql, _ = build_query(polygon="{}")
+    assert "extensions.ST_Intersects(COALESCE(" in poly_sql
 
 
 def test_parent_bench_reads_bench_context_without_vertical_window():
