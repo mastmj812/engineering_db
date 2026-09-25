@@ -102,6 +102,17 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   ORDER and no depth is ever invented: *Top of Bone Spring → Top of Wolfcamp
   = AVA_0 … BS3_S* (Avalon sits inside Bone Spring; WCXY is the top of
   Wolfcamp). An unrecognized phrase is a WARNING and that side stays open.
+- **The review surface is `review.html`** (written by `propose`, re-rendered
+  by `python -m dealintake.cli review --run-dir …`): a deal overview map by
+  lateral class, then one panel per DSU — the map (offset PDP laterals and
+  Novi BASE_CASE sticks coloured by bench, inside vs crossing, the planned
+  chord), the TVD strip (local bench medians against the rights window, the
+  declared depth lines drawn as declared-not-local), and the bench table
+  (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, Novi in/crossing,
+  location source, scope, why). Stacked DSUs say "same footprint as …".
+  **Michael reviews the page and states the exceptions in chat; the operator
+  records them in `benches.yaml` — he never reads the YAML** (feedback
+  2026-09-22).
 - **Per-unit bench seed → `benches.yaml`:** current-SOP packages carry
   **depth-severed stacked DSUs** (identical polygons, different rights and
   WI/NRI — VaULt "2-11 (Bone Spring)" over "2-11 (WCB)"), so benches are
@@ -125,11 +136,11 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
 - PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
 **Reviewer gate — do not run `evaluate` until Michael confirms:** the
-per-unit bench list and planned laterals (he edits `benches.yaml` — the
-seed is a starting point, the file is the decision of record), the
+per-unit bench list and planned laterals (he reads `review.html`; the
+operator applies his calls to `benches.yaml`, the decision of record), the
 correlated window + basis, per-bench planned spacing, and any emerging
 bench he wants included despite thin control. Walk him through the
-"Needs a look" column of the proposal's summary table first.
+"Needs a look" column of the review page's summary table first.
 
 ## Stage 2 — `evaluate` (Gates 2–7)
 

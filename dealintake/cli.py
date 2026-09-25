@@ -27,7 +27,7 @@ from pathlib import Path
 from dealintake import config as cfgmod
 from dealintake import pipeline
 from dealintake.clients.anduin import AnduinError
-from dealintake.render import dossier
+from dealintake.render import dossier, review
 
 
 def _spacing(items: list[str]) -> dict[str, float]:
@@ -105,6 +105,8 @@ def main(argv: list[str] | None = None) -> int:
 
     r = sub.add_parser("render")
     r.add_argument("--run-dir", required=True)
+    v = sub.add_parser("review", help="re-render review.html from proposal.json (after editing benches.yaml)")
+    v.add_argument("--run-dir", required=True)
 
     a = ap.parse_args(argv)
     cfg = cfgmod.load(a.config)
@@ -118,6 +120,7 @@ def main(argv: list[str] | None = None) -> int:
                                 window_basis=a.window_basis)
         shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")
         (run_dir / "proposal.md").write_text(dossier.proposal_md(prop), encoding="utf-8")
+        print(f"wrote {review.render(run_dir)} — open it in a browser: the review surface")
         for w in prop.get("warnings", []):
             print(f"WARNING: {w}")
         print(f"wrote {run_dir / 'proposal.md'} + benches.yaml — review/edit the per-unit benches, "
@@ -133,6 +136,8 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")   # the config evaluate actually ran under
         print(f"wrote {dossier.render(run_dir)}")
+    elif a.cmd == "review":
+        print(f"wrote {review.render(run_dir)}")
     else:
         print(f"wrote {dossier.render(run_dir)}")
     return 0
