@@ -161,3 +161,25 @@ def test_long_lateral_pool_tolerance():
     assert cfg.lateral_tolerance("delaware", 9900.0) == 0.25
     assert cfg.lateral_tolerance("delaware", 15144.0) == 0.40      # long class: widened for the TC pool
     assert cfg.lateral_tolerance("midland", 15144.0) == 0.40       # never narrower than the basin band
+
+
+def test_utm_grid_convergence_round_trip():
+    from dealintake.geo import grid_convergence_deg, grid_to_true, true_to_grid
+
+    lon, lat = -103.3, 31.65                                   # VaULt: east of the -105 central meridian
+    conv = grid_convergence_deg(lon, lat)
+    assert 0.8 < conv < 1.0                                    # the ~0.9 deg drift seen on the generated sticks
+    assert true_to_grid(72.2, lon, lat) == pytest.approx(72.2 - conv, abs=1e-6)
+    assert grid_to_true(true_to_grid(162.05, lon, lat), lon, lat) == pytest.approx(162.05, abs=1e-6)
+    assert grid_to_true(179.5, lon, lat) < 1.0                 # folds through 180
+
+
+def test_shared_offsets_are_not_exclusive():
+    from dealintake.pipeline import shared_offsets
+    from tests._dealintake_fixtures import point_lonlat_ft
+
+    north, south = rect_ft(0, 2640, 10560, 5280), rect_ft(0, 0, 10560, 2640)
+    lon, lat = point_lonlat_ft(5000, -1000)                    # 1,000 ft south of the south unit
+    pool = [{"api10": "a", "lon": lon, "lat": lat}]
+    out = shared_offsets(pool, {"n": north, "s": south}, 5280.0)
+    assert out == {"n": 1, "s": 1}                             # 3,640 ft from north: within 1 mi of both

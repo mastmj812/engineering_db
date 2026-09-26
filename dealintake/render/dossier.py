@@ -230,8 +230,8 @@ def render(run_dir: Path) -> Path:
         s.append(f"\n### TC granularity (gate 5b, run on the whole pool): **{sp['recommendation']}** "
                  f"— metric {sp['metric']}\n")
         if sp["groups"]:
-            s.append(md(["Unit", "Pool wells", "Median /1,000 ft", "Eligible for own TC"],
-                        [[g["unit"], g["n"], g["median"], g["eligible"]] for g in sp["groups"]]))
+            s.append(md(["Unit", "Pool wells (nearest-unit)", "Offsets ≤ 1 mi (shared)", "Median /1,000 ft", "Eligible for own TC"],
+                        [[g["unit"], g["n"], g.get("n_within_1mi"), g["median"], g["eligible"]] for g in sp["groups"]]))
         test = f"{sp['test']} p {p_value(sp['p_value'])}" if sp.get("test") else "no rank test (< 2 eligible groups)"
         s.append(f"\nMedian ratio {num(sp['median_ratio'])}, {test}; gradient "
                  f"{num(sp['gradient_per_mile'], '+,.0f')} bbl/1,000 ft per mile along the cohort axis "

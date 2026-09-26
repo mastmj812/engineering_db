@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 5                 # v5 2026-09-25: Gate 2 orientation/length test (alignment.azimuth_tolerance_deg),
+config_version: 6                 # v6 2026-09-26: planned azimuth = unit long axis (grid advisory, grid_vs_long_axis_flag_deg);
+                                  #    narvi azimuths converted UTM-grid <-> true; split table shared-offset count
+                                  # v5 2026-09-25: Gate 2 orientation/length test (alignment.azimuth_tolerance_deg),
                                   #    Novi-inferred spacing, long-lateral pool tolerance (type_curve.long_lateral)
                                   # v4 2026-09-21: per-unit benches.yaml + lateral classes (planned_lateral.class_ratio)
                                   # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
@@ -23,6 +25,13 @@ alignment:                        # gate 2 — location source (v2 rule, 2026-09
   # infill signal, and generated sticks inherit the BASE_CASE bench's
   # de-facto spacing (median perpendicular gap) instead of the 880-ft fallback.
   azimuth_tolerance_deg: 20
+  # Michael 2026-09-26: planned sticks run PARALLEL TO THE UNIT LONG AXIS. narvi's
+  # neighborhood-grid azimuth (a TRUE bearing: ST_Azimuth on geography) is
+  # advisory — reported beside the long axis and flagged for the reviewer when
+  # a coherent grid disagrees by more than this. narvi's /api/generate lays rows
+  # in UTM 13N, so the runner hands it a GRID bearing (true - convergence,
+  # ~0.9 deg across the Delaware); without that the rows drift ~0.9 deg.
+  grid_vs_long_axis_flag_deg: 5
   # ADVISORY only: IoU vs curated.intel_pad_geom (derived hulls; 2026Q3 covers
   # Midland only). Reported, never decides.
   iou_advisory_min: 0.80
