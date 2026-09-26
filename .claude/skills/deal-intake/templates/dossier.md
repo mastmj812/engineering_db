@@ -1,7 +1,9 @@
 # Deal dossier — section guide (v2)
 
-(Stage 1's review surface is `review.html` — see SKILL.md; this guide covers
-the Stage 2 dossier.)
+(Stage 1's review surface is `review.html`; Stage 2's is `dossier.html`
+(rendered by `dealintake/render/dossier_html.py` — same sections as below
+plus a per-curve summary table and a rate-time overlay per TC group).
+`dossier.md` is the text record; this guide is the section map for both.)
 
 The dossier is RENDERED by `dealintake/render/dossier.py` from
 `signals.json`; this file is not filled in by hand. It documents each

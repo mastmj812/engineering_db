@@ -11,7 +11,7 @@
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
-  render   --run-dir ...        re-render dossier.md from signals.json.
+  render   --run-dir ...        re-render dossier.html + dossier.md from signals.json.
 
 Read-only against the warehouse; narvi/anduin in preview mode (see
 dealintake.pipeline). anduin credentials: ANDUIN_EMAIL / ANDUIN_PASSWORD.
@@ -27,7 +27,7 @@ from pathlib import Path
 from dealintake import config as cfgmod
 from dealintake import pipeline
 from dealintake.clients.anduin import AnduinError
-from dealintake.render import dossier, review
+from dealintake.render import dossier, dossier_html, review
 
 
 def _spacing(items: list[str]) -> dict[str, float]:
@@ -135,11 +135,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2
         shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")   # the config evaluate actually ran under
-        print(f"wrote {dossier.render(run_dir)}")
+        dossier.render(run_dir)
+        print(f"wrote {dossier_html.render(run_dir)} — open it in a browser (dossier.md beside it is the text record)")
     elif a.cmd == "review":
         print(f"wrote {review.render(run_dir)}")
     else:
-        print(f"wrote {dossier.render(run_dir)}")
+        dossier.render(run_dir)
+        print(f"wrote {dossier_html.render(run_dir)} (+ dossier.md)")
     return 0
 
 

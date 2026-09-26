@@ -147,6 +147,32 @@ def test_rendered_dossier_has_no_none_or_raw_floats(tmp_path, monkeypatch):
     assert "None" not in text and "0.00237" in text and "0.0023733" not in text
     assert "No short wells in the pool" in text and "-927" in text and "R² 0.14" in text
 
+    # the HTML dossier renders the same signals with a rate-time overlay per TC group
+    from dealintake.render import dossier_html
+
+    sig = json.loads((tmp_path / "signals.json").read_text(encoding="utf-8"))
+    sr = [40.0] + [80.0 / (1 + 1.0 * 2.8 * m / 12) for m in range(600)]
+    sig["benches"]["BS2_S"]["tc_groups"] = [{
+        "name": "all units", "units": ["u1"], "note": None, "tier_counts": {"codev": 10},
+        "tier_medians_novi_eur_per_1000ft": {"codev": 60000.0}, "flags": [], "tc_wells": [],
+        "tc_preview_n_wells": 10,
+        "tc_preview": {"oil": {"qi": 80.0, "Di": 2.8, "b": 1.0, "eur_per_unit": 66146.0, "smoothed_rate": sr},
+                       "gas": {"qi": 300.0, "Di": 2.4, "b": 1.01, "eur_per_unit": 219125.0, "smoothed_rate": [s * 4 for s in sr]}},
+        "novi": {"oil": {"n": 63, "b": 0.94, "di_nominal": 4.62, "di_effective": 0.832, "seg1_at_cap_frac": 0.17,
+                         "seg1_days": 540, "seg2_di_nominal": 0.59, "seg2_b": 1.1, "qi_per_1000ft": 190.0,
+                         "eur_per_1000ft": 68908.0}},
+        "qc": {"streams": {"oil": {"stream": "oil", "n": 10, "de_median": 0.75, "de_p25": 0.72, "de_p75": 0.78,
+                                   "di_nominal_median": 3.0, "b_median": 1.0, "n_de_flagged": 0, "cohort_flag": None,
+                                   "eur_per_1000ft_median": 63342.0, "flagged": True, "outliers_flagged": True}},
+               "well_flags": [{"api10": "4230136694", "stream": "oil", "flag": "fit_at_bound",
+                               "value": "Di at lower bound (0.5)", "threshold": "anduin bound check"}]},
+    }]
+    sig["unit_plan"] = {"u1": {"benches": ["BS2_S"], "planned_lateral_ft": 9998.0, "seed_benches": ["BS2_S"], "edited": False}}
+    (tmp_path / "signals.json").write_text(json.dumps(sig), encoding="utf-8")
+    page = dossier_html.render(tmp_path).read_text(encoding="utf-8")
+    assert page.count("<svg") == 1 and "Novi median of 63 sticks" in page and "anduin TC (n=10)" in page
+    assert "None" not in page and "0.00237" in page and "4230136694" in page
+
 
 class _FakeAnduin:
     def __init__(self, resp=None, err=None):

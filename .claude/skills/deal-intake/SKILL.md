@@ -167,8 +167,8 @@ python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
 python -m dealintake.cli render --run-dir ...        re-render dossier.md from signals.json
 ```
 
-Writes `signals.json`, `dossier.md`, `map_<bench>.png`,
-`buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
+Writes `signals.json`, `dossier.html` (the review surface), `dossier.md`
+(text record), `map_<bench>.png`, `buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
 first to keep a comparison. (`runs/` is git-ignored.)
 
 **Lateral classes:** units whose planned laterals are within
@@ -309,7 +309,19 @@ the signal (different reservoir or an unreliable autofit). Di spread flags
 oil only; gas and water spreads are report-only (gas tracks real GOR
 behavior; TX water is often a vendor-calculated flat WOR).
 
-### Gate 7 — the comparison
+### Gate 7 — the comparison, and the surface
+
+**`dossier.html` is what Michael reads** (written by `evaluate` and
+`render`; `dossier.md` beside it is the plain-text record). It opens with
+the unit plan and a one-row-per-curve summary (pool, n, oil EUR/1,000 ft
+vs Novi and the % gap, Di nominal + effective, b, gas EUR, split verdict,
+QC flag count) linking to each bench × class panel: map, pool + tiers +
+transfer, split test, then per TC group the **rate-time overlay** (anduin
+TC per 1,000 ft, oil + gas, log scale, 120 months — the Novi
+representative-stick median as a 2-segment Arps dashed beside it, the
+no-transfer curve dotted when one exists), the three-stream table, QC and
+the buildup table (collapsed). Walk him through the page, not the markdown.
+
 
 Per TC group, all three streams: Novi (median of the unit's representative
 sticks; segment-1 Di with the share pinned at Novi's 3.65 /yr cap, segment-2
