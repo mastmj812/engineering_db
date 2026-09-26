@@ -311,9 +311,15 @@ def render(run_dir: Path) -> Path:
             if gg:
                 res = (gg.get("res_inside") or 0) + (gg.get("res_crossing") or 0)
                 novi = f"{gg.get('pud_inside', 0)} in / {gg.get('pud_crossing', 0)} crossing" + (f" · {res} RES" if res else "")
+                if gg.get("novi_azimuth_deg") is not None:
+                    novi += (f" · az {gg['novi_azimuth_deg']:.0f}°"
+                             + (f" ({gg['azimuth_diff_deg']:.0f}° off)" if gg.get("azimuth_diff_deg") else "")
+                             + (f" · {gg['novi_ll_ft']:,.0f} ft" if gg.get("novi_ll_ft") else "")
+                             + (f" · {gg['novi_spacing_ft']:,.0f}-ft spacing" if gg.get("novi_spacing_ft") else ""))
             loc = "—"
             if on:
-                loc = _chip("Novi", "#7c3aed") if gg.get("source") == "novi" else _chip("generate", "#db2777")
+                loc = _Raw(str(_chip("Novi", "#7c3aed") if gg.get("source") == "novi" else _chip("generate", "#db2777"))
+                           + (f'<br><span class="meta">{_esc(gg.get("reason"))}</span>' if gg.get("reason") else ""))
             rows.append([_chip(b, _color(b)), tvd, r.get("status", "—"), pdp3.get(b, 0), in_unit.get(b, 0), novi, loc,
                          _chip("ON", "#059669") if on else _chip("off", "#9ca3af"),
                          _Raw(f'<span class="why">{_esc(st["why"] if st else "not a target bench")}</span>')])

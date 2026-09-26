@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 4                 # v4 2026-09-21: per-unit benches.yaml + lateral classes (planned_lateral.class_ratio)
+config_version: 5                 # v5 2026-09-25: Gate 2 orientation/length test (alignment.azimuth_tolerance_deg),
+                                  #    Novi-inferred spacing, long-lateral pool tolerance (type_curve.long_lateral)
+                                  # v4 2026-09-21: per-unit benches.yaml + lateral classes (planned_lateral.class_ratio)
                                   # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
                                   # v2 2026-09-18: codev tiering, cohort Di dispersion,
                                   # TC split test, planned-lateral estimate, stick-inside rule
@@ -13,6 +15,14 @@ alignment:                        # gate 2 — location source (v2 rule, 2026-09
   # consistent spacing). Benches with every stick inside keep Novi locations.
   stick_inside_tolerance_ft: 50   # Novi DSU vs Land polygon digitizing slack
   fallback_scope: bench           # bench | unit
+  # Michael 2026-09-25: Novi's guess at a unit's infill is often the wrong
+  # ORIENTATION or LENGTH (VaULt 44-45 S2). Keep Novi locations only when the
+  # BASE_CASE sticks are inside AND within this axial angle of our planned
+  # azimuth AND their lateral is within the basin tolerance of our planned
+  # lateral; otherwise GENERATE — the presence of BASE_CASE sticks is the
+  # infill signal, and generated sticks inherit the BASE_CASE bench's
+  # de-facto spacing (median perpendicular gap) instead of the 880-ft fallback.
+  azimuth_tolerance_deg: 20
   # ADVISORY only: IoU vs curated.intel_pad_geom (derived hulls; 2026Q3 covers
   # Midland only). Reported, never decides.
   iou_advisory_min: 0.80
@@ -63,6 +73,14 @@ type_curve:                       # gate 5 — well selection
     delaware: 0.25
     midland: 0.40
     default: 0.25
+  # Long-lateral classes starve under a class-centred basin band (VaULt 15,144-
+  # and 17,670-ft classes: 0-19 wells). Michael 2026-09-25: widen the TC POOL
+  # tolerance for classes at/above min_ft. The Novi representative-stick
+  # tolerance (ledger §9) is NOT widened — the TC-vs-Novi comparison keeps
+  # its basin band.
+  long_lateral:
+    min_ft: 12500
+    tolerance: 0.40
 
 planned_lateral:                  # gate 1 — per-unit planned lateral estimate
   # Uniform setback on EVERY side (Michael, 2026-09-18): more representative

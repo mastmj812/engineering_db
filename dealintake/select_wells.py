@@ -190,7 +190,7 @@ def classify(
     (eligible, excluded-with-reasons, adjacent planned benches). No capping —
     the eligible POOL feeds the split test before any cohort is filled."""
     adjacent = adjacent_benches(bench, planned_stack)
-    tol = cfg.lateral_tolerance(basin)
+    tol = cfg.lateral_tolerance(basin, planned_lateral_ft)
     eligible, excluded = [], []
     for c in candidates:
         c = dict(c)
