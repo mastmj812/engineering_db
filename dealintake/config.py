@@ -21,7 +21,7 @@ TIERS = ("codev", "stack_standalone", "topfill_underfill")
 
 _REQUIRED = {
     "config_version": (),
-    "alignment": ("stick_inside_tolerance_ft", "fallback_scope", "azimuth_tolerance_deg"),
+    "alignment": ("stick_inside_tolerance_ft", "fallback_scope", "azimuth_tolerance_deg", "grid_vs_long_axis_flag_deg"),
     "depth": ("edge_margin_ft",),
     "bench_inclusion": ("pdp_count_3mi_min",),
     "type_curve": ("first_prod_after", "min_months_data", "min_wells", "max_wells", "lateral_tolerance_by_basin",

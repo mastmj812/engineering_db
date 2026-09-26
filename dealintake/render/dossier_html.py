@@ -97,41 +97,64 @@ def novi_curve(nv: dict[str, Any], months: int) -> list[float] | None:
     return out
 
 
+def cum_curve(rates: list[float]) -> list[float]:
+    """Cumulative per 1,000 ft from monthly calendar-day rates (x days/month)."""
+    out, acc = [], 0.0
+    for r in rates:
+        acc += r * DAYS_PER_MONTH
+        out.append(acc)
+    return out
+
+
 def rate_time_chart(G: dict[str, Any], months: int = 120) -> str:
+    """Rate vs time (log) on top, cumulative vs time below — oil and gas, per
+    1,000 ft. anduin TC = smoothed_rate; Novi = 2-segment Arps from the
+    representative-stick medians; own fits dotted when the transfer touched
+    the cohort (Michael 2026-09-26: cum beside rate)."""
     streams = [st for st in ("oil", "gas") if (G.get("tc_preview") or {}).get(st)]
     if not streams:
         return ""
-    fig, axes = plt.subplots(1, len(streams), figsize=(5.2 * len(streams), 3.6), dpi=100, squeeze=False)
-    for ax, st in zip(axes[0], streams):
+    fig, axes = plt.subplots(2, len(streams), figsize=(5.2 * len(streams), 6.6), dpi=100, squeeze=False)
+    legend: dict[str, Any] = {}                 # label -> handle, across both streams
+    for col, st in enumerate(streams):
+        ax_r, ax_c = axes[0][col], axes[1][col]
         tc = G["tc_preview"][st]
-        sr = tc.get("smoothed_rate") or []
+        sr = list(tc.get("smoothed_rate") or [])[:months]
         dn, de = di_pair(tc.get("Di"), tc.get("b"))
+        series: list[tuple[list[float], dict[str, Any], str]] = []
         if sr:
-            ax.plot(range(min(months, len(sr))), sr[:months], color=INK, linewidth=1.8,
-                    label=f"anduin TC (n={G.get('tc_preview_n_wells')}): qi {tc.get('qi', 0):,.0f}, Di {dn}/yr ({de}), "
-                          f"b {tc.get('b', 0):.2f}, EUR {tc.get('eur_per_unit', 0):,.0f}")
-        wo = ((G.get("tc_preview_no_transfer") or {}).get(st) or {}).get("smoothed_rate")
+            series.append((sr, {"color": INK, "linewidth": 1.8},
+                           (f"anduin TC (n={G.get('tc_preview_n_wells')}): qi {tc.get('qi', 0):,.0f}, Di {dn}/yr ({de}), "
+                            f"b {tc.get('b', 0):.2f}, EUR {tc.get('eur_per_unit', 0):,.0f}")))
+        wo = list(((G.get("tc_preview_no_transfer") or {}).get(st) or {}).get("smoothed_rate") or [])[:months]
         if wo:
-            ax.plot(range(min(months, len(wo))), wo[:months], color="#6b7280", linewidth=1.2, linestyle=":",
-                    label="own fits (without transfer)")
+            series.append((wo, {"color": "#6b7280", "linewidth": 1.2, "linestyle": ":"}, "own fits (without transfer)"))
         nv = (G.get("novi") or {}).get(st)
-        if nv:
-            cv = novi_curve(nv, months)
-            if cv:
-                de_n = pct(nv.get("di_effective"))
-                ax.plot(range(months), cv, color="#7c3aed", linewidth=1.6, linestyle="--",
-                        label=f"Novi median of {nv['n']} sticks: qi {nv['qi_per_1000ft']:,.0f}, Di {nv['di_nominal']:.2f}/yr ({de_n}), "
-                              f"b {nv['b']:.2f}; seg-2 Di {num(nv.get('seg2_di_nominal'))}"
-                              + (f", EUR {nv['eur_per_1000ft']:,.0f}" if nv.get("eur_per_1000ft") else ""))
-        ax.set_yscale("log")
-        ax.set_xlim(0, months)
-        ax.set_xlabel("months from first production", fontsize=8)
-        ax.set_ylabel(STREAM_UNIT[st], fontsize=8)
-        ax.set_title(st, fontsize=9)
-        ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
-        ax.tick_params(labelsize=7)
-        ax.legend(fontsize=6.5, loc="upper center", bbox_to_anchor=(0.5, -0.22), frameon=False, ncol=1)
-    fig.tight_layout()
+        cv = novi_curve(nv, months) if nv else None
+        if cv:
+            series.append((cv, {"color": "#7c3aed", "linewidth": 1.6, "linestyle": "--"},
+                           f"Novi median of {nv['n']} sticks: qi {nv['qi_per_1000ft']:,.0f}, Di {nv['di_nominal']:.2f}/yr "
+                           f"({pct(nv.get('di_effective'))}), b {nv['b']:.2f}; seg-2 Di {num(nv.get('seg2_di_nominal'))}"
+                           + (f", EUR {nv['eur_per_1000ft']:,.0f}" if nv.get("eur_per_1000ft") else "")))
+        for ys, style, label in series:
+            ax_r.plot(range(len(ys)), ys, label=label, **style)
+            ax_c.plot(range(len(ys)), [c / 1000.0 for c in cum_curve(ys)], label=label, **style)
+        ax_r.set_yscale("log")
+        ax_r.set_ylabel(STREAM_UNIT[st], fontsize=8)
+        ax_r.set_title(f"{st} — rate", fontsize=9)
+        ax_c.set_ylabel(("Mbbl" if st != "gas" else "MMcf") + " per 1,000 ft", fontsize=8)
+        ax_c.set_title(f"{st} — cumulative", fontsize=9)
+        ax_c.set_xlabel("months from first production", fontsize=8)
+        for ax in (ax_r, ax_c):
+            ax.set_xlim(0, months)
+            ax.grid(True, which="both", linewidth=0.3, alpha=0.5)
+            ax.tick_params(labelsize=7)
+        for h, lab in zip(*ax_r.get_legend_handles_labels()):
+            legend.setdefault(lab, h)
+    if legend:
+        fig.legend(list(legend.values()), list(legend), fontsize=6.5, loc="lower center",
+                   bbox_to_anchor=(0.5, -0.02), frameon=False, ncol=1)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     return _svg(fig)
 
 
@@ -245,8 +268,10 @@ def render(run_dir: Path) -> Path:
                  f"{(_esc(sp['test']) + ' p ' + p_value(sp['p_value'])) if sp.get('test') else 'no rank test'}; "
                  f"gradient {num(sp['gradient_per_mile'], '+,.0f')} per mile (R² {num(sp['gradient_r2'])})</span></h3>")
         if sp["groups"]:
-            p.append(_table(["Unit", "Pool wells", "Median EUR/1,000 ft", "Eligible for own TC"],
-                            [[name.get(g["unit"], g["unit"]), g["n"], g["median"], g["eligible"]] for g in sp["groups"]]))
+            p.append(_table(["Unit", "Pool wells (assigned to nearest unit)", "Offsets ≤ 1 mi (shared, not exclusive)",
+                             "Median EUR/1,000 ft", "Eligible for own TC"],
+                            [[name.get(g["unit"], g["unit"]), g["n"], g.get("n_within_1mi"), g["median"], g["eligible"]]
+                             for g in sp["groups"]]))
         for n in sp["notes"]:
             p.append(f'<div class="flag">{_esc(n)}</div>')
         if sp.get("reviewer_override"):

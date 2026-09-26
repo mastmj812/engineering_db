@@ -44,6 +44,7 @@ from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
     axial_diff,
+    grid_convergence_deg,
     long_axis_azimuth,
     mean_axial_azimuth,
     planned_lateral,
@@ -51,6 +52,7 @@ from dealintake.geo import (
     stick_length_ft,
     stick_relation,
     stick_spacing_ft,
+    true_to_grid,
 )
 from dealintake.render.tables import p_value
 from dealintake.select_wells import (
@@ -162,11 +164,28 @@ def propose(
                         f"({parts[0].area / u.area:.0%} of the area); split the unit in the land file"
                     )
                 u = parts[0]
+            # Azimuth of record = the unit's LONG AXIS (Michael, 2026-09-26: sticks run
+            # parallel to the long axis; a degree or two off is not how a unit is
+            # planned). narvi's neighborhood grid is advisory and reported beside it;
+            # a disagreement beyond the tolerance is a reviewer flag, never an
+            # automatic override. Bearing conventions (verified in narvi's code,
+            # 2026-09-26): /api/warehouse/azimuth is PostGIS ST_Azimuth on geography
+            # = TRUE bearing; /api/generate lays rows in UTM 13N = GRID bearing
+            # (~0.9 deg apart across the Delaware) — see true_to_grid at the
+            # generate call.
+            c0 = u.centroid
+            az_deg, az_src = long_axis_azimuth(u), "unit long axis"
             az = narvi.azimuth(u)
-            if az.get("confident") and az.get("azimuth_deg") is not None:
-                az_deg, az_src = float(az["azimuth_deg"]), f"neighborhood grid (R {az.get('coherence')})"
-            else:
-                az_deg, az_src = long_axis_azimuth(u), "unit long axis"
+            grid_true = None
+            if az.get("azimuth_deg") is not None:
+                grid_true = float(az["azimuth_deg"])                    # already a true bearing
+                d = axial_diff(grid_true, az_deg)
+                az_src = (f"unit long axis (neighborhood grid {grid_true:.1f}° true, "
+                          f"{'R ' + str(az.get('coherence')) + ', ' if az.get('confident') else 'not coherent, '}{d:.1f}° off)")
+                if az.get("confident") and d > float(cfg["alignment"]["grid_vs_long_axis_flag_deg"]):
+                    out.setdefault("warnings", []).append(
+                        f"{pc['label']}: coherent neighborhood grid {grid_true:.1f}° (true) is {d:.1f}° off the unit long axis "
+                        f"{az_deg:.1f}° — planned at the long axis; reviewer confirms the development direction")
             pl = planned_lateral(
                 u, az_deg,
                 setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
@@ -245,7 +264,8 @@ def propose(
                              " [declared depths are NOT local]" if "depth" in (lo.kind, hi.kind) else ""),
                 "bench_seed": bench_seed,
                 "offset_pdp_3mi": {b["bench"]: int(b["n_wells"]) for b in local},
-                "planned_lateral": pl.as_dict(),
+                "planned_lateral": {**pl.as_dict(), "grid_azimuth_true_deg": None if grid_true is None else round(grid_true, 1),
+                                    "grid_convergence_deg": round(grid_convergence_deg(c0.x, c0.y), 2)},
                 "bench_proposal": proposal,
                 "gate2": gate2,
                 "pad_iou_advisory": wh.pad_iou(conn, u),
@@ -304,6 +324,21 @@ def _select_pool(
         if radius_override is None and (len(eligible) >= min_wells or edge):
             break
     return radius, eligible, excluded, adjacent
+
+
+def shared_offsets(pool: list[dict[str, Any]], units: dict[str, Any], radius_ft: float) -> dict[str, int]:
+    """Per unit: pool wells whose mid-lateral point lies within `radius_ft` of
+    the unit polygon — NOT exclusive (a well counts for every unit it is near)."""
+    from shapely.geometry import Point
+
+    from dealintake.geo import M_PER_FT, LocalFrame
+    out: dict[str, int] = {}
+    for label, poly in units.items():
+        frame = LocalFrame.around(poly)
+        local = frame.to_local(poly)
+        out[label] = sum(1 for c in pool if c.get("lon") is not None
+                         and local.distance(frame.to_local(Point(c["lon"], c["lat"]))) <= radius_ft * M_PER_FT)
+    return out
 
 
 def lateral_classes(ll_by_unit: dict[str, float], ratio: float) -> list[list[str]]:
@@ -499,10 +534,11 @@ def evaluate(
                                                   "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
                     unit_novi += [s["stick_id"] for s in sticks]
                 else:
+                    # narvi takes a UTM-13N GRID bearing; the plan is a TRUE bearing.
                     gen = narvi.generate(
                         geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp}],
                         setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp,
-                        azimuth_deg=u["planned_lateral"]["azimuth_deg"],
+                        azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
                     )
                     lg = legs(gen)
                     UB["locations"] = [{"id": f"gen-{i}", "src": "narvi_preview",
@@ -594,6 +630,13 @@ def evaluate(
             # ---- Gate 5b: split test on the POOL, before any cohort is filled -----
             sr = split_test.run(eligible, units, cfg, metric=metric)   # tags c["unit"], c["unit_dist_ft"]
             B["split"] = asdict(sr)
+            # The split test assigns each pool well to ONE unit (containing, else
+            # nearest) — adjacent units can read "0" while sharing the same offsets
+            # (VaULt 44-45 N2 vs S2). Report the SHARED count too: pool wells within
+            # 1 mi of each unit, no exclusivity.
+            shared = shared_offsets(eligible, units, 5280.0)
+            for grp in B["split"]["groups"]:
+                grp["n_within_1mi"] = shared.get(grp["unit"], 0)
             if metric == "eur_per_1000ft":
                 B["split"]["notes"].append("metric = Novi 30-yr EUR/1,000 ft SCREEN (anduin fits unavailable)")
 

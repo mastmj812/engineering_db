@@ -13,7 +13,7 @@ import math
 import statistics
 from dataclasses import dataclass
 
-from pyproj import Transformer
+from pyproj import Proj, Transformer
 from shapely import affinity
 from shapely.geometry import LineString, MultiLineString, Polygon
 from shapely.geometry.base import BaseGeometry
@@ -225,3 +225,23 @@ def stick_spacing_ft(sticks: list[BaseGeometry], azimuth_deg: float) -> float | 
     # < 300 ft apart = the same slot (stacked/staggered or digitizing), not a spacing
     gaps = [b - a for a, b in itertools.pairwise(offs) if b - a >= 300.0]
     return round(statistics.median(gaps), 0) if gaps else None
+
+
+NARVI_WORK_EPSG = 32613   # narvi's work CRS (UTM 13N): its azimuth_deg values are GRID bearings
+_UTM13 = Proj(f"EPSG:{NARVI_WORK_EPSG}")
+
+
+def grid_convergence_deg(lon: float, lat: float) -> float:
+    """UTM 13N meridian convergence at a point: true bearing = grid bearing +
+    convergence. About +0.9° across the Delaware (east of the -105° central
+    meridian). The runner works in TRUE bearings (aeqd frame); narvi in UTM
+    grid — every azimuth crossing that boundary goes through these two."""
+    return float(_UTM13.get_factors(lon, lat).meridian_convergence)
+
+
+def true_to_grid(az_true: float, lon: float, lat: float) -> float:
+    return fold_azimuth(az_true - grid_convergence_deg(lon, lat))
+
+
+def grid_to_true(az_grid: float, lon: float, lat: float) -> float:
+    return fold_azimuth(az_grid + grid_convergence_deg(lon, lat))

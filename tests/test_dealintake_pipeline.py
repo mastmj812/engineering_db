@@ -171,6 +171,10 @@ def test_rendered_dossier_has_no_none_or_raw_floats(tmp_path, monkeypatch):
     (tmp_path / "signals.json").write_text(json.dumps(sig), encoding="utf-8")
     page = dossier_html.render(tmp_path).read_text(encoding="utf-8")
     assert page.count("<svg") == 1 and "Novi median of 63 sticks" in page and "anduin TC (n=10)" in page
+    assert "cumulative" in page and "Mbbl per 1,000 ft" in page and "MMcf per 1,000 ft" in page
+    from dealintake.render.dossier_html import cum_curve
+
+    assert cum_curve([10.0, 10.0])[-1] == pytest.approx(2 * 10.0 * 365.25 / 12)
     assert "None" not in page and "0.00237" in page and "4230136694" in page
 
 

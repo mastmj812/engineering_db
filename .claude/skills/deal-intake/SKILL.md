@@ -83,11 +83,27 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
 - **Ingest (Gate 1):** narvi reprojects and names the parcels. A
   MultiPolygon unit uses its largest part and is reported as a WARNING —
   have Land split it.
+- **Planned azimuth = the unit's LONG AXIS** (Michael, 2026-09-26: sticks
+  run parallel to the long axis; "a degree or two off" is not how a unit is
+  planned). narvi's neighborhood-grid azimuth is advisory: printed beside it
+  (true bearing) and a WARNING when a coherent grid disagrees by more than
+  `alignment.grid_vs_long_axis_flag_deg` (5°) — the reviewer decides the
+  development direction; the runner never switches on its own.
+  **Bearing conventions (cross-repo, verified in narvi 2026-09-26):**
+  narvi `/api/warehouse/azimuth` returns a TRUE bearing (PostGIS
+  `ST_Azimuth` on geography); narvi `/api/generate` lays rows in UTM 13N, so
+  its `azimuth_deg` input is a GRID bearing — the runner converts with
+  `geo.true_to_grid` (≈ true − 0.9° across the Delaware). Passing a true
+  bearing straight through drifts the rows ~0.9° (the VaULt 44-45 and
+  2-11-14-23 sticks, first run). narvi itself feeds its true-bearing grid
+  azimuth into UTM placement unconverted — the "grid vs lease line" drift its
+  edge-snap works around — raised with Michael, not fixed from here.
 - **Planned lateral:** median chord along the planned azimuth inside the
   unit buffered **330 ft inward on every side** (2-mi DSU → ~9,900 ft).
-  Estimate only — narvi's generation setbacks are unchanged. Azimuth =
-  narvi's neighborhood grid when confident, else the unit long axis; the
-  source is printed.
+  Estimate only — narvi's generation setbacks are unchanged. A stair-stepped
+  or skewed unit (VaULt 44-45 S2: the southern band exists only in the east
+  half) legitimately yields one full row and one short row — the review
+  page's map shows it; it is geometry, not an artifact.
 - **Depth window:** declared land depths are echoed verbatim and are **NOT
   local depths** (often a reference-log pick miles away — Toucan 9,515′
   declared ≈ 9,950′ correlated). `--window` passes the engineer's
@@ -290,7 +306,11 @@ when BOTH** max/min unit median > 1.25 AND the rank test is significant at
 0.05 (Mann-Whitney for 2, Kruskal-Wallis for > 2); exactly one → `escalate`;
 neither → `single_tc`. Indistinguishable units are merged into clusters;
 units under 6 wells never split — they borrow the nearest cluster's curve
-(document a multiplier if the reviewer sees a difference). The along-axis
+(document a multiplier if the reviewer sees a difference). The per-unit
+"pool wells" count assigns each well to ONE unit (containing, else nearest),
+so two adjacent units can read 29 and 0 while sharing the same offsets
+(VaULt 44-45 S2 / N2); the "offsets ≤ 1 mi (shared)" column beside it is the
+non-exclusive count — read that one for "does this unit have analogs". The along-axis
 gradient (bbl/1,000 ft per mile, R²) is always reported. On `escalate` with
 a continuous gradient and no clean break, Michael decides: one TC with the
 gradient noted, or a cut where geology says — pass it back as `--tc-groups`
@@ -310,6 +330,9 @@ oil only; gas and water spreads are report-only (gas tracks real GOR
 behavior; TX water is often a vendor-calculated flat WOR).
 
 ### Gate 7 — the comparison, and the surface
+
+Charts per TC group: rate vs time (log) AND cumulative vs time, oil and gas,
+per 1,000 ft (Michael, 2026-09-26).
 
 **`dossier.html` is what Michael reads** (written by `evaluate` and
 `render`; `dossier.md` beside it is the plain-text record). It opens with
@@ -373,13 +396,12 @@ Reviewer levers, all decision-logged or visible in the dossier:
   the reviewer owns that double count in `benches.yaml`.
 - The planned-lateral chord estimate misreads odd-shaped units and units
   whose azimuth fell back to the long axis (VaULt 44-45 S2: 4,620 ft) —
-  correct it in `benches.yaml`; `propose` has no azimuth override. The
-  azimuth trust order of record (planned sticks → kept existing sticks →
-  coherent neighborhood grid → long axis) is only partly implemented: the
-  runner uses narvi's grid when confident, else the long axis; it does NOT
-  yet read the in-unit PDP azimuth. When a unit's PDP run against its long
-  axis (VaULt 36-37-38: one 70° well under a 162° plan; 25-26-27: 55/70°
-  and 158/162° mixed), show Michael the numbers and take his azimuth.
+  correct it in `benches.yaml`; `propose` has no azimuth override. Since
+  2026-09-26 the plan is the unit long axis and the grid is advisory; the
+  runner still does NOT read the in-unit PDP azimuth. When a unit's PDP run
+  against its long axis (VaULt 36-37-38: one 70° well under a 162° plan;
+  25-26-27: 55/70° and 158/162° mixed), show Michael the numbers and take
+  his azimuth.
 - A bench's planned-stack TVD can rest on one well (thin control) — it is
   printed in the proposal; say so when it happens.
 - `pdp_support_for_geom` is live while `intel_pdp_support` is quarterly —
