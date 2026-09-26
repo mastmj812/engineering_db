@@ -239,6 +239,7 @@ h1{font-size:20px;margin:18px 0 4px} h2{font-size:16px;margin:36px 0 6px;border-
 table{border-collapse:collapse;font-size:12px;margin:8px 0} th,td{border:1px solid #e5e7eb;padding:3px 7px;text-align:left;vertical-align:top}
 th{background:#f9fafb} .chip{display:inline-block;color:#fff;border-radius:3px;padding:0 6px;font-weight:600;font-size:11px}
 .rights{font-weight:600} .why{display:inline-block;max-width:520px} .toc a{margin-right:12px;font-size:12px}
+details{margin:6px 0} summary{cursor:pointer;color:#374151;font-size:12px} li.disagree{color:#b45309}
 """
 
 
@@ -295,6 +296,19 @@ def render(run_dir: Path) -> Path:
                  + (f' · <b>same footprint as {_esc(", ".join(name[t] for t in twins[lb]))}</b> (depth-severed)' if twins[lb] else "")
                  + f' · planned lateral {ll[lb]:,.0f} ft ({pl["min_ft"]:,.0f}–{pl["max_ft"]:,.0f}) at {pl["azimuth_deg"]}° '
                    f'({_esc(pl["azimuth_source"])})</div>')
+        tws = u.get("tract_windows") or []
+        if tws:
+            items = "".join(
+                f'<li{" class=\"disagree\"" if tw["disagrees"] else ""}>{_esc(tw["tract"])}: '
+                f'<code>{_esc(tw["raw"].get("Min_Depth"))}</code> → <code>{_esc(tw["raw"].get("Max_Depth")) }</code>'
+                f' ({_esc(tw["rights"])}; {_esc(tw.get("net_ac"))} net ac)'
+                + (" — <b>differs from the DSU window</b>" if tw["disagrees"]
+                   else f" — {_esc(tw['twin'])}'s window (stacked DSU)" if tw.get("twin") else "") + "</li>"
+                for tw in tws)
+            n_bad = sum(1 for tw in tws if tw["disagrees"])
+            p.append(f'<details{" open" if n_bad else ""}><summary>Tracts attached ({len(tws)}; '
+                     f'{n_bad} declare a different window — the DSU row governs, tracts are shown for the reviewer)</summary>'
+                     f"<ul>{items}</ul></details>")
         p.append('<div class="row">' + unit_map(u, [o for o in units if o is not u], geoms.get(lb, {})) + tvd_strip(u) + "</div>")
         byb = {bench_code(r["bench"]): r for r in u["bench_proposal"]}
         order = list(byb) + [b for b in seed if b not in byb]
