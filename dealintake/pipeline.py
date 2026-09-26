@@ -42,7 +42,16 @@ from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
-from dealintake.geo import long_axis_azimuth, planned_lateral, stick_relation
+from dealintake.geo import (
+    axial_diff,
+    long_axis_azimuth,
+    mean_axial_azimuth,
+    planned_lateral,
+    stick_azimuth,
+    stick_length_ft,
+    stick_relation,
+    stick_spacing_ft,
+)
 from dealintake.render.tables import p_value
 from dealintake.select_wells import (
     adjacent_benches,
@@ -76,6 +85,41 @@ def write_json(path: Path, obj: Any) -> None:
 # =============================================================================
 # Stage 1 — propose
 # =============================================================================
+
+def gate2_decision(
+    g: dict[str, Any],
+    *,
+    planned_azimuth_deg: float,
+    planned_lateral_ft: float,
+    azimuth_tol_deg: float,
+    lateral_tol: float,
+) -> dict[str, Any]:
+    """Gate 2 (Michael, 2026-09-25): keep Novi BASE_CASE locations ONLY when
+    every stick is inside the unit AND the sticks are oriented like our plan
+    AND their lateral fits our planned lateral. Novi's guess at a unit's
+    infill is often the wrong orientation or length (VaULt 44-45 S2: 5k E-W
+    in the west, 5k/10k N-S in the east); the PRESENCE of BASE_CASE sticks is
+    the signal that the bench gets infilled, so those benches are generated —
+    and the generated sticks inherit the BASE_CASE bench's spacing."""
+    n_in, n_x = g.get("pud_inside", 0), g.get("pud_crossing", 0)
+    az_n, ll_n = g.get("novi_azimuth_deg"), g.get("novi_ll_ft")
+    if n_in == 0 and n_x == 0:
+        return {"source": "generate", "reason": "no BASE_CASE stick inside", "azimuth_diff_deg": None}
+    if n_x:
+        why = [f"{n_x} BASE_CASE stick(s) cross the unit line"]
+    else:
+        why = []
+    dz = None if az_n is None else round(axial_diff(az_n, planned_azimuth_deg), 1)
+    if dz is not None and dz > azimuth_tol_deg:
+        why.append(f"BASE_CASE azimuth {az_n:.0f}° vs planned {planned_azimuth_deg:.0f}° ({dz:.0f}° off)")
+    if ll_n is not None and planned_lateral_ft > 0 and abs(ll_n - planned_lateral_ft) > lateral_tol * planned_lateral_ft:
+        why.append(f"BASE_CASE lateral {ll_n:,.0f} ft vs planned {planned_lateral_ft:,.0f} ft (±{lateral_tol:.0%})")
+    if why:
+        return {"source": "generate", "reason": "; ".join(why) + " — generate at the BASE_CASE spacing",
+                "azimuth_diff_deg": dz}
+    return {"source": "novi", "reason": "all BASE_CASE sticks inside, oriented and sized like the plan",
+            "azimuth_diff_deg": dz}
+
 
 def propose(
     deal_path: Path,
@@ -167,15 +211,23 @@ def propose(
             }
             gate2 = {}
             for b, c in sorted(rel.items()):
-                pud_in, pud_x = c[("PUD", "inside")], c[("PUD", "crossing")]
+                puds = [s for s in sticks if (s["formation_blueox"] or "(unmapped)") == b
+                        and s["category"] == "PUD" and s["relation"] in ("inside", "crossing")]
+                az_n = mean_axial_azimuth([stick_azimuth(s["geom"]) for s in puds])
+                ll_n = statistics.median([float(s["ll_ft"] or stick_length_ft(s["geom"])) for s in puds]) if puds else None
                 gate2[b] = {
-                    "pud_inside": pud_in, "pud_crossing": pud_x,
+                    "pud_inside": c[("PUD", "inside")], "pud_crossing": c[("PUD", "crossing")],
                     "res_inside": c[("RES", "inside")], "res_crossing": c[("RES", "crossing")],
-                    "source": "novi" if pud_in > 0 and pud_x == 0 else "generate",
-                    "reason": ("all BASE_CASE sticks inside" if pud_in > 0 and pud_x == 0
-                               else f"{pud_x} BASE_CASE stick(s) cross the unit line" if pud_x
-                               else "no BASE_CASE stick inside"),
+                    "novi_azimuth_deg": None if az_n is None else round(az_n, 1),
+                    "novi_ll_ft": None if ll_n is None else round(ll_n, 0),
+                    # de-facto spacing of the BASE_CASE bench: what our generated sticks inherit
+                    "novi_spacing_ft": stick_spacing_ft([s["geom"] for s in puds], az_n) if az_n is not None else None,
                 }
+                gate2[b].update(gate2_decision(
+                    gate2[b], planned_azimuth_deg=pl.azimuth_deg, planned_lateral_ft=pl.median_ft,
+                    azimuth_tol_deg=float(cfg["alignment"]["azimuth_tolerance_deg"]),
+                    lateral_tol=cfg.lateral_tolerance(basin),
+                ))
             out["units"].append({
                 "label": pc["label"],
                 "area_ac": pc["area_ac"],
@@ -398,9 +450,19 @@ def evaluate(
                                  "planned_lateral_ft": planned_ll,
                                  "tvd_ft": _median(local_tvds) or bench_tvd[bench]}
             res["benches"][key] = B
-            sp = float(spacing_ft.get(bench, DEFAULT_SPACING_FT))
+            novi_sp = _median([
+                g.get("novi_spacing_ft")
+                for u in prop["units"] if u["label"] in units
+                for b, g in (u.get("gate2") or {}).items() if bench_code(b) == bench
+            ])
+            if bench in spacing_ft:
+                sp, sp_src = float(spacing_ft[bench]), "reviewer"
+            elif novi_sp:
+                sp, sp_src = float(novi_sp), "Novi BASE_CASE de-facto spacing (median over the class units)"
+            else:
+                sp, sp_src = DEFAULT_SPACING_FT, f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
             B["spacing_ft"] = sp
-            B["spacing_source"] = "reviewer" if bench in spacing_ft else f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
+            B["spacing_source"] = sp_src
             support_all: list[dict[str, Any]] = []
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
@@ -486,8 +548,10 @@ def evaluate(
                     basin=_bn, planned_spacing_ft=_sp),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
+            pool_tol = cfg.lateral_tolerance(basin, planned_ll)
             pool_flags.append(f"radius {radius} mi{' (REVIEWER override)' if r_over is not None else ''}, "
-                              f"basin {basin}, lateral tol {tol:.0%}, eligible pool {len(eligible)}")
+                              f"basin {basin}, lateral tol {pool_tol:.0%}"
+                              f"{' (long-lateral class)' if pool_tol > tol else ''}, eligible pool {len(eligible)}")
             if r_over is not None:
                 if edge:
                     pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")

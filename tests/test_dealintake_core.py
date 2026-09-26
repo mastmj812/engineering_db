@@ -125,3 +125,39 @@ def test_parse_depth_and_proposal():
     rows = {r["bench"]: r["status"] for r in propose(stats, (0.0, 9515.0), 200)}
     assert rows == {"BS2_S": "in_window", "BS3_S": "edge", "WCA_1": "out"}
     assert all(r["status"] == "no_window" for r in propose(stats, None, 200))
+
+
+def test_stick_azimuth_and_spacing():
+    from dealintake.geo import mean_axial_azimuth, stick_azimuth, stick_spacing_ft
+
+    ns = [line_ft((x, 0), (x, 9900)) for x in (1000, 1660, 2320, 2980)]   # N-S sticks, 660 ft apart
+    assert stick_azimuth(ns[0]) == pytest.approx(0.0, abs=0.5)
+    assert stick_azimuth(line_ft((0, 0), (9900, 0))) == pytest.approx(90.0, abs=0.5)
+    assert stick_azimuth(line_ft((0, 9900), (0, 0))) == pytest.approx(0.0, abs=0.5)      # axial: S->N == N->S
+    assert mean_axial_azimuth([178.0, 2.0]) == pytest.approx(0.0, abs=0.5)               # wraps, not 90
+    assert stick_spacing_ft(ns, 0.0) == pytest.approx(660.0, abs=2)
+    assert stick_spacing_ft(ns[:1], 0.0) is None
+    stacked = ns + [line_ft((1133, 0), (1133, 9900))]                 # 133 ft off a slot: same slot, ignored
+    assert stick_spacing_ft(stacked, 0.0) == pytest.approx(660.0, abs=2)
+
+
+def test_gate2_orientation_and_length_rule():
+    from dealintake.pipeline import gate2_decision
+
+    kw = {"planned_azimuth_deg": 72.0, "planned_lateral_ft": 9900.0, "azimuth_tol_deg": 20.0, "lateral_tol": 0.25}
+    ok = {"pud_inside": 4, "pud_crossing": 0, "novi_azimuth_deg": 75.0, "novi_ll_ft": 9600.0}
+    assert gate2_decision(ok, **kw)["source"] == "novi"
+    # VaULt 44-45 S2: Novi supposed 5k E-W laterals — wrong orientation AND length -> generate
+    wrong = {"pud_inside": 4, "pud_crossing": 0, "novi_azimuth_deg": 162.0, "novi_ll_ft": 5000.0}
+    d = gate2_decision(wrong, **kw)
+    assert d["source"] == "generate" and "90° off" in d["reason"] and "5,000 ft" in d["reason"]
+    assert gate2_decision({"pud_inside": 2, "pud_crossing": 1, "novi_azimuth_deg": 72.0, "novi_ll_ft": 9900.0}, **kw)["source"] == "generate"
+    assert gate2_decision({"pud_inside": 0, "pud_crossing": 0}, **kw)["reason"] == "no BASE_CASE stick inside"
+
+
+def test_long_lateral_pool_tolerance():
+    cfg = cfgmod.load()
+    assert cfg.lateral_tolerance("delaware") == 0.25
+    assert cfg.lateral_tolerance("delaware", 9900.0) == 0.25
+    assert cfg.lateral_tolerance("delaware", 15144.0) == 0.40      # long class: widened for the TC pool
+    assert cfg.lateral_tolerance("midland", 15144.0) == 0.40       # never narrower than the basin band

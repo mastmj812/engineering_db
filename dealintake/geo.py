@@ -8,6 +8,7 @@ bearings folded to [0, 180) — workspace rule 16.
 
 from __future__ import annotations
 
+import itertools
 import math
 import statistics
 from dataclasses import dataclass
@@ -23,8 +24,10 @@ M_PER_FT = 1.0 / FT_PER_M
 
 
 def fold_azimuth(az: float) -> float:
-    """Axial bearing folded to [0, 180)."""
-    return az % 180.0
+    """Axial bearing folded to [0, 180). A float hair below 180 (e.g. -1e-15
+    from atan2) is 0, not 179.999..."""
+    a = az % 180.0
+    return 0.0 if a >= 180.0 - 1e-6 else a
 
 
 def axial_diff(a: float, b: float) -> float:
@@ -174,3 +177,51 @@ def stick_midpoint(stick: BaseGeometry) -> BaseGeometry:
     if isinstance(stick, LineString):
         return stick.interpolate(0.5, normalized=True)
     return stick.centroid
+
+
+def stick_azimuth(stick: BaseGeometry) -> float | None:
+    """Axial compass bearing of a stick (first -> last vertex), folded."""
+    coords = list(getattr(stick, "coords", [])) or [c for part in getattr(stick, "geoms", []) for c in part.coords]
+    if len(coords) < 2:
+        return None
+    frame = LocalFrame.around(stick)
+    a = frame.to_local(LineString([coords[0], coords[-1]]))
+    (x0, y0), (x1, y1) = a.coords[0], a.coords[-1]
+    if math.hypot(x1 - x0, y1 - y0) < 1.0:
+        return None
+    return fold_azimuth(math.degrees(math.atan2(x1 - x0, y1 - y0)))
+
+
+def mean_axial_azimuth(azimuths: list[float]) -> float | None:
+    """Circular mean of axial bearings (double the angle first — rule 16)."""
+    vals = [a for a in azimuths if a is not None]
+    if not vals:
+        return None
+    sx = sum(math.cos(math.radians(2 * a)) for a in vals)
+    sy = sum(math.sin(math.radians(2 * a)) for a in vals)
+    if math.hypot(sx, sy) < 1e-9:
+        return None
+    return fold_azimuth(math.degrees(math.atan2(sy, sx)) / 2.0)
+
+
+def stick_length_ft(stick: BaseGeometry) -> float:
+    return LocalFrame.around(stick).to_local(stick).length * FT_PER_M
+
+
+def stick_spacing_ft(sticks: list[BaseGeometry], azimuth_deg: float) -> float | None:
+    """Median gap between ADJACENT sticks measured perpendicular to
+    `azimuth_deg` (midpoints projected on the normal). The de-facto spacing
+    of a Novi BASE_CASE bench — orientation of the individual sticks does not
+    matter, only how far apart they sit. None below two sticks."""
+    if len(sticks) < 2:
+        return None
+    frame = LocalFrame.around(sticks[0])
+    az = math.radians(azimuth_deg)
+    nx, ny = math.cos(az), -math.sin(az)          # unit normal to the bearing (dx=sin az, dy=cos az)
+    offs = sorted(
+        (m.x * nx + m.y * ny) * FT_PER_M
+        for m in (frame.to_local(stick_midpoint(st)) for st in sticks)
+    )
+    # < 300 ft apart = the same slot (stacked/staggered or digitizing), not a spacing
+    gaps = [b - a for a, b in itertools.pairwise(offs) if b - a >= 300.0]
+    return round(statistics.median(gaps), 0) if gaps else None

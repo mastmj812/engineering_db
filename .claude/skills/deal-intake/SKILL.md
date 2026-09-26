@@ -128,11 +128,23 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   `in_window | edge (within 200 ft of a boundary) | out | no_window |
   no_depth`. Landing TVD is always offset-well medians, never tops. A bench
   with < 3 real-depth wells is marked thin control.
-- **Gate 2 — location source per (unit × bench):** every Novi BASE_CASE
-  (PUD) stick inside the unit (50-ft digitizing tolerance) → keep Novi
-  locations; **any stick crossing the unit line → narvi generates that
-  WHOLE bench** (never a mixed bench). Pad IoU vs `intel_pad_geom` is
-  advisory only (2026Q3 covers Midland only).
+- **Gate 2 — location source per (unit × bench)** (Michael, 2026-09-25):
+  keep Novi BASE_CASE (PUD) locations ONLY when every stick is inside the
+  unit (50-ft digitizing tolerance) AND the sticks are oriented like our
+  plan (axial difference ≤ `alignment.azimuth_tolerance_deg`, 20°) AND
+  their lateral fits our planned lateral (± the basin tolerance). Otherwise
+  **narvi generates that WHOLE bench** (never a mixed bench). Novi's guess
+  at a unit's infill is often the wrong orientation or length (VaULt 44-45
+  S2: 5k E-W in the west, 5k/10k N-S in the east; most VaULt BASE_CASE
+  sticks are 5,080-ft N-S sticks under 2-mile E-W plans) — the PRESENCE of
+  BASE_CASE sticks is the signal that the bench gets infilled, not a
+  location to copy. The review page shows each bench's Novi azimuth,
+  lateral and de-facto spacing with the reason. Pad IoU vs
+  `intel_pad_geom` is advisory only (2026Q3 covers Midland only).
+- **Spacing for generated benches:** reviewer `--spacing` → else the Novi
+  BASE_CASE bench's **de-facto spacing** (median perpendicular gap between
+  the sticks, gaps < 300 ft = same slot; median over the class's units) →
+  else the 880-ft narvi fallback. The dossier prints which.
 - PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
 **Reviewer gate — do not run `evaluate` until Michael confirms:** the
@@ -190,7 +202,11 @@ shown beside it (WCB_2 deep-TVD context).
 Candidates = producing horizontals in the TVD-corrected bench within the
 radius. Excluded WITH REASONS (a well can carry several): first production
 before `first_prod_after`; lateral outside the planned lateral ± the
-per-basin tolerance (delaware 25 % / midland 40 % — mirrors ledger §9);
+per-basin tolerance (delaware 25 % / midland 40 % — mirrors ledger §9;
+**long-lateral classes** ≥ `type_curve.long_lateral.min_ft` (12,500 ft)
+use the wider `long_lateral.tolerance` (0.40) for the POOL only — Michael
+2026-09-25, the 15,144/17,670-ft VaULt classes starved — while the Novi
+representative-stick comparison keeps the basin band);
 `months < min_months_data`; spacing class `standalone` (NULL or ≥ 2,800
 sentinel) or `tight` (< 0.65 × planned spacing), judged AS-OF-FIRST-
 PRODUCTION; no codev context.
@@ -345,7 +361,13 @@ Reviewer levers, all decision-logged or visible in the dossier:
   the reviewer owns that double count in `benches.yaml`.
 - The planned-lateral chord estimate misreads odd-shaped units and units
   whose azimuth fell back to the long axis (VaULt 44-45 S2: 4,620 ft) —
-  correct it in `benches.yaml`; `propose` has no azimuth override.
+  correct it in `benches.yaml`; `propose` has no azimuth override. The
+  azimuth trust order of record (planned sticks → kept existing sticks →
+  coherent neighborhood grid → long axis) is only partly implemented: the
+  runner uses narvi's grid when confident, else the long axis; it does NOT
+  yet read the in-unit PDP azimuth. When a unit's PDP run against its long
+  axis (VaULt 36-37-38: one 70° well under a 162° plan; 25-26-27: 55/70°
+  and 158/162° mixed), show Michael the numbers and take his azimuth.
 - A bench's planned-stack TVD can rest on one well (thin control) — it is
   printed in the proposal; say so when it happens.
 - `pdp_support_for_geom` is live while `intel_pdp_support` is quarterly —

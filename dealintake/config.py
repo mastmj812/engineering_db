@@ -21,10 +21,11 @@ TIERS = ("codev", "stack_standalone", "topfill_underfill")
 
 _REQUIRED = {
     "config_version": (),
-    "alignment": ("stick_inside_tolerance_ft", "fallback_scope"),
+    "alignment": ("stick_inside_tolerance_ft", "fallback_scope", "azimuth_tolerance_deg"),
     "depth": ("edge_margin_ft",),
     "bench_inclusion": ("pdp_count_3mi_min",),
-    "type_curve": ("first_prod_after", "min_months_data", "min_wells", "max_wells", "lateral_tolerance_by_basin"),
+    "type_curve": ("first_prod_after", "min_months_data", "min_wells", "max_wells", "lateral_tolerance_by_basin",
+                   "long_lateral"),
     "planned_lateral": ("setback_ft", "chord_step_ft"),
     "codev": ("xy_ft", "window_days", "overlap_min_frac", "tier_order_default",
               "tier_order_when_pdp_adjacent", "min_tier1_frac_warn"),
@@ -50,9 +51,18 @@ class Config:
     def __getitem__(self, key: str) -> Any:
         return self.raw[key]
 
-    def lateral_tolerance(self, basin: str | None) -> float:
+    def lateral_tolerance(self, basin: str | None, planned_lateral_ft: float | None = None) -> float:
+        """Per-basin lateral band (ledger §9). With `planned_lateral_ft`: a LONG
+        lateral class (>= type_curve.long_lateral.min_ft) gets the wider
+        long-lateral tolerance for its TC pool (Michael, 2026-09-25 — 3-mile
+        units starved under the class-centred basin band). The Novi
+        representative-stick tolerance stays the basin value."""
         tol = self.raw["type_curve"]["lateral_tolerance_by_basin"]
-        return float(tol.get((basin or "").lower(), tol["default"]))
+        base = float(tol.get((basin or "").lower(), tol["default"]))
+        long = self.raw["type_curve"]["long_lateral"]
+        if planned_lateral_ft is not None and planned_lateral_ft >= float(long["min_ft"]):
+            return max(base, float(long["tolerance"]))
+        return base
 
 
 def validate(raw: dict[str, Any]) -> None:
