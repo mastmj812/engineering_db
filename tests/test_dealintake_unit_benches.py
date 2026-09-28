@@ -153,8 +153,17 @@ def test_review_page_renders_from_proposal(tmp_path):
         "pdp": [{"api10": "1", "bench": "WCA_1", "wkt": "LINESTRING(-103.315 31.735, -103.312 31.755)"}],
         "novi": [{"stick_id": 5, "bench": "WCB_1", "category": "PUD", "relation": "inside",
                   "wkt": "LINESTRING(-103.31 31.735, -103.307 31.755)"}]}}), encoding="utf-8")
+    unit["gunbarrel"] = {"azimuth_deg": 162.5, "cross_extent_ft": [-1300, 1300], "bench_tvd_ft": {"WCB_1": 12394.0},
+                         "existing": [{"api10": "1", "bench": "WCA_1", "offset_ft": -400, "tvd_ft": 12125.0, "inside": True}],
+                         "novi": [{"stick_id": 5, "bench": "WCB_1", "offset_ft": 200, "tvd_ft": 12390.0, "relation": "inside"}],
+                         "planned": {"WCB_1": {"tvd_ft": 12394.0, "spacing_ft": 1320.0, "spacing_source": "Novi BASE_CASE",
+                                               "offsets_ft": [-660, 660], "lateral_ft": [9900, 9900]}}}
+    (tmp_path / "proposal.json").write_text(json.dumps(prop), encoding="utf-8")
     text = review.render(tmp_path).read_text(encoding="utf-8")
-    assert text.count("<svg") == 5                       # overview + (map + strip) x 2 units
+    assert text.count("<svg") == 6                       # overview + (map + strip) x 2 units + 1 gunbarrel
+    assert "gunbarrel" in text and "2 sticks @ 1,320 ft" in text
+    # Novi sticks are not drawn; the legend carries only existing benches + proposed rows
+    assert "Novi BASE_CASE stick" not in text.split("gunbarrel", 1)[1][:20000]
     assert "same footprint as 2-11 (Bone Spring)" in text and "12,224' declared" in text
     assert "None" not in text and ">ON<" in text and ">off<" in text
 
@@ -185,3 +194,10 @@ def test_twin_dsu_tracts_are_not_disagreements():
     a, b = upper["tract_windows"]
     assert a["disagrees"] is False and a["twin"] == "2-11 (WCB)"      # the twin's paper, not a conflict
     assert b["disagrees"] is True and "twin" not in b                   # a genuinely different window
+
+
+def test_reviewed_benches_reads_the_reviewer_file(tmp_path):
+    assert unit_benches.reviewed_benches(tmp_path) == {}
+    prop = _prop()
+    (tmp_path / unit_benches.FILENAME).write_text(unit_benches.render(prop), encoding="utf-8")
+    assert unit_benches.reviewed_benches(tmp_path) == {"u1": ["WCB_1"]}

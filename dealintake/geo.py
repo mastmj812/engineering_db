@@ -245,3 +245,32 @@ def true_to_grid(az_true: float, lon: float, lat: float) -> float:
 
 def grid_to_true(az_grid: float, lon: float, lat: float) -> float:
     return fold_azimuth(az_grid + grid_convergence_deg(lon, lat))
+
+
+def gunbarrel_frame(unit: Polygon, azimuth_deg: float):
+    """Cross-section frame of record (workspace rule 16): origin = unit
+    centroid, cross-axis 90 deg clockwise of the folded azimuth (+offset =
+    compass EAST for N-S laterals), along-axis = the azimuth. Returns a
+    function geom -> (offset_ft, along_ft) of the geometry's mid-lateral
+    point, plus the unit's own cross/along extents (ft)."""
+    frame = LocalFrame.around(unit)
+    az = math.radians(fold_azimuth(azimuth_deg))
+    cx, cy = math.cos(az), -math.sin(az)          # cross-axis unit vector
+    ax_, ay_ = math.sin(az), math.cos(az)         # along-axis unit vector
+
+    def project(g: BaseGeometry) -> tuple[float, float]:
+        m = frame.to_local(stick_midpoint(g))
+        return (m.x * cx + m.y * cy) * FT_PER_M, (m.x * ax_ + m.y * ay_) * FT_PER_M
+
+    def along_span(g: BaseGeometry) -> tuple[float, float]:
+        """Along-axis extent (ft) of a stick — for 'does it overlap the unit
+        along the laterals', which a midpoint cannot answer."""
+        pts = [frame.to_local(g).coords] if hasattr(g, "coords") else [part.coords for part in getattr(frame.to_local(g), "geoms", [])]
+        vals = [(x * ax_ + y * ay_) * FT_PER_M for cs in pts for x, y in cs]
+        return (min(vals), max(vals)) if vals else (0.0, 0.0)
+
+    project.along_span = along_span          # type: ignore[attr-defined]
+    ring = frame.to_local(unit).exterior.coords
+    offs = [(x * cx + y * cy) * FT_PER_M for x, y in ring]
+    alongs = [(x * ax_ + y * ay_) * FT_PER_M for x, y in ring]
+    return project, (min(offs), max(offs)), (min(alongs), max(alongs))

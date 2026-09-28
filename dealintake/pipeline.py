@@ -32,6 +32,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from shapely import wkt as shp_wkt
 from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
@@ -43,8 +44,10 @@ from dealintake.clients.narvi import Narvi, legs
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
+    LocalFrame,
     axial_diff,
     grid_convergence_deg,
+    gunbarrel_frame,
     long_axis_azimuth,
     mean_axial_azimuth,
     planned_lateral,
@@ -87,6 +90,73 @@ def write_json(path: Path, obj: Any) -> None:
 # =============================================================================
 # Stage 1 — propose
 # =============================================================================
+
+def gunbarrel_preview(
+    unit: Any, azimuth_deg: float, bench_proposal: list[dict[str, Any]], bench_seed: dict[str, dict[str, Any]],
+    gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
+    narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
+) -> dict[str, Any]:
+    """Cross-section data for the review page: existing producers and Novi
+    BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
+    bench (spacing = the bench's Novi de-facto spacing, else 880 ft; TVD = the
+    unit's local median). Offsets in the rule-16 frame (ft), TVD in ft."""
+    project, (c_lo, c_hi), (a_lo, a_hi) = gunbarrel_frame(unit, azimuth_deg)
+    tvd_by = {bench_code(r["bench"]): r["median_tvd_ft"] for r in bench_proposal if r.get("median_tvd_ft") is not None}
+    frame = LocalFrame.around(unit)
+    unit_local = frame.to_local(unit)
+
+    def near(g: Any) -> tuple[float, float] | None:
+        off, along = project(g)
+        return (off, along) if (c_lo - cross_margin_ft <= off <= c_hi + cross_margin_ft
+                                and a_lo - along_margin_ft <= along <= a_hi + along_margin_ft) else None
+
+    # Existing producers: only wells whose LATERAL overlaps the unit along the
+    # laterals (a well entirely north/south of the unit is not in this cross-
+    # section, however close its offset — the 2-11 "Mitchell wells" case,
+    # 2026-09-28). `inside` = the house >=30% co-extent rule (rule 9); the rest
+    # are drawn faded as side/partial neighbours.
+    existing = []
+    for w in pdp_near:
+        g = shp_wkt.loads(w["wkt"])
+        if w.get("tvd_ft") is None:
+            continue
+        off, _ = project(g)
+        lo_a, hi_a = project.along_span(g)
+        if not (c_lo - cross_margin_ft <= off <= c_hi + cross_margin_ft) or hi_a <= a_lo or lo_a >= a_hi:
+            continue
+        gl = frame.to_local(g)
+        frac = gl.intersection(unit_local).length / gl.length if gl.length else 0.0
+        existing.append({"api10": w["api10"], "bench": w["bench"], "offset_ft": round(off), "tvd_ft": float(w["tvd_ft"]),
+                         "inside": frac >= 0.30, "in_unit_frac": round(frac, 2)})
+    novi = []                                  # kept in the data (not drawn) for the record
+    for st in novi_sticks:
+        if st["category"] != "PUD":
+            continue
+        oa = near(st["geom"])
+        if oa and st.get("tvd") is not None:
+            novi.append({"stick_id": st["stick_id"], "bench": st["formation_blueox"] or "(unmapped)",
+                         "offset_ft": round(oa[0]), "tvd_ft": float(st["tvd"]), "relation": st["relation"]})
+    planned: dict[str, dict[str, Any]] = {}
+    for b, row in bench_seed.items():
+        if not row["evaluate"] or b not in tvd_by:
+            continue
+        g2 = gate2.get(b) or {}
+        sp = float(g2.get("novi_spacing_ft") or DEFAULT_SPACING_FT)
+        try:
+            gen = narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd_by[b], "spacing_ft": sp}],
+                                 setback_ft=setback_ft, spacing_ft=sp,
+                                 azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y))
+            offs = [round(project(leg["geom"])[0]) for leg in legs(gen)]
+            lls = [round(float(leg.get("completed_lateral_ft") or 0)) for leg in legs(gen)]
+        except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
+            offs, lls = [], []
+            planned[b] = {"error": str(e)[:160]}
+            continue
+        planned[b] = {"tvd_ft": tvd_by[b], "spacing_ft": sp, "spacing_source": "Novi BASE_CASE" if g2.get("novi_spacing_ft") else "880-ft fallback",
+                      "offsets_ft": offs, "lateral_ft": lls}
+    return {"azimuth_deg": azimuth_deg, "cross_extent_ft": [round(c_lo), round(c_hi)],
+            "bench_tvd_ft": tvd_by, "existing": existing, "novi": novi, "planned": planned}
+
 
 def tract_check(
     tracts: list[dict[str, Any]], lo: strat.Bound, hi: strat.Bound, col: strat.Column, basin: str | None,
@@ -183,6 +253,7 @@ def propose(
         raise ValueError(f"narvi returned no parcels for {deal_path}")
 
     col = strat.load()
+    reviewed = unit_benches.reviewed_benches(run_dir)          # {} on a first propose
     out: dict[str, Any] = {
         "deal_file": str(deal_path),
         "config_version": cfg.version,
@@ -271,10 +342,11 @@ def propose(
                 s["relation"] = stick_relation(s["geom"], u, tol)
                 rel.setdefault(s["formation_blueox"] or "(unmapped)", Counter())[(s["category"], s["relation"])] += 1
             # Review-page layers (display only): Novi sticks near the unit + offset PDP laterals.
+            pdp_near = wh.pdp_laterals_near(conn, u)
             review_geoms[pc["label"]] = {
                 "novi": [{"stick_id": s["stick_id"], "bench": s["formation_blueox"] or "(unmapped)",
                           "category": s["category"], "relation": s["relation"], "wkt": s["geom"].wkt} for s in sticks],
-                "pdp": wh.pdp_laterals_near(conn, u),
+                "pdp": pdp_near,
             }
             gate2 = {}
             for b, c in sorted(rel.items()):
@@ -295,8 +367,21 @@ def propose(
                     azimuth_tol_deg=float(cfg["alignment"]["azimuth_tolerance_deg"]),
                     lateral_tol=cfg.lateral_tolerance(basin),
                 ))
+            # Gunbarrel preview (Michael, 2026-09-28): how many infill sticks per
+            # landing zone the seed implies, and where they sit against the
+            # existing wells — so topfill/underfill calls are made on the review
+            # page, never automatically. Sticks are narvi PREVIEWS at the seed's
+            # benches; evaluate regenerates them with the class-level spacing.
+            enabled = reviewed.get(pc["label"]) if reviewed else None
+            gun = gunbarrel_preview(
+                u, pl.azimuth_deg, proposal,
+                {b: {"evaluate": True} for b in enabled} if enabled is not None else bench_seed,
+                gate2, sticks, pdp_near, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
+            )
+            gun["benches_source"] = unit_benches.FILENAME if enabled is not None else "seed"
             out["units"].append({
                 "label": pc["label"],
+                "gunbarrel": gun,
                 "area_ac": pc["area_ac"],
                 "geometry": mapping(u),
                 "attributes": pc["attributes"],

@@ -132,7 +132,21 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   chord), the TVD strip (local bench medians against the rights window, the
   declared depth lines drawn as declared-not-local), and the bench table
   (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, Novi in/crossing,
-  location source, scope, why). Stacked DSUs say "same footprint as …".
+  location source, scope, why), and the **gunbarrel** (Michael, 2026-09-28):
+  a cross-section perpendicular to the planned azimuth in the rule-16 frame
+  (origin = unit centroid, +offset = 90° clockwise of the azimuth) — the
+  PROPOSED rows (one hollow square per stick at the bench's local median
+  TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
+  lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent
+  in the unit, rule 9; faded = side/partial neighbours; a well entirely
+  beyond the unit's ends is not drawn). Novi BASE_CASE sticks are NOT
+  drawn — our proposal vs PDP only, nothing outside the depth rights; the
+  TVD window is the proposed benches ± 1,500 ft (producers outside it are
+  counted in the title, not plotted). Rows are narvi previews
+  at the REVIEWED benches when `benches.yaml` exists, else at the seed. It
+  exists so topfill/underfill calls are made by eye on the page (BS3_S rows
+  sitting over WCA_1/WCXY producers) — the runner never excludes a bench for
+  being a topfill or underfill. Stacked DSUs say "same footprint as …".
   **Michael reviews the page and states the exceptions in chat; the operator
   records them in `benches.yaml` — he never reads the YAML** (feedback
   2026-09-22).
