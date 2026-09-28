@@ -274,3 +274,63 @@ def gunbarrel_frame(unit: Polygon, azimuth_deg: float):
     offs = [(x * cx + y * cy) * FT_PER_M for x, y in ring]
     alongs = [(x * ax_ + y * ay_) * FT_PER_M for x, y in ring]
     return project, (min(offs), max(offs)), (min(alongs), max(alongs))
+
+
+def positive_offset_bearing(azimuth_deg: float) -> float:
+    """Compass bearing of the +offset direction of the rule-16 frame (90 deg
+    clockwise of the folded azimuth)."""
+    return (fold_azimuth(azimuth_deg) + 90.0) % 360.0
+
+
+def side_sign(side: str, azimuth_deg: float) -> int:
+    """+1 when the named compass side of a unit lies on the +offset side of the
+    rule-16 frame, else -1 (a 162 deg plan: +offset points 252 deg = WSW, so
+    'west' -> +1 and 'east' -> -1)."""
+    b = positive_offset_bearing(azimuth_deg)
+    towards = {"north": 0.0, "east": 90.0, "south": 180.0, "west": 270.0}[side]
+    d = abs((b - towards + 180.0) % 360.0 - 180.0)          # angular distance
+    return 1 if d <= 90.0 else -1
+
+
+def apply_row_rules(
+    rows: list[dict],
+    azimuth_deg: float,
+    *,
+    n_wells: int | None = None,
+    keep_side: str | None = None,
+    drop_rows: dict[str, int] | None = None,
+    min_leg_ft: float | None = None,
+) -> tuple[list[dict], list[str]]:
+    """Reviewer row rules on generated legs — each row has offset_ft and
+    lateral_ft. Order of application: min_leg_ft (drop stubs), keep_side,
+    drop_<side>_rows (nearest that side first), n_wells (trim the outermost
+    rows alternately from each side). Returns (kept rows, notes)."""
+    notes: list[str] = []
+    kept = sorted(rows, key=lambda r: r["offset_ft"])
+    if min_leg_ft:
+        short = [r for r in kept if (r.get("lateral_ft") or 0) < min_leg_ft]
+        if short:
+            notes.append(f"{len(short)} leg(s) shorter than {min_leg_ft:,.0f} ft dropped")
+            kept = [r for r in kept if r not in short]
+    if keep_side:
+        sgn = side_sign(keep_side, azimuth_deg)
+        before = len(kept)
+        kept = [r for r in kept if r["offset_ft"] * sgn >= 0]
+        if len(kept) != before:
+            notes.append(f"{before - len(kept)} row(s) not on the {keep_side} side dropped")
+    for side, n in (drop_rows or {}).items():
+        if not n or not kept:
+            continue
+        sgn = side_sign(side, azimuth_deg)
+        order = sorted(kept, key=lambda r: -r["offset_ft"] * sgn)       # nearest that side first (largest projection on it)
+        drop = order[:n]
+        kept = [r for r in kept if r not in drop]
+        notes.append(f"{len(drop)} {side}-most row(s) dropped")
+    if n_wells is not None and len(kept) > n_wells:
+        extra = len(kept) - n_wells
+        left = True
+        while len(kept) > n_wells:
+            kept = kept[1:] if left else kept[:-1]
+            left = not left
+        notes.append(f"{extra} outermost row(s) trimmed to n_wells {n_wells}")
+    return kept, notes

@@ -169,10 +169,13 @@ def _summary_rows(sig: dict[str, Any]) -> list[list[Any]]:
             dn, de = di_pair(o.get("Di"), o.get("b"))
             oe, ne = o.get("eur_per_unit"), nv.get("eur_per_1000ft")
             delta = f"{oe / ne - 1:+.0%}" if oe and ne else "—"
+            gas_ratio = (G.get("novi_vs_tc") or {}).get("gas")
+            gas_cell = "—" if gas_ratio is None else (_chip(f"Novi {gas_ratio:.1f}x", "#dc2626") if gas_ratio > 1.5 or gas_ratio < 1 / 1.5
+                                                       else f"Novi {gas_ratio:.1f}x")
             sp = B["split"]["recommendation"]
             rows.append([_Raw(f'<a href="#{anchor}">{_esc(key)}</a>'), G["name"] if G["name"] != "all units" else "all",
                          B["pool"]["n_eligible"], G.get("tc_preview_n_wells"),
-                         oe, ne, nv.get("n"), delta, f"{dn} ({de})" if o else "—", o.get("b"), g.get("eur_per_unit"),
+                         oe, ne, nv.get("n"), delta, f"{dn} ({de})" if o else "—", o.get("b"), g.get("eur_per_unit"), gas_cell,
                          _chip(sp, {"single_tc": "#059669", "split_by_polygon": "#2563eb", "escalate": "#d97706"}.get(sp, "#9ca3af")),
                          len((G.get("qc") or {}).get("well_flags", []))])
     return rows
@@ -217,14 +220,17 @@ def render(run_dir: Path) -> Path:
                          for lb, v in plan.items()]))
     p.append("<h2>Type curves — every bench × lateral class</h2>")
     p.append(_table(["Bench @ class", "TC group", "Pool", "n", "Oil EUR/1,000 ft", "Novi", "Novi n", "TC vs Novi",
-                     "Di nom (eff)", "b", "Gas EUR/1,000 ft", "Split test", "QC flags"], _summary_rows(sig)))
+                     "Di nom (eff)", "b", "Gas EUR/1,000 ft", "Gas: Novi/TC", "Split test", "QC flags"], _summary_rows(sig)))
 
     # ---- bench matrix ---------------------------------------------------------
     rows = []
     for key, B in sig["benches"].items():
         for lb, ub in B["units"].items():
             g3 = ub["gate3"]
-            rows.append([name.get(lb, lb), key, f"{g3['n_locations']} ({ub['gate2']['source']})", g3["pdp_count_3mi_median"],
+            loc = f"{g3['n_locations']} ({ub['gate2']['source']})" + (" UPSIDE" if ub.get("role") == "upside" else "")
+            if ub.get("row_rules"):
+                loc += " · " + "; ".join(ub["row_rules"])
+            rows.append([name.get(lb, lb), key, loc, g3["pdp_count_3mi_median"],
                          g3["status"], g3["tvd_excess_3mi_ft_max"], "yes" if ub["has_pdp_in_adjacent_bench"] else "no",
                          next((G["name"] for G in B["tc_groups"] if lb in G["units"]), "—"),
                          "yes" if B["edge_trigger"]["fired"] else "no"])

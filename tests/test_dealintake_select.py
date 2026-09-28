@@ -66,28 +66,34 @@ def test_spacing_class_sentinel_and_tight(xy, cls):
 
 
 def test_tiers():
-    adj = ["WCA_2", "WCB_2"]
-    assert codev_tier(cand("a", "codev"), adj) == "codev"
-    assert codev_tier(cand("a", "standalone"), adj) == "stack_standalone"  # only own-bench codev
-    assert codev_tier(cand("a", "parent"), adj) == "topfill_underfill"  # parent beats codev
-    assert codev_tier(cand("a", "child"), adj) == "topfill_underfill"
+    adj = ["WCA_2", "WCB_2"]                 # adjacent PLANNED benches (codev test)
+    ex = ["WCA_2"]                          # PRODUCING in the unit within the band (parent test)
+    assert codev_tier(cand("a", "codev"), adj, ex) == "codev"
+    assert codev_tier(cand("a", "standalone"), adj, ex) == "stack_standalone"  # only own-bench codev
+    assert codev_tier(cand("a", "parent"), adj, ex) == "topfill_underfill"     # parent in a producing bench beats codev
+    # first-order: the parent must be in a bench that PRODUCES in the unit, not merely planned
+    assert codev_tier(cand("a", "parent"), adj, []) == "codev"
+    assert codev_tier(cand("a", "parent"), adj, ["WCB_2"]) == "codev"
+    # later-child wells are no longer topfill_underfill (Michael 2026-09-28)
+    assert codev_tier(cand("a", "child"), adj, ex) == "stack_standalone"
     # sql/50 rule of record: an ungated parent is no parent; a shielded one neither
-    assert codev_tier(cand("a", "far_parent"), adj) == "stack_standalone"
-    assert codev_tier(cand("a", "shielded"), adj) == "codev"
+    assert codev_tier(cand("a", "far_parent"), adj, ex) == "stack_standalone"
+    assert codev_tier(cand("a", "shielded"), adj, ex) == "codev"
     # shielding is per side: a codev well BELOW does not shield a parent ABOVE
-    assert codev_tier(cand("a", "parent", nearest_codev_below_dtvd_ft=150), adj) == "topfill_underfill"
+    assert codev_tier(cand("a", "parent", nearest_codev_below_dtvd_ft=150), adj, ex) == "topfill_underfill"
 
 
 def _select(cands, pdp_adjacent=False):
     return select(cands, CFG, bench="WCB_1", planned_stack=STACK, planned_lateral_ft=9900,
                   basin="delaware", planned_spacing_ft=880,
-                  deal_has_pdp_in_adjacent_bench=pdp_adjacent)
+                  deal_has_pdp_in_adjacent_bench=pdp_adjacent,
+                  existing_benches=["WCA_2"] if pdp_adjacent else [])
 
 
 def test_fill_takes_first_tier_whole_then_nearest_of_next():
     cands = [cand(f"c{i}", "codev") for i in range(7)]
     cands += [cand(f"s{i}", "standalone", dist=1000 + i) for i in range(6)]
-    cands += [cand(f"p{i}", "parent") for i in range(5)]
+    cands += [cand(f"p{i}", "far_parent", dist=5000) for i in range(5)]   # ungated parent, no codev -> stack_standalone, far
     sel = _select(cands)
     assert sel.tier_order[0] == "codev"
     assert len(sel.selected) == 10

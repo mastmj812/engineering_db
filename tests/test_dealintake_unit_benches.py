@@ -97,7 +97,8 @@ def test_benches_yaml_round_trip_and_reviewer_edit(tmp_path):
     prop = _prop()
     (tmp_path / unit_benches.FILENAME).write_text(unit_benches.render(prop), encoding="utf-8")
     plan = unit_benches.read(tmp_path, prop)
-    assert plan["u1"] == {"benches": ["WCB_1"], "planned_lateral_ft": 9912.0, "seed_benches": ["WCB_1"], "edited": False}
+    assert plan["u1"] == {"benches": ["WCB_1"], "planned_lateral_ft": 9912.0, "seed_benches": ["WCB_1"], "edited": False,
+                          "bench_opts": {"WCB_1": {}}, "min_leg_ft": None}
 
     text = (tmp_path / unit_benches.FILENAME).read_text(encoding="utf-8")
     text = text.replace("WCA_1:  {evaluate: false", "WCA_1:  {evaluate: true ").replace(
@@ -200,4 +201,45 @@ def test_reviewed_benches_reads_the_reviewer_file(tmp_path):
     assert unit_benches.reviewed_benches(tmp_path) == {}
     prop = _prop()
     (tmp_path / unit_benches.FILENAME).write_text(unit_benches.render(prop), encoding="utf-8")
-    assert unit_benches.reviewed_benches(tmp_path) == {"u1": ["WCB_1"]}
+    assert unit_benches.reviewed_benches(tmp_path) == {"u1": {"benches": ["WCB_1"], "bench_opts": {"WCB_1": {}}, "min_leg_ft": None}}
+
+
+def test_reviewer_bench_options_round_trip(tmp_path):
+    """The VaULt walkthrough keys: tvd_ft, spacing_ft, n_wells, keep_side, drop_<side>_rows, role, min_leg_ft."""
+    prop = _prop()
+    text = unit_benches.render(prop).replace(
+        'WCA_1:  {evaluate: false',
+        'WCA_1:  {evaluate: true , tvd_ft: 10333, spacing_ft: 1320, n_wells: 4, keep_side: west, drop_east_rows: 2, role: upside')
+    text = text.replace("planned_lateral_ft: 9912", "min_leg_ft: 7000\n    planned_lateral_ft: 9900")
+    (tmp_path / unit_benches.FILENAME).write_text(text, encoding="utf-8")
+    plan = unit_benches.read(tmp_path, prop)
+    assert plan["u1"]["benches"] == ["WCA_1", "WCB_1"] and plan["u1"]["min_leg_ft"] == 7000.0 and plan["u1"]["edited"]
+    assert plan["u1"]["bench_opts"]["WCA_1"] == {"tvd_ft": 10333.0, "spacing_ft": 1320.0, "n_wells": 4, "keep_side": "west",
+                                                 "drop_east_rows": 2, "role": "upside"}
+    assert plan["u1"]["bench_opts"]["WCB_1"] == {}
+    rv = unit_benches.reviewed_benches(tmp_path)
+    assert rv["u1"]["benches"] == ["WCA_1", "WCB_1"] and rv["u1"]["bench_opts"]["WCA_1"]["tvd_ft"] == 10333.0
+
+    for bad in ("tvd_ft: -5", "n_wells: 2.5", "keep_side: up", "role: maybe", "drop_east_rows: -1"):
+        (tmp_path / unit_benches.FILENAME).write_text(
+            unit_benches.render(prop).replace("WCB_1:  {evaluate: true ", f"WCB_1:  {{evaluate: true , {bad}"), encoding="utf-8")
+        with pytest.raises(ValueError):
+            unit_benches.read(tmp_path, prop)
+
+
+def test_row_rules_on_a_162_deg_plan():
+    from dealintake.geo import apply_row_rules, side_sign
+
+    az = 162.3                                   # VaULt: +offset points 252 deg (WSW) -> west is +
+    assert side_sign("west", az) == 1 and side_sign("east", az) == -1
+    assert side_sign("east", 72.2) == 1          # a 72 deg plan: +offset points 162 deg (SSE) -> east is +
+    rows = [{"offset_ft": o, "lateral_ft": 12500} for o in (-1741, -421, 899, 2219)]
+    kept, notes = apply_row_rules(rows, az, drop_rows={"east": 3})
+    assert [r["offset_ft"] for r in kept] == [2219] and "3 east-most" in notes[0]
+    kept, _ = apply_row_rules(rows, az, keep_side="west")
+    assert [r["offset_ft"] for r in kept] == [899, 2219]
+    kept, _ = apply_row_rules(rows, az, n_wells=2)
+    assert [r["offset_ft"] for r in kept] == [-421, 899]           # outermost trimmed alternately
+    rows[0]["lateral_ft"] = 4620
+    kept, notes = apply_row_rules(rows, az, min_leg_ft=7000)
+    assert len(kept) == 3 and "shorter than 7,000 ft" in notes[0]

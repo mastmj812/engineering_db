@@ -208,8 +208,12 @@ def gunbarrel(u: dict[str, Any]) -> str:
     for x in (c_lo, c_hi):
         ax.axvline(x, color="#9ca3af", linestyle="--", linewidth=0.9)
     seen: set[str] = set()
+    n_permit = 0
     for w in shown:
-        ax.scatter(w["offset_ft"], w["tvd_ft"], s=46, color=_color(w["bench"]), edgecolors=INK, linewidths=0.5,
+        permit = float(w["tvd_ft"]) % 100 == 0           # round-100 TVD = permit depth, not a survey (rule 10)
+        n_permit += permit
+        ax.scatter(w["offset_ft"], w["tvd_ft"], s=46, color="white" if permit else _color(w["bench"]),
+                   edgecolors=_color(w["bench"]) if permit else INK, linewidths=1.4 if permit else 0.5,
                    alpha=1.0 if w["inside"] else 0.4, zorder=3)
         seen.add(w["bench"])
     row_labels: list[str] = []
@@ -217,7 +221,11 @@ def gunbarrel(u: dict[str, Any]) -> str:
         ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.7, alpha=0.6)
         ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=110, marker="s", facecolors="white",
                    edgecolors=_color(b), linewidths=2.0, zorder=5)
-        row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}")
+        row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}"
+                          + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
+                          + (" [UPSIDE]" if pl.get("role") == "upside" else "")
+                          + (f" (Novi pattern {pl['novi_spacing_ft']:,.0f} ft)" if pl.get("novi_spacing_ft") and pl.get("spacing_source") != "reviewer" else "")
+                          + (f" — {'; '.join(pl['rules'])}" if pl.get("rules") else ""))
     ax.set_ylim(y_hi, y_lo)
     ax.set_xlim(c_lo - 1500, c_hi + 1500)
     ax.set_xlabel(f"offset from unit centroid, ft (+ = 90° clockwise of the {gb['azimuth_deg']:.0f}° plan)", fontsize=8)
@@ -228,6 +236,9 @@ def gunbarrel(u: dict[str, Any]) -> str:
                           label=f"existing {b}") for b in sorted(seen)]
     handles += [plt.Line2D([], [], marker="o", linestyle="", color="#9ca3af",
                            label="faded = < 30 % of the lateral in the unit (side / partial neighbour)")]
+    if n_permit:
+        handles += [plt.Line2D([], [], marker="o", linestyle="", markerfacecolor="white", markeredgecolor="#6b7280",
+                               label=f"hollow = round-100 TVD (permit depth, suspect) x{n_permit}")]
     handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="white", markeredgecolor=_color(lbl.split(":")[0]),
                            markersize=8, label="proposed " + lbl) for lbl in row_labels]
     ax.legend(handles=handles, fontsize=6.8, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)

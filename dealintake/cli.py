@@ -94,6 +94,9 @@ def main(argv: list[str] | None = None) -> int:
                    help="reviewer pool radius, BENCH=MILES — exactly that concentric radius, bypassing the "
                         "5/7.5/10 mi steps and the edge-trigger block (e.g. an emerging bench); decision-logged")
     e.add_argument("--no-anduin", action="store_true", help="skip anduin forecast/QC/TC preview")
+    e.add_argument("--tc-single", nargs="*", default=[], metavar="BENCH",
+                   help="reviewer: ONE type curve for this bench per lateral class, whatever the split test said "
+                        "(escalated gradient with no clean break / pool without a multiplier); decision-logged")
     e.add_argument("--tc-groups", nargs="*", default=[],
                    help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")
     e.add_argument("--short-history-transfer", type=int, metavar="POST_PEAK_MONTHS",
@@ -130,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
                               use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups),
                               short_history_transfer=_transfer_cutoff(a, cfg),
-                              radius_overrides=_radius(a.radius))
+                              radius_overrides=_radius(a.radius), tc_single=a.tc_single)
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2

@@ -121,32 +121,84 @@ def read(run_dir: Path, prop: dict[str, Any]) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for label, u in by_label.items():
         row = units.get(label) or {}
-        benches = []
+        benches, opts = [], {}
         for b, v in (row.get("benches") or {}).items():
             if not isinstance(v, dict) or not isinstance(v.get("evaluate"), bool):
                 raise ValueError(f"{FILENAME}: {label}.{b} needs `evaluate: true|false`")  # noqa: TRY004 — a file-content error
             if v["evaluate"]:
                 benches.append(bench_code(b))
+                opts[bench_code(b)] = bench_options(v, f"{label}.{b}")
         ll = row.get("planned_lateral_ft", u["planned_lateral"]["median_ft"])
         if not isinstance(ll, (int, float)) or ll <= 0:
             raise ValueError(f"{FILENAME}: {label}.planned_lateral_ft must be a positive number, got {ll!r}")
+        min_leg = row.get("min_leg_ft")
+        if min_leg is not None and (not isinstance(min_leg, (int, float)) or min_leg <= 0):
+            raise ValueError(f"{FILENAME}: {label}.min_leg_ft must be a positive number, got {min_leg!r}")
         seed = [b for b, v in (u.get("bench_seed") or {}).items() if v["evaluate"]]
         out[label] = {
             "benches": benches, "planned_lateral_ft": float(ll), "seed_benches": seed,
-            "edited": sorted(benches) != sorted(seed) or round(float(ll)) != round(u["planned_lateral"]["median_ft"]),
+            "bench_opts": opts, "min_leg_ft": None if min_leg is None else float(min_leg),
+            "edited": (sorted(benches) != sorted(seed) or round(float(ll)) != round(u["planned_lateral"]["median_ft"])
+                       or any(opts[b] for b in opts) or min_leg is not None),
         }
     return out
 
 
-def reviewed_benches(run_dir: Path) -> dict[str, list[str]]:
-    """{unit: [enabled benches]} from an existing benches.yaml, {} when there is
-    none — lets a re-propose draw its previews at the REVIEWER's benches."""
+SIDES = ("west", "east", "north", "south")
+ROLES = ("base", "upside")
+
+
+def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
+    """Reviewer per-bench keys (all optional, VaULt walkthrough 2026-09-28):
+      tvd_ft          landing TVD for a bench with thin/no local control (geology call)
+      spacing_ft      row spacing for the generated pattern (the reviewer sets the
+                      pattern; Novi's de-facto spacing is a suggestion, 880 the fallback)
+      n_wells         cap on rows per unit (4-per-section = 4 at 1,320 ft)
+      keep_side       keep only the rows on that compass side of the unit centre
+      drop_east_rows / drop_west_rows / drop_north_rows / drop_south_rows
+                      drop the n rows nearest that side (PDP there, basin edge)
+      min_leg_ft      (unit level) drop generated legs shorter than this
+      role            base (default) | upside — carried to the dossier/handoff"""
+    out: dict[str, Any] = {}
+    for k in ("tvd_ft", "spacing_ft"):
+        if v.get(k) is not None:
+            if not isinstance(v[k], (int, float)) or v[k] <= 0:
+                raise ValueError(f"{FILENAME}: {where}.{k} must be a positive number, got {v[k]!r}")
+            out[k] = float(v[k])
+    if v.get("n_wells") is not None:
+        if not isinstance(v["n_wells"], int) or v["n_wells"] < 1:
+            raise ValueError(f"{FILENAME}: {where}.n_wells must be a positive integer, got {v['n_wells']!r}")
+        out["n_wells"] = int(v["n_wells"])
+    if v.get("keep_side") is not None:
+        if v["keep_side"] not in SIDES:
+            raise ValueError(f"{FILENAME}: {where}.keep_side must be one of {SIDES}, got {v['keep_side']!r}")
+        out["keep_side"] = v["keep_side"]
+    for side in SIDES:
+        k = f"drop_{side}_rows"
+        if v.get(k) is not None:
+            if not isinstance(v[k], int) or v[k] < 0:
+                raise ValueError(f"{FILENAME}: {where}.{k} must be a non-negative integer, got {v[k]!r}")
+            out[k] = int(v[k])
+    if v.get("role") is not None:
+        if v["role"] not in ROLES:
+            raise ValueError(f"{FILENAME}: {where}.role must be one of {ROLES}, got {v['role']!r}")
+        out["role"] = v["role"]
+    return out
+
+
+def reviewed_benches(run_dir: Path) -> dict[str, dict[str, Any]]:
+    """{unit: {benches: [enabled], bench_opts: {bench: options}, min_leg_ft}}
+    from an existing benches.yaml, {} when there is none — lets a re-propose
+    draw its previews at the REVIEWER's benches, TVDs, spacing and row rules."""
     path = run_dir / FILENAME
     if not path.exists():
         return {}
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    out: dict[str, list[str]] = {}
+    out: dict[str, dict[str, Any]] = {}
     for label, row in (raw.get("units") or {}).items():
-        out[label] = [bench_code(b) for b, v in ((row or {}).get("benches") or {}).items()
-                      if isinstance(v, dict) and v.get("evaluate") is True]
+        row = row or {}
+        on = {bench_code(b): bench_options(v, f"{label}.{b}") for b, v in (row.get("benches") or {}).items()
+              if isinstance(v, dict) and v.get("evaluate") is True}
+        out[label] = {"benches": list(on), "bench_opts": on,
+                      "min_leg_ft": None if row.get("min_leg_ft") is None else float(row["min_leg_ft"])}
     return out

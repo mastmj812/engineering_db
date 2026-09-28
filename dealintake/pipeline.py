@@ -45,6 +45,7 @@ from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
     LocalFrame,
+    apply_row_rules,
     axial_diff,
     grid_convergence_deg,
     gunbarrel_frame,
@@ -95,6 +96,7 @@ def gunbarrel_preview(
     unit: Any, azimuth_deg: float, bench_proposal: list[dict[str, Any]], bench_seed: dict[str, dict[str, Any]],
     gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
+    bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
 ) -> dict[str, Any]:
     """Cross-section data for the review page: existing producers and Novi
     BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
@@ -137,23 +139,37 @@ def gunbarrel_preview(
             novi.append({"stick_id": st["stick_id"], "bench": st["formation_blueox"] or "(unmapped)",
                          "offset_ft": round(oa[0]), "tvd_ft": float(st["tvd"]), "relation": st["relation"]})
     planned: dict[str, dict[str, Any]] = {}
+    opts_all = bench_opts or {}
     for b, row in bench_seed.items():
-        if not row["evaluate"] or b not in tvd_by:
+        if not row["evaluate"]:
+            continue
+        opts = opts_all.get(b) or {}
+        tvd = opts.get("tvd_ft", tvd_by.get(b))
+        if tvd is None:
             continue
         g2 = gate2.get(b) or {}
-        sp = float(g2.get("novi_spacing_ft") or DEFAULT_SPACING_FT)
+        # The reviewer sets the pattern; Novi's de-facto spacing is a SUGGESTION
+        # (36-37-38: Novi drew BS3_C at ~650 ft), 880 ft is the fallback.
+        sp = float(opts.get("spacing_ft") or DEFAULT_SPACING_FT)
+        sp_src = "reviewer" if opts.get("spacing_ft") else "880-ft fallback"
         try:
-            gen = narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd_by[b], "spacing_ft": sp}],
+            gen = narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
                                  setback_ft=setback_ft, spacing_ft=sp,
                                  azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y))
-            offs = [round(project(leg["geom"])[0]) for leg in legs(gen)]
-            lls = [round(float(leg.get("completed_lateral_ft") or 0)) for leg in legs(gen)]
+            rows = [{"offset_ft": round(project(leg["geom"])[0]),
+                     "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0))} for leg in legs(gen)]
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
-            offs, lls = [], []
             planned[b] = {"error": str(e)[:160]}
             continue
-        planned[b] = {"tvd_ft": tvd_by[b], "spacing_ft": sp, "spacing_source": "Novi BASE_CASE" if g2.get("novi_spacing_ft") else "880-ft fallback",
-                      "offsets_ft": offs, "lateral_ft": lls}
+        kept, notes = apply_row_rules(
+            rows, azimuth_deg, n_wells=opts.get("n_wells"), keep_side=opts.get("keep_side"),
+            drop_rows={sd: opts[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south") if opts.get(f"drop_{sd}_rows")},
+            min_leg_ft=min_leg_ft)
+        planned[b] = {"tvd_ft": tvd, "tvd_source": "reviewer" if "tvd_ft" in opts else "local median",
+                      "spacing_ft": sp, "spacing_source": sp_src,
+                      "novi_spacing_ft": g2.get("novi_spacing_ft"),
+                      "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
+                      "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base")}
     return {"azimuth_deg": azimuth_deg, "cross_extent_ft": [round(c_lo), round(c_hi)],
             "bench_tvd_ft": tvd_by, "existing": existing, "novi": novi, "planned": planned}
 
@@ -372,13 +388,15 @@ def propose(
             # existing wells — so topfill/underfill calls are made on the review
             # page, never automatically. Sticks are narvi PREVIEWS at the seed's
             # benches; evaluate regenerates them with the class-level spacing.
-            enabled = reviewed.get(pc["label"]) if reviewed else None
+            rv = reviewed.get(pc["label"]) if reviewed else None
             gun = gunbarrel_preview(
                 u, pl.azimuth_deg, proposal,
-                {b: {"evaluate": True} for b in enabled} if enabled is not None else bench_seed,
+                {b: {"evaluate": True} for b in rv["benches"]} if rv is not None else bench_seed,
                 gate2, sticks, pdp_near, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
+                bench_opts=rv["bench_opts"] if rv is not None else None,
+                min_leg_ft=rv["min_leg_ft"] if rv is not None else None,
             )
-            gun["benches_source"] = unit_benches.FILENAME if enabled is not None else "seed"
+            gun["benches_source"] = unit_benches.FILENAME if rv is not None else "seed"
             out["units"].append({
                 "label": pc["label"],
                 "gunbarrel": gun,
@@ -512,10 +530,14 @@ def evaluate(
     tc_group_overrides: dict[str, list[list[str]]] | None = None,
     short_history_transfer: int | None = None,
     radius_overrides: dict[str, float] | None = None,
+    tc_single: list[str] | None = None,
     narvi: Narvi | None = None,
     anduin: Anduin | None = None,
 ) -> dict[str, Any]:
-    """radius_overrides: {bench: miles} — REVIEWER decision: the eligible pool
+    """tc_single: benches the REVIEWER pools into one TC per class regardless of
+    the split test (an escalated gradient with no clean break; a split he
+    chose to pool without a multiplier) — decision-logged like --tc-groups.
+    radius_overrides: {bench: miles} — REVIEWER decision: the eligible pool
     is drawn at exactly that concentric radius, bypassing the radius steps and
     the edge-trigger block. Recorded in the pool flags + decision log.
     tc_group_overrides: {bench: [[unit, ...], ...]} — REVIEWER decision that
@@ -539,7 +561,8 @@ def evaluate(
     if benches:
         deal_wide = [bench_code(b) for b in benches]
         plan = {u["label"]: {"benches": deal_wide, "planned_lateral_ft": float(u["planned_lateral"]["median_ft"]),
-                             "seed_benches": deal_wide, "edited": False} for u in prop["units"]}
+                             "seed_benches": deal_wide, "edited": False, "bench_opts": {}, "min_leg_ft": None}
+                for u in prop["units"]}
         plan_source = "--benches (deal-wide)"
     else:
         plan = unit_benches.read(run_dir, prop)
@@ -552,13 +575,19 @@ def evaluate(
     # that actually plan each bench.
     tvd_by_bench: dict[str, list[float]] = {}
     for u in prop["units"]:
+        pu = plan[u["label"]]
         for r in u["bench_proposal"]:
             b = bench_code(r["bench"])
-            if r["median_tvd_ft"] is not None and b in plan[u["label"]]["benches"]:
+            if r["median_tvd_ft"] is not None and b in pu["benches"] and "tvd_ft" not in (pu["bench_opts"].get(b) or {}):
                 tvd_by_bench.setdefault(b, []).append(r["median_tvd_ft"])
+        for b, o in pu["bench_opts"].items():          # reviewer-supplied TVDs (thin / no local control)
+            if "tvd_ft" in o:
+                tvd_by_bench.setdefault(b, []).append(o["tvd_ft"])
     missing = [b for b in benches if b not in tvd_by_bench]
     if missing:
-        raise ValueError(f"no local median TVD for {missing} in the units that enable them ({plan_source})")
+        raise ValueError(f"no local median TVD for {missing} in the units that enable them ({plan_source}) "
+                         "— give the bench a reviewer tvd_ft in benches.yaml")
+    tc_single = [bench_code(b) for b in (tc_single or [])]
     radius_overrides = {bench_code(b): float(r) for b, r in (radius_overrides or {}).items()}
     stray = [b for b in radius_overrides if b not in benches]
     if stray:
@@ -590,6 +619,9 @@ def evaluate(
             "gate": "1 unit benches + lateral", "bench": lb,
             "signal": f"seed: {', '.join(p['seed_benches']) or 'none'}",
             "decision": (f"{', '.join(p['benches']) or 'NOT EVALUATED'}; planned lateral {p['planned_lateral_ft']:,.0f} ft"
+                         + "".join(f"; {b} " + ", ".join(f"{k} {v}" for k, v in o.items())
+                                   for b, o in p.get("bench_opts", {}).items() if o)
+                         + (f"; min leg {p['min_leg_ft']:,.0f} ft" if p.get("min_leg_ft") else "")
                          + (" (edited vs seed)" if p["edited"] else "")),
             "by": f"reviewer ({plan_source})",
         })
@@ -634,14 +666,17 @@ def evaluate(
                 for u in prop["units"] if u["label"] in units
                 for b, g in (u.get("gate2") or {}).items() if bench_code(b) == bench
             ])
+            unit_sp = {lb: (plan[lb]["bench_opts"].get(bench) or {}).get("spacing_ft") for lb in class_units}
+            rev_sp = _median([v for v in unit_sp.values() if v])
             if bench in spacing_ft:
-                sp, sp_src = float(spacing_ft[bench]), "reviewer"
-            elif novi_sp:
-                sp, sp_src = float(novi_sp), "Novi BASE_CASE de-facto spacing (median over the class units)"
+                sp, sp_src = float(spacing_ft[bench]), "reviewer (--spacing)"
+            elif rev_sp:
+                sp, sp_src = float(rev_sp), "reviewer (benches.yaml, median over the class units)"
             else:
                 sp, sp_src = DEFAULT_SPACING_FT, f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
             B["spacing_ft"] = sp
-            B["spacing_source"] = sp_src
+            B["spacing_source"] = sp_src + (f"; Novi de-facto pattern {novi_sp:,.0f} ft (suggestion only)" if novi_sp else "")
+            B["novi_spacing_ft"] = novi_sp
             support_all: list[dict[str, Any]] = []
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
@@ -661,12 +696,18 @@ def evaluate(
                 # the cross-unit median only orders the stack / is the fallback.
                 local_tvd = next((r["median_tvd_ft"] for r in u["bench_proposal"]
                                   if bench_code(r["bench"]) == bench and r["median_tvd_ft"] is not None), None)
-                tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
+                opts = plan[label]["bench_opts"].get(bench) or {}
+                if "tvd_ft" in opts:
+                    tvd_u, tvd_src = float(opts["tvd_ft"]), "reviewer (benches.yaml)"
+                else:
+                    tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
+                    tvd_src = "unit local median" if local_tvd is not None else "cross-unit median (no local control)"
+                sp_u = float(opts.get("spacing_ft") or sp)
                 g2 = u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
                                                "pud_inside": 0, "pud_crossing": 0}
                 unit_novi: list[int] = []
-                UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u,
-                                      "tvd_source": "unit local median" if local_tvd is not None else "cross-unit median (no local control)"}
+                UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
+                                      "spacing_ft": sp_u, "role": opts.get("role", "base"), "row_rules": []}
                 if g2["source"] == "novi":
                     sticks = [s for s in wh.novi_sticks(conn, geom)
                               if s["formation_blueox"] == bench and s["category"] == "PUD"
@@ -680,18 +721,35 @@ def evaluate(
                 else:
                     # narvi takes a UTM-13N GRID bearing; the plan is a TRUE bearing.
                     gen = narvi.generate(
-                        geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp}],
-                        setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp,
+                        geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp_u}],
+                        setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp_u,
                         azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
                     )
                     lg = legs(gen)
+                    # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
+                    project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
+                    rows = [{"offset_ft": round(project(leg["geom"])[0]),
+                             "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0)), "leg": leg} for leg in lg]
+                    kept, notes = apply_row_rules(
+                        rows, u["planned_lateral"]["azimuth_deg"], n_wells=opts.get("n_wells"),
+                        keep_side=opts.get("keep_side"),
+                        drop_rows={sd: opts[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south")
+                                   if opts.get(f"drop_{sd}_rows")},
+                        min_leg_ft=plan[label]["min_leg_ft"])
+                    lg = [r["leg"] for r in kept]
+                    UB["row_rules"] = notes
+                    UB["n_generated"] = len(rows)
                     UB["locations"] = [{"id": f"gen-{i}", "src": "narvi_preview",
                                         "ll_ft": leg.get("completed_lateral_ft"), "tvd": tvd_u,
                                         "wkt": leg["geom"].wkt} for i, leg in enumerate(lg)]
                     sup = [wh.pdp_support(conn, leg["geom"], bench, tvd_u) for leg in lg]
                     for leg in lg:
+                        leg_ft = float(leg.get("completed_lateral_ft") or planned_ll)
+                        # Long generated legs (>= long_lateral.min_ft) use the wider tolerance for
+                        # the Novi representative pull too (Michael 2026-09-28; ledger s9 note):
+                        # Novi's 5,080-ft sticks fell outside +/-25% of 15,144-ft legs.
                         unit_novi += wh.representative_sticks(
-                            conn, leg["geom"], bench, float(leg.get("completed_lateral_ft") or planned_ll), tol)
+                            conn, leg["geom"], bench, leg_ft, cfg.lateral_tolerance(basin, leg_ft))
                 c3 = [r.get("pdp_count_3mi") for r in sup if r.get("pdp_count_3mi") is not None]
                 UB["gate3"] = {
                     "n_locations": len(sup),
@@ -714,8 +772,26 @@ def evaluate(
             # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
             B["edge_trigger"] = {"fired": edge, **edge_sig}
-            pdp_adj_units = [lb for lb, ub in B["units"].items() if ub["has_pdp_in_adjacent_bench"]]
-            # Tier-order flip by STRICT MAJORITY of units (Michael, 2026-09-18); tie -> default.
+            # First-order scenario (Michael, 2026-09-28): what is PRODUCING in each
+            # unit within the vertical band of this bench — those benches are the
+            # parent test for the cohort, and a strict majority of units with such
+            # producers puts the topfill/underfill tier first.
+            band = float(cfg["codev"]["scenario_band_ft"])
+            existing_by_unit: dict[str, dict[str, list[str]]] = {}
+            for u in prop["units"]:
+                if u["label"] not in units:
+                    continue
+                tvd_here = B["units"][u["label"]]["tvd_ft"]
+                above = sorted({e["bench"] for e in (u.get("gunbarrel") or {}).get("existing", [])
+                                if e["inside"] and 0 < tvd_here - e["tvd_ft"] <= band and e["bench"] != "(unmapped)"})
+                below = sorted({e["bench"] for e in (u.get("gunbarrel") or {}).get("existing", [])
+                                if e["inside"] and 0 < e["tvd_ft"] - tvd_here <= band and e["bench"] != "(unmapped)"})
+                existing_by_unit[u["label"]] = {"above": above, "below": below}
+                B["units"][u["label"]]["existing_above"] = above
+                B["units"][u["label"]]["existing_below"] = below
+            existing_benches = sorted({b for v in existing_by_unit.values() for b in v["above"] + v["below"]})
+            B["existing_benches_in_band"] = existing_benches
+            pdp_adj_units = [lb for lb, v in existing_by_unit.items() if v["above"] or v["below"]]
             flip = len(pdp_adj_units) * 2 > len(B["units"])
             min_wells = int(cfg["type_curve"]["min_wells"])
             pool_flags: list[str] = []
@@ -723,9 +799,9 @@ def evaluate(
             radius, eligible, excluded, adjacent = _select_pool(
                 lambda r, _b=bench, _c=cands0, _un=union: (
                     _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r)),
-                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll: classify(
+                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches: classify(
                     cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=_ll,
-                    basin=_bn, planned_spacing_ft=_sp),
+                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
             pool_tol = cfg.lateral_tolerance(basin, planned_ll)
@@ -745,10 +821,11 @@ def evaluate(
                 })
             elif edge and len(eligible) < min_wells:
                 pool_flags.append("EDGE trigger fired: no concentric extension — propose strike-biased set (reviewer confirms)")
-            if pdp_adj_units and len(pdp_adj_units) < len(B["units"]):
+            if existing_benches:
                 pool_flags.append(
-                    f"adjacent-bench PDP in {len(pdp_adj_units)}/{len(B['units'])} units "
-                    f"({', '.join(pdp_adj_units)}): {'majority -> order flipped' if flip else 'no majority -> default order'}")
+                    f"producers within {band:,.0f} ft of this bench in {len(pdp_adj_units)}/{len(B['units'])} units "
+                    f"({', '.join(existing_benches)}): {'majority -> topfill/underfill tier first' if flip else 'no majority -> pad-mates first'}; "
+                    "cohort parent test = these benches (first-order)")
             order, order_reason = tier_order(cfg, adjacent, flip)
             B["pool"] = {
                 "n_eligible": len(eligible), "n_excluded": len(excluded), "flags": pool_flags,
@@ -790,6 +867,8 @@ def evaluate(
             own = {g["unit"] for g in sr.groups if g["eligible"]}
             groups = []
             override = (tc_group_overrides or {}).get(bench)
+            if bench in (tc_single or ()) and not override:
+                override = [list(units)]                      # one group of every unit in the class
             if override:
                 named = [u for grp in override for u in grp]
                 unknown = sorted(set(named) - known_units)
@@ -804,7 +883,9 @@ def evaluate(
                 clusters = [list(grp) for grp in override] + ([rest] if rest else [])
                 B["split"]["reviewer_override"] = {
                     "groups": clusters, "test_said": sr.recommendation,
-                    "note": "reviewer grouping replaces the split test for this bench",
+                    "note": ("reviewer: ONE TC for this bench (gradient noted, no multiplier)" if bench in (tc_single or ())
+                             and not (tc_group_overrides or {}).get(bench) else
+                             "reviewer grouping replaces the split test for this bench"),
                 }
                 res["decision_log"].append({
                     "gate": "5b TC granularity", "bench": key,
@@ -867,6 +948,19 @@ def evaluate(
                 ids = sorted({i for u in g["units"] for i in B["units"][u]["novi_ids"]})
                 G["novi"] = _novi_summary(wh.novi_params(conn, ids))
                 G["novi"]["n_sticks"] = len(ids)
+                # Gas basis = anduin (Michael 2026-09-28); any stream where Novi and the
+                # TC disagree by more than stream_gap_flag_ratio is called out, not buried.
+                gap = float(cfg["qc_flags"].get("stream_gap_flag_ratio", 1.5))
+                G["novi_vs_tc"] = {}
+                for st in ("oil", "gas"):
+                    nv_eur = (G["novi"].get(st) or {}).get("eur_per_1000ft")
+                    tc_eur = ((G.get("tc_preview") or {}).get(st) or {}).get("eur_per_unit")
+                    if nv_eur and tc_eur:
+                        ratio = nv_eur / tc_eur
+                        G["novi_vs_tc"][st] = round(ratio, 2)
+                        if ratio > gap or ratio < 1 / gap:
+                            G["flags"].append(f"{st}: Novi EUR is {ratio:.1f}x the anduin TC ({nv_eur:,.0f} vs {tc_eur:,.0f} per 1,000 ft) "
+                                              f"— beyond the {gap:g}x gap flag; anduin is the basis, reviewer decides")
                 B["tc_groups"].append(G)
             B["eligible_pool"] = eligible
             if ad and B.get("short_history_transfer", {}).get("written"):

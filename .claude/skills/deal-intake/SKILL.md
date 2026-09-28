@@ -142,7 +142,9 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   beyond the unit's ends is not drawn). Novi BASE_CASE sticks are NOT
   drawn — our proposal vs PDP only, nothing outside the depth rights; the
   TVD window is the proposed benches ± 1,500 ft (producers outside it are
-  counted in the title, not plotted). Rows are narvi previews
+  counted in the title, not plotted); a producer at a round-100 TVD is drawn
+  hollow (permit depth, suspect — rule 10; VaULt 25-26-27 "WCB_1 at
+  13,000 ft" was a 2008 well with a permit TVD). Rows are narvi previews
   at the REVIEWED benches when `benches.yaml` exists, else at the seed. It
   exists so topfill/underfill calls are made by eye on the page (BS3_S rows
   sitting over WCA_1/WCXY producers) — the runner never excludes a bench for
@@ -150,6 +152,18 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   **Michael reviews the page and states the exceptions in chat; the operator
   records them in `benches.yaml` — he never reads the YAML** (feedback
   2026-09-22).
+- **Reviewer keys in `benches.yaml`** (VaULt walkthrough, 2026-09-28) — the
+  operator writes these from Michael's calls; `propose` previews and
+  `evaluate` honour them: per bench `tvd_ft` (his landing TVD for a bench
+  with thin/no local control — a geology call), `spacing_ft` (the pattern —
+  Novi's de-facto spacing is only a SUGGESTION shown on the page; 880 ft is
+  the fallback), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
+  west|east|north|south`, `drop_east_rows: n` (and west/north/south — the n
+  rows nearest that side, for PDP there or basin-edge conservatism), `role:
+  upside`; per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
+  words; the runner maps them onto the rule-16 frame (on a 162° plan the
+  +offset side is WSW, so "east" is the negative side). Every key lands in
+  the decision log.
 - **Per-unit bench seed → `benches.yaml`:** current-SOP packages carry
   **depth-severed stacked DSUs** (identical polygons, different rights and
   WI/NRI — VaULt "2-11 (Bone Spring)" over "2-11 (WCB)"), so benches are
@@ -198,6 +212,7 @@ python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
        [--benches WCA_1 WCA_2 ...]       ONE deal-wide list (simple deals); omit to use benches.yaml
        [--spacing BENCH=FT ...]          per-bench planned spacing (default 880 ft narvi fallback)
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
+       [--tc-single BENCH ...]           reviewer: ONE TC per class for the bench (escalate resolved / pooled, no multiplier)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
        [--short-history-transfer N | --no-short-history-transfer]
        [--no-anduin]                     warehouse + narvi only; split test falls back to the Novi EUR screen
@@ -258,13 +273,24 @@ Remedy: `--radius BENCH=MILES` — exactly that radius, edge block bypassed,
 decision-logged. `min_wells: 10` is an uncalibrated scaffold value; under
 it the cohort gets an `under_count` flag, not a block.
 
-### Gate 5 — co-development tiers and the fill
+### Gate 5 — scenario tiers and the fill
 
-Tier of each pool well vs the ADJACENT planned benches (one above / one
-below in the planned stack): `codev` (adjacent bench online within ±180 d)
-· `stack_standalone` (no adjacent neighbor) · `topfill_underfill` (an
-adjacent bench was an **unshielded vertical parent**, or only a later
-child). "Vertical parent" is the **house rule of record, `curated.dev_scenario`
+**First-order scenario tiering (Michael, 2026-09-28).** For each bench ×
+class the runner reads what is PRODUCING IN THE UNITS within
+`codev.scenario_band_ft` (1,000 ft) above/below the planned bench (from the
+gunbarrel's in-unit producers) — that set is the cohort's parent test, not
+the deal-wide planned stack: `topfill_underfill` = the candidate had an
+**unshielded vertical parent** in one of those benches; `codev` = an
+ADJACENT planned bench came on within ±180 d (pad-mates, the greenfield
+analog); `stack_standalone` = the rest. Later-child wells no longer tier as
+topfill_underfill. Scenarios are NEVER chained ("WCB_2 under WCA" is
+matched; "…and co-developed with WCB_1" is not — the data thins out and the
+plan does not need it; VaULt: WCB_2-as-WCA-underfill has 31 analogs within
+25 mi, the chained case 2). Michael's stated basis for dropping a bench is
+often experience of poor performance, not zone absence; the dev_scenario
+medians can test it (WCB_1 under WCA near VaULt: cum-12 13.0k vs codev
+14.0k per 1,000 ft — no significant degradation) — offer the numbers, keep
+his call. "Vertical parent" is the **house rule of record, `curated.dev_scenario`
 (sql/50, Michael 2026-09-23)**: online > 180 d earlier, closest parent's
 lateral MIDPOINT within **660 ft** of the subject lateral, TVD within
 **1,000 ft**, and not **shielded** — a co-developed other-bench well sitting
@@ -274,8 +300,8 @@ from `bench_context`; it copies no threshold. A parent beyond the gate is
 NOT a parent (the ungated co-extent rule diluted the Midland topfill
 hindcast signal 1.23× → 1.05×; gated 1.12–1.22×). Default order codev →
 stack_standalone → topfill_underfill; **flips** to topfill_underfill first
-when a STRICT MAJORITY of deal units already have PDP in an adjacent bench
-(tie keeps the default). Fill: first tier nearest-first up to `max_wells`
+when a STRICT MAJORITY of the class's units have producers within the band
+of the bench (tie keeps the default). Fill: first tier nearest-first up to `max_wells`
 (20); later tiers only top up to `min_wells`. Flags: `first tier capped`,
 `under_count`, `first_tier_share < 50 %`. Per-tier median Novi EUR/1,000 ft
 is shown so the bias direction of the tier mix is visible. The buildup
@@ -373,7 +399,14 @@ Di beside it) vs the anduin TC preview, plus **gas two ways** — independent
 Arps and ratio-to-cum-oil on the TC's own oil curve (GOR fit R² shown).
 Hindcast context: gas Arps runs low (−6 % → −14 % with more history, GOR
 rises in the holdout); the ratio method inherits the oil forecast's error.
-Arps stays the default until more deals are compared. Which forecast goes
+Arps stays the default until more deals are compared. **Gas basis =
+anduin** (Michael 2026-09-28); any stream where Novi and the TC differ by
+more than `qc_flags.stream_gap_flag_ratio` (1.5×) is flagged on the group
+and shown as "Gas: Novi/TC" in the summary table (VaULt WCB_1 @ 9,900: Novi
+gas 3.6× the TC). The Novi representative-stick pull for generated legs ≥
+`type_curve.long_lateral.min_ft` uses the long-lateral tolerance (0.40) —
+a deal-intake-specific reading of ledger §9 so 15,000-ft legs still get a
+Novi comparison; the other §9 consumers are unchanged. Which forecast goes
 to finance is Michael's call per bench — the dossier presents, never picks.
 
 ## Reading the result with Michael
@@ -407,14 +440,16 @@ Reviewer levers, all decision-logged or visible in the dossier:
 - Provisional / uncalibrated: edge-trigger thresholds, `min_wells: 10`,
   `di_bounds_per_stream`. Residual +6–11 % transfer bias is unexplained
   (vintage-matched lenders did not remove it).
-- Tiers are relative to the deal's ADJACENT planned benches; a well's
-  `scenario_class` can say `topfill` from a bench the deal doesn't plan. Read
-  the class column as context, the tier as the selection driver.
-- Adjacency for the co-development tiers uses the DEAL-wide planned stack,
-  not each footprint's — with stacked DSUs a bench can count as "adjacent"
-  because another unit plans it. Overlapping units that enable the SAME
-  bench (VaULt 2-11-14-23 over the 2-11 pair) each get locations for it —
-  the reviewer owns that double count in `benches.yaml`.
+- A well's `scenario_class` is relative to ANY bench; the tier is relative
+  to what is producing in the unit within the band. Read the class column
+  as context, the tier as the selection driver.
+- The `codev` tier still uses the DEAL-wide planned stack for "adjacent"
+  (pad-mates); with stacked DSUs a bench can count as adjacent because the
+  twin plans it. Genuinely overlapping polygons that enable
+  the SAME bench would each get locations for it — the reviewer owns that
+  double count in `benches.yaml`. Do NOT infer overlap from DSU names:
+  VaULt "2-11-14-23" and "2-11" share section numbers in different blocks
+  and sit 5.5 mi apart (caught by Michael 2026-09-28) — check geometry.
 - The planned-lateral chord estimate misreads odd-shaped units and units
   whose azimuth fell back to the long axis (VaULt 44-45 S2: 4,620 ft) —
   correct it in `benches.yaml`; `propose` has no azimuth override. Since
