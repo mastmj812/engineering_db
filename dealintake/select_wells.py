@@ -7,19 +7,16 @@ silently: every exclusion carries a reason, every inclusion a tier.
 TIERS (reviewer decisions 2026-09-18), relative to the ADJACENT PLANNED
 benches of the candidate's bench (the benches immediately above/below it in
 the deal's planned stack, ordered by landing TVD):
+  topfill_underfill  the candidate had an UNSHIELDED VERTICAL PARENT (house
+                     rule of record, curated.dev_scenario sql/50: online
+                     > 180 d earlier, lateral midpoint within 660 ft, TVD
+                     within 1,000 ft, not shielded — Michael 2026-09-23) in a
+                     bench that is PRODUCING IN THE UNIT within the band of
+                     this bench (FIRST-ORDER match, Michael 2026-09-28; no
+                     scenario chaining). Later-child wells do NOT count.
   codev              an adjacent planned bench came online within +/-180 d
-                     AND no adjacent planned bench was already producing
-                     (> 180 d earlier). Later infill (child) is ignored here:
-                     the original development was co-developed, and child
-                     counts are right-censored anyway.
-  stack_standalone   no adjacent-planned-bench neighbor at all.
-  topfill_underfill  an adjacent planned bench was an UNSHIELDED VERTICAL
-                     PARENT by the house rule of record (curated.dev_scenario,
-                     sql/50: online > 180 d earlier, lateral midpoint within
-                     660 ft, TVD within 1,000 ft, not shielded by a codev
-                     well in between — Michael 2026-09-23), OR was only a
-                     later CHILD (infilled from that bench afterwards). A
-                     parent beyond the gate does not make a topfill.
+                     (pad-mates — the greenfield analog).
+  stack_standalone   everything else.
 A single-bench plan has no adjacent bench: every candidate is tier
 `stack_standalone` and tiering is reported as not applicable.
 
@@ -98,22 +95,27 @@ def vertical_parents(c: dict[str, Any]) -> set[str]:
     return out
 
 
-def codev_tier(c: dict[str, Any], adjacent: list[str]) -> str:
-    """Tier vs the ADJACENT PLANNED benches. topfill_underfill = an adjacent
-    bench was an unshielded vertical parent (dev_scenario rule, see
-    vertical_parents) OR only a later child; codev = an adjacent bench came
-    on within +-180 d; else stack_standalone. A parent beyond the 660-ft /
-    1,000-ft gate is NOT a parent here (it diluted the Midland topfill
-    hindcast signal — Michael, 2026-09-23)."""
-    if not adjacent:
-        return "stack_standalone"
-    adj = set(adjacent)
-    if adj & vertical_parents(c):
+def codev_tier(c: dict[str, Any], adjacent: list[str], existing: list[str] | None = None) -> str:
+    """FIRST-ORDER scenario tier (Michael, 2026-09-28: never chain scenarios —
+    "WCB_2 under WCA" is matched, "WCB_2 under WCA and codev with WCB_1" is
+    not; the data thins out and the plan does not need it).
+      topfill_underfill  the candidate had an UNSHIELDED vertical parent
+                         (dev_scenario rule, vertical_parents) in one of the
+                         benches PRODUCING IN THE UNIT within the 1,000-ft band
+                         (`existing`) — the situation our stick will be in.
+      codev              an ADJACENT PLANNED bench came on within +-180 d
+                         (pad-mates, the greenfield case).
+      stack_standalone   everything else.
+    Later CHILD wells no longer count as topfill_underfill (Michael 2026-09-28):
+    a frac hit after the fact is not what a planned topfill sees. `existing`
+    replaces the deal-wide planned stack as the parent test (that stack
+    tiered WCB_2 against WCB_1/WCC we had just dropped instead of the WCA
+    producing in the unit)."""
+    ex = set(existing or [])
+    if ex and (ex & vertical_parents(c)):
         return "topfill_underfill"
-    if adj & set(c.get("codev_benches") or []):
+    if adjacent and (set(adjacent) & set(c.get("codev_benches") or [])):
         return "codev"
-    if adj & set(c.get("child_benches") or []):
-        return "topfill_underfill"
     return "stack_standalone"
 
 
@@ -170,10 +172,13 @@ class Selection:
 
 
 def tier_order(cfg: Config, adjacent: list[str], flip: bool) -> tuple[list[str], str]:
+    """flip = a strict majority of the class's units already have producers
+    within the vertical band of this bench (the sticks WILL be topfills /
+    underfills) — then that tier leads; else codev leads (greenfield)."""
     cx = cfg["codev"]
-    if flip and adjacent:
-        return list(cx["tier_order_when_pdp_adjacent"]), "majority of deal units already have PDP in an adjacent bench"
-    return list(cx["tier_order_default"]), "default"
+    if flip:
+        return list(cx["tier_order_when_pdp_adjacent"]), "majority of units have producers within the band above/below this bench"
+    return list(cx["tier_order_default"]), "default (greenfield: pad-mates first)"
 
 
 def classify(
@@ -185,17 +190,20 @@ def classify(
     planned_lateral_ft: float,
     basin: str | None,
     planned_spacing_ft: float,
+    existing_benches: list[str] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
-    """Tag every candidate with spacing class + codev tier and split into
+    """Tag every candidate with spacing class + scenario tier and split into
     (eligible, excluded-with-reasons, adjacent planned benches). No capping —
-    the eligible POOL feeds the split test before any cohort is filled."""
+    the eligible POOL feeds the split test before any cohort is filled.
+    `existing_benches` = benches producing in the class's units within the
+    vertical band of this bench (first-order parent test)."""
     adjacent = adjacent_benches(bench, planned_stack)
     tol = cfg.lateral_tolerance(basin, planned_lateral_ft)
     eligible, excluded = [], []
     for c in candidates:
         c = dict(c)
         c["spacing_class"] = spacing_class(c.get("lateral_closer_xy_ft"), planned_spacing_ft, cfg)
-        c["tier"] = codev_tier(c, adjacent)
+        c["tier"] = codev_tier(c, adjacent, existing_benches)
         reasons = exclusion_reasons(
             c, cfg, planned_lateral_ft=planned_lateral_ft, lateral_tol=tol,
             planned_spacing_ft=planned_spacing_ft,
@@ -223,7 +231,7 @@ def fill(
     pooled TC, to the unit itself for a per-polygon TC)."""
     sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=order_reason)
     if not adjacent:
-        sel.flags.append("single_bench_plan: codev tiering not applicable")
+        sel.flags.append("no adjacent planned bench: codev tier empty by construction")
     min_wells = int(cfg["type_curve"]["min_wells"])
     max_wells = int(cfg["type_curve"]["max_wells"])
     for t in order:
@@ -257,11 +265,12 @@ def select(
     basin: str | None,
     planned_spacing_ft: float,
     deal_has_pdp_in_adjacent_bench: bool,
+    existing_benches: list[str] | None = None,
 ) -> Selection:
     """classify + fill in one call (single pooled cohort)."""
     eligible, excluded, adjacent = classify(
         candidates, cfg, bench=bench, planned_stack=planned_stack, planned_lateral_ft=planned_lateral_ft,
-        basin=basin, planned_spacing_ft=planned_spacing_ft,
+        basin=basin, planned_spacing_ft=planned_spacing_ft, existing_benches=existing_benches,
     )
     order, why = tier_order(cfg, adjacent, deal_has_pdp_in_adjacent_bench)
     sel = fill(eligible, cfg, bench=bench, adjacent=adjacent, order=order, order_reason=why)

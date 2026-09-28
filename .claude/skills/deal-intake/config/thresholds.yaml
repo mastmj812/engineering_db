@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 6                 # v6 2026-09-26: planned azimuth = unit long axis (grid advisory, grid_vs_long_axis_flag_deg);
+config_version: 7                 # v7 2026-09-28: first-order scenario tiers (codev.scenario_band_ft, child branch dropped),
+                                  #    reviewer per-bench keys in benches.yaml, Novi spacing = suggestion, stream_gap_flag_ratio
+                                  # v6 2026-09-26: planned azimuth = unit long axis (grid advisory, grid_vs_long_axis_flag_deg);
                                   #    narvi azimuths converted UTM-grid <-> true; split table shared-offset count
                                   # v5 2026-09-25: Gate 2 orientation/length test (alignment.azimuth_tolerance_deg),
                                   #    Novi-inferred spacing, long-lateral pool tolerance (type_curve.long_lateral)
@@ -120,8 +122,14 @@ codev:                            # gate 5.2b — co-development tiering
   overlap_min_frac: 0.30
   tier_order_default: [codev, stack_standalone, topfill_underfill]
   tier_order_when_pdp_adjacent: [topfill_underfill, codev, stack_standalone]
-  # flip decided by STRICT MAJORITY of deal units with adjacent-bench PDP
-  # (Michael, 2026-09-18); a tie keeps the default order.
+  # FIRST-ORDER scenario tiering (Michael, 2026-09-28): the cohort's parent test
+  # is the set of benches PRODUCING IN THE UNIT within scenario_band_ft of the
+  # planned bench (what our stick will sit under/over) — never the deal-wide
+  # planned stack, never a chained "codev with X" match. The order flips to
+  # topfill_underfill-first on a STRICT MAJORITY of the class's units with such
+  # producers; a tie keeps the default. Later-child wells no longer tier as
+  # topfill_underfill.
+  scenario_band_ft: 1000          # = sql/50's vertical band
   min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no
@@ -162,6 +170,10 @@ qc_flags:                         # gate 6 — flags only, never auto-drop
                                   # reported (TX water often a flat vendor WOR, sql/41).
   outlier_flags_streams: [oil, gas]  # EUR/1,000 ft outliers + peak-month flags
   typical_effective_range: [0.65, 0.75]  # context in the dossier, not a bound
+  # Novi vs anduin TC per stream (Michael 2026-09-28: anduin is the basis; a gap
+  # beyond this ratio either way is flagged on the curve, not buried — WCB_1 @
+  # 9,900 on VaULt had Novi gas 3.6x the TC).
+  stream_gap_flag_ratio: 1.5
 
 split:                            # gate 5b — one TC or per-polygon TCs
   min_wells_per_group: 6

@@ -294,3 +294,13 @@ re-drop semantics so a split is an expected shape, not a surprise.
 *Column/sheet/key names in §6–§11 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
+
+### §9 note — deal-intake long-lateral reading (2026-09-28, not a drop change)
+
+The deal-intake runner (`engineering_db/dealintake`) applies the §9 per-basin
+lateral tolerance (delaware 0.25 / midland 0.40) to the Novi representative-stick
+pull EXCEPT for generated legs at or above `type_curve.long_lateral.min_ft`
+(12,500 ft), which use 0.40 so a 15,000-ft VaULt leg still finds Novi's
+5,080–10,360-ft sticks. anduin's dossier analog set, narvi's `warehouse.py` and
+`sql/35`'s default are unchanged; nothing the Blue Ox drop emits changes.
+Michael, 2026-09-28.

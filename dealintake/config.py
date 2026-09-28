@@ -28,7 +28,7 @@ _REQUIRED = {
                    "long_lateral"),
     "planned_lateral": ("setback_ft", "chord_step_ft"),
     "codev": ("xy_ft", "window_days", "overlap_min_frac", "tier_order_default",
-              "tier_order_when_pdp_adjacent", "min_tier1_frac_warn"),
+              "tier_order_when_pdp_adjacent", "min_tier1_frac_warn", "scenario_band_ft"),
     "spacing": ("tight_below_frac", "sentinel_ft"),
     "qc_flags": ("peak_month_tolerance", "eur_ft_mad_z", "di_dispersion"),
     "split": ("min_wells_per_group", "median_ratio", "alpha"),
