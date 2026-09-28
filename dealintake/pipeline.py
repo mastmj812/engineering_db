@@ -29,6 +29,7 @@ from collections.abc import Callable
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from decimal import Decimal
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -510,6 +511,70 @@ def shared_offsets(pool: list[dict[str, Any]], units: dict[str, Any], radius_ft:
     return out
 
 
+def pool_lateral_band(lls: list[float], cfg: Config, basin: str | None) -> tuple[float, float]:
+    """One pool per bench: the band SPANS the units' planned laterals — the
+    shortest unit's lower bound to the longest unit's upper bound, each at its
+    own tolerance (basin band; long-lateral tolerance at/above long_lateral.min_ft)."""
+    lo, hi = min(lls), max(lls)
+    return lo * (1 - cfg.lateral_tolerance(basin, lo)), hi * (1 + cfg.lateral_tolerance(basin, hi))
+
+
+def length_check(pool: list[dict[str, Any]], metric: str, cfg: Config) -> dict[str, Any]:
+    """Does per-1,000-ft performance move with lateral length INSIDE this pool?
+    Median of `metric` per length bucket vs the pool median; a bucket with
+    enough wells that sits outside flag_ratio is flagged. A check on the linear
+    per-1,000-ft scaling that one-pool-per-bench relies on — never a filter."""
+    lc = cfg["planned_lateral"]["length_check"]
+    edges = [float(e) for e in lc["bucket_edges_ft"]]
+    min_n, ratio = int(lc["min_wells"]), float(lc["flag_ratio"])
+    rows = [(float(c["lateral_length_ft"]), float(c[metric])) for c in pool
+            if c.get("lateral_length_ft") and c.get(metric)]
+    pool_med = _median([v for _, v in rows])
+    bounds = [0.0, *edges, float("inf")]
+    buckets, flags = [], []
+    for lo, hi in pairwise(bounds):
+        vals = [(ll, v) for ll, v in rows if lo <= ll < hi]
+        if not vals:
+            continue
+        label = (f"< {hi:,.0f} ft" if lo == 0 else f">= {lo:,.0f} ft" if hi == float("inf")
+                 else f"{lo:,.0f}-{hi:,.0f} ft")
+        med = _median([v for _, v in vals])
+        vs = med / pool_med if med and pool_med else None
+        judged = len(vals) >= min_n and vs is not None
+        flagged = bool(judged and (vs > ratio or vs < 1 / ratio))
+        buckets.append({"bucket": label, "n": len(vals), "median_lateral_ft": _median([ll for ll, _ in vals]),
+                        "median_per_1000ft": med, "vs_pool": vs, "judged": judged, "flagged": flagged})
+        if flagged:
+            flags.append(f"length check: {label} wells (n {len(vals)}) run {vs - 1:+.0%} vs the pool median per 1,000 ft "
+                         f"— beyond {ratio:g}x; linear scaling across lengths is suspect for this bench")
+    return {"metric": metric, "pool_median_per_1000ft": pool_med, "n": len(rows), "min_wells": min_n,
+            "flag_ratio": ratio, "buckets": buckets, "flags": flags}
+
+
+def lateral_support(cohort: list[dict[str, Any]], ll_by_unit: dict[str, float], cfg: Config,
+                    basin: str | None) -> tuple[list[dict[str, Any]], list[str]]:
+    """Per unit: is its planned lateral INSIDE the cohort's observed lateral
+    range, and how many cohort wells sit within the unit's own band? Outside
+    the range = the curve is a linear EXTRAPOLATION for that unit — flagged."""
+    lls = sorted(float(c["lateral_length_ft"]) for c in cohort if c.get("lateral_length_ft"))
+    min_n = int(cfg["planned_lateral"]["length_check"]["min_wells_near_planned"])
+    rows, flags = [], []
+    for label, ll in ll_by_unit.items():
+        tol = cfg.lateral_tolerance(basin, ll)
+        near = sum(1 for v in lls if ll * (1 - tol) <= v <= ll * (1 + tol))
+        outside = bool(lls) and not lls[0] <= ll <= lls[-1]
+        rows.append({"unit": label, "planned_lateral_ft": ll, "n_within_band": near, "band_tol": tol,
+                     "cohort_min_ft": lls[0] if lls else None, "cohort_max_ft": lls[-1] if lls else None,
+                     "extrapolated": outside, "thin": near < min_n})
+        if outside:
+            flags.append(f"{label}: planned lateral {ll:,.0f} ft is OUTSIDE the cohort's lateral range "
+                         f"({lls[0]:,.0f}-{lls[-1]:,.0f} ft) — the per-1,000-ft curve is a linear extrapolation here")
+        elif lls and near < min_n:
+            flags.append(f"{label}: only {near} cohort well(s) within +/-{tol:.0%} of the planned {ll:,.0f} ft lateral "
+                         "— length scaling rests on the rest of the pool")
+    return rows, flags
+
+
 def lateral_classes(ll_by_unit: dict[str, float], ratio: float) -> list[list[str]]:
     """Group units by planned lateral, shortest first: a unit joins the current
     class while its lateral is within `ratio` of the class's SHORTEST member,
@@ -606,12 +671,20 @@ def evaluate(
 
     ll_by_unit = {lb: p["planned_lateral_ft"] for lb, p in plan.items() if p["benches"]}
     class_ratio = float(cfg["planned_lateral"].get("class_ratio", 1.10))
+    # Michael 2026-09-28: ONE POOL PER BENCH, per 1,000 ft, scaled linearly to each
+    # unit's planned lateral (25 mi of VaULt: 3-mile vs 2-mile 30-yr EUR/1,000 ft
+    # within -13%/+8%, mixed sign; per-class pools were thinner than the effect).
+    # `class` keeps the v4-v7 per-lateral-class pools.
+    pooling = str(cfg["planned_lateral"].get("pooling", "bench"))
+    if pooling not in ("bench", "class"):
+        raise ValueError(f"planned_lateral.pooling must be bench|class, got {pooling!r}")
     res: dict[str, Any] = {
         "run_dir": str(run_dir), "config_version": cfg.version, "snapshot": prop["snapshot"],
         "planned_stack": stack, "bench_tvd_ft": bench_tvd,
         "planned_lateral_ft": _median(list(ll_by_unit.values())) or 0.0,
-        "lateral_classes": [{"units": c, "planned_lateral_ft": _median([ll_by_unit[u] for u in c])}
-                            for c in lateral_classes(ll_by_unit, class_ratio)],
+        "pooling": pooling,
+        "lateral_classes": ([{"units": c, "planned_lateral_ft": _median([ll_by_unit[u] for u in c])}
+                             for c in lateral_classes(ll_by_unit, class_ratio)] if pooling == "class" else []),
         "unit_plan": plan, "plan_source": plan_source,
         "flags": [], "benches": {}, "decision_log": [],
     }
@@ -621,6 +694,11 @@ def evaluate(
             + ", ".join(f"{c['planned_lateral_ft']:,.0f} ft x{len(c['units'])}" for c in res["lateral_classes"])
             + f"; units within {class_ratio - 1:.0%} share a class): each bench is pooled, split-tested and "
               "type-curved PER CLASS, with the lateral band centered on the class")
+    elif pooling == "bench" and ll_by_unit and max(ll_by_unit.values()) > min(ll_by_unit.values()) * class_ratio:
+        res["flags"].append(
+            f"planned laterals span {min(ll_by_unit.values()):,.0f}-{max(ll_by_unit.values()):,.0f} ft: ONE pool and one "
+            "type curve per bench, per 1,000 ft, scaled LINEARLY to each unit's lateral. Each bench carries a length "
+            "check (per-1,000-ft by length bucket) and a flag where a unit's lateral is outside the cohort's range")
     for lb, p in plan.items():
         res["decision_log"].append({
             "gate": "1 unit benches + lateral", "bench": lb,
@@ -650,7 +728,7 @@ def evaluate(
     jobs: list[tuple[str, list[str], str]] = []
     for bench in stack:
         ll_b = {lb: ll_by_unit[lb] for lb, p in plan.items() if bench in p["benches"]}
-        classes = lateral_classes(ll_b, class_ratio)
+        classes = lateral_classes(ll_b, class_ratio) if pooling == "class" else [sorted(ll_b, key=lambda u: (ll_b[u], u))]
         for cl in classes:
             ll_c = _median([ll_b[u] for u in cl])
             jobs.append((bench, cl, bench if len(classes) == 1 else f"{bench} @ {ll_c:,.0f} ft"))
@@ -693,6 +771,11 @@ def evaluate(
             basin = bc[0][0] if bc else None
             B["basin"] = basin
             tol = cfg.lateral_tolerance(basin)
+            band_ll = (pool_lateral_band([ll_by_unit[lb] for lb in class_units], cfg, basin)
+                       if pooling == "bench" else None)
+            B["lateral_band_ft"] = list(band_ll) if band_ll else [
+                planned_ll * (1 - cfg.lateral_tolerance(basin, planned_ll)),
+                planned_ll * (1 + cfg.lateral_tolerance(basin, planned_ll))]
 
             for u in prop["units"]:
                 if u["label"] not in units:
@@ -806,15 +889,17 @@ def evaluate(
             radius, eligible, excluded, adjacent = _select_pool(
                 lambda r, _b=bench, _c=cands0, _un=union: (
                     _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r)),
-                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches: classify(
+                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches, _bd=band_ll: classify(
                     cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=_ll,
-                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex),
+                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex, lateral_band_ft=_bd),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
             pool_tol = cfg.lateral_tolerance(basin, planned_ll)
-            pool_flags.append(f"radius {radius} mi{' (REVIEWER override)' if r_over is not None else ''}, "
-                              f"basin {basin}, lateral tol {pool_tol:.0%}"
-                              f"{' (long-lateral class)' if pool_tol > tol else ''}, eligible pool {len(eligible)}")
+            pool_flags.append(f"radius {radius} mi{' (REVIEWER override)' if r_over is not None else ''}, basin {basin}, "
+                              + (f"lateral band {band_ll[0]:,.0f}-{band_ll[1]:,.0f} ft (spans the units' planned laterals)"
+                                 if band_ll else
+                                 f"lateral tol {pool_tol:.0%}{' (long-lateral class)' if pool_tol > tol else ''}")
+                              + f", eligible pool {len(eligible)}")
             if r_over is not None:
                 if edge:
                     pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")
@@ -854,6 +939,9 @@ def evaluate(
                 metric = "anduin_oil_eur_per_1000ft"
             else:
                 metric = "eur_per_1000ft"
+
+            B["length_check"] = length_check(eligible, metric, cfg)
+            pool_flags += B["length_check"]["flags"]
 
             # ---- Gate 5b: split test on the POOL, before any cohort is filled -----
             sr = split_test.run(eligible, units, cfg, metric=metric)   # tags c["unit"], c["unit_dist_ft"]
@@ -934,6 +1022,9 @@ def evaluate(
                     "tier_counts": sel.tier_counts(), "tier_medians_novi_eur_per_1000ft": tier_medians(sel),
                     "flags": sel.flags, "tc_wells": sel.selected,
                 }
+                G["lateral_support"], ls_flags = lateral_support(
+                    sel.selected, {u: ll_by_unit[u] for u in g["units"]}, cfg, basin)
+                G["flags"] = list(G["flags"]) + ls_flags
                 api10s = [c["api10"] for c in sel.selected]
                 if ad and api10s:
                     rows = [r for r in rows_all if r["api10"] in set(api10s)]

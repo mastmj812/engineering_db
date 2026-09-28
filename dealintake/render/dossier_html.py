@@ -1,6 +1,6 @@
 """The reviewer's Stage 2 picture: dossier.html rendered from signals.json.
 
-Per (bench x lateral class): the map, the pool and its tiers, the split
+Per bench (one pool per bench; per bench x lateral class under pooling=class): the map, the pool and its tiers, the split
 test, and per TC group the RATE-TIME OVERLAY (anduin TC per 1,000 ft vs the
 Novi representative-stick median, with the no-transfer curve when one
 exists), the three-stream table, QC flags and the buildup table. A summary
@@ -214,12 +214,15 @@ def render(run_dir: Path) -> Path:
     if plan:
         cls_of = {u: c["planned_lateral_ft"] for c in sig.get("lateral_classes", []) for u in c["units"]}
         p.append("<h2>Unit plan (reviewer)</h2>")
-        p.append(_table(["DSU", "Benches evaluated", "Planned lateral ft", "Lateral class ft", "Edited vs seed"],
+        cls_col = ["Lateral class ft"] if cls_of else []
+        p.append(_table(["DSU", "Benches evaluated", "Planned lateral ft", *cls_col, "Edited vs seed"],
                         [[name.get(lb, lb), ", ".join(v["benches"]) or "NOT EVALUATED", f"{v['planned_lateral_ft']:,.0f}",
-                          f"{cls_of[lb]:,.0f}" if lb in cls_of else "—", "yes" if v["edited"] else "no"]
+                          *([f"{cls_of[lb]:,.0f}" if lb in cls_of else "—"] if cls_of else []),
+                          "yes" if v["edited"] else "no"]
                          for lb, v in plan.items()]))
-    p.append("<h2>Type curves — every bench × lateral class</h2>")
-    p.append(_table(["Bench @ class", "TC group", "Pool", "n", "Oil EUR/1,000 ft", "Novi", "Novi n", "TC vs Novi",
+    by_class = bool(sig.get("lateral_classes"))
+    p.append("<h2>Type curves — every bench" + (" × lateral class" if by_class else " (one pool per bench, per 1,000 ft)") + "</h2>")
+    p.append(_table(["Bench @ class" if by_class else "Bench", "TC group", "Pool", "n", "Oil EUR/1,000 ft", "Novi", "Novi n", "TC vs Novi",
                      "Di nom (eff)", "b", "Gas EUR/1,000 ft", "Gas: Novi/TC", "Split test", "QC flags"], _summary_rows(sig)))
 
     # ---- bench matrix ---------------------------------------------------------
@@ -245,8 +248,11 @@ def render(run_dir: Path) -> Path:
         p.append(f'<h2 id="{_slug(key)}">{_esc(key)} <span class="meta">TVD {B["tvd_ft"]:,.0f} ft · spacing {B["spacing_ft"]:,.0f} ft '
                  f'({_esc(B["spacing_source"])}) · basin {_esc(B.get("basin"))}</span></h2>')
         if B.get("class_units"):
-            p.append(f'<div class="meta">Units: {_esc(", ".join(name.get(u, u) for u in B["class_units"]))} — planned lateral '
-                     f'{B["planned_lateral_ft"]:,.0f} ft centres the lateral band.</div>')
+            band = B.get("lateral_band_ft")
+            p.append(f'<div class="meta">Units: {_esc(", ".join(name.get(u, u) for u in B["class_units"]))} — '
+                     + (f'pool lateral band {band[0]:,.0f}–{band[1]:,.0f} ft; median planned lateral '
+                        f'{B["planned_lateral_ft"]:,.0f} ft.</div>' if band else
+                        f'planned lateral {B["planned_lateral_ft"]:,.0f} ft centres the lateral band.</div>'))
         excl = ", ".join(f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1]))
         p.append(f"<div><b>Eligible pool</b> {pool['n_eligible']} wells ({pool['n_excluded']} excluded: {_esc(excl)}). "
                  f"Adjacent planned benches: {_esc(', '.join(pool['adjacent_planned']) or 'none')}; tier order "
@@ -268,6 +274,16 @@ def render(run_dir: Path) -> Path:
         cmp_ = B.get("transfer_compare") or {}
         if cmp_.get("flag"):
             p.append(f'<div class="flag bad"><b>{_esc(cmp_["flag"])}</b></div>')
+        lc = B.get("length_check") or {}
+        if lc.get("buckets"):
+            p.append(f"<h3>Length check <span class=\"meta\">does per-1,000-ft performance move with lateral length in this pool? "
+                     f"metric {_esc(lc['metric'])}; pool median {num(lc['pool_median_per_1000ft'], ',.0f')} over {lc['n']} wells; "
+                     f"a bucket of ≥ {lc['min_wells']} wells beyond {lc['flag_ratio']:g}× is flagged — flag only, never a filter</span></h3>")
+            p.append(_table(["Lateral bucket", "Pool wells", "Median lateral ft", "Median per 1,000 ft", "vs pool median", "Read"],
+                            [[b["bucket"], b["n"], num(b["median_lateral_ft"], ",.0f"), num(b["median_per_1000ft"], ",.0f"),
+                              "—" if b["vs_pool"] is None else f"{b['vs_pool'] - 1:+.0%}",
+                              _chip("FLAG", "#dc2626") if b["flagged"] else ("ok" if b["judged"] else "too few wells to judge")]
+                             for b in lc["buckets"]]))
         sp = B["split"]
         p.append(f"<h3>TC granularity: {_esc(sp['recommendation'])} <span class=\"meta\">metric {_esc(sp['metric'])}; "
                  f"median ratio {num(sp['median_ratio'])}, "
@@ -303,6 +319,22 @@ def render(run_dir: Path) -> Path:
                          "not a stick's own forecast); terminal decline not shown for Novi.</div>")
             p.append(_table(["Stream", "Source", "qi /1,000 ft (cal-day)", "Di nom /yr", "Di eff yr-1", "b", "EUR /1,000 ft"],
                             _stream_rows(G)))
+            ls = G.get("lateral_support") or []
+            if ls:
+                tcp = G.get("tc_preview") or {}
+                oe, ge = (tcp.get("oil") or {}).get("eur_per_unit"), (tcp.get("gas") or {}).get("eur_per_unit")
+                p.append("<div><b>Scaled to each unit's lateral</b> <span class=\"meta\">linear per 1,000 ft; EUR = raw 50-yr "
+                         "technical integral per well</span></div>")
+                p.append(_table(["DSU", "Planned lateral ft", "Oil EUR / well (bbl)", "Gas EUR / well (mcf)",
+                                 "Cohort wells within the unit's band", "Cohort lateral range ft", "Read"],
+                                [[name.get(r["unit"], r["unit"]), f"{r['planned_lateral_ft']:,.0f}",
+                                  num(oe * r["planned_lateral_ft"] / 1000.0, ",.0f") if oe else "—",
+                                  num(ge * r["planned_lateral_ft"] / 1000.0, ",.0f") if ge else "—",
+                                  f"{r['n_within_band']} (±{r['band_tol']:.0%})",
+                                  "—" if r["cohort_min_ft"] is None else f"{r['cohort_min_ft']:,.0f}–{r['cohort_max_ft']:,.0f}",
+                                  _chip("EXTRAPOLATED", "#dc2626") if r["extrapolated"]
+                                  else _chip("thin at this length", "#d97706") if r["thin"] else "inside range"]
+                                 for r in ls]))
             wo = _transfer_rows(G)
             if wo:
                 p.append(f"<div><b>With vs without short-history transfer</b> — {G.get('n_transferred_in_cohort')} of "

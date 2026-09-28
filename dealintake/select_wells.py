@@ -126,6 +126,7 @@ def exclusion_reasons(
     planned_lateral_ft: float,
     lateral_tol: float,
     planned_spacing_ft: float,
+    lateral_band_ft: tuple[float, float] | None = None,
 ) -> list[str]:
     tc = cfg["type_curve"]
     reasons: list[str] = []
@@ -135,7 +136,7 @@ def exclusion_reasons(
     if fp is None or fp < floor:
         reasons.append(f"first_prod<{floor}")
     ll = c.get("lateral_length_ft")
-    lo, hi = planned_lateral_ft * (1 - lateral_tol), planned_lateral_ft * (1 + lateral_tol)
+    lo, hi = lateral_band_ft or (planned_lateral_ft * (1 - lateral_tol), planned_lateral_ft * (1 + lateral_tol))
     if ll is None or not lo <= ll <= hi:
         reasons.append(f"lateral_outside_{lo:.0f}-{hi:.0f}")
     if (c.get("months_produced") or 0) < int(tc["min_months_data"]):
@@ -191,12 +192,15 @@ def classify(
     basin: str | None,
     planned_spacing_ft: float,
     existing_benches: list[str] | None = None,
+    lateral_band_ft: tuple[float, float] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
     """Tag every candidate with spacing class + scenario tier and split into
     (eligible, excluded-with-reasons, adjacent planned benches). No capping —
     the eligible POOL feeds the split test before any cohort is filled.
     `existing_benches` = benches producing in the class's units within the
-    vertical band of this bench (first-order parent test)."""
+    vertical band of this bench (first-order parent test).
+    `lateral_band_ft` = explicit (lo, hi) lateral band (one pool per bench: the
+    span of the units' planned laterals); None = planned lateral +/- tolerance."""
     adjacent = adjacent_benches(bench, planned_stack)
     tol = cfg.lateral_tolerance(basin, planned_lateral_ft)
     eligible, excluded = [], []
@@ -206,7 +210,7 @@ def classify(
         c["tier"] = codev_tier(c, adjacent, existing_benches)
         reasons = exclusion_reasons(
             c, cfg, planned_lateral_ft=planned_lateral_ft, lateral_tol=tol,
-            planned_spacing_ft=planned_spacing_ft,
+            planned_spacing_ft=planned_spacing_ft, lateral_band_ft=lateral_band_ft,
         )
         if reasons:
             c["exclusion"] = ";".join(reasons)
