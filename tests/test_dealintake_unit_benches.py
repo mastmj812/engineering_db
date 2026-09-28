@@ -162,6 +162,8 @@ def test_review_page_renders_from_proposal(tmp_path):
     text = review.render(tmp_path).read_text(encoding="utf-8")
     assert text.count("<svg") == 6                       # overview + (map + strip) x 2 units + 1 gunbarrel
     assert "gunbarrel" in text and "2 sticks @ 1,320 ft" in text
+    # Novi sticks are not drawn; the legend carries only existing benches + proposed rows
+    assert "Novi BASE_CASE stick" not in text.split("gunbarrel", 1)[1][:20000]
     assert "same footprint as 2-11 (Bone Spring)" in text and "12,224' declared" in text
     assert "None" not in text and ">ON<" in text and ">off<" in text
 

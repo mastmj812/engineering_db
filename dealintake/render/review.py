@@ -181,54 +181,60 @@ def tvd_strip(u: dict[str, Any]) -> str:
 
 
 def gunbarrel(u: dict[str, Any]) -> str:
-    """Cross-section perpendicular to the planned azimuth: existing producers
-    (filled, by bench), Novi BASE_CASE sticks (x), proposed rows per seeded
-    bench (hollow squares on the bench's local median TVD), unit edges dashed.
-    +offset = 90 deg clockwise of the azimuth (rule 16)."""
+    """Cross-section perpendicular to the planned azimuth: the PROPOSED rows
+    (narvi preview at the reviewed benches — hollow squares on each bench's
+    local median TVD) against the EXISTING producers (filled, by bench; faded
+    outside the unit). Novi BASE_CASE sticks are not drawn (Michael,
+    2026-09-28: our proposal vs PDP, nothing out of scope). The TVD window is
+    the proposed benches ± a margin, so a shallow unmapped or a Woodford well
+    does not flatten the picture. +offset = 90 deg clockwise of the azimuth."""
     gb = u.get("gunbarrel")
-    if not gb or (not gb["existing"] and not gb["planned"]):
+    if not gb:
         return ""
-    fig, ax = plt.subplots(figsize=(10.5, 4.6), dpi=100)
+    rows = {b: pl for b, pl in gb["planned"].items() if not pl.get("error") and pl.get("offsets_ft")}
+    if not rows and not gb["existing"]:
+        return ""
+    if rows:
+        t = [pl["tvd_ft"] for pl in rows.values()]
+        y_lo, y_hi = min(t) - 1500.0, max(t) + 1500.0
+    else:
+        t = [w["tvd_ft"] for w in gb["existing"]]
+        y_lo, y_hi = min(t) - 500.0, max(t) + 500.0
+    shown = [w for w in gb["existing"] if y_lo <= w["tvd_ft"] <= y_hi]
+    hidden = len(gb["existing"]) - len(shown)
+    fig, ax = plt.subplots(figsize=(10.5, 5.0), dpi=100)
     c_lo, c_hi = gb["cross_extent_ft"]
+    ax.axvspan(c_lo, c_hi, color="#f3f4f6", zorder=0)
     for x in (c_lo, c_hi):
         ax.axvline(x, color="#9ca3af", linestyle="--", linewidth=0.9)
-    seen: dict[str, str] = {}
+    seen: set[str] = set()
+    for w in shown:
+        ax.scatter(w["offset_ft"], w["tvd_ft"], s=46, color=_color(w["bench"]), edgecolors=INK, linewidths=0.5,
+                   alpha=1.0 if w["inside"] else 0.4, zorder=3)
+        seen.add(w["bench"])
     row_labels: list[str] = []
-    for w in gb["existing"]:
-        ax.scatter(w["offset_ft"], w["tvd_ft"], s=34, color=_color(w["bench"]), edgecolors=INK, linewidths=0.4,
-                   alpha=1.0 if w["inside"] else 0.45, zorder=3)
-        seen.setdefault(w["bench"], "pdp")
-    for st in gb["novi"]:
-        ax.scatter(st["offset_ft"], st["tvd_ft"], s=40, marker="x", color=_color(st["bench"]), linewidths=1.2, zorder=4)
-        seen.setdefault(st["bench"], "novi")
-    for b, pl in gb["planned"].items():
-        if pl.get("error") or not pl.get("offsets_ft"):
-            continue
-        ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.6, alpha=0.5)
-        ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=64, marker="s", facecolors="none",
-                   edgecolors=_color(b), linewidths=1.6, zorder=5)
+    for b, pl in rows.items():
+        ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.7, alpha=0.6)
+        ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=110, marker="s", facecolors="white",
+                   edgecolors=_color(b), linewidths=2.0, zorder=5)
         row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}")
-        seen.setdefault(b, "planned")
-    tvds = [w["tvd_ft"] for w in gb["existing"]] + [st["tvd_ft"] for st in gb["novi"]] + \
-           [pl["tvd_ft"] for pl in gb["planned"].values() if not pl.get("error")]
-    if tvds:
-        ax.set_ylim(max(tvds) + 400, min(tvds) - 400)
+    ax.set_ylim(y_hi, y_lo)
     ax.set_xlim(c_lo - 1500, c_hi + 1500)
     ax.set_xlabel(f"offset from unit centroid, ft (+ = 90° clockwise of the {gb['azimuth_deg']:.0f}° plan)", fontsize=8)
     ax.set_ylabel("TVD ft", fontsize=8)
     ax.grid(True, linewidth=0.3, alpha=0.5)
     ax.tick_params(labelsize=7)
-    handles = [plt.Line2D([], [], marker="o", linestyle="", color=_color(b), markeredgecolor=INK, label=b) for b in sorted(seen)]
-    handles += [plt.Line2D([], [], marker="o", linestyle="", color="#6b7280", label="existing producer (faded = outside the unit)"),
-                plt.Line2D([], [], marker="x", linestyle="", color="#6b7280", label="Novi BASE_CASE stick"),
-                plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="none", markeredgecolor="#6b7280",
-                           label="proposed rows (narvi preview):")]
-    handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="none", markeredgecolor=_color(lbl.split(":")[0]),
-                           label=lbl) for lbl in row_labels]
-    ax.legend(handles=handles, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
+    handles = [plt.Line2D([], [], marker="o", linestyle="", color=_color(b), markeredgecolor=INK,
+                          label=f"existing {b}") for b in sorted(seen)]
+    handles += [plt.Line2D([], [], marker="o", linestyle="", color="#9ca3af", label="faded = outside the unit")]
+    handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="white", markeredgecolor=_color(lbl.split(":")[0]),
+                           markersize=8, label="proposed " + lbl) for lbl in row_labels]
+    ax.legend(handles=handles, fontsize=6.8, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     src = gb.get("benches_source", "seed")
-    ax.set_title(f"{u.get('dsu_name') or u['label']} — gunbarrel (looking along the laterals; rows at the "
-                 f"{'reviewed' if src != 'seed' else 'seeded'} benches)", fontsize=9)
+    ax.set_title(f"{u.get('dsu_name') or u['label']} — gunbarrel: proposed rows at the "
+                 f"{'reviewed' if src != 'seed' else 'seeded'} benches vs existing producers"
+                 + (f"  ({hidden} producer{'s' if hidden != 1 else ''} outside the shown TVD window)" if hidden else ""),
+                 fontsize=9)
     return _svg(fig)
 
 
