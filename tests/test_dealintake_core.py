@@ -193,6 +193,8 @@ def test_gunbarrel_frame_convention():
     assert (round(c_lo), round(c_hi)) == (-2640, 2640) and (round(a_lo), round(a_hi)) == (-5280, 5280)
     off, along = project(line_ft((1000, -4000), (1000, 4000)))  # an N-S lateral 1,000 ft EAST of centre
     assert off == pytest.approx(1000, abs=2) and along == pytest.approx(0, abs=2)   # +offset = east (rule 16)
+    lo_a, hi_a = project.along_span(line_ft((1000, -4000), (1000, 4000)))
+    assert (round(lo_a), round(hi_a)) == (-4000, 4000)
     project90, _, _ = gunbarrel_frame(unit, 90.0)
     off, _ = project90(line_ft((-4000, -1000), (4000, -1000)))  # E-W lateral 1,000 ft SOUTH
     assert off == pytest.approx(1000, abs=2)                    # 90 deg clockwise of east = south

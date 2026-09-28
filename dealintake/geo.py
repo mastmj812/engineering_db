@@ -262,6 +262,14 @@ def gunbarrel_frame(unit: Polygon, azimuth_deg: float):
         m = frame.to_local(stick_midpoint(g))
         return (m.x * cx + m.y * cy) * FT_PER_M, (m.x * ax_ + m.y * ay_) * FT_PER_M
 
+    def along_span(g: BaseGeometry) -> tuple[float, float]:
+        """Along-axis extent (ft) of a stick — for 'does it overlap the unit
+        along the laterals', which a midpoint cannot answer."""
+        pts = [frame.to_local(g).coords] if hasattr(g, "coords") else [part.coords for part in getattr(frame.to_local(g), "geoms", [])]
+        vals = [(x * ax_ + y * ay_) * FT_PER_M for cs in pts for x, y in cs]
+        return (min(vals), max(vals)) if vals else (0.0, 0.0)
+
+    project.along_span = along_span          # type: ignore[attr-defined]
     ring = frame.to_local(unit).exterior.coords
     offs = [(x * cx + y * cy) * FT_PER_M for x, y in ring]
     alongs = [(x * ax_ + y * ay_) * FT_PER_M for x, y in ring]

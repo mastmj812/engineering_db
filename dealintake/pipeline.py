@@ -44,6 +44,7 @@ from dealintake.clients.narvi import Narvi, legs
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
+    LocalFrame,
     axial_diff,
     grid_convergence_deg,
     gunbarrel_frame,
@@ -101,19 +102,33 @@ def gunbarrel_preview(
     unit's local median). Offsets in the rule-16 frame (ft), TVD in ft."""
     project, (c_lo, c_hi), (a_lo, a_hi) = gunbarrel_frame(unit, azimuth_deg)
     tvd_by = {bench_code(r["bench"]): r["median_tvd_ft"] for r in bench_proposal if r.get("median_tvd_ft") is not None}
+    frame = LocalFrame.around(unit)
+    unit_local = frame.to_local(unit)
 
     def near(g: Any) -> tuple[float, float] | None:
         off, along = project(g)
         return (off, along) if (c_lo - cross_margin_ft <= off <= c_hi + cross_margin_ft
                                 and a_lo - along_margin_ft <= along <= a_hi + along_margin_ft) else None
 
+    # Existing producers: only wells whose LATERAL overlaps the unit along the
+    # laterals (a well entirely north/south of the unit is not in this cross-
+    # section, however close its offset — the 2-11 "Mitchell wells" case,
+    # 2026-09-28). `inside` = the house >=30% co-extent rule (rule 9); the rest
+    # are drawn faded as side/partial neighbours.
     existing = []
     for w in pdp_near:
-        oa = near(shp_wkt.loads(w["wkt"]))
-        if oa and w.get("tvd_ft") is not None:
-            existing.append({"api10": w["api10"], "bench": w["bench"], "offset_ft": round(oa[0]), "tvd_ft": float(w["tvd_ft"]),
-                             "inside": c_lo <= oa[0] <= c_hi})
-    novi = []
+        g = shp_wkt.loads(w["wkt"])
+        if w.get("tvd_ft") is None:
+            continue
+        off, _ = project(g)
+        lo_a, hi_a = project.along_span(g)
+        if not (c_lo - cross_margin_ft <= off <= c_hi + cross_margin_ft) or hi_a <= a_lo or lo_a >= a_hi:
+            continue
+        gl = frame.to_local(g)
+        frac = gl.intersection(unit_local).length / gl.length if gl.length else 0.0
+        existing.append({"api10": w["api10"], "bench": w["bench"], "offset_ft": round(off), "tvd_ft": float(w["tvd_ft"]),
+                         "inside": frac >= 0.30, "in_unit_frac": round(frac, 2)})
+    novi = []                                  # kept in the data (not drawn) for the record
     for st in novi_sticks:
         if st["category"] != "PUD":
             continue

@@ -226,7 +226,8 @@ def gunbarrel(u: dict[str, Any]) -> str:
     ax.tick_params(labelsize=7)
     handles = [plt.Line2D([], [], marker="o", linestyle="", color=_color(b), markeredgecolor=INK,
                           label=f"existing {b}") for b in sorted(seen)]
-    handles += [plt.Line2D([], [], marker="o", linestyle="", color="#9ca3af", label="faded = outside the unit")]
+    handles += [plt.Line2D([], [], marker="o", linestyle="", color="#9ca3af",
+                           label="faded = < 30 % of the lateral in the unit (side / partial neighbour)")]
     handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="white", markeredgecolor=_color(lbl.split(":")[0]),
                            markersize=8, label="proposed " + lbl) for lbl in row_labels]
     ax.legend(handles=handles, fontsize=6.8, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)

@@ -136,8 +136,10 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   a cross-section perpendicular to the planned azimuth in the rule-16 frame
   (origin = unit centroid, +offset = 90° clockwise of the azimuth) — the
   PROPOSED rows (one hollow square per stick at the bench's local median
-  TVD, "bench: n sticks @ spacing") against the EXISTING producers (filled
-  dots by bench, faded outside the unit). Novi BASE_CASE sticks are NOT
+  TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
+  lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent
+  in the unit, rule 9; faded = side/partial neighbours; a well entirely
+  beyond the unit's ends is not drawn). Novi BASE_CASE sticks are NOT
   drawn — our proposal vs PDP only, nothing outside the depth rights; the
   TVD window is the proposed benches ± 1,500 ft (producers outside it are
   counted in the title, not plotted). Rows are narvi previews
