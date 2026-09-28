@@ -180,6 +180,58 @@ def tvd_strip(u: dict[str, Any]) -> str:
     return _svg(fig)
 
 
+def gunbarrel(u: dict[str, Any]) -> str:
+    """Cross-section perpendicular to the planned azimuth: existing producers
+    (filled, by bench), Novi BASE_CASE sticks (x), proposed rows per seeded
+    bench (hollow squares on the bench's local median TVD), unit edges dashed.
+    +offset = 90 deg clockwise of the azimuth (rule 16)."""
+    gb = u.get("gunbarrel")
+    if not gb or (not gb["existing"] and not gb["planned"]):
+        return ""
+    fig, ax = plt.subplots(figsize=(10.5, 4.6), dpi=100)
+    c_lo, c_hi = gb["cross_extent_ft"]
+    for x in (c_lo, c_hi):
+        ax.axvline(x, color="#9ca3af", linestyle="--", linewidth=0.9)
+    seen: dict[str, str] = {}
+    row_labels: list[str] = []
+    for w in gb["existing"]:
+        ax.scatter(w["offset_ft"], w["tvd_ft"], s=34, color=_color(w["bench"]), edgecolors=INK, linewidths=0.4,
+                   alpha=1.0 if w["inside"] else 0.45, zorder=3)
+        seen.setdefault(w["bench"], "pdp")
+    for st in gb["novi"]:
+        ax.scatter(st["offset_ft"], st["tvd_ft"], s=40, marker="x", color=_color(st["bench"]), linewidths=1.2, zorder=4)
+        seen.setdefault(st["bench"], "novi")
+    for b, pl in gb["planned"].items():
+        if pl.get("error") or not pl.get("offsets_ft"):
+            continue
+        ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.6, alpha=0.5)
+        ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=64, marker="s", facecolors="none",
+                   edgecolors=_color(b), linewidths=1.6, zorder=5)
+        row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}")
+        seen.setdefault(b, "planned")
+    tvds = [w["tvd_ft"] for w in gb["existing"]] + [st["tvd_ft"] for st in gb["novi"]] + \
+           [pl["tvd_ft"] for pl in gb["planned"].values() if not pl.get("error")]
+    if tvds:
+        ax.set_ylim(max(tvds) + 400, min(tvds) - 400)
+    ax.set_xlim(c_lo - 1500, c_hi + 1500)
+    ax.set_xlabel(f"offset from unit centroid, ft (+ = 90° clockwise of the {gb['azimuth_deg']:.0f}° plan)", fontsize=8)
+    ax.set_ylabel("TVD ft", fontsize=8)
+    ax.grid(True, linewidth=0.3, alpha=0.5)
+    ax.tick_params(labelsize=7)
+    handles = [plt.Line2D([], [], marker="o", linestyle="", color=_color(b), markeredgecolor=INK, label=b) for b in sorted(seen)]
+    handles += [plt.Line2D([], [], marker="o", linestyle="", color="#6b7280", label="existing producer (faded = outside the unit)"),
+                plt.Line2D([], [], marker="x", linestyle="", color="#6b7280", label="Novi BASE_CASE stick"),
+                plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="none", markeredgecolor="#6b7280",
+                           label="proposed rows (narvi preview):")]
+    handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="none", markeredgecolor=_color(lbl.split(":")[0]),
+                           label=lbl) for lbl in row_labels]
+    ax.legend(handles=handles, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
+    src = gb.get("benches_source", "seed")
+    ax.set_title(f"{u.get('dsu_name') or u['label']} — gunbarrel (looking along the laterals; rows at the "
+                 f"{'reviewed' if src != 'seed' else 'seeded'} benches)", fontsize=9)
+    return _svg(fig)
+
+
 def overview_map(prop: dict[str, Any], classes: list[list[str]]) -> str:
     fig, ax = plt.subplots(figsize=(9, 6), dpi=100)
     cls_of = {u: i for i, c in enumerate(classes) for u in c}
@@ -310,6 +362,12 @@ def render(run_dir: Path) -> Path:
                      f'{n_bad} declare a different window — the DSU row governs, tracts are shown for the reviewer)</summary>'
                      f"<ul>{items}</ul></details>")
         p.append('<div class="row">' + unit_map(u, [o for o in units if o is not u], geoms.get(lb, {})) + tvd_strip(u) + "</div>")
+        gbs = gunbarrel(u)
+        if gbs:
+            p.append('<div class="row">' + gbs + "</div>")
+            errs = {b: v["error"] for b, v in (u.get("gunbarrel") or {}).get("planned", {}).items() if v.get("error")}
+            for b, e in errs.items():
+                p.append(f'<div class="warn">{_esc(b)}: preview failed — {_esc(e)}</div>')
         byb = {bench_code(r["bench"]): r for r in u["bench_proposal"]}
         order = list(byb) + [b for b in seed if b not in byb]
         rows = []

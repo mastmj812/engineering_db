@@ -136,3 +136,17 @@ def read(run_dir: Path, prop: dict[str, Any]) -> dict[str, dict[str, Any]]:
             "edited": sorted(benches) != sorted(seed) or round(float(ll)) != round(u["planned_lateral"]["median_ft"]),
         }
     return out
+
+
+def reviewed_benches(run_dir: Path) -> dict[str, list[str]]:
+    """{unit: [enabled benches]} from an existing benches.yaml, {} when there is
+    none — lets a re-propose draw its previews at the REVIEWER's benches."""
+    path = run_dir / FILENAME
+    if not path.exists():
+        return {}
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    out: dict[str, list[str]] = {}
+    for label, row in (raw.get("units") or {}).items():
+        out[label] = [bench_code(b) for b, v in ((row or {}).get("benches") or {}).items()
+                      if isinstance(v, dict) and v.get("evaluate") is True]
+    return out

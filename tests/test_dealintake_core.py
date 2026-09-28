@@ -183,3 +183,16 @@ def test_shared_offsets_are_not_exclusive():
     pool = [{"api10": "a", "lon": lon, "lat": lat}]
     out = shared_offsets(pool, {"n": north, "s": south}, 5280.0)
     assert out == {"n": 1, "s": 1}                             # 3,640 ft from north: within 1 mi of both
+
+
+def test_gunbarrel_frame_convention():
+    from dealintake.geo import gunbarrel_frame
+
+    unit = rect_ft(-2640, -5280, 2640, 5280)                   # 1 mi x 2 mi, N-S long axis
+    project, (c_lo, c_hi), (a_lo, a_hi) = gunbarrel_frame(unit, 0.0)
+    assert (round(c_lo), round(c_hi)) == (-2640, 2640) and (round(a_lo), round(a_hi)) == (-5280, 5280)
+    off, along = project(line_ft((1000, -4000), (1000, 4000)))  # an N-S lateral 1,000 ft EAST of centre
+    assert off == pytest.approx(1000, abs=2) and along == pytest.approx(0, abs=2)   # +offset = east (rule 16)
+    project90, _, _ = gunbarrel_frame(unit, 90.0)
+    off, _ = project90(line_ft((-4000, -1000), (4000, -1000)))  # E-W lateral 1,000 ft SOUTH
+    assert off == pytest.approx(1000, abs=2)                    # 90 deg clockwise of east = south
