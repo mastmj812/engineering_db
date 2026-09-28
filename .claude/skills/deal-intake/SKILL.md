@@ -109,6 +109,13 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   declared ≈ 9,950′ correlated). `--window` passes the engineer's
   CORRELATED window and requires `--window-basis`. Without it the declared
   numbers are used and labelled "declared (NOT local — correlate)".
+- **Rights come from the DSU row, never the tracts** (Michael, 2026-09-26).
+  The tracts narvi attaches to a DSU carry their own declared windows; the
+  runner compares each to the DSU's and lists them on the review page
+  (open, amber, plus a WARNING) when they differ — 44-45 S2's DSU says Top
+  of Bone Spring → Top of Wolfcamp while its tracts say Surface → COE and
+  Surface → 11,950′. The DSU window is used regardless; which paper governs
+  is the reviewer's call.
 - **Rights bounds (current land SOP):** each DSU row's `Min_Depth` /
   `Max_Depth` is `Surface`, `COE` ("center of earth" = unbounded below), a
   depth, or a **formation phrase** ("Top of Wolfcamp Formation"). A phrase is

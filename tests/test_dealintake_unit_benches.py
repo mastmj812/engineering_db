@@ -157,3 +157,31 @@ def test_review_page_renders_from_proposal(tmp_path):
     assert text.count("<svg") == 5                       # overview + (map + strip) x 2 units
     assert "same footprint as 2-11 (Bone Spring)" in text and "12,224' declared" in text
     assert "None" not in text and ">ON<" in text and ">off<" in text
+
+
+def test_tract_windows_are_flagged_never_used():
+    from dealintake.pipeline import tract_check
+
+    lo, hi = _b("Top of Bone Spring Formation"), _b("Top of Wolfcamp Formation")      # the DSU row (44-45 S2)
+    tracts = [{"attributes": {"Section": "44", "Block": "20", "Aliquot": "N2N2S2", "Min_Depth": "Surface", "Max_Depth": "COE", "Net_Ac": 150.2}},
+              {"attributes": {"Section": "44", "Block": "20", "Aliquot": "S2S2", "Min_Depth": "Surface", "Max_Depth": "11,950'", "Net_Ac": 170.2}},
+              {"attributes": {"Section": "45", "Block": "20", "Aliquot": "SW", "Min_Depth": "Top of Bone Spring", "Max_Depth": "Top of Wolfcamp"}}]
+    out = tract_check(tracts, lo, hi, COL, "delaware")
+    assert [t["disagrees"] for t in out] == [True, True, False]
+    assert out[1]["rights"] == "Surface -> 11,950 ft" and out[0]["tract"] == "44 20 N2N2S2"
+
+
+def test_twin_dsu_tracts_are_not_disagreements():
+    from dealintake.pipeline import resolve_twin_tracts
+
+    poly = {"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}
+    upper = {"label": "bs", "dsu_name": "2-11 (Bone Spring)", "geometry": poly, "rights": "Surface -> 11,985 ft",
+             "declared_window_raw": {"Min_Depth": "Surface", "Max_Depth": "11,985"},
+             "tract_windows": [{"tract": "a", "raw": {"Min_Depth": "12,224'", "Max_Depth": "COE"}, "rights": "12,224 ft -> COE", "disagrees": True},
+                               {"tract": "b", "raw": {"Min_Depth": "Surface", "Max_Depth": "11,827'"}, "rights": "Surface -> 11,827 ft", "disagrees": True}]}
+    lower = {"label": "wcb", "dsu_name": "2-11 (WCB)", "geometry": poly, "rights": "12,224 ft -> COE",
+             "declared_window_raw": {"Min_Depth": "12,224", "Max_Depth": "COE"}, "tract_windows": []}
+    resolve_twin_tracts([upper, lower])
+    a, b = upper["tract_windows"]
+    assert a["disagrees"] is False and a["twin"] == "2-11 (WCB)"      # the twin's paper, not a conflict
+    assert b["disagrees"] is True and "twin" not in b                   # a genuinely different window

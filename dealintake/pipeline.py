@@ -88,6 +88,50 @@ def write_json(path: Path, obj: Any) -> None:
 # Stage 1 — propose
 # =============================================================================
 
+def tract_check(
+    tracts: list[dict[str, Any]], lo: strat.Bound, hi: strat.Bound, col: strat.Column, basin: str | None,
+) -> list[dict[str, Any]]:
+    """Each attached tract's declared window beside the DSU's. `disagrees` =
+    the tract's bounds are not the same kind+value as the DSU's on either side
+    (a tract that is broader — Surface -> COE under a formation-bounded DSU —
+    is reported too: the reviewer decides which paper governs)."""
+    out = []
+    for t in tracts:
+        a = {k.lower(): v for k, v in (t.get("attributes") or {}).items()}
+        _, _, raw = benchmod.declared_window(a)
+        tlo = strat.parse_bound(raw["Min_Depth"], col, basin)
+        thi = strat.parse_bound(raw["Max_Depth"], col, basin)
+        same = ((tlo.kind, tlo.depth_ft, tlo.group, tlo.edge) == (lo.kind, lo.depth_ft, lo.group, lo.edge)
+                and (thi.kind, thi.depth_ft, thi.group, thi.edge) == (hi.kind, hi.depth_ft, hi.group, hi.edge))
+        label = " ".join(str(a.get(k)) for k in ("section", "block", "aliquot") if a.get(k)) or t.get("label") or "?"
+        out.append({"tract": label, "net_ac": a.get("net_ac"), "wi": a.get("tract_wi"),
+                    "raw": raw, "rights": f"{tlo.describe()} -> {thi.describe()}", "disagrees": not same})
+    return out
+
+
+def resolve_twin_tracts(units: list[dict[str, Any]]) -> None:
+    """For DSUs sharing a footprint (depth-severed pairs), a tract whose
+    declared window equals a twin DSU's declared window is re-labelled as
+    that twin's tract (disagrees=False, twin=<dsu>)."""
+    geoms = {u["label"]: shape(u["geometry"]) for u in units}
+    for u in units:
+        twins = [v for v in units if v is not u and geoms[u["label"]].equals(geoms[v["label"]])]
+        for tw in u.get("tract_windows") or []:
+            if not tw["disagrees"]:
+                continue
+            for v in twins:
+                vr = v.get("declared_window_raw") or {}
+                if (_norm_depth(tw["raw"].get("Min_Depth")), _norm_depth(tw["raw"].get("Max_Depth"))) == (
+                        _norm_depth(vr.get("Min_Depth")), _norm_depth(vr.get("Max_Depth"))):
+                    tw["disagrees"] = False
+                    tw["twin"] = v.get("dsu_name") or v["label"]
+                    break
+
+
+def _norm_depth(v: Any) -> str:
+    return "" if v is None else str(v).strip().lower().replace(",", "").replace("'", "").replace(" formation", "")
+
+
 def gate2_decision(
     g: dict[str, Any],
     *,
@@ -215,6 +259,10 @@ def propose(
             proposal = benchmod.propose(zones.get("stats", []), window, float(cfg["depth"]["edge_margin_ft"]))
             low_attrs = {k.lower(): v for k, v in (pc["attributes"] or {}).items()}
             dsu_name = low_attrs.get("dsu_num")
+            # Rights come from the DSU row ONLY (Michael, 2026-09-26). The tracts
+            # attached to it carry their own declared windows; they are compared
+            # and FLAGGED when they disagree, never used to widen or narrow.
+            tract_windows = tract_check(pc.get("tracts") or [], lo, hi, col, basin)
             bench_seed = unit_benches.seed_unit(dsu_name, lo, hi, proposal, col, basin)
 
             sticks = wh.novi_sticks(conn, u)
@@ -263,6 +311,7 @@ def propose(
                           + (" [correlated]" if correlated_window else
                              " [declared depths are NOT local]" if "depth" in (lo.kind, hi.kind) else ""),
                 "bench_seed": bench_seed,
+                "tract_windows": tract_windows,
                 "offset_pdp_3mi": {b["bench"]: int(b["n_wells"]) for b in local},
                 "planned_lateral": {**pl.as_dict(), "grid_azimuth_true_deg": None if grid_true is None else round(grid_true, 1),
                                     "grid_convergence_deg": round(grid_convergence_deg(c0.x, c0.y), 2)},
@@ -271,6 +320,16 @@ def propose(
                 "pad_iou_advisory": wh.pad_iou(conn, u),
                 "pdp_in_unit": wh.pdp_in_unit(conn, u),
             })
+    # Stacked DSUs share one footprint, and narvi attaches every tract to the
+    # first polygon it matches — a tract that declares the TWIN's window is not
+    # a disagreement, it is the twin's paper. Resolve that before flagging.
+    resolve_twin_tracts(out["units"])
+    for u in out["units"]:
+        for tw in u["tract_windows"]:
+            if tw["disagrees"]:
+                out.setdefault("warnings", []).append(
+                    f"{u['label']}: tract {tw['tract']} declares {tw['rights']} vs the DSU's {u['rights']} "
+                    "— DSU window used; reviewer confirms")
     write_json(run_dir / "proposal.json", out)
     write_json(run_dir / "review_geoms.json", review_geoms)
     # The reviewer's file is never overwritten: a re-propose writes the fresh
