@@ -488,6 +488,13 @@ def _select_pool(
     return radius, eligible, excluded, adjacent
 
 
+def group_pool(eligible: list[dict[str, Any]], cl: list[str], whole: bool) -> list[dict[str, Any]]:
+    """Pool wells for a reviewer TC group: the whole eligible pool when the
+    group spans the class, else the wells the split test assigned to those
+    units (their `unit` tag; None when the split test never ran)."""
+    return list(eligible) if whole else [c for c in eligible if c.get("unit") in cl]
+
+
 def shared_offsets(pool: list[dict[str, Any]], units: dict[str, Any], radius_ft: float) -> dict[str, int]:
     """Per unit: pool wells whose mid-lateral point lies within `radius_ft` of
     the unit polygon — NOT exclusive (a well counts for every unit it is near)."""
@@ -893,12 +900,16 @@ def evaluate(
                     "decision": " | ".join(" + ".join(c) for c in clusters), "by": "reviewer",
                 })
                 for cl in clusters:
-                    small = [u for u in cl if u not in own]
+                    # A group covering every unit in the class takes the WHOLE pool — the
+                    # per-well `unit` tags only exist when the split test ran (>= 2 units);
+                    # a one-unit class + --tc-single left the cohort empty (VaULt 2026-09-28).
+                    whole = set(cl) >= set(units)
+                    small = [] if whole else [u for u in cl if u not in own]
                     groups.append({
                         "name": " + ".join(cl), "units": cl,
-                        "pool": [c for c in eligible if c.get("unit") in cl],
-                        "dist_key": "unit_dist_ft",
-                        "note": "reviewer grouping" + (
+                        "pool": group_pool(eligible, cl, whole),
+                        "dist_key": "dist_ft" if whole else "unit_dist_ft",
+                        "note": ("reviewer: one TC for the class" if whole else "reviewer grouping") + (
                             f"; {', '.join(small)} below {cfg['split']['min_wells_per_group']} pool wells "
                             "(borrow this group's TC)" if small else ""),
                     })

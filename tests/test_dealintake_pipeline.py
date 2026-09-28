@@ -292,3 +292,13 @@ def test_transfer_rows_show_eur_delta():
     rows = _transfer_rows(G)
     assert [r[1] for r in rows] == ["with transfer (default)", "own fits (without)"]
     assert rows[0][7] == "+10.0%" and rows[1][7] == "—"
+
+
+def test_reviewer_group_spanning_the_class_takes_the_whole_pool():
+    from dealintake.pipeline import group_pool
+
+    pool = [{"api10": "a", "unit": None}, {"api10": "b", "unit": None}]     # one-unit class: split test never tagged
+    assert group_pool(pool, ["u1"], whole=True) == pool
+    assert group_pool(pool, ["u1"], whole=False) == []                    # the old behaviour: empty cohort
+    tagged = [{"api10": "a", "unit": "u1"}, {"api10": "b", "unit": "u2"}]
+    assert [c["api10"] for c in group_pool(tagged, ["u2"], whole=False)] == ["b"]
