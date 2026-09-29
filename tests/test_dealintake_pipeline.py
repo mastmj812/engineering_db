@@ -451,3 +451,24 @@ def test_same_landing_producer_is_a_neighbour_not_a_parent():
                          660.0, 1000.0, 150.0)
     assert (s["n_with_parent"], s["nearest_bench"], s["nearest_dtvd_ft"]) == (1, "WCB_1", 400)
     assert (s["n_same_landing"], s["same_landing_benches"]) == (1, ["WCA_2"])
+
+
+def test_curve_labels_and_cohort_rows():
+    from dealintake.render.maps import curve_labels
+    from dealintake.render.tables import COHORT_HEADERS, cohort_rows
+
+    assert curve_labels("BS3_C", {"tc_groups": [{"units": ["a"]}]}) == ["BS3_C"]
+    assert curve_labels("BS3_C", {"tc_groups": [{"units": ["a"]}, {"units": ["b"]}]}) == ["BS3_C-A", "BS3_C-B"]
+    wells = [
+        {"api10": "2", "well_name": "FAR 2H", "operator": "Op", "first_production_date": "2024-07-01", "lateral_length_ft": 10000.0,
+         "unit": "u1", "unit_dist_ft": 10560.0, "dist_ft": 5.0, "anduin_oil_eur_per_1000ft": 50000.0, "bench": "BS3_C",
+         "tier": "codev", "codev_benches": ["BS3_C", "WCA_1"]},
+        {"api10": "1", "well_name": "NEAR 1H", "operator": "Op", "first_production_date": "2025-12-01", "lateral_length_ft": 9968.0,
+         "unit": None, "dist_ft": 528.0, "anduin_oil_eur_per_1000ft": 30000.0, "bench": "BS3_C",
+         "tier": "topfill_underfill", "parent_benches_below": ["BS3_S"]},
+    ]
+    rows = cohort_rows(wells, {"u1": "32-33"})
+    assert len(rows[0]) == len(COHORT_HEADERS)
+    assert [r[0] for r in rows] == ["NEAR 1H", "FAR 2H"]                       # nearest first
+    assert rows[0][6] == "0.1" and rows[0][8] == "over/under BS3_S" and rows[0][3] == "2025-12"
+    assert rows[1][5] == "32-33" and rows[1][6] == "2.0" and rows[1][8] == "co-developed with WCA_1"

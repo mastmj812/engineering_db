@@ -119,7 +119,7 @@ def candidates(
     band, shielding — already applied; scenario_class + gated parent bench
     lists). Raw — filtering/tiering is select_wells' job."""
     rows = _rows(conn, f"""
-        SELECT w.api10, we.current_operator AS operator, we.formation_blueox AS bench,
+        SELECT w.api10, we.well_name, we.current_operator AS operator, we.formation_blueox AS bench,
                we.basin_blueox AS basin, w.first_production_date, w.last_reported_month,
                w.lateral_length_ft, w.tvd_ft, we.lateral_closer_xy_ft,
                we.stack_closer_z_ft, we.parent_days_online, we.is_child,
