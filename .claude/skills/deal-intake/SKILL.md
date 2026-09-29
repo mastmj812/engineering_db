@@ -214,6 +214,7 @@ python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
        [--tc-single BENCH ...]           reviewer: ONE TC for the bench (escalate resolved / pooled, no multiplier)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
+       [--cohort BENCH=N|pool ...]       reviewer cohort size: nearest N pool wells, or the whole pool
        [--short-history-transfer N | --no-short-history-transfer]
        [--no-anduin]                     warehouse + narvi only; split test falls back to the Novi EUR screen
 python -m dealintake.cli render --run-dir ...        re-render dossier.md from signals.json
@@ -268,6 +269,13 @@ placements); the dossier REPORTS it and never selects on it:
   PROVISIONAL) of a stick is the same landing under a different tag — a
   neighbour, reported apart ("same landing, different tag"): check the tag
   or the placement.
+
+**Cohort size** defaults to the nearest `type_curve.max_wells` (20).
+Nearest-first lets the units with the closest offsets set a pooled curve
+(VaULt BS3_C: 12 of 20 wells sat beside two units, three units contributed
+none, and the curve read 57.0k against a 51.5k pool median). `--cohort
+BENCH=N|pool` is the reviewer's override, decision-logged. Show the
+"Built from" table by nearest unit before recommending it.
 
 Why (VaULt BS3_C): a topfill-first cohort gave 38.6k bbl/1,000 ft from 9
 wells — 4 of them one pad on the east edge with ~9 months of history and

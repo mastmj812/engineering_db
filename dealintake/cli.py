@@ -7,7 +7,7 @@
 
   evaluate --run-dir ... [--benches WCA_1 WCA_2 WCB_1] [--spacing WCA_1=880 ...]
            (no --benches = the reviewer's per-unit benches.yaml from propose)
-           [--radius BS2_S=10 ...] [--tc-groups WCA_2=unitA,unitB ...]
+           [--cohort BS3_C=pool ...] [--radius BS2_S=10 ...] [--tc-groups WCA_2=unitA,unitB ...]
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
@@ -37,6 +37,19 @@ def _spacing(items: list[str]) -> dict[str, float]:
         if not v:
             raise SystemExit(f"--spacing expects BENCH=FT, got {it!r}")
         out[k.strip()] = float(v)
+    return out
+
+
+def _cohort(items: list[str]) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for it in items:
+        b, _, v = it.partition("=")
+        try:
+            out[b.strip()] = 0 if v.strip().lower() == "pool" else int(v)
+        except ValueError:
+            raise SystemExit(f"--cohort expects BENCH=N or BENCH=pool, got {it!r}") from None
+        if not b.strip() or out[b.strip()] < 0 or (out[b.strip()] == 0 and v.strip().lower() != "pool"):
+            raise SystemExit(f"--cohort expects BENCH=N (N >= 1) or BENCH=pool, got {it!r}")
     return out
 
 
@@ -90,6 +103,9 @@ def main(argv: list[str] | None = None) -> int:
                    help="ONE deal-wide bench list (simple deals). Omit it to use the reviewer's per-unit "
                         "benches.yaml in the run dir — required for depth-severed stacked DSUs")
     e.add_argument("--spacing", nargs="*", default=[], help="per-bench planned spacing, BENCH=FT")
+    e.add_argument("--cohort", nargs="*", default=[],
+                   help="reviewer cohort size, BENCH=N or BENCH=pool — that bench's type curve is built from the nearest "
+                        "N pool wells (pool = every eligible well) instead of type_curve.max_wells; decision-logged")
     e.add_argument("--radius", nargs="*", default=[],
                    help="reviewer pool radius, BENCH=MILES — exactly that concentric radius, bypassing the "
                         "5/7.5/10 mi steps and the edge-trigger block (e.g. an emerging bench); decision-logged")
@@ -133,7 +149,8 @@ def main(argv: list[str] | None = None) -> int:
             pipeline.evaluate(run_dir, cfg, benches=a.benches, spacing_ft=_spacing(a.spacing),
                               use_anduin=not a.no_anduin, tc_group_overrides=_tc_groups(a.tc_groups),
                               short_history_transfer=_transfer_cutoff(a, cfg),
-                              radius_overrides=_radius(a.radius), tc_single=a.tc_single)
+                              radius_overrides=_radius(a.radius), tc_single=a.tc_single,
+                              cohort_sizes=_cohort(a.cohort))
         except AnduinError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2
