@@ -197,7 +197,9 @@ def render(run_dir: Path) -> Path:
                               "—" if b["vs_pool"] is None else f"{b['vs_pool'] - 1:+.0%}",
                               "FLAG" if b["flagged"] else ("ok" if b["judged"] else "too few")] for b in lc["buckets"]]))
         png = f"map_{_slug(bench)}.png"
-        maps.bench_map(run_dir / png, bench, [u for u in prop["units"] if not cls or u["label"] in cls], B)
+        b_units = [u for u in prop["units"] if not cls or u["label"] in cls]
+        labels = maps.curve_labels(bench, B, b_units)
+        maps.bench_map(run_dir / png, bench, b_units, B, labels)
         s.append(f"![{bench} map]({png})\n")
         pool = B["pool"]
         s.append(f"**Eligible pool:** {pool['n_eligible']} wells ({pool['n_excluded']} excluded: " + ", ".join(
@@ -252,8 +254,8 @@ def render(run_dir: Path) -> Path:
             s.append(f"\n> **Reviewer grouping** (test said {ov['test_said']}): "
                      + " | ".join(" + ".join(c) for c in ov["groups"]))
 
-        for G in B["tc_groups"]:
-            s.append(f"\n### TC group: {G['name']} — units {', '.join(G['units'])}\n")
+        for gi, G in enumerate(B["tc_groups"]):
+            s.append(f"\n### Curve {labels[gi]} — applies to {', '.join(G['units'])}; built from {len(G['tc_wells'])} wells\n")
             if G.get("note"):
                 s.append(f"> {G['note']}\n")
             if G.get("scenario"):

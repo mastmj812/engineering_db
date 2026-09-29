@@ -25,10 +25,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from dealintake.decline import effective_from_nominal
+from dealintake.render import maps
 from dealintake.render.dossier import _slug, _stream_rows, _transfer_rows
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
+    COHORT_HEADERS,
     buildup_rows,
+    cohort_rows,
     di_pair,
     num,
     p_value,
@@ -158,11 +161,17 @@ def rate_time_chart(G: dict[str, Any], months: int = 120) -> str:
     return _svg(fig)
 
 
-def _summary_rows(sig: dict[str, Any]) -> list[list[Any]]:
+def _labels(key: str, B: dict[str, Any], prop: dict[str, Any]) -> list[str]:
+    cls = B.get("class_units")
+    return maps.curve_labels(key, B, [u for u in prop["units"] if not cls or u["label"] in cls])
+
+
+def _summary_rows(sig: dict[str, Any], prop: dict[str, Any], name: dict[str, str]) -> list[list[Any]]:
     rows = []
     for key, B in sig["benches"].items():
-        anchor = _slug(key)
-        for G in B["tc_groups"]:
+        labels = _labels(key, B, prop)
+        for gi, G in enumerate(B["tc_groups"]):
+            anchor = _slug(f"{key}_curve_{gi}")
             tc = G.get("tc_preview") or {}
             o, g = tc.get("oil") or {}, tc.get("gas") or {}
             nv = (G.get("novi") or {}).get("oil") or {}
@@ -173,7 +182,9 @@ def _summary_rows(sig: dict[str, Any]) -> list[list[Any]]:
             gas_cell = "—" if gas_ratio is None else (_chip(f"Novi {gas_ratio:.1f}x", "#dc2626") if gas_ratio > 1.5 or gas_ratio < 1 / 1.5
                                                        else f"Novi {gas_ratio:.1f}x")
             sp = B["split"]["recommendation"]
-            rows.append([_Raw(f'<a href="#{anchor}">{_esc(key)}</a>'), G["name"] if G["name"] != "all units" else "all",
+            sticks = {u: len((B["units"].get(u) or {}).get("locations", [])) for u in G["units"]}
+            rows.append([_Raw(f'<a href="#{anchor}">{_esc(labels[gi])}</a>'),
+                         _Raw("<br>".join(f"{_esc(name.get(u, u))} ({n})" for u, n in sticks.items())), sum(sticks.values()),
                          B["pool"]["n_eligible"], G.get("tc_preview_n_wells"),
                          oe, ne, nv.get("n"), delta, f"{dn} ({de})" if o else "—", o.get("b"), g.get("eur_per_unit"), gas_cell,
                          _chip(sp, {"single_tc": "#059669", "split_by_polygon": "#2563eb", "escalate": "#d97706"}.get(sp, "#9ca3af")),
@@ -222,8 +233,11 @@ def render(run_dir: Path) -> Path:
                          for lb, v in plan.items()]))
     by_class = bool(sig.get("lateral_classes"))
     p.append("<h2>Type curves — every bench" + (" × lateral class" if by_class else " (one pool per bench, per 1,000 ft)") + "</h2>")
-    p.append(_table(["Bench @ class" if by_class else "Bench", "TC group", "Pool", "n", "Oil EUR/1,000 ft", "Novi", "Novi n", "TC vs Novi",
-                     "Di nom (eff)", "b", "Gas EUR/1,000 ft", "Gas: Novi/TC", "Split test", "QC flags"], _summary_rows(sig)))
+    p.append('<div class="meta">One row per type curve. "Applies to" = the DSUs whose planned sticks take that curve '
+             "(sticks in brackets); \"Built from\" = the producing wells in its cohort. Click a curve for its map, "
+             "well list and charts.</div>")
+    p.append(_table(["Curve", "Applies to (sticks)", "Sticks", "Pool", "Built from (wells)", "Oil EUR/1,000 ft", "Novi", "Novi n", "TC vs Novi",
+                     "Di nom (eff)", "b", "Gas EUR/1,000 ft", "Gas: Novi/TC", "Split test", "QC flags"], _summary_rows(sig, prop, name)))
 
     # ---- bench matrix ---------------------------------------------------------
     rows = []
@@ -235,11 +249,12 @@ def render(run_dir: Path) -> Path:
                 loc += " · " + "; ".join(ub["row_rules"])
             rows.append([name.get(lb, lb), key, loc, g3["pdp_count_3mi_median"],
                          g3["status"], g3["tvd_excess_3mi_ft_max"], "yes" if ub["has_pdp_in_adjacent_bench"] else "no",
-                         next((G["name"] for G in B["tc_groups"] if lb in G["units"]), "—"),
+                         next((lab for lab, G in zip(_labels(key, B, prop), B["tc_groups"], strict=True)
+                               if lb in G["units"]), "—"),
                          "yes" if B["edge_trigger"]["fired"] else "no"])
     p.append("<details><summary>Bench matrix (unit × bench): locations, support, edge</summary>"
              + _table(["Unit", "Bench @ class", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
-                       "PDP in adjacent bench", "TC group", "Edge"], rows) + "</details>")
+                       "PDP in adjacent bench", "Curve", "Edge"], rows) + "</details>")
     p.append('<div class="toc">' + " ".join(f'<a href="#{_slug(k)}">{_esc(k)}</a>' for k in sig["benches"]) + "</div>")
 
     # ---- per bench x class -------------------------------------------------------
@@ -300,11 +315,31 @@ def render(run_dir: Path) -> Path:
             ov = sp["reviewer_override"]
             p.append(f'<div class="flag"><b>Reviewer grouping</b> (test said {_esc(ov["test_said"])}): '
                      f'{_esc(" | ".join(" + ".join(name.get(u, u) for u in c) for c in ov["groups"]))}</div>')
-        p.append(f'<div class="row"><img src="map_{_slug(key)}.png" alt="map"></div>')
+        labels = _labels(key, B, prop)
+        p.append(f"<h3>Curves on this bench: {len(labels)} <span class=\"meta\">each unit is filled in the colour of the curve "
+                 "it takes; solid dots are the wells that build that curve</span></h3>")
+        p.append(f'<div class="row"><img src="map_{_slug(key)}.png" alt="map" style="max-width:760px"></div>')
 
-        for G in B["tc_groups"]:
-            gname = G["name"] if G["name"] != "all units" else "all units"
-            p.append(f"<h3>TC group: {_esc(', '.join(name.get(u, u) for u in G['units']) if G['name'] != 'all units' else 'all units')}</h3>")
+        for gi, G in enumerate(B["tc_groups"]):
+            gname = G["name"]
+            col = maps.CURVE_COLOR[gi % len(maps.CURVE_COLOR)]
+            tcp0 = (G.get("tc_preview") or {}).get("oil") or {}
+            p.append(f'<h3 id="{_slug(f"{key}_curve_{gi}")}" style="border-left:6px solid {col};padding-left:8px">'
+                     f"Curve {_esc(labels[gi])} <span class=\"meta\">oil "
+                     f"{num(tcp0.get('eur_per_unit'), ',.0f')} bbl per 1,000 ft</span></h3>")
+            sticks = {u: (B["units"].get(u) or {}) for u in G["units"]}
+            p.append(f"<div><b>Applies to</b> — {sum(len(v.get('locations', [])) for v in sticks.values())} planned sticks in "
+                     f"{len(sticks)} unit(s)</div>")
+            p.append(_table(["DSU", "Planned sticks", "Landing TVD ft", "Spacing ft", "Location source", "Role"],
+                            [[name.get(u, u), len(v.get("locations", [])), num(v.get("tvd_ft"), ",.0f"),
+                              num(v.get("spacing_ft"), ",.0f"), (v.get("gate2") or {}).get("source"), v.get("role", "base")]
+                             for u, v in sticks.items()]))
+            ops: dict[str, int] = {}
+            for w in G["tc_wells"]:
+                ops[w.get("operator") or "—"] = ops.get(w.get("operator") or "—", 0) + 1
+            p.append(f"<div><b>Built from</b> — {len(G['tc_wells'])} producing wells, nearest first ("
+                     + _esc(", ".join(f"{k} {v}" for k, v in sorted(ops.items(), key=lambda kv: -kv[1]))) + ")</div>")
+            p.append(_table(COHORT_HEADERS, cohort_rows(G["tc_wells"], name)))
             if G.get("note"):
                 p.append(f'<div class="flag">{_esc(G["note"])}</div>')
             if G.get("scenario"):
