@@ -68,7 +68,12 @@ from dealintake.select_wells import (
     fill,
     tier_medians,
     tier_order,
+    vertical_parents,
 )
+
+# The vertical-parent offset gate is sql/50's literal; scripts.find_analogs holds the
+# test-pinned copy — import it, never restate it (cross-repo contract).
+from scripts.find_analogs import OFFSET_GATE_FT as PARENT_GATE_FT
 
 DEFAULT_SPACING_FT = 880.0  # narvi's fallback when no in-unit de-facto gap exists
 RADIUS_STEPS_MI = (5.0, 7.5, 10.0)
@@ -490,6 +495,92 @@ def _select_pool(
     return radius, eligible, excluded, adjacent
 
 
+def planned_standoff(unit_geom: Any, azimuth_deg: float, locations: list[dict[str, Any]],
+                     existing: list[dict[str, Any]], bench: str, tvd_ft: float,
+                     gate_ft: float, band_ft: float, same_landing_ft: float = 0.0) -> dict[str, Any]:
+    """Where do OUR sticks sit against the producers already in the unit? Per
+    planned stick: the nearest other-bench producer inside the vertical-parent
+    gate (|cross offset| <= gate_ft, 0 < |dTVD| <= band_ft) in the rule-16
+    gunbarrel plane. dtvd_ft > 0 = the producer is BELOW (our stick is a
+    topfill); < 0 = above (underfill). Same-bench producers are neighbours,
+    not vertical parents — and so is an other-bench producer within
+    `same_landing_ft` vertically (same landing, the bench TAG differs: counted
+    apart as n_same_landing for the reviewer). Diagnostic only — nothing
+    selects on it."""
+    from shapely import wkt as _wkt
+
+    project, _, _ = gunbarrel_frame(unit_geom, azimuth_deg)
+    prods = [e for e in existing if e.get("inside") and e.get("offset_ft") is not None
+             and e.get("tvd_ft") is not None and e.get("bench") not in ("(unmapped)", bench)]
+    rows = []
+    for loc in locations:
+        off = project(_wkt.loads(loc["wkt"]))[0]
+        tv = float(loc.get("tvd") or tvd_ft)
+        near = sorted(((abs(e["tvd_ft"] - tv), e) for e in prods
+                       if abs(e["offset_ft"] - off) <= gate_ft and same_landing_ft < abs(e["tvd_ft"] - tv) <= band_ft),
+                      key=lambda t: t[0])
+        e = near[0][1] if near else None
+        same = [e2["bench"] for e2 in prods
+                if abs(e2["offset_ft"] - off) <= gate_ft and abs(e2["tvd_ft"] - tv) <= same_landing_ft]
+        rows.append({"id": loc["id"], "offset_ft": round(off), "same_landing": sorted(set(same)),
+                     "parent_bench": e["bench"] if e else None,
+                     "dtvd_ft": round(e["tvd_ft"] - tv) if e else None,
+                     "dx_ft": round(e["offset_ft"] - off) if e else None})
+    hit = [r for r in rows if r["parent_bench"]]
+    closest = min(hit, key=lambda r: abs(r["dtvd_ft"])) if hit else None
+    return {"n_sticks": len(rows), "n_with_parent": len(hit), "gate_ft": gate_ft, "band_ft": band_ft,
+            "n_same_landing": sum(1 for r in rows if r["same_landing"]),
+            "same_landing_benches": sorted({b for r in rows for b in r["same_landing"]}),
+            "nearest_bench": closest["parent_bench"] if closest else None,
+            "nearest_dtvd_ft": closest["dtvd_ft"] if closest else None,
+            "median_abs_dtvd_ft": _median([abs(r["dtvd_ft"]) for r in hit]), "sticks": rows}
+
+
+def cohort_standoff(cohort: list[dict[str, Any]]) -> dict[str, Any]:
+    """The cohort's own history: how many wells came on over/under an
+    unshielded vertical parent (dev_scenario rule, sql/50) and at what
+    vertical standoff (nearest parent per well)."""
+    vals = []
+    for c in cohort:
+        bc = c.get("bench_context") or {}
+        d = [abs(float(bc[b]["parent_nearest_dtvd_ft"])) for b in vertical_parents(c)
+             if (bc.get(b) or {}).get("parent_nearest_dtvd_ft") is not None]
+        if d:
+            vals.append(min(d))
+    return {"n": len(cohort), "n_with_parent": len(vals), "median_abs_dtvd_ft": _median(vals),
+            "min_abs_dtvd_ft": min(vals) if vals else None, "max_abs_dtvd_ft": max(vals) if vals else None}
+
+
+def standoff_flags(units: dict[str, dict[str, Any]], cohort: dict[str, Any]) -> list[str]:
+    """ONE flag per TC group: the units whose sticks sit over/under a producer
+    MORE than the cohort did — a larger share of parented sticks, or a tighter
+    standoff than any cohort well — plus any stick landing at the depth of a
+    producer tagged to another bench. The curve carries neither; the reviewer
+    reads the standoff table and risks by hand."""
+    c_share = cohort["n_with_parent"] / cohort["n"] if cohort["n"] else 0.0
+    more = []
+    for label, s in units.items():
+        if not s or not s["n_with_parent"]:
+            continue
+        tighter = cohort["min_abs_dtvd_ft"] is None or abs(s["nearest_dtvd_ft"]) < cohort["min_abs_dtvd_ft"]
+        if s["n_with_parent"] / s["n_sticks"] > c_share or tighter:
+            more.append(f"{label} ({s['n_with_parent']}/{s['n_sticks']} sticks, nearest {s['nearest_bench']} "
+                        f"{abs(s['nearest_dtvd_ft']):,.0f} ft {'below' if s['nearest_dtvd_ft'] > 0 else 'above'})")
+    out = []
+    if more:
+        out.append(
+            f"standoff: {len(more)} unit(s) are more parented than the cohort ({cohort['n_with_parent']} of {cohort['n']} "
+            "cohort wells came on over/under a producer"
+            + (f", median standoff {cohort['median_abs_dtvd_ft']:,.0f} ft" if cohort["n_with_parent"] else "")
+            + f"): {'; '.join(more)} — the curve does not carry this; reviewer risks by hand")
+    same = [f"{label} ({s['n_same_landing']} stick(s) at the depth of {', '.join(s['same_landing_benches'])})"
+            for label, s in units.items() if s and s.get("n_same_landing")]
+    if same:
+        out.append("same landing, different tag: " + "; ".join(same)
+                   + " — a producer tagged to another bench sits at our landing depth inside the gate; check the tag or the placement")
+    return out
+
+
 def scenario_groups(units: list[str], existing_by_unit: dict[str, dict[str, list[str]]]) -> list[dict[str, Any]]:
     """Split a TC group's units by FIRST-ORDER scenario (Michael, 2026-09-29):
       infill      units with producers within the vertical band of this bench —
@@ -860,6 +951,11 @@ def evaluate(
                         # Novi's 5,080-ft sticks fell outside +/-25% of 15,144-ft legs.
                         unit_novi += wh.representative_sticks(
                             conn, leg["geom"], bench, leg_ft, cfg.lateral_tolerance(basin, leg_ft))
+                UB["standoff"] = planned_standoff(
+                    geom, u["planned_lateral"]["azimuth_deg"], UB["locations"],
+                    (u.get("gunbarrel") or {}).get("existing", []), bench, tvd_u,
+                    float(PARENT_GATE_FT), float(cfg["codev"]["scenario_band_ft"]),
+                    float(cfg["codev"].get("same_landing_ft", 0.0)))
                 c3 = [r.get("pdp_count_3mi") for r in sup if r.get("pdp_count_3mi") is not None]
                 UB["gate3"] = {
                     "n_locations": len(sup),
@@ -902,9 +998,9 @@ def evaluate(
             existing_benches = sorted({b for v in existing_by_unit.values() for b in v["above"] + v["below"]})
             B["existing_benches_in_band"] = existing_benches
             pdp_adj_units = [lb for lb, v in existing_by_unit.items() if v["above"] or v["below"]]
-            tier_scope = str(cfg["codev"].get("tier_order_scope", "unit"))
-            if tier_scope not in ("unit", "bench"):
-                raise ValueError(f"codev.tier_order_scope must be unit|bench, got {tier_scope!r}")
+            tier_scope = str(cfg["codev"].get("tier_order_scope", "none"))
+            if tier_scope not in ("none", "unit", "bench"):
+                raise ValueError(f"codev.tier_order_scope must be none|unit|bench, got {tier_scope!r}")
             flip = len(pdp_adj_units) * 2 > len(B["units"])
             min_wells = int(cfg["type_curve"]["min_wells"])
             pool_flags: list[str] = []
@@ -940,7 +1036,10 @@ def evaluate(
                 pool_flags.append(
                     f"producers within {band:,.0f} ft of this bench in {len(pdp_adj_units)}/{len(B['units'])} units "
                     f"({', '.join(existing_benches)}): "
-                    + ("tier order is decided PER UNIT — infill units get a topfill/underfill-first cohort (parent test = "
+                    + ("reported only — the cohort is the nearest wells of the pool whatever their scenario; each TC "
+                       "group carries a standoff table (our sticks vs the cohort's parents)"
+                       if tier_scope == "none" else
+                       "tier order is decided PER UNIT — infill units get a topfill/underfill-first cohort (parent test = "
                        "their own in-band benches), greenfield units a pad-mates-first cohort, from this same pool"
                        if tier_scope == "unit" else
                        f"{'majority -> topfill/underfill tier first' if flip else 'no majority -> pad-mates first'}; "
@@ -948,6 +1047,9 @@ def evaluate(
             order, order_reason = tier_order(cfg, adjacent, flip)
             if tier_scope == "unit":
                 order_reason = "bench-wide vote shown for the pool only; each TC group states its own order"
+            elif tier_scope == "none":
+                order, _ = tier_order(cfg, adjacent, False)
+                order_reason = "tier-blind cohort: nearest wells of the pool; scenario is reported, not selected on"
             B["pool"] = {
                 "n_eligible": len(eligible), "n_excluded": len(excluded), "flags": pool_flags,
                 "adjacent_planned": adjacent, "tier_order": order, "order_reason": order_reason,
@@ -1068,10 +1170,17 @@ def evaluate(
                             "decision": f"{sc['scenario']} cohort, {' > '.join(g_order)}", "by": "rule (per unit)",
                         })
                 groups = by_scn
+            if tier_scope == "none":
+                # Scenario tag = the WELL'S OWN history (any unshielded vertical parent),
+                # for the tier table only — it no longer depends on our units.
+                groups = [{**g, "tier_blind": True,
+                           "pool": [{**c, "tier": codev_tier(c, adjacent, sorted(vertical_parents(c)))} for c in g["pool"]]}
+                          for g in groups]
             B["tc_groups"] = []
             for g in groups:
                 sel = fill(g["pool"], cfg, bench=bench, adjacent=adjacent, order=g.get("order", order),
-                           order_reason=g.get("order_reason", order_reason), dist_key=g["dist_key"])
+                           order_reason=g.get("order_reason", order_reason), dist_key=g["dist_key"],
+                           tier_blind=g.get("tier_blind", False))
                 G: dict[str, Any] = {
                     "name": g["name"], "units": g["units"], "note": g.get("note"),
                     "scenario": g.get("scenario"), "existing_benches": g.get("existing"),
@@ -1082,6 +1191,9 @@ def evaluate(
                 G["lateral_support"], ls_flags = lateral_support(
                     sel.selected, {u: ll_by_unit[u] for u in g["units"]}, cfg, basin)
                 G["flags"] = list(G["flags"]) + ls_flags
+                G["standoff"] = {"cohort": cohort_standoff(sel.selected),
+                                 "units": {u: B["units"][u].get("standoff") for u in g["units"]}}
+                G["flags"] += standoff_flags(G["standoff"]["units"], G["standoff"]["cohort"])
                 api10s = [c["api10"] for c in sel.selected]
                 if ad and api10s:
                     rows = [r for r in rows_all if r["api10"] in set(api10s)]

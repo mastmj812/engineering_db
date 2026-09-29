@@ -202,8 +202,7 @@ def render(run_dir: Path) -> Path:
         pool = B["pool"]
         s.append(f"**Eligible pool:** {pool['n_eligible']} wells ({pool['n_excluded']} excluded: " + ", ".join(
             f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1])) + "). "
-            f"Adjacent planned benches: {', '.join(pool['adjacent_planned']) or 'none'}; tier order "
-            f"{' → '.join(pool['tier_order'])} ({pool['order_reason']}).")
+            f"Adjacent planned benches: {', '.join(pool['adjacent_planned']) or 'none'}. {pool['order_reason']}.")
         for f in pool["flags"]:
             s.append(f"\n> {f}")
 
@@ -257,8 +256,17 @@ def render(run_dir: Path) -> Path:
             s.append(f"\n### TC group: {G['name']} — units {', '.join(G['units'])}\n")
             if G.get("note"):
                 s.append(f"> {G['note']}\n")
-            if G.get("order_reason"):
+            if G.get("scenario"):
                 s.append(f"Scenario — {G['order_reason']}; tier order {' → '.join(G.get('tier_order') or [])}.\n")
+            so = G.get("standoff")
+            if so:
+                c = so["cohort"]
+                s.append(f"**Standoff** (reported, never selected on) — cohort: {c['n_with_parent']} of {c['n']} wells had a "
+                         "vertical parent" + (f", median standoff {c['median_abs_dtvd_ft']:,.0f} ft" if c["n_with_parent"] else "") + ".\n")
+                s.append(md(["Unit", "Planned sticks", "Over/under a producer", "Nearest producer", "Vertical standoff ft"],
+                            [[u, v["n_sticks"], v["n_with_parent"], v["nearest_bench"] or "—",
+                              "—" if v["nearest_dtvd_ft"] is None else f"{v['nearest_dtvd_ft']:+,.0f}"]
+                             for u, v in so["units"].items() if v]))
             s.append(md(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
                         [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)]
                          for t in G.get("tier_order") or pool["tier_order"]]))
