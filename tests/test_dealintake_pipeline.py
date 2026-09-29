@@ -360,3 +360,24 @@ def test_classify_takes_an_explicit_lateral_band():
     kw = {"planned_lateral_ft": 9900.0, "lateral_tol": 0.25, "planned_spacing_ft": 1320.0}
     assert any(r.startswith("lateral_outside") for r in exclusion_reasons(c, cfg, **kw))
     assert exclusion_reasons(c, cfg, lateral_band_ft=(7425.0, 24738.0), **kw) == []
+
+
+def test_scenario_groups_split_infill_from_greenfield():
+    from dealintake.pipeline import scenario_groups
+
+    ex = {"a": {"above": ["WCA_1"], "below": []}, "b": {"above": [], "below": []},
+          "c": {"above": [], "below": ["WCC"]}}
+    out = scenario_groups(["a", "b", "c"], ex)
+    assert [(g["scenario"], g["units"], g["existing"], g["flip"]) for g in out] == [
+        ("infill", ["a", "c"], ["WCA_1", "WCC"], True), ("greenfield", ["b"], [], False)]
+    assert [g["scenario"] for g in scenario_groups(["b"], ex)] == ["greenfield"]      # one scenario: group stays whole
+    assert [g["scenario"] for g in scenario_groups(["a"], ex)] == ["infill"]
+    assert scenario_groups(["z"], {})[0]["scenario"] == "greenfield"                  # unknown unit = no producers
+
+
+def test_greenfield_cohort_never_tiers_topfill():
+    from dealintake.select_wells import codev_tier
+
+    c = {"parent_benches_above": ["WCA_1"], "bench_context": {}, "codev_benches": ["WCB_1"]}
+    assert codev_tier(c, ["WCB_1"], ["WCA_1"]) == "topfill_underfill"     # infill unit under WCA_1
+    assert codev_tier(c, ["WCB_1"], []) == "codev"                        # greenfield unit: same well, pad-mate tier

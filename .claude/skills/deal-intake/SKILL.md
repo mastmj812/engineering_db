@@ -251,6 +251,20 @@ is flagged. `pooling: class` restores the v4–v7 behaviour (benches keyed
 split is a separate question from length. Every unit's benches + lateral
 land in the decision log (gate 1), marked when edited vs the seed.
 
+**Tier order is per unit** (`codev.tier_order_scope: unit`, config v9 —
+Michael 2026-09-29). Each TC group splits by first-order scenario into
+**infill** units (producers within `codev.scenario_band_ft` of the bench:
+topfill/underfill tier first, parent test = those units' own in-band
+benches) and **greenfield** units (pad-mates first) — at most two curves per
+group, both filled from the same bench pool, each decision-logged. The old
+bench-wide majority vote put a topfill/underfill curve on greenfield units
+(VaULt BS3_C: 36.8k bbl/1,000 ft from 9 topfill wells against a 54.5k codev
+tier of 52). `--tc-single` still pools the UNITS into one geographic group;
+the scenario split applies inside it. A reviewer `--tc-single` / `--tc-groups`
+call is scoped to the units it was made on — re-confirm it when the pool
+definition changes (the BS3_C call was made on four 2-mile units and did not
+survive nine).
+
 Order of operations is fixed and matters: **classify the pool → fit the
 whole pool in anduin → transfer → split test → fill each group's cohort**.
 Filling before splitting starved remote units and hid a real split (Toucan).

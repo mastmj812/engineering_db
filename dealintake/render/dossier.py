@@ -257,9 +257,11 @@ def render(run_dir: Path) -> Path:
             s.append(f"\n### TC group: {G['name']} — units {', '.join(G['units'])}\n")
             if G.get("note"):
                 s.append(f"> {G['note']}\n")
+            if G.get("order_reason"):
+                s.append(f"Scenario — {G['order_reason']}; tier order {' → '.join(G.get('tier_order') or [])}.\n")
             s.append(md(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
                         [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)]
-                         for t in pool["tier_order"]]))
+                         for t in G.get("tier_order") or pool["tier_order"]]))
             for f in G["flags"]:
                 s.append(f"\n> {f}")
             write_csv(run_dir / f"buildup_{_slug(f'{bench}_{G['name']}')}.csv", G["tc_wells"])

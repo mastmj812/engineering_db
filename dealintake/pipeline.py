@@ -64,6 +64,7 @@ from dealintake.select_wells import (
     adjacent_benches,
     bench_code,
     classify,
+    codev_tier,
     fill,
     tier_medians,
     tier_order,
@@ -489,6 +490,25 @@ def _select_pool(
     return radius, eligible, excluded, adjacent
 
 
+def scenario_groups(units: list[str], existing_by_unit: dict[str, dict[str, list[str]]]) -> list[dict[str, Any]]:
+    """Split a TC group's units by FIRST-ORDER scenario (Michael, 2026-09-29):
+      infill      units with producers within the vertical band of this bench —
+                  topfill/underfill tier first, parent test = THOSE units' benches
+      greenfield  units with none — pad-mates (codev) first, no parent test
+    A bench-wide majority vote put a topfill/underfill curve on greenfield
+    units (VaULt BS3_C: 36.8k vs a 54.5k codev tier). At most two per group;
+    a group whose units share one scenario stays whole."""
+    infill = [u for u in units if existing_by_unit.get(u, {}).get("above") or existing_by_unit.get(u, {}).get("below")]
+    green = [u for u in units if u not in infill]
+    out: list[dict[str, Any]] = []
+    if infill:
+        ex = sorted({b for u in infill for k in ("above", "below") for b in existing_by_unit[u][k]})
+        out.append({"scenario": "infill", "units": infill, "existing": ex, "flip": True})
+    if green:
+        out.append({"scenario": "greenfield", "units": green, "existing": [], "flip": False})
+    return out
+
+
 def group_pool(eligible: list[dict[str, Any]], cl: list[str], whole: bool) -> list[dict[str, Any]]:
     """Pool wells for a reviewer TC group: the whole eligible pool when the
     group spans the class, else the wells the split test assigned to those
@@ -882,6 +902,9 @@ def evaluate(
             existing_benches = sorted({b for v in existing_by_unit.values() for b in v["above"] + v["below"]})
             B["existing_benches_in_band"] = existing_benches
             pdp_adj_units = [lb for lb, v in existing_by_unit.items() if v["above"] or v["below"]]
+            tier_scope = str(cfg["codev"].get("tier_order_scope", "unit"))
+            if tier_scope not in ("unit", "bench"):
+                raise ValueError(f"codev.tier_order_scope must be unit|bench, got {tier_scope!r}")
             flip = len(pdp_adj_units) * 2 > len(B["units"])
             min_wells = int(cfg["type_curve"]["min_wells"])
             pool_flags: list[str] = []
@@ -916,9 +939,15 @@ def evaluate(
             if existing_benches:
                 pool_flags.append(
                     f"producers within {band:,.0f} ft of this bench in {len(pdp_adj_units)}/{len(B['units'])} units "
-                    f"({', '.join(existing_benches)}): {'majority -> topfill/underfill tier first' if flip else 'no majority -> pad-mates first'}; "
-                    "cohort parent test = these benches (first-order)")
+                    f"({', '.join(existing_benches)}): "
+                    + ("tier order is decided PER UNIT — infill units get a topfill/underfill-first cohort (parent test = "
+                       "their own in-band benches), greenfield units a pad-mates-first cohort, from this same pool"
+                       if tier_scope == "unit" else
+                       f"{'majority -> topfill/underfill tier first' if flip else 'no majority -> pad-mates first'}; "
+                       "cohort parent test = these benches (first-order)"))
             order, order_reason = tier_order(cfg, adjacent, flip)
+            if tier_scope == "unit":
+                order_reason = "bench-wide vote shown for the pool only; each TC group states its own order"
             B["pool"] = {
                 "n_eligible": len(eligible), "n_excluded": len(excluded), "flags": pool_flags,
                 "adjacent_planned": adjacent, "tier_order": order, "order_reason": order_reason,
@@ -1013,12 +1042,40 @@ def evaluate(
                              "borrows this group's TC (document a multiplier if the reviewer sees a difference)")
                             if borrowed else None,
                 })
+            if tier_scope == "unit":
+                by_scn: list[dict[str, Any]] = []
+                for g in groups:
+                    scns = scenario_groups(g["units"], existing_by_unit)
+                    for sc in scns:
+                        g_order, _ = tier_order(cfg, adjacent, sc["flip"])
+                        label = ("infill under/over " + ", ".join(sc["existing"])) if sc["flip"] else "greenfield"
+                        by_scn.append({
+                            **g, "units": sc["units"], "scenario": sc["scenario"], "existing": sc["existing"],
+                            "name": g["name"] if len(scns) == 1 else (
+                                (g["name"] if g["name"] != "all units" else bench) + f" — {label}"),
+                            # re-tier THIS group's pool against its own units' in-band benches
+                            "pool": [{**c, "tier": codev_tier(c, adjacent, sc["existing"])} for c in g["pool"]],
+                            "order": g_order,
+                            "order_reason": (f"{sc['scenario']}: {len(sc['units'])} unit(s) "
+                                             + (f"with producers in {', '.join(sc['existing'])} within {band:,.0f} ft"
+                                                if sc["flip"] else f"with no producer within {band:,.0f} ft")
+                                             + f" -> {g_order[0]} first"),
+                        })
+                        res["decision_log"].append({
+                            "gate": "5.2b tier order", "bench": key,
+                            "signal": f"{', '.join(sc['units'])}: " + (f"in-band producers {', '.join(sc['existing'])}"
+                                                                      if sc["flip"] else "no in-band producer"),
+                            "decision": f"{sc['scenario']} cohort, {' > '.join(g_order)}", "by": "rule (per unit)",
+                        })
+                groups = by_scn
             B["tc_groups"] = []
             for g in groups:
-                sel = fill(g["pool"], cfg, bench=bench, adjacent=adjacent, order=order,
-                           order_reason=order_reason, dist_key=g["dist_key"])
+                sel = fill(g["pool"], cfg, bench=bench, adjacent=adjacent, order=g.get("order", order),
+                           order_reason=g.get("order_reason", order_reason), dist_key=g["dist_key"])
                 G: dict[str, Any] = {
                     "name": g["name"], "units": g["units"], "note": g.get("note"),
+                    "scenario": g.get("scenario"), "existing_benches": g.get("existing"),
+                    "tier_order": sel.tier_order, "order_reason": sel.order_reason,
                     "tier_counts": sel.tier_counts(), "tier_medians_novi_eur_per_1000ft": tier_medians(sel),
                     "flags": sel.flags, "tc_wells": sel.selected,
                 }
