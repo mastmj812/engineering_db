@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 8                 # v8 2026-09-28: ONE POOL PER BENCH (planned_lateral.pooling: bench) — lateral band spans
+config_version: 9                 # v9 2026-09-29: tier order decided PER UNIT (codev.tier_order_scope: unit) — infill vs
+                                  #    greenfield cohorts from the same bench pool
+                                  # v8 2026-09-28: ONE POOL PER BENCH (planned_lateral.pooling: bench) — lateral band spans
                                   #    the units' planned laterals; length check + lateral-support flags replace the classes
                                   # v7 2026-09-28: first-order scenario tiers (codev.scenario_band_ft, child branch dropped),
                                   #    reviewer per-bench keys in benches.yaml, Novi spacing = suggestion, stream_gap_flag_ratio
@@ -148,6 +150,14 @@ codev:                            # gate 5.2b — co-development tiering
   # producers; a tie keeps the default. Later-child wells no longer tier as
   # topfill_underfill.
   scenario_band_ft: 1000          # = sql/50's vertical band
+  # v9 (Michael, 2026-09-29): with one pool per bench the majority vote put a
+  # topfill/underfill-first cohort on GREENFIELD units (VaULt BS3_C 36.8k bbl/
+  # 1,000 ft from 9 topfill wells vs a 54.5k codev tier of 52).
+  #   unit  = each TC group splits into infill units (producers in the band:
+  #           topfill_underfill first, parent test = those units' benches) and
+  #           greenfield units (codev first) — at most two curves per group
+  #   bench = the v7-v8 strict-majority vote across the bench's units
+  tier_order_scope: unit
   min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no

@@ -307,8 +307,11 @@ def render(run_dir: Path) -> Path:
             p.append(f"<h3>TC group: {_esc(', '.join(name.get(u, u) for u in G['units']) if G['name'] != 'all units' else 'all units')}</h3>")
             if G.get("note"):
                 p.append(f'<div class="flag">{_esc(G["note"])}</div>')
+            if G.get("order_reason"):
+                p.append(f'<div class="meta">Scenario — {_esc(G["order_reason"])}; tier order '
+                         f'{_esc(" → ".join(G.get("tier_order") or []))}.</div>')
             p.append(_table(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
-                            [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)] for t in pool["tier_order"]]))
+                            [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)] for t in G.get("tier_order") or pool["tier_order"]]))
             for f in G["flags"]:
                 p.append(f'<div class="flag">{_esc(f)}</div>')
             chart = rate_time_chart(G)
