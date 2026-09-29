@@ -302,3 +302,61 @@ def test_reviewer_group_spanning_the_class_takes_the_whole_pool():
     assert group_pool(pool, ["u1"], whole=False) == []                    # the old behaviour: empty cohort
     tagged = [{"api10": "a", "unit": "u1"}, {"api10": "b", "unit": "u2"}]
     assert [c["api10"] for c in group_pool(tagged, ["u2"], whole=False)] == ["b"]
+
+
+def test_pool_lateral_band_spans_the_units():
+    from dealintake.pipeline import pool_lateral_band
+
+    cfg = load()
+    lo, hi = pool_lateral_band([9900.0, 12576.0, 17670.0], cfg, "delaware")
+    assert lo == pytest.approx(9900.0 * 0.75)            # shortest unit, basin band
+    assert hi == pytest.approx(17670.0 * 1.40)           # longest unit, long-lateral tolerance
+    lo, hi = pool_lateral_band([9900.0], cfg, "delaware")
+    assert (lo, hi) == (pytest.approx(7425.0), pytest.approx(12375.0))   # one unit = the old band
+
+
+def test_length_check_flags_only_judged_buckets():
+    from dealintake.pipeline import length_check
+
+    cfg = load()
+    pool = ([{"lateral_length_ft": 10000.0, "m": 60000.0}] * 8
+            + [{"lateral_length_ft": 15000.0, "m": 45000.0}] * 5       # -25% on 5 wells -> flagged
+            + [{"lateral_length_ft": 12000.0, "m": 90000.0}] * 2)      # +50% but 2 wells -> shown, not judged
+    lc = length_check(pool, "m", cfg)
+    by = {b["bucket"]: b for b in lc["buckets"]}
+    assert lc["pool_median_per_1000ft"] == 60000.0
+    assert by[">= 13,500 ft"]["flagged"] and by[">= 13,500 ft"]["vs_pool"] == pytest.approx(0.75)
+    assert not by["11,000-13,500 ft"]["judged"] and not by["11,000-13,500 ft"]["flagged"]
+    assert not by["8,500-11,000 ft"]["flagged"]
+    assert len(lc["flags"]) == 1 and "-25%" in lc["flags"][0]
+    assert length_check([], "m", cfg)["buckets"] == []
+
+
+def test_lateral_support_flags_extrapolation_and_thin():
+    from dealintake.pipeline import lateral_support
+
+    cfg = load()
+    cohort = [{"lateral_length_ft": v} for v in (9800.0, 10000.0, 10100.0, 10300.0, 12400.0)]
+    rows, flags = lateral_support(cohort, {"two": 9900.0, "two_half": 12576.0, "three_half": 17670.0}, cfg, "delaware")
+    by = {r["unit"]: r for r in rows}
+    assert by["two"]["n_within_band"] == 4 and not by["two"]["extrapolated"] and not by["two"]["thin"]
+    assert by["two_half"]["extrapolated"]                       # 12,576 > the cohort's longest 12,400
+    assert by["three_half"]["extrapolated"] and by["three_half"]["n_within_band"] == 1   # 12,400 in 17,670 -40%
+    assert sum("OUTSIDE" in f for f in flags) == 2
+    gappy = [{"lateral_length_ft": v} for v in (7000.0, 7100.0, 7200.0, 12400.0, 12500.0)]
+    rows, flags = lateral_support(gappy, {"u": 11000.0}, cfg, "delaware")      # inside the range, 2 wells in band
+    assert rows[0]["thin"] and not rows[0]["extrapolated"] and "only 2 cohort well(s)" in flags[0]
+    assert lateral_support([], {"u": 9900.0}, cfg, "delaware")[1] == []
+
+
+def test_classify_takes_an_explicit_lateral_band():
+    from datetime import date
+
+    from dealintake.select_wells import exclusion_reasons
+
+    cfg = load()
+    c = {"first_production_date": date(2022, 1, 1), "lateral_length_ft": 15000.0, "months_produced": 24,
+         "lateral_closer_xy_ft": 1000.0, "codev_scorable": True}
+    kw = {"planned_lateral_ft": 9900.0, "lateral_tol": 0.25, "planned_spacing_ft": 1320.0}
+    assert any(r.startswith("lateral_outside") for r in exclusion_reasons(c, cfg, **kw))
+    assert exclusion_reasons(c, cfg, lateral_band_ft=(7425.0, 24738.0), **kw) == []

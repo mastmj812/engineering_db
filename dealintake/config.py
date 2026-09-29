@@ -26,7 +26,7 @@ _REQUIRED = {
     "bench_inclusion": ("pdp_count_3mi_min",),
     "type_curve": ("first_prod_after", "min_months_data", "min_wells", "max_wells", "lateral_tolerance_by_basin",
                    "long_lateral"),
-    "planned_lateral": ("setback_ft", "chord_step_ft"),
+    "planned_lateral": ("setback_ft", "chord_step_ft", "pooling", "length_check"),
     "codev": ("xy_ft", "window_days", "overlap_min_frac", "tier_order_default",
               "tier_order_when_pdp_adjacent", "min_tier1_frac_warn", "scenario_band_ft"),
     "spacing": ("tight_below_frac", "sentinel_ft"),

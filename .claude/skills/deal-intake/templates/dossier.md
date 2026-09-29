@@ -36,10 +36,14 @@ no economics.
 
 One row per unit from `benches.yaml` (or `--benches`): DSU name, rights as
 resolved (depths are declared-not-local; formation phrases by stratigraphic
-order), benches evaluated, planned lateral, its lateral class, and whether
-the reviewer edited the seed. A `FLAG` above it lists the lateral classes
-when there is more than one — each bench section is then per class
-(`WCB_1 @ 12,620 ft`), with a "Units: …" line naming the class's units.
+order), benches evaluated, planned lateral, and whether the reviewer
+edited the seed. One pool and one type curve per bench (config v8), per
+1,000 ft, scaled linearly to each unit's lateral: a `FLAG` above the table
+says so when the units' laterals differ. Each bench section carries a
+**Length check** table (per-1,000-ft by lateral bucket vs the pool median)
+and each TC group a **Scaled to each unit's lateral** table — per-well EUR,
+cohort wells within the unit's band, and `EXTRAPOLATED` where the planned
+lateral is outside the cohort's lateral range.
 
 ## 2. Bench matrix (unit × bench)
 

@@ -95,7 +95,7 @@ def main(argv: list[str] | None = None) -> int:
                         "5/7.5/10 mi steps and the edge-trigger block (e.g. an emerging bench); decision-logged")
     e.add_argument("--no-anduin", action="store_true", help="skip anduin forecast/QC/TC preview")
     e.add_argument("--tc-single", nargs="*", default=[], metavar="BENCH",
-                   help="reviewer: ONE type curve for this bench per lateral class, whatever the split test said "
+                   help="reviewer: ONE type curve for this bench, whatever the split test said "
                         "(escalated gradient with no clean break / pool without a multiplier); decision-logged")
     e.add_argument("--tc-groups", nargs="*", default=[],
                    help="reviewer TC grouping, BENCH=unitA,unitB[;unitC] — named groups, the rest pooled")

@@ -161,10 +161,12 @@ def render(run_dir: Path) -> Path:
         by = {u["label"]: u for u in prop["units"]}
         cls_of = {u: c["planned_lateral_ft"] for c in sig.get("lateral_classes", []) for u in c["units"]}
         s.append(f"\n## Unit plan (reviewer — {sig.get('plan_source')})\n")
-        s.append(md(["Unit", "DSU", "Rights", "Benches evaluated", "Planned lateral ft", "Lateral class ft", "Edited vs seed"],
+        s.append(md(["Unit", "DSU", "Rights", "Benches evaluated", "Planned lateral ft",
+                     *(["Lateral class ft"] if cls_of else []), "Edited vs seed"],
                     [[lb, by.get(lb, {}).get("dsu_name"), by.get(lb, {}).get("rights"),
                       ", ".join(p["benches"]) or "NOT EVALUATED", f"{p['planned_lateral_ft']:,.0f}",
-                      f"{cls_of[lb]:,.0f}" if lb in cls_of else "—", "yes" if p["edited"] else "no"]
+                      *([f"{cls_of[lb]:,.0f}" if lb in cls_of else "—"] if cls_of else []),
+                      "yes" if p["edited"] else "no"]
                      for lb, p in plan.items()]))
 
     s.append("\n## Bench matrix (unit x bench)\n")
@@ -184,8 +186,16 @@ def render(run_dir: Path) -> Path:
         s.append(f"\n## {bench} — TVD {B['tvd_ft']:,.0f} ft, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
         cls = B.get("class_units")
         if cls:
-            s.append(f"Units: {', '.join(cls)} — planned lateral {B['planned_lateral_ft']:,.0f} ft "
-                     "(centers the lateral band for this pool).\n")
+            band = B.get("lateral_band_ft")
+            s.append(f"Units: {', '.join(cls)} — median planned lateral {B['planned_lateral_ft']:,.0f} ft"
+                     + (f"; pool lateral band {band[0]:,.0f}-{band[1]:,.0f} ft.\n" if band else ".\n"))
+            lc = B.get("length_check") or {}
+            if lc.get("buckets"):
+                s.append(f"**Length check** ({lc['metric']}, per 1,000 ft; flag only):\n")
+                s.append(md(["Lateral bucket", "Pool wells", "Median lateral ft", "Median per 1,000 ft", "vs pool", "Flag"],
+                            [[b["bucket"], b["n"], num(b["median_lateral_ft"], ",.0f"), num(b["median_per_1000ft"], ",.0f"),
+                              "—" if b["vs_pool"] is None else f"{b['vs_pool'] - 1:+.0%}",
+                              "FLAG" if b["flagged"] else ("ok" if b["judged"] else "too few")] for b in lc["buckets"]]))
         png = f"map_{_slug(bench)}.png"
         maps.bench_map(run_dir / png, bench, [u for u in prop["units"] if not cls or u["label"] in cls], B)
         s.append(f"![{bench} map]({png})\n")

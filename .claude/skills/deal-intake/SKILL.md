@@ -212,7 +212,7 @@ python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
        [--benches WCA_1 WCA_2 ...]       ONE deal-wide list (simple deals); omit to use benches.yaml
        [--spacing BENCH=FT ...]          per-bench planned spacing (default 880 ft narvi fallback)
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
-       [--tc-single BENCH ...]           reviewer: ONE TC per class for the bench (escalate resolved / pooled, no multiplier)
+       [--tc-single BENCH ...]           reviewer: ONE TC for the bench (escalate resolved / pooled, no multiplier)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
        [--short-history-transfer N | --no-short-history-transfer]
        [--no-anduin]                     warehouse + narvi only; split test falls back to the Novi EUR screen
@@ -223,15 +223,33 @@ Writes `signals.json`, `dossier.html` (the review surface), `dossier.md`
 (text record), `map_<bench>.png`, `buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
 first to keep a comparison. (`runs/` is git-ignored.)
 
-**Lateral classes:** units whose planned laterals are within
-`planned_lateral.class_ratio` (1.10) of the class's shortest unit share a
-class. Every bench is pooled, split-tested and type-curved **per class**,
-with the lateral band (± per-basin tolerance) centered on the class median
-— a 3-mile unit is not type-curved from a band centered on 2-mile wells.
-A bench planned in several classes appears as `WCB_1 @ 12,620 ft`, etc.
-`--radius` / `--tc-groups` are keyed by bench and apply to each of its
-classes. Every unit's benches + lateral land in the decision log (gate 1),
-marked when edited vs the seed.
+**One pool per bench** (`planned_lateral.pooling: bench`, config v8 —
+Michael 2026-09-28): every bench is pooled, split-tested and type-curved
+ONCE, per 1,000 ft, and scaled **linearly** to each unit's planned lateral.
+The pool's lateral band spans the units: shortest planned lateral × (1 −
+tolerance) to longest × (1 + tolerance). The per-lateral-class pools of
+v4–v7 were retired as "too cute": 25 mi around VaULt, 13.5k+ ft vs 2-mile
+wells ran 0 to −12 % on cum-12 oil per 1,000 ft and −13 % to +8 % (mixed
+sign) on 30-yr EUR per 1,000 ft, while the per-class curves moved the
+other way — pool composition, not length — and the long classes held 0–12
+wells. Two FLAGS replace the classes (flags only, never a filter):
+
+- **Length check** (per bench): median per-1,000-ft of the eligible pool by
+  lateral bucket (`planned_lateral.length_check.bucket_edges_ft`) vs the
+  pool median; a bucket of ≥ `min_wells` beyond `flag_ratio` (1.15,
+  PROVISIONAL) is flagged — linear scaling is suspect for that bench.
+- **Lateral support** (per TC group × unit): cohort wells within the
+  unit's own band and the cohort's lateral range. A planned lateral
+  OUTSIDE the range is flagged `EXTRAPOLATED`; fewer than
+  `min_wells_near_planned` (3) in band is flagged thin. The same table
+  carries the curve scaled to each unit's lateral (EUR per well).
+
+Known and accepted: a linear scale from a mostly-2-mile pool gets a 3-mile
+EUR about right but front-loads year 1 by ~10 %. Say so when a long unit
+is flagged. `pooling: class` restores the v4–v7 behaviour (benches keyed
+`WCB_1 @ 12,620 ft`). The split test still runs per unit — a GEOGRAPHIC
+split is a separate question from length. Every unit's benches + lateral
+land in the decision log (gate 1), marked when edited vs the seed.
 
 Order of operations is fixed and matters: **classify the pool → fit the
 whole pool in anduin → transfer → split test → fill each group's cohort**.
@@ -253,12 +271,11 @@ shown beside it (WCB_2 deep-TVD context).
 
 Candidates = producing horizontals in the TVD-corrected bench within the
 radius. Excluded WITH REASONS (a well can carry several): first production
-before `first_prod_after`; lateral outside the planned lateral ± the
-per-basin tolerance (delaware 25 % / midland 40 % — mirrors ledger §9;
-**long-lateral classes** ≥ `type_curve.long_lateral.min_ft` (12,500 ft)
-use the wider `long_lateral.tolerance` (0.40) for the POOL only — Michael
-2026-09-25, the 15,144/17,670-ft VaULt classes starved — while the Novi
-representative-stick comparison keeps the basin band);
+before `first_prod_after`; lateral outside the pool band — shortest planned
+lateral × (1 − tol) to longest × (1 + tol), tol = the per-basin tolerance
+(delaware 25 % / midland 40 % — mirrors ledger §9), widened to
+`long_lateral.tolerance` (0.40) for a planned lateral ≥
+`type_curve.long_lateral.min_ft` (12,500 ft);
 `months < min_months_data`; spacing class `standalone` (NULL or ≥ 2,800
 sentinel) or `tight` (< 0.65 × planned spacing), judged AS-OF-FIRST-
 PRODUCTION; no codev context.

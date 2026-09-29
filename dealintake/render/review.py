@@ -275,7 +275,7 @@ def overview_map(prop: dict[str, Any], classes: list[list[str]]) -> str:
                for i, c in enumerate(classes)]
     ax.legend(handles=handles, fontsize=6, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     ax.tick_params(labelsize=6)
-    ax.set_title("Deal units by lateral class (stacked DSUs overlap)", fontsize=9)
+    ax.set_title("Deal units by planned lateral (stacked DSUs overlap)", fontsize=9)
     return _svg(fig)
 
 
@@ -321,7 +321,7 @@ def render(run_dir: Path) -> Path:
     geoms = json.loads(gp.read_text(encoding="utf-8")) if gp.exists() else {}
     units = prop["units"]
     ll = {u["label"]: float(u["planned_lateral"]["median_ft"]) for u in units}
-    classes = lateral_classes(ll, 1.10)
+    classes = lateral_classes(ll, 1.10)      # map colouring only — pools are per bench since config v8
     cls_ft = {u: sum(ll[x] for x in c) / len(c) for c in classes for u in c}
     shapes = {u["label"]: shape(u["geometry"]) for u in units}
     twins = {a["label"]: [b["label"] for b in units if b is not a and shapes[a["label"]].equals(shapes[b["label"]])]
