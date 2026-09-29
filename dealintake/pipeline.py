@@ -713,6 +713,7 @@ def evaluate(
     tc_group_overrides: dict[str, list[list[str]]] | None = None,
     short_history_transfer: int | None = None,
     radius_overrides: dict[str, float] | None = None,
+    cohort_sizes: dict[str, int] | None = None,
     tc_single: list[str] | None = None,
     narvi: Narvi | None = None,
     anduin: Anduin | None = None,
@@ -720,6 +721,9 @@ def evaluate(
     """tc_single: benches the REVIEWER pools into one TC per class regardless of
     the split test (an escalated gradient with no clean break; a split he
     chose to pool without a multiplier) — decision-logged like --tc-groups.
+    cohort_sizes: {bench: n} — REVIEWER decision: that bench's cohorts take the
+    nearest n pool wells instead of type_curve.max_wells; 0 = the whole pool.
+    Tier-blind cohorts only. Decision-logged.
     radius_overrides: {bench: miles} — REVIEWER decision: the eligible pool
     is drawn at exactly that concentric radius, bypassing the radius steps and
     the edge-trigger block. Recorded in the pool flags + decision log.
@@ -772,6 +776,11 @@ def evaluate(
                          "— give the bench a reviewer tvd_ft in benches.yaml")
     tc_single = [bench_code(b) for b in (tc_single or [])]
     radius_overrides = {bench_code(b): float(r) for b, r in (radius_overrides or {}).items()}
+    cohort_sizes = {bench_code(b): int(n) for b, n in (cohort_sizes or {}).items()}
+    if any(b not in benches for b in cohort_sizes):
+        raise ValueError(f"--cohort names {sorted(set(cohort_sizes) - set(benches))}, not in the evaluated benches {benches}")
+    if any(n < 0 for n in cohort_sizes.values()):
+        raise ValueError(f"--cohort must be a well count or 'pool', got {cohort_sizes}")
     stray = [b for b in radius_overrides if b not in benches]
     if stray:
         raise ValueError(f"--radius names {stray}, not in the evaluated benches {benches}")
@@ -1176,11 +1185,21 @@ def evaluate(
                 groups = [{**g, "tier_blind": True,
                            "pool": [{**c, "tier": codev_tier(c, adjacent, sorted(vertical_parents(c)))} for c in g["pool"]]}
                           for g in groups]
+            if bench in cohort_sizes:
+                if tier_scope != "none":
+                    raise ValueError("--cohort needs codev.tier_order_scope: none (tier-blind cohorts)")
+                n_c = cohort_sizes[bench]
+                res["decision_log"].append({
+                    "gate": "5 cohort size", "bench": key,
+                    "signal": f"default = nearest {cfg['type_curve']['max_wells']} of the group pool; eligible pool {len(eligible)}",
+                    "decision": "whole pool" if n_c == 0 else f"nearest {n_c}", "by": "reviewer",
+                })
             B["tc_groups"] = []
             for g in groups:
                 sel = fill(g["pool"], cfg, bench=bench, adjacent=adjacent, order=g.get("order", order),
                            order_reason=g.get("order_reason", order_reason), dist_key=g["dist_key"],
-                           tier_blind=g.get("tier_blind", False))
+                           tier_blind=g.get("tier_blind", False),
+                           cohort_size=cohort_sizes.get(bench) if g.get("tier_blind") else None)
                 G: dict[str, Any] = {
                     "name": g["name"], "units": g["units"], "note": g.get("note"),
                     "scenario": g.get("scenario"), "existing_benches": g.get("existing"),

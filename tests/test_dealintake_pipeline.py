@@ -472,3 +472,22 @@ def test_curve_labels_and_cohort_rows():
     assert [r[0] for r in rows] == ["NEAR 1H", "FAR 2H"]                       # nearest first
     assert rows[0][6] == "0.1" and rows[0][8] == "over/under BS3_S" and rows[0][3] == "2025-12"
     assert rows[1][5] == "32-33" and rows[1][6] == "2.0" and rows[1][8] == "co-developed with WCA_1"
+
+
+def test_reviewer_cohort_size_replaces_the_cap():
+    from dealintake.cli import _cohort
+    from dealintake.select_wells import fill
+
+    cfg = load()
+    pool = [{"api10": f"w{i:02d}", "tier": "codev", "dist_ft": 100.0 * i} for i in range(30)]
+    kw = {"bench": "BS3_C", "adjacent": [], "order": ["codev"], "order_reason": "x", "tier_blind": True}
+    whole = fill(pool, cfg, cohort_size=0, **kw)
+    assert len(whole.selected) == 30 and whole.flags == ["cohort = the whole pool of 30 wells (REVIEWER cohort size)"]
+    some = fill(pool, cfg, cohort_size=25, **kw)
+    assert [c["api10"] for c in some.selected] == [f"w{i:02d}" for i in range(25)]
+    assert some.flags == ["cohort capped: 25 nearest of 30 pool wells (REVIEWER cohort size)"]
+    assert len(fill(pool, cfg, **kw).selected) == 20                                   # default unchanged
+    assert _cohort(["BS3_C=pool", "WCB_1=40"]) == {"BS3_C": 0, "WCB_1": 40}
+    for bad in ("BS3_C=0", "BS3_C=-3", "BS3_C=lots"):
+        with pytest.raises(SystemExit):
+            _cohort([bad])

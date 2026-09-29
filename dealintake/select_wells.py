@@ -230,20 +230,27 @@ def fill(
     order_reason: str,
     dist_key: str = "dist_ft",
     tier_blind: bool = False,
+    cohort_size: int | None = None,
 ) -> Selection:
     """Fill one TC cohort from an eligible pool (see FILL in the module doc).
     `dist_key` = distance used for nearest-first (to the whole deal for a
     pooled TC, to the unit itself for a per-polygon TC).
     `tier_blind` (Michael, 2026-09-29): the cohort is the nearest max_wells of
     the pool WHATEVER their scenario tier — scenario is controlled where the
-    reviewer picks benches (gunbarrel), and reported, never selected on."""
+    reviewer picks benches (gunbarrel), and reported, never selected on.
+    `cohort_size` (tier-blind only): REVIEWER cap that replaces max_wells for
+    this cohort; 0 = the whole pool. Nearest-20 lets the units with the closest
+    offsets set the curve (VaULt BS3_C: 12 of 20 wells beside two units)."""
     sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=order_reason)
     if tier_blind:
-        max_wells = int(cfg["type_curve"]["max_wells"])
+        max_wells = int(cfg["type_curve"]["max_wells"]) if cohort_size is None else (cohort_size or len(eligible))
         ranked = sorted(eligible, key=lambda c: (c.get(dist_key) is None, c.get(dist_key) or 0.0, c["api10"]))
         sel.selected, sel.eligible_not_selected = ranked[:max_wells], ranked[max_wells:]
         if len(ranked) > max_wells:
-            sel.flags.append(f"cohort capped: {max_wells} nearest of {len(ranked)} pool wells")
+            sel.flags.append(f"cohort capped: {max_wells} nearest of {len(ranked)} pool wells"
+                             + (" (REVIEWER cohort size)" if cohort_size is not None else ""))
+        elif cohort_size is not None:
+            sel.flags.append(f"cohort = the whole pool of {len(ranked)} wells (REVIEWER cohort size)")
         if len(sel.selected) < int(cfg["type_curve"]["min_wells"]):
             sel.flags.append(f"under_count: {len(sel.selected)} < min_wells {cfg['type_curve']['min_wells']} "
                              "(extend radius / strike-biased — reviewer)")
