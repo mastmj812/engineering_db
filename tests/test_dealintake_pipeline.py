@@ -381,3 +381,73 @@ def test_greenfield_cohort_never_tiers_topfill():
     c = {"parent_benches_above": ["WCA_1"], "bench_context": {}, "codev_benches": ["WCB_1"]}
     assert codev_tier(c, ["WCB_1"], ["WCA_1"]) == "topfill_underfill"     # infill unit under WCA_1
     assert codev_tier(c, ["WCB_1"], []) == "codev"                        # greenfield unit: same well, pad-mate tier
+
+
+def test_tier_blind_fill_takes_the_nearest_whatever_the_tier():
+    from dealintake.select_wells import fill
+
+    cfg = load()
+    pool = [{"api10": f"w{i:02d}", "tier": "topfill_underfill" if i % 5 == 0 else "codev", "dist_ft": 100.0 * i}
+            for i in range(30)]
+    sel = fill(pool, cfg, bench="BS3_C", adjacent=["BS3_S"], order=["codev", "stack_standalone", "topfill_underfill"],
+               order_reason="x", tier_blind=True)
+    assert [c["api10"] for c in sel.selected] == [f"w{i:02d}" for i in range(20)]       # nearest 20, tiers mixed
+    assert sel.tier_counts() == {"codev": 16, "stack_standalone": 0, "topfill_underfill": 4}
+    assert sel.flags == ["cohort capped: 20 nearest of 30 pool wells"]
+    assert "under_count" in fill(pool[:3], cfg, bench="BS3_C", adjacent=[], order=["codev"], order_reason="x",
+                                 tier_blind=True).flags[0]
+
+
+def test_planned_standoff_uses_the_parent_gate_and_skips_same_bench():
+    from shapely.geometry import LineString, box
+
+    from dealintake.pipeline import PARENT_GATE_FT, planned_standoff
+
+    unit = box(-103.30, 31.60, -103.28, 31.63)                       # N-S laterals: +offset = east
+    stick = LineString([(-103.29, 31.602), (-103.29, 31.628)])       # on the unit centre line, offset ~0
+    existing = [
+        {"inside": True, "bench": "BS3_S", "tvd_ft": 11500.0, "offset_ft": 200.0},      # in gate, 400 ft below
+        {"inside": True, "bench": "WCA_1", "tvd_ft": 11300.0, "offset_ft": 1500.0},     # nearer vertically, outside the gate
+        {"inside": True, "bench": "BS3_C", "tvd_ft": 11150.0, "offset_ft": 100.0},      # same bench: a neighbour
+        {"inside": False, "bench": "BS3_S", "tvd_ft": 11200.0, "offset_ft": 0.0},       # not in the unit
+    ]
+    s = planned_standoff(unit, 0.0, [{"id": "gen-0", "wkt": stick.wkt, "tvd": 11100.0}], existing, "BS3_C", 11100.0,
+                         float(PARENT_GATE_FT), 1000.0)
+    assert PARENT_GATE_FT == 660
+    assert (s["n_sticks"], s["n_with_parent"], s["nearest_bench"], s["nearest_dtvd_ft"]) == (1, 1, "BS3_S", 400)
+    none = planned_standoff(unit, 0.0, [{"id": "gen-0", "wkt": stick.wkt, "tvd": 11100.0}], existing[1:], "BS3_C",
+                            11100.0, 660.0, 1000.0)
+    assert none["n_with_parent"] == 0 and none["nearest_bench"] is None
+
+
+def test_standoff_flags_only_when_we_are_more_parented_than_the_cohort():
+    from dealintake.pipeline import cohort_standoff, standoff_flags
+
+    cohort = [{"parent_benches_below": ["BS3_S"], "bench_context": {"BS3_S": {"parent_nearest_dtvd_ft": 400}}},
+              {"parent_benches_below": [], "bench_context": {}}]
+    c = cohort_standoff(cohort)
+    assert (c["n"], c["n_with_parent"], c["median_abs_dtvd_ft"]) == (2, 1, 400)
+    u = {"n_sticks": 4, "n_with_parent": 1, "nearest_dtvd_ft": 450, "nearest_bench": "BS3_S", "gate_ft": 660.0}
+    assert standoff_flags({"a": u}, c) == []                                   # 25% parented at 450 ft vs 50% at 400
+    tight = {**u, "nearest_dtvd_ft": 250}
+    one = standoff_flags({"a": tight, "b": tight, "c": u}, c)
+    assert len(one) == 1 and "2 unit(s)" in one[0] and "nearest BS3_S 250 ft below" in one[0]   # one flag per group
+    assert len(standoff_flags({"a": u}, cohort_standoff(cohort[1:]))) == 1     # cohort has no parented well
+    assert standoff_flags({"a": {**u, "n_with_parent": 0, "nearest_dtvd_ft": None}}, c) == []
+    tag = {**u, "n_with_parent": 0, "nearest_dtvd_ft": None, "n_same_landing": 1, "same_landing_benches": ["WCA_2"]}
+    assert standoff_flags({"a": tag}, c)[0].startswith("same landing, different tag: a (1 stick(s) at the depth of WCA_2)")
+
+
+def test_same_landing_producer_is_a_neighbour_not_a_parent():
+    from shapely.geometry import LineString, box
+
+    from dealintake.pipeline import planned_standoff
+
+    unit = box(-103.30, 31.60, -103.28, 31.63)
+    stick = LineString([(-103.29, 31.602), (-103.29, 31.628)])
+    existing = [{"inside": True, "bench": "WCA_2", "tvd_ft": 11111.0, "offset_ft": 50.0},     # 11 ft: same landing
+                {"inside": True, "bench": "WCB_1", "tvd_ft": 11500.0, "offset_ft": 50.0}]
+    s = planned_standoff(unit, 0.0, [{"id": "g", "wkt": stick.wkt, "tvd": 11100.0}], existing, "WCA_1", 11100.0,
+                         660.0, 1000.0, 150.0)
+    assert (s["n_with_parent"], s["nearest_bench"], s["nearest_dtvd_ft"]) == (1, "WCB_1", 400)
+    assert (s["n_same_landing"], s["same_landing_benches"]) == (1, ["WCA_2"])

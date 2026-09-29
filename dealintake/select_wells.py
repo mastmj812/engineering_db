@@ -229,11 +229,25 @@ def fill(
     order: list[str],
     order_reason: str,
     dist_key: str = "dist_ft",
+    tier_blind: bool = False,
 ) -> Selection:
     """Fill one TC cohort from an eligible pool (see FILL in the module doc).
     `dist_key` = distance used for nearest-first (to the whole deal for a
-    pooled TC, to the unit itself for a per-polygon TC)."""
+    pooled TC, to the unit itself for a per-polygon TC).
+    `tier_blind` (Michael, 2026-09-29): the cohort is the nearest max_wells of
+    the pool WHATEVER their scenario tier — scenario is controlled where the
+    reviewer picks benches (gunbarrel), and reported, never selected on."""
     sel = Selection(bench=bench_code(bench), adjacent=adjacent, tier_order=order, order_reason=order_reason)
+    if tier_blind:
+        max_wells = int(cfg["type_curve"]["max_wells"])
+        ranked = sorted(eligible, key=lambda c: (c.get(dist_key) is None, c.get(dist_key) or 0.0, c["api10"]))
+        sel.selected, sel.eligible_not_selected = ranked[:max_wells], ranked[max_wells:]
+        if len(ranked) > max_wells:
+            sel.flags.append(f"cohort capped: {max_wells} nearest of {len(ranked)} pool wells")
+        if len(sel.selected) < int(cfg["type_curve"]["min_wells"]):
+            sel.flags.append(f"under_count: {len(sel.selected)} < min_wells {cfg['type_curve']['min_wells']} "
+                             "(extend radius / strike-biased — reviewer)")
+        return sel
     if not adjacent:
         sel.flags.append("no adjacent planned bench: codev tier empty by construction")
     min_wells = int(cfg["type_curve"]["min_wells"])

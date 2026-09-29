@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 9                 # v9 2026-09-29: tier order decided PER UNIT (codev.tier_order_scope: unit) — infill vs
+config_version: 10                # v10 2026-09-29: TIER-BLIND cohort (codev.tier_order_scope: none) — scenario is
+                                  #    reported (tier table + standoff table), never selected on
+                                  # v9 2026-09-29: tier order decided PER UNIT (codev.tier_order_scope: unit) — infill vs
                                   #    greenfield cohorts from the same bench pool
                                   # v8 2026-09-28: ONE POOL PER BENCH (planned_lateral.pooling: bench) — lateral band spans
                                   #    the units' planned laterals; length check + lateral-support flags replace the classes
@@ -157,7 +159,20 @@ codev:                            # gate 5.2b — co-development tiering
   #           topfill_underfill first, parent test = those units' benches) and
   #           greenfield units (codev first) — at most two curves per group
   #   bench = the v7-v8 strict-majority vote across the bench's units
-  tier_order_scope: unit
+  # v10 (Michael, 2026-09-29): do NOT split or order by scenario. Scenario is
+  # controlled where the reviewer picks benches (gunbarrel: aggressive
+  # placements are dropped there). VaULt BS3_C showed why: the 38.6k "topfill"
+  # curve was 9 wells, 4 of them one pad on the east edge with ~9 months of
+  # history and parents at 261-416 ft, applied to sticks with 400-570 ft of
+  # standoff — geology and scenario could not be separated, and the penalty
+  # was over-applied.
+  #   none  = cohort = nearest max_wells of the group pool, whatever the tier;
+  #           the dossier reports the tier mix and a standoff table
+  tier_order_scope: none
+  # Standoff table: an other-bench producer within this vertical distance of a
+  # planned stick (inside the 660-ft gate) is the SAME LANDING with a different
+  # bench tag — a neighbour, not a parent. Reported apart. PROVISIONAL.
+  same_landing_ft: 150
   min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no

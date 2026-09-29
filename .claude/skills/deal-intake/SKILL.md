@@ -251,19 +251,31 @@ is flagged. `pooling: class` restores the v4–v7 behaviour (benches keyed
 split is a separate question from length. Every unit's benches + lateral
 land in the decision log (gate 1), marked when edited vs the seed.
 
-**Tier order is per unit** (`codev.tier_order_scope: unit`, config v9 —
-Michael 2026-09-29). Each TC group splits by first-order scenario into
-**infill** units (producers within `codev.scenario_band_ft` of the bench:
-topfill/underfill tier first, parent test = those units' own in-band
-benches) and **greenfield** units (pad-mates first) — at most two curves per
-group, both filled from the same bench pool, each decision-logged. The old
-bench-wide majority vote put a topfill/underfill curve on greenfield units
-(VaULt BS3_C: 36.8k bbl/1,000 ft from 9 topfill wells against a 54.5k codev
-tier of 52). `--tc-single` still pools the UNITS into one geographic group;
-the scenario split applies inside it. A reviewer `--tc-single` / `--tc-groups`
-call is scoped to the units it was made on — re-confirm it when the pool
-definition changes (the BS3_C call was made on four 2-mile units and did not
-survive nine).
+**The cohort is tier-blind** (`codev.tier_order_scope: none`, config v10 —
+Michael 2026-09-29). Each TC group's cohort is the nearest `max_wells` of its
+pool, whatever the wells' development scenario. Scenario is controlled at
+the reviewer's bench selection (the gunbarrel step drops aggressive
+placements); the dossier REPORTS it and never selects on it:
+
+- the tier table shows each cohort well's own history (over/under an
+  unshielded vertical parent, pad-mate codev, standalone) with medians;
+- the **standoff table** puts each unit's planned sticks (nearest
+  other-bench producer inside the 660-ft parent gate, vertical distance)
+  beside the cohort's own parent standoff. Units whose sticks are parented
+  more often, or tighter, than the cohort are named in ONE flag per TC
+  group — the curve does not carry that penalty and the reviewer risks by
+  hand. An other-bench producer within `codev.same_landing_ft` (150 ft,
+  PROVISIONAL) of a stick is the same landing under a different tag — a
+  neighbour, reported apart ("same landing, different tag"): check the tag
+  or the placement.
+
+Why (VaULt BS3_C): a topfill-first cohort gave 38.6k bbl/1,000 ft from 9
+wells — 4 of them one pad on the east edge with ~9 months of history and
+parents at 261–416 ft — applied to sticks with 400–570 ft of standoff.
+Geology and scenario could not be separated at that n, and the penalty was
+over-applied. `unit` (v9) and `bench` (v7–v8) remain as config values. A
+reviewer `--tc-single` / `--tc-groups` call is scoped to the units it was
+made on — re-confirm it when the pool definition changes.
 
 Order of operations is fixed and matters: **classify the pool → fit the
 whole pool in anduin → transfer → split test → fill each group's cohort**.

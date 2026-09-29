@@ -255,8 +255,8 @@ def render(run_dir: Path) -> Path:
                         f'planned lateral {B["planned_lateral_ft"]:,.0f} ft centres the lateral band.</div>'))
         excl = ", ".join(f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1]))
         p.append(f"<div><b>Eligible pool</b> {pool['n_eligible']} wells ({pool['n_excluded']} excluded: {_esc(excl)}). "
-                 f"Adjacent planned benches: {_esc(', '.join(pool['adjacent_planned']) or 'none')}; tier order "
-                 f"{_esc(' → '.join(pool['tier_order']))} ({_esc(pool['order_reason'])}).</div>")
+                 f"Adjacent planned benches: {_esc(', '.join(pool['adjacent_planned']) or 'none')}. "
+                 f"{_esc(pool['order_reason'][:1].upper() + pool['order_reason'][1:])}.</div>")
         for f in pool["flags"]:
             p.append(f'<div class="flag">{_esc(f)}</div>')
         tr = B.get("short_history_transfer")
@@ -307,10 +307,30 @@ def render(run_dir: Path) -> Path:
             p.append(f"<h3>TC group: {_esc(', '.join(name.get(u, u) for u in G['units']) if G['name'] != 'all units' else 'all units')}</h3>")
             if G.get("note"):
                 p.append(f'<div class="flag">{_esc(G["note"])}</div>')
-            if G.get("order_reason"):
+            if G.get("scenario"):
                 p.append(f'<div class="meta">Scenario — {_esc(G["order_reason"])}; tier order '
                          f'{_esc(" → ".join(G.get("tier_order") or []))}.</div>')
-            p.append(_table(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
+            so = G.get("standoff")
+            if so:
+                c = so["cohort"]
+                p.append("<div><b>Standoff — our sticks vs the cohort</b> <span class=\"meta\">vertical distance to the nearest "
+                         "other-bench producer inside the parent gate; reported, never selected on. Cohort: "
+                         f"{c['n_with_parent']} of {c['n']} wells came on over/under a parent"
+                         + (f", standoff median {c['median_abs_dtvd_ft']:,.0f} ft (range {c['min_abs_dtvd_ft']:,.0f}–"
+                            f"{c['max_abs_dtvd_ft']:,.0f})" if c["n_with_parent"] else "") + ".</span></div>")
+                p.append(_table(["DSU", "Planned sticks", "Sticks over/under a producer", "Same landing, other tag",
+                                 "Nearest producer", "Vertical standoff ft", "Read"],
+                                [[name.get(u, u), s["n_sticks"], s["n_with_parent"],
+                                  f"{s['n_same_landing']} ({', '.join(s['same_landing_benches'])})" if s.get("n_same_landing") else "—",
+                                  s["nearest_bench"] or "—",
+                                  "—" if s["nearest_dtvd_ft"] is None else
+                                  f"{abs(s['nearest_dtvd_ft']):,.0f} ({'producer below' if s['nearest_dtvd_ft'] > 0 else 'producer above'})",
+                                  "no parent in gate" if not s["n_with_parent"] else
+                                  (_chip("tighter than the cohort", "#d97706")
+                                   if c["min_abs_dtvd_ft"] is None or abs(s["nearest_dtvd_ft"]) < (c["median_abs_dtvd_ft"] or 0)
+                                   else "more standoff than the cohort median")]
+                                 for u, s in so["units"].items() if s]))
+            p.append(_table(["Scenario of the well (own history)" if so else "Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
                             [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)] for t in G.get("tier_order") or pool["tier_order"]]))
             for f in G["flags"]:
                 p.append(f'<div class="flag">{_esc(f)}</div>')
