@@ -180,6 +180,18 @@ def tvd_strip(u: dict[str, Any]) -> str:
     return _svg(fig)
 
 
+def cross_section_ends(azimuth_deg: float) -> tuple[bool, str, str]:
+    """(flip, left, right) so a gunbarrel reads W->E (or S->N when the cross
+    axis runs mostly north-south). The rule-16 +offset points 90 deg clockwise
+    of the plan: +EAST on a ~0 deg plan but +WSW on a 162 deg plan, which drew
+    36-37 east-to-west (Michael, 2026-09-30). flip = plot +offset on the left."""
+    d = math.radians((azimuth_deg + 90.0) % 360.0)
+    east, north = math.sin(d), math.cos(d)
+    if abs(east) >= abs(north):
+        return east < 0, "W", "E"
+    return north > 0, "S", "N"
+
+
 def gunbarrel(u: dict[str, Any]) -> str:
     """Cross-section perpendicular to the planned azimuth: the PROPOSED rows
     (narvi preview at the reviewed benches — hollow squares on each bench's
@@ -224,11 +236,15 @@ def gunbarrel(u: dict[str, Any]) -> str:
         row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}"
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
                           + (" [UPSIDE]" if pl.get("role") == "upside" else "")
-                          + (f" (Novi pattern {pl['novi_spacing_ft']:,.0f} ft)" if pl.get("novi_spacing_ft") and pl.get("spacing_source") != "reviewer" else "")
+                          + (" [winerack]" if pl.get("winerack") else "")
+                          + (" [880-ft fallback]" if pl.get("spacing_source") != "reviewer" else "")
+                          + (f" (Novi's pattern {pl['novi_spacing_ft']:,.0f} ft — not used)" if pl.get("novi_spacing_ft") and pl.get("spacing_source") != "reviewer" else "")
                           + (f" — {'; '.join(pl['rules'])}" if pl.get("rules") else ""))
     ax.set_ylim(y_hi, y_lo)
-    ax.set_xlim(c_lo - 1500, c_hi + 1500)
-    ax.set_xlabel(f"offset from unit centroid, ft (+ = 90° clockwise of the {gb['azimuth_deg']:.0f}° plan)", fontsize=8)
+    flip, left, right = cross_section_ends(float(gb["azimuth_deg"]))
+    ax.set_xlim((c_hi + 1500, c_lo - 1500) if flip else (c_lo - 1500, c_hi + 1500))
+    ax.set_xlabel(f"{left}  ←   offset from unit centroid, ft (+ = 90° clockwise of the "
+                  f"{gb['azimuth_deg']:.0f}° plan)   →  {right}", fontsize=8)
     ax.set_ylabel("TVD ft", fontsize=8)
     ax.grid(True, linewidth=0.3, alpha=0.5)
     ax.tick_params(labelsize=7)
