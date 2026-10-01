@@ -5,8 +5,9 @@
   2. --writer <login> (optional; the LOGIN role must already exist — Michael
      creates it and sets the password himself, it never touches the repo):
        - GRANT box_econ_writer TO <login>
-       - GRANT <login> TO postgres WITH INHERIT FALSE, SET TRUE — required on
+       - GRANT <login> TO postgres WITH INHERIT TRUE, SET TRUE — required on
          PG16+ so postgres may ALTER DEFAULT PRIVILEGES FOR ROLE <login>
+         (has_privs_of_role needs INHERIT; SET alone is refused)
        - default privileges: tables <login> creates in box_econ are SELECTable
          by analyst_ro and postgres (apps + agent)
        - re-grant SELECT on tables <login> already owns there
@@ -73,7 +74,7 @@ def wire_writer(conn, login: str) -> None:
         s = sql.Identifier(SCHEMA)
         readers = sql.SQL(", ").join(sql.Identifier(x) for x in READERS)
         cur.execute(sql.SQL("GRANT {} TO {}").format(sql.Identifier(GROUP), r))
-        cur.execute(sql.SQL("GRANT {} TO postgres WITH INHERIT FALSE, SET TRUE").format(r))
+        cur.execute(sql.SQL("GRANT {} TO postgres WITH INHERIT TRUE, SET TRUE").format(r))
         cur.execute(
             sql.SQL("ALTER DEFAULT PRIVILEGES FOR ROLE {} IN SCHEMA {} GRANT SELECT ON TABLES TO {}")
             .format(r, s, readers)
