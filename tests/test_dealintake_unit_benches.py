@@ -243,3 +243,52 @@ def test_row_rules_on_a_162_deg_plan():
     rows[0]["lateral_ft"] = 4620
     kept, notes = apply_row_rules(rows, az, min_leg_ft=7000)
     assert len(kept) == 3 and "shorter than 7,000 ft" in notes[0]
+
+
+def test_winerack_key(tmp_path):
+    prop = _prop()
+    (tmp_path / unit_benches.FILENAME).write_text(
+        unit_benches.render(prop).replace("WCB_1:  {evaluate: true ", "WCB_1:  {evaluate: true , winerack: true, spacing_ft: 1320"),
+        encoding="utf-8")
+    assert unit_benches.read(tmp_path, prop)["u1"]["bench_opts"]["WCB_1"] == {"spacing_ft": 1320.0, "winerack": True}
+    (tmp_path / unit_benches.FILENAME).write_text(
+        unit_benches.render(prop).replace("WCB_1:  {evaluate: true ", "WCB_1:  {evaluate: true , winerack: yes please"),
+        encoding="utf-8")
+    with pytest.raises(ValueError):
+        unit_benches.read(tmp_path, prop)
+
+
+def test_winerack_legs_one_call_split_by_bench():
+    """Winerack benches go to narvi in ONE call (it staggers adjacent zones) and
+    come back split by bench; the shallowest zone's spacing leads."""
+    from shapely.geometry import LineString, box, mapping
+
+    from dealintake.pipeline import winerack_legs
+
+    calls = []
+
+    class _Narvi:
+        def generate(self, parcel, zones, **kw):
+            calls.append((zones, kw))
+            feats = [{"type": "Feature", "geometry": mapping(LineString([(x, 0), (x, 1)])),
+                      "properties": {"kind": "leg", "formation": z["formation"], "completed_lateral_ft": 9900}}
+                     for i, z in enumerate(zones) for x in (i, i + 0.5)]
+            return {"geojson": {"features": feats}}
+
+    unit = box(-103.5, 31.5, -103.49, 31.53)
+    got = winerack_legs(_Narvi(), unit, 41.3, {"WCB_2": (11650.0, 1320.0), "WCB_1": (11863.0, 1320.0)}, setback_ft=330)
+    assert len(calls) == 1
+    zones, kw = calls[0]
+    assert [z["formation"] for z in zones] == ["WCB_2", "WCB_1"]          # shallow -> deep
+    assert kw["spacing_ft"] == 1320.0 and kw["setback_ft"] == 330
+    assert {b: len(v) for b, v in got.items()} == {"WCB_2": 2, "WCB_1": 2}
+
+
+def test_gunbarrel_reads_west_to_east():
+    from dealintake.render.review import cross_section_ends
+
+    assert cross_section_ends(0.3) == (False, "W", "E")      # +offset = east -> as drawn
+    assert cross_section_ends(162.2) == (True, "W", "E")     # +offset = WSW -> flip (36-37)
+    assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish, as drawn
+    assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = south -> south on the left
+    assert cross_section_ends(270.0) == (True, "S", "N")

@@ -99,6 +99,26 @@ def write_json(path: Path, obj: Any) -> None:
 # Stage 1 — propose
 # =============================================================================
 
+def winerack_legs(
+    narvi: Narvi, unit: Any, azimuth_deg: float, zones: dict[str, tuple[float, float]], *, setback_ft: float,
+) -> dict[str, list[dict[str, Any]]]:
+    """Generate a unit's winerack benches in ONE narvi call — narvi staggers
+    adjacent zones (by TVD) half a spacing apart — and split the legs back out
+    by bench. zones = {bench: (tvd_ft, spacing_ft)}; the shallowest zone's
+    spacing is the call's base spacing (narvi's lead spacing)."""
+    order = sorted(zones, key=lambda b: zones[b][0])
+    gen = narvi.generate(
+        unit, [{"formation": b, "target_tvd_ft": zones[b][0], "spacing_ft": zones[b][1]} for b in order],
+        setback_ft=setback_ft, spacing_ft=zones[order[0]][1],
+        azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y))
+    out: dict[str, list[dict[str, Any]]] = {b: [] for b in order}
+    for leg in legs(gen):
+        b = bench_code(str(leg.get("formation") or ""))
+        if b in out:
+            out[b].append(leg)
+    return out
+
+
 def gunbarrel_preview(
     unit: Any, azimuth_deg: float, bench_proposal: list[dict[str, Any]], bench_seed: dict[str, dict[str, Any]],
     gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
@@ -147,6 +167,18 @@ def gunbarrel_preview(
                          "offset_ft": round(oa[0]), "tvd_ft": float(st["tvd"]), "relation": st["relation"]})
     planned: dict[str, dict[str, Any]] = {}
     opts_all = bench_opts or {}
+    # Winerack benches are placed together (one narvi call, staggered); the rest one by one.
+    wr_zones = {b: (float(opts_all[b].get("tvd_ft", tvd_by.get(b))),
+                    float(opts_all[b].get("spacing_ft") or DEFAULT_SPACING_FT))
+                for b, row in bench_seed.items()
+                if row["evaluate"] and (opts_all.get(b) or {}).get("winerack")
+                and opts_all[b].get("tvd_ft", tvd_by.get(b)) is not None}
+    wr: dict[str, list[dict[str, Any]]] | Exception = {}
+    if wr_zones:
+        try:
+            wr = winerack_legs(narvi, unit, azimuth_deg, wr_zones, setback_ft=setback_ft)
+        except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
+            wr = e
     for b, row in bench_seed.items():
         if not row["evaluate"]:
             continue
@@ -160,11 +192,16 @@ def gunbarrel_preview(
         sp = float(opts.get("spacing_ft") or DEFAULT_SPACING_FT)
         sp_src = "reviewer" if opts.get("spacing_ft") else "880-ft fallback"
         try:
-            gen = narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
-                                 setback_ft=setback_ft, spacing_ft=sp,
-                                 azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y))
+            if b in wr_zones:
+                if isinstance(wr, Exception):
+                    raise wr
+                lg = wr[b]
+            else:
+                lg = legs(narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
+                                         setback_ft=setback_ft, spacing_ft=sp,
+                                         azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
             rows = [{"offset_ft": round(project(leg["geom"])[0]),
-                     "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0))} for leg in legs(gen)]
+                     "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0))} for leg in lg]
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             planned[b] = {"error": str(e)[:160]}
             continue
@@ -176,7 +213,8 @@ def gunbarrel_preview(
                       "spacing_ft": sp, "spacing_source": sp_src,
                       "novi_spacing_ft": g2.get("novi_spacing_ft"),
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
-                      "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base")}
+                      "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
+                      "winerack": b in wr_zones}
     return {"azimuth_deg": azimuth_deg, "cross_extent_ft": [round(c_lo), round(c_hi)],
             "bench_tvd_ft": tvd_by, "existing": existing, "novi": novi, "planned": planned}
 
@@ -854,6 +892,7 @@ def evaluate(
             jobs.append((bench, cl, bench if len(classes) == 1 else f"{bench} @ {ll_c:,.0f} ft"))
     known_units = set(all_units)
 
+    winerack_memo: dict[str, dict[str, list[dict[str, Any]]]] = {}   # unit -> {bench: legs}
     with wh.connect() as conn:
         for bench, class_units, key in jobs:
             units = {lb: all_units[lb] for lb in class_units}
@@ -928,6 +967,27 @@ def evaluate(
                                                   "dist_nearest_ft", "offset_median_eur_ft",
                                                   "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
                     unit_novi += [s["stick_id"] for s in sticks]
+                elif opts.get("winerack"):
+                    # Placed with the unit's other winerack benches in ONE narvi call
+                    # (staggered half a spacing); memoized per unit across the bench loop.
+                    if label not in winerack_memo:
+                        zones: dict[str, tuple[float, float]] = {}
+                        for b2 in plan[label]["benches"]:
+                            o2 = plan[label]["bench_opts"].get(b2) or {}
+                            if not o2.get("winerack") or (u["gate2"].get(b2) or {}).get("source") == "novi":
+                                continue
+                            t2 = o2.get("tvd_ft", next((r["median_tvd_ft"] for r in u["bench_proposal"]
+                                                        if bench_code(r["bench"]) == b2), None))
+                            if t2 is None:
+                                t2 = bench_tvd.get(b2)
+                            if t2 is not None:
+                                zones[b2] = (float(t2), float(o2.get("spacing_ft") or DEFAULT_SPACING_FT))
+                        zones[bench] = (tvd_u, sp_u)
+                        winerack_memo[label] = winerack_legs(
+                            narvi, geom, u["planned_lateral"]["azimuth_deg"], zones,
+                            setback_ft=float(cfg["planned_lateral"]["setback_ft"]))
+                    lg = winerack_memo[label].get(bench, [])
+                    UB["winerack"] = True
                 else:
                     # narvi takes a UTM-13N GRID bearing; the plan is a TRUE bearing.
                     gen = narvi.generate(
@@ -936,6 +996,7 @@ def evaluate(
                         azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
                     )
                     lg = legs(gen)
+                if g2["source"] != "novi":
                     # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
                     project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
                     rows = [{"offset_ft": round(project(leg["geom"])[0]),
