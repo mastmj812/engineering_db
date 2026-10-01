@@ -99,6 +99,27 @@ def write_json(path: Path, obj: Any) -> None:
 # Stage 1 — propose
 # =============================================================================
 
+# Reviewer keys that describe a PATTERN to place — any of them means "generate".
+PATTERN_KEYS = ("tvd_ft", "spacing_ft", "n_wells", "keep_side",
+                "drop_west_rows", "drop_east_rows", "drop_north_rows", "drop_south_rows", "winerack")
+
+
+def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
+    """Gate 2 with the reviewer on top: a bench Gate 2 would source from Novi's
+    BASE_CASE sticks is GENERATED instead when the reviewer set a pattern on it
+    (TVD / spacing / count / row rules). Rally Caps 2-44 (2026-10-01): "4 WCB_2
+    @ ~11,150" was silently replaced by Novi's single in-unit stick, while the
+    review page (which always generates) showed 4."""
+    if g2.get("source") != "novi":
+        return g2
+    keys = [k for k in PATTERN_KEYS if opts.get(k) is not None]
+    if not keys:
+        return g2
+    return {**g2, "source": "generate", "novi_reason": g2.get("reason"),
+            "reason": f"reviewer pattern ({', '.join(keys)}) overrides Novi's "
+                      f"{g2.get('pud_inside', 0)} BASE_CASE stick(s) — generated"}
+
+
 def winerack_legs(
     narvi: Narvi, unit: Any, azimuth_deg: float, zones: dict[str, tuple[float, float]], *, setback_ft: float,
 ) -> dict[str, list[dict[str, Any]]]:
@@ -952,8 +973,8 @@ def evaluate(
                     tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
                     tvd_src = "unit local median" if local_tvd is not None else "cross-unit median (no local control)"
                 sp_u = float(opts.get("spacing_ft") or sp)
-                g2 = u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
-                                               "pud_inside": 0, "pud_crossing": 0}
+                g2 = location_source(u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
+                                                                "pud_inside": 0, "pud_crossing": 0}, opts)
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
                                       "spacing_ft": sp_u, "role": opts.get("role", "base"), "row_rules": []}
@@ -974,7 +995,7 @@ def evaluate(
                         zones: dict[str, tuple[float, float]] = {}
                         for b2 in plan[label]["benches"]:
                             o2 = plan[label]["bench_opts"].get(b2) or {}
-                            if not o2.get("winerack") or (u["gate2"].get(b2) or {}).get("source") == "novi":
+                            if not o2.get("winerack") or location_source(u["gate2"].get(b2) or {}, o2).get("source") == "novi":
                                 continue
                             t2 = o2.get("tvd_ft", next((r["median_tvd_ft"] for r in u["bench_proposal"]
                                                         if bench_code(r["bench"]) == b2), None))
