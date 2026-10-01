@@ -292,3 +292,18 @@ def test_gunbarrel_reads_west_to_east():
     assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish, as drawn
     assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = south -> south on the left
     assert cross_section_ends(270.0) == (True, "S", "N")
+
+
+def test_reviewer_pattern_overrides_novi_location_source():
+    """Rally Caps 2-44: a reviewer pattern on a bench Gate 2 would source from
+    Novi means GENERATE; no pattern keeps Novi; a generate bench is untouched."""
+    from dealintake.pipeline import location_source
+
+    novi = {"source": "novi", "reason": "all BASE_CASE sticks inside, oriented and sized like the plan", "pud_inside": 1}
+    got = location_source(novi, {"tvd_ft": 11150.0, "spacing_ft": 1320.0, "n_wells": 4})
+    assert got["source"] == "generate" and "tvd_ft, spacing_ft, n_wells" in got["reason"]
+    assert got["novi_reason"] == novi["reason"]
+    assert location_source(novi, {}) is novi
+    assert location_source(novi, {"role": "upside"}) is novi           # role is not a pattern
+    gen = {"source": "generate", "reason": "no BASE_CASE stick inside"}
+    assert location_source(gen, {"n_wells": 4}) is gen
