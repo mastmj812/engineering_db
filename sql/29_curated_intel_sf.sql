@@ -29,6 +29,11 @@
 -- across quarterly reloads — unlike the old BIGSERIAL which renumbered on
 -- every reload. Positive and disjoint from erebor's -(api10) PDP ids.
 --
+-- VINTAGE SCOPE: raw_intel accumulates vintages (superseded slices are kept —
+-- old collections leave the share and backups exclude forecast rows, so they
+-- are irreplaceable); intel_locations / intel_arps / intel_forecast serve the
+-- LATEST report per basin family only (latest_report CTE / WHERE clauses).
+--
 -- RUN: scripts/load_intel_sf.py --curated   (phase-6 cutover only; DROPs
 --      CASCADE through intel_formation_blueox, reconciled_inventory,
 --      net_new_pdp, intel_pdp_support (sql/30), erebor_locations — rebuild order
@@ -51,7 +56,19 @@ DROP MATERIALIZED VIEW IF EXISTS curated.intel_locations CASCADE;
 CREATE MATERIALIZED VIEW curated.intel_locations AS
 -- BEGIN INTEL_LOCATIONS_SELECT (marker used by scripts/reconcile_intel_sf.py
 -- to build the qa staging copy — keep markers intact)
-WITH pdp_key AS (
+WITH latest_report AS (
+    -- One report per basin family. raw_intel retains superseded vintage slices
+    -- after a quarterly reload (loads are DELETE-per-report_name, and old
+    -- collections leave the share, so their slices are irreplaceable); curated
+    -- serves ONLY the latest vintage per family. report_name sorts
+    -- lexicographically within a family ('...__2025Q3' < '...__2026Q3' for the
+    -- enforced YYYYQN format). Added 2026-09-16: the first co-resident reload
+    -- (2025Q3 + 2026Q3) duplicated the stick_id of every carried-over well_ref.
+    SELECT max(report_name) AS report_name
+    FROM raw_intel.well_master
+    GROUP BY split_part(report_name, '__', 2)
+),
+pdp_key AS (
     -- well_id -> api10 for normalizing PDP-side FKs onto well_ref
     SELECT well_id, report_name, uwi_api
     FROM raw_intel.well
@@ -121,13 +138,16 @@ slice_irr AS (
     SELECT wm.basin_slug, wm.inventory_class,
            percentile_cont(0.5) WITHIN GROUP (ORDER BY abs(e.irr)) AS med
     FROM raw_intel.well_master wm
+    JOIN latest_report lr ON lr.report_name = wm.report_name
     JOIN econ e ON e.well_ref = wm.well_ref AND e.report_name = wm.report_name
     WHERE e.irr IS NOT NULL
     GROUP BY wm.basin_slug, wm.inventory_class
 ),
 pad_npv AS (
     -- pad rollup recomputed from member-stick economics (share has no
-    -- pad-level rollup). Delaware BASE_CASE only as of 2025Q3.
+    -- pad-level rollup). Coverage follows the share's pad_name gap: Delaware
+    -- BASE_CASE only as of 2025Q3, Midland only as of 2026Q3 (0 Delaware
+    -- pads shipped — raised with Novi).
     SELECT wm.report_name, wm.pad_name, SUM(e.npv25) AS pad_npv25
     FROM raw_intel.well_master wm
     JOIN econ e ON e.well_ref = wm.well_ref AND e.report_name = wm.report_name
@@ -233,6 +253,7 @@ SELECT
     wb.bottom_hole_longitude          AS bh_lon,
     wm.geom                           AS wellstick_geom
 FROM raw_intel.well_master wm
+JOIN latest_report lr ON lr.report_name = wm.report_name
 JOIN raw_intel.stick_id_map m0 ON m0.well_ref = wm.well_ref
 LEFT JOIN curated.wells w      ON w.api10 = wm.uwi_api
 LEFT JOIN econ  ON econ.well_ref = wm.well_ref AND econ.report_name = wm.report_name
@@ -265,8 +286,9 @@ COMMENT ON MATERIALIZED VIEW curated.intel_locations IS
   'contract as the retired sql/12 version: irr_pct in percent, pad NPV rollup '
   '(SUM of member sticks), api10 crosswalk to curated.wells (PDP), gunbarrel '
   'points (all classes), GIST-indexed wellstick_geom, stable stick_id via '
-  'raw_intel.stick_id_map. Economics are Novi pre-computed on a flat deck — '
-  'a screen, not the authoritative deal value.';
+  'raw_intel.stick_id_map. Latest report per basin family only (superseded '
+  'vintage slices stay in raw_intel). Economics are Novi pre-computed on a '
+  'flat deck — a screen, not the authoritative deal value.';
 
 -- -----------------------------------------------------------------------------
 -- intel_arps — segmented decline parameters, old column names preserved.
@@ -301,7 +323,9 @@ JOIN raw_intel.planned_well pw
   ON af.well_ref = 'PW-' || pw.planned_well_id::text
  AND af.report_name = pw.report_name
 LEFT JOIN raw_intel.stick_id_map sid
-  ON sid.well_ref = af.well_ref;
+  ON sid.well_ref = af.well_ref
+WHERE af.report_name IN (SELECT max(report_name) FROM raw_intel.well_master
+                         GROUP BY split_part(report_name, '__', 2));
 
 -- -----------------------------------------------------------------------------
 -- intel_forecast — monthly production forecast passthrough (planned wells).
@@ -324,7 +348,9 @@ JOIN raw_intel.planned_well pw
   ON pw.planned_well_id = pf.planned_well_id
  AND pw.report_name = pf.report_name
 LEFT JOIN raw_intel.stick_id_map sid
-  ON sid.well_ref = 'PW-' || pw.planned_well_id::text;
+  ON sid.well_ref = 'PW-' || pw.planned_well_id::text
+WHERE pf.report_name IN (SELECT max(report_name) FROM raw_intel.well_master
+                         GROUP BY split_part(report_name, '__', 2));
 
 -- -----------------------------------------------------------------------------
 -- curated.refresh_all() is deliberately NOT redefined here (sql/12 used to,

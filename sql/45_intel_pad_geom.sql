@@ -1,0 +1,15 @@
+-- =============================================================================
+-- 45 — RETIRED (2026-09-21). DO NOT RUN.
+--
+-- This file built curated.intel_pad_geom as one convex hull per
+-- (basin, pad_name). The Delaware 2026Q3 pad_name backfill showed Novi reuses
+-- pad names across unrelated stick groups (34% of Delaware names, mostly
+-- Woodford), so a per-name hull spanned up to ~150 mi. Superseded by:
+--
+--     sql/46_intel_pad_clusters.sql  — curated.intel_pad_member (stick_id ->
+--     spatial pad_key) + curated.intel_pad_geom keyed (basin, pad_key);
+--     applied by scripts/apply_intel_pad_geom.py
+--
+-- The last real body of this file is at commit a5f9e4d. The number stays
+-- reserved so the sql/NN sequence remains canonical.
+-- =============================================================================

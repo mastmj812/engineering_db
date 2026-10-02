@@ -63,24 +63,32 @@ python -m scripts.load_intel_sf --forecast --report <report_name>
 ```
 
 ~73M rows / ~50 min. **Disk check first:** `raw_intel.production_forecast` is
-~16 GB per vintage; ask the user whether to DELETE the superseded
-report_name slice before loading the new one rather than double-holding.
+~16 GB per vintage. Retention policy of record (Michael, 2026-09-18): the
+superseded vintage is TRIMMED, not deleted — step 8 below keeps its accuracy
+core (all core/arps slices + forecast mop <= 24, ~1 GB) so
+`curated.intel_forecast_accuracy_vintage` (sql/43) keeps scoring it as actuals
+accrue, and drops the long-horizon bulk so the database stops growing
+vintage-over-vintage. Full deletion of a vintage remains irreplaceable and
+Michael-only (removes it from the accuracy record permanently).
 
 ## 5. Curated CASCADE rebuild — FIXED ORDER (see memory: quarterly-rebuild-cascade-order)
 
 sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
 `reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
-`intel_forecast_accuracy`, `erebor_locations`); sql/20 inside
-apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` (the
-script rebuilds them in order — keep that if it's ever refactored).
+`intel_forecast_accuracy`, `intel_pad_member`, `intel_pad_geom`, `erebor_locations`); sql/20 inside
+apply_reconciled_inventory additionally kills sql/23 + `wells_enriched` +
+`codev_context` (sql/47) + its `dev_scenario` view (sql/50) + `intel_forecast_accuracy_vintage` (sql/43; restored
+by apply_intel_forecast_accuracy below) — the script rebuilds sql/23 +
+wells_enriched + codev_context + dev_scenario in order (keep that if it's ever refactored).
 
 ```powershell
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast
+python -m scripts.apply_intel_pad_geom                 # sql/46: pad groups + polygons from stick hulls (erebor Highgrade)
 python -m scripts.apply_intel_formation_blueox         # sql/19
-python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/21
+python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/47 -> sql/21
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
-python -m scripts.apply_intel_forecast_accuracy        # sql/38 (self-applies sql/26 first)
+python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
 python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all()
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```
@@ -119,3 +127,19 @@ Otherwise the frozen 3Q25 trio in `raw_novi_intel` stays.
 - Next nightly `intel_sf.report_check` auto-acknowledges the watermark once
   the report_name appears in `raw_intel.well_master` — the alert clears
   itself; no manual ack.
+
+## 8. Trim the superseded vintage (retention policy, after verification)
+
+```powershell
+python -m scripts.trim_superseded_vintage --all-superseded --dry-run   # counts first
+python -m scripts.trim_superseded_vintage --all-superseded
+```
+
+Deletes the superseded vintage's forecast rows with mop > 24 (chunked, with
+settle() pauses; verifies the sql/43 accuracy grain is untouched by refreshing
+it and comparing per-vintage direct-well counts; plain VACUUM at the end makes
+the freed pages reusable for the NEXT reload instead of growing provisioned
+disk). Everything else (core slices, arps, forecast mop <= 24) stays, so the
+vintage keeps scoring in `intel_forecast_accuracy_vintage`. Known effect: the
+anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
+forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).

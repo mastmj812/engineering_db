@@ -1,14 +1,54 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 1
+config_version: 10                # v10 2026-09-29: TIER-BLIND cohort (codev.tier_order_scope: none) — scenario is
+                                  #    reported (tier table + standoff table), never selected on
+                                  # v9 2026-09-29: tier order decided PER UNIT (codev.tier_order_scope: unit) — infill vs
+                                  #    greenfield cohorts from the same bench pool
+                                  # v8 2026-09-28: ONE POOL PER BENCH (planned_lateral.pooling: bench) — lateral band spans
+                                  #    the units' planned laterals; length check + lateral-support flags replace the classes
+                                  # v7 2026-09-28: first-order scenario tiers (codev.scenario_band_ft, child branch dropped),
+                                  #    reviewer per-bench keys in benches.yaml, Novi spacing = suggestion, stream_gap_flag_ratio
+                                  # v6 2026-09-26: planned azimuth = unit long axis (grid advisory, grid_vs_long_axis_flag_deg);
+                                  #    narvi azimuths converted UTM-grid <-> true; split table shared-offset count
+                                  # v5 2026-09-25: Gate 2 orientation/length test (alignment.azimuth_tolerance_deg),
+                                  #    Novi-inferred spacing, long-lateral pool tolerance (type_curve.long_lateral)
+                                  # v4 2026-09-21: per-unit benches.yaml + lateral classes (planned_lateral.class_ratio)
+                                  # v3 2026-09-21: short-history cohort transfer ON by default (9 post-peak mo)
+                                  # v2 2026-09-18: codev tiering, cohort Di dispersion,
+                                  # TC split test, planned-lateral estimate, stick-inside rule
 
-alignment:                        # gate 2 — location source
-  iou_min: 0.90
-  outside_endpoint_frac_max: 0.05
-  gray_band: [0.80, 0.90]         # escalate to reviewer
-  # IoU uses raw_novi_intel.pads (frozen 3Q25 display trio) — advisory if
-  # stale; outside_endpoint_frac from live erebor_locations sticks governs.
+alignment:                        # gate 2 — location source (v2 rule, 2026-09-18)
+  # PRIMARY: per (unit x bench), every Novi PUD/RES stick must lie inside the
+  # unit. Any stick crossing the boundary -> narvi generates that WHOLE bench
+  # (never a mixed bench: a generated stick beside Novi sticks inherits no
+  # consistent spacing). Benches with every stick inside keep Novi locations.
+  stick_inside_tolerance_ft: 50   # Novi DSU vs Land polygon digitizing slack
+  fallback_scope: bench           # bench | unit
+  # Michael 2026-09-25: Novi's guess at a unit's infill is often the wrong
+  # ORIENTATION or LENGTH (VaULt 44-45 S2). Keep Novi locations only when the
+  # BASE_CASE sticks are inside AND within this axial angle of our planned
+  # azimuth AND their lateral is within the basin tolerance of our planned
+  # lateral; otherwise GENERATE — the presence of BASE_CASE sticks is the
+  # infill signal, and generated sticks inherit the BASE_CASE bench's
+  # de-facto spacing (median perpendicular gap) instead of the 880-ft fallback.
+  azimuth_tolerance_deg: 20
+  # Michael 2026-09-26: planned sticks run PARALLEL TO THE UNIT LONG AXIS. narvi's
+  # neighborhood-grid azimuth (a TRUE bearing: ST_Azimuth on geography) is
+  # advisory — reported beside the long axis and flagged for the reviewer when
+  # a coherent grid disagrees by more than this. narvi's /api/generate lays rows
+  # in UTM 13N, so the runner hands it a GRID bearing (true - convergence,
+  # ~0.9 deg across the Delaware); without that the rows drift ~0.9 deg.
+  grid_vs_long_axis_flag_deg: 5
+  # ADVISORY only: IoU vs curated.intel_pad_geom (derived hulls; 2026Q3 covers
+  # Midland only). Reported, never decides.
+  iou_advisory_min: 0.80
+
+depth:                            # gate 1 — bench PROPOSAL from a depth window
+  edge_margin_ft: 200             # bench median TVD within 200 ft of a window
+                                  # boundary -> 'edge' (reviewer look)
+  # Declared land depths are often distant ref-log picks; the CORRELATED
+  # window (narvi deal-terms card) overrides them when supplied.
 
 bench_inclusion:                  # gate 3
   pdp_count_3mi_min: 3            # >= 3; raw-producer support count, NOT
@@ -25,15 +65,115 @@ forecast_source:                  # gate 4 — hybrid mode (settled)
   null_behavior: anduin_required  # true NULL -> build Anduin, no wait
   in_range_optional_anduin: true  # one-click build
 
-type_curve:                       # gate 5 — anduin selection
+type_curve:                       # gate 5 — well selection
   first_prod_after: 2016-01-01
   min_months_data: 6              # post-filter; not a /wells/select param
-  min_lateral_ft: 6000            # assumes ~10k development
   min_wells: 10
+  max_wells: 20                   # cap on the FIRST tier (nearest first); lower tiers
+                                  # only top up to min_wells (Michael, 2026-09-18)
+  # Short-history cohort transfer (anduin POST /forecasts/transfer-cohort-params),
+  # ON BY DEFAULT (Michael, 2026-09-21): wells with < N months AFTER PEAK get
+  # the eligible pool's long-well median Di/b + their own peak qi. Hindcast
+  # (Toucan + BS2_C/BS3_C Lea, next-12-mo oil): own-fit bias +12-16% at 9 mo
+  # -> transfer +6-11%; 9 within ~1-2 pts of 12. Overwrites unlocked anduin
+  # rows for those wells (listed in the dossier). --no-short-history-transfer
+  # turns it off for a run.
+  short_history_transfer_months: 9
   default_radius_mi: 5
   extension:
     basinward: concentric_radius
     near_edge: strike_biased      # reviewer confirms — geological gate
+  # Lateral band around the unit's PLANNED lateral (lateral section below),
+  # per basin — mirrors the Novi-rep tolerance of ledger §9 so the TC and the
+  # Novi analogs are selected on the same lateral. Replaces v1 min_lateral_ft.
+  lateral_tolerance_by_basin:
+    delaware: 0.25
+    midland: 0.40
+    default: 0.25
+  # Long-lateral classes starve under a class-centred basin band (VaULt 15,144-
+  # and 17,670-ft classes: 0-19 wells). Michael 2026-09-25: widen the TC POOL
+  # tolerance for classes at/above min_ft. The Novi representative-stick
+  # tolerance (ledger §9) is NOT widened — the TC-vs-Novi comparison keeps
+  # its basin band.
+  long_lateral:
+    min_ft: 12500
+    tolerance: 0.40
+
+planned_lateral:                  # gate 1 — per-unit planned lateral estimate
+  # Uniform setback on EVERY side (Michael, 2026-09-18): more representative
+  # of achievable lateral than narvi's orientation-dependent 330/100 setbacks
+  # (perfect 2-mi DSU: 9,900 ft vs 10,360 ft). Estimate only — narvi's
+  # generation setbacks are unchanged.
+  setback_ft: 330
+  chord_step_ft: 100              # chord spacing across the unit, along-azimuth
+  statistic: median               # median chord of the inward-buffered unit
+  # Lateral classes (Michael, 2026-09-21 — VaULt mixes 2-, 2.5-, 3- and 3.5-mile
+  # units): units whose planned laterals are within this ratio of the class's
+  # shortest unit share one pool / split test / type curve per bench, with the
+  # lateral band centered on the class median. 1.10 keeps a 9,900-ft and a
+  # 12,600-ft unit apart. The reviewer can override a unit's planned lateral
+  # in benches.yaml (the chord estimate misreads odd-shaped units).
+  class_ratio: 1.10
+  # v8 (Michael, 2026-09-28): the classes were "too cute" — pools thinner than the
+  # effect they guarded against. Measured 25 mi around VaULt (FP >= 2020, medians,
+  # 6 benches): 13.5k+ ft vs 8.5-11k ft wells run 0 to -12% on cum-12 oil per
+  # 1,000 ft and -13% to +8% (mixed sign) on 30-yr EUR per 1,000 ft, while the
+  # per-class curves moved the OTHER way (pool composition, not length).
+  #   bench = one pool / split test / type curve per bench, per 1,000 ft, scaled
+  #           linearly; lateral band = shortest unit's lower bound to longest
+  #           unit's upper bound (each at its own tolerance)
+  #   class = the v4-v7 behaviour (one pool per bench x lateral class)
+  pooling: bench
+  # The flags that replace the classes — FLAGS ONLY, never a filter:
+  length_check:
+    bucket_edges_ft: [8500, 11000, 13500]   # 1.5- / 2- / 2.5- / 3-mile+
+    min_wells: 5                  # a bucket below this is shown, not judged
+    flag_ratio: 1.15              # PROVISIONAL bucket median vs pool median, per 1,000 ft
+    min_wells_near_planned: 3     # cohort wells within a unit's own band, else flagged thin
+  # azimuth source: narvi baseline trust order when available, else the
+  # unit's minimum-rotated-rectangle long axis (reported which).
+
+codev:                            # gate 5.2b — co-development tiering
+  # Constants BAKED in curated.codev_context (sql/47); the runner asserts
+  # equality — change sql/47 and these together or not at all.
+  # The topfill_underfill tier's PARENT test is curated.dev_scenario's (sql/50,
+  # Michael 2026-09-23): 660-ft midpoint offset gate, 1,000-ft band, shielding.
+  # Those live only in the view (read, never copied here).
+  xy_ft: 1320
+  window_days: 180
+  overlap_min_frac: 0.30
+  tier_order_default: [codev, stack_standalone, topfill_underfill]
+  tier_order_when_pdp_adjacent: [topfill_underfill, codev, stack_standalone]
+  # FIRST-ORDER scenario tiering (Michael, 2026-09-28): the cohort's parent test
+  # is the set of benches PRODUCING IN THE UNIT within scenario_band_ft of the
+  # planned bench (what our stick will sit under/over) — never the deal-wide
+  # planned stack, never a chained "codev with X" match. The order flips to
+  # topfill_underfill-first on a STRICT MAJORITY of the class's units with such
+  # producers; a tie keeps the default. Later-child wells no longer tier as
+  # topfill_underfill.
+  scenario_band_ft: 1000          # = sql/50's vertical band
+  # v9 (Michael, 2026-09-29): with one pool per bench the majority vote put a
+  # topfill/underfill-first cohort on GREENFIELD units (VaULt BS3_C 36.8k bbl/
+  # 1,000 ft from 9 topfill wells vs a 54.5k codev tier of 52).
+  #   unit  = each TC group splits into infill units (producers in the band:
+  #           topfill_underfill first, parent test = those units' benches) and
+  #           greenfield units (codev first) — at most two curves per group
+  #   bench = the v7-v8 strict-majority vote across the bench's units
+  # v10 (Michael, 2026-09-29): do NOT split or order by scenario. Scenario is
+  # controlled where the reviewer picks benches (gunbarrel: aggressive
+  # placements are dropped there). VaULt BS3_C showed why: the 38.6k "topfill"
+  # curve was 9 wells, 4 of them one pad on the east edge with ~9 months of
+  # history and parents at 261-416 ft, applied to sticks with 400-570 ft of
+  # standoff — geology and scenario could not be separated, and the penalty
+  # was over-applied.
+  #   none  = cohort = nearest max_wells of the group pool, whatever the tier;
+  #           the dossier reports the tier mix and a standoff table
+  tier_order_scope: none
+  # Standoff table: an other-bench producer within this vertical distance of a
+  # planned stick (inside the 660-ft gate) is the SAME LANDING with a different
+  # bench tag — a neighbour, not a parent. Reported apart. PROVISIONAL.
+  same_landing_ft: 150
+  min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no
   method: density_gradient        # structure surface / play polygon exists)
@@ -53,7 +193,34 @@ spacing:                          # gate 5.2 — classified at RUNTIME vs the
   # 2026-07-14): spacing when the offset came online, not current infill.
   # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
 
-qc_flags:                         # gate 6
+qc_flags:                         # gate 6 — flags only, never auto-drop
   peak_month_tolerance: 2
-  di_bounds_per_stream: TBD       # leave configurable; set with Michael
   eur_vs_offset_p50_tolerance: 0.25
+  eur_ft_mad_z: 3.5               # robust z on EUR/1,000 ft within the cohort
+  # Di (Michael, 2026-09-18): typical 1-yr EFFECTIVE decline ~65-75%, but the
+  # LEVEL varies by area/bench and is NOT a flag. What is a flag: DISPERSION
+  # within one cohort (50% beside 70% => different reservoir, unlikely over a
+  # small area, or an unreliable autoforecast). Measured in effective space
+  # (folds in b), reported nominal /yr + effective % side by side.
+  di_dispersion:
+    well_points_from_median: 10   # |De - cohort median De| > 10 pts -> well flag
+    cohort_flag_frac: 0.20        # >= 20% of wells flagged -> cohort flag
+    cohort_iqr_points: 10         # or IQR of De > 10 pts -> cohort flag
+    streams_flagged: [oil]        # Di SPREAD flags oil only (Michael, 2026-09-18):
+                                  # gas spread is reported, not flagged — it tracks
+                                  # real GOR behavior (ratio-mode test: switching gas
+                                  # to ratio-vs-cum-oil did not tighten it). Water is
+                                  # reported (TX water often a flat vendor WOR, sql/41).
+  outlier_flags_streams: [oil, gas]  # EUR/1,000 ft outliers + peak-month flags
+  typical_effective_range: [0.65, 0.75]  # context in the dossier, not a bound
+  # Novi vs anduin TC per stream (Michael 2026-09-28: anduin is the basis; a gap
+  # beyond this ratio either way is flagged on the curve, not buried — WCB_1 @
+  # 9,900 on VaULt had Novi gas 3.6x the TC).
+  stream_gap_flag_ratio: 1.5
+
+split:                            # gate 5b — one TC or per-polygon TCs
+  min_wells_per_group: 6
+  median_ratio: 1.25              # max/min group median EUR/1,000 ft
+  alpha: 0.05                     # Mann-Whitney (2 groups) / Kruskal-Wallis (>2)
+  # split only when BOTH hold; exactly one -> escalate; neither -> single_tc.
+  # Groups below min_wells_per_group never split: borrow + documented multiplier.
