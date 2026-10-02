@@ -32,6 +32,7 @@ SCHEMAS = (
     "raw_novi_intel",
     "ref",
     "curated",
+    "vdr",
     "meta",
 )
 
@@ -47,6 +48,8 @@ _QUARTERLY = {
     "curated.intel_forecast",
     "curated.bench_reference",  # sql/18, rebuilt by apply_intel_formation_blueox
     "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
+    "curated.intel_pad_member",  # sql/46, rebuilt by apply_intel_pad_geom
+    "curated.intel_pad_geom",  # sql/46, rebuilt by apply_intel_pad_geom
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -59,9 +62,16 @@ _CONSUMERS = {
     "curated.intel_locations": "erebor Highgrade/facets/export",
     "curated.reconciled_inventory": "narvi remaining inventory, erebor recon status",
     "curated.intel_pdp_support": "erebor Highgrade filters + xlsx export, folded into erebor_locations (sql/22)",
+    "curated.intel_pad_member": "erebor Highgrade per-pad aggregation (stick_id -> pad_key)",
+    "curated.intel_pad_geom": "erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)",
+    "curated.codev_context": "deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)",
+    "curated.dev_scenario": "scripts/find_analogs.py; anduin header sync (warehouse_client/wells.py)",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
+    "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
+    "vdr.daily": "anduin daily-production PDP forecasting (planned)",
+    "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 
 
@@ -76,6 +86,8 @@ def _cadence(rel: str, kind: str) -> str:
         return "static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)"
     if schema == "meta":
         return "continuous (ETL bookkeeping)"
+    if schema == "vdr":
+        return "on demand per data room (scripts.load_vdr)"
     if schema == "ref":
         return "static reference"
     if rel in _CURATED_MATVIEWS:
@@ -87,6 +99,7 @@ def _cadence(rel: str, kind: str) -> str:
                 "curated.intel_locations",
                 "curated.erebor_locations",
                 "curated.intel_forecast_accuracy",
+                "curated.intel_forecast_accuracy_vintage",
             )
             else ""
         )

@@ -13,6 +13,10 @@
 --   * Crosswalk CONTENT change  -> reload sql/14, then
 --       REFRESH MATERIALIZED VIEW CONCURRENTLY curated.formation_blueox;
 --     (the crosswalk is a JOINed table, so REFRESH re-runs the mapping — no DROP)
+--   * Ratified per-well OVERRIDE change -> reload sql/44, then the same REFRESH
+--     (ref.formation_tag_overrides is likewise a JOINed table). An override is a
+--     human-ratified re-tag (gunbarrel review); it WINS over the crosswalk and
+--     stamps formation_blueox_source = 'ratified_override'.
 --   * Mapping LOGIC change (this file) -> DROP + re-create THIS matview only.
 --     Nothing heavy depends on it; only curated.wells_enriched (a plain VIEW)
 --     joins it, and that rebuilds for free.
@@ -54,16 +58,20 @@ CREATE MATERIALIZED VIEW curated.formation_blueox AS
 SELECT
     w.api10,
     bx.raw_value                                               AS formation_blueox_raw,
-    bx.source                                                  AS formation_blueox_source,
+    CASE WHEN ovr.api10 IS NOT NULL THEN 'ratified_override'
+         ELSE bx.source END                                    AS formation_blueox_source,
     bx.basin_token                                             AS basin_blueox,
+    -- Ratified per-well override (sql/44) wins over the crosswalk: a human
+    -- gunbarrel adjudication beats the vendor-string mapping. Then:
     -- Delaware/Midland: unmapped -> NULL so crosswalk gaps surface for review.
     -- CBP: unmapped -> OTHER by design — we only crosswalk its deep unconventional
     -- targets (Woodford/Barnett/Mississippian); the conventional shelf is
     -- deliberately bucketed to OTHER, not treated as a gap to chase.
-    CASE WHEN bx.basin_token = 'cbp' THEN COALESCE(fx.canonical_code, 'OTHER')
-         ELSE fx.canonical_code
-    END                                                        AS formation_blueox,
-    (fx.canonical_code IS NOT NULL)                            AS formation_blueox_is_mapped
+    COALESCE(ovr.corrected_code,
+             CASE WHEN bx.basin_token = 'cbp' THEN COALESCE(fx.canonical_code, 'OTHER')
+                  ELSE fx.canonical_code
+             END)                                              AS formation_blueox,
+    (ovr.api10 IS NOT NULL OR fx.canonical_code IS NOT NULL)   AS formation_blueox_is_mapped
 FROM curated.wells w
 LEFT JOIN LATERAL (
     WITH base AS (
@@ -108,6 +116,8 @@ LEFT JOIN LATERAL (
 LEFT JOIN ref.formation_crosswalk fx
        ON fx.basin     = bx.basin_token
       AND fx.raw_value = bx.raw_value
+LEFT JOIN ref.formation_tag_overrides ovr
+       ON ovr.api10 = w.api10
 ;
 
 
@@ -120,4 +130,4 @@ CREATE INDEX idx_curated_formation_blueox_code
 
 
 COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS
-'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / geologist relands) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD) that defer to Enverus ENVInterval. Raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';
+'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / ratified re-tags) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: ref.formation_tag_overrides (human-ratified gunbarrel re-tags, source=ratified_override, sql/44) wins outright; otherwise Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD) that defer to Enverus ENVInterval, with the raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';
