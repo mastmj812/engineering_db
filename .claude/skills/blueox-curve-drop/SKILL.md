@@ -150,6 +150,22 @@ if we're forcing one of the §5 undecided formats.
   oilgas flow.
 - Update the blue-ox memory: drop sent (or staged), sweep result, outstanding acks.
 
+## PDP workbook (Deliverable B) — when producing wells convey
+
+Built in anduin's **PDP tab** from seller data-room daily production (ledger §12). Separate
+file from the curve drop: `<codename>_pdp_<date>.xlsx`.
+
+1. Kickoff inputs from Blue Ox: **effective date**, grouping (default one sheet per well —
+   WI differs inside leases), and whether PDNP/shut-in wells convey. No effective date = no build.
+2. Data current: re-load the newest VDR production update (`python -m scripts.load_vdr`), then
+   PDP tab → Sync daily → Run forecast (manual params, windows and locks survive the re-run).
+3. Review every flagged well; **lock each stream you sign off** — the preview lists every
+   unlocked stream and open flag, and the manifest records `review_status`.
+4. Export panel → Save + preview: contract errors block; readiness warnings don't. Spot-check
+   one group sheet's first month against the seller's reported volumes when the effective
+   date precedes data-through (those rows are actuals by design).
+5. Michael sends. A re-export is a new dated file + "supersedes <name>" (pass `supersedes`).
+
 ## Known traps (each has drawn blood)
 
 Stale-pin 409s after any narvi re-save · phantom pins from wrong-parcel saves · silent

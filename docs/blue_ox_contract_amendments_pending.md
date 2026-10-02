@@ -289,9 +289,58 @@ re-drop semantics so a split is an expected shape, not a surprise.
   old zone name — total location count and Block B reconciliation are
   unchanged (the split partitions rows; it never adds or drops any).
 
+## 12. Deliverable B — the PDP workbook, as built — **NEW (2026-10-02)** (needs ack before first send)
+
+Contract §2 specified the PDP workbook but nothing emitted it until the alchemist
+deal (seller data room with daily production). anduin now builds it from the PDP
+tab (`exports/blueox_pdp.py`, pure builder; `GET /api/deals/{id}/pdp/export.xlsx`).
+Everything below is declared in the workbook's own `manifest`, so a lenient
+loader needs nothing new except where marked.
+
+- **What — shape (contract-conformant):** `<codename>_pdp_<YYYY-MM-DD>.xlsx`; one
+  sheet per PDP group with `gross_oil_bbl`, `gross_gas_mcf`, `gross_water_bbl`;
+  no date column; group aggregate, gross, monthly; Mcf not MMcf; then `manifest`.
+  Curves mode only — no revenue/opex columns ever (scope rule).
+- **What — `first_row_month` (new manifest key):** row 1 = the effective-date
+  month when the effective date is the 1st, otherwise the following month. §2
+  says "first month after the effective date", which is ambiguous for a 1st-of-
+  month date; the key removes the ambiguity.
+- **What — rows before data-through are ACTUALS (`history_basis`, new key):** if
+  the effective date precedes the last reported day, those rows carry the
+  seller's reported daily volumes summed by month (e.g. July = 3 reported days +
+  28 forecast days); later rows are forecast. Value
+  `seller_reported_daily_through_history_then_forecast`;
+  `production_history_through` = last reported day.
+- **What — default grouping is ONE SHEET PER WELL (`grouping`, new key):** WI
+  differs inside leases (alchemist: Atlanta 73 72H vs 73H; Yorktown wells 30–72%),
+  so aggregating would force one interest across wells. Group = well name. Lease
+  grouping and custom groups remain available; the manifest declares which.
+  Group names never equal a zone name (build-refused).
+- **What — Block B (manifest):** one row per group: `group`, `mode` (`curves`),
+  `well_count`, `dollar_basis` (`not_applicable` — curves mode carries no $),
+  `eur_oil_bbl`, `eur_gas_mcf`, `eur_water_bbl` (exact sums of the delivered
+  sheet columns, ±0.1% gate trivially met), `api10s`.
+- **What — volume basis (`water_basis`, `forecast_method`, `forecast_horizon`):**
+  forecasts are fit on seller DAILY volumes (producing-day rate × per-well
+  uptime from routine downtime); water is seller-measured (`water_basis =
+  seller_measured_daily_vdr`), not the Novi TX allocation. Volumes stop at each
+  well's first production + 50 yr (raw technical horizon, no economic limit);
+  later rows are zero. `curve_months` = the deal's curve-drop length (600).
+- **What — NGL:** no `gross_ngl_bbl` column (optional in §2); `ngl_basis =
+  derived_by_blue_ox_via_yield`, same as the curve drop (2026-07-20 amendment).
+- **What — `review_status` (new key):** "N of M well-streams locked" — the
+  engineer's sign-off state at export time. Not a gate on the Blue Ox side.
+- **Kickoff inputs still owed by Blue Ox for alchemist:** the effective date, the
+  grouping preference (per-well default), and whether the PDNP well (Atlanta 73
+  2H, seller `2PDNP`) conveys — it is not in the PDP set today.
+- **Loader impact:** *tolerated* if the loader ignores unknown manifest keys and
+  takes group sheets by enumeration. **Ack needed** on (a) `first_row_month`
+  semantics and (b) actuals in pre-data-through rows — if Blue Ox wants forecast
+  only from the effective date, that is a one-flag change on our side.
+
 ---
 
-*Column/sheet/key names in §6–§11 are final once the first workbook carrying
+*Column/sheet/key names in §6–§12 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
 
