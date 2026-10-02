@@ -32,6 +32,7 @@ SCHEMAS = (
     "raw_novi_intel",
     "ref",
     "curated",
+    "vdr",
     "meta",
 )
 
@@ -69,6 +70,8 @@ _CONSUMERS = {
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
+    "vdr.daily": "anduin daily-production PDP forecasting (planned)",
+    "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 
 
@@ -83,6 +86,8 @@ def _cadence(rel: str, kind: str) -> str:
         return "static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)"
     if schema == "meta":
         return "continuous (ETL bookkeeping)"
+    if schema == "vdr":
+        return "on demand per data room (scripts.load_vdr)"
     if schema == "ref":
         return "static reference"
     if rel in _CURATED_MATVIEWS:

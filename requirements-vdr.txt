@@ -1,0 +1,4 @@
+# Seller VDR loader (scripts/load_vdr.py) — NOT needed by the nightly ETL or CI.
+# Reading ARIES .accdb also needs the 64-bit "Microsoft Access Driver
+# (*.mdb, *.accdb)" (Access Database Engine, Windows only).
+pyodbc>=5.1
