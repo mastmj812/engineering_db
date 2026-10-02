@@ -330,9 +330,16 @@ loader needs nothing new except where marked.
   derived_by_blue_ox_via_yield`, same as the curve drop (2026-07-20 amendment).
 - **What — `review_status` (new key):** "N of M well-streams locked" — the
   engineer's sign-off state at export time. Not a gate on the Blue Ox side.
-- **Kickoff inputs still owed by Blue Ox for alchemist:** the effective date, the
-  grouping preference (per-well default), and whether the PDNP well (Atlanta 73
-  2H, seller `2PDNP`) conveys — it is not in the PDP set today.
+- **Kickoff inputs still owed by Blue Ox for alchemist:** the effective date and
+  the grouping preference (per-well default).
+- **What — non-producing wells that convey (`shut_in_wells`, new key; 2026-10-02):**
+  seller `2PDNP` wells are included when the deal conveys them (alchemist: Atlanta
+  73 2H, per Michael). A stream with no producing day in the trailing 365 d is
+  forecast at ZERO (matching the seller's own ARIES forecast for that well); the
+  well still gets its own sheet (all zeros) and counts in `well_count`. A
+  reactivation case, if engineering sets one, starts at the declared restart date
+  and is zero before it. `shut_in_wells` lists the zero-forecast wells (or
+  `none`).
 - **Loader impact:** *tolerated* if the loader ignores unknown manifest keys and
   takes group sheets by enumeration. **Ack needed** on (a) `first_row_month`
   semantics and (b) actuals in pre-data-through rows — if Blue Ox wants forecast
