@@ -152,7 +152,7 @@ def _project(prop_rows, daily_rows):
                 "OIL": [1.0],
                 "GAS": [2.0],
                 "WATER": [3.0],
-                "DAYSON": [30],
+                "DAYSON": [30.0],  # pandas widens int+NULL columns to float
                 "WELLNO": [1.0],
             }
         ),
@@ -206,6 +206,8 @@ def test_build_package_shapes_rows_and_maps_api10():
     assert by_prop["P1"][2] == "Lowe 74 Unit 61H"
     assert by_prop["P2"][1] is None
     assert pkg.monthly_rows[0][1] == date(2026, 4, 1)
+    days_on = pkg.monthly_rows[0][5]
+    assert days_on == 30 and isinstance(days_on, int)
     kinds = sorted(r[0] for r in pkg.forecast_rows)
     assert kinds == ["property", "sidefile"]
     assert len(pkg.daily_rows) == 1

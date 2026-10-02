@@ -195,6 +195,12 @@ def _clean(v: object) -> Any:
     return v
 
 
+def _clean_int(v: object) -> int | None:
+    """Integer column that pandas widened to float because of NULLs."""
+    v = _clean(v)
+    return None if v is None else round(float(v))
+
+
 def _json_safe(v: object) -> Any:
     v = _clean(v)
     return v.isoformat() if isinstance(v, date) else v
@@ -384,7 +390,7 @@ def build_package(files: list[AriesFile]) -> VdrPackage:
             _clean(r.OIL),
             _clean(r.GAS),
             _clean(r.WATER),
-            _clean(r.DAYSON),
+            _clean_int(r.DAYSON),
             _clean(r.WELLNO),
             project.name,
         )
