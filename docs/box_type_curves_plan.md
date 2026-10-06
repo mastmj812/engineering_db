@@ -1,7 +1,13 @@
 # BOX type curves — build plan
 
-**Status:** plan of record, drafted 2026-10-06. Step 0 done (#85). **Next: step 1** (bench QC, read-only). Execution model in §10, kickoff prompt in §11.
-Nothing in this plan is built except step 0 (`box_econ` schema, eng_db #85).
+**Status:** plan of record, drafted 2026-10-06. Step 0 done (#85). **Step 1 built 2026-10-06, at gate 1**
+(deliverable `docs/box/step1-2026-10-06/` — `FINDINGS.md` + per-bench pages + well sets; builder
+`scripts/box_bench_qc.py`, `box/bench_qc.py`). Gate 1 open items: confirm the well sets; §9 NM
+planned-survey decision (recommendation A); flagged against D4: WCA_1/WCA_2 are only ~130 ft apart
+locally (merged in 36 % of neighbourhoods) and WCXY sits in the WCA_1 band in NM — decide handling
+before step 2. Execution model in §10, kickoff prompt in §11.
+Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
+git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
 it, then stop. Do not roll into the next step on a phase-level "yes".
