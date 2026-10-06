@@ -1338,8 +1338,16 @@ def evaluate(
             if ad and B.get("short_history_transfer", {}).get("written"):
                 B["transfer_compare"] = _compare_without_transfer(
                     ad, B, eligible, short_history_transfer)
+        # laterals for the dossier maps — display only, kept out of signals.json
+        write_json(run_dir / "well_sticks.json", wh.wellsticks(conn, map_api10s(res)))
     write_json(run_dir / "signals.json", res)
     return res
+
+
+def map_api10s(res: dict[str, Any]) -> list[str]:
+    """Every well a dossier map draws: each bench's eligible pool + cohorts."""
+    return sorted({w["api10"] for B in res.get("benches", {}).values()
+                   for w in B.get("eligible_pool", []) + [x for G in B.get("tc_groups") or [] for x in G["tc_wells"]]})
 
 
 def _compare_without_transfer(

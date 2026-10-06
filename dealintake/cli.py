@@ -11,7 +11,9 @@
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
-  render   --run-dir ...        re-render dossier.html + dossier.md from signals.json.
+  render   --run-dir ... [--fetch-sticks]
+      re-render dossier.html + dossier.md from signals.json (--fetch-sticks first
+      pulls the TC wells' laterals for the maps — needed for runs before 2026-10-06).
 
 Read-only against the warehouse; narvi/anduin in preview mode (see
 dealintake.pipeline). anduin credentials: ANDUIN_EMAIL / ANDUIN_PASSWORD.
@@ -20,13 +22,16 @@ dealintake.pipeline). anduin credentials: ANDUIN_EMAIL / ANDUIN_PASSWORD.
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
 
 from dealintake import config as cfgmod
 from dealintake import pipeline
+from dealintake import warehouse as wh
 from dealintake.clients.anduin import AnduinError
+from dealintake.pipeline import write_json
 from dealintake.render import dossier, dossier_html, review
 
 
@@ -124,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
 
     r = sub.add_parser("render")
     r.add_argument("--run-dir", required=True)
+    r.add_argument("--fetch-sticks", action="store_true",
+                   help="(re)write well_sticks.json from the warehouse (read-only) so the maps draw laterals")
     v = sub.add_parser("review", help="re-render review.html from proposal.json (after editing benches.yaml)")
     v.add_argument("--run-dir", required=True)
 
@@ -160,6 +167,10 @@ def main(argv: list[str] | None = None) -> int:
     elif a.cmd == "review":
         print(f"wrote {review.render(run_dir)}")
     else:
+        if a.fetch_sticks:
+            res = json.loads((run_dir / "signals.json").read_text(encoding="utf-8"))
+            with wh.connect() as conn:
+                write_json(run_dir / "well_sticks.json", wh.wellsticks(conn, pipeline.map_api10s(res)))
         dossier.render(run_dir)
         print(f"wrote {dossier_html.render(run_dir)} (+ dossier.md)")
     return 0

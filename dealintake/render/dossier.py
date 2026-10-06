@@ -182,6 +182,7 @@ def render(run_dir: Path) -> Path:
     s.append(md(["Unit", "Bench", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
                  "PDP in adjacent bench", "TC group", "Edge"], rows))
 
+    sticks = maps.load_sticks(run_dir)
     for bench, B in sig["benches"].items():            # key: "WCB_1" or "WCB_1 @ 12,620 ft" (lateral class)
         s.append(f"\n## {bench} — TVD {B['tvd_ft']:,.0f} ft, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
         cls = B.get("class_units")
@@ -199,8 +200,9 @@ def render(run_dir: Path) -> Path:
         png = f"map_{_slug(bench)}.png"
         b_units = [u for u in prop["units"] if not cls or u["label"] in cls]
         labels = maps.curve_labels(bench, B, b_units)
-        maps.bench_map(run_dir / png, bench, b_units, B, labels)
-        s.append(f"![{bench} map]({png})\n")
+        maps.bench_map(run_dir / png, bench, b_units, B, labels, sticks=sticks)
+        if len(B["tc_groups"]) > 1:
+            s.append(f"![{bench} map]({png})\n")
         pool = B["pool"]
         s.append(f"**Eligible pool:** {pool['n_eligible']} wells ({pool['n_excluded']} excluded: " + ", ".join(
             f"{k} {v}" for k, v in sorted(pool["exclusion_reasons"].items(), key=lambda kv: -kv[1])) + "). "
@@ -256,6 +258,7 @@ def render(run_dir: Path) -> Path:
 
         for gi, G in enumerate(B["tc_groups"]):
             s.append(f"\n### Curve {labels[gi]} — applies to {', '.join(G['units'])}; built from {len(G['tc_wells'])} wells\n")
+            s.append(f"![{labels[gi]} map]({maps.curve_png(Path(png), gi).name})\n")
             if G.get("note"):
                 s.append(f"> {G['note']}\n")
             if G.get("scenario"):
