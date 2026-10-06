@@ -2,10 +2,11 @@
 
 **Status:** plan of record, drafted 2026-10-06. Step 0 done (#85). **Step 1 built 2026-10-06, at gate 1**
 (deliverable `docs/box/step1-2026-10-06/` — `FINDINGS.md` + per-bench pages + well sets; builder
-`scripts/box_bench_qc.py`, `box/bench_qc.py`). Gate 1 open items: confirm the well sets; §9 NM
-planned-survey decision (recommendation A); flagged against D4: WCA_1/WCA_2 are only ~130 ft apart
-locally (merged in 36 % of neighbourhoods) and WCXY sits in the WCA_1 band in NM — decide handling
-before step 2. Execution model in §10, kickoff prompt in §11.
+`scripts/box_bench_qc.py`, `box/bench_qc.py`). Gate 1 decided 2026-10-06: D19 (pool WCA for
+extents/areas, split at the curve step) and D20 (WCXY → WCA_1 evidence one-way). Gate 1 still open:
+the §9 NM planned-survey rule (recommendation A) and how consensus flags are ratified (per-class
+calibration cards, not per well — well-by-well review is explicitly off the table). Execution model
+in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -48,6 +49,8 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D16 | **Steven wants monthly volumes.** Monthly rows are a *derived* table generated from params via the shared `trapezoid_eur` grid, never a second truth. Storage assessed after the pilot (BOX extents expected far tighter than Novi's). | |
 | D17 | **Curves refresh quarterly** with the Novi reload (inside frozen extents); **extents re-review on trigger** (§5.4). | |
 | D18 | **Acceptance = hindcast vs Novi 2025Q3** (§8). Thresholds accepted 2026-10-06. | "Novi is too optimistic" is established; "BOX is better" is not. |
+| D19 | **WCA_1 and WCA_2 are POOLED as `WCA` for extents and TC areas (steps 2–4); the sub-bench split happens at the curve step (5), settled by sensitivity (fit with/without the consensus reassignment), not by well inspection.** Michael 2026-10-06, gate 1. | Step-1 QC: the two bands are ~128 ft apart locally and merge (< 100 ft) in 36 % of 1.5-mi neighbourhoods; 675 of the 1,121 WCA consensus flags are WCA_1↔WCA_2 swaps, which change nothing in an extent. |
+| D20 | **Asymmetric bench evidence for WCXY.** WCXY-tagged wells COUNT as WCA_1 (hence WCA) evidence; WCA_1 wells NEVER count as WCXY evidence — a consensus flag of a WCA_1 well into the WCXY band is moot for steps 2–4 and never promotes the well into a future WCXY extent or cohort. Michael 2026-10-06, gate 1. | WCXY is a regional target concentrated on the north side of the basin; southern WCA_1 producers (e.g. Reeves Co.) must not extend or suggest a WCXY extent that far south. Step-1 QC: WCXY sits in the WCA_1 band in NM (66 % merged). |
 
 ## 3. Scope guard (what this plan does NOT do)
 
@@ -243,7 +246,13 @@ Reference: Novi 2025Q3 cum-6 bias −24 % Delaware / −5 % Midland.
 
 - Win on majority — does "majority" weight by holdout wells or by area count? (step 6, before scoring)
 - EUR-vs-qi factor application; per-bench vs per-basin pooling (step 5 gate).
-- NM planned-survey wells: reassign by depth or exclude (step 1 gate).
+- NM planned-survey wells: reassign by depth or exclude (step 1 gate; step-1 recommendation = A:
+  treat as evidence unless consensus-flagged, every survey class — see
+  `docs/box/step1-2026-10-06/FINDINGS.md` §4).
+- Consensus-flag ratification: per swap class via calibration cards (~10 sampled wells per class,
+  gunbarrel strip of subject + 1.5-mi witnesses), accept/reject by class precision; never
+  well-by-well (Michael 2026-10-06). Only edge-pinning review wells get individual eyes, at gate 2.
+- ~~WCA_1 vs WCA_2 handling; WCXY membership~~ → D19 / D20 (2026-10-06).
 - Steven's table shape / econ case dimension (step 7, after his first upload).
 - Geologist's one-line CRS confirmation (any time; D7 stands until contradicted).
 - Extent trigger constants N, X (step 3).
