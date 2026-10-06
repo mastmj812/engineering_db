@@ -1,6 +1,6 @@
 # BOX type curves — build plan
 
-**Status:** plan of record, drafted 2026-10-06 from the 2026-10-01 → 10-06 design discussion.
+**Status:** plan of record, drafted 2026-10-06. Step 0 done (#85). **Next: step 1** (bench QC, read-only). Execution model in §10, kickoff prompt in §11.
 Nothing in this plan is built except step 0 (`box_econ` schema, eng_db #85).
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
@@ -242,7 +242,40 @@ Reference: Novi 2025Q3 cum-6 bias −24 % Delaware / −5 % Midland.
 - Geologist's one-line CRS confirmation (any time; D7 stands until contradicted).
 - Extent trigger constants N, X (step 3).
 
-## 10. Session kickoff prompt (copy into a new session)
+## 10. Execution model (how the work is chunked across sessions)
+
+**One session per step, split further where a step is large.** Expect ~14–16 sessions, not 8:
+
+| Step | Sessions | Notes |
+|---|---|---|
+| 1, 2, 4, 6 | 1 each | read-only or single-deliverable |
+| 3 | 2 | build + export; then import geology's edits (their turnaround in between) |
+| 5 | 3 | 5a extraction (anduin PR, **plan mode first** — approve the module list before edits); 5b curves; 5c factors |
+| 7 | 2 | warehouse tables + crosswalk; then Steven's contract + CLAUDE.md / skill / dictionary text |
+| 8 | 1 per surface | erebor Highgrade; erebor Accuracy; anduin dossier / drop |
+
+**Why fresh sessions:** context summarization keeps a session alive but loses exact numbers and the
+reasons behind small choices. A new session that reads this file, the memory note, and the previous
+step's committed deliverable starts from the record, not a compressed memory of it. Gates are the
+natural boundaries — the review decision is the moment to end the session.
+
+**End-of-session ritual (every session, including an unfinished one):**
+1. Deliverable on disk and committed — the rendered page, the script that produced it, any SQL.
+   Review pages go in the repo (`runs/` or `docs/`), never only in chat.
+2. PR opened; Michael merges after review.
+3. Memory note `box-type-curves-idea` updated with the gate outcome and the one or two numbers that
+   matter.
+4. **The Status line at the top of this file updated** in the same PR: "step N done, gate N passed
+   <date>; next N+1" — or, if unfinished, "step N in progress: done X, Y; not Z; branch <name>".
+   Resolved §9 items move into §2 or get struck. Never update this file in a separate commit on
+   main (orphaned-push trap).
+
+**Within a session:** start with the §11 prompt only (the session reads this file; don't paste it).
+Heavy exploration (warehouse surveys, module inventories) goes to a subagent so raw dumps don't fill
+the main context. If context runs long before the step is done, Michael says **"checkpoint"**: commit,
+update the Status line, summarize, start fresh.
+
+## 11. Session kickoff prompt (copy into a new session)
 
 > Read `docs/box_type_curves_plan.md` in engineering_db and the memory note `box-type-curves-idea`.
 > We are on **step N**. Do only step N: build the deliverable, verify it per §7, report what exists
