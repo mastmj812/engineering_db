@@ -120,7 +120,28 @@ e. **BS2_S consensus coverage is thin:** 35 % off-band + 8 % no-evidence (thin, 
    sands; IQR ≤ 150 ft bands rarely form). Its flags are few (1.4 %); treat the detector as weak
    evidence on BS2_S and lean on sql/23 + the lith guard there.
 
-## 6. Gate 1 asks
+## 7. Gate-1 decisions (Michael, 2026-10-06) and the calibration cards
+
+- **D19:** WCA_1 + WCA_2 pooled as `WCA` for extents and areas; the sub-bench split happens at the
+  curve step, settled by sensitivity. **D20:** WCXY counts as WCA_1 evidence one-way; WCA_1 is never
+  WCXY evidence (WCXY is a north-side regional target; Reeves-County WCA_1 must not extend it south).
+- **Option A adopted** for planned-survey / permit-round wells: evidence unless consensus-flagged,
+  every survey class. **Well-by-well review is off the table**; consensus flags are ratified per
+  swap class from calibration cards.
+- **Cards:** `cards.html` — 797 flags in 24 cross-pool classes touching the pilot evidence sets
+  (in-pool WCA swaps and flags into WCXY are not carded), 142 cards: 10 per class at evenly spaced
+  quantiles of the margin ratio (weakest first), small classes in full. Big classes: WCB_1→WCA 165,
+  BS3_S→WCA 159, WCA→BS3_S 133, WCA→WCB_1 131, BS3_C→BS2_S 68, BS2_S→BS3_C 45. Each card: cross-section
+  of the 1.5-mi neighbourhood (east-west offset vs TVD, tags coloured, hollow = not clean evidence,
+  dashed = local band medians), plan inset, local cohort 12-mo oil/ft by bench with the subject dashed.
+  Mark agree / reject by api10 in chat, or fill the `verdict` column of `cards_sample.csv`; a class
+  is accepted or rejected wholesale on its precision. `flags_all.csv` lists every flag in those classes.
+- **Sensitivity** (cards.html top table): applying every carded flag under option A moves the WCA
+  cohort median 12-mo oil/ft from 21,735 to 21,674 bbl per 1,000 ft (−0.3 %) and BS2_S from 23,388 to
+  23,381 (0.0 %); TVD IQR unchanged. The flags matter for which wells pin an extent edge, not for the
+  cohort statistics.
+
+## 6. Gate 1 asks (superseded by §7 where decided)
 
 1. Confirm the well set per bench: `wells_<bench>.csv`, column `qc_role` (`evidence` / `review`) with
    `qc_reason`. Review class (planned survey, permit-round TVD, or a consensus flag): WCA_1 968 of

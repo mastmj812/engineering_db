@@ -3,10 +3,11 @@
 **Status:** plan of record, drafted 2026-10-06. Step 0 done (#85). **Step 1 built 2026-10-06, at gate 1**
 (deliverable `docs/box/step1-2026-10-06/` — `FINDINGS.md` + per-bench pages + well sets; builder
 `scripts/box_bench_qc.py`, `box/bench_qc.py`). Gate 1 decided 2026-10-06: D19 (pool WCA for
-extents/areas, split at the curve step) and D20 (WCXY → WCA_1 evidence one-way). Gate 1 still open:
-the §9 NM planned-survey rule (recommendation A) and how consensus flags are ratified (per-class
-calibration cards, not per well — well-by-well review is explicitly off the table). Execution model
-in §10, kickoff prompt in §11.
+extents/areas, split at the curve step), D20 (WCXY → WCA_1 evidence one-way), and **option A** for
+planned-survey / permit-round wells (evidence unless consensus-flagged). Consensus flags are ratified
+per swap class from calibration cards (`docs/box/step1-2026-10-06/cards.html`, 142 cards over 797
+cross-pool flags), never per well. Gate 1 closes when Michael's per-class verdicts are in; then
+step 2 in a fresh session. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -246,9 +247,9 @@ Reference: Novi 2025Q3 cum-6 bias −24 % Delaware / −5 % Midland.
 
 - Win on majority — does "majority" weight by holdout wells or by area count? (step 6, before scoring)
 - EUR-vs-qi factor application; per-bench vs per-basin pooling (step 5 gate).
-- NM planned-survey wells: reassign by depth or exclude (step 1 gate; step-1 recommendation = A:
-  treat as evidence unless consensus-flagged, every survey class — see
-  `docs/box/step1-2026-10-06/FINDINGS.md` §4).
+- ~~NM planned-survey wells: reassign by depth or exclude~~ → **option A adopted 2026-10-06**:
+  planned-survey / permit-round wells are evidence unless consensus-flagged, every survey class
+  (`docs/box/step1-2026-10-06/FINDINGS.md` §4/§7). BOX-only; no warehouse change.
 - Consensus-flag ratification: per swap class via calibration cards (~10 sampled wells per class,
   gunbarrel strip of subject + 1.5-mi witnesses), accept/reject by class precision; never
   well-by-well (Michael 2026-10-06). Only edge-pinning review wells get individual eyes, at gate 2.

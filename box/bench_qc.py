@@ -525,7 +525,7 @@ def bench_summary(df: pd.DataFrame, bench: str) -> dict[str, Any]:
 # ----------------------------------------------------------------------------
 
 _CSS = """
-body{font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;color:#111827;margin:0 24px 48px;max-width:1500px}
+body{font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;color:#111827;background:#fff;margin:0 24px 48px;max-width:1500px}
 h1{font-size:20px;margin:18px 0 4px} h2{font-size:16px;margin:36px 0 6px;border-top:2px solid #e5e7eb;padding-top:14px}
 h3{font-size:14px;margin:18px 0 4px} .meta{color:#6b7280;font-size:12px}
 .flag{background:#fffbeb;border-left:4px solid #d97706;padding:4px 10px;margin:4px 0} .bad{background:#fef2f2;border-left-color:#dc2626}
