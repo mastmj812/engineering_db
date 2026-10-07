@@ -149,3 +149,64 @@ fairer 2×2. That is a step-3 knob, not changed here.
 3. **BS2_S W:** is the 2025 Matador/Mewbourne W program a front (buffer W like a gap), or was the
    "capped W" expectation right and these wells are something else?
 4. Note for step 3: whether the edge-perf reference stays pool-wide (§6) or goes local.
+
+## 7. Michael's answers, 2026-10-07 (gate 2 partly answered)
+
+- **Buffer basis — option (b):** the ½-mi pin radius r is a *measuring* radius only. The extent is
+  laterals + variable buffer (k × gap, capped, 2×2-refined); it is **not** the r-dilated outline plus
+  a buffer. Step 3 builds the extent from the lateral lines. Recorded as plan D21.
+- **BS2_S W:** Michael reviewed the W step-outs. They are genuine BS2_S, so **W is a live front**
+  and step 3 buffers it like a gap side, not a capped edge. The "capped W" expectation is
+  superseded. Recorded as plan D22.
+- **The large BS2_S gap/hole on the potash side is very likely the potash mining operation** (a
+  surface constraint, D8), not geology. **Not resolved here.** D8's "add a manual ignore-gap polygon
+  only if it keeps recurring" now applies: the same footprint also opens WCA's north-central hole,
+  so it recurs across benches. Proposal for step 3: one shared potash ignore-gap polygon (BLM
+  Secretary's Potash Area or geology's own outline). Inside it, gaps neither widen buffers nor count
+  as negative evidence. Michael to confirm the source polygon.
+- Still open from §6: explicit acceptance of the metric (r, c) and of the step-out table; the
+  edge-perf reference (step 3).
+
+## 8. Side-probe: do Holden's structure grids add edge information? (2026-10-07)
+
+**Question:** where structure is quiet and continuous, should the extent follow it?
+**Probe:** `structure_probe.py` → `structure_probe_BS2_S.png`. Inputs: Holden's GGX grids
+`HCA_2BSPGS` (2BS sand top) and `HCA_3BSPGC` (3BS carbonate top). The isopach is the BS2 sand
+interval. Grids are UTM 14N US-ft, Z ≈ KB-relative TVD, 5,028-ft (~1 mi) nodes, 2,203 control
+points. Each edge segment is sampled 1 mi inside vs 1 mi outside the BS2_S outline.
+
+| side | grid coverage 1 mi outside | dip in / out (ft/mi) | isopach in / out (ft) | grid control pts within ½ mi of the outside sample |
+|---|---|---|---|---|
+| N | 47 % | 111 / 120 | 428 / 436 | 0.04 |
+| NE | 27 % | 114 / 39 | 488 / 429 | 0.35 |
+| E | 92 % | 144 / 159 | 433 / 481 | 0.50 |
+| SE | 100 % | 121 / 104 | 441 / 420 | 0.37 |
+| S | 100 % | 92 / 94 | 535 / 545 | 0.14 |
+| SW | 100 % | 101 / 92 | 400 / 369 | 0.28 |
+| W | 100 % | 103 / 106 | 321 / 290 | 0.03 |
+| NW | 79 % | 123 / 120 | 466 / 470 | 0.09 |
+
+Grid-wide inside vs 0–5 mi outside: dip median 97 vs 100 ft/mi, isopach 460 vs 434 ft. On gap
+segments vs pinned segments: isopach 444 vs 439 ft outside, dip 104 vs 107 ft/mi.
+
+**Read:**
+1. **Structure is quiet and continuous on every side, inside and outside alike.** The 2BS top is
+   a ~100 ft/mi eastward homocline with no break at any edge. By the proposed rule, every edge would
+   "follow structure outward". The signal doesn't discriminate a capped edge from a gap, because the
+   BS2_S edge isn't structurally controlled. It's facies/charge (sand quality, oil saturation),
+   which structure doesn't map.
+2. **Isopach is the more relevant surface, and it is weak too.** It thins W (321 → 290 ft) and SW
+   (400 → 369 ft), consistent with the rolled W/SW performance. But it's flat across S and SE and
+   indistinguishable between gaps and pinned stretches.
+3. **The grid is weakest exactly where we'd need it.** It doesn't cover the N and NE of the extent
+   (27–47 %). Outside the edge it's interpolation: ≤ 0.5 control points within ½ mi, and 0.03–0.14
+   on N/W/S/NW. Inside the edge its control is largely the same wells that already define the
+   extent. At ~1-mi nodes it can't resolve anything finer than the gaps we measure. The dip map's
+   bullseyes around control clusters are gridding artifacts.
+
+**Recommendation:** not worth adding as an automated extent driver for step 2 or step 3. The
+practical use is as a **context layer in the step-3 geology package**: ship the 2BS isopach
+contours (and the structure contours, `*_cont.xyz`) beside the extent shapefile. Geology can then
+judge, for example, whether the W thinning supports a tighter W buffer despite the live front. That
+is geology's call in GGX, where Holden already has these surfaces. Revisit only if a bench's edge
+proves structurally controlled (a fault or a structural nose), which the BS2_S data doesn't show.

@@ -20,7 +20,10 @@ wells; `box_depth_witness` marks depth evidence). **Step 2 built 2026-10-07, at 
 gaps on every diagonal flank); built instead as union-of-discs + closing (r = ½ mi pin radius, c = ¾ mi tuned
 on WCA) plus a step-out table. WCA uniform (61–74 % pinned every side) = pass; BS2_S N/E capped, S/SE/SW
 gappiest, but **W is a live 2025 front** (31 step-outs at 0.84× interior) — conflicts with the expectation;
-Michael's call at gate 2. Execution model in §10, kickoff prompt in §11.
+Michael 2026-10-07: D21 (buffer replaces the r standoff) + D22 (BS2_S W = live front);
+potash-footprint ignore-gap polygon PROPOSED (D8 recurrence), source polygon to confirm; structure-grid probe =
+not an extent driver, context layer for geology in step 3 (FINDINGS §8). Still open at gate 2: explicit
+acceptance of the metric (r, c) and the step-out table. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -65,6 +68,8 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D18 | **Acceptance = hindcast vs Novi 2025Q3** (§8). Thresholds accepted 2026-10-06. | "Novi is too optimistic" is established; "BOX is better" is not. |
 | D19 | **WCA_1 and WCA_2 are POOLED as `WCA` for extents and TC areas (steps 2–4); the sub-bench split happens at the curve step (5), settled by sensitivity (fit with/without the consensus reassignment), not by well inspection.** Michael 2026-10-06, gate 1. | Step-1 QC: the two bands are ~128 ft apart locally and merge (< 100 ft) in 36 % of 1.5-mi neighbourhoods; 675 of the 1,121 WCA consensus flags are WCA_1↔WCA_2 swaps, which change nothing in an extent. |
 | D20 | **Asymmetric bench evidence for WCXY.** WCXY-tagged wells COUNT as WCA_1 (hence WCA) evidence; WCA_1 wells NEVER count as WCXY evidence — a consensus flag of a WCA_1 well into the WCXY band is moot for steps 2–4 and never promotes the well into a future WCXY extent or cohort. Michael 2026-10-06, gate 1. | WCXY is a regional target concentrated on the north side of the basin; southern WCA_1 producers (e.g. Reeves Co.) must not extend or suggest a WCXY extent that far south. Step-1 QC: WCXY sits in the WCA_1 band in NM (66 % merged). |
+| D21 | **Extent = lateral lines + variable buffer** (k × local gap, capped, 2×2-refined). The step-2 pin radius r (½ mi) is a MEASURING radius for the edge walk only, never a standoff the buffer is added on top of. Michael 2026-10-07, gate 2 (option b). | A well-pinned, rolled edge may sit closer than ½ mi to the last producer; the buffer is the only knob setting distance past the last well. |
+| D22 | **BS2_S W is a live front** (31 step-outs 1–3 mi beyond the body, median first prod 2025, 0.84× interior oil/ft; Michael confirmed they are genuine BS2_S). Step 3 buffers it as a gap side. Supersedes the plan's "capped W" expectation in step 2. Michael 2026-10-07. | Step-2 step-out table. |
 
 ## 3. Scope guard (what this plan does NOT do)
 
