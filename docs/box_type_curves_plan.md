@@ -14,7 +14,12 @@ card verdicts outrank the class rule per well); hold classes exhausted (5 flags 
 per-well verdicts; GOR tiebreak FORMALISED (`gor12`, `cons_gor_vote`, veto in the rule, card panel);
 Diez TVD + McGary duplicates batched with the next vintage query. **Gate 1 CLOSED 2026-10-07.**
 Final well sets = `docs/box/step1-2026-10-06/wells_final_{WCA,BS2_S}.csv` (WCA 12,306 / BS2_S 4,359
-wells; `box_depth_witness` marks depth evidence). **Next: step 2** in a fresh session. Execution model in §10, kickoff prompt in §11.
+wells; `box_depth_witness` marks depth evidence). **Step 2 done; gate 2 CLOSED 2026-10-07** (deliverable `docs/box/step2-2026-10-07/` — `FINDINGS.md`,
+`edge_{WCA,BS2_S}.html`; builder `scripts/box_edge_gap.py`, `box/edge_gap.py`; eng_db #94). Decided: D21 (extent =
+laterals + variable buffer, r is measuring-only), D22 (BS2_S W = live front), D23 (edge metric of record + step-out
+table), D24 (potash ignore-gap = BLM Secretary's Potash Area), D25 (structure grids = geology context only).
+**Next: step 3** (buffers + geology round-trip) in a fresh session, reading `segments_<pool>.csv`,
+`stepouts_<pool>.csv`, `outline_<pool>.geojson`. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -59,6 +64,11 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D18 | **Acceptance = hindcast vs Novi 2025Q3** (§8). Thresholds accepted 2026-10-06. | "Novi is too optimistic" is established; "BOX is better" is not. |
 | D19 | **WCA_1 and WCA_2 are POOLED as `WCA` for extents and TC areas (steps 2–4); the sub-bench split happens at the curve step (5), settled by sensitivity (fit with/without the consensus reassignment), not by well inspection.** Michael 2026-10-06, gate 1. | Step-1 QC: the two bands are ~128 ft apart locally and merge (< 100 ft) in 36 % of 1.5-mi neighbourhoods; 675 of the 1,121 WCA consensus flags are WCA_1↔WCA_2 swaps, which change nothing in an extent. |
 | D20 | **Asymmetric bench evidence for WCXY.** WCXY-tagged wells COUNT as WCA_1 (hence WCA) evidence; WCA_1 wells NEVER count as WCXY evidence — a consensus flag of a WCA_1 well into the WCXY band is moot for steps 2–4 and never promotes the well into a future WCXY extent or cohort. Michael 2026-10-06, gate 1. | WCXY is a regional target concentrated on the north side of the basin; southern WCA_1 producers (e.g. Reeves Co.) must not extend or suggest a WCXY extent that far south. Step-1 QC: WCXY sits in the WCA_1 band in NM (66 % merged). |
+| D21 | **Extent = lateral lines + variable buffer** (k × local gap, capped, 2×2-refined). The step-2 pin radius r (½ mi) is a MEASURING radius for the edge walk only, never a standoff the buffer is added on top of. Michael 2026-10-07, gate 2 (option b). | A well-pinned, rolled edge may sit closer than ½ mi to the last producer; the buffer is the only knob setting distance past the last well. |
+| D22 | **BS2_S W is a live front** (31 step-outs 1–3 mi beyond the body, median first prod 2025, 0.84× interior oil/ft; Michael confirmed they are genuine BS2_S). Step 3 buffers it as a gap side. Supersedes the plan's "capped W" expectation in step 2. Michael 2026-10-07. | Step-2 step-out table. |
+| D23 | **Edge metric of record = step 2 as built**: union-of-discs outline (pin radius r = 2,640 ft, closing c = 3,960 ft, smallest c making WCA one body, one value per basin), gap = unpinned outline between consecutive pinning laterals, sides by bearing from the body centroid, **plus the step-out table** (≥ 2016 laterals beyond the body by side / distance / vintage / oil-ft) as the second half of the edge read. Michael 2026-10-07, gate 2. | The literal Delaunay hull failed (stair-step chords); a gap caps at ~2c, so a moving front shows as step-outs. |
+| D24 | **Potash ignore-gap polygon = the BLM Secretary's Potash Area** (D8's recurrence clause triggered: the potash footprint opens holes/gaps in BS2_S and WCA). Inside it, gaps neither widen buffers nor count as negative evidence; it never extends an extent. Michael 2026-10-07, gate 2. | Surface constraint, not geology. |
+| D25 | **Structure grids are context, not an extent driver.** Holden's regional GGX grids (~1-mi nodes) are thinnest where edges need detail (few vertical penetrations to pick tops); BS2_S's edge is not structurally governed — W edge likely depth (pressure) and water saturation (Michael). Grids ship as contour layers in the step-3 geology package only. Michael 2026-10-07. | Step-2 probe (FINDINGS §8): ~100 ft/mi homocline both sides of every edge. |
 
 ## 3. Scope guard (what this plan does NOT do)
 
@@ -224,7 +234,7 @@ columns mirror `narvi.inventory_well`); Novi subscription decision.
 | Cohort vintage | first prod ≥ 2016-01-01 | D9 |
 | Cohort lateral | 6,000–13,000 ft | D9 |
 | Min area cohort | 10 wells | D9 |
-| Alpha (concave hull) | per basin, tuned on WCA | step 2 |
+| Alpha (concave hull) | per basin, tuned on WCA — Delaware: r = 2,640 ft pin radius, c = 3,960 ft closing (D23, accepted gate 2) | step 2 |
 | buffer = k × gap, cap | k, cap from WCA+BS2_S | step 3 |
 | Edge perf_class | edge wells' 12-mo oil/ft vs interior median: ≥ 0.85 strong, < 0.70 rolled, else unknown | step 2 |
 | Extent trigger | ≥ N new ≥2016 wells within X mi of / outside the extent since last review (N, X set in step 3) | D17 |
