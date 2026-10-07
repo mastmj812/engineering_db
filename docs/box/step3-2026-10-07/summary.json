@@ -1,0 +1,303 @@
+{
+ "built_at": "2026-10-07T17:54:53-05:00",
+ "wells_dir": "docs\\box\\step1-2026-10-06",
+ "version": 1,
+ "edge_params": {
+  "pin_radius_ft": 2640.0,
+  "close_ft": 3960.0,
+  "quad_segs": 4,
+  "ring_step_ft": 100.0,
+  "pin_slack_ft": 60.0,
+  "edge_reach_ft": 2640.0,
+  "interior_depth_ft": 5280.0,
+  "neg_evidence_ft": 2640.0,
+  "min_body_wells": 5
+ },
+ "buffer_params": {
+  "k": 0.75,
+  "cap_ft": 7920.0,
+  "floor_ft": 880.0,
+  "perf_ref": "pool",
+  "local_radius_ft": 52800.0,
+  "local_min_n": 15,
+  "sample_ft": 200.0,
+  "stepout_reach_mi": 5.0,
+  "front_min_ok": 3,
+  "front_ok_over_rolled": 2.0,
+  "lateral_core_ft": 50.0,
+  "quantum_ft": 110.0,
+  "smooth_ft": 330.0,
+  "uniform": false
+ },
+ "pick": {
+  "uniform": false,
+  "k": 0.75,
+  "cap_ft": 7920.0,
+  "floor_ft": 880.0,
+  "perf_ref": "pool",
+  "n_good": 1499,
+  "n_rolled": 591,
+  "hit_good": 780,
+  "hit_rolled": 218,
+  "added_sqmi": 1812.8600000000004,
+  "tpr": 0.5203468979319547,
+  "fpr": 0.3688663282571912,
+  "j": 0.15148056967476348,
+  "precision": 0.781563126252505,
+  "best_j_pool": 0.16319734871188807,
+  "best_j_local": 0.15950396711174625
+ },
+ "cutoffs": [
+  "2021-01-01",
+  "2023-01-01"
+ ],
+ "backtest_info": [
+  {
+   "pool": "WCA",
+   "cutoff": "2021-01-01",
+   "n_before": 5369,
+   "n_after": 5777,
+   "n_after_outside_core": 2680,
+   "n_scored": 1362,
+   "n_hole_infill": 1063,
+   "n_scored_no12": 388,
+   "n_beyond_reach": 255,
+   "interior_median": 21662.461242382124,
+   "fronts": {
+    "N": {
+     "ok": 12,
+     "rolled": 0,
+     "no12": 5,
+     "perf_median": 1.1209869195459068
+    },
+    "SE": {
+     "ok": 3,
+     "rolled": 1,
+     "no12": 1,
+     "perf_median": 1.0087174908648788
+    }
+   },
+   "core_sqmi": 3342.8961978069997
+  },
+  {
+   "pool": "WCA",
+   "cutoff": "2023-01-01",
+   "n_before": 7671,
+   "n_after": 3475,
+   "n_after_outside_core": 1156,
+   "n_scored": 439,
+   "n_hole_infill": 572,
+   "n_scored_no12": 213,
+   "n_beyond_reach": 145,
+   "interior_median": 22361.228814795955,
+   "fronts": {
+    "N": {
+     "ok": 19,
+     "rolled": 0,
+     "no12": 8,
+     "perf_median": 1.0595780550756648
+    }
+   },
+   "core_sqmi": 4040.1966025397974
+  },
+  {
+   "pool": "BS2_S",
+   "cutoff": "2021-01-01",
+   "n_before": 910,
+   "n_after": 2247,
+   "n_after_outside_core": 1994,
+   "n_scored": 850,
+   "n_hole_infill": 139,
+   "n_scored_no12": 321,
+   "n_beyond_reach": 1005,
+   "interior_median": 33352.16900830684,
+   "fronts": {
+    "S": {
+     "ok": 6,
+     "rolled": 0,
+     "no12": 0,
+     "perf_median": 0.8882330336021501
+    },
+    "W": {
+     "ok": 14,
+     "rolled": 1,
+     "no12": 0,
+     "perf_median": 1.2295622483633952
+    }
+   },
+   "core_sqmi": 312.40721699121605
+  },
+  {
+   "pool": "BS2_S",
+   "cutoff": "2023-01-01",
+   "n_before": 1560,
+   "n_after": 1597,
+   "n_after_outside_core": 1234,
+   "n_scored": 704,
+   "n_hole_infill": 76,
+   "n_scored_no12": 343,
+   "n_beyond_reach": 454,
+   "interior_median": 30896.094728074204,
+   "fronts": {
+    "S": {
+     "ok": 27,
+     "rolled": 7,
+     "no12": 8,
+     "perf_median": 0.9757852896489408
+    },
+    "SW": {
+     "ok": 20,
+     "rolled": 6,
+     "no12": 7,
+     "perf_median": 1.0162901006551217
+    },
+    "W": {
+     "ok": 13,
+     "rolled": 0,
+     "no12": 1,
+     "perf_median": 1.1132244559425535
+    }
+   },
+   "core_sqmi": 676.8476744596471
+  }
+ ],
+ "pools": {
+  "WCA": {
+   "extent_sqmi": 5159.682202261479,
+   "core_sqmi": 4876.900919716365,
+   "outline_step2_sqmi": 5419.6099030121695,
+   "n_parts": 12,
+   "n_holes": 17,
+   "perimeter_mi": 814.5901689334779,
+   "walked_mi_by_rule": {
+    "gap: k \u00d7 gap": 204.8,
+    "gap: pre-2016 beyond -> floor (D5)": 4.9,
+    "pinned: floor": 407.2,
+    "potash ignore-gap -> floor (D24)": 124.7
+   },
+   "buffer_ft_median": 1320.0,
+   "buffer_ft_weighted_mean": 1705.5591238108946,
+   "fronts": {},
+   "stepout_roles": {
+    "excluded: rolled step-out": 15,
+    "island": 4,
+    "excluded: no 12-mo yet, not a front side": 4,
+    "excluded: isolated test > reach": 2
+   },
+   "n_evidence": 11146,
+   "n_pre2016": 1160,
+   "interior_median_oil12_kft": 22238.23851203501,
+   "flagged_pinned_strong_mi": 144.86470453071405,
+   "n_contours": {
+    "struct": 113,
+    "isopach": 1477
+   }
+  },
+  "BS2_S": {
+   "extent_sqmi": 2200.8762360745322,
+   "core_sqmi": 1839.1154160168646,
+   "outline_step2_sqmi": 2467.6582692976044,
+   "n_parts": 8,
+   "n_holes": 18,
+   "perimeter_mi": 712.5674449583867,
+   "walked_mi_by_rule": {
+    "gap: k \u00d7 gap": 162.6,
+    "gap: pre-2016 beyond -> floor (D5)": 12.1,
+    "live front -> cap (D22)": 50.2,
+    "pinned: floor": 346.4,
+    "potash ignore-gap -> floor (D24)": 71.1
+   },
+   "buffer_ft_median": 1320.0,
+   "buffer_ft_weighted_mean": 2268.954058009424,
+   "fronts": {
+    "W": {
+     "ok": 8,
+     "rolled": 1,
+     "no12": 18,
+     "perf_median": 0.8622119839565088
+    }
+   },
+   "stepout_roles": {
+    "excluded: isolated test > reach": 38,
+    "island": 29,
+    "excluded: rolled step-out": 15,
+    "excluded: no 12-mo yet, not a front side": 6
+   },
+   "n_evidence": 3157,
+   "n_pre2016": 1202,
+   "interior_median_oil12_kft": 24810.030917210577,
+   "flagged_pinned_strong_mi": 113.06705884477341,
+   "n_contours": {
+    "struct": 72,
+    "isopach": 863
+   }
+  }
+ },
+ "geology_files": [
+  "geology\\BOX_potash_SOPA.shp",
+  "geology\\BOX_potash_SOPA.shx",
+  "geology\\BOX_potash_SOPA.dbf",
+  "geology\\BOX_potash_SOPA.prj",
+  "geology\\BOX_potash_SOPA.cpg",
+  "geology\\BOX_WCA_extent_v1.shp",
+  "geology\\BOX_WCA_extent_v1.shx",
+  "geology\\BOX_WCA_extent_v1.dbf",
+  "geology\\BOX_WCA_extent_v1.prj",
+  "geology\\BOX_WCA_extent_v1.cpg",
+  "geology\\BOX_WCA_edges_v1.shp",
+  "geology\\BOX_WCA_edges_v1.shx",
+  "geology\\BOX_WCA_edges_v1.dbf",
+  "geology\\BOX_WCA_edges_v1.prj",
+  "geology\\BOX_WCA_edges_v1.cpg",
+  "geology\\BOX_WCA_laterals.shp",
+  "geology\\BOX_WCA_laterals.shx",
+  "geology\\BOX_WCA_laterals.dbf",
+  "geology\\BOX_WCA_laterals.prj",
+  "geology\\BOX_WCA_laterals.cpg",
+  "geology\\BOX_WCA_flags.shp",
+  "geology\\BOX_WCA_flags.shx",
+  "geology\\BOX_WCA_flags.dbf",
+  "geology\\BOX_WCA_flags.prj",
+  "geology\\BOX_WCA_flags.cpg",
+  "geology\\BOX_WCA_ctx_struct.shp",
+  "geology\\BOX_WCA_ctx_struct.shx",
+  "geology\\BOX_WCA_ctx_struct.dbf",
+  "geology\\BOX_WCA_ctx_struct.prj",
+  "geology\\BOX_WCA_ctx_struct.cpg",
+  "geology\\BOX_WCA_ctx_isopach.shp",
+  "geology\\BOX_WCA_ctx_isopach.shx",
+  "geology\\BOX_WCA_ctx_isopach.dbf",
+  "geology\\BOX_WCA_ctx_isopach.prj",
+  "geology\\BOX_WCA_ctx_isopach.cpg",
+  "geology\\BOX_BS2_S_extent_v1.shp",
+  "geology\\BOX_BS2_S_extent_v1.shx",
+  "geology\\BOX_BS2_S_extent_v1.dbf",
+  "geology\\BOX_BS2_S_extent_v1.prj",
+  "geology\\BOX_BS2_S_extent_v1.cpg",
+  "geology\\BOX_BS2_S_edges_v1.shp",
+  "geology\\BOX_BS2_S_edges_v1.shx",
+  "geology\\BOX_BS2_S_edges_v1.dbf",
+  "geology\\BOX_BS2_S_edges_v1.prj",
+  "geology\\BOX_BS2_S_edges_v1.cpg",
+  "geology\\BOX_BS2_S_laterals.shp",
+  "geology\\BOX_BS2_S_laterals.shx",
+  "geology\\BOX_BS2_S_laterals.dbf",
+  "geology\\BOX_BS2_S_laterals.prj",
+  "geology\\BOX_BS2_S_laterals.cpg",
+  "geology\\BOX_BS2_S_flags.shp",
+  "geology\\BOX_BS2_S_flags.shx",
+  "geology\\BOX_BS2_S_flags.dbf",
+  "geology\\BOX_BS2_S_flags.prj",
+  "geology\\BOX_BS2_S_flags.cpg",
+  "geology\\BOX_BS2_S_ctx_struct.shp",
+  "geology\\BOX_BS2_S_ctx_struct.shx",
+  "geology\\BOX_BS2_S_ctx_struct.dbf",
+  "geology\\BOX_BS2_S_ctx_struct.prj",
+  "geology\\BOX_BS2_S_ctx_struct.cpg",
+  "geology\\BOX_BS2_S_ctx_isopach.shp",
+  "geology\\BOX_BS2_S_ctx_isopach.shx",
+  "geology\\BOX_BS2_S_ctx_isopach.dbf",
+  "geology\\BOX_BS2_S_ctx_isopach.prj",
+  "geology\\BOX_BS2_S_ctx_isopach.cpg"
+ ]
+}
