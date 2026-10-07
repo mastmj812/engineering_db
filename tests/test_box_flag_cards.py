@@ -8,6 +8,18 @@ import pandas as pd
 from box import flag_cards as fc
 
 
+def test_guard_refuses_to_overwrite_verdicts(tmp_path):
+    import pytest
+
+    p = tmp_path / "cards_sample.csv"
+    pd.DataFrame({"api10": ["1", "2"], "verdict": ["", ""]}).to_csv(p, index=False)
+    fc.guard_verdict_file(p)  # blank verdicts: fine to overwrite
+    pd.DataFrame({"api10": ["1", "2"], "verdict": ["AGREE", ""]}).to_csv(p, index=False)
+    with pytest.raises(fc.VerdictFileExists):
+        fc.guard_verdict_file(p)
+    fc.guard_verdict_file(tmp_path / "missing.csv")  # absent: fine
+
+
 def _flags(rows: list[tuple[str, str, str, float | None, float]]) -> pd.DataFrame:
     return pd.DataFrame(
         {
