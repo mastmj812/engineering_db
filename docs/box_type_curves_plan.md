@@ -6,8 +6,10 @@
 extents/areas, split at the curve step), D20 (WCXY → WCA_1 evidence one-way), and **option A** for
 planned-survey / permit-round wells (evidence unless consensus-flagged). Consensus flags are ratified
 per swap class from calibration cards (`docs/box/step1-2026-10-06/cards.html`, 142 cards over 797
-cross-pool flags), never per well. Gate 1 closes when Michael's per-class verdicts are in; then
-step 2 in a fresh session. Execution model in §10, kickoff prompt in §11.
+cross-pool flags), never per well. **Verdicts in 2026-10-07** (`VERDICTS.md`: 84 agree / 41 reject /
+17 inconclusive; class rule proposed — accept into-pool classes ≥ 0.70, reject thin-boundary classes,
+A′ = planned-survey flag means TVD suspect not tag wrong, never Bone Spring → Wolfcamp). Gate 1
+closes on Michael's answer to VERDICTS §5; then step 2 in a fresh session. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
