@@ -217,7 +217,7 @@ def guard_verdict_file(path: Path) -> None:
         return
     try:
         v = pd.read_csv(path, dtype=str).get("verdict")
-    except Exception:  # unreadable -> treat as precious
+    except (OSError, ValueError, pd.errors.ParserError):  # unreadable -> treat as precious
         raise VerdictFileExists(f"{path} exists and could not be read; choose another --stem") from None
     if v is not None and v.fillna("").str.strip().ne("").any():
         raise VerdictFileExists(f"{path} carries verdicts; refusing to overwrite — choose another --stem")
