@@ -14,7 +14,13 @@ card verdicts outrank the class rule per well); hold classes exhausted (5 flags 
 per-well verdicts; GOR tiebreak FORMALISED (`gor12`, `cons_gor_vote`, veto in the rule, card panel);
 Diez TVD + McGary duplicates batched with the next vintage query. **Gate 1 CLOSED 2026-10-07.**
 Final well sets = `docs/box/step1-2026-10-06/wells_final_{WCA,BS2_S}.csv` (WCA 12,306 / BS2_S 4,359
-wells; `box_depth_witness` marks depth evidence). **Next: step 2** in a fresh session. Execution model in §10, kickoff prompt in §11.
+wells; `box_depth_witness` marks depth evidence). **Step 2 built 2026-10-07, at gate 2** (deliverable
+`docs/box/step2-2026-10-07/` — `FINDINGS.md` + `edge_{WCA,BS2_S}.html`; builder `scripts/box_edge_gap.py`,
+`box/edge_gap.py`). The literal Delaunay alpha hull FAILED the test (N–S laterals → stair-step chords read as
+gaps on every diagonal flank); built instead as union-of-discs + closing (r = ½ mi pin radius, c = ¾ mi tuned
+on WCA) plus a step-out table. WCA uniform (61–74 % pinned every side) = pass; BS2_S N/E capped, S/SE/SW
+gappiest, but **W is a live 2025 front** (31 step-outs at 0.84× interior) — conflicts with the expectation;
+Michael's call at gate 2. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -224,7 +230,7 @@ columns mirror `narvi.inventory_well`); Novi subscription decision.
 | Cohort vintage | first prod ≥ 2016-01-01 | D9 |
 | Cohort lateral | 6,000–13,000 ft | D9 |
 | Min area cohort | 10 wells | D9 |
-| Alpha (concave hull) | per basin, tuned on WCA | step 2 |
+| Alpha (concave hull) | per basin, tuned on WCA — step-2 prototype: r = 2,640 ft pin radius, c = 3,960 ft closing (smallest c making WCA one body), pending gate 2 | step 2 |
 | buffer = k × gap, cap | k, cap from WCA+BS2_S | step 3 |
 | Edge perf_class | edge wells' 12-mo oil/ft vs interior median: ≥ 0.85 strong, < 0.70 rolled, else unknown | step 2 |
 | Extent trigger | ≥ N new ≥2016 wells within X mi of / outside the extent since last review (N, X set in step 3) | D17 |
