@@ -210,3 +210,16 @@ contours (and the structure contours, `*_cont.xyz`) beside the extent shapefile.
 judge, for example, whether the W thinning supports a tighter W buffer despite the live front. That
 is geology's call in GGX, where Holden already has these surfaces. Revisit only if a bench's edge
 proves structurally controlled (a fault or a structural nose), which the BS2_S data doesn't show.
+
+## 9. Gate 2 closed (Michael, 2026-10-07)
+
+- **Metric accepted** as built (r = ½ mi measuring radius, c = ¾ mi tuned on WCA) **and the step-out
+  table accepted** as the second half of the edge read. Plan D23.
+- **Potash ignore-gap polygon = BLM Secretary's Potash Area.** Plan D24; step 3 sources it.
+- **Grids:** agreed context-only. They were built as regional grids; edge detail takes interpretation time,
+  and far-flung areas have few vertical penetrations to pick tops from. The BS2_S W edge is likely
+  governed by depth (pressure) and water saturation, not structure. Plan D25.
+- Step-3 note: if the W edge is depth/pressure-controlled, the relevant measure is the 2BS top's
+  *depth* (or the producers' own TVD) at the W edge, not dip. Producers' TVD is available
+  wherever wells exist, so it doesn't depend on grid coverage. Candidate geology-package layer;
+  not decided.
