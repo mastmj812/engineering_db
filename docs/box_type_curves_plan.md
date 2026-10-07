@@ -18,8 +18,15 @@ wells; `box_depth_witness` marks depth evidence). **Step 2 done; gate 2 CLOSED 2
 `edge_{WCA,BS2_S}.html`; builder `scripts/box_edge_gap.py`, `box/edge_gap.py`; eng_db #94). Decided: D21 (extent =
 laterals + variable buffer, r is measuring-only), D22 (BS2_S W = live front), D23 (edge metric of record + step-out
 table), D24 (potash ignore-gap = BLM Secretary's Potash Area), D25 (structure grids = geology context only).
-**Next: step 3** (buffers + geology round-trip) in a fresh session, reading `segments_<pool>.csv`,
-`stepouts_<pool>.csv`, `outline_<pool>.geojson`. Execution model in §10, kickoff prompt in §11.
+**Step 3 in progress — session 1 of 2 done 2026-10-07** (branch `claude/box-step3-extents`; deliverable
+`docs/box/step3-2026-10-07/` — `FINDINGS.md`, `index.html` calibration, `extent_{WCA,BS2_S}.html`, `geology/`
+shapefile package; builder `scripts/box_extents_export.py`, `box/extent.py`). Built: buffers calibrated by
+time-split backtest (k = 0.75, cap = 7,920 ft, floor = 880 ft, pool reference; live-front term earns most of
+it), extents WCA 5,160 / BS2_S 2,201 sq mi, BLM potash polygon in, geology package written, import/diff
+script ready. `sql/54_box_schema.sql` + `scripts/apply_box_schema.py` **authored, validated on a throwaway
+PostGIS container, NOT applied** (needs go-apply). Not done: Michael's review of FINDINGS §5 flags a–k,
+sending `geology/` to Holden, go-apply + `--store`, session 2 (import edits → diff → version of record →
+gate 3). Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -235,7 +242,7 @@ columns mirror `narvi.inventory_well`); Novi subscription decision.
 | Cohort lateral | 6,000–13,000 ft | D9 |
 | Min area cohort | 10 wells | D9 |
 | Alpha (concave hull) | per basin, tuned on WCA — Delaware: r = 2,640 ft pin radius, c = 3,960 ft closing (D23, accepted gate 2) | step 2 |
-| buffer = k × gap, cap | k, cap from WCA+BS2_S | step 3 |
+| buffer = k × gap, cap | k, cap from WCA+BS2_S — **proposed** k = 0.75, cap = 7,920 ft, pinned floor 880 / 1,320 / 1,760 ft (rolled / unknown / strong), step-3 backtest; Michael's call at gate 3 | step 3 |
 | Edge perf_class | edge wells' 12-mo oil/ft vs interior median: ≥ 0.85 strong, < 0.70 rolled, else unknown | step 2 |
 | Extent trigger | ≥ N new ≥2016 wells within X mi of / outside the extent since last review (N, X set in step 3) | D17 |
 | Dev-scenario rules | sql/50 (660 ft offset gate, 1,000 ft band, shielding) | D11 |
