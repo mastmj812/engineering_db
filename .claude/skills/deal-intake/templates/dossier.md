@@ -58,8 +58,14 @@ lateral is outside the cohort's lateral range.
 
 ## 3. Per bench — `## {bench} — TVD, spacing (source), basin`
 
-1. **Map** (`map_{bench}.png`): units, locations (Novi sticks vs narvi
-   preview sticks), TC wells colored by tier, eligible-not-selected hollow.
+1. **Maps** — one per curve (`map_{bench}_curve_{a..}.png`), placed in that
+   curve's section: its units + planned sticks in the curve colour, a link from
+   each unit to every well that builds the curve, those wells drawn as their
+   laterals coloured by anduin oil EUR/ft (grey = no anduin fit; never Novi),
+   other bench wells faint; right panel zooms on the units and labels each
+   stick (id, lateral ft). Multi-curve benches add an overview
+   (`map_{bench}.png`) on the same colour scale. Older runs:
+   `render --fetch-sticks` pulls the laterals.
 2. **Eligible pool**: n eligible, exclusions by reason (a well can carry
    several), adjacent planned benches, tier order + why. Pool notes follow
    as `>` lines: radius used (`(REVIEWER override)` when `--radius`), edge

@@ -221,7 +221,8 @@ python -m dealintake.cli render --run-dir ...        re-render dossier.md from s
 ```
 
 Writes `signals.json`, `dossier.html` (the review surface), `dossier.md`
-(text record), `map_<bench>.png`, `buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
+(text record), `map_<bench>_curve_<a..>.png` (+ `map_<bench>.png` overview on multi-curve benches),
+`well_sticks.json` (TC/pool laterals for the maps), `buildup_<bench>_<group>.csv`. A re-run overwrites them — copy the folder
 first to keep a comparison. (`runs/` is git-ignored.)
 
 **One pool per bench** (`planned_lateral.pooling: bench`, config v8 —

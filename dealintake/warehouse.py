@@ -184,6 +184,18 @@ def local_benches(conn, unit: BaseGeometry, radius_mi: float = 3.0) -> list[dict
     """, {"u": unit.wkt, "r": radius_mi * M_PER_MI})
 
 
+def wellsticks(conn, api10s: list[str]) -> dict[str, str]:
+    """api10 -> lateral WKT for the dossier maps (display only)."""
+    if not api10s:
+        return {}
+    rows = _rows(conn, """
+        SELECT w.api10, extensions.ST_AsText(w.wellstick_geom) AS wkt
+        FROM curated.wells w
+        WHERE w.api10 = ANY(%(a)s) AND w.wellstick_geom IS NOT NULL
+    """, {"a": list(api10s)})
+    return {r["api10"]: r["wkt"] for r in rows}
+
+
 def pdp_laterals_near(conn, unit: BaseGeometry, radius_mi: float = 1.5) -> list[dict[str, Any]]:
     """Producing horizontals within `radius_mi` of the unit WITH geometry — the
     offset-PDP layer of the review page (display only; selection is Gate 5)."""

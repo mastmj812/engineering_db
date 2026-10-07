@@ -316,9 +316,11 @@ def render(run_dir: Path) -> Path:
             p.append(f'<div class="flag"><b>Reviewer grouping</b> (test said {_esc(ov["test_said"])}): '
                      f'{_esc(" | ".join(" + ".join(name.get(u, u) for u in c) for c in ov["groups"]))}</div>')
         labels = _labels(key, B, prop)
-        p.append(f"<h3>Curves on this bench: {len(labels)} <span class=\"meta\">each unit is filled in the colour of the curve "
-                 "it takes; solid dots are the wells that build that curve</span></h3>")
-        p.append(f'<div class="row"><img src="map_{_slug(key)}.png" alt="map" style="max-width:760px"></div>')
+        p.append(f"<h3>Curves on this bench: {len(labels)} <span class=\"meta\">each unit and its planned sticks are drawn "
+                 "in the colour of the curve they take, linked to the wells that build it; those wells are drawn as their "
+                 "laterals, coloured by anduin oil EUR per ft (same scale on every map of this bench)</span></h3>")
+        if len(labels) > 1:
+            p.append(f'<div class="row"><img src="map_{_slug(key)}.png" alt="map" style="max-width:900px"></div>')
 
         for gi, G in enumerate(B["tc_groups"]):
             gname = G["name"]
@@ -334,6 +336,14 @@ def render(run_dir: Path) -> Path:
                             [[name.get(u, u), len(v.get("locations", [])), num(v.get("tvd_ft"), ",.0f"),
                               num(v.get("spacing_ft"), ",.0f"), (v.get("gate2") or {}).get("source"), v.get("role", "base")]
                              for u, v in sticks.items()]))
+            p.append(f'<div class="row"><img src="{maps.curve_png(Path(f"map_{_slug(key)}.png"), gi).name}" '
+                     'alt="curve map" style="max-width:100%"></div>')
+            p.append("<details><summary>Every planned stick on this curve</summary>"
+                     + _table(["DSU", "Stick", "Source", "Lateral ft", "TVD ft", "Curve"],
+                              [[name.get(u, u), loc["id"], "Novi location kept" if loc["src"] == "novi" else "generated",
+                                num(loc.get("ll_ft"), ",.0f"), num(loc.get("tvd"), ",.0f"), labels[gi]]
+                               for u, v in sticks.items() for loc in v.get("locations", [])])
+                     + "</details>")
             ops: dict[str, int] = {}
             for w in G["tc_wells"]:
                 ops[w.get("operator") or "—"] = ops.get(w.get("operator") or "—", 0) + 1
