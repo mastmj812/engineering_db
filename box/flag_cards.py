@@ -111,8 +111,8 @@ def _png(fig: Any, dpi: int = 85) -> str:
 def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams) -> tuple[str, dict[str, Any]]:
     wit = nb[nb["cons_witness"]]
     bands = local_bands({b: g["tvd_ft"].values for b, g in wit.groupby("formation_blueox")}, p)
-    fig = plt.figure(figsize=(9.2, 4.6))
-    gs = fig.add_gridspec(1, 3, width_ratios=[2.2, 1.0, 1.0], wspace=0.35)
+    fig = plt.figure(figsize=(11.5, 4.6))
+    gs = fig.add_gridspec(1, 4, width_ratios=[2.2, 1.0, 1.0, 1.0], wspace=0.4)
     ax = fig.add_subplot(gs[0, 0])
     for b, g in nb.groupby("formation_blueox"):
         c = _BENCH_COLORS.get(str(b), "#9ca3af")
@@ -154,7 +154,25 @@ def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams) -> tuple[
         ax3.axvline(subj["oil12_kft"], color="k", ls="--", lw=0.9)
     ax3.set_title("12-mo oil, bbl/1,000 ft\n(cohort witnesses; dashed = subject)", fontsize=7)
     ax3.tick_params(labelsize=6)
-    meta = {"bands": {b: {"med": v[0], "n": v[1], "iqr": v[2]} for b, v in bands.items()}, "perf": perf, "n_nb": len(nb), "n_wit": len(wit)}
+    # GOR by bench among cohort witnesses (Michael's tiebreak, formalised 2026-10-07)
+    ax4 = fig.add_subplot(gs[0, 3])
+    gors = {}
+    for b, g in coh.groupby("formation_blueox"):
+        v = g["gor12"].dropna()
+        v = v[v > 0]
+        if len(v) >= 3:
+            gors[str(b)] = (float(v.median()), len(v))
+    if gors:
+        order = sorted(gors, key=lambda b: gors[b][0])
+        ax4.barh(order, [gors[b][0] for b in order], color=[_BENCH_COLORS.get(b, "#9ca3af") for b in order])
+        for k, b in enumerate(order):
+            ax4.text(gors[b][0], k, f" n={gors[b][1]}", fontsize=6, va="center")
+    sg = float(subj.get("gor12", float("nan")))
+    if not math.isnan(sg) and sg > 0:
+        ax4.axvline(sg, color="k", ls="--", lw=0.9)
+    ax4.set_title("12-mo GOR, scf/bbl\n(cohort witnesses; dashed = subject)", fontsize=7)
+    ax4.tick_params(labelsize=6)
+    meta = {"bands": {b: {"med": v[0], "n": v[1], "iqr": v[2]} for b, v in bands.items()}, "perf": perf, "gors": gors, "n_nb": len(nb), "n_wit": len(wit)}
     return _png(fig), meta
 
 
@@ -188,13 +206,49 @@ def sensitivity(df: pd.DataFrame, benches: tuple[str, ...]) -> list[list[Any]]:
     return rows
 
 
-def build(df: pd.DataFrame, out_dir: Path, benches: tuple[str, ...] = PILOT_BENCHES, p: ConsensusParams = DEFAULT_PARAMS) -> dict[str, Any]:
+class VerdictFileExists(RuntimeError):
+    """Refuse to overwrite a sample file that already carries verdicts."""
+
+
+def guard_verdict_file(path: Path) -> None:
+    """A sample CSV with any non-empty verdict is Michael's ratification record;
+    a rebuild must never silently replace it. Use a new --stem instead."""
+    if not path.exists():
+        return
+    try:
+        v = pd.read_csv(path, dtype=str).get("verdict")
+    except Exception:  # unreadable -> treat as precious
+        raise VerdictFileExists(f"{path} exists and could not be read; choose another --stem") from None
+    if v is not None and v.fillna("").str.strip().ne("").any():
+        raise VerdictFileExists(f"{path} carries verdicts; refusing to overwrite — choose another --stem")
+
+
+def build(
+    df: pd.DataFrame,
+    out_dir: Path,
+    benches: tuple[str, ...] = PILOT_BENCHES,
+    p: ConsensusParams = DEFAULT_PARAMS,
+    *,
+    only_classes: tuple[str, ...] | None = None,
+    exclude_api10: set[str] | None = None,
+    stem: str = "cards",
+    title: str = "BOX step 1 — consensus-flag calibration cards",
+) -> dict[str, Any]:
+    """Render the card page. ``only_classes`` restricts to those swap classes
+    (round 2 on the hold classes); ``exclude_api10`` drops wells already carded
+    so a second sample is disjoint; ``stem`` names the outputs
+    (<stem>.html, <stem>_sample.csv, <stem>_summary.json)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     pos_ok = df["mid_lon"].notna() & df["mid_lat"].notna()
     xy = np.full((len(df), 2), np.nan)
     xy[pos_ok.values] = _project_xy_ft(df.loc[pos_ok, "mid_lon"].values, df.loc[pos_ok, "mid_lat"].values)
     df = df.reset_index(drop=True)
-    f = flag_classes(df, benches)
+    f_all = flag_classes(df, benches)
+    f = f_all
+    if only_classes:
+        f = f[f["swap_class"].isin(only_classes)]
+    if exclude_api10:
+        f = f[~f["api10"].isin(exclude_api10)]
     classes = f.groupby("swap_class").size().sort_values(ascending=False)
     sampled: list[pd.DataFrame] = []
     sections: list[str] = []
@@ -216,23 +270,28 @@ def build(df: pd.DataFrame, out_dir: Path, benches: tuple[str, ...] = PILOT_BENC
                 f"tag <b>{_esc(subj['formation_blueox'])}</b> (source {_esc(subj['formation_blueox_source'])}; own band {_fmt(own['med'] if own else None, 0)}, n={_fmt(own['n'] if own else 0)}, Δ {_fmt(subj['cons_own_delta'], 0)} ft) → "
                 f"suggest <b>{_esc(subj['cons_suggest'])}</b> (band {_fmt(sug['med'] if sug else None, 0)}, n={_fmt(sug['n'] if sug else 0)}, Δ {_fmt(subj['cons_nearest_delta'], 0)} ft) · "
                 f"margin ratio {('∞' if math.isinf(subj['margin_ratio']) else _fmt(subj['margin_ratio'], 1))} · witnesses {meta['n_wit']} of {meta['n_nb']} wells in 1.5 mi · "
-                f"sql/23 nearest {_esc(subj['sql23_nearest'])} · 12-mo oil {_fmt(subj['oil12_kft'], 0)} bbl/kft{'' if subj['cohort'] else ' (not cohort)'}"
+                f"sql/23 nearest {_esc(subj['sql23_nearest'])} · 12-mo oil {_fmt(subj['oil12_kft'], 0)} bbl/kft{'' if subj['cohort'] else ' (not cohort)'} · "
+                f"GOR {_fmt(subj.get('gor12'), 0)} scf/bbl vs own {_fmt(subj.get('cons_gor_own_med'), 0)} / suggested {_fmt(subj.get('cons_gor_sug_med'), 0)} → GOR vote <b>{_esc(subj.get('cons_gor_vote', 'none'))}</b>"
             )
             cards.append(f"<div class=card id=\"w{_esc(subj['api10'])}\"><div class=kv>{kv}</div><img src=\"{png}\"></div>")
         sampled.append(s)
         sections.append(f"<h2 id=\"c{_esc(cls)}\">{_esc(cls)} — {n_cls} flagged, {len(s)} carded</h2>" + "".join(cards))
     sample = pd.concat(sampled) if sampled else f.iloc[0:0]
     cols = ["swap_class", "api10", "well_name", "operator", "state_code", "county", "formation_blueox", "cons_suggest", "tvd_ft", "planned", "tvd_round",
-            "cons_own_delta", "cons_nearest_delta", "margin_ratio", "cons_n_witness", "sql23_nearest", "oil12_kft", "cohort"]
+            "cons_own_delta", "cons_nearest_delta", "margin_ratio", "cons_n_witness", "sql23_nearest", "oil12_kft", "cohort",
+            "gor12", "cons_gor_own_med", "cons_gor_sug_med", "cons_gor_vote"]
+    cols = [c for c in cols if c in f.columns]
     sample = sample[cols].copy()
     sample["verdict"] = ""
-    sample.to_csv(out_dir / "cards_sample.csv", index=False)
-    f[cols].to_csv(out_dir / "flags_all.csv", index=False)
+    guard_verdict_file(out_dir / f"{stem}_sample.csv")
+    sample.to_csv(out_dir / f"{stem}_sample.csv", index=False)
+    if stem == "cards":
+        f_all[cols].to_csv(out_dir / "flags_all.csv", index=False)
     built = _dt.datetime.now(tz=_dt.UTC).astimezone().isoformat(timespec="seconds")
     sens = sensitivity(df, benches)
     page = [
-        f"<!doctype html><html><head><meta charset=\"utf-8\"><title>BOX step 1 — flag calibration cards</title><style>{_CSS}</style></head><body>",
-        "<h1>BOX step 1 — consensus-flag calibration cards</h1>",
+        f"<!doctype html><html><head><meta charset=\"utf-8\"><title>{_esc(title)}</title><style>{_CSS}</style></head><body>",
+        f"<h1>{_esc(title)}</h1>",
         f"<div class=meta>Built {built}, read-only. Classes are pooled per D19/D20 (WCA_1 + WCA_2 + WCXY = WCA; nothing is promoted into WCXY). "
         + f"Sample = {CARDS_PER_CLASS} wells per class at evenly spaced quantiles of the margin ratio (own-band Δ ÷ suggested-band Δ; ∞ = own band absent), weakest flags first; classes of ≤ {MIN_CLASS_FOR_SAMPLING} are carded in full. "
         + "Mark each card agree / reject (reply in chat by api10, or fill <code>cards_sample.csv</code> column <code>verdict</code>); a class is accepted or rejected wholesale on its precision. "
@@ -247,7 +306,7 @@ def build(df: pd.DataFrame, out_dir: Path, benches: tuple[str, ...] = PILOT_BENC
         *sections,
         "</body></html>",
     ]
-    (out_dir / "cards.html").write_text("".join(page), encoding="utf-8")
-    summary = {"built_at": built, "n_flags_carded_classes": len(f), "classes": {c: int(n) for c, n in classes.items()}, "n_cards": len(sample), "sensitivity": sens}
-    (out_dir / "cards_summary.json").write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")
+    (out_dir / f"{stem}.html").write_text("".join(page), encoding="utf-8")
+    summary = {"built_at": built, "stem": stem, "n_flags_carded_classes": len(f), "classes": {c: int(n) for c, n in classes.items()}, "n_cards": len(sample), "sensitivity": sens}
+    (out_dir / f"{stem}_summary.json").write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")
     return summary

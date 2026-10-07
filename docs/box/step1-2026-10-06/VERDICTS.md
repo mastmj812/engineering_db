@@ -90,7 +90,41 @@ bench membership of individual wells, not for the cohort statistics.
   Cimarex well's api14 suffix is -02-00, a sidetrack, and the two old wells may sit outside the
   anduin map's default date range).
 
-## 5. Open questions for Michael
+## 6. Decisions (Michael, 2026-10-07) and what was applied
+
+1. **Rule accepted** (§3) and implemented in `box/qc_rule.py`; applied by `scripts/box_apply_rule.py`,
+   which also loads the card verdicts: **a per-card AGREE / REJECT outranks the class rule for that
+   well** (84 agree / 41 reject loaded).
+2. **Hold classes:** a second sample of 10 was requested, but BS2_S→BS1_S and BS2_S→BS3_S have exactly
+   5 flags each in the whole population and all 10 were in the first sample. The classes are
+   exhausted; they resolve per well on the existing verdicts (3 agree / 2 reject each).
+3. **GOR formalised:** `gor12` (Novi cum_12m_gas × 1000 ÷ cum_12m_oil, scf/bbl) on every well; the
+   detector now carries the local cohort median GOR per bench among the 1.5-mi witnesses and a
+   `cons_gor_vote` (own / suggest / none; none when the two benches' GOR are within 25 % or either
+   side is missing). The rule uses it as a veto (GOR says "own" → flag not applied); the cards carry
+   a fourth panel (12-mo GOR by bench, subject dashed) from the next build on.
+4. **Diez TVD and the McGary-Tudor duplicates:** batched with the next Novi vintage query.
+5. **"Can't find" in anduin:** searched by api10. Not geometry — all three have valid sticks in the
+   warehouse. Forge Federal Com #703H (3002551417) IS in anduin's wells table with geometry, so that
+   one is a map-search or default-filter miss; Oatmeal 8 Federal (2007, 2,305-ft lateral) and Cimarex
+   University 18-41 'B' 1H (2008, 3,164 ft, api14 sidetrack suffix -02) are NOT in anduin's synced
+   universe — the sync drops them (old short laterals). Logged as an anduin follow-up, not a step-1 item.
+
+**Final well sets** (`wells_final_WCA.csv`, `wells_final_BS2_S.csv`; `rule_summary.json`), pulled
+2026-10-07 (production as-of 2026-08-01; tagged counts differ from the 2026-10-06 build by a handful
+of wells after a nightly tag refresh):
+
+| pool | tagged | after rule | reassigned out | reassigned in | TVD-suspect (tag kept, not a depth witness) | depth witnesses | D9 cohort |
+|---|---|---|---|---|---|---|---|
+| WCA | 12,182 | 12,306 | 14 | 138 | 32 | 11,076 | 7,562 |
+| BS2_S | 4,306 | 4,359 | 10 | 63 | 12 | 3,490 | 1,898 |
+
+Flags kept by reason (WCA): 932 in-pool swaps (moot), 218 into WCXY (D20), 113 WCA→WCB_1 and 110
+WCA→BS3_S class-rejected, 12 card REJECTs, 5 accepted-class flags without sql/23 concurrence, 1 GOR
+veto. BS2_S: 30 BS2_S→BS3_C class-rejected, 10 card REJECTs. Columns per well: `box_bench`,
+`box_action` (keep / reassign / tvd_suspect), `box_depth_witness`, `box_reason`.
+
+## 5. Open questions for Michael (answered 2026-10-07 — see §6)
 
 1. Accept the class dispositions in §1 and the rule in §3 as the step-1 output (class gate +
    sql/23 second vote + A′ for planned-survey wells + no Bone Spring → Wolfcamp)?

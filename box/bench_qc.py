@@ -266,7 +266,7 @@ SELECT
     w.formation_blueox_tvd_corrected,
     w.directional_survey_is_planned AS planned,
     w.tvd_ft, w.lateral_length_ft, w.first_production_date, w.last_reported_month,
-    w.cum_12m_oil_bbl, w.cum_24m_oil_bbl, w.has_production_sharing,
+    w.cum_12m_oil_bbl, w.cum_24m_oil_bbl, w.cum_12m_gas_mcf, w.has_production_sharing,
     COALESCE(w.midpoint_lon,
              CASE WHEN ST_GeometryType(w.wellstick_geom) = 'ST_LineString'
                   THEN ST_X(ST_LineInterpolatePoint(w.wellstick_geom, 0.5)) END,
@@ -304,13 +304,17 @@ def pull_delaware_producers(conn: Any) -> pd.DataFrame:
 def prepare(df: pd.DataFrame, asof: date | None = None) -> pd.DataFrame:
     """Derive the QC columns on the pulled frame (pure; used by tests)."""
     d = df.copy()
-    for c in ("tvd_ft", "lateral_length_ft", "cum_12m_oil_bbl", "cum_24m_oil_bbl", "mid_lon", "mid_lat"):
+    if "cum_12m_gas_mcf" not in d.columns:
+        d["cum_12m_gas_mcf"] = np.nan
+    for c in ("tvd_ft", "lateral_length_ft", "cum_12m_oil_bbl", "cum_24m_oil_bbl", "cum_12m_gas_mcf", "mid_lon", "mid_lat"):
         d[c] = pd.to_numeric(d[c], errors="coerce")
     d["first_production_date"] = pd.to_datetime(d["first_production_date"]).dt.date
     d["planned"] = d["planned"].fillna(False).astype(bool)
     d["formation_blueox"] = d["formation_blueox"].fillna("(unmapped)")
     d["tvd_round"] = d["tvd_ft"].notna() & ((d["tvd_ft"] % 100) == 0)
     d["oil12_kft"] = d["cum_12m_oil_bbl"] / d["lateral_length_ft"] * 1000.0
+    # 12-mo GOR, scf/bbl (Novi cum_12m_gas_mcf x 1000 / cum_12m_oil_bbl); the bench tiebreak of record
+    d["gor12"] = np.where(d["cum_12m_oil_bbl"] > 0, d["cum_12m_gas_mcf"] * 1000.0 / d["cum_12m_oil_bbl"], np.nan)
     if asof is None:
         lrm = pd.to_datetime(d["last_reported_month"], errors="coerce")
         asof = lrm.max().date() if lrm.notna().any() else _dt.datetime.now(tz=_dt.UTC).date()
@@ -367,30 +371,70 @@ def score_consensus(df: pd.DataFrame, p: ConsensusParams = DEFAULT_PARAMS) -> pd
     tree = cKDTree(xy_all[wit_idx])
     wit_bench = df["formation_blueox"].values[wit_idx]
     wit_tvd = df["tvd_ft"].values[wit_idx].astype(float)
+    wit_gor = np.where(df["cohort"].values[wit_idx], df["gor12"].values[wit_idx].astype(float), np.nan)
     tvd = df["tvd_ft"].values
     tag = df["formation_blueox"].values
+    gor = df["gor12"].values.astype(float)
     out: list[dict[str, Any]] = []
     subj = np.where(pos_ok.values)[0]
     neigh = tree.query_ball_point(xy_all[subj], r=p.radius_ft)
     for k, i in enumerate(subj):
         js = [wit_idx[j] for j in neigh[k] if wit_idx[j] != i]
         by: dict[str, list[float]] = {}
+        gby: dict[str, list[float]] = {}
         for j in neigh[k]:
             if wit_idx[j] == i:
                 continue
             by.setdefault(str(wit_bench[j]), []).append(float(wit_tvd[j]))
+            if not np.isnan(wit_gor[j]):
+                gby.setdefault(str(wit_bench[j]), []).append(float(wit_gor[j]))
         bands = local_bands({b: np.array(v) for b, v in by.items()}, p)
         r = score_subject(float(tvd[i]), str(tag[i]), bands, p)
         r["idx"] = i
         r["cons_n_witness"] = len(js)
         r["cons_bands"] = {b: v[0] for b, v in bands.items()}  # bench -> local median TVD
+        gors = {b: (float(np.median(v)), len(v)) for b, v in gby.items() if len(v) >= GOR_MIN_N}
+        r["cons_gors"] = gors  # bench -> (median 12-mo GOR scf/bbl of cohort witnesses, n)
+        r.update(gor_vote(float(gor[i]), str(tag[i]), r.get("cons_suggest"), gors))
         out.append(r)
     res = pd.DataFrame(out).set_index("idx")
     for c in res.columns:
         df[c] = res[c]
     df["cons_status"] = df["cons_status"].fillna("no_position")
     df["cons_n_witness"] = df["cons_n_witness"].fillna(0).astype(int)
+    df["cons_gor_vote"] = df["cons_gor_vote"].fillna("none")
     return df
+
+
+GOR_MIN_N = 3  # cohort witnesses needed for a local bench GOR
+GOR_SEPARATION = 1.25  # bench GOR medians must differ by >= 25 % for GOR to vote at all
+
+
+def gor_vote(gor_subject: float, tag: str, suggest: str | None, gors: dict[str, tuple[float, int]]) -> dict[str, Any]:
+    """Michael's tiebreak, formalised (2026-10-07): compare the subject's 12-mo GOR
+    with the local cohort median GOR of its tagged bench and of the suggested
+    bench (log scale). Vote 'own' when it produces like its tag, 'suggest' when
+    like the suggested bench, 'none' when either side is missing or the two
+    benches' GOR are not separable (within GOR_SEPARATION of each other)."""
+    out: dict[str, Any] = {
+        "cons_gor_subject": gor_subject,
+        "cons_gor_own_med": np.nan, "cons_gor_own_n": 0,
+        "cons_gor_sug_med": np.nan, "cons_gor_sug_n": 0,
+        "cons_gor_vote": "none",
+    }
+    if tag in gors:
+        out["cons_gor_own_med"], out["cons_gor_own_n"] = gors[tag]
+    if suggest and suggest in gors:
+        out["cons_gor_sug_med"], out["cons_gor_sug_n"] = gors[suggest]
+    own, sug = out["cons_gor_own_med"], out["cons_gor_sug_med"]
+    if not suggest or np.isnan(gor_subject) or gor_subject <= 0 or np.isnan(own) or np.isnan(sug) or own <= 0 or sug <= 0:
+        return out
+    if max(own, sug) / min(own, sug) < GOR_SEPARATION:
+        return out
+    d_own = abs(math.log(gor_subject / own))
+    d_sug = abs(math.log(gor_subject / sug))
+    out["cons_gor_vote"] = "own" if d_own <= d_sug else "suggest"
+    return out
 
 
 def pair_separation(df: pd.DataFrame, bench: str, min_hoods: int = 30) -> list[dict[str, Any]]:
@@ -816,7 +860,8 @@ WELL_COLS = [
     "lateral_length_ft", "first_production_date", "cum_12m_oil_bbl", "oil12_kft", "cohort",
     "mid_lon", "mid_lat", "sql23_nearest", "sql23_assigned_gap", "sql23_nearest_gap", "sql23_disagree",
     "sql23_corrected", "cons_status", "cons_n_witness", "cons_own_med", "cons_own_n", "cons_own_delta",
-    "cons_nearest", "cons_nearest_delta", "cons_suggest", "qc_role", "qc_reason",
+    "cons_nearest", "cons_nearest_delta", "cons_suggest", "gor12", "cons_gor_own_med", "cons_gor_sug_med", "cons_gor_vote",
+    "qc_role", "qc_reason",
 ]
 
 

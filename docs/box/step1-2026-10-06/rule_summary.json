@@ -1,0 +1,63 @@
+{
+ "BS2_S": {
+  "n_tagged": 4306,
+  "n_after_rule": 4359,
+  "reassigned_out": 10,
+  "reassigned_in": 63,
+  "tvd_suspect": 12,
+  "depth_witnesses": 3490,
+  "cohort_after": 1898,
+  "actions": {
+   "keep": 4284,
+   "tvd_suspect": 12,
+   "reassign": 10
+  },
+  "flags_kept_by_reason": {
+   "class BS2_S->BS3_C rejected": 30,
+   "card verdict REJECT": 10
+  }
+ },
+ "WCA": {
+  "n_tagged": 12182,
+  "n_after_rule": 12306,
+  "reassigned_out": 14,
+  "reassigned_in": 138,
+  "tvd_suspect": 32,
+  "depth_witnesses": 11076,
+  "cohort_after": 7562,
+  "actions": {
+   "keep": 12136,
+   "tvd_suspect": 32,
+   "reassign": 14
+  },
+  "flags_kept_by_reason": {
+   "in-pool swap, moot for extents": 932,
+   "flag into WCXY is never applied": 218,
+   "class WCA->WCB_1 rejected": 113,
+   "class WCA->BS3_S rejected": 110,
+   "card verdict REJECT": 12,
+   "class WCA->WCB_2 accepted but sql/23 nearest  does not concur": 3,
+   "class WCA->WCC accepted but sql/23 nearest  does not concur": 2,
+   "class WCA->WCB_2 accepted, sql/23 concurs, but GOR says it produces like WCA_1": 1
+  }
+ },
+ "unknown_classes": [
+  "AVA_1->WCA",
+  "BS1_S->BS2_S",
+  "BS1_S->WCA",
+  "BS2_S->WCB_1",
+  "BS3_C->WCA",
+  "WCA->BS2_S",
+  "WCA->BS3_C",
+  "WDFD->WCA"
+ ],
+ "built_at": "2026-10-07T12:11:15-05:00",
+ "asof": "2026-08-01",
+ "verdicts_loaded": {
+  "files": [
+   "docs\\box\\step1-2026-10-06\\cards_sample.csv"
+  ],
+  "agree": 84,
+  "reject": 41
+ }
+}

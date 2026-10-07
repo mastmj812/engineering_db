@@ -9,7 +9,12 @@ per swap class from calibration cards (`docs/box/step1-2026-10-06/cards.html`, 1
 cross-pool flags), never per well. **Verdicts in 2026-10-07** (`VERDICTS.md`: 84 agree / 41 reject /
 17 inconclusive; class rule proposed — accept into-pool classes ≥ 0.70, reject thin-boundary classes,
 A′ = planned-survey flag means TVD suspect not tag wrong, never Bone Spring → Wolfcamp). Gate 1
-closes on Michael's answer to VERDICTS §5; then step 2 in a fresh session. Execution model in §10, kickoff prompt in §11.
+answered 2026-10-07 (VERDICTS §6): rule ACCEPTED and applied (`box/qc_rule.py`, `scripts/box_apply_rule.py`,
+card verdicts outrank the class rule per well); hold classes exhausted (5 flags each, all carded) →
+per-well verdicts; GOR tiebreak FORMALISED (`gor12`, `cons_gor_vote`, veto in the rule, card panel);
+Diez TVD + McGary duplicates batched with the next vintage query. **Gate 1 CLOSED 2026-10-07.**
+Final well sets = `docs/box/step1-2026-10-06/wells_final_{WCA,BS2_S}.csv` (WCA 12,306 / BS2_S 4,359
+wells; `box_depth_witness` marks depth evidence). **Next: step 2** in a fresh session. Execution model in §10, kickoff prompt in §11.
 Built so far: step 0 (`box_econ` schema, eng_db #85) and the step-1 QC deliverable. `runs/` is
 git-ignored, so review pages live under `docs/box/`.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
@@ -252,9 +257,15 @@ Reference: Novi 2025Q3 cum-6 bias −24 % Delaware / −5 % Midland.
 - ~~NM planned-survey wells: reassign by depth or exclude~~ → **option A adopted 2026-10-06**:
   planned-survey / permit-round wells are evidence unless consensus-flagged, every survey class
   (`docs/box/step1-2026-10-06/FINDINGS.md` §4/§7). BOX-only; no warehouse change.
-- Consensus-flag ratification: per swap class via calibration cards (~10 sampled wells per class,
-  gunbarrel strip of subject + 1.5-mi witnesses), accept/reject by class precision; never
-  well-by-well (Michael 2026-10-06). Only edge-pinning review wells get individual eyes, at gate 2.
+- ~~Consensus-flag ratification~~ → DONE 2026-10-07: class rule of record in `box/qc_rule.py` (class
+  gate ≥ 0.70 from card precision, sql/23 second vote, GOR veto, A′ for planned surveys, never Bone
+  Spring → Wolfcamp; per-card verdicts outrank the rule). Re-calibrate only when the detector or the
+  tag chain changes (quarterly reload). Edge-pinning review wells still get individual eyes at gate 2.
+- Vendor data defects to batch with the next Novi vintage query: Diez Unit 10 2H (4238937383) Novi TVD
+  10,896 vs Enverus 10,430 / Michael 10,383; McGary-Tudor West 4H / East 5H duplicate api10s
+  (4238939884/4238941440, 4238939885/4238941441) both producing.
+- anduin follow-up (not BOX): old short laterals (e.g. 3001534505, 4247535273) are not in anduin's
+  synced universe; api10 search for a synced well (3002551417) showed nothing on the map.
 - ~~WCA_1 vs WCA_2 handling; WCXY membership~~ → D19 / D20 (2026-10-06).
 - Steven's table shape / econ case dimension (step 7, after his first upload).
 - Geologist's one-line CRS confirmation (any time; D7 stands until contradicted).
