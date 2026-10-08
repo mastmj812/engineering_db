@@ -35,6 +35,7 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
+from shapely.ops import unary_union
 
 TIER_COLOR = {"codev": "#2563eb", "stack_standalone": "#16a34a", "topfill_underfill": "#d97706"}
 CURVE_COLOR = ["#2563eb", "#d97706", "#059669", "#7c3aed", "#dc2626", "#0891b2", "#a16207", "#be185d"]
@@ -46,16 +47,46 @@ MAX_STICK_LABELS = 16
 _HALO = [pe.withStroke(linewidth=2.2, foreground="white")]
 
 
+_ROSE4 = ["North", "East", "South", "West"]
+_ROSE8 = ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"]
+
+
+def _safe(s: str) -> str:
+    """No spaces in a curve name: `WCB_2 @ 10,000 ft` -> `WCB_2_10000ft`."""
+    return s.replace(",", "").replace(" @ ", "_").replace(" ", "")
+
+
 def curve_labels(key: str, B: dict[str, Any], units: list[dict[str, Any]] | None = None) -> list[str]:
-    """A short NAME per TC group, in group order. One group: the bench key.
-    Several: `<bench>-A`, `-B`, ... — letters only. The split test groups units
-    by how their offsets PERFORM, so a group's units can interleave on the map
-    (VaULt BS3_C-B = 25-26-27 + 35-38-47, eight miles apart); a compass word in
-    the name would mislead. The map colour is what tells them apart."""
+    """A short NAME per TC group, in group order — no spaces, no letter suffixes
+    (Michael 2026-10-08: `WCB_2_North` socializes; `WCB_2-A` confuses). One group:
+    the bench key. Several: `<bench>_<Compass>` = the bearing of the group's unit
+    centroid from the centroid of all the bench's grouped units, on the coarsest
+    rose (4- then 8-point) that names every group uniquely. Groups that still
+    collide (interleaved units) — or a call without unit geometry — fall back to
+    `<bench>_<first DSU name>`; the map colour stays the cross-reference."""
     groups = B.get("tc_groups") or []
+    base = _safe(key)
     if len(groups) <= 1:
-        return [key for _ in groups]
-    return [f"{key}-{chr(65 + i)}" for i in range(len(groups))]
+        return [base for _ in groups]
+    geom = {u["label"]: u for u in units or [] if u.get("geometry")}
+
+    def dsu(G: dict[str, Any]) -> str:
+        u = geom.get(G["units"][0]) or {}
+        return f"{base}_{_safe(u.get('dsu_name') or G['units'][0])}"
+
+    if not all(lab in geom for G in groups for lab in G["units"]):
+        return [dsu(G) for G in groups]
+    cents = [unary_union([shape(geom[lab]["geometry"]) for lab in G["units"]]).centroid for G in groups]
+    allc = unary_union([shape(geom[lab]["geometry"]) for G in groups for lab in G["units"]]).centroid
+    k = math.cos(math.radians(allc.y))
+    brg = [math.degrees(math.atan2((c.x - allc.x) * k, c.y - allc.y)) % 360 for c in cents]
+    for rose in (_ROSE4, _ROSE8):
+        step = 360 / len(rose)
+        names = [rose[int((b + step / 2) // step) % len(rose)] for b in brg]
+        if len(set(names)) == len(names):
+            return [f"{base}_{n}" for n in names]
+    return [f"{base}_{n}" if names.count(n) == 1 else dsu(G) for n, G in zip(names, groups, strict=True)]
+
 
 
 def curve_png(overview: Path, gi: int) -> Path:

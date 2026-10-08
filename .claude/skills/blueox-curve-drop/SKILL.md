@@ -1,6 +1,6 @@
 ---
 name: blueox-curve-drop
-description: Build, sweep, and stage a Blue Ox curve-drop workbook (or re-drop) for the engineering→finance handoff — scenario re-save recency, config re-pin, pre-send sweep, covering note, amendments ledger, #eng-updates Slack notice. Use when a deal is ready to hand to Steven, a narvi/anduin fix invalidates a shipped drop, Steven raises a query on a delivered workbook, or a zone split/rename/risking change forces a re-export.
+description: Build, sweep, and stage a Blue Ox curve-drop workbook (or re-drop) for the engineering→finance handoff — scenario re-save recency, config re-pin, pre-send sweep, amendments ledger, #eng-updates Slack notice. Use when a deal is ready to hand to Steven, a narvi/anduin fix invalidates a shipped drop, Steven raises a query on a delivered workbook, or a zone split/rename/risking change forces a re-export.
 ---
 
 # Blue Ox curve drop — build → sweep → stage for send
@@ -13,7 +13,7 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
 
 **Hard rules:**
 - One anduin deal = one Blue Ox codename = **one governing workbook**. A re-drop SUPERSEDES the
-  prior file — never overwrite it; the covering note names the superseded filename.
+  prior file — never overwrite it; the #eng-updates post names the superseded filename.
 - Column/sheet/key names are **FINAL once the first workbook carrying them ships**.
 - Blue Ox percentiles are **ASCENDING** (their p10 = LOW — opposite of house SPE). The flip lives
   ONLY in `exports/blueox.LEVEL_TO_SPE_KEY`. Never re-derive it, never emit percentile water
@@ -22,9 +22,15 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
 - NGL ships all-zero with `ngl_basis = derived_by_blue_ox_via_yield` (they derive via yield).
 - `reserve_category` is `PUD` / `UPSIDE` (`RES` is refused at build). `di_convention =
   nominal_annual`, always.
-- **Claude prepares and sweeps; Michael sends.** Never email/transmit anything to Steven. The one
-  exception is the #eng-updates notice (step 10): Claude posts it, and only after Michael gives an
-  explicit go for that specific drop. A go for one drop does not carry over to the next.
+- **Claude prepares and sweeps; Michael delivers the file.** There is NO email and no covering
+  note to Steven (Michael, 2026-10-08): the #eng-updates post (step 10) IS Steven's notification.
+  Claude posts it only after Michael gives an explicit go for that specific drop. A go for one
+  drop does not carry over to the next.
+- **Zone / type-curve names: no spaces, no letter suffixes** (Michael, 2026-10-08). Several
+  curves on one bench are told apart by compass direction — `WCB_2_North`, `WCB_2_Southeast` —
+  never `WCB_2-A` / `WCB_2 -A`. deal-intake's dossier proposes these names
+  (`dealintake/render/maps.curve_labels`). Names already shipped stay final (bro_time
+  `WCB_2 West` / `WCB_2 East`); the rule applies to new drops.
 - Any new deviation the drop carries → ledger section written **in the same commit** as the code,
   with a "Loader impact" line marked *required* vs *tolerated*.
 
@@ -35,7 +41,7 @@ percentile levels (subset of P10/P25/P75/P90 — P50 always ships); `normalizati
 (`per_1000_lateral_ft` | `per_well`); `production_history_through` (`YYYY-MM`); risking decision
 (unrisked vs `geologic_multipliers_applied` + the MULs); Novi Intelligence vintage
 (`novi_intel_vintage`); whether this SUPERSEDES a prior drop and whether the zone list changed
-(a §11 split/rename must be declared in the covering note).
+(a §11 split/rename must be declared in the #eng-updates post).
 
 ## 1. Scenario recency + integrity (the step that keeps biting)
 
@@ -79,15 +85,15 @@ is almost always wrong — re-pin instead. Red rows that won't pin = phantom pin
 
 ## 4. Zone list + scope check
 
-- Zone names ≤26 chars, none of `: \ / ? * [ ]`, no leading/trailing space/apostrophe, not a
+- Zone names ≤26 chars, no spaces, no `-A`/`-B` letter suffixes, none of `: \ / ? * [ ]`, no leading/trailing space/apostrophe, not a
   reserved sheet name (`meta`, `inventory`, `manifest`, `analog_production`, `curve_params`,
   `dsu_meta`, `novi_comparison`, `novi_comparison_meta`), unique.
-- Same-bench splits (§11, e.g. `WCB_2_W`/`WCB_2_E`): shared `bench` code, **scenario scopes
+- Same-bench splits (§11, e.g. `WCB_2_North`/`WCB_2_South`): shared `bench` code, **scenario scopes
   disjoint and covering** — anduin hard-errors overlap or a planned well no zone's scenario covers
   (`scope_missed`). PDP wells are never dropped (unzoned PDP lands on `inventory` with the bench
   code as `area` — sanctioned, §2).
 - Zone list stable vs the prior governing drop, or the rename/split is declared (a re-drop split
-  SUPERSEDES the old zone name — say so in the covering note).
+  SUPERSEDES the old zone name — say so in the #eng-updates post).
 - Strat tab order set as Michael wants it (zone tab-order controls, anduin #33).
 
 ## 5. Risking
@@ -133,17 +139,17 @@ Now run the checks the validator can't:
       stick-to-stick, per-basin lateral tolerance **±25% Delaware / ±40% Midland** (§9), `low_n`
       flagged never widened; `novi_alignment = novi_to_ip_tc_to_peak`,
       `novi_rate_to_volume_days = 30`.
-- [ ] Diff vs the prior governing drop: zones, counts, EURs — every delta explainable and worth a
-      line in the covering note.
+- [ ] Diff vs the prior governing drop: zones, counts, EURs — every delta explainable; the material ones
+      go in the post's "what changed" line.
 - [ ] Contract §4 16-box self-check walked once, top to bottom.
 - [ ] File opens clean in Excel; exactly one governing workbook will exist post-send.
 
-## 8. Covering note (draft for Michael to send)
+## 8. What-changed summary (feeds the step-10 post — no email)
 
-Must contain: codename + filename; SUPERSEDES line naming the prior file (if re-drop); what
-changed and why (fix, re-save, split, risking); any zone-list change called out explicitly (§11);
-any NEW ledger deviation the file carries, with the required-vs-tolerated framing; open questions
-if we're forcing one of the §5 undecided formats.
+No covering note is sent. Collect for the post: codename + filename; SUPERSEDES the prior file
+(if re-drop); what changed and why (fix, re-save, split, risking); any zone-list change (§11); any
+NEW ledger deviation the file carries, with the required-vs-tolerated framing. If that won't fit
+one readable message, show Michael the full summary and agree the post wording with him.
 
 ## 9. Ledger + memory
 
@@ -159,7 +165,7 @@ Blue Ox's bot-to-bot channel: Steven's tools/workflows watch it to pick up new e
 2026-10-05, "for humans and AI agents"): **post one message; put the codename that matches the
 ArcMap and Deal Folder name.**
 
-1. **Gate:** only after step 7 is fully green (and, for a curve drop, the step-8 note is drafted).
+1. **Gate:** only after step 7 is fully green and the step-8 summary is assembled.
    Never for test builds, re-exports while debugging, or a build that needed `allow_stale`.
 2. **Codename:** ask Michael for the Blue Ox codename, i.e. the ArcMap / Deal Folder name. The anduin deal name
    may differ (e.g. `VaULt 2.0`), and we can't see the ArcMap or Deal Folder, so never infer it.
@@ -189,7 +195,7 @@ file from the curve drop: `<codename>_pdp_<date>.xlsx`.
 4. Export panel → Save + preview: contract errors block; readiness warnings don't. Spot-check
    one group sheet's first month against the seller's reported volumes when the effective
    date precedes data-through (those rows are actuals by design).
-5. Michael sends. A re-export is a new dated file + "supersedes <name>" (pass `supersedes`).
+5. Michael delivers the file (no email). A re-export is a new dated file + "supersedes <name>" (pass `supersedes`).
 6. Notify #eng-updates per step 10 (same gate, same go-per-drop rule).
 
 ## Known traps (each has drawn blood)
