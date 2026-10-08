@@ -10,9 +10,9 @@ receive, and checks them before anything is written:
   min_leg_ft), so the plan previews the IDENTICAL save recipe, matches every
   leg to the dossier's kept locations (midpoint <= MATCH_TOL_FT, same bench)
   and sends the rest as `culled_wells`. A unit whose dossier benches came from
-  more than one generate call (e.g. 1-12: WCB_1 + WCB_2, each placed alone)
-  would be staggered together by the save, so every bench is PINNED at its own
-  preview position (`ZoneModel.offset_ft`). Any dossier location the recipe
+  more than one generate call is PINNED (`ZoneModel.offset_ft`) where evaluate
+  placed it — evaluate's anchor-and-shift stagger records `pin_offset_ft` per
+  bench (older runs: re-derived from evaluate's own preview calls). Any dossier location the recipe
   cannot reproduce BLOCKS the unit — never a silent difference.
 * anduin — one saved type curve per dossier curve (name = the dossier's
   compass name, members = the dossier cohort, peak_ramp, per lateral ft, Arps
@@ -127,8 +127,9 @@ def plan_unit(
     # evaluate's own calls: winerack benches together, every other bench alone
     wr = [b for b in order if gen[b].get("winerack")]
     calls = ([wr] if wr else []) + [[b] for b in order if b not in wr]
-    pins: dict[str, float] = {}
-    if len(calls) > 1:
+    # evaluate records the stagger pins (narvi frame) it placed each bench with
+    pins: dict[str, float] = {b: float(gen[b]["pin_offset_ft"]) for b in order if gen[b].get("pin_offset_ft") is not None}
+    if not pins and len(calls) > 1:              # runs before 2026-10-08: re-derive from the preview calls
         for call in calls:
             zs = [z for z in zones if z["formation"] in call]
             got = _by_bench(narvi_legs(narvi.generate(geom, zs, setback_ft=setback_ft,
@@ -140,9 +141,9 @@ def plan_unit(
                                   "— re-run evaluate (narvi or inputs changed since)")
                     continue
                 pins[b] = float(hit[min(hit)]["gunbarrel_x_ft"])
-        for z in zones:
-            if z["formation"] in pins:
-                z["offset_ft"] = pins[z["formation"]]
+    for z in zones:
+        if z["formation"] in pins:
+            z["offset_ft"] = pins[z["formation"]]
 
     params = {"spacing_ft": base_sp, "setback_ft": setback_ft, "azimuth_deg": az_grid, "well_type": "single"}
     rows: list[dict[str, Any]] = []

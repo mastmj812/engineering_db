@@ -151,3 +151,58 @@ def test_stagger_is_the_default():
     g2 = {"source": "novi", "reason": "Novi sticks", "pud_inside": 2}
     assert location_source(g2, {"winerack": False})["source"] == "novi"      # an opt-out is not a pattern
     assert location_source(g2, {"winerack": True})["source"] == "generate"
+
+
+class LatticeNarvi:
+    """Window +-2310 ft. Alone: 4 rows centred (-1980..1980). Pinned at p: every
+    p + k*spacing inside the window."""
+
+    def __init__(self) -> None:
+        self.calls: list[list[dict[str, Any]]] = []
+
+    def generate(self, parcel, zones, *, setback_ft, spacing_ft, azimuth_deg):
+        self.calls.append(zones)
+        feats = []
+        for z in zones:
+            sp = z["spacing_ft"]
+            if z.get("offset_ft") is None:
+                xs = [-1980.0, -660.0, 660.0, 1980.0]
+            else:
+                p = z["offset_ft"]
+                xs = [p + k * sp for k in range(-6, 7) if abs(p + k * sp) <= 2310.0]
+            for i, x in enumerate(sorted(xs), 1):
+                feats.append({"type": "Feature", "geometry": mapping(_line(x)),
+                              "properties": {"kind": "leg", "formation": z["formation"],
+                                             "well_name": f"{z['formation']}-{i:02d}", "gunbarrel_x_ft": x,
+                                             "completed_lateral_ft": 9000.0}})
+        return {"geojson": {"features": feats}}
+
+
+def test_stagger_anchor_keeps_its_rows_and_the_other_bench_shifts():
+    from shapely.geometry import shape
+
+    from dealintake.pipeline import winerack_legs
+    g = shape(_unit()["geometry"])
+    zones = {"WCB_1": (12584.0, 1320.0), "WCB_2": (12947.0, 1320.0)}
+    lg, pins = winerack_legs(LatticeNarvi(), g, 0.3, zones, setback_ft=330.0)
+    # tie (4 alone each) -> the DEEPER bench anchors; WCB_1 shifts half a spacing (3 fit)
+    assert len(lg["WCB_2"]) == 4 and len(lg["WCB_1"]) == 3
+    assert pins["WCB_2"] == -1980.0 and pins["WCB_1"] == -1980.0 + 660.0
+    # the reviewer's rules decide: a bench that would lose a row anyway does not anchor
+    lg, pins = winerack_legs(LatticeNarvi(), g, 0.3, zones, setback_ft=330.0,
+                             kept=lambda b, x: len(x) - (1 if b == "WCB_2" else 0))
+    assert len(lg["WCB_1"]) == 4 and len(lg["WCB_2"]) == 3
+    one, p1 = winerack_legs(LatticeNarvi(), g, 0.3, {"WCB_2": (12947.0, 1320.0)}, setback_ft=330.0)
+    assert p1 == {} and len(one["WCB_2"]) == 4
+
+
+def test_handoff_sends_the_recorded_stagger_pins():
+    nv = LatticeNarvi()
+    w2 = _ub([-1980, -660, 660, 1980], 12947.0)
+    w1 = _ub([-1320, 0, 1320], 12584.0)
+    w2.update(winerack=True, pin_offset_ft=-1980.0)
+    w1.update(winerack=True, pin_offset_ft=-1320.0)
+    u = handoff.plan_unit(nv, _unit(), {"WCB_1": w1, "WCB_2": w2}, 330.0)
+    assert u["issues"] == [] and u["body"]["culled_wells"] == []
+    assert len(nv.calls) == 1                                    # pins recorded: no re-derivation
+    assert {z["formation"]: z["offset_ft"] for z in u["body"]["zones"]} == {"WCB_1": -1320.0, "WCB_2": -1980.0}
