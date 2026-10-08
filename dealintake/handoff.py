@@ -39,6 +39,19 @@ from dealintake.geo import LocalFrame, true_to_grid
 from dealintake.select_wells import bench_code
 
 MATCH_TOL_FT = 50.0
+# anduin frontend DEFAULT_FILTER_SPEC (frontend/src/api/types.ts). A saved curve
+# carries a FULL filter spec so anduin's "add wells" route reopens the Map tab on
+# the curve's bench with PDP status, exactly like a UI-saved curve; the
+# deal-intake run details ride under their own key (ignored by the UI).
+ANDUIN_DEFAULT_FILTER: dict[str, Any] = {
+    "formations": [], "operators": [], "counties": [], "statuses": ["PDP"],
+    "first_prod_start": None, "first_prod_end": None, "lateral_min_ft": None, "lateral_max_ft": None,
+    "spacing_min_ft": None, "spacing_max_ft": None,
+    "spacing_include_no_neighbor": True, "spacing_include_no_data": True,
+    "well_name_contains": None, "api10s": [], "water_sources": [], "scenario_classes": [],
+    "scenario_benches": [], "parent_benches": [], "parent_side": "any",
+    "parent_dtvd_max_ft": None, "parent_age_min_days": None, "parent_age_max_days": None,
+}
 FT_PER_M = 3.28084
 NARVI_CATEGORIES = ["pdp", "pud"]          # Novi benches: PUD only, as the dossier counted them
 
@@ -242,9 +255,10 @@ def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codena
                     "name": name,
                     "notes": f"deal-intake handoff: {run_dir.as_posix()} (config v{sig.get('config_version')}), "
                              f"bench {B['bench']}, units {', '.join(G['units'])}",
-                    "filter_spec": {"source": "deal-intake", "run_dir": run_dir.as_posix(),
-                                    "config_version": sig.get("config_version"), "bench": B["bench"],
-                                    "units": G["units"], "cohort_rule": G.get("order_reason")},
+                    "filter_spec": {**ANDUIN_DEFAULT_FILTER, "formations": [B["bench"]],
+                                    "dealintake": {"run_dir": run_dir.as_posix(),
+                                                   "config_version": sig.get("config_version"),
+                                                   "units": G["units"], "cohort_rule": G.get("order_reason")}},
                     "included_api10s": api10s,
                     "normalization_basis": "per_lateral_ft",
                     "alignment_method": "peak_ramp",

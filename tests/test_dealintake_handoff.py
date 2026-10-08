@@ -213,3 +213,12 @@ def test_saved_curve_names_carry_the_deal_codename(tmp_path):
     cs = handoff.plan_curves(sig, prop, tmp_path, "rallycaps")
     assert [c["name"] for c in cs] == ["rallycaps_WCB_1", "rallycaps_WCB_2_N", "rallycaps_WCB_2_S"]
     assert [c["zone"]["zone_name"] for c in cs] == ["WCB_1", "WCB_2_N", "WCB_2_S"]       # tabs: no prefix
+
+
+def test_saved_curve_carries_a_full_anduin_filter_spec(tmp_path):
+    sig, prop = _sig()
+    (c,) = [c for c in handoff.plan_curves(sig, prop, tmp_path, "rallycaps") if c["bench"] == "WCB_1"]
+    fs = c["save_body"]["filter_spec"]
+    assert set(handoff.ANDUIN_DEFAULT_FILTER) <= set(fs)
+    assert fs["formations"] == ["WCB_1"] and fs["statuses"] == ["PDP"] and fs["api10s"] == []
+    assert fs["dealintake"]["units"] == ["u_up"]
