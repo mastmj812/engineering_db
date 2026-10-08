@@ -23,7 +23,7 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
 - `reserve_category` is `PUD` / `UPSIDE` (`RES` is refused at build). `di_convention =
   nominal_annual`, always.
 - **Claude prepares and sweeps; Michael delivers the file** into the Deal Folder:
-  `%USERPROFILE%\Blue Ox Resources\Business Development - General. Deals\<Deal Folder>\`
+  `%USERPROFILE%\Blue Ox Resources\Business Development - General\2. Deals\<Deal Folder>\`
   (top level, beside the prior drops; synced SharePoint). There is NO email and no covering
   note to Steven (Michael, 2026-10-08): the #eng-updates post (step 10) IS Steven's notification
   — post only once the file is in the Deal Folder.
