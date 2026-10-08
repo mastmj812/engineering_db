@@ -1,8 +1,10 @@
 """Thin anduin HTTP client (bearer JWT; default http://localhost:8000).
 
 Endpoints used by Gates 5-6 (shapes verified against anduin backend/app
-2026-09-18). Credentials come from ANDUIN_EMAIL / ANDUIN_PASSWORD in the
-environment — never from config files or arguments, and never logged.
+2026-09-18). Auth: ANDUIN_EMAIL / ANDUIN_PASSWORD in the environment when
+set, else the token `python -m dealintake login` keeps in the Windows
+Credential Manager (dealintake.credentials) — never config files or
+arguments, never logged.
 
 Respects the manual-override guard by construction: this client never
 refits a row with manual_override=TRUE, locked=FALSE — `forecast()` checks
@@ -22,7 +24,9 @@ BATCH_MAX = 500
 
 
 class AnduinError(RuntimeError):
-    pass
+    def __init__(self, msg: str, status: int | None = None) -> None:
+        super().__init__(msg)
+        self.status = status
 
 
 class Anduin:
@@ -31,14 +35,59 @@ class Anduin:
         self.timeout = timeout
         self.s = requests.Session()
         self._authed = False
+        self.user: dict[str, Any] = {}
+
+    def request_token(self, email: str, password: str) -> dict[str, Any]:
+        """POST /api/auth/login -> {access_token, user}. 30-day token."""
+        return self._req("POST", "/api/auth/login", json={"email": email, "password": password}, auth=False)
 
     def login(self) -> None:
         email, pw = os.environ.get("ANDUIN_EMAIL"), os.environ.get("ANDUIN_PASSWORD")
-        if not email or not pw:
-            raise AnduinError("set ANDUIN_EMAIL and ANDUIN_PASSWORD in the environment")
-        r = self._req("POST", "/api/auth/login", json={"email": email, "password": pw}, auth=False)
-        self.s.headers["Authorization"] = f"Bearer {r['access_token']}"
+        if email and pw:
+            token = self.request_token(email, pw)["access_token"]
+        else:
+            from dealintake import credentials
+            saved = credentials.load(self.base)
+            if not saved:
+                raise AnduinError(r"not logged in to anduin — run:  .\di login   (once; the token lasts 30 days)")
+            token = saved["token"]
+        self.s.headers["Authorization"] = f"Bearer {token}"
         self._authed = True
+        try:
+            self.user = self._req("GET", "/api/auth/me")
+        except AnduinError as e:
+            if e.status == 401:
+                raise AnduinError(r"anduin login expired — run:  .\di login", 401) from e
+            raise
+
+    # ---- deals / saved type curves / Blue Ox config (handoff gate 8) ----
+    def deals(self) -> list[dict[str, Any]]:
+        return self._req("GET", "/api/deals")
+
+    def deal(self, deal_id: str) -> dict[str, Any]:
+        return self._req("GET", f"/api/deals/{deal_id}")
+
+    def create_deal(self, name: str, notes: str | None = None) -> dict[str, Any]:
+        return self._req("POST", "/api/deals", json={"name": name, "notes": notes})
+
+    def type_curve(self, tc_id: str) -> dict[str, Any]:
+        return self._req("GET", f"/api/type-curves/{tc_id}")
+
+    def save_type_curve(self, body: dict[str, Any]) -> dict[str, Any]:
+        return self._req("POST", "/api/type-curves", json=body)
+
+    def new_version(self, tc_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        """Save as a new version of tc_id; take_over_deal moves the deal to it."""
+        return self._req("POST", f"/api/type-curves/{tc_id}/versions", json={**body, "take_over_deal": True})
+
+    def patch_type_curve(self, tc_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return self._req("PATCH", f"/api/type-curves/{tc_id}", json=body)
+
+    def blueox_config(self, deal_id: str) -> dict[str, Any]:
+        return self._req("GET", f"/api/deals/{deal_id}/blueox-config")
+
+    def put_blueox_config(self, deal_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return self._req("PUT", f"/api/deals/{deal_id}/blueox-config", json=body)
 
     # Paths safe to repeat after a dropped connection: reads, plus the TC
     # compute PREVIEW (persists nothing). /forecasts/batch is NOT here — a
@@ -66,7 +115,7 @@ class Anduin:
                     + ("" if retryable else " — not retried (not idempotent); check GET /api/sync/status before re-running")
                 ) from e
         if r.status_code >= 400:
-            raise AnduinError(f"{method} {path} -> {r.status_code}: {r.text[:500]}")
+            raise AnduinError(f"{method} {path} -> {r.status_code}: {r.text[:500]}", r.status_code)
         return r.json() if r.content else None
 
     # -- forecasts ---------------------------------------------------------
