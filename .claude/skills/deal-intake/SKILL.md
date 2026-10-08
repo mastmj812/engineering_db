@@ -516,12 +516,15 @@ writes nothing. `--apply` writes, in order:
    PUT pins the narvi scenarios, so the drop skill starts with nothing stale.
 
 `handoff_state.json` records what the handoff wrote. A re-run skips
-unchanged rows and **refuses** anything edited since (a narvi re-save, a
-curve whose membership / fit / overrides / risking changed, a hand-edited
-Blue Ox config): `--replace` overwrites narvi + the config, `--new-version`
-saves the dossier cohort as a new version beside an edited curve
-(Michael 2026-10-08: refuse by default). Cohort culls are made in anduin
-AFTER the handoff. Next: the `blueox-curve-drop` skill from step 0.
+unchanged rows, updates its OWN untouched curves in place when a fresh
+evaluate changed a cohort (same id: membership + re-aggregate), and
+**refuses** anything edited since: a curve whose membership / fit /
+overrides / risking changed (always — no override flag), a narvi re-save or
+a hand-edited Blue Ox config (`--replace` overwrites those two). anduin
+"versions" are never used (Michael 2026-10-08). The handoff curve is the
+frozen SCREEN record; when a zone earns a work-up, Michael builds a separate
+`<name>_v2` curve on the same deal in the normal anduin flow and compares the
+two. Next: the `blueox-curve-drop` skill from step 0.
 
 **Stagger** (default, Michael 2026-10-08): a unit's generated benches are
 placed together. The bench that keeps the most rows after its row rules
