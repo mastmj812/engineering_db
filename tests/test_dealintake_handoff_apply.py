@@ -22,7 +22,9 @@ def _plan() -> dict[str, Any]:
         "units": [{"body": {"deal_id": "u1", "scenario_id": "plan_u1", "zones": [{"formation": "WCB_2"}]},
                    "expected": {"WCB_2": 2}}],
         "curves": [{"name": "WCB_2_N", "preview_oil": {"eur_per_unit": 100.0},
-                    "save_body": {"name": "WCB_2_N", "included_api10s": ["4200000001", "4200000002"]}}],
+                    "save_body": {"name": "WCB_2_N", "included_api10s": ["4200000001", "4200000002"]},
+                    "zone": {"zone_name": "WCB_2_N", "reserve_category": "PUD", "benches": ["WCB_2"],
+                             "scenario_scope": [{"deal_id": "u1", "scenario_id": "plan_u1"}]}}],
         "blueox_zones": [{"zone_name": "WCB_2_N", "reserve_category": "PUD", "benches": ["WCB_2"],
                           "scenario_scope": [{"deal_id": "u1", "scenario_id": "plan_u1"}]}],
         "narvi_selections": [{"deal_id": "u1", "scenario_id": "plan_u1"}],
@@ -222,7 +224,6 @@ def test_a_naming_change_never_renames_a_handed_off_deal(tmp_path):
     _apply(tmp_path, store, an)
     P = _plan()
     P["curves"][0] = {**P["curves"][0], "name": "rallycaps_WCB_2_N"}
-    P["blueox_zones"][0] = {**P["blueox_zones"][0], "zone_name": "rallycaps_WCB_2_N"}
     with pytest.raises(handoff.HandoffRefused, match="names are final"):
         handoff.apply(P, tmp_path, store, an, contextlib.nullcontext, saved_fn=store.saved)
     assert len(an.curves) == 1

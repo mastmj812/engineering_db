@@ -49,9 +49,9 @@ reading guide to its sections.
   several curves on one bench are named by the abbreviated compass direction
   of the group from the bench's units — `WCB_2_N`, `WCB_2_SE` (4-point rose,
   8-point if needed; DSU name only when interleaved groups still collide).
-  The handoff saves them with the deal codename in front:
-  `rallycaps_WCB_2_SE` (codename = the Deal Folder name lowercased, letters
-  and digits only). Names are final once a drop ships — the handoff refuses
+  The handoff saves the anduin CURVE with the deal codename in front
+  (`rallycaps_WCB_2_SE`; codename = the Deal Folder name lowercased, letters
+  and digits only); the Blue Ox ZONE / workbook tab stays `WCB_2_SE`. Names are final once a drop ships — the handoff refuses
   to rename a handed-off deal's curves (Rally Caps shipped `WCB_2_Southeast`).
 - Nothing auto-drops a well. Every exclusion carries a reason, every
   outlier is a flag, and culling happens in anduin by the reviewer.

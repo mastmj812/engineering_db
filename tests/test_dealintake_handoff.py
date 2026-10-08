@@ -212,4 +212,4 @@ def test_saved_curve_names_carry_the_deal_codename(tmp_path):
     sig, prop = _sig()
     cs = handoff.plan_curves(sig, prop, tmp_path, "rallycaps")
     assert [c["name"] for c in cs] == ["rallycaps_WCB_1", "rallycaps_WCB_2_N", "rallycaps_WCB_2_S"]
-    assert all(c["zone"]["zone_name"] == c["name"] for c in cs)
+    assert [c["zone"]["zone_name"] for c in cs] == ["WCB_1", "WCB_2_N", "WCB_2_S"]       # tabs: no prefix

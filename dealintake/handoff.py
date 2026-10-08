@@ -212,8 +212,9 @@ def codename_for(deal_folder: str) -> str:
 
 def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codename: str = "") -> list[dict[str, Any]]:
     """One saved type curve + one Blue Ox zone per dossier curve, in tab order.
-    Saved names carry the deal codename in front (Michael 2026-10-08:
-    `rallycaps_WCB_2_SE`) so curves stay unique across deals in the anduin library."""
+    The saved CURVE name carries the deal codename in front (`rallycaps_WCB_2_SE`)
+    so curves stay unique across deals in the anduin library; the Blue Ox ZONE
+    name (= the workbook tab) does not (`WCB_2_SE`) — Michael 2026-10-08."""
     from dealintake.render.dossier_html import _labels
 
     out: list[dict[str, Any]] = []
@@ -254,7 +255,7 @@ def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codena
                         "formations": [B["bench"]],
                     },
                 },
-                "zone": {"zone_name": name, "reserve_category": "UPSIDE" if roles == {"upside"} else "PUD",
+                "zone": {"zone_name": label, "reserve_category": "UPSIDE" if roles == {"upside"} else "PUD",
                          "benches": [B["bench"]], "scenario_scope": [scenario_key(u) for u in G["units"]]},
             })
     return out
@@ -304,9 +305,9 @@ def plan(
     covered = {(lb, c["bench"]) for c in curves for lb in c["units"]}
     issues += [f"{u['label']} {b}: located in the dossier but no curve applies to it"
               for u in units for b in u["expected"] if (u["label"], b) not in covered]
-    names = [c["name"] for c in curves]
-    issues += [f"duplicate curve name {n}" for n in sorted({n for n in names if names.count(n) > 1})]
-    issues += [f"curve name {n!r} is over 26 characters (Blue Ox zone limit)" for n in names if len(n) > 26]
+    names = [c["zone"]["zone_name"] for c in curves]
+    issues += [f"duplicate zone name {n}" for n in sorted({n for n in names if names.count(n) > 1})]
+    issues += [f"zone name {n!r} is over 26 characters (Blue Ox tab limit)" for n in names if len(n) > 26]
     blocked = issues + [f"{u['label']}: {i}" for u in units for i in u["issues"]] \
         + [f"{c['name']}: {i}" for c in curves for i in c["issues"]]
     return {
@@ -501,7 +502,7 @@ def apply(
         "curve_months": house.get("curve_months", 600),
         "levels": house.get("levels", ["P10", "P25", "P75", "P90"]),
         "prepared_by": house.get("prepared_by") or (anduin.user or {}).get("display_name") or "Mast",
-        "zones": [{**z, "type_curve_id": ids[z["zone_name"]]} for z in P["blueox_zones"]],
+        "zones": [{**c["zone"], "type_curve_id": ids[c["name"]]} for c in P["curves"]],
         "narvi_selections": P["narvi_selections"],
         "exclude_benches": (cur or {}).get("exclude_benches", []),
     }
