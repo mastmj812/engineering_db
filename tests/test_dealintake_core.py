@@ -197,4 +197,24 @@ def test_gunbarrel_frame_convention():
     assert (round(lo_a), round(hi_a)) == (-4000, 4000)
     project90, _, _ = gunbarrel_frame(unit, 90.0)
     off, _ = project90(line_ft((-4000, -1000), (4000, -1000)))  # E-W lateral 1,000 ft SOUTH
-    assert off == pytest.approx(1000, abs=2)                    # 90 deg clockwise of east = south
+    assert off == pytest.approx(-1000, abs=2)                   # rule v2: E-W units read S -> N
+
+
+# THE golden table (lateral azimuth -> compass bearing of +offset), gunbarrel
+# sign rule v2 — byte-identical to narvi tests/test_gunbarrel_convention.py,
+# anduin test_blueox_export.py and erebor test_gunbarrel_axis.py.
+GOLDEN_PLUS_BEARING = [
+    (0.0, 90.0), (0.3, 90.3), (40.2, 130.2), (45.0, 135.0), (45.04, 135.04),
+    (45.06, 315.06), (45.1, 315.1), (55.3, 325.3), (71.3, 341.3), (89.0, 359.0),
+    (90.0, 0.0), (128.8, 38.8), (161.3, 71.3), (179.5, 89.5), (179.96, 89.96),
+    (180.0, 90.0), (200.0, 110.0), (-18.7, 71.3),
+]
+
+
+def test_positive_offset_bearing_golden_table():
+    from dealintake.geo import near_seam, positive_offset_bearing
+
+    for az, want in GOLDEN_PLUS_BEARING:
+        got = positive_offset_bearing(az)
+        assert abs((got - want + 180.0) % 360.0 - 180.0) < 1e-6, (az, got, want)
+    assert near_seam(43.0) and near_seam(47.9) and not near_seam(40.2) and not near_seam(135.0)

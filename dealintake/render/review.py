@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
 
+from dealintake.geo import positive_offset_bearing
 from dealintake.select_wells import bench_code
 
 # Mirror of narvi's FORMATION_COLORS (src/narvi/viz.py) — keep in step.
@@ -182,14 +183,15 @@ def tvd_strip(u: dict[str, Any]) -> str:
 
 def cross_section_ends(azimuth_deg: float) -> tuple[bool, str, str]:
     """(flip, left, right) so a gunbarrel reads W->E (or S->N when the cross
-    axis runs mostly north-south). The rule-16 +offset points 90 deg clockwise
-    of the plan: +EAST on a ~0 deg plan but +WSW on a 162 deg plan, which drew
-    36-37 east-to-west (Michael, 2026-09-30). flip = plot +offset on the left."""
-    d = math.radians((azimuth_deg + 90.0) % 360.0)
+    axis runs mostly north-south). Since sign rule v2 (Michael, 2026-10-08)
+    the rule-16 +offset itself points that way (into the NE half — the old
+    90-deg-clockwise frame drew 36-37 east-to-west, 2026-09-30), so flip is
+    always False; only the end labels depend on the plan azimuth."""
+    d = math.radians(positive_offset_bearing(azimuth_deg))
     east, north = math.sin(d), math.cos(d)
     if abs(east) >= abs(north):
         return east < 0, "W", "E"
-    return north > 0, "S", "N"
+    return north < 0, "S", "N"
 
 
 def gunbarrel(u: dict[str, Any]) -> str:
@@ -199,7 +201,8 @@ def gunbarrel(u: dict[str, Any]) -> str:
     outside the unit). Novi BASE_CASE sticks are not drawn (Michael,
     2026-09-28: our proposal vs PDP, nothing out of scope). The TVD window is
     the proposed benches ± a margin, so a shallow unmapped or a Woodford well
-    does not flatten the picture. +offset = 90 deg clockwise of the azimuth."""
+    does not flatten the picture. +offset = rule-16 sign rule v2 (W -> E for
+    N-S-ish plans, S -> N for E-W-ish)."""
     gb = u.get("gunbarrel")
     if not gb:
         return ""
@@ -243,7 +246,7 @@ def gunbarrel(u: dict[str, Any]) -> str:
     ax.set_ylim(y_hi, y_lo)
     flip, left, right = cross_section_ends(float(gb["azimuth_deg"]))
     ax.set_xlim((c_hi + 1500, c_lo - 1500) if flip else (c_lo - 1500, c_hi + 1500))
-    ax.set_xlabel(f"{left}  ←   offset from unit centroid, ft (+ = 90° clockwise of the "
+    ax.set_xlabel(f"{left}  ←   offset from unit centroid, ft (+ toward {right}; "
                   f"{gb['azimuth_deg']:.0f}° plan)   →  {right}", fontsize=8)
     ax.set_ylabel("TVD ft", fontsize=8)
     ax.grid(True, linewidth=0.3, alpha=0.5)
