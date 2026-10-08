@@ -89,11 +89,16 @@ class FakeAnduin:
         self.curves[tc_id]["deal_id"] = body["deal_id"]
         return copy.deepcopy(self.curves[tc_id])
 
-    def new_version(self, tc_id: str, body: dict[str, Any]) -> dict[str, Any]:
-        self.calls.append("version")
-        deal = self.curves[tc_id]["deal_id"]
-        self.curves[tc_id]["deal_id"] = None
-        return self._row(f"tc-{len(self.curves) + 1}", body, deal)
+    def patch_membership(self, tc_id, add, remove, reason=None):
+        self.calls.append("membership")
+        cur = [a for a in self.curves[tc_id]["included_api10s"] if a not in remove] + list(add)
+        self.curves[tc_id]["included_api10s"] = cur
+        self.curves[tc_id]["provenance"] = {"post_save_additions": add, "post_save_removals": remove}
+        return copy.deepcopy(self.curves[tc_id])
+
+    def reaggregate(self, tc_id):
+        self.calls.append("reaggregate")
+        return copy.deepcopy(self.curves[tc_id])
 
     def type_curve(self, tc_id: str) -> dict[str, Any]:
         return copy.deepcopy(self.curves[tc_id])
@@ -151,16 +156,26 @@ def test_scenario_saved_outside_the_handoff_is_refused(tmp_path):
     assert store.saves == []
 
 
-def test_curve_edited_in_anduin_is_refused_unless_new_version(tmp_path):
+def test_curve_edited_in_anduin_is_always_refused(tmp_path):
     store, an = Store(), FakeAnduin()
     _apply(tmp_path, store, an)
     an.curves["tc-1"]["included_api10s"] = ["4200000001"]                 # reviewer culled a well
-    with pytest.raises(handoff.HandoffRefused, match="edited in anduin"):
+    with pytest.raises(handoff.HandoffRefused, match="_v2"):
         _apply(tmp_path, store, an)
+    with pytest.raises(handoff.HandoffRefused, match="edited in anduin"):
+        _apply(tmp_path, store, an, replace=True)                         # no flag overrides it
     assert an.curves["tc-1"]["included_api10s"] == ["4200000001"]          # edit kept
-    out = _apply(tmp_path, store, an, new_version=True)
-    assert out["curves"][0]["action"] == "new version" and "version" in an.calls
-    assert an.config["zones"][0]["type_curve_id"] == out["curves"][0]["id"]
+
+
+def test_reevaluated_cohort_updates_our_own_curve_in_place(tmp_path):
+    store, an = Store(), FakeAnduin()
+    _apply(tmp_path, store, an)
+    P = _plan()
+    P["curves"][0]["save_body"] = {**P["curves"][0]["save_body"], "included_api10s": ["4200000002", "4200000003"]}
+    out = handoff.apply(P, tmp_path, store, an, contextlib.nullcontext, saved_fn=store.saved)
+    assert out["curves"][0]["action"] == "updated in place" and out["curves"][0]["id"] == "tc-1"
+    assert sorted(an.curves["tc-1"]["included_api10s"]) == ["4200000002", "4200000003"]
+    assert len(an.curves) == 1 and an.config["zones"][0]["type_curve_id"] == "tc-1"
 
 
 def test_narvi_mismatch_stops_before_anduin(tmp_path):

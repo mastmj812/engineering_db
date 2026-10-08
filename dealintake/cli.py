@@ -20,11 +20,12 @@ dossier -> handoff -> Blue Ox drop; Steven's econs pick where to look harder.
       Reviewer flags are REMEMBERED per run (evaluate_args.json): a re-run is
       just `.\di evaluate rallycaps`.
 
-  handoff  <run> [--deal "Rally Caps" --codename "RALLY CAPS"] [--apply [--new-version] [--replace]]
+  handoff  <run> [--deal "Rally Caps" --deal-folder "RALLY CAPS"] [--apply [--replace]]
       Gate 8. Without --apply: DRY RUN -> handoff_plan.json + handoff.html.
       --apply WRITES the narvi scenarios (one per DSU), the anduin type curves,
-      deal and Blue Ox config; anything edited since the last handoff is refused.
-      Deal + codename are remembered per run after the first time.
+      deal and Blue Ox config; anything edited since the last handoff is refused
+      (an edited curve always — the work-up belongs in a `<name>_v2` curve).
+      Deal + Deal Folder are remembered per run after the first time.
 
   render   <run> [--fetch-sticks]
       re-render dossier.html + dossier.md from signals.json (--fetch-sticks first
@@ -186,7 +187,7 @@ def _handoff(run_dir: Path, a: argparse.Namespace, cfg: cfgmod.Config) -> int:
         print(f"wrote {handoff_html.render(run_dir)} - review it, then:  .\\di handoff {a.run or run_dir} --apply")
         return 0 if P["status"] == "READY" else 3
     try:
-        res = handoff.apply(P, run_dir, narvi, Anduin(), wh.connect, new_version=a.new_version, replace=a.replace)
+        res = handoff.apply(P, run_dir, narvi, Anduin(), wh.connect, replace=a.replace)
     except (handoff.HandoffRefused, AnduinError) as e:
         print(f"STOPPED: {e}", file=sys.stderr)
         handoff_html.render(run_dir)
@@ -258,8 +259,6 @@ def main(argv: list[str] | None = None) -> int:
     h.add_argument("--codename", help="override the derived Blue Ox codename (remembered per run)")
     h.add_argument("--apply", action="store_true",
                    help="WRITE: narvi scenarios, anduin type curves + deal + Blue Ox config (plan must be READY)")
-    h.add_argument("--new-version", action="store_true",
-                   help="a curve edited in anduin since the handoff: save the dossier cohort as a NEW version")
     h.add_argument("--replace", action="store_true",
                    help="overwrite narvi scenarios / the Blue Ox config edited since the handoff")
     v = sub.add_parser("review", help="re-render review.html from proposal.json (after editing benches.yaml)")

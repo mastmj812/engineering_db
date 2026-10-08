@@ -339,7 +339,11 @@ def plan(
 # apply (--apply): narvi first (the Blue Ox config pins its updated_at), then
 # anduin curves -> deal -> Blue Ox config. handoff_state.json in the run dir
 # records what THIS handoff wrote, so a re-run can tell its own rows from rows
-# the reviewer edited since: edited rows are never overwritten silently.
+# the reviewer edited since: edited rows are never overwritten. anduin
+# "versions" are never used (Michael 2026-10-08: confusing, hidden behind one
+# name) — a handoff curve is the frozen SCREEN record; the reviewer's work-up
+# is a separate `<name>_v2` curve. A re-run after a fresh evaluate updates the
+# handoff's OWN untouched curves in place (same id: membership + re-aggregate).
 # ---------------------------------------------------------------------------
 
 STATE_FILE = "handoff_state.json"
@@ -419,10 +423,11 @@ def last_drop_settings(anduin: Any, skip_deal_id: str) -> dict[str, Any]:
 
 def apply(
     P: dict[str, Any], run_dir: Path, narvi: Any, anduin: Any, conn_factory: Any, *,
-    new_version: bool = False, replace: bool = False, saved_fn: Any = narvi_saved,
+    replace: bool = False, saved_fn: Any = narvi_saved,
 ) -> dict[str, Any]:
-    """Write the plan. Refuses (HandoffRefused) on a BLOCKED plan or on any row
-    edited since this handoff wrote it (unless new_version / replace)."""
+    """Write the plan. Refuses (HandoffRefused) on a BLOCKED plan, on any curve
+    edited in anduin since this handoff wrote it (always), and on narvi / Blue Ox
+    config rows edited since (unless replace)."""
     if P["status"] != "READY":
         raise HandoffRefused("plan is BLOCKED — fix what handoff.html lists, then re-run the dry run")
     state = load_state(run_dir)
@@ -483,15 +488,19 @@ def apply(
                 edited = "edited in anduin since the handoff"
         elif prev_id:
             edited = "a curve with this name is already on the deal (not from this handoff)"
-        if edited and not new_version:
-            raise HandoffRefused(f"anduin curve {c['name']}: {edited} — stopped; your edits are kept. "
-                                 "Re-run with --new-version to save the dossier cohort as a new version beside it.")
-        if st and prev_id and not edited and st["body"] == _hash(body["included_api10s"]):
+        if edited:
+            raise HandoffRefused(f"anduin curve {c['name']}: {edited} — stopped; your edits are kept and the "
+                                 f"handoff never overwrites an edited curve. Save a work-up as {c['name']}_v2.")
+        if st and prev_id and st["body"] == _hash(body["included_api10s"]):
             ids[c["name"]] = st["id"]
             out["curves"].append({"name": c["name"], "id": st["id"], "action": "unchanged"})
             continue
-        if prev_id:
-            row, action = anduin.new_version(prev_id, body), "new version"
+        if st and prev_id:
+            # our own untouched curve, cohort changed by a re-evaluate: same id, new members
+            old, new = set(row["included_api10s"]), set(body["included_api10s"])
+            anduin.patch_membership(prev_id, sorted(new - old), sorted(old - new),
+                                    {"code": "other", "note": f"deal-intake re-evaluate {P['run_dir']}: cohort rule"})
+            row, action = anduin.reaggregate(prev_id), "updated in place"
         else:
             row = anduin.save_type_curve(body)
             row, action = anduin.patch_type_curve(row["id"], {"deal_id": deal["id"]}), "saved"
