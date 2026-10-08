@@ -11,6 +11,11 @@
            [--no-anduin] [--no-short-history-transfer | --short-history-transfer N]
       Gates 2-7 on the confirmed benches; writes signals.json and the dossier.
 
+  handoff  --run-dir ... --deal "Rally Caps" --codename "RALLY CAPS"
+      Gate 8 DRY RUN: plan the narvi scenarios (one per DSU), the anduin type
+      curves and the Blue Ox zones from the reviewed dossier; writes
+      handoff_plan.json + handoff.html. Writes nothing to narvi or anduin.
+
   render   --run-dir ... [--fetch-sticks]
       re-render dossier.html + dossier.md from signals.json (--fetch-sticks first
       pulls the TC wells' laterals for the maps — needed for runs before 2026-10-06).
@@ -28,11 +33,12 @@ import sys
 from pathlib import Path
 
 from dealintake import config as cfgmod
-from dealintake import pipeline
+from dealintake import handoff, pipeline
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import AnduinError
+from dealintake.clients.narvi import Narvi
 from dealintake.pipeline import write_json
-from dealintake.render import dossier, dossier_html, review
+from dealintake.render import dossier, dossier_html, handoff_html, review
 
 
 def _spacing(items: list[str]) -> dict[str, float]:
@@ -131,6 +137,10 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--run-dir", required=True)
     r.add_argument("--fetch-sticks", action="store_true",
                    help="(re)write well_sticks.json from the warehouse (read-only) so the maps draw laterals")
+    h = sub.add_parser("handoff", help="gate 8 dry run: plan the narvi + anduin saves (handoff.html)")
+    h.add_argument("--run-dir", required=True)
+    h.add_argument("--deal", required=True, help="anduin deal name, e.g. \"Rally Caps\"")
+    h.add_argument("--codename", required=True, help="Blue Ox codename = the ArcMap / Deal Folder name")
     v = sub.add_parser("review", help="re-render review.html from proposal.json (after editing benches.yaml)")
     v.add_argument("--run-dir", required=True)
 
@@ -164,6 +174,13 @@ def main(argv: list[str] | None = None) -> int:
         shutil.copy(cfg.path, run_dir / "thresholds.snapshot.yaml")   # the config evaluate actually ran under
         dossier.render(run_dir)
         print(f"wrote {dossier_html.render(run_dir)} — open it in a browser (dossier.md beside it is the text record)")
+    elif a.cmd == "handoff":
+        with wh.connect() as conn:
+            P = handoff.plan(run_dir, Narvi(), cfg, deal=a.deal, codename=a.codename, conn=conn)
+        write_json(run_dir / "handoff_plan.json", P)
+        print(f"{P['status']}: wrote {handoff_html.render(run_dir)} — open it in a browser")
+        for b in P["blocked"]:
+            print(f"BLOCKED: {b}")
     elif a.cmd == "review":
         print(f"wrote {review.render(run_dir)}")
     else:
