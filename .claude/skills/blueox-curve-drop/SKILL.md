@@ -39,6 +39,13 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
 
 ## 0. Kickoff — confirm the inputs
 
+A deal that came through deal-intake arrives with its narvi scenarios saved,
+its anduin curves on the deal and the Blue Ox config already pinned
+(`.\di handoff <deal> --apply`, gate 8): steps 1-3 then confirm rather than
+build. Set the levels / curve_months / prepared_by here (the handoff leaves
+them at the config's values). The first pass is a SCREEN for Steven's econs
+— don't hold it for cohort work-up.
+
 Record before building: codename; which narvi scenarios/units contribute; `curve_months`;
 percentile levels (subset of P10/P25/P75/P90 — P50 always ships); `normalization_basis`
 (`per_1000_lateral_ft` | `per_well`); `production_history_through` (`YYYY-MM`); risking decision

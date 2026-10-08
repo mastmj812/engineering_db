@@ -96,6 +96,8 @@ def _gunbarrel(u: dict[str, Any], colors: dict[tuple[str, str], str]) -> str:
 
 def render(run_dir: Path) -> Path:
     P = json.loads((run_dir / "handoff_plan.json").read_text(encoding="utf-8"))
+    fa = run_dir / "handoff_applied.json"
+    A = json.loads(fa.read_text(encoding="utf-8")) if fa.exists() else None
     colors = _color_of(P)
     ready = P["status"] == "READY"
     out: list[str] = [
@@ -105,8 +107,23 @@ def render(run_dir: Path) -> Path:
          f"{_chip(P['status'], '#059669' if ready else '#dc2626')}</h1>"),
         (f'<p class="meta">Blue Ox codename {_esc(P["codename"])} · run {_esc(P["run_dir"])} · '
          f"config v{_esc(P['config_version'])} · planned {_esc(P['planned_at'][:16])} UTC · "
-         "dry run: nothing written</p>"),
+         + (f"<b>APPLIED {_esc(A['applied_at'][:16])} UTC</b></p>" if A else "dry run: nothing written</p>")),
     ]
+    if A:
+        rows = [[n["scenario"], n["action"], "; ".join(f"{b} {k}" for b, k in (n.get("planned") or {}).items()) or "—",
+                 _chip("verified", "#059669") if n.get("verified", True) else _chip("MISMATCH", "#dc2626")]
+                for n in A["narvi"]]
+        crow = [[c["name"], c["action"], c["id"], num(c.get("oil_eur_per_1000ft"), ",.0f"),
+                 num(c.get("dossier_preview"), ",.0f"), "—" if c.get("diff_pct") is None else f"{c['diff_pct']:+.2f}%"]
+                for c in A["curves"]]
+        d = A.get("deal") or {}
+        out.append("<h2>Applied</h2>" + _table(["narvi scenario", "action", "saved planned sticks", "check"], rows)
+                   + _table(["anduin curve", "action", "id", "saved oil EUR bbl/1,000 ft", "dossier preview",
+                             "diff"], crow)
+                   + f'<p class="meta">anduin deal <b>{_esc(d.get("name"))}</b>: Blue Ox config saved, '
+                     f'{_esc(d.get("zones"))} zones, {_esc(d.get("scenarios_pinned"))} narvi scenarios pinned. '
+                     "Next: the blueox-curve-drop skill (build + pre-send sweep), file into the Deal Folder, "
+                     "then the #eng-updates post on your go.</p>")
     for b in P["blocked"]:
         out.append(f'<div class="flag bad">{_esc(b)}</div>')
     n_wells = sum(1 for u in P["units"] for r in u["rows"] if r["status"] == "kept")

@@ -307,3 +307,175 @@ def plan(run_dir: Path, narvi: Any, cfg: Any, *, deal: str, codename: str, conn:
         "narvi_selections": keys,
         "narvi_checked": have is not None,
     }
+
+
+# ---------------------------------------------------------------------------
+# apply (--apply): narvi first (the Blue Ox config pins its updated_at), then
+# anduin curves -> deal -> Blue Ox config. handoff_state.json in the run dir
+# records what THIS handoff wrote, so a re-run can tell its own rows from rows
+# the reviewer edited since: edited rows are never overwritten silently.
+# ---------------------------------------------------------------------------
+
+STATE_FILE = "handoff_state.json"
+PLANNED = ("generated", "pud", "res")
+
+
+class HandoffRefused(RuntimeError):
+    pass
+
+
+def _hash(obj: Any) -> str:
+    import hashlib
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()[:16]
+
+
+def load_state(run_dir: Path) -> dict[str, Any]:
+    f = run_dir / STATE_FILE
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {"narvi": {}, "anduin": {"curves": {}}}
+
+
+def _save_state(run_dir: Path, state: dict[str, Any]) -> None:
+    (run_dir / STATE_FILE).write_text(json.dumps(state, indent=1, default=str), encoding="utf-8")
+
+
+def narvi_saved(conn: Any, deal_id: str, scenario_id: str) -> dict[str, Any]:
+    """Read-only: the saved header stamp + planned sticks per bench."""
+    hdr = conn.execute("SELECT updated_at FROM narvi.scenario WHERE deal_id = %s AND scenario_id = %s",
+                       (deal_id, scenario_id)).fetchone()
+    rows = conn.execute(
+        "SELECT formation, detail->>'category', count(*) FROM narvi.inventory_well "
+        "WHERE deal_id = %s AND scenario_id = %s GROUP BY 1, 2", (deal_id, scenario_id)).fetchall()
+    per: dict[str, int] = {}
+    for f, cat, n in rows:
+        if cat in PLANNED:
+            per[bench_code(f)] = per.get(bench_code(f), 0) + int(n)
+    return {"updated_at": hdr[0].isoformat() if hdr and hdr[0] else None, "planned": per}
+
+
+def curve_snapshot(row: dict[str, Any]) -> str:
+    """What the reviewer can change on a saved curve: name, membership, per-well
+    fit overrides, risking, fitted parameters, post-save membership edits."""
+    streams = (row.get("series") or {}).get("streams") or {}
+    fitted = {s: {k: round(float(v), 6) for k, v in ((d or {}).get("fitted") or {}).items()
+                  if k in ("qi", "Di", "b", "Df", "qo", "peak_index") and v is not None}
+              for s, d in streams.items()}
+    prov = row.get("provenance") or {}
+    return _hash({"name": row.get("name"), "api10s": sorted(row.get("included_api10s") or []),
+                  "risk": row.get("risk_multipliers") or {}, "fitted": fitted,
+                  "overrides": row.get("forecast_overrides") or {},
+                  "post": [prov.get("post_save_removals"), prov.get("post_save_additions")]})
+
+
+def _refuse_edited_narvi(P: dict[str, Any], state: dict[str, Any], live: dict[str, Any], replace: bool) -> None:
+    refused = []
+    for u in P["units"]:
+        k = f"{u['body']['deal_id']}/{u['body']['scenario_id']}"
+        st, now = state["narvi"].get(k), live[k]
+        if now["updated_at"] and not replace and (st is None or st["updated_at"] != now["updated_at"]):
+            refused.append(f"narvi {k}: " + ("already saved outside this handoff" if st is None
+                                             else f"edited in narvi since the handoff ({now['updated_at'][:16]})"))
+    if refused:
+        raise HandoffRefused("; ".join(refused) + " — nothing written. Re-run with --replace to overwrite narvi.")
+
+
+def apply(
+    P: dict[str, Any], run_dir: Path, narvi: Any, anduin: Any, conn_factory: Any, *,
+    new_version: bool = False, replace: bool = False, saved_fn: Any = narvi_saved,
+) -> dict[str, Any]:
+    """Write the plan. Refuses (HandoffRefused) on a BLOCKED plan or on any row
+    edited since this handoff wrote it (unless new_version / replace)."""
+    if P["status"] != "READY":
+        raise HandoffRefused("plan is BLOCKED — fix what handoff.html lists, then re-run the dry run")
+    state = load_state(run_dir)
+    out: dict[str, Any] = {"applied_at": datetime.now(UTC).isoformat(), "narvi": [], "curves": [], "notes": []}
+
+    # ---- narvi ---------------------------------------------------------------
+    keys = {f"{u['body']['deal_id']}/{u['body']['scenario_id']}": u for u in P["units"]}
+    with conn_factory() as conn:
+        live = {k: saved_fn(conn, u["body"]["deal_id"], u["body"]["scenario_id"]) for k, u in keys.items()}
+    _refuse_edited_narvi(P, state, live, replace)
+    anduin.login()                                   # fail on a stale login BEFORE the first write
+    for k, u in keys.items():
+        b, st = u["body"], state["narvi"].get(k)
+        if st and st["body"] == _hash(b) and live[k]["updated_at"] == st["updated_at"]:
+            out["narvi"].append({"scenario": k, "action": "unchanged", "verified": True})
+            continue
+        narvi.save_composed(b)
+        with conn_factory() as conn:
+            got = saved_fn(conn, b["deal_id"], b["scenario_id"])
+        ok = got["planned"] == u["expected"]
+        state["narvi"][k] = {"updated_at": got["updated_at"], "body": _hash(b)}
+        _save_state(run_dir, state)
+        out["narvi"].append({"scenario": k, "action": "saved", "planned": got["planned"],
+                             "expected": u["expected"], "verified": ok})
+        if not ok:
+            raise HandoffRefused(f"narvi {k}: saved sticks {got['planned']} != plan {u['expected']} — stopped "
+                                 "before anduin; open the scenario in narvi")
+
+    # ---- anduin: deal ----------------------------------------------------------
+    deal = next((d for d in anduin.deals() if d["name"] == P["deal"]), None)
+    if deal is None:
+        deal = anduin.create_deal(P["deal"], f"deal-intake handoff {P['run_dir']}")
+        out["notes"].append(f"anduin deal {P['deal']} created")
+    state["anduin"]["deal_id"] = deal["id"]
+    on_deal = {c["name"]: c["id"] for c in (anduin.deal(deal["id"]).get("curves") or [])}
+
+    # ---- anduin: curves ----------------------------------------------------------
+    ids: dict[str, str] = {}
+    for c in P["curves"]:
+        body, st = c["save_body"], state["anduin"]["curves"].get(c["name"])
+        prev_id = st["id"] if st else on_deal.get(c["name"])
+        edited = None
+        if st:
+            try:
+                row = anduin.type_curve(st["id"])
+            except Exception:  # noqa: BLE001 — a deleted curve: save fresh
+                row, prev_id = None, None
+            if row is not None and (curve_snapshot(row) != st["snapshot"]
+                                    or str(row.get("deal_id")) != str(deal["id"])):
+                edited = "edited in anduin since the handoff"
+        elif prev_id:
+            edited = "a curve with this name is already on the deal (not from this handoff)"
+        if edited and not new_version:
+            raise HandoffRefused(f"anduin curve {c['name']}: {edited} — stopped; your edits are kept. "
+                                 "Re-run with --new-version to save the dossier cohort as a new version beside it.")
+        if st and prev_id and not edited and st["body"] == _hash(body["included_api10s"]):
+            ids[c["name"]] = st["id"]
+            out["curves"].append({"name": c["name"], "id": st["id"], "action": "unchanged"})
+            continue
+        if prev_id:
+            row, action = anduin.new_version(prev_id, body), "new version"
+        else:
+            row = anduin.save_type_curve(body)
+            row, action = anduin.patch_type_curve(row["id"], {"deal_id": deal["id"]}), "saved"
+        ids[c["name"]] = row["id"]
+        oil = (((row.get("series") or {}).get("streams") or {}).get("oil") or {}).get("fitted") or {}
+        want, got = c["preview_oil"].get("eur_per_unit"), oil.get("eur_per_unit")
+        state["anduin"]["curves"][c["name"]] = {"id": row["id"], "snapshot": curve_snapshot(row),
+                                               "body": _hash(body["included_api10s"])}
+        _save_state(run_dir, state)
+        out["curves"].append({"name": c["name"], "id": row["id"], "action": action,
+                              "oil_eur_per_1000ft": got, "dossier_preview": want,
+                              "diff_pct": round(100 * (got / want - 1.0), 2) if want and got else None})
+
+    # ---- anduin: Blue Ox config ------------------------------------------------
+    cur = (anduin.blueox_config(deal["id"]) or {}).get("config")
+    if cur and state["anduin"].get("config") and _hash(cur) != state["anduin"]["config"] and not replace:
+        raise HandoffRefused("anduin Blue Ox config edited since the handoff — curves saved, config NOT "
+                             "touched. Re-run with --replace to overwrite it.")
+    user = anduin.user or {}
+    cfg = {
+        "codename": P["codename"],
+        "curve_months": (cur or {}).get("curve_months", 360),
+        "levels": (cur or {}).get("levels", []),
+        "prepared_by": (cur or {}).get("prepared_by") or user.get("display_name") or user.get("email") or "deal-intake",
+        "zones": [{**z, "type_curve_id": ids[z["zone_name"]]} for z in P["blueox_zones"]],
+        "narvi_selections": P["narvi_selections"],
+        "exclude_benches": (cur or {}).get("exclude_benches", []),
+    }
+    saved = anduin.put_blueox_config(deal["id"], cfg)
+    state["anduin"]["config"] = _hash(saved.get("config"))
+    _save_state(run_dir, state)
+    out["deal"] = {"name": P["deal"], "id": deal["id"], "zones": len(cfg["zones"]),
+                   "scenarios_pinned": len(cfg["narvi_selections"])}
+    return out

@@ -1,6 +1,7 @@
 """Thin narvi HTTP client (no auth; default http://127.0.0.1:8078).
 
-Only the endpoints the deal-intake gates use. narvi owns gpkg parsing
+Only the endpoints the deal-intake gates use — previews everywhere, plus the
+composed scenario save for the gate-8 handoff (`handoff --apply`). narvi owns gpkg parsing
 (src/narvi/gpkg_reader.py is the canonical reader — this package does NOT
 add a fourth copy), zone medians and stick generation. Shapes verified
 against narvi backend/app 2026-09-18.
@@ -97,6 +98,13 @@ class Narvi:
         return self._post("/api/generate", json={
             "parcel": mapping(parcel), "params": params, "mode": "winerack", "zones": zones,
         })
+
+
+    def save_composed(self, body: dict[str, Any]) -> dict[str, Any]:
+        """POST /api/scenarios/composed — the UI's own save (narvi regenerates the
+        sticks from the recipe server-side). WRITES narvi.scenario +
+        narvi.inventory_well. A 409 (override_drop) is raised, never forced."""
+        return self._post("/api/scenarios/composed", json=body)
 
 
 def legs(generate_response: dict[str, Any]) -> list[dict[str, Any]]:
