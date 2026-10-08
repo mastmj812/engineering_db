@@ -47,6 +47,13 @@ build. Set the levels / curve_months / prepared_by here (the handoff leaves
 them at the config's values). The first pass is a SCREEN for Steven's econs
 — don't hold it for cohort work-up.
 
+**Work-up curves (`_vN`) — check every zone** (Michael 2026-10-08): list the deal's
+curves and, for each zone, look for `<zone's curve name>_v2` / `_v3`… (the highest N
+wins). One found → ask Michael "use `WCB_2_North_v2` for zone `WCB_2_North`?" — on
+a yes, re-point that zone's `type_curve_id` (zone name stays as shipped) and say in
+the #eng-updates post that the zone moved from the screen curve to the work-up.
+Never use anduin "versions" and never rebuild a shipped curve in place.
+
 Record before building: codename; which narvi scenarios/units contribute; `curve_months`;
 percentile levels (subset of P10/P25/P75/P90 — P50 always ships); `normalization_basis`
 (`per_1000_lateral_ft` | `per_well`); `production_history_through` (`YYYY-MM`); risking decision

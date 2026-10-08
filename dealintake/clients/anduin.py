@@ -76,9 +76,19 @@ class Anduin:
     def save_type_curve(self, body: dict[str, Any]) -> dict[str, Any]:
         return self._req("POST", "/api/type-curves", json=body)
 
-    def new_version(self, tc_id: str, body: dict[str, Any]) -> dict[str, Any]:
-        """Save as a new version of tc_id; take_over_deal moves the deal to it."""
-        return self._req("POST", f"/api/type-curves/{tc_id}/versions", json={**body, "take_over_deal": True})
+    def patch_membership(self, tc_id: str, add: list[str], remove: list[str],
+                         reason: dict[str, str] | None = None) -> dict[str, Any]:
+        """PATCH /api/type-curves/{id}/membership — recorded in the curve's build-up
+        provenance (post_save_additions / removals); marks it stale."""
+        body: dict[str, Any] = {"add": add, "remove": remove}
+        if remove and reason:
+            body["remove_reason"] = reason
+        return self._req("PATCH", f"/api/type-curves/{tc_id}/membership", json=body)
+
+    def reaggregate(self, tc_id: str) -> dict[str, Any]:
+        """POST /api/type-curves/{id}/reaggregate — rebuild the saved series in place
+        from the current members' forecasts (same id; no version row)."""
+        return self._req("POST", f"/api/type-curves/{tc_id}/reaggregate")
 
     def patch_type_curve(self, tc_id: str, body: dict[str, Any]) -> dict[str, Any]:
         return self._req("PATCH", f"/api/type-curves/{tc_id}", json=body)
