@@ -30,6 +30,11 @@ reading guide to its sections.
   `stick_id` (PDP rows = `-(api10)`).
 - Novi comparison figures are the **median of representative sticks** —
   not a P50, and not the erebor export's cohort mean.
+- Curve names carry no spaces and no letter suffixes (Michael 2026-10-08):
+  several curves on one bench are named by compass direction of the group
+  from the bench's units — `WCB_2_North`, `WCB_2_Southeast` (4-point rose,
+  8-point if needed; DSU name only when interleaved groups still collide).
+  Save the anduin type curves under the dossier's names.
 - Nothing auto-drops a well. Every exclusion carries a reason, every
   outlier is a flag, and culling happens in anduin by the reviewer.
 
