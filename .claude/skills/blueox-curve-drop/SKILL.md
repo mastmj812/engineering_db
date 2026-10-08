@@ -74,8 +74,9 @@ For every contributing `(deal_id, scenario_id)`:
      delta > 5° = bad frame (the toucan azimuth defect signature).
    - **§6 offset invariant:** every `inventory_well` `gunbarrel_offset_ft` must reproduce to
      0.0 ft from `dsu_meta.azimuth_deg` + the parcel centroid (recompute with
-     `narvi.placement.gunbarrel_offset_ft` — axis 90° CW of the folded azimuth, +offset = east for
-     N-S laterals).
+     `narvi.placement.gunbarrel_offset_ft` — sign rule v2, ledger §13: +offset = east for N-S
+     laterals, north for E-W; a narvi scenario without `summary.gunbarrel_rule = 2` predates the
+     v2 migration and must not ship).
    - Per-unit planned-PUD/UPSIDE counts and PDP counts match expectations; PDP azimuth spread is
      plausible against the uniform header azimuth.
 
@@ -137,7 +138,9 @@ Now run the checks the validator can't:
 - [ ] **§3 gate 3** — `gross_locations` and avg producing/drilled lateral per zone tie the
       inventory sheet exactly (PDP display rows excluded from both).
 - [ ] **§6 invariant** on the workbook itself: every `inventory.gunbarrel_offset_ft` reproduces
-      to 0.0 ft from `dsu_meta.azimuth_deg` + origin.
+      to 0.0 ft from `dsu_meta.azimuth_deg` + origin under sign rule v2 (§13), and every
+      `dsu_meta` row carries `plus_offset_bearing_deg`. First v2 drop to a deal shipped under §6 →
+      the step-8 note says its gunbarrels plot mirrored for units planned past 45°.
 - [ ] **§8** — all coordinate pairs lon-first; heel columns blank where the stick isn't 4-vertex
       (`ST_NPoints ≠ 4`); `wellstick_wkt` present. (Pre-2026-07-29 drops' heel columns are known
       untrustworthy — never copy from them.)

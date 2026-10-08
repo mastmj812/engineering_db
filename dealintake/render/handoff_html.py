@@ -56,9 +56,10 @@ def _unit_map(u: dict[str, Any], colors: dict[tuple[str, str], str]) -> str:
 
 
 def _plus_side(u: dict[str, Any]) -> str:
-    """Compass side the +offset points to, read off the rows themselves (narvi's
-    frame follows its GRID azimuth folded to [0,180): a ~0-deg-true plan folds to
-    ~179.4 grid and + flips to WEST — 1-12 on Rally Caps)."""
+    """Compass side the +offset points to, read off the rows themselves — an
+    empirical check on narvi's frame. Under sign rule v2 (2026-10-08) it reads
+    E for N-S-ish units and N for E-W-ish (before v2 a ~0-deg-true plan folded
+    to ~179.4 grid and + read WEST — 1-12 on Rally Caps)."""
     pts = [(r["offset_ft"], shp_wkt.loads(r["wkt"]).interpolate(0.5, normalized=True))
            for r in u["rows"] if r.get("offset_ft") is not None]
     if len(pts) < 2:

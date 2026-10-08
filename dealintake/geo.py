@@ -248,14 +248,15 @@ def grid_to_true(az_grid: float, lon: float, lat: float) -> float:
 
 
 def gunbarrel_frame(unit: Polygon, azimuth_deg: float):
-    """Cross-section frame of record (workspace rule 16): origin = unit
-    centroid, cross-axis 90 deg clockwise of the folded azimuth (+offset =
-    compass EAST for N-S laterals), along-axis = the azimuth. Returns a
+    """Cross-section frame of record (workspace rule 16, sign rule v2):
+    origin = unit centroid, +offset toward positive_offset_bearing (W -> E for
+    N-S-ish laterals, S -> N for E-W-ish), along-axis = the azimuth. Returns a
     function geom -> (offset_ft, along_ft) of the geometry's mid-lateral
     point, plus the unit's own cross/along extents (ft)."""
     frame = LocalFrame.around(unit)
     az = math.radians(fold_azimuth(azimuth_deg))
-    cx, cy = math.cos(az), -math.sin(az)          # cross-axis unit vector
+    pb = math.radians(positive_offset_bearing(azimuth_deg))
+    cx, cy = math.sin(pb), math.cos(pb)           # cross-axis unit vector
     ax_, ay_ = math.sin(az), math.cos(az)         # along-axis unit vector
 
     def project(g: BaseGeometry) -> tuple[float, float]:
@@ -276,16 +277,37 @@ def gunbarrel_frame(unit: Polygon, azimuth_deg: float):
     return project, (min(offs), max(offs)), (min(alongs), max(alongs))
 
 
+GUNBARREL_SEAM_DEG = 45.0
+
+
 def positive_offset_bearing(azimuth_deg: float) -> float:
-    """Compass bearing of the +offset direction of the rule-16 frame (90 deg
-    clockwise of the folded azimuth)."""
-    return (fold_azimuth(azimuth_deg) + 90.0) % 360.0
+    """Compass bearing of the +offset direction of the rule-16 frame, sign
+    rule v2 (Michael, 2026-10-08): with a = the folded azimuth, a + 90 when
+    a <= 45 else a - 90 — + always points into the NE half, so N-S-ish units
+    read W -> E and E-W-ish units S -> N; an exact 45 deg lateral gets SE. The
+    side is decided on a rounded to 0.1 deg (the precision narvi persists).
+    Copy of narvi placement.plus_offset_bearing_deg — change every copy or
+    none. NB the runner works in TRUE bearings and narvi in UTM-13N GRID
+    (~0.9 deg apart): within ~1 deg of the 45 deg seam the two can land on
+    different sides — near_seam() flags it."""
+    a = azimuth_deg % 180.0
+    if round(a, 1) >= 180.0:          # 179.96 rounds onto the 0 deg side of the fold
+        a -= 180.0
+    b = a + 90.0 if round(a, 1) <= GUNBARREL_SEAM_DEG else a - 90.0
+    return b % 360.0
+
+
+def near_seam(azimuth_deg: float, tol_deg: float = 3.0) -> bool:
+    """TRUE when a plan azimuth sits within `tol_deg` (axial) of the 45 deg
+    gunbarrel seam: neighbouring units either side of it plot mirrored, and a
+    TRUE vs GRID bearing can land on different sides."""
+    return axial_diff(azimuth_deg, GUNBARREL_SEAM_DEG) <= tol_deg
 
 
 def side_sign(side: str, azimuth_deg: float) -> int:
     """+1 when the named compass side of a unit lies on the +offset side of the
-    rule-16 frame, else -1 (a 162 deg plan: +offset points 252 deg = WSW, so
-    'west' -> +1 and 'east' -> -1)."""
+    rule-16 frame, else -1 (a 162 deg plan: +offset points 72 deg = ENE, so
+    'east' -> +1 and 'west' -> -1)."""
     b = positive_offset_bearing(azimuth_deg)
     towards = {"north": 0.0, "east": 90.0, "south": 180.0, "west": 270.0}[side]
     d = abs((b - towards + 180.0) % 360.0 - 180.0)          # angular distance

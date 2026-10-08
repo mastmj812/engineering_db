@@ -159,7 +159,8 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, Novi in/crossing,
   location source, scope, why), and the **gunbarrel** (Michael, 2026-09-28):
   a cross-section perpendicular to the planned azimuth in the rule-16 frame
-  (origin = unit centroid, +offset = 90° clockwise of the azimuth) — the
+  (origin = unit centroid, sign rule v2: reads W → E for N-S-ish plans, S → N
+  for E-W-ish; `geo.near_seam` flags plans within 3° of the 45° seam) — the
   PROPOSED rows (one hollow square per stick at the bench's local median
   TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
   lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent

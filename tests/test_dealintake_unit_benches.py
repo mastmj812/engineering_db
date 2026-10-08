@@ -230,14 +230,15 @@ def test_reviewer_bench_options_round_trip(tmp_path):
 def test_row_rules_on_a_162_deg_plan():
     from dealintake.geo import apply_row_rules, side_sign
 
-    az = 162.3                                   # VaULt: +offset points 252 deg (WSW) -> west is +
-    assert side_sign("west", az) == 1 and side_sign("east", az) == -1
-    assert side_sign("east", 72.2) == 1          # a 72 deg plan: +offset points 162 deg (SSE) -> east is +
+    az = 162.3                                   # VaULt: +offset points 72 deg (ENE) -> east is + (rule v2)
+    assert side_sign("east", az) == 1 and side_sign("west", az) == -1
+    assert side_sign("north", 72.2) == 1         # a 72 deg plan: +offset points 342 deg (NNW) -> north is +
+    assert side_sign("east", 72.2) == -1
     rows = [{"offset_ft": o, "lateral_ft": 12500} for o in (-1741, -421, 899, 2219)]
     kept, notes = apply_row_rules(rows, az, drop_rows={"east": 3})
-    assert [r["offset_ft"] for r in kept] == [2219] and "3 east-most" in notes[0]
+    assert [r["offset_ft"] for r in kept] == [-1741] and "3 east-most" in notes[0]
     kept, _ = apply_row_rules(rows, az, keep_side="west")
-    assert [r["offset_ft"] for r in kept] == [899, 2219]
+    assert [r["offset_ft"] for r in kept] == [-1741, -421]
     kept, _ = apply_row_rules(rows, az, n_wells=2)
     assert [r["offset_ft"] for r in kept] == [-421, 899]           # outermost trimmed alternately
     rows[0]["lateral_ft"] = 4620
@@ -290,11 +291,13 @@ def test_winerack_legs_anchor_then_pinned_shift():
 def test_gunbarrel_reads_west_to_east():
     from dealintake.render.review import cross_section_ends
 
-    assert cross_section_ends(0.3) == (False, "W", "E")      # +offset = east -> as drawn
-    assert cross_section_ends(162.2) == (True, "W", "E")     # +offset = WSW -> flip (36-37)
-    assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish, as drawn
-    assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = south -> south on the left
-    assert cross_section_ends(270.0) == (True, "S", "N")
+    # sign rule v2: the frame itself reads W->E / S->N, so nothing ever flips
+    assert cross_section_ends(0.3) == (False, "W", "E")      # +offset = east
+    assert cross_section_ends(162.2) == (False, "W", "E")    # +offset = ENE (36-37 now drawn W->E as stored)
+    assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish
+    assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = north
+    assert cross_section_ends(270.0) == (False, "S", "N")
+    assert cross_section_ends(72.2) == (False, "S", "N")     # VaULt: +offset = NNW
 
 
 def test_reviewer_pattern_overrides_novi_location_source():
