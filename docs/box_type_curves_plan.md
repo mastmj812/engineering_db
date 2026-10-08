@@ -22,7 +22,7 @@ table), D24 (potash ignore-gap = BLM Secretary's Potash Area), D25 (structure gr
 `docs/box/step3-2026-10-07/` — `FINDINGS.md`, `index.html` calibration, `extent_{WCA,BS2_S}.html`, `geology/`
 shapefile package; builder `scripts/box_extents_export.py`, `box/extent.py`). Built: buffers calibrated by
 time-split backtest (k = 0.75, cap = 7,920 ft, floor = 880 ft, pool reference; live-front term earns most of
-it), extents WCA 5,160 / BS2_S 2,201 sq mi, BLM potash polygon in, geology package written, import/diff
+it), D26 legacy-hole fill (2026-10-08), extents WCA 5,190 / BS2_S 2,308 sq mi, BLM potash polygon in, geology package written, import/diff
 script ready. `sql/54_box_schema.sql` + `scripts/apply_box_schema.py` **authored, validated on a throwaway
 PostGIS container, NOT applied** (needs go-apply). Not done: Michael's review of FINDINGS §5 flags a–k,
 sending `geology/` to Holden, go-apply + `--store`, session 2 (import edits → diff → version of record →
@@ -76,6 +76,7 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D23 | **Edge metric of record = step 2 as built**: union-of-discs outline (pin radius r = 2,640 ft, closing c = 3,960 ft, smallest c making WCA one body, one value per basin), gap = unpinned outline between consecutive pinning laterals, sides by bearing from the body centroid, **plus the step-out table** (≥ 2016 laterals beyond the body by side / distance / vintage / oil-ft) as the second half of the edge read. Michael 2026-10-07, gate 2. | The literal Delaunay hull failed (stair-step chords); a gap caps at ~2c, so a moving front shows as step-outs. |
 | D24 | **Potash ignore-gap polygon = the BLM Secretary's Potash Area** (D8's recurrence clause triggered: the potash footprint opens holes/gaps in BS2_S and WCA). Inside it, gaps neither widen buffers nor count as negative evidence; it never extends an extent. Michael 2026-10-07, gate 2. | Surface constraint, not geology. |
 | D25 | **Structure grids are context, not an extent driver.** Holden's regional GGX grids (~1-mi nodes) are thinnest where edges need detail (few vertical penetrations to pick tops); BS2_S's edge is not structurally governed — W edge likely depth (pressure) and water saturation (Michael). Grids ship as contour layers in the step-3 geology package only. Michael 2026-10-07. | Step-2 probe (FINDINGS §8): ~100 ft/mi homocline both sides of every edge. |
+| D26 | **Legacy drilled-up holes are filled.** A hole of the drilled body ≥ 90 % covered by the ½-mi footprint of pre-2016 laterals is filled into the extent, potash-area holes included. Pre-2016 wells stay negative evidence at edges (D5) and never curve evidence (D9); the rule never extends an outer edge. Michael 2026-10-08. | No modern wells there because the ground is drilled up, not because operators avoided it (WCA 14.3-sq-mi hole: 68 legacy laterals, 100 % cover, 5 D1 PUDs). Refines D5 for enclosed ground. |
 
 ## 3. Scope guard (what this plan does NOT do)
 

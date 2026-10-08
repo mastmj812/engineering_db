@@ -1,4 +1,4 @@
-BOX extents for geology review — 2026-10-07T17:54:53-05:00
+BOX extents for geology review — 2026-10-08T08:27:05-05:00
 ================================================================
 
 What this is
@@ -24,7 +24,8 @@ What to look at (not edited)
       "potash"                     inside the BLM Secretary's Potash Area: a surface constraint,
                                    not geology — the gap is not widened, never treated as a dry hole
       "pre-2016 ... not followed up" old laterals beyond a gap: buffer held to the floor
-  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?) and
+  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?), legacy
+                                drilled-up holes already filled (D26: >= 90 % covered by pre-2016 wells), and
                                 step-outs left out of the extent (rolled / isolated / too new)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE

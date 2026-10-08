@@ -19,7 +19,7 @@ session 2, after Holden's edits come back.
 | Code | `box/extent.py` (pure rule), `box/extent_report.py` (calibration + build), `box/extent_pages.py`, `box/extent_package.py`, `box/geology_io.py` (shapefile round-trip), `box/extent_store.py` (warehouse writes, not run) |
 | Scripts | `python -m scripts.box_extents_export` (rebuild, ~5 min) · `python -m scripts.box_extents_import --pool <P> --edited <shp>` (diff page; session 2) · `python -m scripts.apply_box_schema` (**DDL, needs go-apply**) |
 | Warehouse DDL | `sql/54_box_schema.sql`: `box.bench_scope`, `box.extent`, `box.extent_edge`. **Authored, not applied.** |
-| Tests | `tests/test_box_extent.py`, 20 DB-free tests (rule, fronts, polygon vs point rule, potash clamp, diff, `.prj`, GGX-frame point, shapefile round-trip with a hole, wrong-CRS guard). Full suite: 279 passed / 32 skipped. |
+| Tests | `tests/test_box_extent.py`, 23 DB-free tests (rule, fronts, polygon vs point rule, potash clamp, D26 hole fill, diff, `.prj`, GGX-frame point, shapefile round-trip with a hole, wrong-CRS guard). Full suite: 282 passed / 32 skipped. |
 
 Grain: one lateral per api10. 12-mo oil = Novi `cum_12m_oil_bbl` ÷ lateral ft × 1,000 (calendar
 basis, as Novi computed it). Interior references are **medians**. No forecasts are made in this
@@ -30,8 +30,8 @@ step, so there is no Di or EUR here.
 **Extent = drilled core + per-segment buffer.**
 
 - **Core (D21).** The step-2 outline eroded back by r, which lands it on the last laterals, plus the
-  laterals' own lines. The r-dilated outline is never the extent. Core sizes: WCA 4,877 sq mi, BS2_S
-  1,839 sq mi; the step-2 measuring outlines were 5,420 and 2,468.
+  laterals' own lines. The r-dilated outline is never the extent. Core sizes after the D26 hole fill: WCA
+  4,914 sq mi, BS2_S 1,964 sq mi; the step-2 measuring outlines were 5,420 and 2,468.
 - **Buffer per walked step-2 segment** (D6 plus the plan's 2×2):
   - **Pinned:** a floor of 880 ft (rolled), 1,320 (unknown), or 1,760 (strong).
   - **Gap:** k × gap × perf multiplier (strong 1.0, unknown 0.75, rolled 0.5), clipped to
@@ -40,7 +40,9 @@ step, so there is no Di or EUR here.
     1. Pre-2016 laterals just beyond a gap → floor (D5: tighten only).
     2. A live-front side → cap.
     3. A segment inside the potash polygon → floor (D24).
-  - **Holes:** the tightest floor, and flagged.
+  - **Holes:** the tightest floor, and flagged. **Exception (D26, 2026-10-08):** a hole ≥ 90% covered by
+    the ½-mi footprint of pre-2016 laterals is legacy drilled-up ground and is filled into the core,
+    potash holes included.
 - **Sectors.** Each point beyond the core takes the buffer of the nearest walked-ring sample, i.e.
   that sample's Voronoi cell. Inside the potash polygon, every point is held to its sector's floor.
   The polygon is assembled per distinct buffer value, then smoothed by 330 ft. A test checks the
@@ -108,8 +110,9 @@ summed over the four backtests.
 
 | | WCA | BS2_S |
 |---|---|---|
-| Extent (generated v1) | **5,160 sq mi**, 12 parts, 17 holes | **2,201 sq mi**, 8 parts, 18 holes |
-| Drilled core / step-2 outline | 4,877 / 5,420 sq mi | 1,839 / 2,468 sq mi |
+| Extent (generated v1, with D26) | **5,190 sq mi**, 12 parts, 14 holes | **2,308 sq mi**, 8 parts, 15 holes |
+| Drilled core / step-2 outline | 4,914 / 5,420 sq mi | 1,964 / 2,468 sq mi |
+| Legacy drilled-up holes filled (D26) | 3, 19.7 sq mi (97 pre-2016 laterals) | 8, 74.3 sq mi (273 pre-2016 laterals; 4 mostly potash) |
 | Buffer, perimeter-weighted mean | 1,706 ft | 2,269 ft (W front 6,911 ft) |
 | Walked perimeter: pinned floor / k×gap / potash / pre-2016 / front | 407 / 205 / 125 / 5 / 0 mi | 346 / 163 / 71 / 12 / 50 mi |
 | Live fronts | none | **W** |
@@ -122,11 +125,11 @@ conflict ∪ not-yet-reconciled.
 
 | bench (Novi tag) | in generated extent | in drilled core | in step-2 outline | Delaware D1 total |
 |---|---|---|---|---|
-| BS2_S | **3,803** | 2,837 | 4,585 | 15,122 |
+| BS2_S | **3,998** | 3,055 | 4,585 | 15,122 |
 | WCA_1 + WCA_2 | **1,164** | 1,002 | 1,394 | 3,425 |
-| WCXY (in the WCA extent) | 2,377 | 2,231 | 2,677 | 3,408 |
+| WCXY (in the WCA extent) | 2,395 | 2,259 | 2,677 | 3,408 |
 
-**75% of Novi's Delaware BS2_S PUDs sit outside the BOX BS2_S extent.** That is the "BOX extents far
+**74% of Novi's Delaware BS2_S PUDs sit outside the BOX BS2_S extent.** That is the "BOX extents far
 tighter than Novi's" expectation (D16), now with a number on it.
 
 ## 4. Warehouse (not applied — needs your "go apply")
@@ -167,7 +170,8 @@ a. **D24 "never extends an extent".** Inside the Secretary's Potash Area I hold 
    wells there don't count against it. If you meant zero standoff inside the polygon, it's a
    one-line change.
 
-b. **Holes are kept as holes** (shrunk by the 880-ft floor) and flagged for geology. The backtest
+b. **DECIDED 2026-10-08 — D26** (see §7) for legacy drilled-up holes. The rest of this item still stands for the
+   other holes. **Holes are kept as holes** (shrunk by the 880-ft floor) and flagged for geology. The backtest
    says holes tend to fill with interior-grade wells, though today's holes are the persistent ones.
    - BS2_S: 26 holes, 209 sq mi, of which 91 sq mi is potash area; 12 holes are more than 50%
      potash.
@@ -196,7 +200,7 @@ g. **Potash polygon source** is `CFO_POTASH_SOPA_1986` (BLM Carlsbad FO, 497,632
    if you meant the 2012 SO 3324 "Designated Potash Area" polygon, I need that file.
 
 h. **PUD membership is a step-7 question; here it's only counted.**
-   - Novi tags just 3,425 Delaware D1 PUDs as WCA_1/WCA_2, and 3,408 as WCXY. 2,377 of those WCXY
+   - Novi tags just 3,425 Delaware D1 PUDs as WCA_1/WCA_2, and 3,408 as WCXY. 2,395 of those WCXY
      PUDs sit inside the WCA extent.
    - D20 makes WCXY one-way *evidence*. Whether WCXY PUDs get WCA forecasts isn't decided.
    - The small WCA count may also be a Novi tagging issue (WCB_1 7,397 / BS3_S 13,085 D1 PUDs).
@@ -225,3 +229,30 @@ k. **GGX ingest is untested.** The `.prj` is the exact ESRI definition of NAD83 
    before session 2.
 4. **Session 2:** `python -m scripts.box_extents_import --pool <P> --edited <shp> --puds` → diff page →
    your review → `--store --record` → gate 3 closed.
+
+## 7. D26 — legacy drilled-up holes are filled (Michael, 2026-10-08)
+
+**Question.** Michael asked why WCA showed holes where pre-2016 laterals exist. They were holes
+because the outline is built only from ≥ 2016 laterals, and D5 lets pre-2016 wells tighten, never
+extend.
+
+**Michael's diagnosis.** The 14.3-sq-mi WCA hole has no modern wells because it is completely
+drilled up by legacy wells; there is no room for an operator to place a new one. The data agrees: 68
+pre-2016 laterals cover 100% of it within ½ mi, and Novi lists only 5 D1 PUDs there.
+
+**D26.** A hole of the drilled body that is ≥ 90% covered by the ½-mi footprint of pre-2016
+laterals is legacy drilled-up ground. It is **filled into the extent, potash-area holes included**.
+The old wells remain negative evidence at edges (D5) and are never curve evidence (D9). The rule
+never extends an outer edge.
+
+| pool | holes filled | area | pre-2016 laterals | notes |
+|---|---|---|---|---|
+| WCA | 3 | 19.7 sq mi | 97 | 14.3 sq mi (68 wells), 3.6 (21), 1.8 (8); 0% potash |
+| BS2_S | 8 | 74.3 sq mi | 273 | four are 45–100% potash, including the 34.3-sq-mi hole at −103.86, 32.64 (116 wells, 95% cover) where Novi still lists 62 D1 PUDs — flagged for geology as possible infill room |
+
+**Effect.**
+- Extents: WCA 5,160 → **5,190** sq mi; BS2_S 2,201 → **2,308** sq mi.
+- D1 PUDs inside: BS2_S 3,803 → **3,998**; WCXY in the WCA extent 2,377 → 2,395; WCA_1 + WCA_2
+  unchanged.
+- Calibration pick unchanged: k = 0.75, cap = 7,920 ft, floor = 880 ft, J +0.15.
+- In the geology flags layer, filled holes are labelled "hole filled (D26)", green on the map.
