@@ -125,9 +125,9 @@ def _sig() -> tuple[dict[str, Any], dict[str, Any]]:
 def test_curves_zones_tab_order_and_scope(tmp_path):
     sig, prop = _sig()
     cs = handoff.plan_curves(sig, prop, tmp_path)
-    assert [c["name"] for c in cs] == ["WCB_1", "WCB_2_North", "WCB_2_South"]     # shallow -> deep
+    assert [c["name"] for c in cs] == ["WCB_1", "WCB_2_N", "WCB_2_S"]     # shallow -> deep
     north = cs[1]
-    assert north["zone"] == {"zone_name": "WCB_2_North", "reserve_category": "PUD", "benches": ["WCB_2"],
+    assert north["zone"] == {"zone_name": "WCB_2_N", "reserve_category": "PUD", "benches": ["WCB_2"],
                              "scenario_scope": [{"deal_id": "u_north", "scenario_id": "plan_u_north"}]}
     sb = north["save_body"]
     assert sb["alignment_method"] == "peak_ramp" and sb["normalization_basis"] == "per_lateral_ft"
@@ -206,3 +206,10 @@ def test_handoff_sends_the_recorded_stagger_pins():
     assert u["issues"] == [] and u["body"]["culled_wells"] == []
     assert len(nv.calls) == 1                                    # pins recorded: no re-derivation
     assert {z["formation"]: z["offset_ft"] for z in u["body"]["zones"]} == {"WCB_1": -1320.0, "WCB_2": -1980.0}
+
+
+def test_saved_curve_names_carry_the_deal_codename(tmp_path):
+    sig, prop = _sig()
+    cs = handoff.plan_curves(sig, prop, tmp_path, "rallycaps")
+    assert [c["name"] for c in cs] == ["rallycaps_WCB_1", "rallycaps_WCB_2_N", "rallycaps_WCB_2_S"]
+    assert [c["zone"]["zone_name"] for c in cs] == ["WCB_1", "WCB_2_N", "WCB_2_S"]       # tabs: no prefix

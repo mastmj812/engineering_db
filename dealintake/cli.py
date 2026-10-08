@@ -166,21 +166,23 @@ def _remember_evaluate(run_dir: Path, a: argparse.Namespace) -> None:
 def _handoff(run_dir: Path, a: argparse.Namespace, cfg: cfgmod.Config) -> int:
     f = run_dir / HANDOFF_ARGS
     saved = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
-    deal, codename = a.deal or saved.get("deal"), a.codename or saved.get("codename")
-    if not deal or not codename:
-        raise SystemExit('first handoff for this run: pass --deal "Rally Caps" --codename "RALLY CAPS" '
-                         "(the codename = the ArcMap / Deal Folder name); both are remembered after that")
-    f.write_text(json.dumps({"deal": deal, "codename": codename}, indent=1), encoding="utf-8")
+    if "deal_folder" not in saved and saved.get("codename"):      # runs before 2026-10-08 stored the folder name
+        saved = {**saved, "deal_folder": saved["codename"], "codename": None}
+    deal, folder = a.deal or saved.get("deal"), a.deal_folder or saved.get("deal_folder")
+    if not deal or not folder:
+        raise SystemExit('first handoff for this run: pass --deal "Rally Caps" --deal-folder "RALLY CAPS" '
+                         "(the ArcMap / Deal Folder name); both are remembered after that")
+    codename = a.codename or saved.get("codename") or handoff.codename_for(folder)
+    f.write_text(json.dumps({"deal": deal, "deal_folder": folder, "codename": codename}, indent=1), encoding="utf-8")
     narvi = Narvi()
     with wh.connect() as conn:
-        P = handoff.plan(run_dir, narvi, cfg, deal=deal, codename=codename, conn=conn)
+        P = handoff.plan(run_dir, narvi, cfg, deal=deal, codename=codename, deal_folder=folder, conn=conn)
     write_json(run_dir / "handoff_plan.json", P)
     print(f"{P['status']}: {len(P['units'])} narvi scenarios, {len(P['curves'])} curves -> "
           f"anduin deal {deal!r}, Blue Ox codename {codename!r}")
     for b in P["blocked"]:
         print(f"BLOCKED: {b}")
     if not a.apply:
-        (run_dir / "handoff_applied.json").unlink(missing_ok=True)
         print(f"wrote {handoff_html.render(run_dir)} - review it, then:  .\\di handoff {a.run or run_dir} --apply")
         return 0 if P["status"] == "READY" else 3
     try:
@@ -251,7 +253,9 @@ def main(argv: list[str] | None = None) -> int:
     h = sub.add_parser("handoff", help="gate 8: plan (dry run, handoff.html) or --apply the narvi + anduin saves")
     _run_args(h)
     h.add_argument("--deal", help="anduin deal name, e.g. 'Rally Caps' (remembered per run)")
-    h.add_argument("--codename", help="Blue Ox codename = the ArcMap / Deal Folder name (remembered per run)")
+    h.add_argument("--deal-folder", help="the ArcMap / Deal Folder name, e.g. 'RALLY CAPS' (remembered per run); "
+                   "the Blue Ox codename + curve-name prefix derive from it (rallycaps)")
+    h.add_argument("--codename", help="override the derived Blue Ox codename (remembered per run)")
     h.add_argument("--apply", action="store_true",
                    help="WRITE: narvi scenarios, anduin type curves + deal + Blue Ox config (plan must be READY)")
     h.add_argument("--new-version", action="store_true",

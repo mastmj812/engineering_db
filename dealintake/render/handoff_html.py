@@ -107,7 +107,8 @@ def render(run_dir: Path) -> Path:
          f"{_chip(P['status'], '#059669' if ready else '#dc2626')}</h1>"),
         (f'<p class="meta">Blue Ox codename {_esc(P["codename"])} · run {_esc(P["run_dir"])} · '
          f"config v{_esc(P['config_version'])} · planned {_esc(P['planned_at'][:16])} UTC · "
-         + (f"<b>APPLIED {_esc(A['applied_at'][:16])} UTC</b></p>" if A else "dry run: nothing written</p>")),
+         + (f"dry run · <b>last applied {_esc(A['applied_at'][:16])} UTC</b> (below)</p>" if A
+            else "dry run: nothing written</p>")),
     ]
     if A:
         rows = [[n["scenario"], n["action"], "; ".join(f"{b} {k}" for b, k in (n.get("planned") or {}).items()) or "—",
@@ -117,7 +118,7 @@ def render(run_dir: Path) -> Path:
                  num(c.get("dossier_preview"), ",.0f"), "—" if c.get("diff_pct") is None else f"{c['diff_pct']:+.2f}%"]
                 for c in A["curves"]]
         d = A.get("deal") or {}
-        out.append("<h2>Applied</h2>" + _table(["narvi scenario", "action", "saved planned sticks", "check"], rows)
+        out.append(f"<h2>Last applied {_esc(A['applied_at'][:16])} UTC</h2>" + _table(["narvi scenario", "action", "saved planned sticks", "check"], rows)
                    + _table(["anduin curve", "action", "id", "saved oil EUR bbl/1,000 ft", "dossier preview",
                              "diff"], crow)
                    + f'<p class="meta">anduin deal <b>{_esc(d.get("name"))}</b>: Blue Ox config saved, '

@@ -21,9 +21,11 @@ def _plan() -> dict[str, Any]:
         "status": "READY", "deal": "Rally Caps", "codename": "RALLY CAPS", "run_dir": "runs/x",
         "units": [{"body": {"deal_id": "u1", "scenario_id": "plan_u1", "zones": [{"formation": "WCB_2"}]},
                    "expected": {"WCB_2": 2}}],
-        "curves": [{"name": "WCB_2_North", "preview_oil": {"eur_per_unit": 100.0},
-                    "save_body": {"name": "WCB_2_North", "included_api10s": ["4200000001", "4200000002"]}}],
-        "blueox_zones": [{"zone_name": "WCB_2_North", "reserve_category": "PUD", "benches": ["WCB_2"],
+        "curves": [{"name": "WCB_2_N", "preview_oil": {"eur_per_unit": 100.0},
+                    "save_body": {"name": "WCB_2_N", "included_api10s": ["4200000001", "4200000002"]},
+                    "zone": {"zone_name": "WCB_2_N", "reserve_category": "PUD", "benches": ["WCB_2"],
+                             "scenario_scope": [{"deal_id": "u1", "scenario_id": "plan_u1"}]}}],
+        "blueox_zones": [{"zone_name": "WCB_2_N", "reserve_category": "PUD", "benches": ["WCB_2"],
                           "scenario_scope": [{"deal_id": "u1", "scenario_id": "plan_u1"}]}],
         "narvi_selections": [{"deal_id": "u1", "scenario_id": "plan_u1"}],
     }
@@ -203,3 +205,25 @@ def test_run_name_resolves_to_the_newest_matching_folder(tmp_path, monkeypatch):
     assert got.name == "rallycaps-2026-09-30"
     with pytest.raises(SystemExit):
         cli._resolve_run(argparse.Namespace(run="nosuchdeal", run_dir=None))
+
+
+def test_names_carry_the_codename_and_house_settings_are_copied(tmp_path):
+    assert handoff.codename_for("RALLY CAPS") == "rallycaps" and handoff.codename_for("Gator Tails") == "gatortails"
+    an = FakeAnduin()
+    an.deals_ = [{"id": "old", "name": "gatorTails", "created_at": "2026-10-02"}]
+    an.config = None
+    seeded = {"old": {"levels": ["P10", "P25", "P75", "P90"], "curve_months": 600, "prepared_by": "Mast"}}
+    an.blueox_config = lambda d: {"config": seeded.get(d) or (copy.deepcopy(an.config) if d != "old" else None)}
+    _apply(tmp_path, Store(), an)
+    assert (an.config["levels"], an.config["curve_months"], an.config["prepared_by"]) == (
+        ["P10", "P25", "P75", "P90"], 600, "Mast")
+
+
+def test_a_naming_change_never_renames_a_handed_off_deal(tmp_path):
+    store, an = Store(), FakeAnduin()
+    _apply(tmp_path, store, an)
+    P = _plan()
+    P["curves"][0] = {**P["curves"][0], "name": "rallycaps_WCB_2_N"}
+    with pytest.raises(handoff.HandoffRefused, match="names are final"):
+        handoff.apply(P, tmp_path, store, an, contextlib.nullcontext, saved_fn=store.saved)
+    assert len(an.curves) == 1

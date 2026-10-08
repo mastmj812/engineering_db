@@ -21,7 +21,7 @@ calls. Michael runs it himself:
 .\di login                          # once; 30-day anduin token in Windows Credential Manager
 .\di propose <deal.gpkg> --run-dir runs/<deal>-<date>
 .\di evaluate <deal>                # flags remembered per run (evaluate_args.json)
-.\di handoff <deal>                 # dry run -> handoff.html (first time: --deal "..." --codename "...")
+.\di handoff <deal>                 # dry run -> handoff.html (first time: --deal "Rally Caps" --deal-folder "RALLY CAPS")
 .\di handoff <deal> --apply         # writes narvi + anduin; then the blueox-curve-drop skill
 ```
 Geology and land calls (benches, correlated window, spacing, strike
@@ -46,10 +46,13 @@ reading guide to its sections.
 - Novi comparison figures are the **median of representative sticks** —
   not a P50, and not the erebor export's cohort mean.
 - Curve names carry no spaces and no letter suffixes (Michael 2026-10-08):
-  several curves on one bench are named by compass direction of the group
-  from the bench's units — `WCB_2_North`, `WCB_2_Southeast` (4-point rose,
+  several curves on one bench are named by the abbreviated compass direction
+  of the group from the bench's units — `WCB_2_N`, `WCB_2_SE` (4-point rose,
   8-point if needed; DSU name only when interleaved groups still collide).
-  Save the anduin type curves under the dossier's names.
+  The handoff saves the anduin CURVE with the deal codename in front
+  (`rallycaps_WCB_2_SE`; codename = the Deal Folder name lowercased, letters
+  and digits only); the Blue Ox ZONE / workbook tab stays `WCB_2_SE`. Names are final once a drop ships — the handoff refuses
+  to rename a handed-off deal's curves (Rally Caps shipped `WCB_2_Southeast`).
 - Nothing auto-drops a well. Every exclusion carries a reason, every
   outlier is a flag, and culling happens in anduin by the reviewer.
 
