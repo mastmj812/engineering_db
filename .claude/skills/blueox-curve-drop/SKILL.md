@@ -30,10 +30,11 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
   Claude posts it only after Michael gives an explicit go for that specific drop. A go for one
   drop does not carry over to the next.
 - **Zone / type-curve names: no spaces, no letter suffixes** (Michael, 2026-10-08). Several
-  curves on one bench are told apart by compass direction — `WCB_2_North`, `WCB_2_Southeast` —
-  never `WCB_2-A` / `WCB_2 -A`. deal-intake's dossier proposes these names
-  (`dealintake/render/maps.curve_labels`). Names already shipped stay final (bro_time
-  `WCB_2 West` / `WCB_2 East`); the rule applies to new drops.
+  curves on one bench are told apart by abbreviated compass direction, with the deal
+  codename in front — `rallycaps_WCB_2_SE` — never `WCB_2-A` / `WCB_2 -A`. deal-intake's
+  handoff saves these names (`dealintake/render/maps.curve_labels` + the codename prefix).
+  Names already shipped stay final (bro_time `WCB_2 West` / `WCB_2 East`; Rally Caps
+  `WCB_2_Southeast` etc., 2026-10-08); the rule applies to new drops.
 - Any new deviation the drop carries → ledger section written **in the same commit** as the code,
   with a "Loader impact" line marked *required* vs *tolerated*.
 
@@ -98,7 +99,7 @@ is almost always wrong — re-pin instead. Red rows that won't pin = phantom pin
 - Zone names ≤26 chars, no spaces, no `-A`/`-B` letter suffixes, none of `: \ / ? * [ ]`, no leading/trailing space/apostrophe, not a
   reserved sheet name (`meta`, `inventory`, `manifest`, `analog_production`, `curve_params`,
   `dsu_meta`, `novi_comparison`, `novi_comparison_meta`), unique.
-- Same-bench splits (§11, e.g. `WCB_2_North`/`WCB_2_South`): shared `bench` code, **scenario scopes
+- Same-bench splits (§11, e.g. `rallycaps_WCB_2_N`/`rallycaps_WCB_2_S`): shared `bench` code, **scenario scopes
   disjoint and covering** — anduin hard-errors overlap or a planned well no zone's scenario covers
   (`scope_missed`). PDP wells are never dropped (unzoned PDP lands on `inventory` with the bench
   code as `area` — sanctioned, §2).

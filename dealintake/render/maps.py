@@ -47,8 +47,8 @@ MAX_STICK_LABELS = 16
 _HALO = [pe.withStroke(linewidth=2.2, foreground="white")]
 
 
-_ROSE4 = ["North", "East", "South", "West"]
-_ROSE8 = ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"]
+_ROSE4 = ["N", "E", "S", "W"]
+_ROSE8 = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
 
 def _safe(s: str) -> str:
@@ -58,8 +58,8 @@ def _safe(s: str) -> str:
 
 def curve_labels(key: str, B: dict[str, Any], units: list[dict[str, Any]] | None = None) -> list[str]:
     """A short NAME per TC group, in group order — no spaces, no letter suffixes
-    (Michael 2026-10-08: `WCB_2_North` socializes; `WCB_2-A` confuses). One group:
-    the bench key. Several: `<bench>_<Compass>` = the bearing of the group's unit
+    (Michael 2026-10-08: `WCB_2_SE` socializes; `WCB_2-A` confuses). One group:
+    the bench key. Several: `<bench>_<compass>` (N/NE/.../NW) = the bearing of the group's unit
     centroid from the centroid of all the bench's grouped units, on the coarsest
     rose (4- then 8-point) that names every group uniquely. Groups that still
     collide (interleaved units) — or a call without unit geometry — fall back to

@@ -204,15 +204,24 @@ def plan_unit(
 # anduin
 # ---------------------------------------------------------------------------
 
-def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path) -> list[dict[str, Any]]:
-    """One saved type curve + one Blue Ox zone per dossier curve, in tab order."""
+def codename_for(deal_folder: str) -> str:
+    """Blue Ox codename from the Deal Folder name: lowercase, letters and digits
+    only — `RALLY CAPS` -> `rallycaps`, `Gator Tails` -> `gatortails`."""
+    return re.sub(r"[^a-z0-9]", "", deal_folder.lower())
+
+
+def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codename: str = "") -> list[dict[str, Any]]:
+    """One saved type curve + one Blue Ox zone per dossier curve, in tab order.
+    Saved names carry the deal codename in front (Michael 2026-10-08:
+    `rallycaps_WCB_2_SE`) so curves stay unique across deals in the anduin library."""
     from dealintake.render.dossier_html import _labels
 
     out: list[dict[str, Any]] = []
     benches = sorted(sig["benches"].items(), key=lambda kv: kv[1].get("tvd_ft") or 0.0)
     for key, B in benches:
         groups = B.get("tc_groups") or []
-        for G, name in zip(groups, _labels(key, B, prop), strict=True):
+        for G, label in zip(groups, _labels(key, B, prop), strict=True):
+            name = f"{codename}_{label}" if codename else label
             api10s = [w["api10"] for w in G["tc_wells"]]
             roles = {(B["units"].get(u) or {}).get("role", "base") for u in G["units"]}
             issues = []
@@ -268,7 +277,9 @@ def existing_scenarios(conn: Any, keys: list[dict[str, str]]) -> dict[tuple[str,
             for r in rows}
 
 
-def plan(run_dir: Path, narvi: Any, cfg: Any, *, deal: str, codename: str, conn: Any = None) -> dict[str, Any]:
+def plan(
+    run_dir: Path, narvi: Any, cfg: Any, *, deal: str, codename: str, deal_folder: str | None = None, conn: Any = None,
+) -> dict[str, Any]:
     sig, prop = load_run(run_dir)
     setback = float(cfg["planned_lateral"]["setback_ft"])
     ub = unit_benches(sig)
@@ -284,7 +295,7 @@ def plan(run_dir: Path, narvi: Any, cfg: Any, *, deal: str, codename: str, conn:
     for u in units:
         if uploads and u["label"] not in uploads:
             issues.append(f"{u['label']}: not in the deal file's parcels (relabelled since propose?)")
-    curves = plan_curves(sig, prop, run_dir)
+    curves = plan_curves(sig, prop, run_dir, codename)
     keys = [scenario_key(u["label"]) for u in units]
     have = existing_scenarios(conn, keys) if conn is not None else None
     for u in units:
@@ -299,7 +310,7 @@ def plan(run_dir: Path, narvi: Any, cfg: Any, *, deal: str, codename: str, conn:
     blocked = issues + [f"{u['label']}: {i}" for u in units for i in u["issues"]] \
         + [f"{c['name']}: {i}" for c in curves for i in c["issues"]]
     return {
-        "deal": deal, "codename": codename, "run_dir": run_dir.as_posix(),
+        "deal": deal, "codename": codename, "deal_folder": deal_folder or codename, "run_dir": run_dir.as_posix(),
         "config_version": sig.get("config_version"), "planned_at": datetime.now(UTC).isoformat(),
         "status": "BLOCKED" if blocked else "READY", "blocked": blocked,
         "units": units, "curves": curves,
@@ -378,6 +389,19 @@ def _refuse_edited_narvi(P: dict[str, Any], state: dict[str, Any], live: dict[st
         raise HandoffRefused("; ".join(refused) + " — nothing written. Re-run with --replace to overwrite narvi.")
 
 
+def last_drop_settings(anduin: Any, skip_deal_id: str) -> dict[str, Any]:
+    """levels / curve_months / prepared_by from the newest OTHER deal with a Blue Ox
+    config — the house convention (every 2026 drop: P10/P25/P75/P90, 600 months,
+    'Mast'); a new deal never ships P50-only by accident."""
+    for d in sorted(anduin.deals(), key=lambda d: str(d.get("created_at") or ""), reverse=True):
+        if d["id"] == skip_deal_id:
+            continue
+        c = (anduin.blueox_config(d["id"]) or {}).get("config")
+        if c:
+            return {k: c[k] for k in ("levels", "curve_months", "prepared_by") if k in c}
+    return {}
+
+
 def apply(
     P: dict[str, Any], run_dir: Path, narvi: Any, anduin: Any, conn_factory: Any, *,
     new_version: bool = False, replace: bool = False, saved_fn: Any = narvi_saved,
@@ -411,6 +435,14 @@ def apply(
         if not ok:
             raise HandoffRefused(f"narvi {k}: saved sticks {got['planned']} != plan {u['expected']} — stopped "
                                  "before anduin; open the scenario in narvi")
+
+    # Curve names are zone names once a drop ships (contract: FINAL). A naming-rule
+    # change must never rename a handed-off deal's curves or add duplicates beside them.
+    had = set(state["anduin"]["curves"])
+    if had and not had <= {c["name"] for c in P["curves"]}:
+        gone = sorted(had - {c["name"] for c in P["curves"]})
+        raise HandoffRefused(f"curve names changed since this deal's handoff ({', '.join(gone)} no longer planned) — "
+                             "names are final once a drop ships; nothing written to anduin")
 
     # ---- anduin: deal ----------------------------------------------------------
     deal = next((d for d in anduin.deals() if d["name"] == P["deal"]), None)
@@ -463,12 +495,12 @@ def apply(
     if cur and state["anduin"].get("config") and _hash(cur) != state["anduin"]["config"] and not replace:
         raise HandoffRefused("anduin Blue Ox config edited since the handoff — curves saved, config NOT "
                              "touched. Re-run with --replace to overwrite it.")
-    user = anduin.user or {}
+    house = cur or last_drop_settings(anduin, deal["id"])
     cfg = {
         "codename": P["codename"],
-        "curve_months": (cur or {}).get("curve_months", 360),
-        "levels": (cur or {}).get("levels", []),
-        "prepared_by": (cur or {}).get("prepared_by") or user.get("display_name") or user.get("email") or "deal-intake",
+        "curve_months": house.get("curve_months", 600),
+        "levels": house.get("levels", ["P10", "P25", "P75", "P90"]),
+        "prepared_by": house.get("prepared_by") or (anduin.user or {}).get("display_name") or "Mast",
         "zones": [{**z, "type_curve_id": ids[z["zone_name"]]} for z in P["blueox_zones"]],
         "narvi_selections": P["narvi_selections"],
         "exclude_benches": (cur or {}).get("exclude_benches", []),
