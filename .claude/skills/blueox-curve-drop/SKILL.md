@@ -22,8 +22,11 @@ numbers cited everywhere). Builder: anduin `exports/blueox.py` (pure); endpoint
 - NGL ships all-zero with `ngl_basis = derived_by_blue_ox_via_yield` (they derive via yield).
 - `reserve_category` is `PUD` / `UPSIDE` (`RES` is refused at build). `di_convention =
   nominal_annual`, always.
-- **Claude prepares and sweeps; Michael delivers the file.** There is NO email and no covering
-  note to Steven (Michael, 2026-10-08): the #eng-updates post (step 10) IS Steven's notification.
+- **Claude prepares and sweeps; Michael delivers the file** into the Deal Folder:
+  `%USERPROFILE%\Blue Ox Resources\Business Development - General\2. Deals\<Deal Folder>\`
+  (top level, beside the prior drops; synced SharePoint). There is NO email and no covering
+  note to Steven (Michael, 2026-10-08): the #eng-updates post (step 10) IS Steven's notification
+  — post only once the file is in the Deal Folder.
   Claude posts it only after Michael gives an explicit go for that specific drop. A go for one
   drop does not carry over to the next.
 - **Zone / type-curve names: no spaces, no letter suffixes** (Michael, 2026-10-08). Several
@@ -195,7 +198,7 @@ file from the curve drop: `<codename>_pdp_<date>.xlsx`.
 4. Export panel → Save + preview: contract errors block; readiness warnings don't. Spot-check
    one group sheet's first month against the seller's reported volumes when the effective
    date precedes data-through (those rows are actuals by design).
-5. Michael delivers the file (no email). A re-export is a new dated file + "supersedes <name>" (pass `supersedes`).
+5. Michael puts the file in the Deal Folder (no email). A re-export is a new dated file + "supersedes <name>" (pass `supersedes`).
 6. Notify #eng-updates per step 10 (same gate, same go-per-drop rule).
 
 ## Known traps (each has drawn blood)
