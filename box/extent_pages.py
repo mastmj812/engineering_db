@@ -37,8 +37,8 @@ const so = L.layerGroup(D.so.map(s => L.polyline(ll(s.c), {color: s.in ? '#c026d
 const edges = L.layerGroup(D.edges.map(e => L.polyline(ll(e.c), {color: e.col, weight: 4, opacity: 0.95}).bindPopup(
   `<b>${esc(e.rule)}</b><br>buffer ${e.buf.toLocaleString()} ft · side ${e.side}<br>edge ${e.cls}${e.gap ? ' · gap ' + e.gap.toLocaleString() + ' ft' : ''} · perf ${e.pc} (${e.pr ?? '–'}×)` +
   (e.flag ? `<br><span style="color:#b45309">${esc(e.flag)}</span>` : '')))).addTo(map);
-const holes = L.layerGroup(D.holes.map(h => L.circleMarker([h.lat, h.lon], {radius: 6, color: '#a16207', weight: 2, fillOpacity: 0.6}).bindPopup(
-  `<b>hole</b> ${h.a} sq mi · ${h.sopa}% in the potash area`))).addTo(map);
+const holes = L.layerGroup(D.holes.map(h => L.circleMarker([h.lat, h.lon], {radius: 6, color: h.fill ? '#15803d' : '#a16207', weight: 2, fillOpacity: 0.6}).bindPopup(
+  `<b>${h.fill ? 'legacy drilled-up hole — FILLED (D26)' : 'hole'}</b> ${h.a} sq mi · ${h.sopa}% in the potash area · ${h.cov}% covered by pre-2016 laterals`))).addTo(map);
 L.control.layers(null, {'extent (generated)': extent, 'drilled core': core, 'step-2 outline (measuring, dashed)': outline, 'BLM Secretary\\'s Potash Area': sopa,
   'pre-2016 laterals': old, '≥2016 laterals': ev, 'step-outs (magenta in / black out)': so, 'extent edge by rule': edges, 'holes': holes}, {collapsed: false}).addTo(map);
 const bounds = L.latLngBounds(D.extent.flatMap(P => ll(P[0])));
@@ -69,7 +69,8 @@ def map_data(b: dict[str, Any], sopa_ll: Any) -> dict[str, Any]:
         edges.append({"c": _lonlat_coords(g.simplify(1e-5)), "col": pkg.RULE_COLOURS.get(e.rule, "#000"), "rule": e.rule, "buf": round(float(e.buffer_ft)), "side": e.side, "cls": e.edge_class,
                       "gap": None if not np.isfinite(e.gap_ft) or e.gap_ft == 0 else round(float(e.gap_ft)), "pc": e.perf_class,
                       "pr": None if not np.isfinite(e.perf_ratio) else round(float(e.perf_ratio), 2), "flag": e.flag})
-    holes = [{"lat": round(h.lat, 5), "lon": round(h.lon, 5), "a": round(h.area_sqmi, 1), "sopa": round(100 * h.sopa_share)} for h in b["holes"].itertuples()]
+    holes = [{"lat": round(h.lat, 5), "lon": round(h.lon, 5), "a": round(h.area_sqmi, 1), "sopa": round(100 * h.sopa_share), "cov": round(100 * h.legacy_cover), "fill": bool(h.filled_D26)}
+             for h in b["holes"].itertuples()]
     main = [g for g in pr.r["outline"].geoms if g.equals(pr.r["body"])] or [pr.r["body"]]
     return {
         "extent": _rings_ll(eg.to_lonlat([b["extent"]])[0]),
@@ -220,9 +221,11 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"<h2 id=stepouts>Step-outs ({len(so):,}): islands in, the rest flagged</h2>"
         f"<div class=meta>Island = within {bp.stepout_reach_mi:g} mi and performing (≥ 0.70×), or too new for a 12-mo on a live-front side. Left out: rolled, isolated (&gt; {bp.stepout_reach_mi:g} mi), or too new on a non-front side. All appear in the flags layer.</div>"
         + _table(so_tab, {"dist_mi": ".1f", "perf_ratio": ".2f"}, max_rows=150),
-        f"<h2 id=holes>Holes ({len(holes):,})</h2><div class=meta>Holes of the drilled body are kept as holes, shrunk by the tightest floor, and flagged: geology hole, surface constraint (potash share shown), or fill? "
+        f"<h2 id=holes>Holes ({len(holes):,}; {int(holes.filled_D26.sum())} filled by D26)</h2><div class=meta><b>D26 (Michael 2026-10-08):</b> a hole ≥ {ctx['bp'].legacy_fill_cover:.0%} covered by the ½-mi footprint of pre-2016 laterals is legacy drilled-up ground — "
+        "the bench is proven and full, no room for a modern well — and is filled into the extent (potash holes included; the old wells are still never curve evidence). "
+        "Other holes are kept as holes, shrunk by the tightest floor, and flagged: geology hole, surface constraint (potash share shown), or fill? "
         "Backtest note: holes open at T were later infilled with wells that performed like the interior (see calibration), so most holes are an open question, not a no.</div>"
-        + _table(holes, {"area_sqmi": ",.1f", "sopa_share": ".0%", "lon": ".4f", "lat": ".4f"}, max_rows=40),
+        + _table(holes, {"area_sqmi": ",.1f", "sopa_share": ".0%", "legacy_cover": ".0%", "lon": ".4f", "lat": ".4f"}, max_rows=40),
         "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
         "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "
         "Columns compare the generated extent with the drilled core and the step-2 measuring outline. WCXY PUDs are listed apart (D20: WCXY is WCA evidence one-way; PUD membership is a step-7 call).</div>"

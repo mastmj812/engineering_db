@@ -93,12 +93,17 @@ class Prep:
     xy: np.ndarray
     seg_ix: np.ndarray
     interior_median: float
+    body: Polygon  # the step-2 body with D26 legacy drilled-up holes filled
+    hole_cover: list[float]  # per step-2 hole: share within r of a pre-2016 lateral
+    hole_filled: list[bool]
 
 
 def prep(d: pd.DataFrame, pool: str, T: dt.date | None, bp: ex.BufferParams = ex.DEFAULT, p: eg.EdgeParams = EDGE) -> Prep:
     x = at_cutoff(d, T)
     r = egr.analyse_pool(x, p)
-    ev, body = r["ev"], r["body"]
+    ev = r["ev"]
+    cover = ex.legacy_cover(r["body"], list(r["old"]["geom"]), p.pin_radius_ft)
+    body, filled = ex.fill_legacy_holes(r["body"], cover, bp.legacy_fill_cover)
     lines = list(ev["geom"])
     oil = ev["oil12_kft"].to_numpy(float)
     coh = ev["cohort"].to_numpy(bool) & np.isfinite(oil)
@@ -113,7 +118,7 @@ def prep(d: pd.DataFrame, pool: str, T: dt.date | None, bp: ex.BufferParams = ex
     body_lines = [ln for ln in lines if ln.intersects(body)]
     c = ex.core(body, body_lines, islands, p.pin_radius_ft, bp)
     xy, six = ex.ring_samples(seg, body, bp.sample_ft)
-    return Prep(pool, T, r, seg, fronts, so, c, xy, six, med)
+    return Prep(pool, T, r, seg, fronts, so, c, xy, six, med, body, cover, filled)
 
 
 def configs(grid: dict[str, tuple[Any, ...]] = GRID, uniform: tuple[float, ...] = UNIFORM_FT) -> list[ex.BufferParams]:
@@ -294,14 +299,16 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any) -> di
     edges = edges_frame(pr, sb, runs, bp)
     seg = pr.seg.join(sb)
     seg["flag"] = seg.apply(ex.geology_flag, axis=1)
-    body = pr.r["body"]
+    old_lines = np.asarray(list(pr.r["old"]["geom"]), dtype=object)
     holes = []
-    for h in body.interiors:
+    for h, cov, fil in zip(pr.r["body"].interiors, pr.hole_cover, pr.hole_filled):
         hp = Polygon(h)
         c = eg.to_lonlat([hp.representative_point()])[0]
         holes.append({"area_sqmi": hp.area / eg.FT_PER_MI**2, "sopa_share": hp.intersection(sopa).area / hp.area if sopa is not None else 0.0, "lon": c.x, "lat": c.y,
-                      "still_hole_in_extent": not ext.contains(hp.representative_point()), "geom": hp})
-    holes_df = pd.DataFrame(holes, columns=["area_sqmi", "sopa_share", "lon", "lat", "still_hole_in_extent", "geom"]).sort_values("area_sqmi", ascending=False).reset_index(drop=True)
+                      "n_pre2016": int(shapely.intersects(old_lines, hp).sum()) if len(old_lines) else 0, "legacy_cover": cov,
+                      "filled_D26": fil, "still_hole_in_extent": not ext.contains(hp.representative_point()), "geom": hp})
+    cols = ["area_sqmi", "sopa_share", "lon", "lat", "n_pre2016", "legacy_cover", "filled_D26", "still_hole_in_extent", "geom"]
+    holes_df = pd.DataFrame(holes, columns=cols).sort_values("area_sqmi", ascending=False).reset_index(drop=True)
     per = seg.groupby("rule").length_ft.sum() / eg.FT_PER_MI
     stats = {
         "extent_sqmi": ext.area / eg.FT_PER_MI**2,

@@ -16,7 +16,9 @@ extent polygon.
         pre-2016 laterals just beyond a gap -> floor (D5: tested, not followed up — tighten only)
         live-front side (D22, detected from the step-out table) -> cap
         segment inside the potash ignore-gap polygon (D24) -> floor (a gap there never widens)
-     Holes of the body get the tightest floor and a geology flag.
+     Holes of the body get the tightest floor and a geology flag — except legacy drilled-up holes
+     (D26): a hole >= 90 % covered by the r-footprint of pre-2016 laterals is filled into the core
+     (the bench is proven there and full; no room for a modern well). Potash holes included.
   3. SECTORS: each point outside the core takes the buffer of the nearest walked-ring sample (the
      Voronoi cell of the ring). A point lies in the extent when its distance to the core is within
      that buffer. Inside the potash polygon every point is held to its sector's floor (D24: the
@@ -62,6 +64,7 @@ class BufferParams:
     lateral_core_ft: float = 50.0  # half-width of a lateral's own line in the core
     quantum_ft: float = 110.0  # buffer quantisation for polygon assembly (1/48 mi)
     smooth_ft: float = 330.0  # closing + opening of the assembled polygon
+    legacy_fill_cover: float = 0.90  # D26: fill a hole this covered by the pre-2016 lateral footprint (r)
     uniform: bool = False  # calibration baseline: floor_ft everywhere, no 2×2 / gap / front terms
 
 
@@ -83,6 +86,31 @@ def core(body: Polygon, body_lines: list[LineString], island_lines: list[LineStr
     lines = list(body_lines) + list(island_lines)
     thin = shapely.union_all(shapely.buffer(np.asarray(lines, dtype=object), bp.lateral_core_ft, quad_segs=2)) if lines else Polygon()
     return as_multi(shapely.union_all([eroded, thin]).buffer(0))
+
+
+def legacy_cover(body: Polygon, old_lines: list[LineString], pin_radius_ft: float) -> list[float]:
+    """Per hole of the body (in body.interiors order): share of its area within r of a pre-2016 lateral."""
+    holes = [Polygon(h) for h in body.interiors]
+    if not holes or not old_lines:
+        return [0.0] * len(holes)
+    arr = np.asarray(old_lines, dtype=object)
+    tree = shapely.STRtree(arr)
+    out = []
+    for h in holes:
+        ix = tree.query(h, predicate="dwithin", distance=pin_radius_ft)
+        if not len(ix):
+            out.append(0.0)
+            continue
+        fp = shapely.union_all(shapely.buffer(arr[ix], pin_radius_ft, quad_segs=4))
+        out.append(h.intersection(fp).area / h.area)
+    return out
+
+
+def fill_legacy_holes(body: Polygon, cover: list[float], threshold: float) -> tuple[Polygon, list[bool]]:
+    """D26: the body with every hole whose legacy cover >= threshold filled; returns (body, filled flags)."""
+    filled = [c >= threshold for c in cover]
+    keep = [h for h, f in zip(body.interiors, filled) if not f]
+    return Polygon(body.exterior, keep), filled
 
 
 # ----------------------------------------------------------------------------

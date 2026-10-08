@@ -146,8 +146,12 @@ def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any]
     flags_g, flags_r = [], []
     for h in b["holes"].itertuples():
         flags_g.append(h.geom.representative_point())
-        txt = f"hole {h.area_sqmi:.1f} sq mi inside the drilled body ({h.sopa_share:.0%} in the potash area): geology hole, surface, or fill?"
-        flags_r.append([pool, "hole", txt, h.area_sqmi, ""])
+        if h.filled_D26:
+            txt = f"legacy drilled-up hole {h.area_sqmi:.1f} sq mi FILLED (D26): {h.n_pre2016} pre-2016 laterals cover {h.legacy_cover:.0%}; no room for a modern well"
+            flags_r.append([pool, "hole filled (D26)", txt, h.area_sqmi, ""])
+        else:
+            txt = f"hole {h.area_sqmi:.1f} sq mi inside the drilled body ({h.sopa_share:.0%} in the potash area, {h.legacy_cover:.0%} legacy cover): geology hole, surface, or fill?"
+            flags_r.append([pool, "hole", txt, h.area_sqmi, ""])
     so = pr.stepouts
     ev = pr.r["ev"]
     for s in so[so.role != "island"].itertuples():
@@ -266,7 +270,8 @@ What to look at (not edited)
       "potash"                     inside the BLM Secretary's Potash Area: a surface constraint,
                                    not geology — the gap is not widened, never treated as a dry hole
       "pre-2016 ... not followed up" old laterals beyond a gap: buffer held to the floor
-  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?) and
+  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?), legacy
+                                drilled-up holes already filled (D26: >= 90 % covered by pre-2016 wells), and
                                 step-outs left out of the extent (rolled / isolated / too new)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE

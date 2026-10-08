@@ -231,3 +231,34 @@ def test_shapefile_round_trip_with_hole(tmp_path):
     assert gio.read_extent(tmp_path / "BOX_T_extent_v1.shp", bench="OTHER").is_empty
     assert gio.check_frame(back, g) == ""
     assert "wrong CRS" in gio.check_frame(shapely.affinity.scale(back, 0.3048, 0.3048, origin=(0, 0)), g)
+
+
+# ---------------------------------------------------------------------------- D26 legacy drilled-up holes
+
+
+def _ring_body() -> Polygon:
+    """A 6 x 6 mi body with a 1 x 1 mi hole in the middle."""
+    return Polygon(shapely.box(0, 0, 6 * MI, 6 * MI).exterior, [shapely.box(2.5 * MI, 2.5 * MI, 3.5 * MI, 3.5 * MI).exterior])
+
+
+def test_hole_drilled_up_by_legacy_wells_is_filled():
+    body = _ring_body()
+    old = [LineString([(x, 2.5 * MI), (x, 3.5 * MI)]) for x in np.arange(2.5 * MI, 3.5 * MI + 1, 660.0)]
+    cover = ex.legacy_cover(body, old, 2640.0)
+    assert cover[0] == pytest.approx(1.0)
+    filled_body, filled = ex.fill_legacy_holes(body, cover, 0.90)
+    assert filled == [True] and len(filled_body.interiors) == 0
+
+
+def test_hole_with_a_lone_old_well_is_kept():
+    body = _ring_body()
+    old = [LineString([(2.5 * MI + 100, 2.5 * MI), (2.5 * MI + 100, 3.5 * MI)])]  # one well on the W side of the hole
+    cover = ex.legacy_cover(body, old, 1320.0)
+    assert 0.2 < cover[0] < 0.9
+    filled_body, filled = ex.fill_legacy_holes(body, cover, 0.90)
+    assert filled == [False] and len(filled_body.interiors) == 1
+
+
+def test_no_old_wells_no_fill():
+    body = _ring_body()
+    assert ex.legacy_cover(body, [], 2640.0) == [0.0]
