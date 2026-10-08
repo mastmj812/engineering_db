@@ -143,3 +143,11 @@ def test_mixed_roles_block_the_curve(tmp_path):
     B["tc_groups"] = [{**B["tc_groups"][0], "units": ["u_north", "u_south"]}]
     (c,) = [c for c in handoff.plan_curves(sig, prop, tmp_path) if c["bench"] == "WCB_2"]
     assert c["issues"] and "roles" in c["issues"][0]
+
+
+def test_stagger_is_the_default():
+    from dealintake.pipeline import location_source, staggered
+    assert staggered({}) and staggered({"winerack": True}) and not staggered({"winerack": False})
+    g2 = {"source": "novi", "reason": "Novi sticks", "pud_inside": 2}
+    assert location_source(g2, {"winerack": False})["source"] == "novi"      # an opt-out is not a pattern
+    assert location_source(g2, {"winerack": True})["source"] == "generate"

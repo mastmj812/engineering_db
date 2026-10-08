@@ -165,7 +165,10 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   the fallback), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
   west|east|north|south`, `drop_east_rows: n` (and west/north/south — the n
   rows nearest that side, for PDP there or basin-edge conservatism), `role:
-  upside`; per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
+  upside`, `winerack: false` (opt OUT of the default stagger — a unit's
+  generated benches are placed together, adjacent benches half a spacing
+  apart, Michael 2026-10-08; on a narrow unit the stagger can cost a row:
+  Rally Caps 1-12 WCB_2 4 -> 3); per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
   words; the runner maps them onto the rule-16 frame (on a 162° plan the
   +offset side is WSW, so "east" is the negative side). Every key lands in
   the decision log.

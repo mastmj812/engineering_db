@@ -112,12 +112,18 @@ def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
     review page (which always generates) showed 4."""
     if g2.get("source") != "novi":
         return g2
-    keys = [k for k in PATTERN_KEYS if opts.get(k) is not None]
+    keys = [k for k in PATTERN_KEYS if opts.get(k) not in (None, False)]
     if not keys:
         return g2
     return {**g2, "source": "generate", "novi_reason": g2.get("reason"),
             "reason": f"reviewer pattern ({', '.join(keys)}) overrides Novi's "
                       f"{g2.get('pud_inside', 0)} BASE_CASE stick(s) — generated"}
+
+
+def staggered(opts: dict[str, Any]) -> bool:
+    """Benches are placed together, staggered, unless the reviewer set
+    `winerack: false` (default flipped to stagger — Michael 2026-10-08)."""
+    return opts.get("winerack", True) is not False
 
 
 def winerack_legs(
@@ -192,7 +198,7 @@ def gunbarrel_preview(
     wr_zones = {b: (float(opts_all[b].get("tvd_ft", tvd_by.get(b))),
                     float(opts_all[b].get("spacing_ft") or DEFAULT_SPACING_FT))
                 for b, row in bench_seed.items()
-                if row["evaluate"] and (opts_all.get(b) or {}).get("winerack")
+                if row["evaluate"] and staggered(opts_all.get(b) or {})
                 and opts_all[b].get("tvd_ft", tvd_by.get(b)) is not None}
     wr: dict[str, list[dict[str, Any]]] | Exception = {}
     if wr_zones:
@@ -988,14 +994,14 @@ def evaluate(
                                                   "dist_nearest_ft", "offset_median_eur_ft",
                                                   "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
                     unit_novi += [s["stick_id"] for s in sticks]
-                elif opts.get("winerack"):
+                elif staggered(opts):
                     # Placed with the unit's other winerack benches in ONE narvi call
                     # (staggered half a spacing); memoized per unit across the bench loop.
                     if label not in winerack_memo:
                         zones: dict[str, tuple[float, float]] = {}
                         for b2 in plan[label]["benches"]:
                             o2 = plan[label]["bench_opts"].get(b2) or {}
-                            if not o2.get("winerack") or location_source(u["gate2"].get(b2) or {}, o2).get("source") == "novi":
+                            if not staggered(o2) or location_source(u["gate2"].get(b2) or {}, o2).get("source") == "novi":
                                 continue
                             t2 = o2.get("tvd_ft", next((r["median_tvd_ft"] for r in u["bench_proposal"]
                                                         if bench_code(r["bench"]) == b2), None))

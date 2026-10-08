@@ -159,10 +159,11 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
                       drop the n rows nearest that side (PDP there, basin edge)
       min_leg_ft      (unit level) drop generated legs shorter than this
       role            base (default) | upside — carried to the dossier/handoff
-      winerack        true = generate this bench TOGETHER with the unit's other
-                      winerack benches in one narvi call, so adjacent benches are
-                      staggered by half a spacing (Rally Caps 192-191, 2026-09-30).
-                      Give each winerack bench its own spacing_ft."""
+      winerack        DEFAULT true (Michael 2026-10-08): a unit's generated benches
+                      are placed TOGETHER in one narvi call, adjacent benches
+                      staggered by half a spacing. false = place this bench on its
+                      own (rows may stack directly over the neighbouring bench).
+                      Give each bench its own spacing_ft."""
     out: dict[str, Any] = {}
     for k in ("tvd_ft", "spacing_ft"):
         if v.get(k) is not None:
@@ -190,8 +191,7 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
     if v.get("winerack") is not None:
         if not isinstance(v["winerack"], bool):
             raise ValueError(f"{FILENAME}: {where}.winerack must be true or false, got {v['winerack']!r}")
-        if v["winerack"]:
-            out["winerack"] = True
+        out["winerack"] = v["winerack"]
     return out
 
 
