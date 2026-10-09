@@ -2520,9 +2520,9 @@ BOX bench extents, one row per version x source. generated = lateral lines + var
 
 ### `box.extent_edge` (table)
 
-Boundary of a generated extent split by the walked step-2 ring segment whose sector it lies in: edge_class pinned/gap/hole, perf_class (12-mo oil/ft of the edge wells vs the interior median, >=0.85 strong, <0.70 rolled), buffer_ft and the rule that set it, explanation = the geology flag text. seg_no = -1 for hole rings.
+Boundary of a generated extent split by the walked step-2 ring segment whose sector it lies in: edge_class pinned/gap/hole, or bridge where the D27 development envelope bridged a gap between development trends; perf_class (12-mo oil/ft of the edge wells vs the interior median, >=0.85 strong, <0.70 rolled), buffer_ft and the rule that set it, explanation = the geology flag text. seg_no = -1 for hole rings. See sql/54, sql/55.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
+~564 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
 
 | column | type | description |
 |---|---|---|
