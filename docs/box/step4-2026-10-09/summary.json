@@ -1,0 +1,90 @@
+{
+  "built_at": "2026-10-09T14:43:00-05:00",
+  "asof": "2026-08-01",
+  "extent_id": 6,
+  "extent_version": 1,
+  "params": {
+    "cell_ft": 5280.0,
+    "knn": 15,
+    "prior_w": 0.25,
+    "min_wells": 10,
+    "k_max": 60,
+    "folds": 5,
+    "block_ft": 15840.0,
+    "seed": 20261009
+  },
+  "n_areas": 34,
+  "pick": {
+    "k_min": 39,
+    "k_1se": 34
+  },
+  "n_cells": 7386,
+  "n_c12": 7553,
+  "n_c24": 6842,
+  "n_ceur": 8182,
+  "n_c12_all": 7562,
+  "n_c12_outside": 9,
+  "r2_in": 0.4132599142214358,
+  "cv_r2_pick": 0.2106464112292058,
+  "cv_r2_k1": -0.01092105116044717,
+  "knn_local_cv_r2": 0.2192836109342321,
+  "cv24": {
+    "n": 6842,
+    "k_min": 48,
+    "k_1se": 18,
+    "cv_r2_at_pick": 0.21225563766840994
+  },
+  "pool_oil12_p50": 21.73348541955961,
+  "area_rank_agreement_spearman": {
+    "oil12_vs_oil24": 0.975553857906799,
+    "oil12_vs_bo_ft": 0.8961038961038961
+  },
+  "d1_puds_inside": {
+    "WCA_1+2": 1934,
+    "WCXY": 3211
+  },
+  "levels": {
+    "6": {
+      "n_areas": 6,
+      "n_pad_scale": 0,
+      "n_one_operator": 0,
+      "min_n12": 236,
+      "median_n12": 741.0
+    },
+    "10": {
+      "n_areas": 10,
+      "n_pad_scale": 0,
+      "n_one_operator": 1,
+      "min_n12": 18,
+      "median_n12": 550.5
+    },
+    "14": {
+      "n_areas": 14,
+      "n_pad_scale": 1,
+      "n_one_operator": 1,
+      "min_n12": 18,
+      "median_n12": 390.0
+    },
+    "20": {
+      "n_areas": 20,
+      "n_pad_scale": 3,
+      "n_one_operator": 3,
+      "min_n12": 15,
+      "median_n12": 220.5
+    },
+    "34": {
+      "n_areas": 34,
+      "n_pad_scale": 6,
+      "n_one_operator": 5,
+      "min_n12": 15,
+      "median_n12": 69.0
+    },
+    "39": {
+      "n_areas": 39,
+      "n_pad_scale": 6,
+      "n_one_operator": 7,
+      "min_n12": 15,
+      "median_n12": 67.0
+    }
+  }
+}
