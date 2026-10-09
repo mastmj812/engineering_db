@@ -119,7 +119,11 @@ table, not across runs.
 
 ## 6. Flags for gate 4
 
-**a. k = 35 vs a coarser nested level.** *Open.*
+**Gate 4 decided 2026-10-09:** keep 35 areas; El Campeon / Los Vaqueros excluded; gas via GOR; gas in
+the acceptance test. The areas are stored as the version of record only after `sql/57` go-apply +
+`--store --record`.
+
+**a. k = 35 vs a coarser nested level.** *DECIDED 2026-10-09 (Michael): keep 35 (plan D29).*
 - The rule picks 35 areas: median 79 cohort wells, quartiles 35 / 197, min 15.
 - Five of them are pad-scale (< 25 sq mi) and four are dominated by one operator (≥ 70 % of wells),
   mostly 2019–23 vintage. These look like operator / program clusters, the confounding D9 accepts but
@@ -162,8 +166,9 @@ table, not across runs.
   among the low ones (areas 1, 2, 4).
 - The step-6 hindcast is where it will show if it matters.
 
-**e. The areas do not follow GOR; GOR needs its own handling for the gas stream.** *Open (step 5 and
-§8 design).*
+**e. The areas do not follow GOR; GOR needs its own handling for the gas stream.** *DECIDED 2026-10-09
+(Michael): recommendation adopted — gas via GOR ratio mode at a local GOR level (plan D30), gas added
+to §8 acceptance (plan D31).*
 
 Asked at the gate (Michael 2026-10-09): do the TC areas align with GOR trends, should they, and
 should GOR inform them?

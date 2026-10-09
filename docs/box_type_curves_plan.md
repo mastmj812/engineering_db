@@ -18,7 +18,7 @@ wells; `box_depth_witness` marks depth evidence). **Step 2 done; gate 2 CLOSED 2
 `edge_{WCA,BS2_S}.html`; builder `scripts/box_edge_gap.py`, `box/edge_gap.py`; eng_db #94). Decided: D21 (extent =
 laterals + variable buffer, r is measuring-only), D22 (BS2_S W = live front), D23 (edge metric of record + step-out
 table), D24 (potash ignore-gap = BLM Secretary's Potash Area), D25 (structure grids = geology context only).
-**Step 3 done 2026-10-09; gate 3 redefined by D28 (geology non-blocking).** Extents are D27 development envelopes (amended 2026-10-09: ≥ 3-lateral step-out programs, no updip limit, generalized edge): WCA 6,168 / BS2_S 3,358 sq mi (eng_db #95, #96, #104 merged). Deliverable `docs/box/step3-2026-10-07/` (FINDINGS §8–§9, review pages, `geology/` package). `sql/54` box schema **LIVE 2026-10-09** (28/28 apply checks). `sql/56` (edge_class `bridge`; authored as sql/55, renumbered after the Novi mirror took 55) **LIVE 2026-10-09**. **Generated v1 STORED as the version of record 2026-10-09** (`box.extent` extent_id 6 WCA 6,168.7 sq mi / 7 BS2_S 3,358.5 sq mi, 346 / 218 edges; identical to the committed `geology/` package within 0.005 sq mi). **Gate 3 CLOSED (D28).** **Step 4 built 2026-10-09, AT GATE 4** (branch `claude/box-step4-tc-areas`, eng_db #110; deliverable `docs/box/step4-2026-10-09/` — `FINDINGS.md` + `areas_WCA.html`; builder `scripts/box_tc_areas.py`, `box/tc_area.py`): contiguity-constrained Ward on 1-mi hex cells, log 12-mo oil/ft of 7,527 D9 cohort wells, k by blocked CV + paired 1-SE = **35 areas** (held-out R² 0.21 vs 0.22 local-kNN ceiling; flat past ~14, k weakly identified); sweet spot N-central along the state line. **Well exclusions of record** = `docs/box/exclusions.csv` (applied at load, every step): El Campeon / Los Vaqueros (Permian Resources) state-line program, Novi allocation defect — 46 wells (27 WCA, 19 BS2_S), Michael 2026-10-09; extents not regenerated (interior). Open gate-4 asks (FINDINGS §6): (a) k = 35 vs a coarser nested level / min-area floor; (e) GOR is an E→W maturity trend crossing the oil areas (oil areas explain ~46 % of held-out log-GOR vs 77 % local) → proposed: oil areas unchanged, gas via GOR-vs-cum-oil ratio at a local GOR level, gas cum-6/12 added to the §8 hindcast (changes step 5 + §8, Michael's call). `sql/57` box.tc_area authored + container-validated, **NOT applied** (go-apply, then `--store --record` at the chosen k). Execution model in §10, kickoff prompt in §11.
+**Step 3 done 2026-10-09; gate 3 redefined by D28 (geology non-blocking).** Extents are D27 development envelopes (amended 2026-10-09: ≥ 3-lateral step-out programs, no updip limit, generalized edge): WCA 6,168 / BS2_S 3,358 sq mi (eng_db #95, #96, #104 merged). Deliverable `docs/box/step3-2026-10-07/` (FINDINGS §8–§9, review pages, `geology/` package). `sql/54` box schema **LIVE 2026-10-09** (28/28 apply checks). `sql/56` (edge_class `bridge`; authored as sql/55, renumbered after the Novi mirror took 55) **LIVE 2026-10-09**. **Generated v1 STORED as the version of record 2026-10-09** (`box.extent` extent_id 6 WCA 6,168.7 sq mi / 7 BS2_S 3,358.5 sq mi, 346 / 218 edges; identical to the committed `geology/` package within 0.005 sq mi). **Gate 3 CLOSED (D28).** **Step 4 done; gate 4 DECIDED 2026-10-09** (eng_db #110; deliverable `docs/box/step4-2026-10-09/`): **35 WCA TC areas kept** (D29), El Campeon / Los Vaqueros excluded via `docs/box/exclusions.csv` (D29), **gas via GOR ratio mode at a local GOR level** (D30), **gas added to §8 acceptance** (D31). Areas NOT yet stored: `sql/57` box.tc_area needs go-apply, then `box_tc_areas --store --record` (k = 35), then dictionary regen — gate 4 fully closes when the areas are stored as the version of record. **Next: step 5 (5a boxfit extraction incl. ratio mode — plan mode first)** in a fresh session. Execution model in §10, kickoff prompt in §11.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
 it, then stop. Do not roll into the next step on a phase-level "yes".
@@ -70,6 +70,10 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D27 | **The extent is the bench's DEVELOPMENT envelope.** (1) Development is always in: step-out clusters of **≥ 3 laterals** (within 1 mi of each other) within 8 mi of the body are inside, whatever their performance; 1–2-well step-outs and anything beyond 8 mi are tests, out and listed (amended 2026-10-09: a single test well — e.g. Tascosa's Shake 'N Bake 2 State #204H, 6.6 mi W of BS2_S — is not development). (2) No voids: gaps between development trends narrower than **8 mi** are bridged and every interior void is filled, potash area included. (3) Evidence (2×2 buffer, live fronts, potash floor, pre-2016) governs only how far the extent reaches beyond the outermost development. No updip depth limit on either bench (BS2_S 2BS 7,000 ft tried and dropped 2026-10-09: it trimmed only ~37 sq mi of reach and fought the D22 W front; low updip performance is the TC areas' job). (3a) The edge is generalized: 2-mi simplification + corner cutting, a proportional bulge wherever that would leave a developed lateral out, corners rounded at ¾ mi. (4) Performance lives in the TC areas (step 4), never in the extent. Geology cuts a void or moves an edge only for a structural or reservoir reason. Supersedes D21's construction; subsumes D26; D25 stands (grids are context). Michael 2026-10-09. | A sedimentary bench with no structural break has no voids between development trends (BS2_S SE: two strong trends, one gap). Cutting developed wells to express performance mixes the extent with the TC areas. BS2_S producers roll over updip of ~7,000 ft on the 2BS top (6,750–7,000 ft: 0.68× interior, 39 % performing; 7,000–7,250: 0.83×, 68 %; 7,250–7,500: 1.03×, 84 %). |
 | D28 | **Geology review is non-blocking.** The generated D27 extents (v1) are adopted as the version of record and BOX moves on to step 4; the shapefile package stays in `docs/box/step3-2026-10-07/geology/` for geology to review whenever. When geology returns relevant edits, they are imported (`scripts/box_extents_import.py`), stored as a new version of record, and everything downstream (TC areas, curves, PUD forecasts) is re-run on the new version. Gate 3 is redefined accordingly: v1 stored as the version of record. Michael 2026-10-09. | "These extents are more than good enough to move forward with"; progress should not halt waiting on geology. |
 
+| D29 | **TC areas of record = the step-4 build at k = 35** (contiguity-constrained Ward on 1-mi hex cells, log 12-mo oil/ft, D9 floor 10, k by 5-fold CV on 3-mi blocks + paired 1-SE; `box/tc_area.py`). The pad-scale / single-operator areas stay (D9 confounding accepted). **BOX well exclusions** live in `docs/box/exclusions.csv` (api10, reason, decided_by, date), applied at load in every step; first entry = El Campeon / Los Vaqueros (Novi allocation defect, 46 wells). Michael 2026-10-09, gate 4. | Held-out R² 0.21 vs 0.22 local ceiling; the curve is flat past ~14 so the rule's pick is kept rather than re-tuned. Exclusions are a record, not a per-step filter. |
+| D30 | **Gas is forecast via GOR, not an independent gas Arps.** The TC areas stay oil-built (GOR does not move them). Per area, the gas stream is the ratio mode of record (anduin `forecasting/ratio.py`: ln GOR = α + β·Np, fitted vs cumulative oil on the area's per-1,000-ft mean series, constant-ratio fallback) applied to the area's oil curve; the **level** comes from the PUD's own neighbourhood (local GOR, §6) by shifting α, the area supplies the shape β. Michael 2026-10-09, gate 4. | GOR is an E→W maturity trend crossing the oil areas: oil-built areas explain ~46 % of held-out log-GOR variance vs 77 % for a local 15-well median; 16 of 35 areas mix GOR regimes (FINDINGS step 4 §6e). Reuses the 2026-08-17 ratio-mode decision; no second gas method. |
+| D31 | **Gas is in the acceptance test (§8).** Step 6 scores gas cum-6 / cum-12 next to oil, against Novi 2025Q3 gas (sql/43 `pct_err_gas`). Michael 2026-10-09, gate 4. | A gas miss would otherwise pass an oil-only test silently, and gas + NGL are revenue on Steven's side. |
+
 ## 3. Scope guard (what this plan does NOT do)
 
 - No own-location placement; no RES/UPSIDE; no emerging benches; no surface constraints.
@@ -101,7 +105,8 @@ box.extent_edge        extent_id, seg_no, geom (linestring), gap_ft, buffer_ft, 
                        perf_class {strong|rolled|unknown}, explanation text      -- the 2×2 per segment
 box.tc_area            area_id, extent_id, area_no, geom, n_wells, cohort_stats jsonb
 box.type_curve         tc_id, area_id, version, stream, relaxation_step (1..5), n_wells, anchors jsonb,
-                       params jsonb (qi, Di_nom, b, Df, ramp) per stream, eur_per_kft, fit_meta jsonb
+                       params jsonb (qi, Di_nom, b, Df, ramp) per stream — gas: ratio-mode params
+                       (mode, alpha, beta, fallback) vs cum oil, D30 — eur_per_kft, fit_meta jsonb
 box.tc_member          tc_id, api10, dev_scenario, parent_bench, included bool, drop_reason
 box.risk_factor        basin, bench, stream, dev_scenario, parent_bench, factor, n_pairs, ci_lo, ci_hi,
                        applies_to {eur|qi|both}, version
@@ -109,6 +114,7 @@ box.location           location_id (ours), source {novi_<vintage>|box_placement}
                        basin, bench, geom, lateral_ft, dev_scenario (ours), extent_id, area_id,
                        first_seen_vintage, last_seen_vintage, crosswalk_method
 box.pud_forecast       location_id, tc_id, risk_version, stream, params jsonb (scaled), eur_bbl, eur_per_kft,
+                       gor_level (local 12-mo GOR behind the gas alpha shift, D30),
                        coverage {covered|not_covered_emerging|not_covered_outside_extent|thin}
 box.pud_forecast_month (derived) location_id, stream, month_no, volume   -- regenerated from params
 box.hindcast_run       run_id, cutoff_report, built_at, config jsonb
@@ -180,11 +186,15 @@ Delaware WCA_1, WCA_2, BS2_S.
 
 ### Step 5 — shared fitting package + baseline curves + risk factors
 5a. **Extract `boxfit`** from anduin `app/forecasting` (`peak_detection`, `fit`, `ramp_arps`, `eur`,
-`types`, `cohort` as needed). anduin imports it; **560+ tests, real-well baselines, money test all
+`types`, `cohort` as needed, **plus `ratio` and the TC-level `type_curves/ratio_mode` builder** — D30). anduin imports it; **560+ tests, real-well baselines, money test all
 unchanged**; ruff/mypy clean on touched files. Separate anduin PR, squash-merged **before** 5b.
 5b. **Baseline curve per area per stream** via the relaxation ladder (D10); stamp step, n, anchors;
-EUR/1000 ft via `trapezoid_eur`; reconcile stored vs recomputed < 0.1 %.
-5c. **Dev-scenario factors** pooled per bench across the basin: per stream, per (scenario,
+EUR/1000 ft via `trapezoid_eur`; reconcile stored vs recomputed < 0.1 %. **Gas = ratio mode on the oil
+curve (D30)**; the PUD's local GOR level shifts α (Np rescaled per-1,000 ft → PUD lateral). Test whether
+oil b / nominal Di shift with GOR within an area (if they do, that is the case for a GOR split — report,
+don't act). Water stays an independent Arps fit unless the pilot says otherwise.
+5c. **Dev-scenario factors** pooled per bench across the basin: per stream (gas: decide whether it
+carries its own factor or inherits oil's through the ratio — §9), per (scenario,
 parent_bench) pair vs the reference scenario; normalize each area's mixed cohort to the reference;
 report n_pairs and CI; selection-bias note (topfill = newer completions + better rock).
 5d. `box.type_curve`, `tc_member`, `risk_factor` DDL + apply (go-apply).
@@ -197,7 +207,9 @@ report n_pairs and CI; selection-bias note (topfill = newer completions + better
 - Holdout = the ~1,742 wells retained in the trimmed 2025Q3 slices (`intel_forecast_accuracy_vintage`
   / sql/42 by-report functions), actuals through 2026-08.
 - Predict each holdout well: BOX area curve × lateral × factor(its dev scenario, computed by us);
-  Novi = its 2025Q3 forecast. Score cum-6 and cum-12 oil per bench-area.
+  gas = ratio mode at the well's local GOR level built from pre-cutoff wells only (D30);
+  Novi = its 2025Q3 forecast (sql/43 carries oil and gas). Score cum-6 and cum-12 **oil and gas** per
+  bench-area (D31).
 - **Deliverable:** acceptance page — per bench-area bias and P10–P90 error band, BOX vs Novi, n
   holdout wells; summary verdict against §8.
 - **Gate 6:** pass/fail decision. Fail → diagnose (areas? factors? relaxation?) and re-run; no app
@@ -240,6 +252,8 @@ columns mirror `narvi.inventory_well`); Novi subscription decision.
 | Extent trigger | ≥ N new ≥2016 wells within X mi of / outside the extent since last review (N, X set in step 3) | D17 |
 | Dev-scenario rules | sql/50 (660 ft offset gate, 1,000 ft band, shielding) | D11 |
 | Di bounds | oil/gas nominal [0.5, 4.0]/yr, water cap 12/yr, b ∈ [0.9, 1.2] | rule 1 |
+| TC areas | 1-mi hex cells, field kNN 15, D9 floor 10, k by 5-fold CV on 3-mi blocks + paired 1-SE → 35 on WCA | D29, step 4 |
+| Local GOR level (gas) | median 12-mo GOR of the 15 nearest D9 cohort wells (77 % held-out R² on WCA); pilot may refine | D30, step 5 |
 
 ## 7. Verification standard per deliverable
 
@@ -253,17 +267,23 @@ columns mirror `narvi.inventory_well`); Novi subscription decision.
 
 ## 8. Acceptance criteria (accepted 2026-10-06)
 
-On the 2025Q3 holdout, per bench-area with ≥ 10 holdout wells, for cum-6 and cum-12 oil:
+On the 2025Q3 holdout, per bench-area with ≥ 10 holdout wells, for cum-6 and cum-12 **oil and gas**
+(gas added 2026-10-09, D31):
 1. **Bias:** BOX mean % error within **±10 %**, and |BOX bias| < |Novi bias|.
 2. **Spread:** BOX P10–P90 error band **no wider** than Novi's.
 3. **Coverage:** 1 and 2 hold on a **majority** of qualifying bench-areas. Bench-areas with < 10
    holdout wells are reported but count neither way.
-Reference: Novi 2025Q3 cum-6 bias −24 % Delaware / −5 % Midland.
+Reference: Novi 2025Q3 cum-6 oil bias −24 % Delaware / −5 % Midland (gas reference from sql/43 at step 6).
+Oil and gas are judged separately: BOX passes only if both pass. *(Assumed form — Michael 2026-10-09
+said "add gas to the acceptance test"; same thresholds as oil until he says otherwise, §9.)*
 
 ## 9. Open items (resolve in the step named)
 
 - Win on majority — does "majority" weight by holdout wells or by area count? (step 6, before scoring)
 - EUR-vs-qi factor application; per-bench vs per-basin pooling (step 5 gate).
+- Gas acceptance form (D31): same ±10 % / no-wider-spread / majority thresholds as oil, and pass = oil
+  AND gas — confirm, or set gas its own (step 6, before scoring).
+- Gas dev-scenario factor: own factor vs inherit oil's through the ratio (step 5c).
 - ~~NM planned-survey wells: reassign by depth or exclude~~ → **option A adopted 2026-10-06**:
   planned-survey / permit-round wells are evidence unless consensus-flagged, every survey class
   (`docs/box/step1-2026-10-06/FINDINGS.md` §4/§7). BOX-only; no warehouse change.
