@@ -119,9 +119,11 @@ table, not across runs.
 
 ## 6. Flags for gate 4
 
-**Gate 4 decided 2026-10-09:** keep 35 areas; El Campeon / Los Vaqueros excluded; gas via GOR; gas in
-the acceptance test. The areas are stored as the version of record only after `sql/57` go-apply +
-`--store --record`.
+**Gate 4 CLOSED 2026-10-09:** keep 35 areas; El Campeon / Los Vaqueros excluded; gas via GOR; gas in
+the acceptance test. `sql/57` applied live (15/15) on Michael's go-apply; the 35 areas are stored as
+`box.tc_area` v1 on extent_id 6, `is_record` (a read-only rebuild immediately before the store matched
+this deliverable exactly; live check: 35 rows, n_wells 7,527, areas/extent geodesic ratio 0.99999997,
+no overlap, per-area n and P50 equal to `areas_WCA_v1.geojson`). Data dictionary regenerated.
 
 **a. k = 35 vs a coarser nested level.** *DECIDED 2026-10-09 (Michael): keep 35 (plan D29).*
 - The rule picks 35 areas: median 79 cohort wells, quartiles 35 / 197, min 15.
@@ -244,7 +246,7 @@ should GOR inform them?
   unique index, and EXPLAIN showing `box_tc_area_geom_gix` and `box_tc_area_geog_gix`.
 - `store_areas` dry run into the container: rows = areas, identity check passed, and the record
   handover from v1 to v2 is correct.
-- **Not applied to Supabase.**
+- **Applied to Supabase 2026-10-09** (15/15 live) and the areas stored as the version of record (gate-4 block above).
 
 **Tests:** `pytest -q` passes 326, skips 35, including 12 new box tests. Ruff is clean on every touched
 file (mypy is not installed in this venv).
