@@ -222,7 +222,8 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"evidence governs reach beyond the outermost development only. Buffered extent before the envelope {st['pre_envelope_sqmi']:,.0f} sq mi, envelope {st['extent_sqmi']:,.0f} sq mi "
         f"({st['bridged_sqmi']:,.0f} sq mi bridged or filled; {st['bridge_edge_mi']:,.0f} mi of edge placed by a bridge). "
         f"Updip depth limit: {('2BS top ' + format(st['updip_limit'][1], ',.0f') + ' ft') if st['updip_limit'] else 'none'}. "
-        f"Developed >= 2016 laterals outside the extent: {st['developed_outside']} (isolated tests {st['n_isolated_tests']}; others {st['developed_outside_not_isolated']}).</div>"),
+        f"Edge generalized ({bp.gen_tol_mi:g}-mi simplification, bulges where a developed lateral would fall out, {bp.gen_round_mi:g}-mi rounding): raw envelope {st['envelope_raw_sqmi']:,.0f} sq mi. "
+        f">= 2016 laterals outside the extent: {st['developed_outside']} (all step-out tests: {st['n_isolated_tests']}, of which {st['n_tests_within_reach']} are 1-2-well tests within {bp.bridge_mi:g} mi; other {st['developed_outside_not_isolated']}).</div>"),
         "<h2 id=themap>Map</h2><div class=lg>" + "".join(f"<span style='background:{c}'></span>{r}" for r, c in pkg.RULE_COLOURS.items() if r in set(b['edges'].rule)) + "</div>",
         "<div id=map></div><div class=meta>Edge colour = the clause that set the buffer; click an edge for buffer, gap, performance and the geology flag. Magenta = step-out within the bridging width (developed, in), black = isolated test (out). Violet dashed = updip of the depth limit. Toggle the drilled core and the step-2 measuring outline top-right.</div>",
         f"<details><summary>static overview (the legend PNG shipped to geology)</summary><img src='geology/BOX_{pool}_legend.png'></details>",
@@ -232,9 +233,10 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"<h2 id=flags>Geology flags: pinned edge with strong wells ({len(flagged):,} runs, {st['flagged_pinned_strong_mi']:,.1f} mi)</h2>"
         "<div class=meta>The plan's \"pinned + strong → tight + flag for geology\": the edge is drilled up to and the last wells perform ≥ 0.85× interior, so performance does not explain the stop. Longest first.</div>"
         + _table(flag_tab, {"pinned run ft": ",.0f", "perf_ratio": ".2f", "buffer_ft": ",.0f"}, max_rows=60),
-        f"<h2 id=stepouts>Step-outs ({len(so):,}): within {bp.bridge_mi:g} mi in, isolated tests out</h2>"
-        f"<div class=meta>D27: developed is always in. A >= 2016 lateral within {bp.bridge_mi:g} mi of the body joins the extent whatever its performance (performance is the TC areas' job). "
-        f"Beyond {bp.bridge_mi:g} mi it is an isolated test: tested, not developed, listed in the flags layer.</div>"
+        f"<h2 id=stepouts>Step-outs ({len(so):,}): development in, tests out</h2>"
+        f"<div class=meta>D27: development is always in. Step-outs within {bp.bridge_mi:g} mi are grouped into clusters (laterals within {bp.cluster_link_mi:g} mi of each other); "
+        f"a cluster of >= {bp.min_cluster} laterals is development and joins the extent whatever its performance (performance is the TC areas' job). "
+        f"1-2-well step-outs and anything beyond {bp.bridge_mi:g} mi are tests: listed in the flags layer, not included.</div>"
         + _table(so_tab, {"dist_mi": ".1f", "perf_ratio": ".2f"}, max_rows=150),
         f"<h2 id=holes>Holes of the step-2 body ({len(holes):,}; {int(holes.filled_D26.sum())} filled by D26, {int(holes.filled_D27.sum())} by D27)</h2><div class=meta><b>D26 (Michael 2026-10-08):</b> a hole ≥ {ctx['bp'].legacy_fill_cover:.0%} covered by the ½-mi footprint of pre-2016 laterals is legacy drilled-up ground — "
         "the bench is proven and full, no room for a modern well — and is filled into the extent (potash holes included; the old wells are still never curve evidence). "

@@ -231,7 +231,7 @@ def legend_png(path: Path, pool: str, b: dict[str, Any], sopa: Any, bp: Any, ver
     h = [Line2D([], [], color=RULE_COLOURS.get(u, "#000"), lw=3, label=u) for u in used]
     h += [Patch(facecolor="#fde68a", alpha=0.5, label="extent"), Patch(facecolor="none", edgecolor="#0ea5e9", hatch="//", label="BLM Secretary's Potash Area (D24)"),
           Line2D([], [], color="#1e3a8a", lw=1, label=">= 2016 lateral"), Line2D([], [], color="#9ca3af", lw=1, label="pre-2016 lateral"),
-          Line2D([], [], color="#c026d3", lw=1.5, label="step-out within 8 mi (developed, in)"), Line2D([], [], color="#111827", lw=1.5, label="isolated test (out, flags layer)")]
+          Line2D([], [], color="#c026d3", lw=1.5, label="step-out development (>= 3-well cluster, in)"), Line2D([], [], color="#111827", lw=1.5, label="step-out test (out, flags layer)")]
     lax = fig.add_axes((0.02, 0.01, 0.5, 0.2))
     lax.axis("off")
     lax.legend(handles=h, loc="upper left", fontsize=8, frameon=False, ncol=1)
@@ -244,8 +244,8 @@ def legend_png(path: Path, pool: str, b: dict[str, Any], sopa: Any, bp: Any, ver
         "pre-2016 beyond a gap -> floor (D5: tighten only)\n"
         f"live front -> cap ({', '.join(st['fronts']) or 'none'}; D22)\n"
         "inside the potash area -> floor (D24)\n"
-        f"D27: envelope bridges gaps < {bp.bridge_mi:g} mi; no voids; developed is in\n"
-        "updip of the depth limit -> floor (BS2_S: 2BS top 7,000 ft)\n"
+        f"D27: envelope bridges gaps < {bp.bridge_mi:g} mi; no voids; development (>= 3-well clusters) is in\n"
+        f"edge generalized: {bp.gen_tol_mi:g}-mi simplification, bulges over development, {bp.gen_round_mi:g}-mi rounding\n"
         "perf class = edge wells' 12-mo oil/ft vs the pool interior median\n    (>= 0.85 strong, < 0.70 rolled)\n"
         "CRS: NAD83 / UTM 14N, US-survey ft (.prj written; coords projected)"
     )
@@ -268,8 +268,10 @@ CRS
   already projected, same frame as the HCA_* GGX grids.
 
 What to edit
-  The extent is the bench's DEVELOPMENT envelope (D27): every developed well is inside, gaps
-  between development trends narrower than 8 mi are bridged, and there are no interior voids.
+  The extent is the bench's DEVELOPMENT envelope (D27): all development is inside (step-out
+  programs of 3+ laterals included, single/two-well tests listed but left out), gaps between
+  development trends narrower than 8 mi are bridged, there are no interior voids, and the edge is
+  generalized (smooth).
   Cut a void or pull an edge only where structure or reservoir says so; say why in NOTE.
 
   BOX_<bench>_extent_v{version}.shp — the ONLY layer you edit. Move, cut or add polygon area.
@@ -288,8 +290,8 @@ What to look at (not edited)
                                    is there a structural or reservoir break that should cut it?
       "updip"                      shallower than the bench's depth limit: no reach past the last wells
   BOX_<bench>_flags             voids filled (D27: no voids inside the development envelope), legacy
-                                drilled-up holes filled (D26), and isolated tests beyond 8 mi
-                                (tested, not developed: left out)
+                                drilled-up holes filled (D26), and step-out tests left out: 1-2-well
+                                step-outs, and anything beyond 8 mi (tested, not developed)
   BOX_<bench>_updip             the zone shallower than the depth limit (BS2_S: 2BS top 7,000 ft)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE

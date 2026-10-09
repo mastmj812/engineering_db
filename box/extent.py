@@ -27,13 +27,17 @@ extent polygon.
      then lightly smoothed. The same rule evaluated point-wise drives the calibration backtest.
 
   5. D27 (Michael 2026-10-09) — the extent is the bench's DEVELOPMENT envelope:
-     - developed is always in: every >= 2016 pool lateral within the bridging width of the body
-       joins the core whatever its performance; isolated tests beyond it are listed, not included;
+     - developed is always in: a step-out cluster of >= min_cluster laterals (laterals within
+       cluster_link_mi of each other) within the bridging width joins the core whatever its
+       performance; 1-2-well step-outs and anything beyond the bridging width are tests, listed
+       not included (amended 2026-10-09: a single test well is not development);
      - no voids: the buffered extent is closed with radius bridge_mi / 2 (gaps between development
        trends narrower than bridge_mi are bridged) and every interior void is filled;
-     - evidence only governs reach beyond the outermost development: an optional updip depth limit
-       (BS2_S: 2BS sand top 7,000 ft) holds the buffer to the floor on the shallow side, like the
-       potash polygon. Performance belongs to the TC areas (step 4), never to the extent.
+     - evidence only governs reach beyond the outermost development. An updip depth limit was
+       tried and dropped (2026-10-09): it only trimmed reach (~1 %) and fought the D22 W front.
+       Performance belongs to the TC areas (step 4), never to the extent;
+     - generalized edge (2026-10-09): 2-mi simplification + corner cutting, a proportional bulge
+       wherever that would leave a developed lateral out, then corners rounded at 3/4 mi.
 
 Planar math in UTM 13N feet (box.edge_gap's frame).
 """
@@ -76,6 +80,11 @@ class BufferParams:
     legacy_fill_cover: float = 0.90  # D26: fill a hole this covered by the pre-2016 lateral footprint (r)
     bridge_mi: float = 8.0  # D27: bridge gaps between development trends narrower than this; also the step-out inclusion reach
     envelope: bool = True  # D27 envelope (closing + no voids); False = the pre-D27 buffered extent
+    min_cluster: int = 3  # D27: a step-out cluster needs this many laterals to count as development
+    cluster_link_mi: float = 1.0  # laterals within this of each other form one step-out cluster
+    gen_tol_mi: float = 2.0  # generalized edge: simplification tolerance
+    gen_shoulder_mi: float = 1.5  # bulge shoulder floor (and 2.5 x how far the wells sit out)
+    gen_round_mi: float = 0.75  # final corner rounding radius
     uniform: bool = False  # calibration baseline: floor_ft everywhere, no 2×2 / gap / front terms
 
 
@@ -180,12 +189,23 @@ def front_sides(so: pd.DataFrame, bp: BufferParams = DEFAULT) -> dict[str, dict[
     return out
 
 
-def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = DEFAULT) -> pd.Series:
-    """D27: developed is always in — a step-out within the bridging width joins the core (an island
-    the envelope bridges) whatever its performance; beyond it, an isolated test, listed not included.
-    (fronts no longer decide membership; they still set the cap on their side.)"""
-    near = so["dist_mi"] <= bp.bridge_mi
-    return pd.Series(np.where(near, "island", "excluded: isolated test (tested, not developed)"), index=so.index)
+def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = DEFAULT, geoms: list[Any] | None = None) -> pd.Series:
+    """D27: development is in, tests are out. Step-outs within the bridging width are grouped into
+    clusters (laterals within cluster_link_mi of each other); a cluster of >= min_cluster laterals is
+    development and joins the core (an island the envelope bridges) whatever its performance; a 1-2
+    well cluster is a test. Beyond the bridging width: an isolated test. Tests are listed, never
+    included. (fronts no longer decide membership; they still set the cap on their side.)"""
+    near = (so["dist_mi"] <= bp.bridge_mi).to_numpy()
+    role = np.where(near, "island", "excluded: isolated test (tested, not developed)").astype(object)
+    if geoms is not None and near.any():
+        g = np.asarray(geoms, dtype=object)
+        ix = np.flatnonzero(near)
+        blobs = as_multi(shapely.union_all(shapely.buffer(g[ix], bp.cluster_link_mi * FT_PER_MI / 2.0, quad_segs=4)))
+        for blob in blobs.geoms:
+            members = ix[shapely.intersects(g[ix], blob)]
+            if len(members) < bp.min_cluster:
+                role[members] = f"excluded: test ({len(members)}-well step-out, not development)"
+    return pd.Series(role, index=so.index)
 
 
 # ----------------------------------------------------------------------------
@@ -351,6 +371,59 @@ def build_extent(core_mp: MultiPolygon, xy: np.ndarray, b: np.ndarray, f: np.nda
         ext = development_envelope(ext, bp.bridge_mi * FT_PER_MI / 2.0)
     ext = ext.simplify(25.0)
     return MultiPolygon([shapely.geometry.polygon.orient(g) for g in as_multi(ext).geoms]), cells
+
+
+def _chaikin(coords: Any, n: int) -> np.ndarray:
+    c = np.asarray(coords)[:-1]
+    for _ in range(n):
+        nxt = np.roll(c, -1, axis=0)
+        q, r = 0.75 * c + 0.25 * nxt, 0.25 * c + 0.75 * nxt
+        c = np.empty((2 * len(q), 2))
+        c[0::2], c[1::2] = q, r
+    return np.vstack([c, c[:1]])
+
+
+def _fill(g: Any) -> MultiPolygon:
+    return as_multi(shapely.union_all([Polygon(q.exterior) for q in as_multi(g).geoms]))
+
+
+def _inside_frac(lines: np.ndarray, g: Any) -> np.ndarray:
+    return shapely.length(shapely.intersection(lines, g)) / shapely.length(lines)
+
+
+def generalize_extent(ext: Any, dev_lines: list[LineString], bp: BufferParams = DEFAULT, margin_ft: float = 1320.0, fillet_ft: float = FT_PER_MI) -> MultiPolygon:
+    """The geologic-looking edge (Michael 2026-10-09). (1) Simplify each part at gen_tol_mi and cut
+    corners (Chaikin); (2) wherever that leaves a developed lateral out (< 50 % of its length inside,
+    the D27 test), add a bulge: the hull of those laterals (+ margin) and the stretch of edge within
+    max(gen_shoulder_mi, 2.5 x how far they sit out), filleted in; (3) round corners at gen_round_mi
+    (close then open) and re-guard any lateral that drops out. Developed laterals the input holds
+    are held by the output; no voids."""
+    lines = np.asarray(dev_lines, dtype=object)
+    held = lines[_inside_frac(lines, ext) >= 0.5] if len(lines) else lines
+    parts = []
+    for p in as_multi(ext).geoms:
+        s = p.exterior.simplify(bp.gen_tol_mi * FT_PER_MI)
+        parts.append(Polygon(_chaikin(s.coords, 5)).buffer(0) if len(s.coords) >= 4 else p)
+    g = shapely.union_all(parts)
+    if len(held):
+        need = held[_inside_frac(held, g) < 0.5]
+        if len(need):
+            clusters = as_multi(shapely.union_all(shapely.buffer(need, FT_PER_MI / 2.0, quad_segs=4)))
+            bulges = []
+            ring = shapely.union_all([q.exterior for q in as_multi(g).geoms])
+            for c in clusters.geoms:
+                lat = shapely.union_all(shapely.buffer(need[shapely.intersects(need, c)], margin_ft, quad_segs=4))
+                h = max(ring.distance(shapely.Point(x, y)) for x, y in shapely.get_coordinates(lat)[::5])
+                near = ring.intersection(lat.buffer(max(bp.gen_shoulder_mi * FT_PER_MI, 2.5 * h)))
+                bulges.append(shapely.convex_hull(shapely.union_all([lat, near])))
+            g = shapely.union_all([g, *bulges]).buffer(fillet_ft, quad_segs=16).buffer(-fillet_ft, quad_segs=16)
+    r = bp.gen_round_mi * FT_PER_MI
+    h = g.buffer(r, quad_segs=24).buffer(-r, quad_segs=24).buffer(-r, quad_segs=24).buffer(r, quad_segs=24)
+    if len(held):
+        lost = held[_inside_frac(held, h) < 0.5]
+        if len(lost):
+            h = shapely.union_all([h, *shapely.buffer(lost, margin_ft, quad_segs=4)]).buffer(r, quad_segs=24).buffer(-r, quad_segs=24)
+    return MultiPolygon([shapely.geometry.polygon.orient(q) for q in _fill(h).geoms])
 
 
 def development_envelope(ext: Any, close_ft: float) -> MultiPolygon:

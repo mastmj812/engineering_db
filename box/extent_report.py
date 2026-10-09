@@ -50,10 +50,11 @@ BRIDGE_SLACK_FT = 1500.0  # an extent edge this far past its segment's buffer wa
 MIN_FLOOR_FT = 880.0  # next-row rule: the next development row beyond a producer (narvi's 880-ft fallback spacing) is always inside
 UNIFORM_FT = (660.0, 1320.0, 1980.0, 2640.0, 3960.0, 5280.0)  # flat-buffer baselines
 SOPA_DIR = Path("docs") / "box" / "ref" / "potash_sopa_1986"
-# D27 updip depth limit per pool: (Holden GGX grid of the bench top, cutoff ft). Shallower than the
-# cutoff = the updip side that rolls over: the extent never reaches past the last wells there.
-# BS2_S: 2BS sand top 7,000 ft (Michael 2026-10-09). WCA: none (not decided).
-UPDIP: dict[str, tuple[str, float]] = {"BS2_S": ("HCA_2BSPGS_STRUCTURE_MDXYZ_grid.xyz", 7000.0)}
+# Optional updip depth limit per pool: (Holden GGX grid of the bench top, cutoff ft). Shallower than
+# the cutoff, the extent never reaches past the last wells. Tried for BS2_S (2BS top 7,000 ft) and
+# DROPPED 2026-10-09 (Michael): it only trimmed reach (~37 sq mi) and fought the D22 W front; low
+# updip performance is the TC areas' job. Kept as machinery, empty by decision.
+UPDIP: dict[str, tuple[str, float]] = {}
 
 
 # ----------------------------------------------------------------------------
@@ -156,7 +157,7 @@ def prep(d: pd.DataFrame, pool: str, T: dt.date | None, bp: ex.BufferParams = ex
     seg = ex.local_perf(r["seg"], lines, oil, im & coh, med, bp)
     so = r["stepouts"].copy()
     fronts = ex.front_sides(so, bp)
-    so["role"] = ex.stepout_roles(so, fronts, bp)
+    so["role"] = ex.stepout_roles(so, fronts, bp, [lines[i] for i in so["ix"]])
     so["class"] = ex.stepout_class(so)
     islands = [lines[i] for i in so.loc[so.role == "island", "ix"]]
     body_lines = [ln for ln in lines if ln.intersects(body)]
@@ -348,7 +349,8 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip
     pr = prep(d, pool, None, bp)
     sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa, updip)
     b, f = ex.sample_buffers(pr.seg_ix, sb, bp.floor_ft)
-    ext, _cells = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), bp)
+    raw, _cells = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), bp)
+    ext = ex.generalize_extent(raw, list(pr.r["ev"]["geom"]), bp) if bp.envelope else raw
     runs = ex.edge_runs(ext, pr.xy, pr.seg_ix)
     edges = edges_frame(pr, sb, runs, bp)
     pre, _ = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), replace(bp, envelope=False))
@@ -372,6 +374,8 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip
     iso_ix = set(so.loc[so.role != "island", "ix"])
     stats = {
         "pre_envelope_sqmi": pre.area / eg.FT_PER_MI**2,
+        "envelope_raw_sqmi": raw.area / eg.FT_PER_MI**2,
+        "n_tests_within_reach": int(so["role"].str.startswith("excluded: test").sum()),
         "bridged_sqmi": ext.difference(pre).area / eg.FT_PER_MI**2,
         "updip_limit": UPDIP.get(pool),
         "developed_outside": int((~inside).sum()),
@@ -410,7 +414,7 @@ def envelope_backtest(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any
         rows = {}
         for env in (False, True):
             ext, _ = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), replace(bp, envelope=env))
-            rows[env] = ext
+            rows[env] = ex.generalize_extent(ext, list(pr.r["ev"]["geom"]), bp) if env else ext
         new = d[(d["first_production_date"] >= T) & d["geom"].notna()].reset_index(drop=True)
         pxy, who = _sample_lines(list(new["geom"]), EVAL_STEP_FT)
         dist = ex.CoreDistance(pr.core).distance(pxy, EVAL_REACH_FT)
@@ -553,7 +557,8 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
         f"  pinned edge: floor = {bp.floor_ft:,.0f} ft (rolled) / {1.5 * bp.floor_ft:,.0f} (unknown) / {2 * bp.floor_ft:,.0f} (strong)\n"
         f"  gap: k x gap length x perf (strong 1.0 / unknown 0.75 / rolled 0.5), k = {bp.k:g}, within [floor, cap = {bp.cap_ft:,.0f} ft]\n"
         "  pre-2016 laterals beyond a gap -> floor; live-front side -> cap; potash area -> floor; updip of the depth limit -> floor\n"
-        f"  D27 envelope: developed (within {bp.bridge_mi:g} mi) always in; gaps < {bp.bridge_mi:g} mi bridged; no voids"
+        f"  D27 envelope: development (step-out clusters >= {bp.min_cluster} laterals within {bp.bridge_mi:g} mi) always in; gaps < {bp.bridge_mi:g} mi bridged; no voids\n"
+        f"  edge generalized: {bp.gen_tol_mi:g}-mi simplification, bulges over development, {bp.gen_round_mi:g}-mi rounding"
     )
     (geo_dir / "README.txt").write_text(pkg.README.format(built=built, pools=", ".join(POOLS), version=version, rule=rule_txt), encoding="utf-8")
     # 5. pages + data

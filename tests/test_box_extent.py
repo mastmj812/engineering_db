@@ -322,3 +322,26 @@ def test_build_extent_survives_an_invalid_voronoi_cell(monkeypatch):
     monkeypatch.setattr(shapely, "voronoi_polygons", bowtie)
     ext, _ = ex.build_extent(core, xy, b, f, None, BP)
     assert ext.is_valid and ext.contains(core.buffer(-1.0))
+
+
+def test_one_and_two_well_stepouts_are_tests_three_is_development():
+    so = pd.DataFrame([{"side": "W", "dist_mi": 3.0, "perf_ratio": 0.9, "cohort": True} for _ in range(6)])
+    g = [LineString([(0, 0), (0, 10_000)]),  # lone test
+         LineString([(30_000, 0), (30_000, 10_000)]), LineString([(30_880, 0), (30_880, 10_000)]),  # 2-well test
+         LineString([(60_000, 0), (60_000, 10_000)]), LineString([(60_880, 0), (60_880, 10_000)]), LineString([(61_760, 0), (61_760, 10_000)])]  # program
+    roles = list(ex.stepout_roles(so, {}, ex.DEFAULT, g))
+    assert roles[0].startswith("excluded: test (1-well") and roles[1].startswith("excluded: test (2-well") and roles[2] == roles[1]
+    assert roles[3:] == ["island"] * 3
+
+
+def test_generalized_edge_holds_development_and_has_no_spikes():
+    lines = []
+    for k in range(4):  # a staircase of units: the shape that scallops
+        lines += [LineString([(k * 5280 + i * 660, k * 10_560), (k * 5280 + i * 660, k * 10_560 + 10_000)]) for i in range(8)]
+    lines.append(LineString([(9_000, 40_000), (9_000, 52_000)]))  # one lateral poking out to the N
+    ext = ex.as_multi(shapely.union_all(shapely.buffer(np.asarray(lines, dtype=object), 1320)))
+    g = ex.generalize_extent(ext, lines, BP)
+    frac = shapely.length(shapely.intersection(np.asarray(lines, dtype=object), g)) / shapely.length(np.asarray(lines, dtype=object))
+    assert (frac >= 0.5).all() and len(g.geoms) == 1 and len(g.geoms[0].interiors) == 0
+    opened = g.buffer(-0.5 * MI).buffer(0.5 * MI)
+    assert not [p for p in ex.as_multi(g.difference(opened)).geoms if p.area > 0.05 * MI * MI]  # no sub-mile spikes
