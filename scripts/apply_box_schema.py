@@ -1,7 +1,8 @@
-"""Apply sql/54 (BOX schema: bench_scope, extent, extent_edge) and verify it.
+"""Apply sql/54 + sql/55 (BOX schema: bench_scope, extent, extent_edge) and verify it.
 
   1. sql/54 — schema box, the three tables, indexes, grants, the D2 bench_scope seed
-     (ON CONFLICT DO NOTHING: Michael's later edits survive a re-apply).
+     (ON CONFLICT DO NOTHING: Michael's later edits survive a re-apply); sql/55 — edge_class
+     'bridge' (D27 envelope bridges).
   2. validate by identity:
        - every table + named index exists; PKs present
        - bench_scope holds every seeded (basin, bench) key with the seeded in_scope
@@ -24,7 +25,8 @@ from psycopg import errors
 
 from etl.db import get_connection
 
-SQL = Path(__file__).resolve().parent.parent / "sql" / "54_box_schema.sql"
+SQL_DIR = Path(__file__).resolve().parent.parent / "sql"
+SQL_FILES = ("54_box_schema.sql", "55_box_extent_edge_bridge.sql")
 TABLES = ("box.bench_scope", "box.extent", "box.extent_edge")
 INDEXES = ("box_extent_version_uq", "box_extent_record_uq", "box_extent_geom_gix", "box_extent_geog_gix", "box_extent_edge_geom_gix")
 SEED = {
@@ -48,9 +50,10 @@ def _check(ok: bool, msg: str) -> None:
 
 
 def apply_schema(conn) -> None:
-    print("[1/3] sql/54 — box schema", flush=True)
+    print("[1/3] sql/54 + sql/55 — box schema", flush=True)
     with conn.cursor() as cur:
-        cur.execute(SQL.read_text(encoding="utf-8"))
+        for f in SQL_FILES:
+            cur.execute((SQL_DIR / f).read_text(encoding="utf-8"))
     conn.commit()
 
 
@@ -93,6 +96,12 @@ def smoke(conn) -> None:
                 (eid,),
             )
             _check(q("SELECT count(*) FROM box.extent_edge WHERE extent_id = %s", (eid,)).fetchone()[0] == 1, "extent + edge insert")
+            q(
+                "INSERT INTO box.extent_edge (extent_id, edge_no, seg_no, geom, buffer_ft, edge_class, rule) "
+                "VALUES (%s, 1, 0, extensions.ST_GeomFromText('LINESTRING(-103.8 31.9,-103.8 32.0)', 4326), 880, 'bridge', 'envelope bridge (D27)')",
+                (eid,),
+            )
+            _check(True, "edge_class 'bridge' accepted (sql/55)")
             q("SAVEPOINT s")
             try:
                 q(
