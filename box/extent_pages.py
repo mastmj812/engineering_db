@@ -30,6 +30,7 @@ const extent = L.layerGroup(D.extent.map(P => poly(P, {color: '#a16207', weight:
 const core = L.layerGroup(D.core.map(P => poly(P, {color: '#1e3a8a', weight: 0.6, fill: false, interactive: false})));
 const outline = L.layerGroup(D.outline.map(P => poly(P, {color: '#6b7280', weight: 1, dashArray: '4 4', fill: false, interactive: false})));
 const sopa = L.layerGroup(D.sopa.map(P => poly(P, {color: '#0ea5e9', weight: 1.5, fillColor: '#0ea5e9', fillOpacity: 0.08, interactive: false}))).addTo(map);
+const updip = L.layerGroup(D.updip.map(P => poly(P, {color: '#7c3aed', weight: 1.2, dashArray: '3 3', fillColor: '#7c3aed', fillOpacity: 0.07, interactive: false}))).addTo(map);
 const old = L.layerGroup(D.old.map(c => L.polyline(ll(c), {color: '#9ca3af', weight: 1, interactive: false}))).addTo(map);
 const ev = L.layerGroup(D.ev.map(c => L.polyline(ll(c), {color: '#1e3a8a', weight: 0.8, interactive: false}))).addTo(map);
 const so = L.layerGroup(D.so.map(s => L.polyline(ll(s.c), {color: s.in ? '#c026d3' : '#111827', weight: 3}).bindPopup(
@@ -38,8 +39,8 @@ const edges = L.layerGroup(D.edges.map(e => L.polyline(ll(e.c), {color: e.col, w
   `<b>${esc(e.rule)}</b><br>buffer ${e.buf.toLocaleString()} ft · side ${e.side}<br>edge ${e.cls}${e.gap ? ' · gap ' + e.gap.toLocaleString() + ' ft' : ''} · perf ${e.pc} (${e.pr ?? '–'}×)` +
   (e.flag ? `<br><span style="color:#b45309">${esc(e.flag)}</span>` : '')))).addTo(map);
 const holes = L.layerGroup(D.holes.map(h => L.circleMarker([h.lat, h.lon], {radius: 6, color: h.fill ? '#15803d' : '#a16207', weight: 2, fillOpacity: 0.6}).bindPopup(
-  `<b>${h.fill ? 'legacy drilled-up hole — FILLED (D26)' : 'hole'}</b> ${h.a} sq mi · ${h.sopa}% in the potash area · ${h.cov}% covered by pre-2016 laterals`))).addTo(map);
-L.control.layers(null, {'extent (generated)': extent, 'drilled core': core, 'step-2 outline (measuring, dashed)': outline, 'BLM Secretary\\'s Potash Area': sopa,
+  `<b>${h.fill ? 'void FILLED (D26 / D27)' : 'hole'}</b> ${h.a} sq mi · ${h.sopa}% in the potash area · ${h.cov}% covered by pre-2016 laterals`))).addTo(map);
+L.control.layers(null, {'extent (generated)': extent, 'drilled core': core, 'step-2 outline (measuring, dashed)': outline, 'BLM Secretary\\'s Potash Area': sopa, 'updip of the depth limit': updip,
   'pre-2016 laterals': old, '≥2016 laterals': ev, 'step-outs (magenta in / black out)': so, 'extent edge by rule': edges, 'holes': holes}, {collapsed: false}).addTo(map);
 const bounds = L.latLngBounds(D.extent.flatMap(P => ll(P[0])));
 map.fitBounds(bounds);
@@ -69,7 +70,7 @@ def map_data(b: dict[str, Any], sopa_ll: Any) -> dict[str, Any]:
         edges.append({"c": _lonlat_coords(g.simplify(1e-5)), "col": pkg.RULE_COLOURS.get(e.rule, "#000"), "rule": e.rule, "buf": round(float(e.buffer_ft)), "side": e.side, "cls": e.edge_class,
                       "gap": None if not np.isfinite(e.gap_ft) or e.gap_ft == 0 else round(float(e.gap_ft)), "pc": e.perf_class,
                       "pr": None if not np.isfinite(e.perf_ratio) else round(float(e.perf_ratio), 2), "flag": e.flag})
-    holes = [{"lat": round(h.lat, 5), "lon": round(h.lon, 5), "a": round(h.area_sqmi, 1), "sopa": round(100 * h.sopa_share), "cov": round(100 * h.legacy_cover), "fill": bool(h.filled_D26)}
+    holes = [{"lat": round(h.lat, 5), "lon": round(h.lon, 5), "a": round(h.area_sqmi, 1), "sopa": round(100 * h.sopa_share), "cov": round(100 * h.legacy_cover), "fill": bool(h.filled_D26 or h.filled_D27)}
              for h in b["holes"].itertuples()]
     main = [g for g in pr.r["outline"].geoms if g.equals(pr.r["body"])] or [pr.r["body"]]
     return {
@@ -77,6 +78,7 @@ def map_data(b: dict[str, Any], sopa_ll: Any) -> dict[str, Any]:
         "core": _rings_ll(eg.to_lonlat([pr.core.simplify(100.0)])[0]),
         "outline": _rings_ll(eg.to_lonlat(main)[0]),
         "sopa": _rings_ll(sopa_ll) if sopa_ll is not None else [],
+        "updip": _rings_ll(eg.to_lonlat([b["updip"].simplify(200.0)])[0]) if b.get("updip") is not None and not b["updip"].is_empty else [],
         "old": lines(list(old.geom)),
         "ev": lines(list(ev.geom)),
         "so": sos,
@@ -158,6 +160,13 @@ def calibration_html(ctx: dict[str, Any]) -> str:
     ]
     for name, t in pt.items():
         parts.append(f"<h3>{name}</h3>" + _table(t, {"share_performing": ".2f", "median_oil_ratio": ".2f"}))
+    eb = ctx.get("env_bt")
+    if eb is not None and len(eb):
+        parts.append("<h3 id=envbt>D27 check: the chosen config built as a polygon at each cutoff, before vs after the development envelope</h3>"
+                     "<div class=meta>Later wells >= 50 % outside the T core and within 3 mi of it, 12-mo known (hole infill included this time; the envelope fills holes). "
+                     "The envelope is a development statement, not a performance screen: it is expected to capture more of both.</div>"
+                     + _table(eb[["pool", "cutoff", "construction", "area_sqmi", "n_good", "hit_good", "n_rolled", "hit_rolled", "tpr", "fpr", "j"]],
+                              {"area_sqmi": ",.0f", "tpr": ".2f", "fpr": ".2f", "j": ".3f"}))
     return "\n".join(parts)
 
 
@@ -208,9 +217,14 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
             "holes kept": st["n_holes"], "extent perimeter mi": st["perimeter_mi"], "buffer ft, perimeter-weighted mean": st["buffer_ft_weighted_mean"], "buffer ft, median segment": st["buffer_ft_median"],
             "pinned+strong flagged mi": st["flagged_pinned_strong_mi"]}]), {"extent sq mi": ",.0f", "drilled core sq mi": ",.0f", "step-2 outline sq mi (measuring)": ",.0f", "extent perimeter mi": ",.0f",
                                                                             "buffer ft, perimeter-weighted mean": ",.0f", "buffer ft, median segment": ",.0f", "pinned+strong flagged mi": ",.1f"}),
-        f"<div class='flag'><b>Live fronts (D22 rule, detected from the step-out table):</b> {front_txt}. Front sides are buffered at the cap and their performing / too-new step-outs within reach join the core as islands.</div>",
+        (f"<div class='flag'><b>Live fronts (D22 rule, detected from the step-out table):</b> {front_txt}. Front sides are buffered at the cap.</div>"
+        f"<div class='flag ok'><b>D27 development envelope (Michael 2026-10-09):</b> developed is always in; gaps between development trends narrower than {bp.bridge_mi:g} mi are bridged; no interior voids; "
+        f"evidence governs reach beyond the outermost development only. Buffered extent before the envelope {st['pre_envelope_sqmi']:,.0f} sq mi, envelope {st['extent_sqmi']:,.0f} sq mi "
+        f"({st['bridged_sqmi']:,.0f} sq mi bridged or filled; {st['bridge_edge_mi']:,.0f} mi of edge placed by a bridge). "
+        f"Updip depth limit: {('2BS top ' + format(st['updip_limit'][1], ',.0f') + ' ft') if st['updip_limit'] else 'none'}. "
+        f"Developed >= 2016 laterals outside the extent: {st['developed_outside']} (isolated tests {st['n_isolated_tests']}; others {st['developed_outside_not_isolated']}).</div>"),
         "<h2 id=themap>Map</h2><div class=lg>" + "".join(f"<span style='background:{c}'></span>{r}" for r, c in pkg.RULE_COLOURS.items() if r in set(b['edges'].rule)) + "</div>",
-        "<div id=map></div><div class=meta>Edge colour = the clause that set the buffer; click an edge for buffer, gap, performance and the geology flag. Magenta = step-out island (in), black = step-out left out. Toggle the drilled core and the step-2 measuring outline top-right.</div>",
+        "<div id=map></div><div class=meta>Edge colour = the clause that set the buffer; click an edge for buffer, gap, performance and the geology flag. Magenta = step-out within the bridging width (developed, in), black = isolated test (out). Violet dashed = updip of the depth limit. Toggle the drilled core and the step-2 measuring outline top-right.</div>",
         f"<details><summary>static overview (the legend PNG shipped to geology)</summary><img src='geology/BOX_{pool}_legend.png'></details>",
         "<h2 id=rules>Perimeter by buffer rule (walked ring)</h2>" + _table(by_rule, {"walked_mi": ",.1f", "buffer_ft_median": ",.0f", "buffer_ft_max": ",.0f"}),
         "<h3>By 2×2 class</h3>" + _table(by_class, {"walked_mi": ",.1f", "buffer_ft_median": ",.0f"}),
@@ -218,13 +232,14 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"<h2 id=flags>Geology flags: pinned edge with strong wells ({len(flagged):,} runs, {st['flagged_pinned_strong_mi']:,.1f} mi)</h2>"
         "<div class=meta>The plan's \"pinned + strong → tight + flag for geology\": the edge is drilled up to and the last wells perform ≥ 0.85× interior, so performance does not explain the stop. Longest first.</div>"
         + _table(flag_tab, {"pinned run ft": ",.0f", "perf_ratio": ".2f", "buffer_ft": ",.0f"}, max_rows=60),
-        f"<h2 id=stepouts>Step-outs ({len(so):,}): islands in, the rest flagged</h2>"
-        f"<div class=meta>Island = within {bp.stepout_reach_mi:g} mi and performing (≥ 0.70×), or too new for a 12-mo on a live-front side. Left out: rolled, isolated (&gt; {bp.stepout_reach_mi:g} mi), or too new on a non-front side. All appear in the flags layer.</div>"
+        f"<h2 id=stepouts>Step-outs ({len(so):,}): within {bp.bridge_mi:g} mi in, isolated tests out</h2>"
+        f"<div class=meta>D27: developed is always in. A >= 2016 lateral within {bp.bridge_mi:g} mi of the body joins the extent whatever its performance (performance is the TC areas' job). "
+        f"Beyond {bp.bridge_mi:g} mi it is an isolated test: tested, not developed, listed in the flags layer.</div>"
         + _table(so_tab, {"dist_mi": ".1f", "perf_ratio": ".2f"}, max_rows=150),
-        f"<h2 id=holes>Holes ({len(holes):,}; {int(holes.filled_D26.sum())} filled by D26)</h2><div class=meta><b>D26 (Michael 2026-10-08):</b> a hole ≥ {ctx['bp'].legacy_fill_cover:.0%} covered by the ½-mi footprint of pre-2016 laterals is legacy drilled-up ground — "
+        f"<h2 id=holes>Holes of the step-2 body ({len(holes):,}; {int(holes.filled_D26.sum())} filled by D26, {int(holes.filled_D27.sum())} by D27)</h2><div class=meta><b>D26 (Michael 2026-10-08):</b> a hole ≥ {ctx['bp'].legacy_fill_cover:.0%} covered by the ½-mi footprint of pre-2016 laterals is legacy drilled-up ground — "
         "the bench is proven and full, no room for a modern well — and is filled into the extent (potash holes included; the old wells are still never curve evidence). "
-        "Other holes are kept as holes, shrunk by the tightest floor, and flagged: geology hole, surface constraint (potash share shown), or fill? "
-        "Backtest note: holes open at T were later infilled with wells that performed like the interior (see calibration), so most holes are an open question, not a no.</div>"
+        "<b>D27 (2026-10-09):</b> every other void inside the development envelope is filled too; geology cuts one only for a structural or reservoir reason. "
+        "Backtest note: holes open at T were later infilled with wells that performed like the interior.</div>"
         + _table(holes, {"area_sqmi": ",.1f", "sopa_share": ".0%", "legacy_cover": ".0%", "lon": ".4f", "lat": ".4f"}, max_rows=40),
         "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
         "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "

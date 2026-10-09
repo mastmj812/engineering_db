@@ -45,6 +45,8 @@ RULE_COLOURS = {
     "live front -> cap (D22)": "#c026d3",
     "potash ignore-gap -> floor (D24)": "#0ea5e9",
     "hole: tightest floor": "#a16207",
+    "updip of depth limit -> floor (D27)": "#7c3aed",
+    "envelope bridge (D27)": "#db2777",
     "uniform baseline": "#000000",
 }
 
@@ -149,6 +151,9 @@ def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any]
         if h.filled_D26:
             txt = f"legacy drilled-up hole {h.area_sqmi:.1f} sq mi FILLED (D26): {h.n_pre2016} pre-2016 laterals cover {h.legacy_cover:.0%}; no room for a modern well"
             flags_r.append([pool, "hole filled (D26)", txt, h.area_sqmi, ""])
+        elif h.filled_D27:
+            txt = f"void {h.area_sqmi:.1f} sq mi inside the development envelope FILLED (D27: no voids) ({h.sopa_share:.0%} potash): cut only for a structural/reservoir reason"
+            flags_r.append([pool, "void filled (D27)", txt, h.area_sqmi, ""])
         else:
             txt = f"hole {h.area_sqmi:.1f} sq mi inside the drilled body ({h.sopa_share:.0%} in the potash area, {h.legacy_cover:.0%} legacy cover): geology hole, surface, or fill?"
             flags_r.append([pool, "hole", txt, h.area_sqmi, ""])
@@ -158,9 +163,13 @@ def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any]
         g = ev.geom.iat[int(s.ix)]
         flags_g.append(g.interpolate(0.5, normalized=True))
         pr_txt = "" if not np.isfinite(s.perf_ratio) else f", {s.perf_ratio:.2f}× interior"
-        flags_r.append([pool, "step-out excluded", f"{s.role} ({s.side}, {s.dist_mi:.1f} mi out, first prod {s.first_production_date}{pr_txt})", None, s.api10])
+        flags_r.append([pool, "isolated test", f"{s.role} ({s.side}, {s.dist_mi:.1f} mi out, first prod {s.first_production_date}{pr_txt})", None, s.api10])
     if flags_g:
         files += gio.write_layer(out / f"BOX_{pool}_flags", "point", gio.ft13_to_geology(flags_g), FLAG_FIELDS, flags_r)
+    up = b.get("updip")
+    if up is not None and not up.is_empty:
+        files += gio.write_layer(out / f"BOX_{pool}_updip", "polygon", gio.ft13_to_geology([up]), [("BENCH", "C", 12, 0), ("LIMIT", "C", 120, 0)],
+                                 [[pool, b["stats"].get("updip_text", "")]])
     top, base = GRIDS[pool]
     for kind, items in contours.items():
         if items:
@@ -222,7 +231,7 @@ def legend_png(path: Path, pool: str, b: dict[str, Any], sopa: Any, bp: Any, ver
     h = [Line2D([], [], color=RULE_COLOURS.get(u, "#000"), lw=3, label=u) for u in used]
     h += [Patch(facecolor="#fde68a", alpha=0.5, label="extent"), Patch(facecolor="none", edgecolor="#0ea5e9", hatch="//", label="BLM Secretary's Potash Area (D24)"),
           Line2D([], [], color="#1e3a8a", lw=1, label=">= 2016 lateral"), Line2D([], [], color="#9ca3af", lw=1, label="pre-2016 lateral"),
-          Line2D([], [], color="#c026d3", lw=1.5, label="step-out island (in)"), Line2D([], [], color="#111827", lw=1.5, label="step-out excluded (flags layer)")]
+          Line2D([], [], color="#c026d3", lw=1.5, label="step-out within 8 mi (developed, in)"), Line2D([], [], color="#111827", lw=1.5, label="isolated test (out, flags layer)")]
     lax = fig.add_axes((0.02, 0.01, 0.5, 0.2))
     lax.axis("off")
     lax.legend(handles=h, loc="upper left", fontsize=8, frameon=False, ncol=1)
@@ -235,7 +244,8 @@ def legend_png(path: Path, pool: str, b: dict[str, Any], sopa: Any, bp: Any, ver
         "pre-2016 beyond a gap -> floor (D5: tighten only)\n"
         f"live front -> cap ({', '.join(st['fronts']) or 'none'}; D22)\n"
         "inside the potash area -> floor (D24)\n"
-        "holes -> tightest floor (flagged)\n"
+        f"D27: envelope bridges gaps < {bp.bridge_mi:g} mi; no voids; developed is in\n"
+        "updip of the depth limit -> floor (BS2_S: 2BS top 7,000 ft)\n"
         "perf class = edge wells' 12-mo oil/ft vs the pool interior median\n    (>= 0.85 strong, < 0.70 rolled)\n"
         "CRS: NAD83 / UTM 14N, US-survey ft (.prj written; coords projected)"
     )
@@ -258,6 +268,10 @@ CRS
   already projected, same frame as the HCA_* GGX grids.
 
 What to edit
+  The extent is the bench's DEVELOPMENT envelope (D27): every developed well is inside, gaps
+  between development trends narrower than 8 mi are bridged, and there are no interior voids.
+  Cut a void or pull an edge only where structure or reservoir says so; say why in NOTE.
+
   BOX_<bench>_extent_v{version}.shp — the ONLY layer you edit. Move, cut or add polygon area.
   Keep the BENCH attribute. Save as BOX_<bench>_extent_v{version}_edited.shp (all side files).
   If you add a note for a change, put it in a new text field NOTE (any length up to 254).
@@ -270,9 +284,13 @@ What to look at (not edited)
       "potash"                     inside the BLM Secretary's Potash Area: a surface constraint,
                                    not geology — the gap is not widened, never treated as a dry hole
       "pre-2016 ... not followed up" old laterals beyond a gap: buffer held to the floor
-  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?), legacy
-                                drilled-up holes already filled (D26: >= 90 % covered by pre-2016 wells), and
-                                step-outs left out of the extent (rolled / isolated / too new)
+      "bridged gap"                the envelope bridged a gap between development trends (D27):
+                                   is there a structural or reservoir break that should cut it?
+      "updip"                      shallower than the bench's depth limit: no reach past the last wells
+  BOX_<bench>_flags             voids filled (D27: no voids inside the development envelope), legacy
+                                drilled-up holes filled (D26), and isolated tests beyond 8 mi
+                                (tested, not developed: left out)
+  BOX_<bench>_updip             the zone shallower than the depth limit (BS2_S: 2BS top 7,000 ft)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE
   BOX_<bench>_ctx_struct / _ctx_isopach   contours from your HCA grids (context only)

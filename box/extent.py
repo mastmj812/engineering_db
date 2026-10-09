@@ -26,6 +26,15 @@ extent polygon.
   4. The polygon is assembled per distinct buffer value (quantised) as buffer(core, b) ∩ cells(b),
      then lightly smoothed. The same rule evaluated point-wise drives the calibration backtest.
 
+  5. D27 (Michael 2026-10-09) — the extent is the bench's DEVELOPMENT envelope:
+     - developed is always in: every >= 2016 pool lateral within the bridging width of the body
+       joins the core whatever its performance; isolated tests beyond it are listed, not included;
+     - no voids: the buffered extent is closed with radius bridge_mi / 2 (gaps between development
+       trends narrower than bridge_mi are bridged) and every interior void is filled;
+     - evidence only governs reach beyond the outermost development: an optional updip depth limit
+       (BS2_S: 2BS sand top 7,000 ft) holds the buffer to the floor on the shallow side, like the
+       potash polygon. Performance belongs to the TC areas (step 4), never to the extent.
+
 Planar math in UTM 13N feet (box.edge_gap's frame).
 """
 
@@ -58,13 +67,15 @@ class BufferParams:
     local_radius_ft: float = 10 * 5280.0  # local reference: interior cohort within this of the segment
     local_min_n: int = 15  # ... at least this many, else 2× radius, else the pool median
     sample_ft: float = 200.0  # ring sampling for sectors
-    stepout_reach_mi: float = 5.0  # step-outs beyond this are isolated tests, never islands
+    stepout_reach_mi: float = 5.0  # live-front detection: performing step-outs within this of the body
     front_min_ok: int = 3  # live front: >= this many performing step-outs within reach ...
     front_ok_over_rolled: float = 2.0  # ... and at least this many times the rolled ones
     lateral_core_ft: float = 50.0  # half-width of a lateral's own line in the core
     quantum_ft: float = 110.0  # buffer quantisation for polygon assembly (1/48 mi)
     smooth_ft: float = 330.0  # closing + opening of the assembled polygon
     legacy_fill_cover: float = 0.90  # D26: fill a hole this covered by the pre-2016 lateral footprint (r)
+    bridge_mi: float = 8.0  # D27: bridge gaps between development trends narrower than this; also the step-out inclusion reach
+    envelope: bool = True  # D27 envelope (closing + no voids); False = the pre-D27 buffered extent
     uniform: bool = False  # calibration baseline: floor_ft everywhere, no 2×2 / gap / front terms
 
 
@@ -170,16 +181,11 @@ def front_sides(so: pd.DataFrame, bp: BufferParams = DEFAULT) -> dict[str, dict[
 
 
 def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = DEFAULT) -> pd.Series:
-    """What each step-out does: island (joins the core) or why it is left out (listed for geology)."""
-    c = stepout_class(so)
-    near = so["dist_mi"] <= bp.stepout_reach_mi
-    on_front = so["side"].isin(list(fronts))
-    role = np.select(
-        [~near, c == "rolled", c == "ok", on_front],
-        ["excluded: isolated test > reach", "excluded: rolled step-out", "island", "island"],
-        default="excluded: no 12-mo yet, not a front side",
-    )
-    return pd.Series(role, index=so.index)
+    """D27: developed is always in — a step-out within the bridging width joins the core (an island
+    the envelope bridges) whatever its performance; beyond it, an isolated test, listed not included.
+    (fronts no longer decide membership; they still set the cap on their side.)"""
+    near = so["dist_mi"] <= bp.bridge_mi
+    return pd.Series(np.where(near, "island", "excluded: isolated test (tested, not developed)"), index=so.index)
 
 
 # ----------------------------------------------------------------------------
@@ -187,7 +193,7 @@ def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = D
 # ----------------------------------------------------------------------------
 
 
-def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] | None = None, sopa: Any = None) -> pd.DataFrame:
+def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] | None = None, sopa: Any = None, updip: Any = None) -> pd.DataFrame:
     """buffer_ft / floor_ft / rule per walked segment (rule = the clause that set the buffer)."""
     fronts = fronts or {}
     if bp.uniform:
@@ -207,8 +213,12 @@ def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] 
     fr = seg["side"].isin(list(fronts)).to_numpy()
     b = np.where(fr, np.maximum(bp.cap_ft, floor), b)
     rule[fr] = "live front -> cap (D22)"
-    if sopa is not None and not sopa.is_empty:
-        mids = shapely.line_interpolate_point(np.asarray(list(seg["geom"]), dtype=object), 0.5, normalized=True)
+    mids = shapely.line_interpolate_point(np.asarray(list(seg["geom"]), dtype=object), 0.5, normalized=True) if len(seg) else np.asarray([])
+    if updip is not None and not updip.is_empty and len(seg):
+        up = shapely.contains(updip, mids)
+        b = np.where(up, floor, b)
+        rule[up] = "updip of depth limit -> floor (D27)"
+    if sopa is not None and not sopa.is_empty and len(seg):
         ins = shapely.contains(sopa, mids)
         b = np.where(ins, floor, b)
         rule[ins] = "potash ignore-gap -> floor (D24)"
@@ -226,6 +236,8 @@ def geology_flag(s: pd.Series) -> str:
         out.append("live front: performing step-outs ahead of the body; buffered at the cap")
     if str(s["rule"]).startswith("potash"):
         out.append("inside the BLM Secretary's Potash Area: surface, not geology; gap not widened")
+    if str(s["rule"]).startswith("updip"):
+        out.append("updip of the depth limit (shallow side rolls over): no reach past the last wells")
     if str(s["rule"]).startswith("gap: pre-2016"):
         out.append("pre-2016 laterals beyond this gap were not followed up; held to the floor")
     return "; ".join(out)
@@ -319,17 +331,34 @@ def _assemble(core_mp: MultiPolygon, cells: np.ndarray, vals: np.ndarray, quantu
 
 
 def build_extent(core_mp: MultiPolygon, xy: np.ndarray, b: np.ndarray, f: np.ndarray, sopa: Any, bp: BufferParams = DEFAULT) -> tuple[MultiPolygon, np.ndarray]:
-    """Extent polygon from the core and per-sample buffers; returns (extent, Voronoi cells)."""
+    """Extent polygon from the core and per-sample buffers; returns (extent, Voronoi cells).
+    ``sopa`` is the floor-clamp polygon: the potash area, unioned with any updip zone (D27)."""
     env = shapely.box(*core_mp.bounds).buffer(4 * max(bp.cap_ft, float(b.max())))
     cells = np.asarray(shapely.voronoi_polygons(shapely.multipoints(xy), extend_to=env, ordered=True).geoms, dtype=object)
+    # GEOS occasionally returns a self-intersecting cell for near-collinear ring sites (1-2 per
+    # build); repair just those so the per-buffer unions node cleanly
+    bad = ~shapely.is_valid(cells)
+    if bad.any():
+        cells[bad] = shapely.buffer(cells[bad], 0)
     ext = _assemble(core_mp, cells, b, bp.quantum_ft)
     if sopa is not None and not sopa.is_empty and ext.intersects(sopa):
         ext_f = _assemble(core_mp, cells, f, bp.quantum_ft)
         ext = shapely.union_all([ext.difference(sopa), ext_f.intersection(sopa), core_mp])
     s = bp.smooth_ft
     ext = ext.buffer(s, quad_segs=4).buffer(-s, quad_segs=4).buffer(-s, quad_segs=4).buffer(s, quad_segs=4)
-    ext = shapely.union_all([ext, core_mp]).simplify(25.0)
+    ext = shapely.union_all([ext, core_mp])
+    if bp.envelope:
+        ext = development_envelope(ext, bp.bridge_mi * FT_PER_MI / 2.0)
+    ext = ext.simplify(25.0)
     return MultiPolygon([shapely.geometry.polygon.orient(g) for g in as_multi(ext).geoms]), cells
+
+
+def development_envelope(ext: Any, close_ft: float) -> MultiPolygon:
+    """D27: close by close_ft (bridges gaps between trends narrower than 2 x close_ft; never pushes a
+    convex outer edge) and fill every interior void. Contains its input by construction."""
+    g = ext.buffer(close_ft, quad_segs=16).buffer(-close_ft, quad_segs=16)
+    filled = [Polygon(p.exterior) for p in as_multi(shapely.union_all([g, ext])).geoms]
+    return as_multi(shapely.union_all(filled))
 
 
 def edge_runs(extent: MultiPolygon, xy: np.ndarray, seg_ix: np.ndarray, step_ft: float = 100.0) -> list[dict[str, Any]]:
