@@ -337,3 +337,44 @@ That's the same updip rollover as BS2_S, more gradual. A WCA limit would sit bet
 - §5 flags a, c–k (b is closed by D26 and D27).
 - go-apply sql/54.
 - Sending `geology/` to Holden.
+
+## 9. D27 amended (Michael, 2026-10-09): development needs 3+ wells; no updip limit; generalized edge
+
+**Why.**
+- **The 8-mi "developed is in" rule took single test wells as development.** On BS2_S, a lone
+  2025 Tascosa well pulled a wedge out to the W: SHAKE 'N BAKE 2 STATE #204H, api10 3001555251,
+  4,658-ft lateral at 5,917 ft TVD, 6.6 mi W of the body, no 12-mo result yet. Michael couldn't
+  find it in anduin.
+- **The 2BS 7,000-ft updip limit never removed wells.** It only held the reach past the last W
+  wells to the floor. That was 37 sq mi (about 1%) of BS2_S, and it conflicted with the D22 W
+  live front.
+- **The round bites** left by the 8-mi bridge read as scallops.
+
+**Amendments**
+1. **Development = a step-out cluster of at least 3 laterals** (laterals within 1 mi of each
+   other) within 8 mi, whatever its performance. One- and two-well step-outs are tests: listed,
+   not included.
+2. **No updip depth limit on either bench.** WCA was checked and declined: its W wells stay in
+   and will inform a low-performing TC area. The BS2_S 7,000-ft limit is dropped. D25 stands.
+3. **Generalized edge:**
+   - 2-mi simplification plus corner cutting;
+   - a proportional bulge wherever that would leave a developed lateral out (hull of those
+     laterals and the edge within max(1.5 mi, 2.5× how far they sit out), filleted);
+   - corners rounded at ¾ mi, re-guarding developed laterals.
+
+   Rejected along the way: re-including the full buffered footprint (lumpy), a free-form outward
+   push (BS2_S +981 sq mi), and plain corner smoothing (dropped 14–18 developed laterals).
+
+**Result (the v1 package in `geology/`)**
+
+| | WCA | BS2_S |
+|---|---|---|
+| Extent | **6,168 sq mi**, 1 part, 0 voids | **3,358 sq mi**, 1 part, 0 voids |
+| Raw envelope before generalizing | 5,919 sq mi | 3,223 sq mi |
+| Step-out programs in (≥ 3 laterals) | 10 laterals: SM Energy NW, Mongoose SE, Permian Resources W | 36 laterals: Mewbourne/Paloma W 18, Matador/Mewbourne W 11, Chevron/Conoco SW 7 |
+| Tests out: 1–2-well step-outs within 8 mi / beyond 8 mi | 14 / 1 | 17 / 35 |
+| ≥ 2016 laterals outside the extent | 15, all tests | 51, all tests |
+| D1 Novi PUDs inside (≥ 50% of stick) | WCA_1+2 1,934; WCXY 3,211 | **7,478 of 15,122** |
+
+The calibration pick is unchanged: k 0.75, cap 7,920 ft, floor 880 ft. The envelope backtest is
+in `backtest_envelope.csv`.

@@ -1,4 +1,4 @@
-BOX extents for geology review — 2026-10-09T12:57:18-05:00
+BOX extents for geology review — 2026-10-09T13:42:25-05:00
 ================================================================
 
 What this is
@@ -12,8 +12,10 @@ CRS
   already projected, same frame as the HCA_* GGX grids.
 
 What to edit
-  The extent is the bench's DEVELOPMENT envelope (D27): every developed well is inside, gaps
-  between development trends narrower than 8 mi are bridged, and there are no interior voids.
+  The extent is the bench's DEVELOPMENT envelope (D27): all development is inside (step-out
+  programs of 3+ laterals included, single/two-well tests listed but left out), gaps between
+  development trends narrower than 8 mi are bridged, there are no interior voids, and the edge is
+  generalized (smooth).
   Cut a void or pull an edge only where structure or reservoir says so; say why in NOTE.
 
   BOX_<bench>_extent_v1.shp — the ONLY layer you edit. Move, cut or add polygon area.
@@ -32,8 +34,8 @@ What to look at (not edited)
                                    is there a structural or reservoir break that should cut it?
       "updip"                      shallower than the bench's depth limit: no reach past the last wells
   BOX_<bench>_flags             voids filled (D27: no voids inside the development envelope), legacy
-                                drilled-up holes filled (D26), and isolated tests beyond 8 mi
-                                (tested, not developed: left out)
+                                drilled-up holes filled (D26), and step-out tests left out: 1-2-well
+                                step-outs, and anything beyond 8 mi (tested, not developed)
   BOX_<bench>_updip             the zone shallower than the depth limit (BS2_S: 2BS top 7,000 ft)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE
@@ -44,7 +46,8 @@ Buffer rule (parameters in the extent PARAMS attribute)
   pinned edge: floor = 880 ft (rolled) / 1,320 (unknown) / 1,760 (strong)
   gap: k x gap length x perf (strong 1.0 / unknown 0.75 / rolled 0.5), k = 0.75, within [floor, cap = 7,920 ft]
   pre-2016 laterals beyond a gap -> floor; live-front side -> cap; potash area -> floor; updip of the depth limit -> floor
-  D27 envelope: developed (within 8 mi) always in; gaps < 8 mi bridged; no voids
+  D27 envelope: development (step-out clusters >= 3 laterals within 8 mi) always in; gaps < 8 mi bridged; no voids
+  edge generalized: 2-mi simplification, bulges over development, 0.75-mi rounding
 
 Return
   The *_edited shapefile set (zip is fine) to Michael. It is re-imported, diffed against this
