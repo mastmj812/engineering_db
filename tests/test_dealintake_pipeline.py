@@ -458,7 +458,27 @@ def test_curve_labels_and_cohort_rows():
     from dealintake.render.tables import COHORT_HEADERS, cohort_rows
 
     assert curve_labels("BS3_C", {"tc_groups": [{"units": ["a"]}]}) == ["BS3_C"]
-    assert curve_labels("BS3_C", {"tc_groups": [{"units": ["a"]}, {"units": ["b"]}]}) == ["BS3_C-A", "BS3_C-B"]
+
+    def sq(label: str, x: float, y: float, name: str) -> dict:
+        ring = [[x, y], [x + 0.01, y], [x + 0.01, y + 0.01], [x, y + 0.01], [x, y]]
+        return {"label": label, "dsu_name": name, "geometry": {"type": "Polygon", "coordinates": [ring]}}
+
+    two = {"tc_groups": [{"units": ["a"]}, {"units": ["b"]}]}
+    # no letters, no spaces (Michael 2026-10-08); 2 groups -> 4-point rose
+    assert curve_labels("BS3_C", two, [sq("a", -103.5, 31.9, "1-12"), sq("b", -103.5, 31.6, "4-5")]) \
+        == ["BS3_C_N", "BS3_C_S"]
+    assert curve_labels("BS3_C", two) == ["BS3_C_a", "BS3_C_b"]            # no geometry -> DSU fallback
+    assert curve_labels("WCB_2 @ 10,000 ft", {"tc_groups": [{"units": ["a"]}]}) == ["WCB_2_10000ft"]
+    # Rally Caps WCB_2 shape: N / NE / NW / SW / SE need the 8-point rose
+    five = {"tc_groups": [{"units": [u]} for u in "abcde"]}
+    units = [sq("a", -103.55, 32.1, "1-12"), sq("b", -103.25, 32.05, "35-26"), sq("c", -103.75, 32.05, "2-47"),
+             sq("d", -103.75, 31.7, "13-18"), sq("e", -103.35, 31.7, "4-5")]
+    assert curve_labels("WCB_2", five, units) == [
+        "WCB_2_N", "WCB_2_NE", "WCB_2_NW", "WCB_2_SW", "WCB_2_SE"]
+    # interleaved groups that share a direction on both roses fall back to the DSU name
+    units3 = [sq("a", -103.5, 32.0, "1-12"), sq("b", -103.5, 32.1, "2-47"), sq("c", -103.5, 31.5, "4-5")]
+    assert curve_labels("WCB_2", {"tc_groups": [{"units": [u]} for u in "abc"]}, units3) == [
+        "WCB_2_1-12", "WCB_2_2-47", "WCB_2_S"]
     wells = [
         {"api10": "2", "well_name": "FAR 2H", "operator": "Op", "first_production_date": "2024-07-01", "lateral_length_ft": 10000.0,
          "unit": "u1", "unit_dist_ft": 10560.0, "dist_ft": 5.0, "anduin_oil_eur_per_1000ft": 50000.0, "bench": "BS3_C",

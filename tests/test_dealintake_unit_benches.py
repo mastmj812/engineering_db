@@ -230,14 +230,15 @@ def test_reviewer_bench_options_round_trip(tmp_path):
 def test_row_rules_on_a_162_deg_plan():
     from dealintake.geo import apply_row_rules, side_sign
 
-    az = 162.3                                   # VaULt: +offset points 252 deg (WSW) -> west is +
-    assert side_sign("west", az) == 1 and side_sign("east", az) == -1
-    assert side_sign("east", 72.2) == 1          # a 72 deg plan: +offset points 162 deg (SSE) -> east is +
+    az = 162.3                                   # VaULt: +offset points 72 deg (ENE) -> east is + (rule v2)
+    assert side_sign("east", az) == 1 and side_sign("west", az) == -1
+    assert side_sign("north", 72.2) == 1         # a 72 deg plan: +offset points 342 deg (NNW) -> north is +
+    assert side_sign("east", 72.2) == -1
     rows = [{"offset_ft": o, "lateral_ft": 12500} for o in (-1741, -421, 899, 2219)]
     kept, notes = apply_row_rules(rows, az, drop_rows={"east": 3})
-    assert [r["offset_ft"] for r in kept] == [2219] and "3 east-most" in notes[0]
+    assert [r["offset_ft"] for r in kept] == [-1741] and "3 east-most" in notes[0]
     kept, _ = apply_row_rules(rows, az, keep_side="west")
-    assert [r["offset_ft"] for r in kept] == [899, 2219]
+    assert [r["offset_ft"] for r in kept] == [-1741, -421]
     kept, _ = apply_row_rules(rows, az, n_wells=2)
     assert [r["offset_ft"] for r in kept] == [-421, 899]           # outermost trimmed alternately
     rows[0]["lateral_ft"] = 4620
@@ -258,9 +259,10 @@ def test_winerack_key(tmp_path):
         unit_benches.read(tmp_path, prop)
 
 
-def test_winerack_legs_one_call_split_by_bench():
-    """Winerack benches go to narvi in ONE call (it staggers adjacent zones) and
-    come back split by bench; the shallowest zone's spacing leads."""
+def test_winerack_legs_anchor_then_pinned_shift():
+    """Staggered benches: each placed alone first; the bench keeping the most rows
+    anchors (tie -> deeper), the other is PINNED half a spacing off the anchor's
+    lattice (Michael 2026-10-08, Rally Caps 1-12) — not narvi's shallow-leads stagger."""
     from shapely.geometry import LineString, box, mapping
 
     from dealintake.pipeline import winerack_legs
@@ -271,27 +273,31 @@ def test_winerack_legs_one_call_split_by_bench():
         def generate(self, parcel, zones, **kw):
             calls.append((zones, kw))
             feats = [{"type": "Feature", "geometry": mapping(LineString([(x, 0), (x, 1)])),
-                      "properties": {"kind": "leg", "formation": z["formation"], "completed_lateral_ft": 9900}}
+                      "properties": {"kind": "leg", "formation": z["formation"], "completed_lateral_ft": 9900,
+                                     "gunbarrel_x_ft": 100.0 * x}}
                      for i, z in enumerate(zones) for x in (i, i + 0.5)]
             return {"geojson": {"features": feats}}
 
     unit = box(-103.5, 31.5, -103.49, 31.53)
-    got = winerack_legs(_Narvi(), unit, 41.3, {"WCB_2": (11650.0, 1320.0), "WCB_1": (11863.0, 1320.0)}, setback_ft=330)
-    assert len(calls) == 1
-    zones, kw = calls[0]
-    assert [z["formation"] for z in zones] == ["WCB_2", "WCB_1"]          # shallow -> deep
-    assert kw["spacing_ft"] == 1320.0 and kw["setback_ft"] == 330
+    got, pins = winerack_legs(_Narvi(), unit, 41.3, {"WCB_2": (11650.0, 1320.0), "WCB_1": (11863.0, 1320.0)},
+                              setback_ft=330)
+    assert all(len(z) == 1 for z, _ in calls) and len(calls) == 3      # two alone + one pinned
+    assert calls[0][1]["spacing_ft"] == 1320.0 and calls[0][1]["setback_ft"] == 330
+    assert set(pins) == {"WCB_1", "WCB_2"} and pins["WCB_2"] - pins["WCB_1"] == 660.0   # deeper WCB_1 anchors
+    assert calls[-1][0][0]["formation"] == "WCB_2" and calls[-1][0][0]["offset_ft"] == pins["WCB_2"]
     assert {b: len(v) for b, v in got.items()} == {"WCB_2": 2, "WCB_1": 2}
 
 
 def test_gunbarrel_reads_west_to_east():
     from dealintake.render.review import cross_section_ends
 
-    assert cross_section_ends(0.3) == (False, "W", "E")      # +offset = east -> as drawn
-    assert cross_section_ends(162.2) == (True, "W", "E")     # +offset = WSW -> flip (36-37)
-    assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish, as drawn
-    assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = south -> south on the left
-    assert cross_section_ends(270.0) == (True, "S", "N")
+    # sign rule v2: the frame itself reads W->E / S->N, so nothing ever flips
+    assert cross_section_ends(0.3) == (False, "W", "E")      # +offset = east
+    assert cross_section_ends(162.2) == (False, "W", "E")    # +offset = ENE (36-37 now drawn W->E as stored)
+    assert cross_section_ends(41.3) == (False, "W", "E")     # +offset = SE -> east-ish
+    assert cross_section_ends(90.0) == (False, "S", "N")     # E-W plan: +offset = north
+    assert cross_section_ends(270.0) == (False, "S", "N")
+    assert cross_section_ends(72.2) == (False, "S", "N")     # VaULt: +offset = NNW
 
 
 def test_reviewer_pattern_overrides_novi_location_source():

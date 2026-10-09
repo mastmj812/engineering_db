@@ -9,6 +9,21 @@ Michael is the **reviewer of exceptions, not the executor of steps**. The
 runner (`python -m dealintake`, package `dealintake/` in engineering_db)
 computes every signal reproducibly per `config_version`; this playbook says
 how to drive it, where it stops for him, and how to read what it writes.
+
+**The first pass is an ECONOMIC SCREEN** (Michael 2026-10-08): gpkg ->
+dossier -> handoff -> Blue Ox drop, so Steven runs econs on EVERY DSU; only
+what looks economic gets the detailed work-up (landing depth, offset
+proximity, spacing, cohort culls, Novi-vs-TC gaps). Default sensibly and
+flag hazards on the page; don't stop the screen for per-row or per-cohort
+calls. Michael runs it himself:
+
+```
+.\di login                          # once; 30-day anduin token in Windows Credential Manager
+.\di propose <deal.gpkg> --run-dir runs/<deal>-<date>
+.\di evaluate <deal>                # flags remembered per run (evaluate_args.json)
+.\di handoff <deal>                 # dry run -> handoff.html (first time: --deal "Rally Caps" --deal-folder "RALLY CAPS")
+.\di handoff <deal> --apply         # writes narvi + anduin; then the blueox-curve-drop skill
+```
 Geology and land calls (benches, correlated window, spacing, strike
 extension, TC grouping, culling wells) are surfaced with evidence and
 **never auto-decided**.
@@ -30,6 +45,14 @@ reading guide to its sections.
   `stick_id` (PDP rows = `-(api10)`).
 - Novi comparison figures are the **median of representative sticks** —
   not a P50, and not the erebor export's cohort mean.
+- Curve names carry no spaces and no letter suffixes (Michael 2026-10-08):
+  several curves on one bench are named by the abbreviated compass direction
+  of the group from the bench's units — `WCB_2_N`, `WCB_2_SE` (4-point rose,
+  8-point if needed; DSU name only when interleaved groups still collide).
+  The handoff saves the anduin CURVE with the deal codename in front
+  (`rallycaps_WCB_2_SE`; codename = the Deal Folder name lowercased, letters
+  and digits only); the Blue Ox ZONE / workbook tab stays `WCB_2_SE`. Names are final once a drop ships — the handoff refuses
+  to rename a handed-off deal's curves (Rally Caps shipped `WCB_2_Southeast`).
 - Nothing auto-drops a well. Every exclusion carries a reason, every
   outlier is a flag, and culling happens in anduin by the reviewer.
 
@@ -41,20 +64,22 @@ reading guide to its sections.
 | narvi | parcel upload, azimuth, zones, `/api/generate` PREVIEW | nothing saved (no scenario) |
 | anduin | fits wells that have NO forecast row yet; TC `compute` previews | new forecast rows only |
 | anduin — short-history transfer (ON by default) | overwrites the short wells' **unlocked** forecast rows with cohort-transfer rows | **yes — listed per bench in the dossier** |
+| narvi + anduin — `handoff --apply` (gate 8) | one composed scenario per DSU; one saved type curve per dossier curve; the deal + its Blue Ox config | **yes — only on --apply, refusing anything edited since** |
 
 The manual-override guard holds by construction: existing fits are reused,
 never refreshed; a refit is refused when a target has `manual_override=TRUE,
 locked=FALSE`; locked rows are skipped by the transfer. The transfer resets
 `manual_override` on the rows it rewrites (anduin's behavior). Saving the
-type curve and the narvi scenario stay reviewer actions.
+type curves and the narvi scenarios happens only at gate 8 (`handoff --apply`).
 
 ## Prerequisites
 
 - engineering_db `.venv` with `requirements-dealintake.txt` installed.
 - narvi backend on :8078 (`NARVI_URL` to override); anduin on :8000
-  (`ANDUIN_URL`). anduin credentials come ONLY from the environment —
-  `ANDUIN_EMAIL` / `ANDUIN_PASSWORD` — so **Michael runs `evaluate` in his
-  own shell**; never ask for or handle the password. If anduin is requested
+  (`ANDUIN_URL`). anduin auth = the token `.\di login` keeps in the Windows
+  Credential Manager (`ANDUIN_EMAIL` / `ANDUIN_PASSWORD` in the environment
+  still win). **Michael runs `.\di login` himself**; never ask for or handle
+  the password. If anduin is requested
   and unavailable the run fails loudly (exit 2) — that is deliberate: a
   silent skip once made a credential-less run look successful.
 - `curated.codev_context` (sql/47), `pdp_support_for_geom` (sql/48) and the
@@ -134,7 +159,8 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, Novi in/crossing,
   location source, scope, why), and the **gunbarrel** (Michael, 2026-09-28):
   a cross-section perpendicular to the planned azimuth in the rule-16 frame
-  (origin = unit centroid, +offset = 90° clockwise of the azimuth) — the
+  (origin = unit centroid, sign rule v2: reads W → E for N-S-ish plans, S → N
+  for E-W-ish; `geo.near_seam` flags plans within 3° of the 45° seam) — the
   PROPOSED rows (one hollow square per stick at the bench's local median
   TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
   lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent
@@ -160,7 +186,10 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   the fallback), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
   west|east|north|south`, `drop_east_rows: n` (and west/north/south — the n
   rows nearest that side, for PDP there or basin-edge conservatism), `role:
-  upside`; per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
+  upside`, `winerack: false` (opt OUT of the default stagger — a unit's
+  generated benches are placed together, adjacent benches half a spacing
+  apart, Michael 2026-10-08; on a narrow unit the stagger can cost a row:
+  Rally Caps 1-12 WCB_2 4 -> 3); per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
   words; the runner maps them onto the rule-16 frame (on a 162° plan the
   +offset side is WSW, so "east" is the negative side). Every key lands in
   the decision log.
@@ -460,6 +489,48 @@ gas 3.6× the TC). The Novi representative-stick pull for generated legs ≥
 a deal-intake-specific reading of ledger §9 so 15,000-ft legs still get a
 Novi comparison; the other §9 consumers are unchanged. Which forecast goes
 to finance is Michael's call per bench — the dossier presents, never picks.
+
+### Gate 8 — handoff to narvi + anduin (`.\di handoff <deal> [--apply]`)
+
+`dealintake/handoff.py`. The dry run writes `handoff_plan.json` +
+`handoff.html` (status READY/BLOCKED, curves = Blue Ox zones in tab order,
+the narvi scenarios, a plan view + gunbarrel cross-section per DSU); it
+writes nothing. `--apply` writes, in order:
+
+1. **narvi** — one composed scenario per DSU through narvi's own save
+   (`deal_id` = narvi's slug of the parcel label, `scenario_id` =
+   `plan_<slug>`, name = label — the UI convention, so a reload in narvi
+   re-saves the same row). narvi has no row rules, so the plan previews the
+   identical recipe, matches every leg to a dossier location (<= 50 ft) and
+   sends the rest as `culled_wells`; staggered benches carry evaluate's
+   `pin_offset_ft`. Any dossier location the recipe can't reproduce =
+   BLOCKED. After each save the planned sticks per bench are read back and
+   must equal the dossier, or it stops before anduin.
+2. **anduin type curves** — name = the dossier's compass name, members = the
+   dossier cohort, peak_ramp, per lateral ft, Arps on every stream; the saved
+   oil EUR is reported against the dossier preview.
+3. **anduin deal** (created if missing) + the curves assigned to it.
+4. **Blue Ox config** — one zone per curve (PUD; UPSIDE when every unit has
+   `role: upside`), scope = that curve's units, tab order shallow -> deep;
+   codename from the run; existing levels / months / prepared_by kept. The
+   PUT pins the narvi scenarios, so the drop skill starts with nothing stale.
+
+`handoff_state.json` records what the handoff wrote. A re-run skips
+unchanged rows, updates its OWN untouched curves in place when a fresh
+evaluate changed a cohort (same id: membership + re-aggregate), and
+**refuses** anything edited since: a curve whose membership / fit /
+overrides / risking changed (always — no override flag), a narvi re-save or
+a hand-edited Blue Ox config (`--replace` overwrites those two). anduin
+"versions" are never used (Michael 2026-10-08). The handoff curve is the
+frozen SCREEN record; when a zone earns a work-up, Michael builds a separate
+`<name>_v2` curve on the same deal in the normal anduin flow and compares the
+two. Next: the `blueox-curve-drop` skill from step 0.
+
+**Stagger** (default, Michael 2026-10-08): a unit's generated benches are
+placed together. The bench that keeps the most rows after its row rules
+(tie -> the deeper bench) keeps its layout; the others are pinned half a
+spacing off it (`pipeline.winerack_legs`), so a row rule never costs the
+other bench a well (Rally Caps 1-12: WCB_2 4, WCB_1 3 between them).
 
 ## Reading the result with Michael
 

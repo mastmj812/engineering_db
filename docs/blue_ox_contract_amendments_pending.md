@@ -94,7 +94,8 @@ Requested by S. Murray so Blue Ox can rebuild per-DSU gunbarrels
   `dsu_id, azimuth_deg, origin_lon, origin_lat`. Reproducibility of the
   offsets: `gunbarrel_offset_ft` = signed projection of the leg midpoint onto
   the axis 90° clockwise of `azimuth_deg` (folded to [0°, 180°)) through the
-  origin (parcel centroid), in feet. Plotting offset vs `landing_tvd_ft`
+  origin (parcel centroid), in feet. *(Sign rule superseded by §13 for drops
+  that carry `dsu_meta.plus_offset_bearing_deg`.)* Plotting offset vs `landing_tvd_ft`
   reproduces the narvi gunbarrel; U-turn legs A/B join at one TVD.
 - **Loader impact:** extra `inventory` columns *tolerated* (ignore unknowns);
   `dsu_meta` joins the reserved sheet-name list (must never collide with a
@@ -345,9 +346,43 @@ loader needs nothing new except where marked.
   semantics and (b) actuals in pre-data-through rows — if Blue Ox wants forecast
   only from the effective date, that is a one-flag change on our side.
 
+## 13. Gunbarrel offset sign — v2 reading convention — **NEW (2026-10-08)** (**Loader impact: required**)
+
+Engineering-side decision (Michael, 2026-10-08): every cross-section reads
+**West → East for N-S-ish units and South → North for E-W-ish units**. Under
+the §6 rule (+offset 90° clockwise of the folded azimuth) any unit planned past
+135° — including every ~0°-true plan, which is ~179.5° in narvi's UTM-13N grid —
+read East → West, and E-W units read North → South.
+
+- **What — `inventory.gunbarrel_offset_ft` / `gunbarrel_offset_b_ft`:** still
+  the §6 signed projection of the leg midpoint through the `dsu_meta` origin, in
+  feet; the **sign rule changes**. With a = `dsu_meta.azimuth_deg` (axial,
+  [0°, 180°), 0.1° precision): the +offset direction has compass bearing
+  **a + 90° when a ≤ 45°, else a − 90°** — always inside (−45°, 135°], i.e. +
+  points into the NE half. One seam remains, at a 45° lateral (+ = SE there);
+  units planned within a few degrees of 45° on either side plot mirrored
+  relative to each other. Units with a ≤ 45° are numerically unchanged; units
+  with a > 45° are exactly negated relative to §6.
+- **What — `dsu_meta` additive column `plus_offset_bearing_deg`** (deg,
+  compass, 0.1 precision): the +offset direction, stated explicitly. Projecting
+  the leg midpoint (UTM 13N work CRS, as §6) onto the unit vector
+  (sin b, cos b) at this bearing reproduces every offset with no sign rule on
+  the receiving side. **Its presence marks a v2-sign drop**; drops without it
+  used the §6 rule.
+- **Consequence:** workbooks shipped before 2026-10-08 keep the §6 sign. A
+  re-drop of the same deal plots **mirrored** for every unit with a > 45°
+  (e.g. bro_time ~161°, toucan ~55°, VaULt ~71°/~161°); the drop's what-changed
+  note says so. Geometry, well counts and laterals are unchanged.
+- **Loader impact: required.** A loader that recomputes offsets from
+  `dsu_meta.azimuth_deg` must use `plus_offset_bearing_deg` when present (else
+  the §6 rule for legacy drops); a v2 drop recomputed with the §6 rule fails
+  reproducibility on every a > 45° unit. A loader that only plots the stored
+  offsets needs no change (its plots now read W → E / S → N). `dsu_meta` gains
+  one column — tolerated by a loader that ignores unknown columns.
+
 ---
 
-*Column/sheet/key names in §6–§12 are final once the first workbook carrying
+*Column/sheet/key names in §6–§13 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
 
