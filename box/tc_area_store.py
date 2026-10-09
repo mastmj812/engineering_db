@@ -22,7 +22,8 @@ def store_areas(conn: Any, res: dict[str, Any], version: int, make_record: bool 
     geoms = res["r"]["geoms"]
     params = {"method": "contiguity-constrained Ward, 1-mi hex cells, log 12-mo oil/ft", **summ["params"], "pick": summ["pick"],
               "cv_r2_pick": summ["cv_r2_pick"], "cv_r2_k1": summ["cv_r2_k1"], "knn_local_cv_r2": summ["knn_local_cv_r2"],
-              "well_set": "docs/box/step1-2026-10-06/wells_final_WCA.csv", "data_asof": summ["asof"]}
+              "well_set": "docs/box/step1-2026-10-06/wells_final_WCA.csv minus docs/box/exclusions.csv",
+              "excluded_api10": summ["excluded_api10"], "data_asof": summ["asof"]}
     rows = []
     for g, r in zip(eg.to_lonlat(geoms), s.to_dict("records")):
         stats = {k: v for k, v in r.items() if k not in ("area_no", "area_sqmi", "n12")}

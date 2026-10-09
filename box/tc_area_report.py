@@ -35,6 +35,7 @@ from matplotlib.patches import Polygon as MplPolygon
 
 from box import edge_gap as eg
 from box import edge_gap_report as egr
+from box import exclusions
 from box import extent_report as er
 from box import tc_area as ta
 from box.edge_gap_report import _CSS, _lonlat_coords, _png, _table
@@ -385,7 +386,7 @@ def render_page(ctx: dict[str, Any]) -> str:
         "#legend span{display:inline-block;width:18px;height:10px;margin:0 3px 0 8px;vertical-align:middle;border:1px solid #e5e7eb}</style></head><body>"),
         f"<h1>BOX step 4 — TC areas on WCA (Delaware), {len(r['geoms'])} areas</h1>",
         (f"<div class=meta>built {summ['built_at']} · extent of record box.extent id {ext['extent_id']} (WCA v{ext['version']} {ext['source']}, {ext['area_sqmi']:,.1f} sq mi) · "
-        f"well set docs/box/step1-2026-10-06/wells_final_WCA.csv (WCA_1 + WCA_2 pooled, WCXY one-way; D19/D20) · data through {summ['asof']} · read-only</div>"),
+        f"well set docs/box/step1-2026-10-06/wells_final_WCA.csv (WCA_1 + WCA_2 pooled, WCXY one-way; D19/D20) minus docs/box/exclusions.csv ({summ['n_excluded']} wells) · data through {summ['asof']} · read-only</div>"),
         ("<div class='flag'>Response = Novi WellDetails cum-12 / cum-24 oil per lateral ft (calendar months from first production). Vintage is normalized <b>by filter only</b> "
         "(first prod ≥ 2016-01-01, lateral 6,000–13,000 ft); operator / completion confounding is accepted for v1 and NOT removed (D9). Percentiles are SPE: P10 = HIGH. "
         "bo/ft = Novi 30-yr oil EUR (vendor horizon, not the 50-yr technical EUR) — a screen, shown for the gut check only.</div>"),
@@ -414,7 +415,9 @@ def render_page(ctx: dict[str, Any]) -> str:
         "(D19: WCA_1 / WCA_2 split happens at the curve step; D20: WCXY counted one-way). D1 PUDs = remaining_pud ∪ conflict ∪ not-yet-reconciled Novi PUD sticks ≥ 50 % inside the extent, "
         "to the max-overlap area (count only; no RES/UPSIDE).</div>"),
         _table(tab, fmt),
-        f"<p class=meta>Cohort wells outside the extent (midpoint): {summ['n_c12_outside']:,} of {summ['n_c12_all']:,} (excluded, D9 'inside the extent').</p>",
+        (f"<p class=meta>Cohort wells outside the extent (midpoint): {summ['n_c12_outside']:,} of {summ['n_c12_all']:,} (excluded, D9 'inside the extent'). "
+        f"Excluded by docs/box/exclusions.csv before anything else: {summ['n_excluded']} wells ({summ['n_excluded_cohort']} in the D9 cohort) — "
+        "El Campeon / Los Vaqueros (Permian Resources) state-line program, Novi allocation defect (Michael 2026-10-09).</p>"),
         _MAP_JS.replace("__DATA__", json.dumps(ctx["map"], separators=(",", ":"), default=lambda o: None)),
         "</body></html>",
     ]
@@ -428,7 +431,7 @@ def render_page(ctx: dict[str, Any]) -> str:
 
 def run(conn: Any, wells_dir: Path, out: Path, p: ta.AreaParams = ta.DEFAULT, puds: bool = True) -> dict[str, Any]:
     out.mkdir(parents=True, exist_ok=True)
-    wells = egr.load_final_sets(wells_dir, (POOL,))
+    wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, (POOL,)))
     ext = pull_extent(conn)
     d = prepare(wells, pull_extra(conn, list(wells["api10"])), ext["geom_ft"])
     r = regionalize(ext["geom_ft"], d, p)
@@ -456,6 +459,7 @@ def run(conn: Any, wells_dir: Path, out: Path, p: ta.AreaParams = ta.DEFAULT, pu
     coh = d[d["cohort"].astype(bool)]
     summ = {"built_at": built, "asof": str(d.attrs["asof"]), "extent_id": ext["extent_id"], "extent_version": ext["version"], "params": asdict(p),
             "n_areas": len(r["geoms"]), "pick": r["pick"], "n_cells": r["n_cells"], "n_c12": int(d.c12.sum()), "n_c24": int(d.c24.sum()), "n_ceur": int(d.ceur.sum()),
+            "n_excluded": len(excluded), "n_excluded_cohort": int(excluded["cohort"].sum()), "excluded_api10": sorted(excluded["api10"]),
             "n_c12_all": int((coh["oil12_ft"] > 0).sum()), "n_c12_outside": int(((coh["oil12_ft"] > 0) & ~coh["inside"]).sum()),
             "r2_in": r["r2_in"], "cv_r2_pick": float(r["cv"]["cv"].loc[r["cv"]["cv"].k == r["pick"]["k_1se"], "r2"].iloc[0]),
             "cv_r2_k1": float(r["cv"]["cv"].loc[r["cv"]["cv"].k == 1, "r2"].iloc[0]), "knn_local_cv_r2": 1.0 - r["cv"]["knn_mse"] / r["cv"]["var"],

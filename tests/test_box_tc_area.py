@@ -13,6 +13,7 @@ from shapely.geometry import LineString
 from shapely.geometry import box as rect
 
 from box import edge_gap as eg
+from box import exclusions
 from box import tc_area as ta
 from box import tc_area_report as tr
 
@@ -184,3 +185,13 @@ def test_pud_areas_co_extent_overlap_not_distance():
     out = tr.pud_areas(puds, ext, [a1, a2])  # sticks round-trip lon/lat -> UTM 13N ft inside
     assert out["area_no"].tolist() == [1, 2, 0]
     assert out["bench_grp"].tolist() == ["WCA_1+2", "WCXY", "WCA_1+2"]
+
+
+def test_exclusions_drop_by_api10_and_cover_the_allocation_defect_program():
+    ex = exclusions.load()
+    assert ex["api10"].is_unique and ex["api10"].str.len().eq(10).all()
+    assert {"reason", "decided_by", "decided_on"} <= set(ex.columns)
+    wells = pd.DataFrame({"api10": ["3002547394", "4230136057", "9999999999"]})  # El Campeon #432H NM + its TX twin + a keeper
+    kept, dropped = exclusions.drop(wells)
+    assert kept["api10"].tolist() == ["9999999999"]
+    assert sorted(dropped["api10"]) == ["3002547394", "4230136057"]
