@@ -2481,7 +2481,7 @@ vdr.daily joined to vdr.property on the suite well key (api10 NOT NULL rows only
 
 Basin x bench in/out of BOX scope (plan D2). member_benches = the formation_blueox codes pooled into the bench (WCA = WCA_1 + WCA_2, with WCXY as one-way evidence, D19/D20). Michael-owned: sql/54 seeds with ON CONFLICT DO NOTHING.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)
 
 | column | type | description |
 |---|---|---|
@@ -2497,7 +2497,7 @@ Basin x bench in/out of BOX scope (plan D2). member_benches = the formation_blue
 
 BOX bench extents, one row per version x source. generated = lateral lines + variable buffer (D21, box/extent.py); geology_edited = the geologist's shapefile edit of a generated version (D7, parent_extent_id), with diff_stats. is_record marks the single version of record per basin x bench. geom EPSG:4326; area_sqmi planar (UTM 13N ft).
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)
 
 | column | type | description |
 |---|---|---|
@@ -2522,7 +2522,7 @@ BOX bench extents, one row per version x source. generated = lateral lines + var
 
 Boundary of a generated extent split by the walked step-2 ring segment whose sector it lies in: edge_class pinned/gap/hole, or bridge where the D27 development envelope bridged a gap between development trends; perf_class (12-mo oil/ft of the edge wells vs the interior median, >=0.85 strong, <0.70 rolled), buffer_ft and the rule that set it, explanation = the geology flag text. seg_no = -1 for hole rings. See sql/54, sql/56.
 
-~564 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
+~564 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
 
 | column | type | description |
 |---|---|---|
@@ -2538,6 +2538,29 @@ Boundary of a generated extent split by the walked step-2 ring segment whose sec
 | `perf_ratio` | double precision |  |
 | `rule` | text |  |
 | `explanation` | text |  |
+
+### `box.tc_area` (table)
+
+BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record, built by box/tc_area.py (contiguity-constrained Ward agglomeration of 1-mi hex cells on log 12-mo oil/ft of the D9 cohort, k by 5-fold CV on 3-mi blocks, paired 1-SE rule). The areas of one (extent_id, version) tile the extent. is_record marks the area set of record per extent. n_wells = 12-mo D9 cohort wells (fp >= 2016, lateral 6,000-13,000 ft, 12 full months) inside the area. Vintage normalized by filter only; operator/completion confounding accepted for v1. See sql/57.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)
+
+| column | type | description |
+|---|---|---|
+| `area_id` | bigint |  |
+| `extent_id` | bigint |  |
+| `version` | integer |  |
+| `area_no` | integer |  |
+| `geom` | geometry(MultiPolygon,4326) |  |
+| `area_sqmi` | double precision |  |
+| `n_wells` | integer |  |
+| `response` | text |  |
+| `cohort_stats` | jsonb | Per-area responses in bbl per lateral ft: 12-mo / 24-mo oil P50 (SPE: P10 = HIGH) with their own n, Novi 30-yr oil EUR/ft (vendor horizon, a screen), member tags (WCA_1 / WCA_2 / WCXY one-way, D19/D20), median first-prod year, top operator share, D1 PUD counts. |
+| `params` | jsonb | Method knobs (cell size, field kNN, D9 floor, CV folds/blocks/seed), the CV pick (k_1se, k_min, held-out R2) and the input well set. |
+| `generated_from_run` | text |  |
+| `is_record` | boolean |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
 
 ## Schema `meta`
 
