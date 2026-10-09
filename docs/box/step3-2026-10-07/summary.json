@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-07T17:54:53-05:00",
+ "built_at": "2026-10-08T08:27:05-05:00",
  "wells_dir": "docs\\box\\step1-2026-10-06",
  "version": 1,
  "edge_params": {
@@ -27,6 +27,7 @@
   "lateral_core_ft": 50.0,
   "quantum_ft": 110.0,
   "smooth_ft": 330.0,
+  "legacy_fill_cover": 0.9,
   "uniform": false
  },
  "pick": {
@@ -39,7 +40,7 @@
   "n_rolled": 591,
   "hit_good": 780,
   "hit_rolled": 218,
-  "added_sqmi": 1812.8600000000004,
+  "added_sqmi": 1783.3400000000004,
   "tpr": 0.5203468979319547,
   "fpr": 0.3688663282571912,
   "j": 0.15148056967476348,
@@ -57,10 +58,10 @@
    "cutoff": "2021-01-01",
    "n_before": 5369,
    "n_after": 5777,
-   "n_after_outside_core": 2680,
-   "n_scored": 1362,
-   "n_hole_infill": 1063,
-   "n_scored_no12": 388,
+   "n_after_outside_core": 2625,
+   "n_scored": 1363,
+   "n_hole_infill": 1007,
+   "n_scored_no12": 389,
    "n_beyond_reach": 255,
    "interior_median": 21662.461242382124,
    "fronts": {
@@ -77,16 +78,16 @@
      "perf_median": 1.0087174908648788
     }
    },
-   "core_sqmi": 3342.8961978069997
+   "core_sqmi": 3427.0310607913198
   },
   {
    "pool": "WCA",
    "cutoff": "2023-01-01",
    "n_before": 7671,
    "n_after": 3475,
-   "n_after_outside_core": 1156,
+   "n_after_outside_core": 1126,
    "n_scored": 439,
-   "n_hole_infill": 572,
+   "n_hole_infill": 542,
    "n_scored_no12": 213,
    "n_beyond_reach": 145,
    "interior_median": 22361.228814795955,
@@ -98,16 +99,16 @@
      "perf_median": 1.0595780550756648
     }
    },
-   "core_sqmi": 4040.1966025397974
+   "core_sqmi": 4106.307823529375
   },
   {
    "pool": "BS2_S",
    "cutoff": "2021-01-01",
    "n_before": 910,
    "n_after": 2247,
-   "n_after_outside_core": 1994,
+   "n_after_outside_core": 1990,
    "n_scored": 850,
-   "n_hole_infill": 139,
+   "n_hole_infill": 135,
    "n_scored_no12": 321,
    "n_beyond_reach": 1005,
    "interior_median": 33352.16900830684,
@@ -125,16 +126,16 @@
      "perf_median": 1.2295622483633952
     }
    },
-   "core_sqmi": 312.40721699121605
+   "core_sqmi": 326.87139219257585
   },
   {
    "pool": "BS2_S",
    "cutoff": "2023-01-01",
    "n_before": 1560,
    "n_after": 1597,
-   "n_after_outside_core": 1234,
+   "n_after_outside_core": 1228,
    "n_scored": 704,
-   "n_hole_infill": 76,
+   "n_hole_infill": 70,
    "n_scored_no12": 343,
    "n_beyond_reach": 454,
    "interior_median": 30896.094728074204,
@@ -158,17 +159,17 @@
      "perf_median": 1.1132244559425535
     }
    },
-   "core_sqmi": 676.8476744596471
+   "core_sqmi": 697.1643083027477
   }
  ],
  "pools": {
   "WCA": {
-   "extent_sqmi": 5159.682202261479,
-   "core_sqmi": 4876.900919716365,
+   "extent_sqmi": 5190.155141675695,
+   "core_sqmi": 4913.650983000121,
    "outline_step2_sqmi": 5419.6099030121695,
    "n_parts": 12,
-   "n_holes": 17,
-   "perimeter_mi": 814.5901689334779,
+   "n_holes": 14,
+   "perimeter_mi": 814.5901793854799,
    "walked_mi_by_rule": {
     "gap: k \u00d7 gap": 204.8,
     "gap: pre-2016 beyond -> floor (D5)": 4.9,
@@ -194,12 +195,12 @@
    }
   },
   "BS2_S": {
-   "extent_sqmi": 2200.8762360745322,
-   "core_sqmi": 1839.1154160168646,
+   "extent_sqmi": 2308.0970045956756,
+   "core_sqmi": 1963.854429165875,
    "outline_step2_sqmi": 2467.6582692976044,
    "n_parts": 8,
-   "n_holes": 18,
-   "perimeter_mi": 712.5674449583867,
+   "n_holes": 15,
+   "perimeter_mi": 712.567444958387,
    "walked_mi_by_rule": {
     "gap: k \u00d7 gap": 162.6,
     "gap: pre-2016 beyond -> floor (D5)": 12.1,
