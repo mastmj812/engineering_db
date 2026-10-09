@@ -85,9 +85,12 @@ def smoke(conn) -> None:
     with conn.cursor() as cur:
         q = cur.execute
         try:
+            # a throwaway bench inside the rolled-back transaction: real benches may already hold a
+            # version-of-record row, which the partial unique index would (correctly) refuse
+            q("INSERT INTO box.bench_scope (basin, bench, in_scope, reason, decided_on) VALUES ('delaware', '_APPLY_SMOKE', false, 'apply smoke', current_date)")
             eid = q(
                 "INSERT INTO box.extent (basin, bench, version, source, geom, is_record) "
-                "VALUES ('delaware', 'BS2_S', 999, 'generated', extensions.ST_GeomFromText(%s, 4326), true) RETURNING extent_id",
+                "VALUES ('delaware', '_APPLY_SMOKE', 999, 'generated', extensions.ST_GeomFromText(%s, 4326), true) RETURNING extent_id",
                 (_SQUARE,),
             ).fetchone()[0]
             q(
@@ -106,7 +109,7 @@ def smoke(conn) -> None:
             try:
                 q(
                     "INSERT INTO box.extent (basin, bench, version, source, geom, is_record) "
-                    "VALUES ('delaware', 'BS2_S', 998, 'generated', extensions.ST_GeomFromText(%s, 4326), true)",
+                    "VALUES ('delaware', '_APPLY_SMOKE', 998, 'generated', extensions.ST_GeomFromText(%s, 4326), true)",
                     (_SQUARE,),
                 )
                 _check(False, "a second is_record row per bench was ALLOWED")
