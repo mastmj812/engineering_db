@@ -33,6 +33,7 @@ SCHEMAS = (
     "ref",
     "curated",
     "vdr",
+    "box",
     "meta",
 )
 
@@ -71,6 +72,9 @@ _CONSUMERS = {
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
     "vdr.daily": "anduin daily-production PDP forecasting (planned)",
+    "box.bench_scope": "BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)",
+    "box.extent": "BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)",
+    "box.extent_edge": "geology review of the extent edge (rule + flag per boundary piece)",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 
@@ -90,6 +94,8 @@ def _cadence(rel: str, kind: str) -> str:
         return "on demand per data room (scripts.load_vdr)"
     if schema == "ref":
         return "static reference"
+    if schema == "box":
+        return "on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches)"
     if rel in _CURATED_MATVIEWS:
         pos = _CURATED_MATVIEWS.index(rel) + 1
         gated = " — refresh gated on source change" if rel in _GATED_REFRESH else ""

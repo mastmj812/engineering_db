@@ -24,7 +24,10 @@ def _wkt_ll(g_ft13: Any) -> str:
     return eg.to_lonlat([g_ft13])[0].wkt
 
 
-def store_generated(conn: Any, pool: str, version: int, b: dict[str, Any], bp: Any, run_id: str) -> int:
+def store_generated(conn: Any, pool: str, version: int, b: dict[str, Any], bp: Any, run_id: str, make_record: bool = False) -> int:
+    """Store a generated extent + its edges; make_record also makes it the version of record (the
+    previous record, if any, is marked superseded) — plan D28: generated extents are adopted without
+    waiting for geology; a later geology edit supersedes them through store_edited."""
     from dataclasses import asdict
 
     from box.extent_report import EDGE
@@ -47,6 +50,9 @@ def store_generated(conn: Any, pool: str, version: int, b: dict[str, Any], bp: A
                VALUES (%s, %s, %s, extensions.ST_GeomFromText(%s, 4326), %s, %s, %s, %s, %s, %s, %s, %s)""",
             rows,
         )
+        if make_record:
+            cur.execute("UPDATE box.extent SET is_record = false, superseded_by = %s WHERE basin = %s AND bench = %s AND is_record", (eid, BASIN, pool))
+            cur.execute("UPDATE box.extent SET is_record = true WHERE extent_id = %s", (eid,))
     conn.commit()
     return eid
 
