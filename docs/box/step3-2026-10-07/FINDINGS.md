@@ -256,3 +256,125 @@ never extends an outer edge.
   unchanged.
 - Calibration pick unchanged: k = 0.75, cap = 7,920 ft, floor = 880 ft, J +0.15.
 - In the geology flags layer, filled holes are labelled "hole filled (D26)", green on the map.
+
+## 8. D27 — the extent is the development envelope (Michael, 2026-10-09)
+
+**Supersedes §1's construction and §3's numbers.** The v1 package in `geology/` is now the D27
+build. The calibration in §2 is unchanged (same pick: k = 0.75, cap = 7,920 ft, floor = 880 ft).
+
+**How we got here.**
+- BS2_S showed a strong SE development lobe, a big gap, then another strong trend. Michael's view:
+  a sedimentary bench with no structural break has no voids between development trends.
+- Novi's BASE_CASE BS2_S inventory is one continuous blanket with no voids. It sits well beyond
+  any BOX version: W and S aprons, plus a separate SE Texas body about 40 mi out.
+- A 2BS structure overlay showed the BS2_S W edge on the 6,300–6,900-ft 2BS top, with producers
+  rolling over updip of about 7,000 ft:
+
+  | 2BS top | median oil ratio | share performing |
+  |---|---|---|
+  | 6,750–7,000 ft | 0.68× | 39% |
+  | 7,000–7,250 ft | 0.83× | 68% |
+  | 7,250–7,500 ft | 1.03× | 84% |
+
+- Cutting developed wells at that contour was rejected. The extent states where the bench is
+  developed; performance belongs to the TC areas.
+
+**D27, as built**
+1. **Developed is always in.** Every ≥ 2016 pool lateral within 8 mi of the body joins the
+   extent, whatever its performance. Isolated tests beyond 8 mi are out and listed in the flags
+   layer.
+2. **No voids.** The buffered extent is closed at 4 mi radius, which bridges gaps between
+   development trends narrower than 8 mi, and every interior void is filled, potash included.
+   Edges placed by a bridge are classed `envelope bridge (D27)`: geology's question is whether
+   a structural or reservoir break should cut there.
+3. **Evidence governs reach beyond the outermost development only.** That covers the 2×2
+   buffer, live fronts, the potash floor and the pre-2016 rule. **BS2_S updip limit:** where the
+   2BS top is shallower than 7,000 ft (Holden's grid), the buffer is held to the floor. The
+   limit ships as `BOX_BS2_S_updip`. WCA has no depth limit (see below).
+
+**Result**
+
+| | WCA | BS2_S |
+|---|---|---|
+| Buffered extent before the envelope | 5,208 sq mi | 2,307 sq mi |
+| **D27 envelope** | **6,118 sq mi**, 1 part, 0 voids | **3,473 sq mi**, 2 parts, 0 voids |
+| Bridged or filled | 911 sq mi | 1,166 sq mi |
+| Edge placed by a bridge | 198 mi | 193 mi |
+| Developed ≥ 2016 laterals outside | 1 (isolated test) | 35 (isolated tests; 22 are the SE Texas scatter) |
+| D1 Novi PUDs inside (≥ 50% of stick) | WCA_1 + WCA_2 1,794; WCXY 3,157 | **7,804 of 15,122** Delaware D1 (52%) |
+
+- **The round bites along the outer edge** are embayments wider than 8 mi with no development.
+  D27 deliberately leaves them out; geology can redraw them if structure or reservoir says they
+  belong in.
+- **BS2_S's 2nd part** is a small W island: developed laterals within 8 mi that the bridge didn't
+  join to the body.
+
+**Backtest check** (`backtest_envelope.csv`, `index.html#envbt`). Later wells ≥ 50% outside
+the cutoff-year core, within 3 mi of it, with a 12-mo result:
+
+| | performing wells contained | rolled wells contained |
+|---|---|---|
+| pre-D27 buffered extent | 24–46% | 21–43% |
+| D27 envelope | 82–94% | 67–87% |
+
+The envelope is a development statement, not a performance screen: it contains most of where
+operators went next, good or bad. Telling those apart is the TC areas' job in step 4.
+
+**WCA depth check (read-only; not applied, your call).** ≥ 2016 WCA producers by depth to the
+WCA top (HCA_WOLFCAMP_A grid; 95.5% covered):
+
+| WCA top | wells | median ratio | share performing |
+|---|---|---|---|
+| < 7,500 ft | 34 | 0.47× | 15% |
+| 7,500–8,500 ft | 133 | 0.74–0.75× | 52–59% |
+| ≥ 8,500 ft | | 0.88–1.23× | 72–93% |
+
+That's the same updip rollover as BS2_S, more gradual. A WCA limit would sit between 7,500 and
+8,500 ft.
+
+**Still open for gate 3:**
+- WCA depth limit: yes or no, and at what depth.
+- §5 flags a, c–k (b is closed by D26 and D27).
+- go-apply sql/54.
+- Sending `geology/` to Holden.
+
+## 9. D27 amended (Michael, 2026-10-09): development needs 3+ wells; no updip limit; generalized edge
+
+**Why.**
+- **The 8-mi "developed is in" rule took single test wells as development.** On BS2_S, a lone
+  2025 Tascosa well pulled a wedge out to the W: SHAKE 'N BAKE 2 STATE #204H, api10 3001555251,
+  4,658-ft lateral at 5,917 ft TVD, 6.6 mi W of the body, no 12-mo result yet. Michael couldn't
+  find it in anduin.
+- **The 2BS 7,000-ft updip limit never removed wells.** It only held the reach past the last W
+  wells to the floor. That was 37 sq mi (about 1%) of BS2_S, and it conflicted with the D22 W
+  live front.
+- **The round bites** left by the 8-mi bridge read as scallops.
+
+**Amendments**
+1. **Development = a step-out cluster of at least 3 laterals** (laterals within 1 mi of each
+   other) within 8 mi, whatever its performance. One- and two-well step-outs are tests: listed,
+   not included.
+2. **No updip depth limit on either bench.** WCA was checked and declined: its W wells stay in
+   and will inform a low-performing TC area. The BS2_S 7,000-ft limit is dropped. D25 stands.
+3. **Generalized edge:**
+   - 2-mi simplification plus corner cutting;
+   - a proportional bulge wherever that would leave a developed lateral out (hull of those
+     laterals and the edge within max(1.5 mi, 2.5× how far they sit out), filleted);
+   - corners rounded at ¾ mi, re-guarding developed laterals.
+
+   Rejected along the way: re-including the full buffered footprint (lumpy), a free-form outward
+   push (BS2_S +981 sq mi), and plain corner smoothing (dropped 14–18 developed laterals).
+
+**Result (the v1 package in `geology/`)**
+
+| | WCA | BS2_S |
+|---|---|---|
+| Extent | **6,168 sq mi**, 1 part, 0 voids | **3,358 sq mi**, 1 part, 0 voids |
+| Raw envelope before generalizing | 5,919 sq mi | 3,223 sq mi |
+| Step-out programs in (≥ 3 laterals) | 10 laterals: SM Energy NW, Mongoose SE, Permian Resources W | 36 laterals: Mewbourne/Paloma W 18, Matador/Mewbourne W 11, Chevron/Conoco SW 7 |
+| Tests out: 1–2-well step-outs within 8 mi / beyond 8 mi | 14 / 1 | 17 / 35 |
+| ≥ 2016 laterals outside the extent | 15, all tests | 51, all tests |
+| D1 Novi PUDs inside (≥ 50% of stick) | WCA_1+2 1,934; WCXY 3,211 | **7,478 of 15,122** |
+
+The calibration pick is unchanged: k 0.75, cap 7,920 ft, floor 880 ft. The envelope backtest is
+in `backtest_envelope.csv`.

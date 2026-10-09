@@ -46,9 +46,15 @@ EVAL_REACH_FT = 3 * eg.FT_PER_MI  # later wells scored only within 3 mi of the T
 EVAL_STEP_FT = 250.0
 AREA_CELL_FT = 528.0  # 0.1-mi grid for the area estimate
 J_TIE = 0.02
+BRIDGE_SLACK_FT = 1500.0  # an extent edge this far past its segment's buffer was placed by the D27 bridge
 MIN_FLOOR_FT = 880.0  # next-row rule: the next development row beyond a producer (narvi's 880-ft fallback spacing) is always inside
 UNIFORM_FT = (660.0, 1320.0, 1980.0, 2640.0, 3960.0, 5280.0)  # flat-buffer baselines
 SOPA_DIR = Path("docs") / "box" / "ref" / "potash_sopa_1986"
+# Optional updip depth limit per pool: (Holden GGX grid of the bench top, cutoff ft). Shallower than
+# the cutoff, the extent never reaches past the last wells. Tried for BS2_S (2BS top 7,000 ft) and
+# DROPPED 2026-10-09 (Michael): it only trimmed reach (~37 sq mi) and fought the D22 W front; low
+# updip performance is the TC areas' job. Kept as machinery, empty by decision.
+UPDIP: dict[str, tuple[str, float]] = {}
 
 
 # ----------------------------------------------------------------------------
@@ -63,6 +69,45 @@ def load_sopa(path: Path = SOPA_DIR / "CFO_POTASH_SOPA_1986.shp") -> Any:
     tr = Transformer.from_crs("EPSG:26913", "EPSG:4326", always_xy=True)
     polys = [shapely.transform(g, lambda c: np.column_stack(tr.transform(c[:, 0], c[:, 1]))) for g, _ in gio.read_layer(path)]
     return shapely.union_all(eg.to_ft(polys))
+
+
+def load_updip(pool: str, bounds_ft13: tuple[float, float, float, float], pad_ft: float = 10 * eg.FT_PER_MI, cell_ft: float = 528.0) -> Any:
+    """D27: the zone shallower than the pool's depth cutoff, as a UTM 13N ft polygon (None if the pool
+    has no limit or the grid is unavailable). Outside grid coverage is never updip."""
+    cfg = UPDIP.get(pool)
+    if cfg is None:
+        return None
+    from box import extent_package as pkg
+
+    path = pkg.GRID_DIR / cfg[0]
+    if not path.exists():
+        return None
+    import matplotlib.pyplot as plt
+    from pyproj import Transformer
+    from scipy.interpolate import RegularGridInterpolator
+
+    xs, ys, Z = pkg._grid(path)
+    fz = RegularGridInterpolator((ys, xs), Z, bounds_error=False, fill_value=np.nan)
+    x0, y0, x1, y1 = bounds_ft13
+    gx = np.arange(x0 - pad_ft, x1 + pad_ft, cell_ft)
+    gy = np.arange(y0 - pad_ft, y1 + pad_ft, cell_ft)
+    GX, GY = np.meshgrid(gx, gy)
+    tr = Transformer.from_crs("EPSG:32613", gio.GEOLOGY_CRS, always_xy=True)
+    ux, uy = tr.transform(GX.ravel() / 3.280839895, GY.ravel() / 3.280839895)
+    GZ = fz(np.column_stack([uy, ux])).reshape(GX.shape)
+    fig, ax = plt.subplots()
+    cs = ax.contourf(GX, GY, np.ma.masked_invalid(GZ), levels=[-1e9, cfg[1]])
+    plt.close(fig)
+    polys = [Polygon(r) for path_ in cs.get_paths() for r in path_.to_polygons() if len(r) >= 4]
+    u = Polygon()
+    for q in sorted(polys, key=lambda q: -q.area):  # even-odd: nested rings are holes
+        u = u.symmetric_difference(q)
+    return ex.as_multi(u.buffer(0))
+
+
+def _clamp(sopa: Any, updip: Any) -> Any:
+    parts = [g for g in (sopa, updip) if g is not None and not g.is_empty]
+    return shapely.union_all(parts) if parts else None
 
 
 def at_cutoff(d: pd.DataFrame, T: dt.date | None) -> pd.DataFrame:
@@ -112,7 +157,7 @@ def prep(d: pd.DataFrame, pool: str, T: dt.date | None, bp: ex.BufferParams = ex
     seg = ex.local_perf(r["seg"], lines, oil, im & coh, med, bp)
     so = r["stepouts"].copy()
     fronts = ex.front_sides(so, bp)
-    so["role"] = ex.stepout_roles(so, fronts, bp)
+    so["role"] = ex.stepout_roles(so, fronts, bp, [lines[i] for i in so["ix"]])
     so["class"] = ex.stepout_class(so)
     islands = [lines[i] for i in so.loc[so.role == "island", "ix"]]
     body_lines = [ln for ln in lines if ln.intersects(body)]
@@ -141,7 +186,7 @@ def _sample_lines(lines: list[LineString], step: float) -> tuple[np.ndarray, np.
     return np.vstack(xy), np.concatenate(who)
 
 
-def backtest_pool(d: pd.DataFrame, pool: str, T: dt.date, sopa: Any, cfgs: list[ex.BufferParams]) -> tuple[pd.DataFrame, dict[str, Any]]:
+def backtest_pool(d: pd.DataFrame, pool: str, T: dt.date, sopa: Any, cfgs: list[ex.BufferParams], updip: Any = None) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Score every config on the wells online at/after T (one pool, one cutoff)."""
     pr = prep(d, pool, T)
     new = d[(d["first_production_date"] >= T) & d["geom"].notna()].reset_index(drop=True)
@@ -162,7 +207,8 @@ def backtest_pool(d: pd.DataFrame, pool: str, T: dt.date, sopa: Any, cfgs: list[
     known = new["cohort"].to_numpy(bool) & np.isfinite(ratio)
     good = scored & known & (ratio >= eg.PERF_ROLLED)
     rolled = scored & known & (ratio < eg.PERF_ROLLED)
-    sop = shapely.contains_xy(sopa, pxy[:, 0], pxy[:, 1]) if sopa is not None else np.zeros(len(pxy), bool)
+    clamp = _clamp(sopa, updip)
+    sop = shapely.contains_xy(clamp, pxy[:, 0], pxy[:, 1]) if clamp is not None else np.zeros(len(pxy), bool)
     # area grid: added area (outside the core, inside the extent)
     gmax = max(c.cap_ft for c in cfgs) * 1.0 + AREA_CELL_FT
     b0 = pr.core.bounds
@@ -174,14 +220,14 @@ def backtest_pool(d: pd.DataFrame, pool: str, T: dt.date, sopa: Any, cfgs: list[
     keep = np.isfinite(gd) & (gd > 0)
     gxy, gd = gxy[keep], gd[keep]
     _, gnn = tree.query(gxy)
-    gsop = shapely.contains_xy(sopa, gxy[:, 0], gxy[:, 1]) if sopa is not None else np.zeros(len(gxy), bool)
+    gsop = shapely.contains_xy(clamp, gxy[:, 0], gxy[:, 1]) if clamp is not None else np.zeros(len(gxy), bool)
     cell_sqmi = (AREA_CELL_FT / eg.FT_PER_MI) ** 2
     rows = []
     for c in cfgs:
         for with_fronts in (True, False):
             if c.uniform and not with_fronts:
                 continue
-            sb = ex.segment_buffers(pr.seg, c, pr.fronts if with_fronts else {}, sopa)
+            sb = ex.segment_buffers(pr.seg, c, pr.fronts if with_fronts else {}, sopa, updip)
             b, f = ex.sample_buffers(pr.seg_ix, sb, c.floor_ft)
             inside = dist <= ex.point_buffer(nn, sop, b, f)
             cap = ex.captured(ex.well_inside_fraction(who, inside, n))
@@ -287,16 +333,27 @@ def edges_frame(pr: Prep, sb: pd.DataFrame, runs: list[dict[str, Any]], bp: ex.B
         )
     e = pd.DataFrame(rows)
     e["length_ft"] = [g.length for g in e.geom]
+    # D27: boundary pieces well beyond their segment's buffer are where the envelope bridged a gap
+    # between development trends — the place geology most needs to look.
+    if len(e):
+        mids = np.asarray([g.interpolate(0.5, normalized=True).coords[0] for g in e.geom])
+        dist = ex.CoreDistance(pr.core).distance(mids, 50 * eg.FT_PER_MI)
+        br = dist > e["buffer_ft"].to_numpy(float) + BRIDGE_SLACK_FT
+        e.loc[br, "edge_class"] = "bridge"
+        e.loc[br, "rule"] = "envelope bridge (D27)"
+        e.loc[br, "flag"] = "bridged gap between development trends (D27): any structural or reservoir break here?"
     return e
 
 
-def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any) -> dict[str, Any]:
+def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any = None) -> dict[str, Any]:
     pr = prep(d, pool, None, bp)
-    sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa)
+    sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa, updip)
     b, f = ex.sample_buffers(pr.seg_ix, sb, bp.floor_ft)
-    ext, _cells = ex.build_extent(pr.core, pr.xy, b, f, sopa, bp)
+    raw, _cells = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), bp)
+    ext = ex.generalize_extent(raw, list(pr.r["ev"]["geom"]), bp) if bp.envelope else raw
     runs = ex.edge_runs(ext, pr.xy, pr.seg_ix)
     edges = edges_frame(pr, sb, runs, bp)
+    pre, _ = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), replace(bp, envelope=False))
     seg = pr.seg.join(sb)
     seg["flag"] = seg.apply(ex.geology_flag, axis=1)
     old_lines = np.asarray(list(pr.r["old"]["geom"]), dtype=object)
@@ -306,11 +363,25 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any) -> di
         c = eg.to_lonlat([hp.representative_point()])[0]
         holes.append({"area_sqmi": hp.area / eg.FT_PER_MI**2, "sopa_share": hp.intersection(sopa).area / hp.area if sopa is not None else 0.0, "lon": c.x, "lat": c.y,
                       "n_pre2016": int(shapely.intersects(old_lines, hp).sum()) if len(old_lines) else 0, "legacy_cover": cov,
-                      "filled_D26": fil, "still_hole_in_extent": not ext.contains(hp.representative_point()), "geom": hp})
-    cols = ["area_sqmi", "sopa_share", "lon", "lat", "n_pre2016", "legacy_cover", "filled_D26", "still_hole_in_extent", "geom"]
+                      "filled_D26": fil, "filled_D27": (not fil) and ext.contains(hp.representative_point()),
+                      "still_hole_in_extent": not ext.contains(hp.representative_point()), "geom": hp})
+    cols = ["area_sqmi", "sopa_share", "lon", "lat", "n_pre2016", "legacy_cover", "filled_D26", "filled_D27", "still_hole_in_extent", "geom"]
     holes_df = pd.DataFrame(holes, columns=cols).sort_values("area_sqmi", ascending=False).reset_index(drop=True)
     per = seg.groupby("rule").length_ft.sum() / eg.FT_PER_MI
+    ev_lines = np.asarray(list(pr.r["ev"]["geom"]), dtype=object)
+    inside = shapely.length(shapely.intersection(ev_lines, ext)) / shapely.length(ev_lines) >= 0.5
+    so = pr.stepouts
+    iso_ix = set(so.loc[so.role != "island", "ix"])
     stats = {
+        "pre_envelope_sqmi": pre.area / eg.FT_PER_MI**2,
+        "envelope_raw_sqmi": raw.area / eg.FT_PER_MI**2,
+        "n_tests_within_reach": int(so["role"].str.startswith("excluded: test").sum()),
+        "bridged_sqmi": ext.difference(pre).area / eg.FT_PER_MI**2,
+        "updip_limit": UPDIP.get(pool),
+        "developed_outside": int((~inside).sum()),
+        "developed_outside_not_isolated": int(sum(1 for i, x in enumerate(inside) if not x and i not in iso_ix)),
+        "n_isolated_tests": len(iso_ix),
+        "bridge_edge_mi": float(edges.loc[edges.edge_class == "bridge", "length_ft"].sum() / eg.FT_PER_MI) if len(edges) else 0.0,
         "extent_sqmi": ext.area / eg.FT_PER_MI**2,
         "core_sqmi": pr.core.area / eg.FT_PER_MI**2,
         "outline_step2_sqmi": float(sum(g.area for g in pr.r["outline"].geoms) / eg.FT_PER_MI**2),
@@ -327,7 +398,39 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any) -> di
         "interior_median_oil12_kft": pr.interior_median,
         "flagged_pinned_strong_mi": float(seg.loc[(seg.kind == "pinned") & (seg.perf_used == "strong"), "length_ft"].sum() / eg.FT_PER_MI),
     }
-    return {"prep": pr, "seg": seg, "extent": ext, "edges": edges, "holes": holes_df, "stats": stats}
+    if updip is not None and pool in UPDIP:
+        stats["updip_text"] = f"{UPDIP[pool][0]} shallower than {UPDIP[pool][1]:,.0f} ft (D27)"
+    return {"prep": pr, "seg": seg, "extent": ext, "edges": edges, "holes": holes_df, "stats": stats, "updip": updip}
+
+
+def envelope_backtest(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any) -> list[dict[str, Any]]:
+    """The chosen config built as the D27 polygon at each cutoff: share of later performing / rolled
+    wells (>= 50 % outside the T core, within 3 mi of it, 12-mo known) that it contains."""
+    out = []
+    for T in CUTOFFS:
+        pr = prep(d, pool, T, bp)
+        sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa, updip)
+        b, f = ex.sample_buffers(pr.seg_ix, sb, bp.floor_ft)
+        rows = {}
+        for env in (False, True):
+            ext, _ = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), replace(bp, envelope=env))
+            rows[env] = ex.generalize_extent(ext, list(pr.r["ev"]["geom"]), bp) if env else ext
+        new = d[(d["first_production_date"] >= T) & d["geom"].notna()].reset_index(drop=True)
+        pxy, who = _sample_lines(list(new["geom"]), EVAL_STEP_FT)
+        dist = ex.CoreDistance(pr.core).distance(pxy, EVAL_REACH_FT)
+        n = len(new)
+        outside = ex.well_inside_fraction(who, dist > 0, n) >= 0.5
+        dmin = np.full(n, np.inf)
+        np.minimum.at(dmin, who, dist)
+        ratio = new["oil12_kft"].to_numpy(float) / pr.interior_median
+        known = new["cohort"].to_numpy(bool) & np.isfinite(ratio)
+        scored = outside & (dmin <= EVAL_REACH_FT) & known
+        good, rolled = scored & (ratio >= eg.PERF_ROLLED), scored & (ratio < eg.PERF_ROLLED)
+        for env, ext in rows.items():
+            cap = ex.captured(ex.well_inside_fraction(who, shapely.contains_xy(ext, pxy[:, 0], pxy[:, 1]), n))
+            out.append({"pool": pool, "cutoff": str(T), "construction": "D27 envelope" if env else "pre-D27 buffered", "area_sqmi": ext.area / eg.FT_PER_MI**2,
+                        **ex.score(good, rolled, cap)})
+    return out
 
 
 # ----------------------------------------------------------------------------
@@ -410,10 +513,14 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     # 1. calibration backtest
     cfgs = configs()
+    updips = {}
+    for pool in POOLS:
+        g = np.asarray(list(df.loc[(df.pool == pool) & df.geom.notna(), "geom"]), dtype=object)
+        updips[pool] = load_updip(pool, shapely.total_bounds(g))
     bts, infos = [], []
     for pool in POOLS:
         for T in CUTOFFS:
-            bt, info = backtest_pool(df[df.pool == pool], pool, T, sopa, cfgs)
+            bt, info = backtest_pool(df[df.pool == pool], pool, T, sopa, cfgs, updips[pool])
             bts.append(bt)
             infos.append(info)
     bt = pd.concat(bts, ignore_index=True)
@@ -427,7 +534,8 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
     abl["precision"] = abl.hit_good / (abl.hit_good + abl.hit_rolled)
     wells = pd.concat([i["wells"] for i in infos], ignore_index=True)
     # 2. final extents
-    builds = {pool: build_pool(df[df.pool == pool], pool, bp, sopa) for pool in POOLS}
+    builds = {pool: build_pool(df[df.pool == pool], pool, bp, sopa, updips[pool]) for pool in POOLS}
+    env_bt = pd.DataFrame([r for pool in POOLS for r in envelope_backtest(df[df.pool == pool], pool, bp, sopa, updips[pool])])
     # 3. D1 universe count (read-only)
     pud_tabs: dict[str, pd.DataFrame] = {}
     if puds and conn is not None:
@@ -448,11 +556,13 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
     rule_txt = (
         f"  pinned edge: floor = {bp.floor_ft:,.0f} ft (rolled) / {1.5 * bp.floor_ft:,.0f} (unknown) / {2 * bp.floor_ft:,.0f} (strong)\n"
         f"  gap: k x gap length x perf (strong 1.0 / unknown 0.75 / rolled 0.5), k = {bp.k:g}, within [floor, cap = {bp.cap_ft:,.0f} ft]\n"
-        "  pre-2016 laterals beyond a gap -> floor; live-front side -> cap; inside the potash area -> floor; holes -> tightest floor"
+        "  pre-2016 laterals beyond a gap -> floor; live-front side -> cap; potash area -> floor; updip of the depth limit -> floor\n"
+        f"  D27 envelope: development (step-out clusters >= {bp.min_cluster} laterals within {bp.bridge_mi:g} mi) always in; gaps < {bp.bridge_mi:g} mi bridged; no voids\n"
+        f"  edge generalized: {bp.gen_tol_mi:g}-mi simplification, bulges over development, {bp.gen_round_mi:g}-mi rounding"
     )
     (geo_dir / "README.txt").write_text(pkg.README.format(built=built, pools=", ".join(POOLS), version=version, rule=rule_txt), encoding="utf-8")
     # 5. pages + data
-    ctx = {"built": built, "bp": bp, "version": version, "grid": grid, "pick": pick, "infos": infos, "ablation": abl, "wells": wells, "min_floor": MIN_FLOOR_FT,
+    ctx = {"env_bt": env_bt, "built": built, "bp": bp, "version": version, "grid": grid, "pick": pick, "infos": infos, "ablation": abl, "wells": wells, "min_floor": MIN_FLOOR_FT,
            "frontier_png": pages.frontier_png(grid, pick), "puds": pud_tabs, "sopa_ll": eg.to_lonlat([sopa.simplify(200.0)])[0]}
     for pool, b in builds.items():
         (out / f"extent_{pool}.html").write_text(pages.pool_page(pool, b, ctx), encoding="utf-8")
@@ -467,6 +577,7 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
     bt.to_csv(out / "backtest_by_pool_cutoff.csv", index=False)
     wells.to_csv(out / "backtest_wells.csv", index=False)
     abl.to_csv(out / "backtest_ablation.csv", index=False)
+    env_bt.to_csv(out / "backtest_envelope.csv", index=False)
     summary = {
         "built_at": built,
         "wells_dir": str(wells_dir),
@@ -477,7 +588,8 @@ def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFram
         "cutoffs": [str(c) for c in CUTOFFS],
         "backtest_info": [{k: v for k, v in i.items() if k != "wells"} for i in infos],
         "pools": {p: b["stats"] for p, b in builds.items()},
+        "envelope_backtest": env_bt.to_dict(orient="records"),
         "geology_files": [str(f.relative_to(out)) for f in files],
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=1, default=lambda x: None if isinstance(x, float) and not math.isfinite(x) else str(x)), encoding="utf-8")
-    return {"summary": summary, "builds": builds, "bp": bp, "grid": grid, "ablation": abl, "pud_tabs": pud_tabs}
+    return {"summary": summary, "builds": builds, "bp": bp, "grid": grid, "ablation": abl, "pud_tabs": pud_tabs, "env_bt": env_bt, "updips": updips}

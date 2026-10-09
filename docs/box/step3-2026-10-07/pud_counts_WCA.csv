@@ -1,13 +1,13 @@
 formation_blueox,status,in extent,in drilled core,in step-2 outline,pool
-WCA_1,D1 universe,603,523,707,WCA
-WCA_1,conflict,31,28,32,WCA
-WCA_1,realized_phantom,22,21,24,WCA
-WCA_1,remaining_pud,572,495,675,WCA
-WCA_2,D1 universe,561,479,687,WCA
+WCA_1,D1 universe,975,523,707,WCA
+WCA_1,conflict,34,28,32,WCA
+WCA_1,realized_phantom,29,21,24,WCA
+WCA_1,remaining_pud,941,495,675,WCA
+WCA_2,D1 universe,959,479,687,WCA
 WCA_2,conflict,36,35,36,WCA
-WCA_2,realized_phantom,29,26,28,WCA
-WCA_2,remaining_pud,525,444,651,WCA
-WCXY,D1 universe,2395,2259,2677,WCA
+WCA_2,realized_phantom,30,26,28,WCA
+WCA_2,remaining_pud,923,444,651,WCA
+WCXY,D1 universe,3211,2259,2677,WCA
 WCXY,conflict,86,85,86,WCA
-WCXY,realized_phantom,86,83,87,WCA
-WCXY,remaining_pud,2309,2174,2591,WCA
+WCXY,realized_phantom,88,83,87,WCA
+WCXY,remaining_pud,3125,2174,2591,WCA

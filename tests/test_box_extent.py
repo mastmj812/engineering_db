@@ -89,9 +89,9 @@ def test_front_needs_performing_stepouts_outnumbering_rolled():
     fr = ex.front_sides(so)
     assert list(fr) == ["W"] and fr["W"]["ok"] == 8  # SE tests are beyond reach
     roles = ex.stepout_roles(so, fr)
-    assert (roles[so.side == "W"] == "island").sum() == 26  # performing + too-new on the front; the rolled one is out
-    assert set(roles[so.side == "SW"]) == {"excluded: rolled step-out", "excluded: no 12-mo yet, not a front side"}
-    assert set(roles[so.side == "SE"]) == {"excluded: isolated test > reach"}
+    # D27: developed is always in within the bridging width, whatever the performance
+    assert (roles[so.side.isin(["W", "SW"])] == "island").all()
+    assert set(roles[so.side == "SE"]) == {"excluded: isolated test (tested, not developed)"}  # 30 mi > 8 mi
 
 
 def test_stepout_class_uses_any_12mo_not_only_cohort():
@@ -262,3 +262,86 @@ def test_hole_with_a_lone_old_well_is_kept():
 def test_no_old_wells_no_fill():
     body = _ring_body()
     assert ex.legacy_cover(body, [], 2640.0) == [0.0]
+
+
+
+# ---------------------------------------------------------------------------- D27 development envelope
+
+
+def test_envelope_bridges_a_gap_between_trends_and_fills_voids():
+    a = shapely.box(0, 0, 10 * MI, 10 * MI)
+    b = shapely.box(16 * MI, 0, 26 * MI, 10 * MI)  # 6-mi gap between two development trends
+    void = shapely.box(4 * MI, 4 * MI, 6 * MI, 6 * MI)
+    ext = ex.as_multi(shapely.union_all([a.difference(void), b]))
+    env = ex.development_envelope(ext, 4 * MI)  # bridge_mi = 8
+    assert len(env.geoms) == 1 and len(env.geoms[0].interiors) == 0
+    assert env.contains(shapely.box(11 * MI, 3 * MI, 15 * MI, 7 * MI))  # the gap is in
+    assert env.contains(void.buffer(-1.0)) and env.buffer(1.0).contains(ext)
+
+
+def test_envelope_never_pushes_an_outer_edge():
+    ext = ex.as_multi(shapely.box(0, 0, 10 * MI, 10 * MI))
+    env = ex.development_envelope(ext, 4 * MI)
+    assert env.area == pytest.approx(ext.area, rel=1e-3)
+
+
+def test_envelope_leaves_a_gap_wider_than_the_bridging_width():
+    ext = ex.as_multi(shapely.union_all([shapely.box(0, 0, 10 * MI, 10 * MI), shapely.box(20 * MI, 0, 30 * MI, 10 * MI)]))  # 10-mi gap
+    env = ex.development_envelope(ext, 4 * MI)
+    assert len(env.geoms) == 2
+
+
+def test_updip_zone_holds_the_floor_but_potash_label_wins():
+    seg = _seg([{"kind": "gap", "length_ft": 9000.0, "perf_class": "strong", "geom": LineString([(0, 0), (1000, 0)])},
+                {"kind": "gap", "length_ft": 9000.0, "perf_class": "strong", "geom": LineString([(50_000, 0), (51_000, 0)])}])
+    updip = shapely.box(-500, -500, 1500, 500)
+    sb = ex.segment_buffers(seg, BP, updip=updip)
+    assert sb.buffer_ft.iloc[0] == 1760.0 and sb.rule.iloc[0].startswith("updip")
+    assert sb.buffer_ft.iloc[1] == 0.5 * 9000 * 1.0
+
+
+def test_stepout_inside_bridging_width_is_in_even_if_rolled():
+    so = pd.DataFrame([{"side": "S", "dist_mi": 7.9, "perf_ratio": 0.2, "cohort": True}, {"side": "S", "dist_mi": 8.1, "perf_ratio": 1.2, "cohort": True}])
+    assert list(ex.stepout_roles(so, {})) == ["island", "excluded: isolated test (tested, not developed)"]
+
+
+def test_build_extent_survives_an_invalid_voronoi_cell(monkeypatch):
+    body, lines, seg = _block()
+    core = ex.core(body, lines, [], 1320.0)
+    sb = ex.segment_buffers(seg, BP)
+    xy, six = ex.ring_samples(seg, body, 100.0)
+    b, f = ex.sample_buffers(six, sb, BP.floor_ft)
+    real = shapely.voronoi_polygons
+
+    def bowtie(*a, **k):
+        out = list(real(*a, **k).geoms)
+        c = out[0].centroid
+        out[0] = Polygon([(c.x - 50, c.y - 50), (c.x + 50, c.y + 50), (c.x + 50, c.y - 50), (c.x - 50, c.y + 50)])  # self-intersecting
+        return shapely.geometrycollections(out)
+
+    monkeypatch.setattr(shapely, "voronoi_polygons", bowtie)
+    ext, _ = ex.build_extent(core, xy, b, f, None, BP)
+    assert ext.is_valid and ext.contains(core.buffer(-1.0))
+
+
+def test_one_and_two_well_stepouts_are_tests_three_is_development():
+    so = pd.DataFrame([{"side": "W", "dist_mi": 3.0, "perf_ratio": 0.9, "cohort": True} for _ in range(6)])
+    g = [LineString([(0, 0), (0, 10_000)]),  # lone test
+         LineString([(30_000, 0), (30_000, 10_000)]), LineString([(30_880, 0), (30_880, 10_000)]),  # 2-well test
+         LineString([(60_000, 0), (60_000, 10_000)]), LineString([(60_880, 0), (60_880, 10_000)]), LineString([(61_760, 0), (61_760, 10_000)])]  # program
+    roles = list(ex.stepout_roles(so, {}, ex.DEFAULT, g))
+    assert roles[0].startswith("excluded: test (1-well") and roles[1].startswith("excluded: test (2-well") and roles[2] == roles[1]
+    assert roles[3:] == ["island"] * 3
+
+
+def test_generalized_edge_holds_development_and_has_no_spikes():
+    lines = []
+    for k in range(4):  # a staircase of units: the shape that scallops
+        lines += [LineString([(k * 5280 + i * 660, k * 10_560), (k * 5280 + i * 660, k * 10_560 + 10_000)]) for i in range(8)]
+    lines.append(LineString([(9_000, 40_000), (9_000, 52_000)]))  # one lateral poking out to the N
+    ext = ex.as_multi(shapely.union_all(shapely.buffer(np.asarray(lines, dtype=object), 1320)))
+    g = ex.generalize_extent(ext, lines, BP)
+    frac = shapely.length(shapely.intersection(np.asarray(lines, dtype=object), g)) / shapely.length(np.asarray(lines, dtype=object))
+    assert (frac >= 0.5).all() and len(g.geoms) == 1 and len(g.geoms[0].interiors) == 0
+    opened = g.buffer(-0.5 * MI).buffer(0.5 * MI)
+    assert not [p for p in ex.as_multi(g.difference(opened)).geoms if p.area > 0.05 * MI * MI]  # no sub-mile spikes

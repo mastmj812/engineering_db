@@ -26,6 +26,19 @@ extent polygon.
   4. The polygon is assembled per distinct buffer value (quantised) as buffer(core, b) ∩ cells(b),
      then lightly smoothed. The same rule evaluated point-wise drives the calibration backtest.
 
+  5. D27 (Michael 2026-10-09) — the extent is the bench's DEVELOPMENT envelope:
+     - developed is always in: a step-out cluster of >= min_cluster laterals (laterals within
+       cluster_link_mi of each other) within the bridging width joins the core whatever its
+       performance; 1-2-well step-outs and anything beyond the bridging width are tests, listed
+       not included (amended 2026-10-09: a single test well is not development);
+     - no voids: the buffered extent is closed with radius bridge_mi / 2 (gaps between development
+       trends narrower than bridge_mi are bridged) and every interior void is filled;
+     - evidence only governs reach beyond the outermost development. An updip depth limit was
+       tried and dropped (2026-10-09): it only trimmed reach (~1 %) and fought the D22 W front.
+       Performance belongs to the TC areas (step 4), never to the extent;
+     - generalized edge (2026-10-09): 2-mi simplification + corner cutting, a proportional bulge
+       wherever that would leave a developed lateral out, then corners rounded at 3/4 mi.
+
 Planar math in UTM 13N feet (box.edge_gap's frame).
 """
 
@@ -58,13 +71,20 @@ class BufferParams:
     local_radius_ft: float = 10 * 5280.0  # local reference: interior cohort within this of the segment
     local_min_n: int = 15  # ... at least this many, else 2× radius, else the pool median
     sample_ft: float = 200.0  # ring sampling for sectors
-    stepout_reach_mi: float = 5.0  # step-outs beyond this are isolated tests, never islands
+    stepout_reach_mi: float = 5.0  # live-front detection: performing step-outs within this of the body
     front_min_ok: int = 3  # live front: >= this many performing step-outs within reach ...
     front_ok_over_rolled: float = 2.0  # ... and at least this many times the rolled ones
     lateral_core_ft: float = 50.0  # half-width of a lateral's own line in the core
     quantum_ft: float = 110.0  # buffer quantisation for polygon assembly (1/48 mi)
     smooth_ft: float = 330.0  # closing + opening of the assembled polygon
     legacy_fill_cover: float = 0.90  # D26: fill a hole this covered by the pre-2016 lateral footprint (r)
+    bridge_mi: float = 8.0  # D27: bridge gaps between development trends narrower than this; also the step-out inclusion reach
+    envelope: bool = True  # D27 envelope (closing + no voids); False = the pre-D27 buffered extent
+    min_cluster: int = 3  # D27: a step-out cluster needs this many laterals to count as development
+    cluster_link_mi: float = 1.0  # laterals within this of each other form one step-out cluster
+    gen_tol_mi: float = 2.0  # generalized edge: simplification tolerance
+    gen_shoulder_mi: float = 1.5  # bulge shoulder floor (and 2.5 x how far the wells sit out)
+    gen_round_mi: float = 0.75  # final corner rounding radius
     uniform: bool = False  # calibration baseline: floor_ft everywhere, no 2×2 / gap / front terms
 
 
@@ -169,16 +189,22 @@ def front_sides(so: pd.DataFrame, bp: BufferParams = DEFAULT) -> dict[str, dict[
     return out
 
 
-def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = DEFAULT) -> pd.Series:
-    """What each step-out does: island (joins the core) or why it is left out (listed for geology)."""
-    c = stepout_class(so)
-    near = so["dist_mi"] <= bp.stepout_reach_mi
-    on_front = so["side"].isin(list(fronts))
-    role = np.select(
-        [~near, c == "rolled", c == "ok", on_front],
-        ["excluded: isolated test > reach", "excluded: rolled step-out", "island", "island"],
-        default="excluded: no 12-mo yet, not a front side",
-    )
+def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = DEFAULT, geoms: list[Any] | None = None) -> pd.Series:
+    """D27: development is in, tests are out. Step-outs within the bridging width are grouped into
+    clusters (laterals within cluster_link_mi of each other); a cluster of >= min_cluster laterals is
+    development and joins the core (an island the envelope bridges) whatever its performance; a 1-2
+    well cluster is a test. Beyond the bridging width: an isolated test. Tests are listed, never
+    included. (fronts no longer decide membership; they still set the cap on their side.)"""
+    near = (so["dist_mi"] <= bp.bridge_mi).to_numpy()
+    role = np.where(near, "island", "excluded: isolated test (tested, not developed)").astype(object)
+    if geoms is not None and near.any():
+        g = np.asarray(geoms, dtype=object)
+        ix = np.flatnonzero(near)
+        blobs = as_multi(shapely.union_all(shapely.buffer(g[ix], bp.cluster_link_mi * FT_PER_MI / 2.0, quad_segs=4)))
+        for blob in blobs.geoms:
+            members = ix[shapely.intersects(g[ix], blob)]
+            if len(members) < bp.min_cluster:
+                role[members] = f"excluded: test ({len(members)}-well step-out, not development)"
     return pd.Series(role, index=so.index)
 
 
@@ -187,7 +213,7 @@ def stepout_roles(so: pd.DataFrame, fronts: dict[str, Any], bp: BufferParams = D
 # ----------------------------------------------------------------------------
 
 
-def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] | None = None, sopa: Any = None) -> pd.DataFrame:
+def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] | None = None, sopa: Any = None, updip: Any = None) -> pd.DataFrame:
     """buffer_ft / floor_ft / rule per walked segment (rule = the clause that set the buffer)."""
     fronts = fronts or {}
     if bp.uniform:
@@ -207,8 +233,12 @@ def segment_buffers(seg: pd.DataFrame, bp: BufferParams, fronts: dict[str, Any] 
     fr = seg["side"].isin(list(fronts)).to_numpy()
     b = np.where(fr, np.maximum(bp.cap_ft, floor), b)
     rule[fr] = "live front -> cap (D22)"
-    if sopa is not None and not sopa.is_empty:
-        mids = shapely.line_interpolate_point(np.asarray(list(seg["geom"]), dtype=object), 0.5, normalized=True)
+    mids = shapely.line_interpolate_point(np.asarray(list(seg["geom"]), dtype=object), 0.5, normalized=True) if len(seg) else np.asarray([])
+    if updip is not None and not updip.is_empty and len(seg):
+        up = shapely.contains(updip, mids)
+        b = np.where(up, floor, b)
+        rule[up] = "updip of depth limit -> floor (D27)"
+    if sopa is not None and not sopa.is_empty and len(seg):
         ins = shapely.contains(sopa, mids)
         b = np.where(ins, floor, b)
         rule[ins] = "potash ignore-gap -> floor (D24)"
@@ -226,6 +256,8 @@ def geology_flag(s: pd.Series) -> str:
         out.append("live front: performing step-outs ahead of the body; buffered at the cap")
     if str(s["rule"]).startswith("potash"):
         out.append("inside the BLM Secretary's Potash Area: surface, not geology; gap not widened")
+    if str(s["rule"]).startswith("updip"):
+        out.append("updip of the depth limit (shallow side rolls over): no reach past the last wells")
     if str(s["rule"]).startswith("gap: pre-2016"):
         out.append("pre-2016 laterals beyond this gap were not followed up; held to the floor")
     return "; ".join(out)
@@ -319,17 +351,87 @@ def _assemble(core_mp: MultiPolygon, cells: np.ndarray, vals: np.ndarray, quantu
 
 
 def build_extent(core_mp: MultiPolygon, xy: np.ndarray, b: np.ndarray, f: np.ndarray, sopa: Any, bp: BufferParams = DEFAULT) -> tuple[MultiPolygon, np.ndarray]:
-    """Extent polygon from the core and per-sample buffers; returns (extent, Voronoi cells)."""
+    """Extent polygon from the core and per-sample buffers; returns (extent, Voronoi cells).
+    ``sopa`` is the floor-clamp polygon: the potash area, unioned with any updip zone (D27)."""
     env = shapely.box(*core_mp.bounds).buffer(4 * max(bp.cap_ft, float(b.max())))
     cells = np.asarray(shapely.voronoi_polygons(shapely.multipoints(xy), extend_to=env, ordered=True).geoms, dtype=object)
+    # GEOS occasionally returns a self-intersecting cell for near-collinear ring sites (1-2 per
+    # build); repair just those so the per-buffer unions node cleanly
+    bad = ~shapely.is_valid(cells)
+    if bad.any():
+        cells[bad] = shapely.buffer(cells[bad], 0)
     ext = _assemble(core_mp, cells, b, bp.quantum_ft)
     if sopa is not None and not sopa.is_empty and ext.intersects(sopa):
         ext_f = _assemble(core_mp, cells, f, bp.quantum_ft)
         ext = shapely.union_all([ext.difference(sopa), ext_f.intersection(sopa), core_mp])
     s = bp.smooth_ft
     ext = ext.buffer(s, quad_segs=4).buffer(-s, quad_segs=4).buffer(-s, quad_segs=4).buffer(s, quad_segs=4)
-    ext = shapely.union_all([ext, core_mp]).simplify(25.0)
+    ext = shapely.union_all([ext, core_mp])
+    if bp.envelope:
+        ext = development_envelope(ext, bp.bridge_mi * FT_PER_MI / 2.0)
+    ext = ext.simplify(25.0)
     return MultiPolygon([shapely.geometry.polygon.orient(g) for g in as_multi(ext).geoms]), cells
+
+
+def _chaikin(coords: Any, n: int) -> np.ndarray:
+    c = np.asarray(coords)[:-1]
+    for _ in range(n):
+        nxt = np.roll(c, -1, axis=0)
+        q, r = 0.75 * c + 0.25 * nxt, 0.25 * c + 0.75 * nxt
+        c = np.empty((2 * len(q), 2))
+        c[0::2], c[1::2] = q, r
+    return np.vstack([c, c[:1]])
+
+
+def _fill(g: Any) -> MultiPolygon:
+    return as_multi(shapely.union_all([Polygon(q.exterior) for q in as_multi(g).geoms]))
+
+
+def _inside_frac(lines: np.ndarray, g: Any) -> np.ndarray:
+    return shapely.length(shapely.intersection(lines, g)) / shapely.length(lines)
+
+
+def generalize_extent(ext: Any, dev_lines: list[LineString], bp: BufferParams = DEFAULT, margin_ft: float = 1320.0, fillet_ft: float = FT_PER_MI) -> MultiPolygon:
+    """The geologic-looking edge (Michael 2026-10-09). (1) Simplify each part at gen_tol_mi and cut
+    corners (Chaikin); (2) wherever that leaves a developed lateral out (< 50 % of its length inside,
+    the D27 test), add a bulge: the hull of those laterals (+ margin) and the stretch of edge within
+    max(gen_shoulder_mi, 2.5 x how far they sit out), filleted in; (3) round corners at gen_round_mi
+    (close then open) and re-guard any lateral that drops out. Developed laterals the input holds
+    are held by the output; no voids."""
+    lines = np.asarray(dev_lines, dtype=object)
+    held = lines[_inside_frac(lines, ext) >= 0.5] if len(lines) else lines
+    parts = []
+    for p in as_multi(ext).geoms:
+        s = p.exterior.simplify(bp.gen_tol_mi * FT_PER_MI)
+        parts.append(Polygon(_chaikin(s.coords, 5)).buffer(0) if len(s.coords) >= 4 else p)
+    g = shapely.union_all(parts)
+    if len(held):
+        need = held[_inside_frac(held, g) < 0.5]
+        if len(need):
+            clusters = as_multi(shapely.union_all(shapely.buffer(need, FT_PER_MI / 2.0, quad_segs=4)))
+            bulges = []
+            ring = shapely.union_all([q.exterior for q in as_multi(g).geoms])
+            for c in clusters.geoms:
+                lat = shapely.union_all(shapely.buffer(need[shapely.intersects(need, c)], margin_ft, quad_segs=4))
+                h = max(ring.distance(shapely.Point(x, y)) for x, y in shapely.get_coordinates(lat)[::5])
+                near = ring.intersection(lat.buffer(max(bp.gen_shoulder_mi * FT_PER_MI, 2.5 * h)))
+                bulges.append(shapely.convex_hull(shapely.union_all([lat, near])))
+            g = shapely.union_all([g, *bulges]).buffer(fillet_ft, quad_segs=16).buffer(-fillet_ft, quad_segs=16)
+    r = bp.gen_round_mi * FT_PER_MI
+    h = g.buffer(r, quad_segs=24).buffer(-r, quad_segs=24).buffer(-r, quad_segs=24).buffer(r, quad_segs=24)
+    if len(held):
+        lost = held[_inside_frac(held, h) < 0.5]
+        if len(lost):
+            h = shapely.union_all([h, *shapely.buffer(lost, margin_ft, quad_segs=4)]).buffer(r, quad_segs=24).buffer(-r, quad_segs=24)
+    return MultiPolygon([shapely.geometry.polygon.orient(q) for q in _fill(h).geoms])
+
+
+def development_envelope(ext: Any, close_ft: float) -> MultiPolygon:
+    """D27: close by close_ft (bridges gaps between trends narrower than 2 x close_ft; never pushes a
+    convex outer edge) and fill every interior void. Contains its input by construction."""
+    g = ext.buffer(close_ft, quad_segs=16).buffer(-close_ft, quad_segs=16)
+    filled = [Polygon(p.exterior) for p in as_multi(shapely.union_all([g, ext])).geoms]
+    return as_multi(shapely.union_all(filled))
 
 
 def edge_runs(extent: MultiPolygon, xy: np.ndarray, seg_ix: np.ndarray, step_ft: float = 100.0) -> list[dict[str, Any]]:
