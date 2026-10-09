@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-10-02 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-10-09 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -20,7 +20,7 @@
 
 Novi unified history+forecast time series. IsForecasted=false rows duplicate raw_novi."WellMonths" actuals; IsForecasted=true rows are Novi's algorithmic decline forecast. Curated layer should filter on IsForecasted=TRUE to isolate new information.
 
-~25,239,424 rows | nightly (scripts.run_daily raw load)
+~25,334,580 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -48,7 +48,7 @@ Novi unified history+forecast time series. IsForecasted=false rows duplicate raw
 
 Novi Insights extended per-well attributes (completion intensity, cums, EURs, spacing, peak rates), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV. Primary source behind curated.wells.
 
-~95,139 rows | nightly (scripts.run_daily raw load)
+~95,398 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -177,12 +177,13 @@ Novi Insights extended per-well attributes (completion intensity, cums, EURs, sp
 | `LatestOilAPIGravityTestDate` | date |  |
 | `LatestGasSpecificGravity` | double precision |  |
 | `LatestGasSpecificGravityTestDate` | date |  |
+| `ReportedWellType` | character varying(255) |  |
 
 ### `raw_novi.WellMonths` (table)
 
 Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly INCREMENTAL upsert of rows newer than the live max(ModifiedAt) watermark (full snapshot rewrite is too heavy for the instance); deletions caught by on-demand reconcile.
 
-~5,145,241 rows | nightly (scripts.run_daily raw load)
+~5,189,240 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -222,7 +223,7 @@ Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly IN
 
 Novi Insights per-well spacing metrics (closest-well distance ft, wells in radius, avg of closest two), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV.
 
-~62,109 rows | nightly (scripts.run_daily raw load)
+~62,581 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -248,7 +249,7 @@ Novi Insights per-well spacing metrics (closest-well distance ft, wells in radiu
 
 Novi Insights well header mirror, one row per wellbore keyed API10 (some synthetic Novi APIs). Nightly full TRUNCATE + COPY from the bulk TSV (etl/novi/load.py; sync forces no_diffs=True). Column names are quoted PascalCase as shipped.
 
-~95,139 rows | nightly (scripts.run_daily raw load)
+~95,398 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -326,6 +327,7 @@ Novi Insights well header mirror, one row per wellbore keyed API10 (some synthet
 | `DeletedAt` | timestamp without time zone |  |
 | `ingested_at` | timestamp with time zone |  |
 | `LastRefracDate` | date |  |
+| `ReportedWellType` | character varying(255) |  |
 
 ## Schema `raw_enverus`
 
@@ -333,7 +335,7 @@ Novi Insights well header mirror, one row per wellbore keyed API10 (some synthet
 
 Enverus DirectAccess v3 wells dataset mirror; one row per completion event, upsert key (wellid, completionid). Nightly incremental pull (updateddate cursor from meta.etl_log; etl/enverus/pull.py). Intake lowercases Enverus PascalCase keys and converts literal "NULL" strings to SQL NULL.
 
-~638,071 rows | nightly (scripts.run_daily raw load)
+~641,278 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -1466,7 +1468,7 @@ Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k ro
 
 TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers (e.g. Enverus-substitution mis-tags). Audit object - the override is applied downstream in curated.wells_enriched. Refreshed nightly by etl.refresh / curated.refresh_all() after producing_reference.
 
-~60,625 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
+~60,777 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
 
 | column | type | description |
 |---|---|---|
@@ -1580,7 +1582,7 @@ Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer 
 
 Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage's own blind-producer population (first prod >= that vintage's per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload's sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.
 
-~100,456 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
+~103,525 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
 
 | column | type | description |
 |---|---|---|
@@ -1826,7 +1828,7 @@ Producing curated wells (first_production_date NOT NULL, delaware/midland, mappe
 
 Well-month production actuals from raw_novi.WellMonths (soft-deleted rows excluded), ~5M rows. Grain: one row per well-month; key (api10, prod_year, prod_month). Refreshed nightly by etl.refresh via curated.refresh_all(), per-view with settle().
 
-~5,179,268 rows | nightly (etl.refresh, 7/15) | reads: `raw_novi.WellMonths`
+~5,218,227 rows | nightly (etl.refresh, 7/15) | reads: `raw_novi.WellMonths`
 
 | column | type | description |
 |---|---|---|
@@ -1910,7 +1912,7 @@ Regular VIEW (no storage, always fresh): production_normalized actuals UNION ALL
 
 Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M rows) JOINed to curated.wells and normalized per 1,000 ft; column-identical to production_normalized for clean UNION. Key (api10, prod_year, prod_month); MoP 1-600. Nightly refresh is gated on ForecastWellMonths source change and runs LAST.
 
-~20,135,582 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
+~20,339,940 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
 
 | column | type | description |
 |---|---|---|
@@ -1957,7 +1959,7 @@ Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M 
 
 Actuals well-months: curated.production INNER JOIN curated.wells, adding BOE (oil + gas/6) and per-1,000-ft normalized rates plus cohort keys. Grain well-month; key (api10, prod_year, prod_month); MoP filtered 1-600. Refreshed nightly by etl.refresh after wells and production.
 
-~5,165,473 rows | nightly (etl.refresh, 9/15) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
+~5,210,789 rows | nightly (etl.refresh, 9/15) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
 
 | column | type | description |
 |---|---|---|
@@ -2022,7 +2024,7 @@ Novi PUD inventory reconciled against producing curated wells by co-extent overl
 
 Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.
 
-~180,092 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
+~181,476 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
 
 | column | type | description |
 |---|---|---|
@@ -2054,7 +2056,7 @@ Pre-aggregated type-curve cohorts over production_normalized: one row per (state
 
 Per-well water-stream provenance: measured vs vendor-calculated water, one row per api10 in curated.production. TX RRC has no monthly well-level water -- vendors backfill a static WOR from an initial filing (water = k*oil; 83.6% of TX public-water horizontals FP>=2019 have WOR CV < 2% over mop 1-24), while operator-share months (production.is_water_proprietary) and NM C-115 water are real. Signals: water_prop_share + wor_cv over mop 1-24 (oil>0 AND water>0 months). Labels: insufficient (<6 usable months) / measured (prop_share>=0.9 OR cv>=0.15) / calculated (prop_share<=0.1 AND cv<0.05) / indeterminate. Convention 2026-08-17: FLAG-ONLY surfacing -- apps badge and filter, nothing excluded by default. Piecewise-flat re-filed WORs can escape to indeterminate/measured (known v1 limit). No state column by design -- join wells_enriched. Nightly refresh after curated.production. sql/41.
 
-~65,246 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
+~65,478 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
 
 | column | type | description |
 |---|---|---|
@@ -2071,7 +2073,7 @@ Per-well water-stream provenance: measured vs vendor-calculated water, one row p
 
 One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpacing LEFT JOINed to the latest Enverus completion event via LEFT(api14, 10) = api10; per-column source precedence is Novi preferred, Enverus fallback unless noted. Permian-wide (~90k rows). Refreshed nightly by etl.refresh / curated.refresh_all() after the vendor loads.
 
-~95,139 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
+~95,242 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
 
 | column | type | description |
 |---|---|---|
@@ -2329,7 +2331,7 @@ Analytics view over curated.wells (one row per api10): joins the Blue Ox formati
 
 Seller daily wellhead production (ARIES AC_DAILY), AS REPORTED: negatives (allocation corrections) kept, no downtime cleaning. hours_on is often empty — infer downtime from volumes. file_name = the file that supplied the surviving row.
 
-~0 rows | on demand per data room (scripts.load_vdr) | consumers: anduin daily-production PDP forecasting (planned)
+~22,403 rows | on demand per data room (scripts.load_vdr) | consumers: anduin daily-production PDP forecasting (planned)
 
 | column | type | description |
 |---|---|---|
@@ -2367,7 +2369,7 @@ Every file loaded for a vdr_id, in load_order (later files win on overlapping ke
 
 Seller monthly production (ARIES AC_PRODUCT). prod_month normalized to the first of the month (ARIES stores month-end dates).
 
-~0 rows | on demand per data room (scripts.load_vdr)
+~697 rows | on demand per data room (scripts.load_vdr)
 
 | column | type | description |
 |---|---|---|
@@ -2385,7 +2387,7 @@ Seller monthly production (ARIES AC_PRODUCT). prod_month normalized to the first
 
 Seller property list (ARIES AC_PROPERTY), one row per seller propnum. api10 = suite well key (NULL for seller PUD placeholders). raw = the full source row minus commercial columns (WI/NRI/payout/LOS group are excluded by the loader).
 
-~0 rows | on demand per data room (scripts.load_vdr)
+~52 rows | on demand per data room (scripts.load_vdr)
 
 | column | type | description |
 |---|---|---|
@@ -2422,7 +2424,7 @@ Seller property list (ARIES AC_PROPERTY), one row per seller propnum. api10 = su
 
 Seller ARIES production-forecast lines verbatim: section 4 of AC_ECONOMIC (owner_kind=property, owner_key=propnum) and of AR_SIDEFILE (owner_kind=sidefile, owner_key=sidefile name). ARIES syntax, unparsed. A comparison basis only — never an input to our forecasts.
 
-~0 rows | on demand per data room (scripts.load_vdr)
+~443 rows | on demand per data room (scripts.load_vdr)
 
 | column | type | description |
 |---|---|---|
@@ -2473,13 +2475,77 @@ vdr.daily joined to vdr.property on the suite well key (api10 NOT NULL rows only
 | `choke` | double precision |  |
 | `bhp_psi` | double precision |  |
 
+## Schema `box`
+
+### `box.bench_scope` (table)
+
+Basin x bench in/out of BOX scope (plan D2). member_benches = the formation_blueox codes pooled into the bench (WCA = WCA_1 + WCA_2, with WCXY as one-way evidence, D19/D20). Michael-owned: sql/54 seeds with ON CONFLICT DO NOTHING.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)
+
+| column | type | description |
+|---|---|---|
+| `basin` | text |  |
+| `bench` | text |  |
+| `in_scope` | boolean |  |
+| `member_benches` | text[] |  |
+| `reason` | text |  |
+| `decided_on` | date |  |
+| `decision_ref` | text |  |
+
+### `box.extent` (table)
+
+BOX bench extents, one row per version x source. generated = lateral lines + variable buffer (D21, box/extent.py); geology_edited = the geologist's shapefile edit of a generated version (D7, parent_extent_id), with diff_stats. is_record marks the single version of record per basin x bench. geom EPSG:4326; area_sqmi planar (UTM 13N ft).
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)
+
+| column | type | description |
+|---|---|---|
+| `extent_id` | bigint |  |
+| `basin` | text |  |
+| `bench` | text |  |
+| `version` | integer |  |
+| `source` | text |  |
+| `geom` | geometry(MultiPolygon,4326) |  |
+| `area_sqmi` | double precision |  |
+| `params` | jsonb |  |
+| `edge_gap_stats` | jsonb |  |
+| `generated_from_run` | text |  |
+| `parent_extent_id` | bigint |  |
+| `diff_stats` | jsonb |  |
+| `is_record` | boolean |  |
+| `superseded_by` | bigint |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
+
+### `box.extent_edge` (table)
+
+Boundary of a generated extent split by the walked step-2 ring segment whose sector it lies in: edge_class pinned/gap/hole, perf_class (12-mo oil/ft of the edge wells vs the interior median, >=0.85 strong, <0.70 rolled), buffer_ft and the rule that set it, explanation = the geology flag text. seg_no = -1 for hole rings.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
+
+| column | type | description |
+|---|---|---|
+| `extent_id` | bigint |  |
+| `edge_no` | integer |  |
+| `seg_no` | integer |  |
+| `geom` | geometry(LineString,4326) |  |
+| `side` | text |  |
+| `gap_ft` | double precision |  |
+| `buffer_ft` | double precision |  |
+| `edge_class` | text |  |
+| `perf_class` | text |  |
+| `perf_ratio` | double precision |  |
+| `rule` | text |  |
+| `explanation` | text |  |
+
 ## Schema `meta`
 
 ### `meta.etl_log` (table)
 
 One row per ETL step run (source x table_name), written by etl/db.py log_etl_run: status running/success/failed, row counts, timings. Doubles as the incremental cursor for Enverus pulls (updateddate > last success) and the curated refresh gate.
 
-~1,982 rows | continuous (ETL bookkeeping)
+~2,106 rows | continuous (ETL bookkeeping)
 
 | column | type | description |
 |---|---|---|
