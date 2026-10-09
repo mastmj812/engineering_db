@@ -1,4 +1,4 @@
-BOX extents for geology review — 2026-10-08T08:27:05-05:00
+BOX extents for geology review — 2026-10-09T12:57:18-05:00
 ================================================================
 
 What this is
@@ -12,6 +12,10 @@ CRS
   already projected, same frame as the HCA_* GGX grids.
 
 What to edit
+  The extent is the bench's DEVELOPMENT envelope (D27): every developed well is inside, gaps
+  between development trends narrower than 8 mi are bridged, and there are no interior voids.
+  Cut a void or pull an edge only where structure or reservoir says so; say why in NOTE.
+
   BOX_<bench>_extent_v1.shp — the ONLY layer you edit. Move, cut or add polygon area.
   Keep the BENCH attribute. Save as BOX_<bench>_extent_v1_edited.shp (all side files).
   If you add a note for a change, put it in a new text field NOTE (any length up to 254).
@@ -24,9 +28,13 @@ What to look at (not edited)
       "potash"                     inside the BLM Secretary's Potash Area: a surface constraint,
                                    not geology — the gap is not widened, never treated as a dry hole
       "pre-2016 ... not followed up" old laterals beyond a gap: buffer held to the floor
-  BOX_<bench>_flags             holes in the drilled body (geology hole, surface, or fill?), legacy
-                                drilled-up holes already filled (D26: >= 90 % covered by pre-2016 wells), and
-                                step-outs left out of the extent (rolled / isolated / too new)
+      "bridged gap"                the envelope bridged a gap between development trends (D27):
+                                   is there a structural or reservoir break that should cut it?
+      "updip"                      shallower than the bench's depth limit: no reach past the last wells
+  BOX_<bench>_flags             voids filled (D27: no voids inside the development envelope), legacy
+                                drilled-up holes filled (D26), and isolated tests beyond 8 mi
+                                (tested, not developed: left out)
+  BOX_<bench>_updip             the zone shallower than the depth limit (BS2_S: 2BS top 7,000 ft)
   BOX_<bench>_laterals          every pool lateral: ROLE, TVD_FT (producers' TVD — the W-edge
                                 depth question), OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE
   BOX_<bench>_ctx_struct / _ctx_isopach   contours from your HCA grids (context only)
@@ -35,7 +43,8 @@ What to look at (not edited)
 Buffer rule (parameters in the extent PARAMS attribute)
   pinned edge: floor = 880 ft (rolled) / 1,320 (unknown) / 1,760 (strong)
   gap: k x gap length x perf (strong 1.0 / unknown 0.75 / rolled 0.5), k = 0.75, within [floor, cap = 7,920 ft]
-  pre-2016 laterals beyond a gap -> floor; live-front side -> cap; inside the potash area -> floor; holes -> tightest floor
+  pre-2016 laterals beyond a gap -> floor; live-front side -> cap; potash area -> floor; updip of the depth limit -> floor
+  D27 envelope: developed (within 8 mi) always in; gaps < 8 mi bridged; no voids
 
 Return
   The *_edited shapefile set (zip is fine) to Michael. It is re-imported, diffed against this

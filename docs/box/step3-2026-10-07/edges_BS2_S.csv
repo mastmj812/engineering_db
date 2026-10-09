@@ -1,929 +1,211 @@
 edge_no,seg_no,edge_class,side,gap_ft,perf_class,perf_ratio,buffer_ft,rule,flag,length_ft
-0,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,7085.495615464655
-1,11,gap,NW,6299.937429501747,strong,0.8537674532710904,4724.95307212631,gap: k × gap,,9180.065924336699
-2,12,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2883.1951402238324
-3,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,4381.285914337737
-4,14,pinned,NW,0.0,strong,1.391122422273319,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4192.239374556109
-5,15,gap,NW,999.9900681748805,strong,1.391122422273319,1760.0,gap: k × gap,,999.3999983196345
-6,16,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9493.08713486743
-7,17,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",998.7264417121083
-8,19,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2589.276132742527
-9,20,gap,NW,4899.951334056915,strong,1.1665345212591947,3674.9635005426862,gap: k × gap,,4187.895065205014
-10,21,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,9286.852953613396
-11,22,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,10082.048554422056
-12,23,gap,NW,5399.946368144355,strong,1.0241065907113343,4049.959776108266,gap: k × gap,,5585.910794050764
-13,24,pinned,NW,0.0,strong,1.0241065907113343,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1590.49677557545
-14,25,gap,NW,499.9950340874403,strong,1.0241065907113343,1760.0,gap: k × gap,,599.7530449439957
-15,26,pinned,NW,0.0,strong,1.0241065907113343,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1997.3586107604247
-16,27,pinned,NW,0.0,strong,1.0241065907113343,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2689.348990450908
-17,28,gap,NW,3499.965238612082,strong,1.1027324681193504,2624.9739289590616,gap: k × gap,,2884.8597260554066
-18,29,pinned,NW,0.0,strong,1.1027324681193504,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7193.192983654348
-19,30,pinned,NW,0.0,strong,1.1027324681193504,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",10989.81622831641
-20,31,gap,NW,6799.932463589187,unknown,,3824.962010768918,gap: k × gap,,4093.0687039746917
-21,5,gap,NW,6799.932463589187,unknown,,3824.962010768918,gap: k × gap,,4688.112577668012
-22,6,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1790.494494555949
-23,7,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,2592.1327488536913
-24,8,gap,NW,5899.941402231795,rolled,0.5954344445019695,2212.4780258369233,gap: k × gap,,7385.165839814167
-25,9,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,2789.2503304108445
-26,702,gap,NW,7299.927497676627,rolled,0.11179958757591779,2737.472811628735,gap: k × gap,,494.3038884898358
-27,701,pinned,NW,0.0,rolled,0.11179958757591779,880.0,pinned: floor,,996.0539127264229
-28,702,gap,NW,7299.927497676627,rolled,0.11179958757591779,2737.472811628735,gap: k × gap,,2176.8972292761787
-29,698,gap,NW,8899.911606756437,rolled,0.3628223691111066,3337.4668525336638,gap: k × gap,,4066.8054769180258
-30,699,pinned,NW,0.0,rolled,0.11179958757591779,880.0,pinned: floor,,298.9571852583543
-31,700,gap,NW,1299.9870886273447,rolled,0.11179958757591779,880.0,gap: k × gap,,897.3489457041543
-32,701,pinned,NW,0.0,rolled,0.11179958757591779,880.0,pinned: floor,,7172.325037958391
-33,699,pinned,NW,0.0,rolled,0.11179958757591779,880.0,pinned: floor,,13449.76397274099
-34,432,pinned,S,0.0,unknown,,1320.0,pinned: floor,,30576.822308166345
-35,276,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,22313.053222847386
-36,734,gap,NW,5299.9473613268665,strong,0.8803340362053276,3974.9605209951496,gap: k × gap,,4089.6700352480893
-37,0,pinned,NW,0.0,strong,0.8803340362053276,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2790.2084106791435
-38,1,pinned,NW,0.0,strong,0.8803340362053276,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",11397.44707381473
-39,2,gap,NW,999.9900681748805,strong,0.9329433656981759,1760.0,gap: k × gap,,999.9942367980716
-40,3,pinned,NW,0.0,strong,0.9329433656981759,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",11995.37154779245
-41,4,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,11487.591708517166
-42,5,gap,NW,6799.932463589187,unknown,,3824.962010768918,gap: k × gap,,3995.3842097299203
-43,31,gap,NW,6799.932463589187,unknown,,3824.962010768918,gap: k × gap,,4690.36337264983
-44,32,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1989.272174396998
-45,33,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,2289.7793768757547
-46,34,gap,NW,4599.95431360445,unknown,,2587.4743014025034,gap: k × gap,,5487.8556365014765
-47,35,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,3592.204421082677
-48,36,gap,NW,2199.9781499847372,unknown,,1320.0,gap: k × gap,,2599.3774778835323
-49,37,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,3194.4837929001774
-50,38,gap,NW,3599.96424542957,unknown,,2024.979888054133,gap: k × gap,,4391.8360684228055
-51,39,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,4593.219505108032
-52,40,gap,NW,3899.9612658820342,rolled,0.4162182618066502,1462.485474705763,gap: k × gap,,4994.486276936682
-53,41,pinned,NW,0.0,rolled,0.4162182618066502,880.0,pinned: floor,,2289.250604520941
-54,42,gap,NW,3799.962259064546,rolled,0.2560858371417195,1424.9858471492048,gap: k × gap,,990.2660255478236
-55,43,pinned,NW,0.0,rolled,0.2560858371417195,880.0,pinned: floor,,11786.568654573366
-56,44,gap,NW,5099.949347691891,rolled,0.2560858371417195,1912.481005384459,gap: k × gap,,6488.1848113949845
-57,45,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1293.12403520095
-58,46,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,18088.162689080607
-59,47,gap,NW,4399.9562999694745,rolled,0.5197022909213177,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",5993.217611595627
-60,48,pinned,NW,0.0,rolled,0.6089929318749834,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2197.2542993787133
-61,49,gap,NW,999.9900681748805,rolled,0.6089929318749834,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",996.0991544448298
-62,50,pinned,NW,0.0,unknown,0.7094144975365665,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",10992.293265396169
-63,51,pinned,NW,0.0,unknown,0.7094144975365665,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1395.659563813165
-64,52,pinned,NW,0.0,unknown,0.7094144975365665,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1296.154174860056
-65,53,pinned,NW,0.0,unknown,0.7094144975365665,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1397.678213680478
-66,54,gap,NW,5099.949347691891,unknown,0.7224802937304279,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",6598.620790289157
-67,55,pinned,NW,0.0,unknown,0.83063368888021,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",10899.194782845863
-68,56,gap,NW,2599.9741772546895,unknown,0.83063368888021,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3591.0363645721714
-69,57,pinned,N,0.0,unknown,0.8459555291280377,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",13098.048855512314
-70,58,gap,N,1399.9860954448327,unknown,0.8024592782176777,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1099.6800078727324
-71,59,pinned,N,0.0,unknown,0.8024592782176777,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",9397.021253305327
-72,60,gap,N,2699.9731840721774,unknown,0.7299562869010584,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3199.4942444758794
-73,61,pinned,N,0.0,unknown,0.7299562869010584,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",20291.486709402103
-74,62,gap,N,7799.9225317640685,strong,1.0070774274435008,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",9395.64431573256
-75,63,pinned,N,0.0,strong,1.0070774274435008,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3196.9628521824807
-76,64,pinned,N,0.0,strong,0.892518645077974,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",4495.980033833623
-77,65,gap,N,2599.9741772546895,strong,0.892518645077974,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2899.5050412153178
-78,66,pinned,N,0.0,strong,0.892518645077974,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2194.7059341936074
-79,67,gap,N,9399.906640843878,rolled,0.6999776408098652,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2492.797780055014
-80,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),36684.209350229554
-81,67,gap,N,9399.906640843878,rolled,0.6999776408098652,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",4297.320986382519
-82,68,pinned,N,0.0,rolled,0.42904354168132464,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",6096.703132244173
-83,69,gap,N,2299.977156802225,rolled,0.42904354168132464,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3099.250373626797
-84,70,pinned,N,0.0,rolled,0.42904354168132464,880.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3391.817604543558
-85,71,gap,N,4599.95431360445,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",6091.5609712899595
-86,72,pinned,N,0.0,strong,0.9322460768472673,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3495.036730959243
-87,73,gap,N,2599.9741772546895,strong,0.9209529406529705,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2999.09184003611
-88,74,pinned,N,0.0,strong,0.9209529406529705,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2297.0770179839296
-89,75,gap,N,1499.9851022623209,strong,0.9322460768472673,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1499.9913551965715
-90,76,pinned,N,0.0,strong,0.9411565413064612,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1099.6191605902668
-91,77,pinned,N,0.0,strong,0.9426810660588336,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1496.462227051689
-92,78,pinned,N,0.0,strong,0.9411565413064612,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1099.5187919201278
-93,79,pinned,N,0.0,strong,0.9411565413064612,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1099.8208056838034
-94,80,pinned,N,0.0,strong,0.9411565413064612,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",18394.51077140301
-95,81,gap,N,4499.955306786962,strong,0.9426810660588336,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",4998.062186392272
-96,82,pinned,N,0.0,strong,1.1215267183313349,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",14396.330461060796
-97,83,gap,N,4699.953320421939,strong,1.21948406544281,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",5499.0643792393275
-98,84,pinned,N,0.0,strong,2.16428129178635,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3597.5742184020028
-99,85,gap,N,6099.939415866771,strong,0.9873694400773306,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",6997.787307199905
-100,86,pinned,N,0.0,strong,1.00641118186008,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1498.9664990797328
-101,87,pinned,N,0.0,strong,1.0232118575041065,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1297.851150849377
-102,88,pinned,N,0.0,strong,1.1097355562387488,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1296.3855065091907
-103,89,pinned,N,0.0,strong,1.1096412031893907,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1199.216203557435
-104,90,pinned,N,0.0,strong,1.1096883797140698,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1397.5545537754942
-105,91,pinned,N,0.0,strong,1.1097355562387488,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1299.3617784170456
-106,92,pinned,N,0.0,strong,1.1288738315111684,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",798.7439117298559
-107,93,gap,N,4299.957293151986,strong,1.1288738315111684,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",5098.734876906617
-108,94,pinned,N,0.0,strong,0.9047004937071499,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3395.857297559608
-109,95,gap,NW,5599.944381779331,strong,0.9047004937071499,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",6594.581819695552
-110,96,pinned,NW,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2090.4642461182093
-111,97,gap,NW,799.9920545399044,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",799.9953894388857
-112,98,pinned,NW,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1698.905265576723
-113,99,gap,NW,99.99900681748805,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",99.99942367904556
-114,100,pinned,N,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1698.415096555807
-115,101,pinned,N,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1798.1184583851605
-116,102,pinned,N,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",499.81349796462064
-117,103,pinned,N,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",499.99711839850283
-118,104,pinned,NW,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",8696.975609633493
-119,105,gap,NW,8499.915579486484,unknown,0.7038474077033773,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",11096.546346818523
-120,106,pinned,NW,0.0,unknown,0.7038474077033773,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",16387.852848134415
-121,107,gap,NW,8599.914586303972,unknown,0.7038474077033773,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",10896.695036214747
-122,108,pinned,NW,0.0,unknown,0.8471541942144521,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3097.703359629082
-123,109,gap,NW,3399.9662317945936,unknown,0.8471541942144521,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3999.4673653501955
-124,110,pinned,NW,0.0,unknown,0.8471541942144521,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",13091.661127004609
-125,111,gap,NW,4399.9562999694745,strong,0.8996458313868022,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",5394.78998965327
-126,112,pinned,NW,0.0,strong,0.9036929406398029,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3396.116376645529
-127,113,gap,NW,7399.926504494116,strong,0.9036929406398029,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",8492.212002878547
-128,114,pinned,W,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",7585.175279974827
-129,115,gap,W,11299.88777037615,strong,1.0899049656670523,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",13593.175610945702
-130,116,pinned,W,0.0,strong,1.0899049656670523,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3795.9083283903865
-131,117,pinned,W,0.0,strong,1.0899049656670523,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1497.8108655916715
-132,118,gap,W,2999.9702045246418,strong,1.0899049656670523,1760.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",3399.0187102574328
-133,119,pinned,W,0.0,strong,1.1262303217747032,1760.0,potash ignore-gap -> floor (D24),"pinned edge, strong wells: edge not explained by performance; what stops it?; inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2494.786521259709
-134,120,gap,W,899.9910613573925,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1095.945016999349
-135,121,pinned,W,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",199.9988473593553
-136,122,pinned,W,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",9995.183635317608
-137,123,gap,W,1399.9860954448327,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1399.9919315174807
-138,124,pinned,W,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1898.487009182297
-139,125,pinned,W,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1894.8171619842042
-140,126,gap,W,1899.981129532273,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",2399.49930326673
-141,127,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,8695.742706429288
-142,128,gap,W,1399.9860954448327,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1197.3487463464753
-143,127,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,9290.749925393578
-144,128,gap,W,1399.9860954448327,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,15391.384014119261
-145,16,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",21987.88572031542
-146,132,pinned,W,0.0,rolled,0.5676483486546392,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,5999.106351909973
-147,16,pinned,NW,0.0,strong,1.1665345212591947,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",398.31737894702144
-148,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,55357.61721578286
-149,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,99.99942368005671
-150,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,699.9959657588515
-151,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,99.99942367990181
-152,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,399.99769471868143
-153,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,199.99884736011342
-154,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,499.9971183987381
-155,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,199.99884736011342
-156,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,399.99769471868143
-157,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,299.99827104017015
-158,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,399.99769471868143
-159,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,299.99827104017015
-160,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,299.99827103862475
-161,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,399.997694720072
-162,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,34472.06665984431
-163,132,pinned,W,0.0,rolled,0.5676483486546392,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,63763.2765624188
-164,134,pinned,W,0.0,rolled,0.5738568637971616,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,11099.271049185827
-165,135,gap,W,699.9930477224163,rolled,0.5698397297414911,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,393.4648234794431
-166,138,pinned,W,0.0,rolled,0.5020529663773635,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,27292.505377800582
-167,139,pinned,W,0.0,rolled,0.5020529663773635,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,10996.89455477439
-168,141,pinned,W,0.0,rolled,0.5757714898356562,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,7690.091225767653
-169,143,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,12592.194997197736
-170,144,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,3499.940772144314
-171,143,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,99.99942367990187
-172,144,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,24487.269673157127
-173,145,gap,SW,899.9910613573925,unknown,,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,3797.660565952262
-174,146,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,12992.405884256237
-175,148,pinned,W,0.0,rolled,0.5757714898356562,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,8496.963325530629
-176,150,pinned,W,0.0,rolled,0.5020529663773635,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1792.8902860781475
-177,152,pinned,W,0.0,rolled,0.39980395719718353,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3794.9029939161865
-178,154,pinned,W,0.0,rolled,0.5458226087994149,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,4195.07962564688
-179,156,pinned,W,0.0,strong,1.2360848372325306,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",7194.886714420343
-180,157,gap,SW,2199.9781499847372,strong,0.8839063944750537,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,7792.670804949311
-181,158,pinned,SW,0.0,strong,0.8839063944750537,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",899.409526226807
-182,159,pinned,SW,0.0,strong,0.8839063944750537,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",6398.949794498786
-183,160,gap,SW,4699.953320421939,strong,1.0181596573131058,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,5598.522126570201
-184,161,pinned,SW,0.0,strong,1.1382727246418367,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4091.68377329346
-185,162,gap,SW,2899.9711977071534,strong,1.1310375299104956,2174.978398280365,gap: k × gap,,2990.8538194586718
-186,163,pinned,SW,0.0,strong,1.1310375299104956,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2984.994143232257
-187,164,gap,SW,5199.948354509379,strong,1.067638423381224,3899.9612658820342,gap: k × gap,,4187.990050970478
-188,165,pinned,SW,0.0,strong,0.8808484431098829,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4090.4584986155805
-189,166,pinned,SW,0.0,strong,0.8808484431098829,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1096.8959144322182
-190,167,gap,SW,199.9980136349761,unknown,0.8223981757314602,1320.0,gap: k × gap,,294.1702788546305
-191,168,pinned,SW,0.0,unknown,0.8223981757314602,1320.0,pinned: floor,,1293.867185243767
-192,169,pinned,SW,0.0,strong,0.8808484431098829,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",595.5410750340135
-193,170,pinned,SW,0.0,strong,0.9392987104883057,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",799.7532443521803
-194,171,pinned,SW,0.0,strong,0.950405185841059,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1099.1004870431746
-195,172,gap,SW,199.9980136349761,strong,0.8808484431098829,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,199.99884735972716
-196,173,pinned,SW,0.0,strong,0.8808484431098829,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1699.4559515662058
-197,174,pinned,SW,0.0,strong,0.8808484431098829,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1097.8565184559468
-198,175,pinned,SW,0.0,strong,0.975092813630107,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",999.2211385964099
-199,176,pinned,SW,0.0,strong,1.0477604607266036,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3095.9873104080684
-200,177,gap,SW,7699.92352494658,strong,1.0846340046812983,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,9095.379413898292
-201,178,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2594.5060854875514
-202,179,gap,SW,199.9980136349761,unknown,,1320.0,gap: k × gap,,99.99942367990008
-203,180,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,1998.5637304125344
-204,181,gap,SW,3899.9612658820342,unknown,,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,10594.435027430352
-205,182,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1296.9556743890948
-206,144,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,1699.990202555737
-207,182,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3995.8084441714323
-208,184,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,4699.34949196758
-209,185,gap,W,3099.9692113421297,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,399.7436145886728
-210,186,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,10096.615571202088
-211,187,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3199.574426628086
-212,188,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1099.442442120887
-213,189,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1399.84659005525
-214,190,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,4395.279788139563
-215,192,pinned,W,0.0,rolled,0.19291843372817857,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,24097.850658972133
-216,193,gap,W,1699.9831158972968,rolled,0.19291843372817857,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,199.99884735870523
-217,194,pinned,W,0.0,rolled,0.19291843372817857,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,32694.113960440514
-218,206,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",15190.194445059598
-219,207,gap,SW,899.9910613573925,strong,1.1981273914505628,1760.0,gap: k × gap,,899.9948131172839
-220,208,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1099.1424644719098
-221,209,gap,SW,599.9940409049283,strong,1.1981273914505628,1760.0,gap: k × gap,,599.9965420792755
-222,210,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4595.755977060072
-223,211,gap,SW,999.9900681748805,strong,1.1981273914505628,1760.0,gap: k × gap,,999.9942367978495
-224,212,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3493.4627536421817
-225,213,gap,SW,7599.924518129092,strong,1.2695773289422922,5699.943388596819,gap: k × gap,,8381.99004212837
-226,214,pinned,SW,0.0,strong,1.341027266434022,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",6087.603398677764
-227,215,gap,SW,4499.955306786962,strong,1.266233037688947,3374.9664800902215,gap: k × gap,,4187.922458434015
-228,216,pinned,SW,0.0,unknown,0.7581240895279707,1320.0,pinned: floor,,4587.832405182019
-229,217,gap,SW,3699.963252247058,unknown,0.7581240895279707,2081.2293293889697,gap: k × gap,,4984.61357945642
-230,218,pinned,SW,0.0,rolled,0.6020333401135854,880.0,pinned: floor,,4681.656939352626
-231,219,gap,SW,6399.936436319235,unknown,,3599.96424542957,gap: k × gap,,8583.509037811491
-232,220,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2684.8704275258438
-233,221,gap,SW,3099.9692113421297,unknown,,1743.732681379948,gap: k × gap,,3692.4687763395477
-234,222,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2688.2617812777453
-235,223,pinned,SW,0.0,rolled,0.6591383763873746,880.0,pinned: floor,,1891.589492925573
-236,224,gap,SW,2499.975170437201,rolled,0.6591383763873746,937.4906889139504,gap: k × gap,,3098.2304922996354
-237,225,pinned,SW,0.0,rolled,0.6591383763873746,880.0,pinned: floor,,2192.168858563211
-238,226,gap,SW,8799.912599938949,rolled,0.45612659911448333,3299.9672249771056,gap: k × gap,,9483.342323120776
-239,227,pinned,SW,0.0,rolled,0.42401430435944487,880.0,pinned: floor,,7984.9068839592655
-240,228,gap,SW,6099.939415866771,rolled,0.45612659911448333,2287.477280950039,gap: k × gap,,5083.775923984817
-241,229,pinned,SW,0.0,rolled,0.39190200960440646,880.0,pinned: floor,,10688.602613980747
-242,230,gap,SW,1999.980136349761,rolled,0.39190200960440646,880.0,gap: k × gap,,2399.7326776719715
-243,231,pinned,SW,0.0,rolled,0.39190200960440646,880.0,pinned: floor,,11897.561830027236
-244,232,gap,SW,399.9960272699522,rolled,0.38974843709752416,880.0,gap: k × gap,,299.99827103834684
-245,233,pinned,SW,0.0,rolled,0.38974843709752416,880.0,pinned: floor,,3394.4663028490395
-246,234,pinned,SW,0.0,rolled,0.38974843709752416,880.0,pinned: floor,,2389.492274853329
-247,235,gap,SW,8199.91855903402,rolled,0.5156583441516758,3074.9694596377576,gap: k × gap,,9183.815089682408
-248,236,pinned,SW,0.0,rolled,0.6645297790443883,880.0,pinned: floor,,4193.084272380167
-249,237,pinned,SW,0.0,rolled,0.6645297790443883,880.0,pinned: floor,,1597.1004211722566
-250,238,gap,SW,99.99900681748805,rolled,0.6645297790443883,880.0,gap: k × gap,,199.99884735953918
-251,239,pinned,SW,0.0,rolled,0.6645297790443883,880.0,pinned: floor,,1497.3882158839906
-252,240,pinned,SW,0.0,rolled,0.6645297790443883,880.0,pinned: floor,,2897.289501265317
-253,241,gap,SW,6099.939415866771,rolled,0.6645297790443883,880.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,8595.004644560382
-254,242,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2993.8916189948923
-255,243,gap,SW,6099.939415866771,unknown,,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,7897.613286119685
-256,244,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2297.4579681495466
-257,245,gap,SW,199.9980136349761,unknown,,1320.0,gap: k × gap,,499.53395245212744
-258,246,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,4995.6676977947955
-259,247,gap,SW,2399.976163619713,unknown,,1349.9865920360887,gap: k × gap,,2899.3334541948852
-260,248,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2292.64564420585
-261,249,gap,SW,2999.9702045246418,unknown,,1687.483240045111,gap: k × gap,,3496.22368598669
-262,250,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,7693.294012075504
-263,251,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,4599.067716872511
-264,252,gap,SW,1799.982122714785,unknown,,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,1894.7217598807642
-265,253,pinned,SW,0.0,strong,1.090798378311053,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",10586.630935822664
-266,254,gap,SW,7399.926504494116,strong,0.9043674397236285,5549.944878370587,gap: k × gap,,4480.878210234224
-267,255,pinned,SW,0.0,strong,0.8828652389723811,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4086.457254938057
-268,256,gap,SW,6999.930477224164,strong,0.8652046549380611,5249.947857918123,gap: k × gap,,5985.995057001359
-269,257,pinned,SW,0.0,rolled,0.5808838981845267,880.0,pinned: floor,,499.9971183985318
-270,256,gap,SW,6999.930477224164,strong,0.8652046549380611,5249.947857918123,gap: k × gap,,1699.9902025573106
-271,257,pinned,SW,0.0,rolled,0.5808838981845267,880.0,pinned: floor,,699.9959657582153
-272,256,gap,SW,6999.930477224164,strong,0.8652046549380611,5249.947857918123,gap: k × gap,,799.1502852979359
-273,257,pinned,SW,0.0,rolled,0.5808838981845267,880.0,pinned: floor,,3382.700956640983
-274,258,gap,SW,599.9940409049283,rolled,0.5808838981845267,880.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,496.75458334761345
-275,259,pinned,SW,0.0,strong,0.8762857703875162,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9690.912598876384
-276,260,gap,SW,1099.9890749923686,strong,0.8762857703875162,1760.0,gap: k × gap,,999.9942367979717
-277,261,pinned,SW,0.0,strong,0.8762857703875162,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3896.848698061769
-278,262,gap,SW,8499.915579486484,strong,1.1716876425905056,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,9992.813501947478
-279,263,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,4689.059372476867
-280,264,gap,SW,9499.905647661364,rolled,0.6468802412887436,880.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,13289.529030881564
-281,265,pinned,SW,0.0,rolled,0.39114366715429333,880.0,pinned: floor,,12896.974947158595
-282,266,gap,SW,999.9900681748805,rolled,0.3539395753588638,880.0,gap: k × gap,,999.994236798294
-283,267,pinned,SW,0.0,rolled,0.30552803730688116,880.0,pinned: floor,,9695.297740112968
-284,268,pinned,SW,0.0,rolled,0.3408024430582536,880.0,pinned: floor,,997.106283639989
-285,269,pinned,SW,0.0,rolled,0.3408024430582536,880.0,pinned: floor,,2188.9279229875883
-286,270,gap,SW,6399.936436319235,rolled,0.3408024430582536,2399.976163619713,gap: k × gap,,7089.0202211095575
-287,271,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,6484.398226304222
-288,272,gap,SW,6499.935443136724,rolled,0.1450688935026027,2437.4757911762713,gap: k × gap,,1784.4408219077172
-289,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),199.99884736015466
-290,272,gap,SW,6499.935443136724,rolled,0.1450688935026027,2437.4757911762713,gap: k × gap,,99.99942367937057
-291,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),99.9994236795222
-292,272,gap,SW,6499.935443136724,rolled,0.1450688935026027,2437.4757911762713,gap: k × gap,,199.99884736015468
-293,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),99.99942367937057
-294,272,gap,SW,6499.935443136724,rolled,0.1450688935026027,2437.4757911762713,gap: k × gap,,199.7055754058428
-295,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),42875.65391781342
-296,273,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,1297.1088606801961
-297,274,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,1198.3935857112592
-298,275,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,1298.5550445172123
-299,276,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,11089.259118305252
-300,278,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,899.500297393481
-301,279,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,1298.2424598444943
-302,280,pinned,SW,0.0,rolled,0.1450688935026027,880.0,pinned: floor,,2191.2459944456195
-303,281,gap,SW,6599.934449954211,rolled,0.1723331886423548,2474.975418732829,gap: k × gap,,7088.802602247285
-304,282,pinned,S,0.0,strong,2.1319299483414564,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7881.27596860701
-305,283,gap,S,7399.926504494116,strong,2.1319299483414564,5549.944878370587,gap: k × gap,,1699.9796232160115
-306,282,pinned,S,0.0,strong,2.1319299483414564,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",299.99827103932444
-307,283,gap,S,7399.926504494116,strong,2.1319299483414564,5549.944878370587,gap: k × gap,,99.99942368004534
-308,282,pinned,S,0.0,strong,2.1319299483414564,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",599.9965420786488
-309,283,gap,S,7399.926504494116,strong,2.1319299483414564,5549.944878370587,gap: k × gap,,99.99942368004534
-310,282,pinned,S,0.0,strong,2.1319299483414564,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.66306973713404
-311,283,gap,S,7399.926504494116,strong,2.1319299483414564,5549.944878370587,gap: k × gap,,6381.711108700294
-312,284,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2492.142410605457
-313,285,gap,S,2499.975170437201,unknown,,1406.2360333709257,gap: k × gap,,198.0987703261369
-314,286,pinned,S,0.0,unknown,,1320.0,pinned: floor,,10290.47628817247
-315,287,gap,S,4399.9562999694745,rolled,0.25569915391047376,1649.9836124885528,gap: k × gap,,5293.81594895266
-316,288,pinned,S,0.0,rolled,0.25569915391047376,880.0,pinned: floor,,2686.181130812612
-317,289,gap,S,3499.965238612082,rolled,0.23167800822907544,1312.4869644795308,gap: k × gap,,4595.878634133423
-318,290,pinned,S,0.0,unknown,,1320.0,pinned: floor,,3491.129679809023
-319,291,gap,S,6999.930477224164,unknown,,3937.4608934385924,gap: k × gap,,5587.739415685392
-320,292,pinned,S,0.0,unknown,0.812202289313916,1320.0,pinned: floor,,99.99942367986237
-321,291,gap,S,6999.930477224164,unknown,,3937.4608934385924,gap: k × gap,,699.9959657586721
-322,292,pinned,S,0.0,unknown,0.812202289313916,1320.0,pinned: floor,,399.9976947188618
-323,291,gap,S,6999.930477224164,unknown,,3937.4608934385924,gap: k × gap,,399.9122405852634
-324,292,pinned,S,0.0,unknown,0.812202289313916,1320.0,pinned: floor,,8689.143891514166
-325,293,gap,S,2599.9741772546895,unknown,0.8439309156164002,1462.485474705763,gap: k × gap,,3098.8151319713766
-326,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,3691.9947590579472
-327,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99942367996307
-328,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,199.99884735951088
-329,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99942367996307
-330,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,99.99942367932086
-331,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,199.99884736015312
-332,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,99.99942367932086
-333,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99942368019005
-334,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,199.99884735928393
-335,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99942368019005
-336,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,199.9988473595109
-337,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99942367996307
-338,294,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,199.9988473595109
-339,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,6486.032863096583
-340,296,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,299.99827104007824
-341,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,199.99884735923183
-342,296,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,399.997694719621
-343,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,199.99884735923183
-344,296,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,299.9982710400782
-345,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,299.99827103877465
-346,296,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,3089.07162439484
-347,297,gap,S,99.99900681748805,unknown,0.8439309156164002,1320.0,gap: k × gap,,99.99942367962214
-348,298,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,4993.637117306446
-349,300,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,199.9988473598599
-350,301,gap,S,1099.9890749923686,unknown,0.8439309156164002,1320.0,gap: k × gap,,899.9948131184854
-351,302,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,7392.062923213675
-352,303,gap,S,4199.958286334499,unknown,0.8439309156164002,2362.4765360631554,gap: k × gap,,5187.307267181017
-353,304,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2886.335599562278
-354,305,gap,S,4099.95927951701,unknown,,2306.227094728318,gap: k × gap,,4987.501885303817
-355,306,pinned,S,0.0,unknown,,1320.0,pinned: floor,,9383.238252652622
-356,307,gap,S,2899.9711977071534,unknown,,1631.2337987102737,gap: k × gap,,2994.007640974737
-357,308,pinned,S,0.0,unknown,,1320.0,pinned: floor,,1992.1638710045686
-358,309,gap,S,4499.955306786962,rolled,0.2917395057633648,1687.4832400451107,gap: k × gap,,5491.637354165804
-359,310,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,1493.789323596099
-360,311,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,999.5117099032631
-361,312,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,1096.676363001583
-362,313,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,997.7735021635532
-363,314,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,1296.4414733393107
-364,315,pinned,S,0.0,rolled,0.2917395057633648,880.0,pinned: floor,,1296.8294054324554
-365,316,pinned,S,0.0,rolled,0.362550391393127,880.0,pinned: floor,,798.3306576190242
-366,317,pinned,S,0.0,rolled,0.362550391393127,880.0,pinned: floor,,1096.7926288041426
-367,318,pinned,S,0.0,rolled,0.3987285894144971,880.0,pinned: floor,,896.1459947812926
-368,319,pinned,S,0.0,rolled,0.6912139671954829,880.0,pinned: floor,,2490.818130540476
-369,320,gap,S,2999.9702045246418,unknown,0.7687477766727765,1687.483240045111,gap: k × gap,,3790.987929921501
-370,321,pinned,S,0.0,unknown,0.7687477766727765,1320.0,pinned: floor,,2191.5341546544996
-371,322,pinned,S,0.0,unknown,0.8345569856191275,1320.0,pinned: floor,,9199.035167633843
-372,323,gap,S,1199.9880818098566,unknown,0.7648328435936858,1320.0,gap: k × gap,,1199.9930841578082
-373,324,pinned,S,0.0,unknown,0.8345569856191275,1320.0,pinned: floor,,2893.4125155620436
-374,325,gap,S,8599.914586303972,rolled,0.6867965206004828,3224.9679698639893,gap: k × gap,,7788.299644342162
-375,326,pinned,S,0.0,rolled,0.46600359692284904,880.0,pinned: floor,,4887.373866941792
-376,327,gap,S,6499.935443136724,rolled,0.4455936175800998,2437.4757911762713,gap: k × gap,,7086.158794433002
-377,328,pinned,S,0.0,strong,1.1804068340511125,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",18283.352977506
-378,329,gap,S,3299.9672249771056,strong,1.1804068340511125,2474.975418732829,gap: k × gap,,3686.5521721308723
-379,330,pinned,S,0.0,strong,1.1804068340511125,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",22082.27847531113
-380,331,gap,S,4399.9562999694745,strong,0.9423653481721683,3299.9672249771056,gap: k × gap,,4090.096766254792
-381,332,pinned,S,0.0,unknown,0.704323862293224,1320.0,pinned: floor,,1099.9936604772986
-382,331,gap,S,4399.9562999694745,strong,0.9423653481721683,3299.9672249771056,gap: k × gap,,99.99942368045807
-383,332,pinned,S,0.0,unknown,0.704323862293224,1320.0,pinned: floor,,7189.406396722118
-384,333,gap,S,1899.981129532273,unknown,0.8057150872799176,1320.0,gap: k × gap,,2399.2917705528785
-385,334,pinned,S,0.0,unknown,0.8057150872799176,1320.0,pinned: floor,,11694.738188200174
-386,335,pinned,S,0.0,unknown,0.8057150872799176,1320.0,pinned: floor,,2993.112271193107
-387,336,gap,S,7499.925511311604,unknown,0.7928761298873557,4218.708100112777,gap: k × gap,,899.9597515578167
-388,335,pinned,S,0.0,unknown,0.8057150872799176,1320.0,pinned: floor,,799.4309602500232
-389,336,gap,S,7499.925511311604,unknown,0.7928761298873557,4218.708100112777,gap: k × gap,,7085.008305904048
-390,337,pinned,S,0.0,strong,0.9242314680194329,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9186.110430603212
-391,338,gap,S,6999.930477224164,strong,0.8677810998932013,5249.947857918123,gap: k × gap,,6385.305180048435
-392,339,pinned,S,0.0,unknown,,1320.0,pinned: floor,,1894.6230485701344
-393,340,pinned,S,0.0,unknown,,1320.0,pinned: floor,,898.8609568971458
-394,341,pinned,S,0.0,unknown,,1320.0,pinned: floor,,9487.666463038195
-395,342,gap,S,5499.945374961843,strong,1.0813939501428562,4124.959031221382,gap: k × gap,,4089.0501332129643
-396,343,pinned,S,0.0,strong,1.0823271928027411,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3491.460475681012
-397,344,pinned,S,0.0,strong,1.1240762481393758,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1297.967016665282
-398,345,pinned,S,0.0,strong,1.0392829448283047,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2096.8706940799375
-399,346,gap,S,399.9960272699522,unknown,0.8287961262289341,1320.0,gap: k × gap,,197.17256106460778
-400,347,pinned,S,0.0,unknown,0.8287961262289341,1320.0,pinned: floor,,1298.4625321069116
-401,348,gap,S,999.9900681748805,unknown,0.7871029897562085,1320.0,gap: k × gap,,1099.4693751834625
-402,349,pinned,S,0.0,unknown,0.8287961262289341,1320.0,pinned: floor,,1794.4741502246168
-403,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,699.9959657578265
-404,349,pinned,S,0.0,unknown,0.8287961262289341,1320.0,pinned: floor,,99.99942368042298
-405,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,199.99884735913452
-406,349,pinned,S,0.0,unknown,0.8287961262289341,1320.0,pinned: floor,,99.99942368042298
-407,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,5784.2448097470715
-408,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.9988473593892
-409,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942368020791
-410,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.99884735918
-411,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942368020791
-412,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.99884735918
-413,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.9994236799987
-414,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.99884735959841
-415,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942367978949
-416,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",299.9982710395971
-417,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.9994236799987
-418,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.9988473593892
-419,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942368020791
-420,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.99884735918
-421,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942368020791
-422,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.99884735918
-423,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.99942368020791
-424,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",199.9988473593892
-425,350,gap,S,7799.9225317640685,strong,1.0392829448283047,5849.941898823052,gap: k × gap,,99.67805913986685
-426,351,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4188.382734799652
-427,352,gap,S,699.9930477224163,strong,1.3134262124802425,1760.0,gap: k × gap,,699.9959657598521
-428,353,pinned,S,0.0,strong,1.3134262124802425,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9193.458563516946
-429,354,gap,S,4799.952327239426,unknown,0.8486166687441995,2699.9731840721774,gap: k × gap,,4989.889500485428
-430,355,pinned,S,0.0,unknown,0.7779578866958363,1320.0,pinned: floor,,6689.832953811688
-431,356,gap,S,599.9940409049283,unknown,0.7072991046474731,1320.0,gap: k × gap,,599.9965420803094
-432,357,pinned,S,0.0,unknown,0.7072991046474731,1320.0,pinned: floor,,2695.7582410145324
-433,358,gap,S,1699.9831158972968,unknown,0.7779578866958363,1320.0,gap: k × gap,,1899.4839461917009
-434,359,pinned,S,0.0,unknown,0.7779578866958363,1320.0,pinned: floor,,3798.0223387276883
-435,360,gap,S,2299.977156802225,unknown,0.7072991046474731,1320.0,gap: k × gap,,2599.7417178340315
-436,361,pinned,S,0.0,unknown,0.8161390619952302,1320.0,pinned: floor,,6797.123350602796
-437,362,pinned,S,0.0,unknown,,1320.0,pinned: floor,,5995.8641277687275
-438,363,gap,S,3199.9682181596177,unknown,,1799.982122714785,gap: k × gap,,3694.287151883982
-439,364,pinned,S,0.0,unknown,0.8122649147664005,1320.0,pinned: floor,,9581.475635021248
-440,365,gap,S,3099.9692113421297,unknown,0.8370129728288518,1743.732681379948,gap: k × gap,,3793.9500599907487
-441,366,pinned,S,0.0,unknown,0.8370129728288518,1320.0,pinned: floor,,3093.120969836953
-442,367,pinned,S,0.0,unknown,0.8370129728288518,1320.0,pinned: floor,,998.6471058228618
-443,368,pinned,S,0.0,unknown,0.8370129728288518,1320.0,pinned: floor,,997.2743355737277
-444,369,pinned,S,0.0,unknown,0.8370129728288518,1320.0,pinned: floor,,899.2126036558739
-445,370,pinned,S,0.0,unknown,0.8370129728288518,1320.0,pinned: floor,,1193.83940209259
-446,371,gap,S,3399.9662317945936,unknown,0.8200963623774273,1912.481005384459,gap: k × gap,,4091.838398328866
-447,372,pinned,S,0.0,unknown,0.803179751926003,1320.0,pinned: floor,,1790.0026742293155
-448,373,gap,S,2499.975170437201,unknown,0.7083722388809501,1406.2360333709257,gap: k × gap,,2998.5102669472244
-449,374,pinned,S,0.0,unknown,0.7083722388809501,1320.0,pinned: floor,,2898.013320875867
-450,375,gap,S,299.99702045246414,unknown,0.7083722388809501,1320.0,gap: k × gap,,99.9994236803766
-451,376,pinned,S,0.0,unknown,0.7083722388809501,1320.0,pinned: floor,,4094.350236691796
-452,377,gap,S,499.9950340874403,unknown,0.7083722388809501,1320.0,gap: k × gap,,499.99711839928835
-453,378,pinned,S,0.0,unknown,0.7083722388809501,1320.0,pinned: floor,,10387.044421523791
-454,379,gap,S,4899.951334056915,strong,1.1227900354553682,3674.9635005426862,gap: k × gap,,5388.511595986627
-455,380,pinned,S,0.0,strong,1.2366419793774757,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1190.7166072611562
-456,383,pinned,S,0.0,strong,1.2366419793774757,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1698.012198617443
-457,384,pinned,S,0.0,strong,1.2366419793774757,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1099.514491401362
-458,385,pinned,S,0.0,strong,1.2366419793774757,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",998.7476716742749
-459,386,pinned,S,0.0,strong,1.2366419793774757,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1698.5908967861194
-460,387,gap,S,2299.977156802225,strong,1.2366419793774757,1760.0,gap: k × gap,,2599.030460080158
-461,388,pinned,S,0.0,strong,1.3730749773126116,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4686.983781256511
-462,389,gap,SE,8299.917565851509,strong,0.8962543111471123,6224.9381743886315,gap: k × gap,,2899.9415836283715
-463,388,pinned,S,0.0,strong,1.3730749773126116,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",899.9321075711061
-464,389,gap,SE,8299.917565851509,strong,0.8962543111471123,6224.9381743886315,gap: k × gap,,1385.4674722112168
-465,390,pinned,SE,0.0,strong,0.8767701098360595,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9486.753195410656
-466,391,gap,SE,8799.912599938949,strong,0.8767701098360595,6599.934449954211,gap: k × gap,,99.99942367976217
-467,390,pinned,SE,0.0,strong,0.8767701098360595,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1899.9890499173957
-468,391,gap,SE,8799.912599938949,strong,0.8767701098360595,6599.934449954211,gap: k × gap,,696.3174545944145
-469,392,pinned,SE,0.0,unknown,0.8210377542459479,1320.0,pinned: floor,,199.77436631638358
-470,391,gap,SE,8799.912599938949,strong,0.8767701098360595,6599.934449954211,gap: k × gap,,4799.590758120367
-471,392,pinned,SE,0.0,unknown,0.8210377542459479,1320.0,pinned: floor,,2690.9337712592883
-472,393,gap,SE,1899.981129532273,unknown,0.8210377542459479,1320.0,gap: k × gap,,2299.85878959093
-473,394,pinned,SE,0.0,unknown,0.8210377542459479,1320.0,pinned: floor,,5198.854684594632
-474,395,gap,SE,899.9910613573925,unknown,0.830233021397584,1320.0,gap: k × gap,,899.9948131175915
-475,396,pinned,SE,0.0,unknown,0.830233021397584,1320.0,pinned: floor,,2190.4165398165937
-476,397,gap,SE,3499.965238612082,unknown,0.830233021397584,1968.7304467192962,gap: k × gap,,3989.502096061111
-477,398,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2085.8933261813204
-478,399,gap,S,2899.9711977071534,unknown,,1631.2337987102737,gap: k × gap,,3492.3524804350936
-479,400,pinned,S,0.0,unknown,,1320.0,pinned: floor,,10582.080764229791
-480,401,gap,S,4199.958286334499,strong,0.9180825350386874,3149.968714750874,gap: k × gap,,4087.00195904428
-481,402,pinned,S,0.0,strong,0.9180825350386874,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2092.1390428906157
-482,403,gap,S,299.99702045246414,strong,0.9180825350386874,1760.0,gap: k × gap,,299.9982710392345
-483,404,pinned,S,0.0,strong,0.9180825350386874,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1499.405888100843
-484,405,pinned,S,0.0,strong,0.9180825350386874,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9891.375718980109
-485,406,gap,S,2699.9731840721774,rolled,0.5712688340864849,1012.4899440270665,gap: k × gap,,3594.4428830571187
-486,407,pinned,S,0.0,rolled,0.5712688340864849,880.0,pinned: floor,,4388.317658034755
-487,408,gap,S,4599.95431360445,strong,0.8611967425113185,3449.9657352033378,gap: k × gap,,4189.115639752905
-488,409,pinned,S,0.0,strong,0.9742520058491837,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3780.0287438343107
-489,410,gap,S,4299.957293151986,strong,0.9742520058491837,3224.9679698639893,gap: k × gap,,4787.758617132294
-490,411,pinned,S,0.0,strong,1.1441930617144176,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3796.3392547198887
-491,412,gap,S,2299.977156802225,strong,1.1441930617144176,1760.0,gap: k × gap,,2599.559481580828
-492,413,pinned,S,0.0,strong,1.1441930617144176,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",6892.67243837603
-493,414,gap,S,699.9930477224163,strong,1.1441930617144176,1760.0,gap: k × gap,,699.9959657584889
-494,415,pinned,S,0.0,strong,1.1441930617144176,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1498.21734636088
-495,416,gap,S,1299.9870886273447,strong,1.1441930617144176,1760.0,gap: k × gap,,1299.9925078376943
-496,417,pinned,S,0.0,strong,1.1441930617144176,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1395.94920540246
-497,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,16684.962722677374
-498,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,199.9988473590227
-499,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,199.99884736055037
-500,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,199.9988473588895
-501,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,99.99942368027519
-502,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,199.9988473590227
-503,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,199.99884736041716
-504,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,199.9988473590227
-505,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,199.99884736055037
-506,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,99.99942367861432
-507,418,pinned,S,0.0,unknown,,1320.0,pinned: floor,,99.58195819453609
-508,419,gap,S,6799.932463589187,unknown,0.8043109499839497,3824.962010768918,gap: k × gap,,7187.13425239787
-509,420,pinned,S,0.0,unknown,0.7147920318352791,1320.0,pinned: floor,,5190.852194821756
-510,421,pinned,S,0.0,unknown,0.7147920318352791,1320.0,pinned: floor,,3193.3839806949127
-511,422,gap,S,3799.962259064546,rolled,0.19700966879863335,1424.9858471492048,gap: k × gap,,4894.907916253244
-512,423,pinned,S,0.0,rolled,0.03492131838539148,880.0,pinned: floor,,2093.4971768750447
-513,424,gap,S,299.99702045246414,rolled,0.03492131838539148,880.0,gap: k × gap,,399.99769471929505
-514,425,pinned,S,0.0,rolled,0.03492131838539148,880.0,pinned: floor,,4187.0398444093125
-515,426,gap,S,8199.91855903402,rolled,0.14556446408610266,3074.9694596377576,gap: k × gap,,7781.7233273506245
-516,427,pinned,S,0.0,rolled,0.37539780130483386,880.0,pinned: floor,,3586.106314861639
-517,428,gap,S,2099.9791431672493,rolled,0.37539780130483386,880.0,gap: k × gap,,2799.453601950216
-518,429,pinned,S,0.0,rolled,0.37539780130483386,880.0,pinned: floor,,11380.258677943371
-519,430,gap,S,7099.929484041651,rolled,0.41357262588584154,2662.4735565156193,gap: k × gap,,99.99942368029812
-520,429,pinned,S,0.0,rolled,0.37539780130483386,880.0,pinned: floor,,499.83944068672656
-521,430,gap,S,7099.929484041651,rolled,0.41357262588584154,2662.4735565156193,gap: k × gap,,7485.079594718924
-522,431,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2888.0606415682773
-523,432,pinned,S,0.0,unknown,,1320.0,pinned: floor,,12790.927402396985
-524,433,pinned,S,0.0,unknown,,1320.0,pinned: floor,,1291.2513821328214
-525,434,gap,S,5799.942395414307,rolled,0.37539780130483386,2174.978398280365,gap: k × gap,,6688.05443144904
-526,435,pinned,S,0.0,rolled,0.37539780130483386,880.0,pinned: floor,,3091.9124426158846
-527,436,gap,S,1899.981129532273,rolled,0.37539780130483386,880.0,gap: k × gap,,1899.9890499162232
-528,437,pinned,S,0.0,rolled,0.37539780130483386,880.0,pinned: floor,,3099.272953500514
-529,438,gap,S,1899.981129532273,rolled,0.23225045751259757,880.0,gap: k × gap,,2599.2223613623337
-530,439,pinned,S,0.0,rolled,0.23225045751259757,880.0,pinned: floor,,3393.96669746433
-531,440,gap,S,2099.9791431672493,unknown,0.84132699651409,1320.0,gap: k × gap,,2498.9001811930802
-532,441,pinned,S,0.0,unknown,0.84132699651409,1320.0,pinned: floor,,8290.091711584491
-533,442,gap,S,3099.9692113421297,unknown,0.8196836175850757,1743.732681379948,gap: k × gap,,3791.0436546406727
-534,443,pinned,S,0.0,unknown,0.8196836175850757,1320.0,pinned: floor,,5189.02654961636
-535,444,gap,S,8799.912599938949,unknown,0.8196836175850757,4949.950837465658,gap: k × gap,,4484.659118868861
-536,445,pinned,S,0.0,unknown,,1320.0,pinned: floor,,199.9988473603421
-537,444,gap,S,8799.912599938949,unknown,0.8196836175850757,4949.950837465658,gap: k × gap,,99.99942367957833
-538,445,pinned,S,0.0,unknown,,1320.0,pinned: floor,,5289.123149358483
-539,446,gap,S,799.9920545399044,unknown,,1320.0,gap: k × gap,,799.9953894386178
-540,447,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2297.336915570348
-541,448,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,599.4541125885756
-542,449,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,4592.992525750052
-543,450,gap,SE,3399.9662317945936,unknown,,1912.481005384459,gap: k × gap,,4090.636951124617
-544,451,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,4589.43083370838
-545,452,gap,SE,9199.9086272089,unknown,,5174.948602805007,gap: k × gap,,8479.670678137109
-546,453,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,4994.494095464923
-547,454,gap,SE,299.99702045246414,unknown,,1320.0,gap: k × gap,,199.99884735981152
-548,455,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,1198.6730120082336
-549,456,gap,SE,1699.9831158972968,unknown,,1320.0,gap: k × gap,,2099.680549747927
-550,457,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,21084.513211174843
-551,458,gap,SE,6099.939415866771,unknown,,3431.2159214250587,gap: k × gap,,5487.564708079957
-552,459,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,199.9988473588681
-553,458,gap,SE,6099.939415866771,unknown,,3431.2159214250587,gap: k × gap,,199.99884736049833
-554,459,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,199.9988473590933
-555,458,gap,SE,6099.939415866771,unknown,,3431.2159214250587,gap: k × gap,,199.99884736049833
-556,459,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,99.98757634078319
-557,458,gap,SE,6099.939415866771,unknown,,3431.2159214250587,gap: k × gap,,99.99942368073441
-558,459,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,6789.253042525843
-559,460,gap,SE,2299.977156802225,unknown,,1320.0,gap: k × gap,,2799.177119329896
-560,461,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,3891.5797567122772
-561,462,gap,SE,9099.909620391412,unknown,,5118.699161470169,gap: k × gap,,10084.332904246223
-562,463,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,2487.769624186346
-563,464,gap,SE,4299.957293151986,unknown,,2418.725977397992,gap: k × gap,,5084.665022083892
-564,465,pinned,SE,0.0,unknown,0.7087558390155213,1320.0,pinned: floor,,2291.48861640926
-565,466,gap,SE,2499.975170437201,unknown,0.7087558390155213,1406.2360333709257,gap: k × gap,,2799.1150225290044
-566,467,pinned,SE,0.0,unknown,0.7087558390155213,1320.0,pinned: floor,,11791.996333602088
-567,468,gap,SE,999.9900681748805,unknown,0.7087558390155213,1320.0,gap: k × gap,,899.9948131189316
-568,469,pinned,SE,0.0,unknown,0.7087558390155213,1320.0,pinned: floor,,2496.261837113585
-569,470,gap,SE,2899.9711977071534,unknown,0.7087558390155213,1631.2337987102737,gap: k × gap,,3392.350665499595
-570,471,pinned,SE,0.0,unknown,0.7087558390155213,1320.0,pinned: floor,,11585.302240374709
-571,472,gap,SE,4199.958286334499,unknown,,2362.4765360631554,gap: k × gap,,5187.3076718381135
-572,473,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,3091.8949087573606
-573,474,gap,SE,1799.982122714785,unknown,,1320.0,gap: k × gap,,698.7812212737471
-574,475,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,10391.355065849963
-575,476,gap,SE,6099.939415866771,unknown,,3431.2159214250587,gap: k × gap,,5388.948207958764
-576,477,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,2989.781538368836
-577,478,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,3089.2086239194236
-578,479,gap,SE,5799.942395414307,unknown,,3262.4675974205475,gap: k × gap,,5287.946249567398
-579,480,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,5782.616080078871
-580,481,gap,SE,7499.925511311604,strong,0.8505325524222069,5624.944133483703,gap: k × gap,,399.9937340452675
-581,480,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,599.9965420791642
-582,481,gap,SE,7499.925511311604,strong,0.8505325524222069,5624.944133483703,gap: k × gap,,99.99942367871121
-583,480,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,299.9982710402718
-584,481,gap,SE,7499.925511311604,strong,0.8505325524222069,5624.944133483703,gap: k × gap,,199.99884735911473
-585,480,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,99.57698574653745
-586,481,gap,SE,7499.925511311604,strong,0.8505325524222069,5624.944133483703,gap: k × gap,,6683.936662748454
-587,482,pinned,SE,0.0,unknown,0.8362335630271351,1320.0,pinned: floor,,2691.767100862346
-588,484,pinned,SE,0.0,unknown,0.8362335630271351,1320.0,pinned: floor,,1298.6467914195152
-589,485,gap,SE,2099.9791431672493,unknown,0.8362335630271351,1320.0,gap: k × gap,,2494.322956340458
-590,486,pinned,SE,0.0,strong,0.8648315418172787,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",8091.895163641049
-591,487,gap,SE,2899.9711977071534,strong,0.8648315418172787,2174.978398280365,gap: k × gap,,3190.719690098574
-592,488,pinned,SE,0.0,strong,1.0730909124177337,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",8981.97079675805
-593,489,gap,SE,4799.952327239426,strong,1.1010674834817273,3599.96424542957,gap: k × gap,,5290.113587658881
-594,490,pinned,SE,0.0,unknown,0.752857708149532,1320.0,pinned: floor,,7991.202432657239
-595,491,gap,SE,1299.9870886273447,unknown,0.752857708149532,1320.0,gap: k × gap,,1699.7658692112393
-596,492,pinned,SE,0.0,unknown,0.7465628619845114,1320.0,pinned: floor,,10192.0912169884
-597,493,gap,SE,5799.942395414307,unknown,0.7048441213986518,3262.4675974205475,gap: k × gap,,5289.854840474197
-598,494,pinned,SE,0.0,unknown,0.7048441213986518,1320.0,pinned: floor,,1894.7376126056322
-599,495,pinned,SE,0.0,unknown,0.7048441213986518,1320.0,pinned: floor,,799.7477849616938
-600,496,pinned,SE,0.0,unknown,0.7048441213986518,1320.0,pinned: floor,,1597.0874041240268
-601,497,gap,SE,99.99900681748805,unknown,0.7048441213986518,1320.0,gap: k × gap,,99.99942367986276
-602,498,pinned,SE,0.0,unknown,0.7934880860738489,1320.0,pinned: floor,,2799.6500021859033
-603,499,gap,SE,2299.977156802225,unknown,0.7934880860738489,1320.0,gap: k × gap,,2694.149029109958
-604,500,pinned,SE,0.0,rolled,0.6651667020133547,880.0,pinned: floor,,3482.655150668717
-605,501,gap,SE,8199.91855903402,rolled,0.5862780589224574,3074.9694596377576,gap: k × gap,,199.99884736090286
-606,500,pinned,SE,0.0,rolled,0.6651667020133547,880.0,pinned: floor,,199.9988473584833
-607,501,gap,SE,8199.91855903402,rolled,0.5862780589224574,3074.9694596377576,gap: k × gap,,99.99942368076341
-608,500,pinned,SE,0.0,rolled,0.6651667020133547,880.0,pinned: floor,,599.9965420788839
-609,501,gap,SE,8199.91855903402,rolled,0.5862780589224574,3074.9694596377576,gap: k × gap,,7988.056609783063
-610,502,pinned,SE,0.0,rolled,0.5681733115902255,880.0,pinned: floor,,1199.9930841585767
-611,501,gap,SE,8199.91855903402,rolled,0.5862780589224574,3074.9694596377576,gap: k × gap,,99.99942367942995
-612,502,pinned,SE,0.0,rolled,0.5681733115902255,880.0,pinned: floor,,99.99942368046207
-613,501,gap,SE,8199.91855903402,rolled,0.5862780589224574,3074.9694596377576,gap: k × gap,,99.0953923781737
-614,502,pinned,SE,0.0,rolled,0.5681733115902255,880.0,pinned: floor,,2690.4365793888082
-615,503,pinned,SE,0.0,rolled,0.5862780589224574,880.0,pinned: floor,,1797.3557920964986
-616,504,gap,SE,2499.975170437201,rolled,0.5862780589224574,937.4906889139504,gap: k × gap,,3198.441556187285
-617,505,pinned,SE,0.0,rolled,0.5862780589224574,880.0,pinned: floor,,4386.849722969827
-618,506,gap,SE,7299.927497676627,rolled,0.6613996458748271,2737.472811628735,gap: k × gap,,7389.946282369562
-619,507,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,7591.602037605505
-620,508,gap,SE,1099.9890749923686,unknown,,1320.0,gap: k × gap,,1199.9755872704807
-621,509,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,2193.599937100435
-622,510,pinned,SE,0.0,rolled,0.4454398992834579,880.0,pinned: floor,,2879.569688702632
-623,511,gap,SE,4599.95431360445,rolled,0.5295381580722738,1724.9828676016689,gap: k × gap,,5988.656575344517
-624,512,pinned,SE,0.0,rolled,0.6787483502904628,880.0,pinned: floor,,6682.603619867833
-625,513,gap,SE,6899.9314704066755,rolled,0.6787483502904628,2587.4743014025034,gap: k × gap,,99.99942367867077
-626,512,pinned,SE,0.0,rolled,0.6787483502904628,880.0,pinned: floor,,99.99942368019484
-627,513,gap,SE,6899.9314704066755,rolled,0.6787483502904628,2587.4743014025034,gap: k × gap,,199.9988473588656
-628,512,pinned,SE,0.0,rolled,0.6787483502904628,880.0,pinned: floor,,99.99942368037993
-629,513,gap,SE,6899.9314704066755,rolled,0.6787483502904628,2587.4743014025034,gap: k × gap,,8583.267679342469
-630,514,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,14188.390679963117
-631,515,gap,SE,1499.9851022623209,unknown,,1320.0,gap: k × gap,,1799.5704284092144
-632,516,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,10196.010711530667
-633,517,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,10293.31296617101
-634,518,gap,SE,1399.9860954448327,unknown,,1320.0,gap: k × gap,,1899.636998497735
-635,519,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,13991.97847391823
-636,520,gap,SE,8699.91359312146,rolled,0.5582179728483252,3262.4675974205475,gap: k × gap,,8984.827011766747
-637,521,pinned,SE,0.0,rolled,0.46471151112840875,880.0,pinned: floor,,16177.26488835335
-638,522,gap,SE,4999.950340874402,rolled,0.5791265658264554,1874.9813778279008,gap: k × gap,,6283.718698934232
-639,523,pinned,SE,0.0,rolled,0.5877542426522435,880.0,pinned: floor,,7984.037329620828
-640,524,gap,SE,7199.92849085914,rolled,0.5877542426522435,2699.9731840721774,gap: k × gap,,8480.353117458359
-641,525,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,2195.710995378299
-642,526,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,1498.1566381631958
-643,527,gap,SE,799.9920545399044,unknown,,1320.0,gap: k × gap,,799.9953894387556
-644,528,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,16582.663512036645
-645,529,gap,SE,8399.916572668997,rolled,0.6813970032812334,3149.968714750874,gap: k × gap,,7587.448232690877
-646,530,pinned,SE,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,5984.15032553072
-647,531,gap,SE,1799.982122714785,rolled,0.6027412568549038,880.0,gap: k × gap,,2391.5689381745824
-648,532,pinned,E,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,9691.006506850033
-649,533,pinned,E,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,1498.3115231439608
-650,534,pinned,E,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,2889.560420198197
-651,535,gap,E,5399.946368144355,unknown,0.7271210974067073,3037.4698320811995,gap: k × gap,,5189.089214251725
-652,536,pinned,E,0.0,unknown,,1320.0,pinned: floor,,3692.3823355495856
-653,537,pinned,E,0.0,unknown,,1320.0,pinned: floor,,1098.7540146587237
-654,538,pinned,E,0.0,unknown,0.7275909325865717,1320.0,pinned: floor,,1793.508756630319
-655,539,gap,E,4399.9562999694745,unknown,0.7275909325865717,2474.975418732829,gap: k × gap,,5385.220313319259
-656,540,pinned,E,0.0,unknown,0.7929708475390055,1320.0,pinned: floor,,10387.560313478582
-657,541,gap,E,599.9940409049283,unknown,0.7929708475390055,1320.0,gap: k × gap,,499.9971183990786
-658,542,pinned,E,0.0,unknown,0.7929708475390055,1320.0,pinned: floor,,999.3713121452995
-659,543,pinned,E,0.0,unknown,0.7929708475390055,1320.0,pinned: floor,,999.3352534991216
-660,544,pinned,E,0.0,unknown,0.7929708475390055,1320.0,pinned: floor,,14284.037659273692
-661,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,3684.9063080596534
-662,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-663,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,99.99942368064161
-664,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-665,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,99.99942368064161
-666,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-667,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,199.99884736128323
-668,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-669,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,99.99942368064161
-670,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-671,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,99.99942368064161
-672,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-673,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,599.9965420801949
-674,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",99.99942367881421
-675,545,gap,E,6599.934449954211,strong,0.9240308374205494,4949.950837465658,gap: k × gap,,99.99942368064161
-676,546,pinned,E,0.0,strong,0.9240308374205494,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2291.0035062116153
-677,547,pinned,E,0.0,strong,0.9155832913657275,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1698.640595465603
-678,548,gap,E,699.9930477224163,strong,0.9155832913657275,1760.0,gap: k × gap,,699.9959657584706
-679,549,pinned,SE,0.0,strong,0.9155832913657275,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3788.946701431065
-680,550,gap,SE,8399.916572668997,strong,0.8769498036340767,6299.937429501748,gap: k × gap,,99.99942368037568
-681,549,pinned,SE,0.0,strong,0.9155832913657275,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1999.265702372803
-682,550,gap,SE,8399.916572668997,strong,0.8769498036340767,6299.937429501748,gap: k × gap,,2382.223992436137
-683,551,pinned,E,0.0,unknown,,1320.0,pinned: floor,,299.99827103855307
-684,550,gap,SE,8399.916572668997,strong,0.8769498036340767,6299.937429501748,gap: k × gap,,99.99942368037111
-685,551,pinned,E,0.0,unknown,,1320.0,pinned: floor,,599.996542078677
-686,550,gap,SE,8399.916572668997,strong,0.8769498036340767,6299.937429501748,gap: k × gap,,99.99942368037111
-687,551,pinned,E,0.0,unknown,,1320.0,pinned: floor,,9392.93255600242
-688,552,gap,E,99.99900681748805,unknown,,1320.0,gap: k × gap,,99.99942367823321
-689,553,pinned,E,0.0,unknown,,1320.0,pinned: floor,,5691.321410323541
-690,554,gap,E,5199.948354509379,unknown,,2924.970949411526,gap: k × gap,,5188.111913443869
-691,555,pinned,E,0.0,unknown,,1320.0,pinned: floor,,1791.539292842036
-692,556,pinned,E,0.0,unknown,,1320.0,pinned: floor,,9586.633960798561
-693,557,gap,E,4799.952327239426,strong,1.067955369002093,3599.96424542957,gap: k × gap,,4188.0879160388085
-694,558,pinned,E,0.0,strong,1.067955369002093,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5085.294150148548
-695,559,gap,E,3099.9692113421297,strong,1.067955369002093,2324.9769085065973,gap: k × gap,,3385.486217555191
-696,560,pinned,E,0.0,strong,1.067955369002093,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7890.414872295013
-697,561,gap,E,3399.9662317945936,rolled,0.5799555700838399,1274.9873369229726,gap: k × gap,,4587.792846744834
-698,562,pinned,E,0.0,rolled,0.6262077727501016,880.0,pinned: floor,,11094.419792087961
-699,563,gap,E,1899.981129532273,rolled,0.6262077727501016,880.0,gap: k × gap,,2299.734433759907
-700,564,pinned,E,0.0,rolled,0.6262077727501016,880.0,pinned: floor,,5687.937703512539
-701,565,gap,E,2999.9702045246418,unknown,0.7966682911394883,1687.483240045111,gap: k × gap,,3790.2584040007605
-702,566,pinned,E,0.0,rolled,0.6595302525321034,880.0,pinned: floor,,14381.807054457186
-703,567,gap,E,4499.955306786962,unknown,0.7032805827157632,2531.224860067666,gap: k × gap,,5987.471553752745
-704,568,pinned,E,0.0,unknown,0.747030912899423,1320.0,pinned: floor,,6880.283788188703
-705,569,gap,E,2699.9731840721774,strong,0.8761134088200584,2024.979888054133,gap: k × gap,,3091.4536569891457
-706,570,pinned,NE,0.0,strong,0.8628641290523589,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",19194.674352010337
-707,571,gap,NE,1699.9831158972968,strong,0.9786973452052947,1760.0,gap: k × gap,,1999.3848583911554
-708,572,pinned,NE,0.0,strong,0.8645909545806859,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",12493.505319849934
-709,574,pinned,NE,0.0,unknown,0.7788976197213047,1320.0,pinned: floor,,2787.1067173987485
-710,575,gap,NE,4799.952327239426,unknown,0.750484563956077,2699.9731840721774,gap: k × gap,,4988.018685021195
-711,576,pinned,NE,0.0,rolled,0.4655556444036717,880.0,pinned: floor,,3782.4183339111414
-712,577,gap,NE,4799.952327239426,rolled,0.4655556444036717,1799.982122714785,gap: k × gap,,6089.016932486753
-713,578,pinned,NE,0.0,rolled,0.5772610366833759,880.0,pinned: floor,,1691.291741895229
-714,579,pinned,NE,0.0,rolled,0.5772610366833759,880.0,pinned: floor,,2093.2299678904988
-715,580,gap,NE,5699.943388596819,rolled,0.6371097208492846,2137.4787707238074,gap: k × gap,,7088.102806865798
-716,581,pinned,NE,0.0,rolled,0.6969584050151935,880.0,pinned: floor,,15281.97323919596
-717,582,gap,NE,4499.955306786962,rolled,0.5549622151950114,880.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,6298.502872526523
-718,583,pinned,NE,0.0,rolled,0.4741661993047584,880.0,pinned: floor,,2793.5648358514018
-719,584,pinned,NE,0.0,rolled,0.4741661993047584,880.0,pinned: floor,,1198.438333600753
-720,585,pinned,NE,0.0,rolled,0.4741661993047584,880.0,pinned: floor,,1196.8750502244366
-721,586,pinned,NE,0.0,rolled,0.4741661993047584,880.0,pinned: floor,,1099.6849216991855
-722,587,pinned,NE,0.0,rolled,0.4741661993047584,880.0,pinned: floor,,1789.151772951814
-723,588,gap,NE,4299.957293151986,rolled,0.49810760809492327,1612.4839849319947,gap: k × gap,,5487.952828824511
-724,589,pinned,NE,0.0,rolled,0.6736548181327451,880.0,pinned: floor,,2189.353705034822
-725,590,gap,NE,2399.976163619713,rolled,0.6736548181327451,899.9910613573925,gap: k × gap,,2999.18610740117
-726,591,pinned,NE,0.0,rolled,0.5858812131138342,880.0,pinned: floor,,9696.80373343701
-727,592,gap,NE,4299.957293151986,rolled,0.471393127435327,1612.4839849319947,gap: k × gap,,889.9641837684372
-728,601,gap,NE,4299.957293151986,rolled,0.471393127435327,1612.4839849319947,gap: k × gap,,494.97454003473274
-729,602,pinned,NE,0.0,rolled,0.49810760809492327,880.0,pinned: floor,,4284.556839032291
-730,603,gap,NE,7499.925511311604,rolled,0.3949160709789083,2812.4720667418514,gap: k × gap,,7488.778498610872
-731,604,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,3392.7436909837043
-732,605,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,899.3182408902378
-733,606,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,2390.421721260744
-734,607,gap,NE,7499.925511311604,rolled,0.3926288446287489,2812.4720667418514,gap: k × gap,,399.99769471888715
-735,606,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,99.99942367915324
-736,607,gap,NE,7499.925511311604,rolled,0.3926288446287489,2812.4720667418514,gap: k × gap,,499.997118399574
-737,606,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,99.99942367915324
-738,607,gap,NE,7499.925511311604,rolled,0.3926288446287489,2812.4720667418514,gap: k × gap,,99.99942368068679
-739,606,pinned,NE,0.0,rolled,0.3926288446287489,880.0,pinned: floor,,99.68740047582963
-740,607,gap,NE,7499.925511311604,rolled,0.3926288446287489,2812.4720667418514,gap: k × gap,,7488.877878061053
-741,608,pinned,NE,0.0,unknown,,1320.0,pinned: floor,,4281.70109464184
-742,609,gap,NE,5699.943388596819,strong,1.2263130614173163,4274.957541447615,gap: k × gap,,6480.76895879251
-743,610,pinned,NE,0.0,strong,1.2263130614173163,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5294.778798429633
-744,611,gap,NE,1699.9831158972968,strong,1.2263130614173163,1760.0,gap: k × gap,,1499.575396668242
-745,612,pinned,NE,0.0,strong,1.2263130614173163,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9997.499532285468
-746,613,gap,NE,799.9920545399044,strong,1.0526302672024417,1760.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,896.4813610669237
-747,614,pinned,NE,0.0,unknown,,1320.0,pinned: floor,,4077.0395966096103
-748,615,gap,NE,6199.938422684259,unknown,0.8083154259493422,3487.465362759896,gap: k × gap,,2489.373072567552
-749,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,4186.933338537479
-750,618,pinned,N,0.0,unknown,,1320.0,pinned: floor,,4078.3235689623307
-751,619,gap,N,6299.937429501747,unknown,,3543.7148040947322,gap: k × gap,,5485.255191635856
-752,620,pinned,N,0.0,unknown,,1320.0,pinned: floor,,4885.793290098731
-753,621,gap,N,3699.963252247058,unknown,,2081.2293293889697,gap: k × gap,,4388.164152221839
-754,622,pinned,N,0.0,unknown,,1320.0,pinned: floor,,8283.550736713007
-755,623,gap,N,4699.953320421939,unknown,,2643.7237427373407,gap: k × gap,,5388.373467908479
-756,624,pinned,N,0.0,strong,1.4546802512181203,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2489.1245238420506
-757,625,pinned,N,0.0,strong,1.4546802512181203,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1495.6654430304586
-758,626,gap,N,3099.9692113421297,strong,1.5576709582234007,2324.9769085065973,gap: k × gap,,3490.1579100859244
-759,627,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4186.130357601611
-760,628,gap,N,499.9950340874403,strong,1.5576709582234007,1760.0,gap: k × gap,,399.9976947189839
-761,629,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1996.8978730893264
-762,630,gap,N,1299.9870886273447,strong,1.5576709582234007,1760.0,gap: k × gap,,1599.7596435039961
-763,631,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1598.7600542161354
-764,632,pinned,N,0.0,strong,1.6606616652286812,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1496.9350797084164
-765,633,pinned,N,0.0,unknown,,1320.0,pinned: floor,,1595.616950574057
-766,634,pinned,N,0.0,unknown,,1320.0,pinned: floor,,14087.443347159468
-767,635,gap,N,3799.962259064546,unknown,,2137.4787707238074,gap: k × gap,,4487.575443133343
-768,636,pinned,N,0.0,unknown,,1320.0,pinned: floor,,2882.9880618660977
-769,637,gap,N,3899.9612658820342,unknown,,2193.728212058644,gap: k × gap,,4688.842281917884
-770,638,pinned,N,0.0,unknown,,1320.0,pinned: floor,,1891.3294461825576
-771,639,pinned,N,0.0,unknown,,1320.0,pinned: floor,,1593.2349539078211
-772,640,gap,N,5299.9473613268665,strong,1.5250696174882163,3974.9605209951496,gap: k × gap,,1099.993660477535
-773,639,pinned,N,0.0,unknown,,1320.0,pinned: floor,,299.9982710411593
-774,640,gap,N,5299.9473613268665,strong,1.5250696174882163,3974.9605209951496,gap: k × gap,,4484.991697787816
-775,641,pinned,N,0.0,rolled,0.6876939946682885,880.0,pinned: floor,,8891.46918076633
-776,642,gap,N,1799.982122714785,rolled,0.6876939946682885,880.0,gap: k × gap,,2794.5651738962506
-777,643,pinned,N,0.0,strong,1.3532995318645649,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",13189.17078470239
-778,644,gap,N,2399.976163619713,strong,1.0204967632664268,1799.982122714785,gap: k × gap,,2698.9950497702616
-779,645,pinned,N,0.0,strong,1.3105947603608377,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",12897.75962029034
-780,646,pinned,N,0.0,strong,1.3532995318645649,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9997.91687874339
-781,647,gap,N,1999.980136349761,strong,1.4383429334458613,1760.0,gap: k × gap,,2199.4757263204924
-782,648,pinned,N,0.0,strong,1.1756829625682013,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",6596.138326126094
-783,649,gap,N,2199.9781499847372,strong,1.1756829625682013,1760.0,gap: k × gap,,2599.8129155443376
-784,650,pinned,N,0.0,strong,0.8871955222332817,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2894.6239257498914
-785,651,pinned,N,0.0,unknown,0.8327036801247037,1320.0,pinned: floor,,2197.558006748172
-786,652,gap,N,899.9910613573925,unknown,0.8327036801247037,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,699.9959657583827
-787,653,pinned,N,0.0,unknown,0.8327036801247037,1320.0,pinned: floor,,399.31491688563494
-788,654,pinned,N,0.0,unknown,0.8327036801247037,1320.0,pinned: floor,,899.7358162204079
-789,655,gap,N,5699.943388596819,unknown,0.8041516473804963,1320.0,gap: pre-2016 beyond -> floor (D5),pre-2016 laterals beyond this gap were not followed up; held to the floor,7393.619451162078
-790,656,pinned,N,0.0,rolled,0.5559174358375993,880.0,pinned: floor,,1888.7483122202373
-791,657,gap,N,4799.952327239426,strong,0.9339652312736474,3599.96424542957,gap: k × gap,,299.99827103887577
-792,656,pinned,N,0.0,rolled,0.5559174358375993,880.0,pinned: floor,,199.99884736044743
-793,657,gap,N,4799.952327239426,strong,0.9339652312736474,3599.96424542957,gap: k × gap,,199.99884735867676
-794,656,pinned,N,0.0,rolled,0.5559174358375993,880.0,pinned: floor,,99.99942368019897
-795,657,gap,N,4799.952327239426,strong,0.9339652312736474,3599.96424542957,gap: k × gap,,299.9982710388757
-796,656,pinned,N,0.0,rolled,0.5559174358375993,880.0,pinned: floor,,99.99942368024844
-797,657,gap,N,4799.952327239426,strong,0.9339652312736474,3599.96424542957,gap: k × gap,,5088.50202940403
-798,658,pinned,N,0.0,strong,0.9464565503593088,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4284.0155329094305
-799,659,gap,N,5099.949347691891,unknown,0.8496917512687864,2868.721508076688,gap: k × gap,,5189.595032286937
-800,660,pinned,N,0.0,unknown,,1320.0,pinned: floor,,3585.74257052175
-801,661,pinned,N,0.0,strong,0.9412360750021103,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",15890.281015093271
-802,662,gap,N,3799.962259064546,strong,0.9412360750021103,2849.9716942984096,gap: k × gap,,4085.169606256103
-803,663,pinned,N,0.0,strong,0.9412360750021103,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",11489.853642276394
-804,664,pinned,N,0.0,strong,0.9720198170626133,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",16596.589382688315
-805,665,gap,NW,2599.9741772546895,strong,2.0356447488833234,1949.9806329410171,gap: k × gap,,2997.364039759575
-806,666,pinned,NW,0.0,strong,2.0356447488833234,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2794.8536102003004
-807,667,gap,NW,1299.9870886273447,strong,2.0356447488833234,1760.0,gap: k × gap,,999.9942367980041
-808,668,pinned,NW,0.0,strong,1.5817584418860533,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5899.081615546612
-809,669,pinned,NW,0.0,strong,1.5817584418860533,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5199.550364572137
-810,670,gap,NW,899.9910613573925,strong,1.0038252139656991,1760.0,gap: k × gap,,899.9948131184354
-811,671,pinned,NW,0.0,strong,1.4036357181598162,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5294.916822057497
-812,672,gap,NW,1799.982122714785,strong,1.1346587323969237,1760.0,gap: k × gap,,2099.4927617081053
-813,673,pinned,NW,0.0,strong,1.26914722527837,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1998.8941018682822
-814,674,gap,NW,1699.9831158972968,strong,1.26914722527837,1760.0,gap: k × gap,,1599.5491023482516
-815,675,pinned,NW,0.0,strong,1.26914722527837,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3097.236250942323
-816,676,pinned,NW,0.0,strong,1.2294232884286536,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3295.9316705692336
-817,677,gap,NW,1599.9841090798088,strong,1.2294232884286536,1760.0,gap: k × gap,,1499.515498252654
-818,678,pinned,NW,0.0,strong,1.136040271339609,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1895.0256644591286
-819,679,gap,NW,4999.950340874402,strong,1.0622563786070176,3749.9627556558016,gap: k × gap,,5087.32544970146
-820,680,pinned,NW,0.0,strong,0.9366193525435126,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3790.2549527562624
-821,681,gap,NW,5499.945374961843,rolled,0.6270492135738422,2062.479515610691,gap: k × gap,,6390.773674786525
-822,682,pinned,NW,0.0,rolled,0.6310384984334751,880.0,pinned: floor,,6591.328971836528
-823,683,gap,NW,1499.9851022623209,rolled,0.6230599287142095,880.0,gap: k × gap,,1099.9936604780366
-824,684,pinned,NW,0.0,rolled,0.6230599287142095,880.0,pinned: floor,,6390.726855512394
-825,685,gap,NW,1599.9841090798088,unknown,0.7560010751681598,1320.0,gap: k × gap,,1696.398812959052
-826,686,pinned,NW,0.0,strong,0.9145122813560718,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1290.9326378806254
-827,687,gap,NW,2899.9711977071534,strong,0.9145122813560718,2174.978398280365,gap: k × gap,,1290.6291309627088
-828,688,pinned,NW,0.0,strong,0.9145122813560718,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4584.928151229718
-829,689,gap,NW,4999.950340874402,strong,0.9145122813560718,3749.9627556558016,gap: k × gap,,299.64268361756996
-830,688,pinned,NW,0.0,strong,0.9145122813560718,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",299.5704579023766
-831,689,gap,NW,4999.950340874402,strong,0.9145122813560718,3749.9627556558016,gap: k × gap,,4288.380584605905
-832,690,pinned,NW,0.0,strong,0.8615295470508704,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9793.601146020892
-833,691,gap,NW,2999.9702045246418,unknown,0.8403338524780659,1687.483240045111,gap: k × gap,,3392.7390553690298
-834,692,pinned,NW,0.0,unknown,0.824952959372874,1320.0,pinned: floor,,2392.600155603874
-835,693,pinned,NW,0.0,unknown,0.824952959372874,1320.0,pinned: floor,,1395.2168535876103
-836,694,pinned,NW,0.0,unknown,0.824952959372874,1320.0,pinned: floor,,1199.3580286310266
-837,695,pinned,NW,0.0,unknown,0.824952959372874,1320.0,pinned: floor,,4092.157058569751
-838,696,gap,NW,6899.9314704066755,unknown,0.7181653716064706,3881.211452103755,gap: k × gap,,5488.908941427171
-839,697,pinned,NW,0.0,rolled,0.6138451506462954,880.0,pinned: floor,,399.9976947182756
-840,696,gap,NW,6899.9314704066755,unknown,0.7181653716064706,3881.211452103755,gap: k × gap,,99.99942368089727
-841,697,pinned,NW,0.0,rolled,0.6138451506462954,880.0,pinned: floor,,99.99942367914473
-842,696,gap,NW,6899.9314704066755,unknown,0.7181653716064706,3881.211452103755,gap: k × gap,,99.99942368089727
-843,697,pinned,NW,0.0,rolled,0.6138451506462954,880.0,pinned: floor,,699.9959657574623
-844,696,gap,NW,6899.9314704066755,unknown,0.7181653716064706,3881.211452103755,gap: k × gap,,99.99942368089727
-845,697,pinned,NW,0.0,rolled,0.6138451506462954,880.0,pinned: floor,,499.99711839742037
-846,696,gap,NW,6899.9314704066755,unknown,0.7181653716064706,3881.211452103755,gap: k × gap,,99.99571267768472
-847,697,pinned,NW,0.0,rolled,0.6138451506462954,880.0,pinned: floor,,6281.994768222631
-848,698,gap,NW,8899.911606756437,rolled,0.3628223691111066,3337.4668525336638,gap: k × gap,,5588.760335412676
-849,702,gap,NW,7299.927497676627,rolled,0.11179958757591779,2737.472811628735,gap: k × gap,,4588.5478450949695
-850,703,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,2892.764326280641
-851,704,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1598.0496610453206
-852,705,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1997.581393667139
-853,706,gap,NW,1599.9841090798088,unknown,,1320.0,gap: k × gap,,1399.9919315189745
-854,707,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,8294.635547264517
-855,708,gap,NW,3299.9672249771056,rolled,0.6729121056089048,1237.4877093664145,gap: k × gap,,3997.727023501831
-856,709,pinned,NW,0.0,rolled,0.6729121056089048,880.0,pinned: floor,,7685.423595743439
-857,710,gap,NW,5299.9473613268665,unknown,0.7411642246247858,2981.220390746362,gap: k × gap,,5189.87523426312
-858,711,pinned,NW,0.0,unknown,0.7411642246247858,1320.0,pinned: floor,,2291.372584746425
-859,712,pinned,NW,0.0,unknown,0.7833545489348872,1320.0,pinned: floor,,699.384954851136
-860,713,gap,NW,1299.9870886273447,unknown,0.7833545489348872,1320.0,gap: k × gap,,1299.992507839121
-861,714,pinned,NW,0.0,unknown,0.7411642246247858,1320.0,pinned: floor,,1996.5150616149053
-862,715,gap,NW,399.9960272699522,unknown,,1320.0,gap: k × gap,,399.9976947190648
-863,716,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,5192.006984772135
-864,717,gap,NW,6799.932463589187,unknown,,3824.962010768918,gap: k × gap,,7183.418333330971
-865,718,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,6687.681446510702
-866,719,gap,NW,2999.9702045246418,unknown,,1687.483240045111,gap: k × gap,,3597.3989582829504
-867,720,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1493.6706094110182
-868,721,gap,NW,2899.9711977071534,unknown,,1631.2337987102737,gap: k × gap,,3393.0698407287337
-869,722,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,2393.67196849395
-870,723,gap,NW,3999.960272699522,rolled,0.6537654886164911,1499.9851022623209,gap: k × gap,,4988.540327305601
-871,724,pinned,NW,0.0,rolled,0.6537654886164911,880.0,pinned: floor,,1693.7989292321447
-872,725,pinned,NW,0.0,rolled,0.6537654886164911,880.0,pinned: floor,,4695.894496341925
-873,726,gap,NW,999.9900681748805,rolled,0.6482959695647199,880.0,gap: k × gap,,999.994236797975
-874,727,pinned,NW,0.0,rolled,0.6537654886164911,880.0,pinned: floor,,2994.476162749533
-875,728,gap,NW,2299.977156802225,rolled,0.6537654886164911,880.0,gap: k × gap,,2999.2358370956417
-876,729,pinned,NW,0.0,rolled,0.6537654886164911,880.0,pinned: floor,,4188.184602884957
-877,730,gap,NW,5599.944381779331,rolled,0.6537654886164911,2099.9791431672493,gap: k × gap,,6985.348154752205
-878,731,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1894.6657836130194
-879,732,gap,NW,1199.9880818098566,unknown,,1320.0,gap: k × gap,,1599.4810721036677
-880,733,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,12085.112034583566
-881,524,gap,SE,7199.92849085914,rolled,0.5877542426522435,2699.9731840721774,gap: k × gap,,1199.3654098593986
-882,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),103622.57454897734
-883,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),83495.49016510785
-884,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),103335.39907895362
-885,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),46543.94531053093
-886,609,gap,NE,5699.943388596819,strong,1.2263130614173163,4274.957541447615,gap: k × gap,,899.2131486101711
-887,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),1398.7204263494978
-888,609,gap,NE,5699.943388596819,strong,1.2263130614173163,4274.957541447615,gap: k × gap,,999.0520530472634
-889,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),99048.34431876807
-890,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),67725.43308772137
-891,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),57048.669506974744
-892,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),125079.74944191487
-893,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),51471.05374481104
-894,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),52264.359501513114
-895,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),63958.616157903394
-896,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),70910.52497579828
-897,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),51508.14445760452
-898,-1,hole,,,,,880.0,hole: tightest floor,hole in the drilled body: geology hole or surface? (fill / keep),59080.71603025171
-899,129,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,2759.0255491095163
-900,131,pinned,W,0.0,rolled,0.6042126056834887,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3944.1396123111535
-901,599,gap,NE,4299.957293151986,rolled,0.6061048447956578,1612.4839849319947,gap: k × gap,,5284.977024315514
-902,600,pinned,NE,0.0,rolled,0.44467864677573077,880.0,pinned: floor,,10779.873996188378
-903,601,gap,NE,4299.957293151986,rolled,0.471393127435327,1612.4839849319947,gap: k × gap,,892.075689814457
-904,592,gap,NE,4299.957293151986,rolled,0.471393127435327,1612.4839849319947,gap: k × gap,,392.5627152867286
-905,593,pinned,NE,0.0,rolled,0.5195272183652686,880.0,pinned: floor,,12381.246570138019
-906,594,gap,NE,2699.9731840721774,rolled,0.5195272183652686,1012.4899440270665,gap: k × gap,,1095.5655455608935
-907,599,gap,NE,4299.957293151986,rolled,0.6061048447956578,1612.4839849319947,gap: k × gap,,99.95496583617232
-908,594,gap,NE,2699.9731840721774,rolled,0.5195272183652686,1012.4899440270665,gap: k × gap,,3092.607481157446
-909,595,pinned,NE,0.0,rolled,0.6061048447956578,880.0,pinned: floor,,13889.389190025946
-910,596,gap,NE,1099.9890749923686,rolled,0.6178338996365093,880.0,gap: k × gap,,599.6108872624385
-911,597,pinned,NE,0.0,rolled,0.6178338996365093,880.0,pinned: floor,,2096.488329583391
-912,598,pinned,NE,0.0,rolled,0.6178338996365093,880.0,pinned: floor,,14878.13490805262
-913,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,99.7070003639489
-914,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,99.70700036407376
-915,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,199.4140007278978
-916,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,99.70700036407376
-917,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,99.7070003639489
-918,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,199.41400072802264
-919,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,99.7070003639489
-920,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,199.41400072802264
-921,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,99.7070003639489
-922,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,199.41400072802264
-923,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,99.7070003639489
-924,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,199.30045186469374
-925,617,gap,NE,6599.934449954211,unknown,0.8083154259493422,3712.4631280992435,gap: k × gap,,2583.0722392102
-926,615,gap,NE,6199.938422684259,unknown,0.8083154259493422,3487.465362759896,gap: k × gap,,3577.558108090713
-927,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,24101.14851282269
+0,297,gap,S,99.99900681748805,unknown,0.8439309156164002,1320.0,gap: k × gap,,199.9926007064388
+1,298,pinned,S,0.0,unknown,0.8439309156164002,1320.0,pinned: floor,,6799.135079330148
+2,301,bridge,S,1099.9890749923686,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4899.598139709104
+3,302,bridge,S,0.0,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7899.404103801554
+4,301,bridge,S,1099.9890749923686,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1499.8761789305624
+5,298,bridge,S,0.0,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,15698.839702853857
+6,418,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,29195.943437847207
+7,420,pinned,S,0.0,unknown,0.7147920318352791,1320.0,pinned: floor,,27193.590080225218
+8,421,bridge,S,0.0,unknown,0.7147920318352791,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12798.983855342825
+9,424,bridge,S,299.99702045246414,rolled,0.03492131838539148,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,299.98890105969883
+10,425,bridge,S,0.0,rolled,0.03492131838539148,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2999.7556923222387
+11,429,bridge,S,0.0,rolled,0.37539780130483386,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12297.471910833876
+12,430,gap,S,7099.929484041651,rolled,0.41357262588584154,2662.4735565156193,gap: k × gap,,6198.277917020422
+13,431,pinned,S,0.0,unknown,,1320.0,pinned: floor,,2499.8150269621156
+14,432,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,52186.32862171392
+15,457,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,67687.01095132441
+16,459,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,26496.449316443675
+17,460,gap,SE,2299.977156802225,unknown,,1320.0,gap: k × gap,,2599.8162904356195
+18,461,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,8199.360983857017
+19,467,bridge,SE,0.0,unknown,0.7087558390155213,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,22198.400428096436
+20,516,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,18296.681013645284
+21,517,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,10295.791409168782
+22,518,gap,SE,1399.9860954448327,unknown,,1320.0,gap: k × gap,,1699.8817333367408
+23,519,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,16397.504656733505
+24,520,bridge,SE,8699.91359312146,rolled,0.5582179728483252,3262.4675974205475,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,899.8441289519233
+25,521,bridge,SE,0.0,rolled,0.46471151112840875,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,31295.49145781729
+26,528,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,40187.75498866603
+27,529,bridge,SE,8399.916572668997,rolled,0.6813970032812334,3149.968714750874,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3199.739049992246
+28,530,pinned,SE,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,6197.238928983241
+29,531,gap,SE,1799.982122714785,rolled,0.6027412568549038,880.0,gap: k × gap,,1899.9297067100285
+30,532,pinned,E,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,9797.137864753762
+31,533,pinned,E,0.0,unknown,0.7271210974067073,1320.0,pinned: floor,,1799.9128440984696
+32,534,bridge,E,0.0,unknown,0.7271210974067073,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1299.9519045908833
+33,535,gap,E,5399.946368144355,unknown,0.7271210974067073,3037.4698320811995,gap: k × gap,,4099.657968760133
+34,536,pinned,E,0.0,unknown,,1320.0,pinned: floor,,2699.7497699824617
+35,537,pinned,E,0.0,unknown,,1320.0,pinned: floor,,1199.9441001640353
+36,538,pinned,E,0.0,unknown,0.7275909325865717,1320.0,pinned: floor,,1699.9371060028373
+37,539,gap,E,4399.9562999694745,unknown,0.7275909325865717,2474.975418732829,gap: k × gap,,4199.722471027943
+38,540,pinned,E,0.0,unknown,0.7929708475390055,1320.0,pinned: floor,,10498.510526464277
+39,541,bridge,E,599.9940409049283,unknown,0.7929708475390055,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,999.9550536429748
+40,542,bridge,E,0.0,unknown,0.7929708475390055,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1699.937106004201
+41,543,bridge,E,0.0,unknown,0.7929708475390055,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4199.5821212659885
+42,544,bridge,E,0.0,unknown,0.7929708475390055,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,599.9778021176431
+43,556,bridge,E,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4699.654308103505
+44,558,bridge,E,0.0,strong,1.067955369002093,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7599.417333478029
+45,559,gap,E,3099.9692113421297,strong,1.067955369002093,2324.9769085065973,gap: k × gap,,2999.8292251628723
+46,560,pinned,E,0.0,strong,1.067955369002093,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7698.723900662201
+47,561,gap,E,3399.9662317945936,rolled,0.5799555700838399,1274.9873369229726,gap: k × gap,,3899.6676565913613
+48,562,pinned,E,0.0,rolled,0.6262077727501016,880.0,pinned: floor,,10998.640525319197
+49,563,gap,E,1899.981129532273,rolled,0.6262077727501016,880.0,gap: k × gap,,2299.762783188409
+50,564,pinned,E,0.0,rolled,0.6262077727501016,880.0,pinned: floor,,5298.285317920256
+51,565,gap,E,2999.9702045246418,unknown,0.7966682911394883,1687.483240045111,gap: k × gap,,3398.393497546071
+52,566,pinned,E,0.0,rolled,0.6595302525321034,880.0,pinned: floor,,14698.189733805128
+53,567,gap,E,4499.955306786962,unknown,0.7032805827157632,2531.224860067666,gap: k × gap,,4198.095484197616
+54,568,pinned,E,0.0,unknown,0.747030912899423,1320.0,pinned: floor,,6099.624090415542
+55,569,gap,E,2699.9731840721774,strong,0.8761134088200584,2024.979888054133,gap: k × gap,,2999.7133824724733
+56,570,pinned,NE,0.0,strong,0.8628641290523589,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",19098.58892251421
+57,571,gap,NE,1699.9831158972968,strong,0.9786973452052947,1760.0,gap: k × gap,,1799.8549176475585
+58,572,pinned,NE,0.0,strong,0.8645909545806859,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",12598.187274237935
+59,573,gap,NE,99.99900681748805,unknown,0.750484563956077,1320.0,gap: k × gap,,99.93283392827115
+60,574,bridge,NE,0.0,unknown,0.7788976197213047,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2599.8537949673055
+61,575,bridge,NE,4799.952327239426,unknown,0.750484563956077,2699.9731840721774,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2399.87522788629
+62,576,bridge,NE,0.0,rolled,0.4655556444036717,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4399.813096060754
+63,577,bridge,NE,4799.952327239426,rolled,0.4655556444036717,1799.982122714785,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,499.96768257656936
+64,578,bridge,NE,0.0,rolled,0.5772610366833759,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1999.8961360893873
+65,579,bridge,NE,0.0,rolled,0.5772610366833759,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,699.9741024711286
+66,580,bridge,NE,5699.943388596819,rolled,0.6371097208492846,2137.4787707238074,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,999.9630035315138
+67,581,pinned,NE,0.0,rolled,0.6969584050151935,880.0,pinned: floor,,20196.836953806098
+68,582,bridge,NE,4499.955306786962,rolled,0.5549622151950114,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3599.7388342638405
+69,583,bridge,NE,0.0,rolled,0.4741661993047584,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,15198.85231388258
+70,593,pinned,NE,0.0,rolled,0.5195272183652686,880.0,pinned: floor,,26294.88436750076
+71,595,bridge,NE,0.0,rolled,0.6061048447956578,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,29592.203421037815
+72,596,gap,NE,1099.9890749923686,rolled,0.6178338996365093,880.0,gap: k × gap,,599.9277606656441
+73,597,pinned,NE,0.0,rolled,0.6178338996365093,880.0,pinned: floor,,2098.845951313052
+74,598,bridge,NE,0.0,rolled,0.6178338996365093,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,10397.319670661082
+75,616,pinned,NE,0.0,unknown,0.8083154259493422,1320.0,pinned: floor,,21995.96365058263
+76,622,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12398.99230561905
+77,623,gap,N,4699.953320421939,unknown,,2643.7237427373407,gap: k × gap,,3999.5988464387065
+78,624,bridge,N,0.0,strong,1.4546802512181203,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2399.802365270735
+79,625,bridge,N,0.0,strong,1.4546802512181203,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,999.9630035320806
+80,626,gap,N,3099.9692113421297,strong,1.5576709582234007,2324.9769085065973,gap: k × gap,,2999.730883799311
+81,627,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",4197.016630144247
+82,628,gap,N,499.9950340874403,strong,1.5576709582234007,1760.0,gap: k × gap,,399.98520141274406
+83,629,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1899.2094445580633
+84,630,gap,N,1299.9870886273447,strong,1.5576709582234007,1760.0,gap: k × gap,,1599.9408056505226
+85,631,pinned,N,0.0,strong,1.5576709582234007,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1699.3660315016039
+86,632,pinned,N,0.0,strong,1.6606616652286812,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1399.1674297331963
+87,633,pinned,N,0.0,unknown,,1320.0,pinned: floor,,1399.804379568583
+88,634,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9298.222894735216
+89,643,bridge,N,0.0,strong,1.3532995318645649,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9798.933894222831
+90,644,gap,N,2399.976163619713,strong,1.0204967632664268,1799.982122714785,gap: k × gap,,2599.866093198361
+91,645,pinned,N,0.0,strong,1.3105947603608377,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",12798.552715357033
+92,646,pinned,N,0.0,strong,1.3532995318645649,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",9999.02657716652
+93,647,gap,N,1999.980136349761,strong,1.4383429334458613,1760.0,gap: k × gap,,2099.7598286226175
+94,648,pinned,N,0.0,strong,1.1756829625682013,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7799.1100740490565
+95,649,bridge,N,2199.9781499847372,strong,1.1756829625682013,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1899.8139625603312
+96,650,bridge,N,0.0,strong,0.8871955222332817,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2699.766957272689
+97,661,pinned,N,0.0,strong,0.9412360750021103,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",19798.313062555953
+98,662,gap,N,3799.962259064546,strong,0.9412360750021103,2849.9716942984096,gap: k × gap,,3599.2294696546796
+99,663,pinned,N,0.0,strong,0.9412360750021103,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",11099.473232261635
+100,664,pinned,N,0.0,strong,0.9720198170626133,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",16599.263054084393
+101,665,gap,NW,2599.9741772546895,strong,2.0356447488833234,1949.9806329410171,gap: k × gap,,2899.7873762281547
+102,666,pinned,NW,0.0,strong,2.0356447488833234,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2799.0314043825692
+103,667,gap,NW,1299.9870886273447,strong,2.0356447488833234,1760.0,gap: k × gap,,999.8820728828218
+104,668,pinned,NW,0.0,strong,1.5817584418860533,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5799.647381503411
+105,669,pinned,NW,0.0,strong,1.5817584418860533,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5199.605669589679
+106,670,gap,NW,899.9910613573925,strong,1.0038252139656991,1760.0,gap: k × gap,,999.9630035316875
+107,671,pinned,NW,0.0,strong,1.4036357181598162,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5296.331617784093
+108,672,gap,NW,1799.982122714785,strong,1.1346587323969237,1760.0,gap: k × gap,,1799.83989110984
+109,673,pinned,NW,0.0,strong,1.26914722527837,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",1599.940805650045
+110,674,gap,NW,1699.9831158972968,strong,1.26914722527837,1760.0,gap: k × gap,,1699.8988136857952
+111,675,bridge,NW,0.0,strong,1.26914722527837,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7199.365609689643
+112,676,bridge,NW,0.0,strong,1.2294232884286536,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7399.568857415903
+113,687,gap,NW,2899.9711977071534,strong,0.9145122813560718,2174.978398280365,gap: k × gap,,16394.904033321574
+114,688,bridge,NW,0.0,strong,0.9145122813560718,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6499.576132641563
+115,690,bridge,NW,0.0,strong,0.8615295470508704,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,13998.980876394571
+116,699,bridge,NW,0.0,rolled,0.11179958757591779,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11494.577173997093
+117,700,gap,NW,1299.9870886273447,rolled,0.11179958757591779,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,899.9667031788937
+118,701,pinned,NW,0.0,rolled,0.11179958757591779,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,7999.442746643112
+119,702,bridge,NW,7299.927497676627,rolled,0.11179958757591779,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4599.666761463694
+120,703,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,5699.516717673788
+121,704,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2199.87014184309
+122,705,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2899.780823606057
+123,706,bridge,NW,1599.9841090798088,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1999.8802942868522
+124,707,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6999.432030906398
+125,727,bridge,NW,0.0,rolled,0.6537654886164911,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2999.774962756874
+126,729,bridge,NW,0.0,rolled,0.6537654886164911,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,17697.843643283275
+127,733,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,49673.07011334398
+128,734,bridge,NW,5299.9473613268665,strong,0.8803340362053276,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4699.568960014248
+129,0,pinned,NW,0.0,strong,0.8803340362053276,1760.0,updip of depth limit -> floor (D27),"pinned edge, strong wells: edge not explained by performance; what stops it?; updip of the depth limit (shallow side rolls over): no reach past the last wells",1299.9519045911748
+130,1,pinned,NW,0.0,strong,0.8803340362053276,1760.0,updip of depth limit -> floor (D27),"pinned edge, strong wells: edge not explained by performance; what stops it?; updip of the depth limit (shallow side rolls over): no reach past the last wells",11397.96302237611
+131,2,gap,NW,999.9900681748805,strong,0.9329433656981759,1760.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,999.9630035312894
+132,3,pinned,NW,0.0,strong,0.9329433656981759,1760.0,updip of depth limit -> floor (D27),"pinned edge, strong wells: edge not explained by performance; what stops it?; updip of the depth limit (shallow side rolls over): no reach past the last wells",12498.628987118555
+133,4,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7599.476830338234
+134,7,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,5499.771315838329
+135,8,bridge,NW,5899.941402231795,rolled,0.5954344445019695,2212.4780258369233,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,699.958418690663
+136,9,bridge,NW,0.0,rolled,0.5954344445019695,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6499.605288441834
+137,10,bridge,NW,0.0,rolled,0.5954344445019695,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,17398.64550684742
+138,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,10598.15897451752
+139,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,99.9963003538034
+140,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,99.9963003524129
+141,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,399.9852014136682
+142,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,99.9963003524129
+143,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,99.9963003536485
+144,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,99.9963003524129
+145,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,99.9963003536485
+146,13,bridge,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,13297.822434538992
+147,10,pinned,NW,0.0,rolled,0.5954344445019695,880.0,pinned: floor,,4097.675970815368
+148,13,gap,NW,4199.958286334499,strong,1.391122422273319,3149.968714750874,gap: k × gap,,23990.239503523233
+149,132,bridge,W,0.0,rolled,0.5676483486546392,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,30496.635544787863
+150,138,bridge,W,0.0,rolled,0.5020529663773635,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,23695.751976612508
+151,139,bridge,W,0.0,rolled,0.5020529663773635,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11498.896867376807
+152,143,bridge,W,0.0,unknown,,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6299.520296131538
+153,186,bridge,W,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12499.030736645955
+154,187,pinned,W,0.0,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1699.836736217475
+155,188,pinned,W,0.0,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1499.9445052972408
+156,189,pinned,W,0.0,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1298.7426677015944
+157,190,pinned,W,0.0,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1999.3962941670632
+158,191,gap,W,2899.9711977071534,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,3399.7373079433023
+159,192,pinned,W,0.0,rolled,0.19291843372817857,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,9595.63487881522
+160,193,gap,W,1699.9831158972968,rolled,0.19291843372817857,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,2099.8195113324427
+161,194,pinned,W,0.0,rolled,0.19291843372817857,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,19795.60342157486
+162,206,bridge,SW,0.0,strong,1.1981273914505628,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,8399.346454648723
+163,207,gap,SW,899.9910613573925,strong,1.1981273914505628,1760.0,gap: k × gap,,899.8960625043289
+164,208,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",599.9778021186593
+165,209,gap,SW,599.9940409049283,strong,1.1981273914505628,1760.0,gap: k × gap,,599.97780211859
+166,210,pinned,SW,0.0,strong,1.1981273914505628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",5999.103179276405
+167,211,bridge,SW,999.9900681748805,strong,1.1981273914505628,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1899.817613441108
+168,212,bridge,SW,0.0,strong,1.1981273914505628,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4599.611663622661
+169,216,bridge,SW,0.0,unknown,0.7581240895279707,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3699.6540175771875
+170,218,bridge,SW,0.0,rolled,0.6020333401135854,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,8299.306766133932
+171,229,bridge,SW,0.0,rolled,0.39190200960440646,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,34293.048263817
+172,231,bridge,SW,0.0,rolled,0.39190200960440646,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,33792.67677552581
+173,232,gap,SW,399.9960272699522,rolled,0.38974843709752416,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,699.8554443440776
+174,233,pinned,SW,0.0,rolled,0.38974843709752416,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,3797.0556772385576
+175,234,pinned,SW,0.0,rolled,0.38974843709752416,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,2599.734592952213
+176,235,bridge,SW,8199.91855903402,rolled,0.5156583441516758,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7699.32460663752
+177,236,pinned,SW,0.0,rolled,0.6645297790443883,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,2899.321024776539
+178,237,pinned,SW,0.0,rolled,0.6645297790443883,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1499.9291814962019
+179,238,gap,SW,99.99900681748805,rolled,0.6645297790443883,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,199.99260070636194
+180,239,pinned,SW,0.0,rolled,0.6645297790443883,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,1399.2809042225822
+181,240,pinned,SW,0.0,rolled,0.6645297790443883,880.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,3198.191873890623
+182,241,bridge,SW,6099.939415866771,rolled,0.6645297790443883,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6299.564903856142
+183,242,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,3499.6592439490973
+184,243,bridge,SW,6099.939415866771,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,5899.585531385151
+185,244,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2499.8229587317783
+186,245,gap,SW,199.9980136349761,unknown,,1320.0,gap: k × gap,,499.981501765636
+187,246,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,4998.111806090005
+188,247,gap,SW,2399.976163619713,unknown,,1349.9865920360887,gap: k × gap,,2599.824669370581
+189,248,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,2299.892848768787
+190,249,gap,SW,2999.9702045246418,unknown,,1687.483240045111,gap: k × gap,,3099.7419794370003
+191,250,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9699.344757799225
+192,259,bridge,SW,0.0,strong,0.8762857703875162,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,8398.232456591539
+193,260,gap,SW,1099.9890749923686,strong,0.8762857703875162,1760.0,gap: k × gap,,999.9630035315189
+194,261,pinned,SW,0.0,strong,0.8762857703875162,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",7599.402907052821
+195,262,bridge,SW,8499.915579486484,strong,1.1716876425905056,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,299.9889010593234
+196,263,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9499.20788572569
+197,265,bridge,SW,0.0,rolled,0.39114366715429333,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9499.27014404225
+198,266,bridge,SW,999.9900681748805,rolled,0.3539395753588638,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,999.8910175286194
+199,267,pinned,SW,0.0,rolled,0.30552803730688116,880.0,pinned: floor,,17198.394969541074
+200,276,bridge,SW,0.0,rolled,0.1450688935026027,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,45888.09214174847
+201,277,gap,SW,1699.9831158972968,rolled,0.1450688935026027,880.0,gap: k × gap,,15094.576263273595
+202,282,bridge,S,0.0,strong,2.1319299483414564,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,31094.24664138372
+203,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,8393.459959592034
+204,296,bridge,S,0.0,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,199.99260070701203
+205,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.99630035270926
+206,296,bridge,S,0.0,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,199.9926007068915
+207,295,gap,S,6899.9314704066755,unknown,0.8439309156164002,3881.211452103755,gap: k × gap,,99.9963003525887
+208,296,bridge,S,0.0,unknown,0.8439309156164002,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,17598.719379412
+209,733,pinned,NW,0.0,unknown,,1320.0,updip of depth limit -> floor (D27),updip of the depth limit (shallow side rolls over): no reach past the last wells,19404.819637233602
