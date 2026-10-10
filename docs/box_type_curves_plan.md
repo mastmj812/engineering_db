@@ -18,7 +18,7 @@ wells; `box_depth_witness` marks depth evidence). **Step 2 done; gate 2 CLOSED 2
 `edge_{WCA,BS2_S}.html`; builder `scripts/box_edge_gap.py`, `box/edge_gap.py`; eng_db #94). Decided: D21 (extent =
 laterals + variable buffer, r is measuring-only), D22 (BS2_S W = live front), D23 (edge metric of record + step-out
 table), D24 (potash ignore-gap = BLM Secretary's Potash Area), D25 (structure grids = geology context only).
-**Step 3 done 2026-10-09; gate 3 redefined by D28 (geology non-blocking).** Extents are D27 development envelopes (amended 2026-10-09: ≥ 3-lateral step-out programs, no updip limit, generalized edge): WCA 6,168 / BS2_S 3,358 sq mi (eng_db #95, #96, #104 merged). Deliverable `docs/box/step3-2026-10-07/` (FINDINGS §8–§9, review pages, `geology/` package). `sql/54` box schema **LIVE 2026-10-09** (28/28 apply checks). `sql/56` (edge_class `bridge`; authored as sql/55, renumbered after the Novi mirror took 55) **LIVE 2026-10-09**. **Generated v1 STORED as the version of record 2026-10-09** (`box.extent` extent_id 6 WCA 6,168.7 sq mi / 7 BS2_S 3,358.5 sq mi, 346 / 218 edges; identical to the committed `geology/` package within 0.005 sq mi). **Gate 3 CLOSED (D28).** **Step 4 done; gate 4 CLOSED 2026-10-09** (eng_db #110; deliverable `docs/box/step4-2026-10-09/`): **35 WCA TC areas kept** (D29), El Campeon / Los Vaqueros excluded via `docs/box/exclusions.csv` (D29), **gas via GOR ratio mode at a local GOR level** (D30), **gas added to §8 acceptance** (D31). `sql/57` box.tc_area **LIVE 2026-10-09** (15/15 apply checks live); **35 areas STORED as the version of record** (box.tc_area v1 on extent_id 6: 35 rows, n_wells 7,527, tile the extent — geodesic ratio 0.99999997, no overlap — identical to the reviewed deliverable); dictionary regenerated. **Gate 4 CLOSED.** **Next: step 5 (5a boxfit extraction incl. ratio mode — plan mode first)** in a fresh session. Execution model in §10, kickoff prompt in §11.
+**Step 3 done 2026-10-09; gate 3 redefined by D28 (geology non-blocking).** Extents are D27 development envelopes (amended 2026-10-09: ≥ 3-lateral step-out programs, no updip limit, generalized edge): WCA 6,168 / BS2_S 3,358 sq mi (eng_db #95, #96, #104 merged). Deliverable `docs/box/step3-2026-10-07/` (FINDINGS §8–§9, review pages, `geology/` package). `sql/54` box schema **LIVE 2026-10-09** (28/28 apply checks). `sql/56` (edge_class `bridge`; authored as sql/55, renumbered after the Novi mirror took 55) **LIVE 2026-10-09**. **Generated v1 STORED as the version of record 2026-10-09** (`box.extent` extent_id 6 WCA 6,168.7 sq mi / 7 BS2_S 3,358.5 sq mi, 346 / 218 edges; identical to the committed `geology/` package within 0.005 sq mi). **Gate 3 CLOSED (D28).** **Step 4 done; gate 4 CLOSED 2026-10-09** (eng_db #110; deliverable `docs/box/step4-2026-10-09/`): **35 WCA TC areas kept** (D29), El Campeon / Los Vaqueros excluded via `docs/box/exclusions.csv` (D29), **gas via GOR ratio mode at a local GOR level** (D30), **gas added to §8 acceptance** (D31). `sql/57` box.tc_area **LIVE 2026-10-09** (15/15 apply checks live); **35 areas STORED as the version of record** (box.tc_area v1 on extent_id 6: 35 rows, n_wells 7,527, tile the extent — geodesic ratio 0.99999997, no overlap — identical to the reviewed deliverable); dictionary regenerated. **Gate 4 CLOSED.** **Step 5 in progress (2026-10-10): 5a built** — module list approved in plan mode; `boxfit` extracted to anduin `backend/packages/boxfit` (distribution `blueox-boxfit`; import `boxfit`), anduin consumes it through module aliases, plus pure splits `boxfit.well.fit_well_streams` (per-well pipeline) and `boxfit.tc.align` (peak_ramp anchors); anduin suite 624 passed, baselines + money test unchanged without reseed, 63-entry before/after snapshot bit-identical — **anduin PR mastmj812/permiantypecurve#93 OPEN** (squash-merge before 5b). Not done: 5b curves (fresh session after #93 merges; first act = pin `blueox-boxfit` by git URL + merged SHA in engineering_db), 5c factors, 5d DDL (go-apply). Execution model in §10, kickoff prompt in §11.
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
 it, then stop. Do not roll into the next step on a phase-level "yes".
@@ -79,7 +79,8 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 - No own-location placement; no RES/UPSIDE; no emerging benches; no surface constraints.
 - No economics logic anywhere; no econ-limit, no truncation; EUR = raw 50-yr integral (rule 6).
 - No change to anduin's fitting behavior — extraction is a refactor, baselines and the money test
-  (61,642.7 bbl/1000 ft ±0.5 %) must not move.
+  (60,959.3 bbl/1000 ft ±0.5 % — re-pinned 2026-09-22 in anduin `tests/test_money_p50_eur.py`; the
+  61,642.7 figure this plan was drafted with is retired) must not move.
 - No app switch before step 6 passes.
 
 ## 4. Architecture
@@ -284,6 +285,14 @@ said "add gas to the acceptance test"; same thresholds as oil until he says othe
 - Gas acceptance form (D31): same ±10 % / no-wider-spread / majority thresholds as oil, and pass = oil
   AND gas — confirm, or set gas its own (step 6, before scoring).
 - Gas dev-scenario factor: own factor vs inherit oil's through the ratio (step 5c).
+- TC curve-of-record statistic: anduin fits its type curve to the cross-well **P50**
+  (`boxfit.tc.fit_p50`); erebor's export is a cohort **mean** per 1,000 ft (rule 18). BOX picks one,
+  labeled, in 5b; Michael confirms at gate 5.
+- erebor `packages/decline` is a third partial Arps copy (`models` + `compute_eur`, verbatim from
+  anduin, identical as of 2026-10-10). D15 implies erebor moves to `blueox-boxfit`; follow-up, not BOX
+  scope unless Michael says so.
+- Package name: an unrelated `boxfit` exists on PyPI → the distribution is `blueox-boxfit` and is never
+  listed by bare name (anduin installs editable; engineering_db pins by git URL + SHA).
 - ~~NM planned-survey wells: reassign by depth or exclude~~ → **option A adopted 2026-10-06**:
   planned-survey / permit-round wells are evidence unless consensus-flagged, every survey class
   (`docs/box/step1-2026-10-06/FINDINGS.md` §4/§7). BOX-only; no warehouse change.
