@@ -308,3 +308,9 @@ absorbed too.
 **Open question it raises for step 7.** The monthly volumes Steven receives (D16) come from the same uptime-free
 curves. If his deck applies its own downtime factor, B must NOT also go into his volumes, or downtime is counted
 twice. Worth asking him what he assumes before step 7.
+
+### Decisions (Michael, 2026-10-11)
+
+- **D35:** #1 closed. No GOR split and no GOR term on oil.
+- **D36:** #2 → option B. Calendar factor F(k) per bench, fitted pre-cutoff and applied to the step-6 predictions. Curves of record stay uptime-free.
+- **Steven:** he normally applies his own downtime factor. If the volumes BOX delivers already carry F(k), he stops applying his. Step 7 settles which way the delivery goes and states it on the delivery and in the ledger.
