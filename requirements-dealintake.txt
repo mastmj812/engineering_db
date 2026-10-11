@@ -6,3 +6,7 @@ pyyaml>=6.0
 scipy>=1.11
 matplotlib>=3.8
 keyring>=25                 # anduin token in the Windows Credential Manager (dealintake login)
+# BOX batch (box/, scripts/box_*.py) installs from this file too. The shared fitting engine is
+# anduin's blueox-boxfit, pinned to a merged anduin commit (plan D15). NEVER list it by bare name:
+# an unrelated "boxfit" exists on PyPI. Bump the SHA only to a commit merged on anduin main.
+blueox-boxfit @ git+https://github.com/mastmj812/permiantypecurve.git@b7a051958d1556b4d21d924489bc01c048b91167#subdirectory=backend/packages/boxfit

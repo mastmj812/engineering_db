@@ -1,0 +1,383 @@
+{
+  "checked_at": "2026-10-10T16:45:28-05:00",
+  "curves": [
+    {
+      "curve": "vault_wca",
+      "type_curve_id": "ab9297f4-4b5b-4740-9f8a-329511acbbab",
+      "saved_at": "2026-08-16T18:03:34.38756+00:00",
+      "is_stale": false,
+      "fc_rows_refit_after_save": 548,
+      "fc_rows": 590,
+      "n_included": 201,
+      "n_with_forecasts": 201,
+      "n_wells_aggregated": 201,
+      "df_terminal": 0.08,
+      "streams": {
+        "oil": {
+          "p50": {
+            "anduin_eur_per_kft": 64104.083752358,
+            "box_eur_per_kft": 65286.19603552213,
+            "rel_diff": 0.0184405144566262,
+            "anduin_live_eur_per_kft": 65286.196015811794,
+            "rel_diff_live": 3.0190672184460254e-10,
+            "box_params": {
+              "qo": 46.03873239436619,
+              "qi": 95.33579124278491,
+              "Di": 2.796636441376539,
+              "b": 1.0905383616422368,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 69388.22182004174,
+            "box_eur_per_kft": 70261.29842147553,
+            "rel_diff": 0.01258248991735389,
+            "anduin_live_eur_per_kft": 70261.29843219952,
+            "rel_diff_live": -1.5263013075639265e-10,
+            "box_params": {
+              "qo": 47.89877860290071,
+              "qi": 93.41226316008678,
+              "Di": 2.4378710450441528,
+              "b": 1.0868270655359509,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        },
+        "gas": {
+          "p50": {
+            "anduin_eur_per_kft": 101248.81095971233,
+            "box_eur_per_kft": 103451.07099107048,
+            "rel_diff": 0.02175097179397434,
+            "anduin_live_eur_per_kft": 103451.07097089209,
+            "rel_diff_live": 1.9505241866113465e-10,
+            "box_params": {
+              "qo": 74.73173319780422,
+              "qi": 114.3137790565404,
+              "Di": 1.9158980389779365,
+              "b": 1.0989416243424808,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 121023.49312522952,
+            "box_eur_per_kft": 122686.07908913126,
+            "rel_diff": 0.013737712579336758,
+            "anduin_live_eur_per_kft": 122686.07912398688,
+            "rel_diff_live": -2.8410407360013323e-10,
+            "box_params": {
+              "qo": 75.28159498263012,
+              "qi": 124.45695804559082,
+              "Di": 1.7968468607451575,
+              "b": 1.1410211453569983,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        },
+        "water": {
+          "p50": {
+            "anduin_eur_per_kft": 208903.17354501435,
+            "box_eur_per_kft": 211081.20518042264,
+            "rel_diff": 0.010426034216942881,
+            "anduin_live_eur_per_kft": 211081.20521835852,
+            "rel_diff_live": -1.7972179300329572e-10,
+            "box_params": {
+              "qo": 137.09635485977782,
+              "qi": 302.3627858871814,
+              "Di": 2.9291985585634994,
+              "b": 1.1345371215573408,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 226088.90726784972,
+            "box_eur_per_kft": 227583.31458846555,
+            "rel_diff": 0.006609821501969648,
+            "anduin_live_eur_per_kft": 227583.31453545028,
+            "rel_diff_live": 2.3294877138368975e-10,
+            "box_params": {
+              "qo": 156.7218444826292,
+              "qi": 312.82741774209245,
+              "Di": 2.7780211038555573,
+              "b": 1.1374740201869615,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        }
+      },
+      "max_abs_rel_diff": 0.02175097179397434,
+      "max_abs_rel_diff_live": 3.0190672184460254e-10,
+      "pass_live_lt_0p1pct": true,
+      "pass_lt_0p1pct": false,
+      "reference_valid": false
+    },
+    {
+      "curve": "vault_wcxy",
+      "type_curve_id": "9bf36038-93df-4f42-b83c-9cfea99133cb",
+      "saved_at": "2026-09-25T16:46:05.18038+00:00",
+      "is_stale": false,
+      "fc_rows_refit_after_save": 14,
+      "fc_rows": 71,
+      "n_included": 25,
+      "n_with_forecasts": 25,
+      "n_wells_aggregated": 25,
+      "df_terminal": 0.08,
+      "streams": {
+        "oil": {
+          "p50": {
+            "anduin_eur_per_kft": 64963.130005984654,
+            "box_eur_per_kft": 64963.129988026805,
+            "rel_diff": -2.7643143329925124e-10,
+            "anduin_live_eur_per_kft": 64963.130005984654,
+            "rel_diff_live": -2.7643143329925124e-10,
+            "box_params": {
+              "qo": 43.81441608111943,
+              "qi": 81.34634615988139,
+              "Di": 2.1680377575653025,
+              "b": 1.0658611826486348,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 66540.12228030266,
+            "box_eur_per_kft": 66540.12228379388,
+            "rel_diff": 5.246802992076027e-11,
+            "anduin_live_eur_per_kft": 66540.12228030266,
+            "rel_diff_live": 5.246802992076027e-11,
+            "box_params": {
+              "qo": 40.186726764848444,
+              "qi": 85.29355378323845,
+              "Di": 2.541427232296815,
+              "b": 1.1454371641643264,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        },
+        "gas": {
+          "p50": {
+            "anduin_eur_per_kft": 73573.36907844918,
+            "box_eur_per_kft": 73573.36906102803,
+            "rel_diff": -2.3678603522370167e-10,
+            "anduin_live_eur_per_kft": 73573.36907844918,
+            "rel_diff_live": -2.3678603522370167e-10,
+            "box_params": {
+              "qo": 52.906486941870256,
+              "qi": 101.28440951571667,
+              "Di": 2.841338102547839,
+              "b": 1.1493264886584769,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 84964.53409954047,
+            "box_eur_per_kft": 84964.53406751521,
+            "rel_diff": -3.769250467300367e-10,
+            "anduin_live_eur_per_kft": 84964.53409954047,
+            "rel_diff_live": -3.769250467300367e-10,
+            "box_params": {
+              "qo": 60.87065853881396,
+              "qi": 98.77441721408876,
+              "Di": 2.2639790586825566,
+              "b": 1.1604924887315706,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        },
+        "water": {
+          "p50": {
+            "anduin_eur_per_kft": 311194.4761046911,
+            "box_eur_per_kft": 311194.47607573244,
+            "rel_diff": -9.305645143342645e-11,
+            "anduin_live_eur_per_kft": 311194.4761046911,
+            "rel_diff_live": -9.305645143342645e-11,
+            "box_params": {
+              "qo": 238.37049561449857,
+              "qi": 445.31449582595485,
+              "Di": 2.80852507319393,
+              "b": 1.108978084264096,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 307412.1522463844,
+            "box_eur_per_kft": 307412.15226018155,
+            "rel_diff": 4.4881653948891653e-11,
+            "anduin_live_eur_per_kft": 307412.1522463844,
+            "rel_diff_live": 4.4881653948891653e-11,
+            "box_params": {
+              "qo": 198.82310511096185,
+              "qi": 475.2324703292761,
+              "Di": 3.096410346373758,
+              "b": 1.1043767194560452,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        }
+      },
+      "max_abs_rel_diff": 3.769250467300367e-10,
+      "max_abs_rel_diff_live": 3.769250467300367e-10,
+      "pass_live_lt_0p1pct": true,
+      "pass_lt_0p1pct": true,
+      "reference_valid": true
+    },
+    {
+      "curve": "RALLYCAPS_WCB_2_N",
+      "type_curve_id": "eb0216cf-6c60-4a11-876c-97f8bb167d5a",
+      "saved_at": "2026-10-09T16:21:34.724235+00:00",
+      "is_stale": false,
+      "fc_rows_refit_after_save": 0,
+      "fc_rows": 72,
+      "n_included": 24,
+      "n_with_forecasts": 24,
+      "n_wells_aggregated": 24,
+      "df_terminal": 0.08,
+      "streams": {
+        "oil": {
+          "p50": {
+            "anduin_eur_per_kft": 81009.00464467167,
+            "box_eur_per_kft": 81009.00463937565,
+            "rel_diff": -6.537570484965727e-11,
+            "anduin_live_eur_per_kft": 81009.00464467167,
+            "rel_diff_live": -6.537570484965727e-11,
+            "box_params": {
+              "qo": 46.9984743883309,
+              "qi": 90.42155664320583,
+              "Di": 2.1694328611393257,
+              "b": 1.1737617981831294,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 85121.96616556034,
+            "box_eur_per_kft": 85121.96618260164,
+            "rel_diff": 2.0019852442487718e-10,
+            "anduin_live_eur_per_kft": 85121.96616556034,
+            "rel_diff_live": 2.0019852442487718e-10,
+            "box_params": {
+              "qo": 47.00269782770851,
+              "qi": 95.97424097846365,
+              "Di": 2.234968336411006,
+              "b": 1.1839765549412606,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        },
+        "gas": {
+          "p50": {
+            "anduin_eur_per_kft": 395819.45575922925,
+            "box_eur_per_kft": 395819.45575780893,
+            "rel_diff": -3.5883518378909685e-12,
+            "anduin_live_eur_per_kft": 395819.45575922925,
+            "rel_diff_live": -3.5883518378909685e-12,
+            "box_params": {
+              "qo": 170.7682107082441,
+              "qi": 291.89901051982497,
+              "Di": 1.1470178708048466,
+              "b": 1.1452112474195288,
+              "Df": 0.08,
+              "peak_index": 2
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 417410.52189805394,
+            "box_eur_per_kft": 417410.52189474826,
+            "rel_diff": -7.919442879256167e-12,
+            "anduin_live_eur_per_kft": 417410.52189805394,
+            "rel_diff_live": -7.919442879256167e-12,
+            "box_params": {
+              "qo": 150.2574018884037,
+              "qi": 314.45039061427707,
+              "Di": 1.2639524667826336,
+              "b": 1.1999999999999997,
+              "Df": 0.08,
+              "peak_index": 2
+            }
+          }
+        },
+        "water": {
+          "p50": {
+            "anduin_eur_per_kft": 405809.89317250537,
+            "box_eur_per_kft": 405809.8931834799,
+            "rel_diff": 2.7043478567634338e-11,
+            "anduin_live_eur_per_kft": 405809.89317250537,
+            "rel_diff_live": 2.7043478567634338e-11,
+            "box_params": {
+              "qo": 282.1952199236794,
+              "qi": 527.4164933197557,
+              "Di": 2.8382713016051895,
+              "b": 1.1999999999999997,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          },
+          "mean": {
+            "anduin_eur_per_kft": 531611.3579234038,
+            "box_eur_per_kft": 531611.3579232849,
+            "rel_diff": -2.2382096176443156e-13,
+            "anduin_live_eur_per_kft": 531611.3579234038,
+            "rel_diff_live": -2.2382096176443156e-13,
+            "box_params": {
+              "qo": 343.8694384232395,
+              "qi": 539.095475073374,
+              "Di": 1.9568319156944585,
+              "b": 1.1999999999999997,
+              "Df": 0.08,
+              "peak_index": 1
+            }
+          }
+        }
+      },
+      "max_abs_rel_diff": 2.0019852442487718e-10,
+      "max_abs_rel_diff_live": 2.0019852442487718e-10,
+      "pass_live_lt_0p1pct": true,
+      "pass_lt_0p1pct": true,
+      "reference_valid": true
+    }
+  ],
+  "per_well": {
+    "n_box_wells": 12241,
+    "oil": {
+      "n_common_machine_fits": 1084,
+      "share_within_0p1pct": 0.8523985239852399,
+      "share_within_5pct": 0.9603321033210332,
+      "median_rel": -2.0038470882610682e-11,
+      "p10_p90_rel": [
+        -0.0002002187794282517,
+        0.00011475248261223512
+      ]
+    },
+    "gas": {
+      "n_common_machine_fits": 1093,
+      "share_within_0p1pct": 0.8225068618481244,
+      "share_within_5pct": 0.9414455626715462,
+      "median_rel": 2.220446049250313e-16,
+      "p10_p90_rel": [
+        -0.0001305836321509712,
+        0.0006367928269031889
+      ]
+    },
+    "water": {
+      "n_common_machine_fits": 1058,
+      "share_within_0p1pct": 0.8071833648393195,
+      "share_within_5pct": 0.9224952741020794,
+      "median_rel": 1.1102230246251565e-16,
+      "p10_p90_rel": [
+        -0.00021717918882302453,
+        0.0033830986420363422
+      ]
+    }
+  }
+}
