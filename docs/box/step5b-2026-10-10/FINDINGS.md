@@ -210,3 +210,107 @@ Next after the gate: **5c** dev-scenario factors (fresh session), then 5d DDL (g
 - **D33:** WCA_1 + WCA_2 stay pooled — no sub-bench split (ask 2).
 - **D34:** bound-pinned per-well fits stay in the panel for now (flag c).
 - Not yet answered: the GOR oil-level effect (ask 3) and flags a, b, d, e, f — carried in plan §9.
+
+## 9. Follow-up 2026-10-11: open items #1 (GOR oil level) and #2 (early cum)
+
+Analysis: `scripts/box_tc_gate5b_dig.py` → `dig/dig.json`, `dig/dig.png`. Read-only. Grain = the 7,526 cohort wells
+with an oil fit; production through 2026-07-01; each well's OWN anduin-style forecast laid on calendar months from
+its first report (no peak_ramp alignment), against its actual monthly volumes.
+
+![gate-5b dig](dig/dig.png)
+
+### #1 — the within-area "GOR effect on oil" is a mechanical artifact. **Supersedes the §5 GOR reading.**
+
+GOR12 = gas12 / oil12, so a well that under-produces oil reads a HIGH GOR by construction. Splitting an area at its
+median OWN GOR (§5) sorted wells by their own oil residual, so the 0.89× was built in.
+
+Test with the **neighbours' GOR** instead: the median 12-mo GOR of the 15 nearest other cohort wells, which has no
+mechanical link to the well's own oil.
+
+| Within-area slope of ln 12-mo oil/kft on… | Slope | t |
+|---|---|---|
+| own ln GOR12 | −0.107 | −12.7 |
+| **neighbours' ln GOR12** | **−0.012 ± 0.011** | −1.1 (zero) |
+| … + first-prod-year FE + TVD + ln lateral + top-25 operator FE | −0.010 ± 0.013 | (zero) |
+| ln 12-mo **gas**/kft on neighbours' ln GOR12 | +0.999 | +83 |
+
+Inside an area, gassier ground carries **the same oil and proportionally more gas**. On a blocked held-out test
+(5 folds on 3-mi blocks), R² of ln 12-mo oil/kft:
+
+| Predictor | R² |
+|---|---|
+| area mean | 0.441 |
+| area mean + neighbours' GOR adjustment | 0.441 |
+| local 15-well oil median | 0.268 |
+| local oil median + neighbours' GOR | 0.276 |
+
+GOR adds nothing on top of the area. These R² sit higher than step 4's 0.21 because the areas themselves were built
+on all wells and only the area means are re-estimated per fold, so compare rows within this table, not across steps.
+
+The one residue is per-well 50-yr oil EUR/kft on neighbours' ln GOR: −0.09 (t −8.7). That is a slightly steeper
+decline in gassier ground; 12-mo oil is unaffected. Across the typical within-area spread of neighbours' GOR (IQR
+0.25 ln units) it moves EUR by about **−2 %**, which is immaterial at area grain.
+
+**Recommendation:** close the item. No GOR split, no GOR term on oil. D30 already handles gas through the local level.
+
+### #2 — the curves run ~7 % high in year 1 against calendar actuals. Three causes, measured.
+
+Sum actual / sum own forecast, oil:
+
+| Window | Ratio | n wells |
+|---|---|---|
+| month 0 (first report) | 0.69 | 7,526 |
+| cum-3 | 0.94 | 7,526 |
+| cum-6 | 0.94 | 7,526 |
+| **cum-12** | **0.93** | 7,526 |
+| cum-24 | 0.94 | 6,961 |
+| cum-36 | 0.94 | 6,068 |
+| cum-60 | 0.96 | 4,106 |
+
+Gas tracks oil: 0.94 / 0.93 / 0.95 at cum-6 / 12 / 24.
+
+The cum-12 gap of ~7 % splits into three parts:
+
+1. **The first reported month is partial (~3 points).** Actual month 0 is 0.69 of forecast. Most wells start
+   mid-month. The ramp evaluates the first month as a trapezoid from qo up toward qi, while the actual is one partial
+   month. Excluding month 0 lifts cum-12 to 0.958.
+2. **The early decline is steeper than the bounds allow (~3 points).** In months that report full uptime
+   (producing_days ≥ 28; only 37 % of rows report producing days at all), actual runs 1.12× forecast in month 1, then
+   **0.93–0.95× in months 4–12**, and is back to 1.0 by about month 20.
+   - That is a well declining faster in year 1 than b ≥ 0.9 and Di ≤ 4.0/yr let the fit follow.
+   - The 37 % of wells pinned at Di = 4.0 show it most: cum-12 0.916, against 0.940 for unpinned wells.
+3. **Downtime (~1–3 points).** In the same months, the all-months curve sits 2–3 % under the full-uptime curve.
+   Partial-uptime months are 12 % of months 1–11 and run 0.63× forecast.
+
+**Stability.**
+
+- By vintage, cum-12 runs 0.92–0.935 for every year 2016–2025.
+- By area: median 0.928, P10–P90 0.89–0.95.
+- **Step-6-like transfer:** a factor fitted on wells first-producing ≤ 2022, applied to 2023–24 wells, leaves a
+  residual bias of **+0.5 % at cum-12** and +2.1 % at cum-6. One pooled factor transfers.
+
+**What it means for step 6.** On top of these per-well numbers, the area curves add ~2 points from peak_ramp
+alignment (curve vs actual at cum-12: +9.8 % median). Scored as-is, BOX's expected bias is about **−9 %**
+(actual / predicted − 1): inside the ±10 % band, but with no margin.
+
+**Options (Michael's call; none implemented):**
+
+| | Treatment | Effect |
+|---|---|---|
+| A | Score as-is | Honest about what the curves are, but a near-certain borderline. |
+| **B** | **Calendar factor in the step-6 prediction:** predicted cum-k × F(k) = Σ actual / Σ curve at month k, pooled per bench, fitted on pre-cutoff wells only, stamped on the run | Transfer test says residual ≤ 2 %. Technical, not economic. It changes only how a curve maps to calendar volumes. The fitting rule (calday rates, bounds) is untouched. |
+| C | Fix the month-0 convention only (treat the first calendar month as partial) | Removes ~3 of the ~9 points; the shape and downtime parts remain. |
+| D | Change the per-well fit (bounds, downtime handling) | Off the table: house rule says never widen bounds, and it would move anduin. |
+
+**My recommendation is B,** computed from the record curves themselves (curve vs actual), so the alignment piece is
+absorbed too.
+
+**Open question it raises for step 7.** The monthly volumes Steven receives (D16) come from the same uptime-free
+curves. If his deck applies its own downtime factor, B must NOT also go into his volumes, or downtime is counted
+twice. Worth asking him what he assumes before step 7.
+
+### Decisions (Michael, 2026-10-11)
+
+- **D35:** #1 closed. No GOR split and no GOR term on oil.
+- **D36:** #2 → option B. Calendar factor F(k) per bench, fitted pre-cutoff and applied to the step-6 predictions. Curves of record stay uptime-free.
+- **Steven:** he normally applies his own downtime factor. If the volumes BOX delivers already carry F(k), he stops applying his. Step 7 settles which way the delivery goes and states it on the delivery and in the ledger.
