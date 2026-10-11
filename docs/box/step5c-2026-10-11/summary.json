@@ -1,0 +1,77 @@
+{
+  "built_at": "2026-10-11T08:19:46-05:00",
+  "prod_asof": "2026-07-01",
+  "boxfit_sha": "b7a051958d1556b4d21d924489bc01c048b91167",
+  "n_boot": 400,
+  "ci": 0.9,
+  "reference": "codev_stack",
+  "min_pair_wells": 10,
+  "cluster_block_ft": 15840.0,
+  "loc_block_ft": 26400.0,
+  "bs2s": {
+    "extent_id": 7,
+    "extent_version": 1,
+    "n_excluded": 19,
+    "n_in_extent_cohort": 1865,
+    "n_full12": 1865
+  },
+  "replication": {
+    "WCA": {
+      "n": 7527,
+      "n_unscored": 1,
+      "n_replicated": 7526,
+      "n_mismatch": 0,
+      "n_own_bench_outside_pool": 101
+    },
+    "BS2_S": {
+      "n": 1865,
+      "n_unscored": 0,
+      "n_replicated": 1865,
+      "n_mismatch": 0,
+      "n_own_bench_outside_pool": 61
+    }
+  },
+  "wca_oil12_recut_vs_5b": {
+    "share_within_0.1pct": 1.0,
+    "max_abs": 2.220446049250313e-16
+  },
+  "benches": {
+    "WCA": {
+      "n_cohort": 7527,
+      "n_est": 7425,
+      "n24": 6851,
+      "class_mix": {
+        "codev_stack": 5396,
+        "standalone": 1612,
+        "topfill": 278,
+        "underfill": 232,
+        "sandwich": 8,
+        "nan": 1
+      },
+      "infill_share": 0.20685532084495814
+    },
+    "BS2_S": {
+      "n_cohort": 1865,
+      "n_est": 1804,
+      "n24": 1477,
+      "class_mix": {
+        "codev_stack": 1070,
+        "standalone": 627,
+        "topfill": 118,
+        "underfill": 40,
+        "sandwich": 10
+      },
+      "infill_share": 0.2675603217158177
+    }
+  },
+  "norm_mult_eur": {
+    "median": 0.9932166113010108,
+    "min": 0.9456932685150329,
+    "max": 1.0247574708460576
+  },
+  "norm_mult_cum12": {
+    "median": 1.0092450227452898,
+    "min": 0.9763504046673988,
+    "max": 1.0437782798962854
+  }
+}
