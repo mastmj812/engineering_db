@@ -21,9 +21,11 @@ metric is the mean per-well error (actual / predicted - 1, sql/43 convention), a
 curve predicts the cohort's mean cum without a built-in skew bias; the P50 fit is kept alongside.
 Plan §9 left this to 5b; Michael confirms at gate 5.
 
-Relaxation ladder (D10), fixed and stamped per curve: (1) strict -> (2) relax lateral -> (3) relax
-vintage -> (4) borrow neighbouring areas -> (5) transfer from the parent bench. The caller supplies the
-pools; `climb` takes the first rung holding >= min_wells fitted wells for the stream.
+Relaxation ladder (D10 as amended by D37), fixed and stamped per curve: (1) strict -> (2) relax lateral
+-> (4) borrow neighbouring areas -> (5) transfer from the parent bench. Rung 3 (relax vintage) is
+RETIRED (D37: pre-2016 wells are never curve evidence, D26); the numbers stay stable so a stamp means
+the same thing in every version, and a pool stamped 3 is refused. The caller supplies the pools;
+`climb` takes the first rung holding >= min_wells fitted wells for the stream.
 """
 
 from __future__ import annotations
@@ -53,11 +55,11 @@ RECONCILE_TOL = 0.001  # stored (closed form) vs recomputed (trapezoid) EUR, rul
 LADDER: tuple[tuple[int, str], ...] = (
     (1, "strict"),
     (2, "relax_lateral"),
-    (3, "relax_vintage"),
     (4, "borrow_neighbour"),
     (5, "parent_bench"),
 )
 RUNG_LABEL = dict(LADDER)
+RETIRED_RUNGS = {3: "relax_vintage (retired, D37)"}
 
 
 @dataclass(frozen=True)
@@ -267,7 +269,7 @@ def climb(pools: Sequence[tuple[int, Sequence[Member]]], stream: str, min_wells:
         raise ValueError("no pools")
     rungs = [r for r, _ in pools]
     if rungs != sorted(rungs) or len(set(rungs)) != len(rungs) or any(r not in RUNG_LABEL for r in rungs):
-        raise ValueError(f"pools must follow the D10 ladder order, got rungs {rungs}")
+        raise ValueError(f"pools must follow the D10 ladder order (rung 3 retired, D37), got rungs {rungs}")
     for rung, mem in pools:
         if n_fitted(mem, stream) >= min_wells:
             return rung, mem, False

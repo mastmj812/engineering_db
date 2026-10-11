@@ -295,8 +295,8 @@ def member(row: Any, fits: dict[str, dict[str, Any]], rates: dict[str, dict[str,
 def area_pools(d: pd.DataFrame, a: int, nb: dict[int, list[int]], mask: pd.Series | None = None) -> list[tuple[int, pd.DataFrame]]:
     """The D10 ladder pools for area `a` (optionally restricted by `mask`, e.g. one sub-bench):
     1 strict = the step-4 D9 cohort in the area; 2 relax lateral = any lateral > 0, first prod >= 2016,
-    12 full months; 3 relax vintage = rung 2 without the vintage floor; 4 = rung 1 of the area and its
-    edge neighbours; 5 = parent (the caller appends it)."""
+    12 full months; 4 = rung 1 of the area and its edge neighbours; 5 = parent (the caller appends it).
+    No rung 3: relaxing the vintage floor is retired (D37) — pre-2016 wells never enter a curve."""
     m = pd.Series(True, index=d.index) if mask is None else mask
     in_a = (d["area_no"] == a) & m
     base = d["full12"] & (d["lateral_ft"] > 0)
@@ -304,7 +304,6 @@ def area_pools(d: pd.DataFrame, a: int, nb: dict[int, list[int]], mask: pd.Serie
     return [
         (1, d[in_a & d["c12"]]),
         (2, d[in_a & base & fp16]),
-        (3, d[in_a & base]),
         (4, d[d["area_no"].isin([a, *nb[a]]) & m & d["c12"]]),
     ]
 
