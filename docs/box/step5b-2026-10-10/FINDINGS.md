@@ -203,3 +203,10 @@ g. **anduin follow-up (not BOX).** vault_wca's stored series is stale against it
    bound, the rung-3 rule.
 
 Next after the gate: **5c** dev-scenario factors (fresh session), then 5d DDL (go-apply).
+
+## 8. Gate 5b outcome (Michael, 2026-10-11)
+
+- **D32:** the cohort MEAN is the curve of record (ask 1).
+- **D33:** WCA_1 + WCA_2 stay pooled — no sub-bench split (ask 2).
+- **D34:** bound-pinned per-well fits stay in the panel for now (flag c).
+- Not yet answered: the GOR oil-level effect (ask 3) and flags a, b, d, e, f — carried in plan §9.
