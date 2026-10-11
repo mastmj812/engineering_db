@@ -85,6 +85,9 @@ def test_climb_follows_the_ladder_and_flags_thin() -> None:
     assert (rung, thin) == (5, True)
     with pytest.raises(ValueError):
         tc.climb([(4, many), (1, many)], "oil")
+    with pytest.raises(ValueError):  # rung 3 (relax vintage) is retired, D37
+        tc.climb([(1, few), (3, many), (5, many)], "oil")
+    assert 3 not in tc.RUNG_LABEL
     # a well without a stream fit does not count toward that stream
     nogas = [tc.Member(api10=m.api10, lateral_ft=m.lateral_ft, params={**m.params, "gas": None}) for m in many]
     assert tc.climb([(1, nogas), (5, many)], "gas")[0] == 5

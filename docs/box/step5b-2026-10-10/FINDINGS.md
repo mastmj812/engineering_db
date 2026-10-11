@@ -23,7 +23,7 @@ gas / water fit overlays and the member list.
 
 Code: `box/tc_curve.py` (pure curve math on top of `blueox-boxfit`), `box/tc_curve_report.py` (inputs,
 per-well fits, ladder, gate tests, page), `scripts/box_tc_curves.py` (CLI, ~7 min), `scripts/box_tc_anduin_check.py`
-(§7 check), `tests/test_box_tc_curve.py` (13 DB-free tests). **`blueox-boxfit` is pinned** in
+(§7 check), `tests/test_box_tc_curve.py` (12 DB-free tests). **`blueox-boxfit` is pinned** in
 `requirements-dealintake.txt` at the merged anduin SHA `b7a051958d15…` by git URL (never by bare name). CI
 installs that file, so the engine is installed in CI too.
 
@@ -314,3 +314,10 @@ twice. Worth asking him what he assumes before step 7.
 - **D35:** #1 closed. No GOR split and no GOR term on oil.
 - **D36:** #2 → option B. Calendar factor F(k) per bench, fitted pre-cutoff and applied to the step-6 predictions. Curves of record stay uptime-free.
 - **Steven:** he normally applies his own downtime factor. If the volumes BOX delivers already carry F(k), he stops applying his. Step 7 settles which way the delivery goes and states it on the delivery and in the ledger.
+
+### Decision (Michael, 2026-10-11): flag f → D37
+
+**D37:** ladder rung 3 (relax vintage) is retired and D26 stands: pre-2016 wells are never curve evidence. The ladder is
+1 → 2 → 4 → 5. `box/tc_curve.py` refuses a pool stamped 3, and `area_pools` no longer builds one. No record curve changes,
+since all 35 sit at rung 1. The single rung-3 row in `subbench_WCA.csv` (area 23 WCA_1) is a pre-D37 record and is moot
+under D33.
