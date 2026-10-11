@@ -1,0 +1,221 @@
+bench,spec,metric,stream,term,factor,n_wells,n_clusters
+WCA,raw (no controls),oil_cum12,oil,sandwich|all,0.6477749069677593,7,7
+WCA,raw (no controls),oil_cum12,oil,standalone,0.9110880710185025,1592,434
+WCA,raw (no controls),oil_cum12,oil,topfill|WCA_1,0.7614309192364205,28,22
+WCA,raw (no controls),oil_cum12,oil,topfill|WCA_2,0.8474328013994558,62,51
+WCA,raw (no controls),oil_cum12,oil,topfill|WCB_1,0.8202819979953184,56,42
+WCA,raw (no controls),oil_cum12,oil,topfill|WCB_2,0.8371378024816573,53,38
+WCA,raw (no controls),oil_cum12,oil,topfill|WCC,1.0254292123558677,65,34
+WCA,raw (no controls),oil_cum12,oil,topfill|other,0.8872506631538281,11,9
+WCA,raw (no controls),oil_cum12,oil,underfill|BS3_C,0.896508869903799,42,27
+WCA,raw (no controls),oil_cum12,oil,underfill|BS3_S,0.7944558872988037,85,55
+WCA,raw (no controls),oil_cum12,oil,underfill|WCA_1,0.8132950499750029,49,44
+WCA,raw (no controls),oil_cum12,oil,underfill|WCXY,0.9105435820601929,33,27
+WCA,raw (no controls),oil_cum12,oil,underfill|other,1.113866361441976,19,12
+WCA,raw (no controls),oil_cum12,oil,infill,0.9512141182418482,1545,427
+WCA,raw (no controls),oil_eur,oil,sandwich|all,0.7288410615787301,7,7
+WCA,raw (no controls),oil_eur,oil,standalone,1.011045920327441,1592,434
+WCA,raw (no controls),oil_eur,oil,topfill|WCA_1,0.9939932094337094,28,22
+WCA,raw (no controls),oil_eur,oil,topfill|WCA_2,0.9890183507368856,62,51
+WCA,raw (no controls),oil_eur,oil,topfill|WCB_1,0.8599105896568026,56,42
+WCA,raw (no controls),oil_eur,oil,topfill|WCB_2,0.8401237047887303,53,38
+WCA,raw (no controls),oil_eur,oil,topfill|WCC,0.9943975866418202,65,34
+WCA,raw (no controls),oil_eur,oil,topfill|other,0.979045574901265,11,9
+WCA,raw (no controls),oil_eur,oil,underfill|BS3_C,0.83981236356551,42,27
+WCA,raw (no controls),oil_eur,oil,underfill|BS3_S,0.9357484768369798,85,55
+WCA,raw (no controls),oil_eur,oil,underfill|WCA_1,0.8575714393475145,49,44
+WCA,raw (no controls),oil_eur,oil,underfill|WCXY,1.1170236633678101,33,27
+WCA,raw (no controls),oil_eur,oil,underfill|other,1.0774436031297998,19,12
+WCA,raw (no controls),oil_eur,oil,infill,0.9483950143204382,1545,427
+WCA,location FE,oil_cum12,oil,sandwich|all,0.7044652026562689,7,7
+WCA,location FE,oil_cum12,oil,standalone,1.059274976910398,1592,434
+WCA,location FE,oil_cum12,oil,topfill|WCA_1,0.8354565067086571,28,22
+WCA,location FE,oil_cum12,oil,topfill|WCA_2,0.8963719246578558,62,51
+WCA,location FE,oil_cum12,oil,topfill|WCB_1,0.9543276461850155,56,42
+WCA,location FE,oil_cum12,oil,topfill|WCB_2,0.985601824335809,53,38
+WCA,location FE,oil_cum12,oil,topfill|WCC,1.0033617266598995,65,34
+WCA,location FE,oil_cum12,oil,topfill|other,0.8981733792537687,11,9
+WCA,location FE,oil_cum12,oil,underfill|BS3_C,0.9412143296543577,42,27
+WCA,location FE,oil_cum12,oil,underfill|BS3_S,0.8909256887222506,85,55
+WCA,location FE,oil_cum12,oil,underfill|WCA_1,0.8855379255290617,49,44
+WCA,location FE,oil_cum12,oil,underfill|WCXY,0.9820727587325252,33,27
+WCA,location FE,oil_cum12,oil,underfill|other,1.075242844686379,19,12
+WCA,location FE,oil_cum12,oil,infill,0.9301399141773787,1545,427
+WCA,location FE,oil_eur,oil,sandwich|all,0.764725736554489,7,7
+WCA,location FE,oil_eur,oil,standalone,1.1575199837279413,1592,434
+WCA,location FE,oil_eur,oil,topfill|WCA_1,1.007409569246337,28,22
+WCA,location FE,oil_eur,oil,topfill|WCA_2,1.0135413703262095,62,51
+WCA,location FE,oil_eur,oil,topfill|WCB_1,0.9522868569051318,56,42
+WCA,location FE,oil_eur,oil,topfill|WCB_2,1.009298204822558,53,38
+WCA,location FE,oil_eur,oil,topfill|WCC,1.0263823229378,65,34
+WCA,location FE,oil_eur,oil,topfill|other,0.9817272876303534,11,9
+WCA,location FE,oil_eur,oil,underfill|BS3_C,0.8798730035025883,42,27
+WCA,location FE,oil_eur,oil,underfill|BS3_S,1.0032487774774155,85,55
+WCA,location FE,oil_eur,oil,underfill|WCA_1,0.911475812974103,49,44
+WCA,location FE,oil_eur,oil,underfill|WCXY,1.1307129559347529,33,27
+WCA,location FE,oil_eur,oil,underfill|other,1.0290103469335872,19,12
+WCA,location FE,oil_eur,oil,infill,0.9273441427648899,1545,427
+WCA,location + vintage FE (record),oil_cum12,oil,sandwich|all,0.7057740451885055,7,7
+WCA,location + vintage FE (record),oil_cum12,oil,standalone,1.0340228272529994,1592,434
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|WCA_1,0.8246179376310468,28,22
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|WCA_2,0.8929179413143647,62,51
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|WCB_1,0.9550027939200845,56,42
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|WCB_2,0.9755369032259223,53,38
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|WCC,1.0061467010812697,65,34
+WCA,location + vintage FE (record),oil_cum12,oil,topfill|other,0.9047837100288134,11,9
+WCA,location + vintage FE (record),oil_cum12,oil,underfill|BS3_C,0.948868616529247,42,27
+WCA,location + vintage FE (record),oil_cum12,oil,underfill|BS3_S,0.8866362440005029,85,55
+WCA,location + vintage FE (record),oil_cum12,oil,underfill|WCA_1,0.8755347506981264,49,44
+WCA,location + vintage FE (record),oil_cum12,oil,underfill|WCXY,0.9682153809870734,33,27
+WCA,location + vintage FE (record),oil_cum12,oil,underfill|other,1.080167705275674,19,12
+WCA,location + vintage FE (record),oil_cum12,oil,infill,0.9345994840471057,1545,427
+WCA,location + vintage FE (record),oil_eur,oil,sandwich|all,0.775353525751379,7,7
+WCA,location + vintage FE (record),oil_eur,oil,standalone,1.084046954956783,1592,434
+WCA,location + vintage FE (record),oil_eur,oil,topfill|WCA_1,0.9873524820685241,28,22
+WCA,location + vintage FE (record),oil_eur,oil,topfill|WCA_2,0.9923115060085973,62,51
+WCA,location + vintage FE (record),oil_eur,oil,topfill|WCB_1,0.9528041109528943,56,42
+WCA,location + vintage FE (record),oil_eur,oil,topfill|WCB_2,0.9872170524878806,53,38
+WCA,location + vintage FE (record),oil_eur,oil,topfill|WCC,1.0360680934612756,65,34
+WCA,location + vintage FE (record),oil_eur,oil,topfill|other,0.9990241153498288,11,9
+WCA,location + vintage FE (record),oil_eur,oil,underfill|BS3_C,0.8822081331881171,42,27
+WCA,location + vintage FE (record),oil_eur,oil,underfill|BS3_S,0.9836173796371688,85,55
+WCA,location + vintage FE (record),oil_eur,oil,underfill|WCA_1,0.8861792139831908,49,44
+WCA,location + vintage FE (record),oil_eur,oil,underfill|WCXY,1.0960224508354954,33,27
+WCA,location + vintage FE (record),oil_eur,oil,underfill|other,1.0493786003703955,19,12
+WCA,location + vintage FE (record),oil_eur,oil,infill,0.9379403556011877,1545,427
+WCA,+ operator FE (top 25),oil_cum12,oil,sandwich|all,0.7288069350726802,7,7
+WCA,+ operator FE (top 25),oil_cum12,oil,standalone,1.0325991864488833,1592,434
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|WCA_1,0.8262878704090845,28,22
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|WCA_2,0.8899211109484277,62,51
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|WCB_1,0.9462266819137702,56,42
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|WCB_2,0.9718984895427654,53,38
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|WCC,0.9914692721608723,65,34
+WCA,+ operator FE (top 25),oil_cum12,oil,topfill|other,0.9141331402557135,11,9
+WCA,+ operator FE (top 25),oil_cum12,oil,underfill|BS3_C,0.9417840397433233,42,27
+WCA,+ operator FE (top 25),oil_cum12,oil,underfill|BS3_S,0.8851683844084413,85,55
+WCA,+ operator FE (top 25),oil_cum12,oil,underfill|WCA_1,0.8959604862023185,49,44
+WCA,+ operator FE (top 25),oil_cum12,oil,underfill|WCXY,0.9617411171393981,33,27
+WCA,+ operator FE (top 25),oil_cum12,oil,underfill|other,1.0212777826899395,19,12
+WCA,+ operator FE (top 25),oil_cum12,oil,infill,0.9356540539515942,1545,427
+WCA,+ operator FE (top 25),oil_eur,oil,sandwich|all,0.800640945002332,7,7
+WCA,+ operator FE (top 25),oil_eur,oil,standalone,1.077843356290321,1592,434
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|WCA_1,0.9903404730244327,28,22
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|WCA_2,0.9833985421798255,62,51
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|WCB_1,0.9660370207091448,56,42
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|WCB_2,0.9927908992158344,53,38
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|WCC,1.0466377603303014,65,34
+WCA,+ operator FE (top 25),oil_eur,oil,topfill|other,1.002610527182621,11,9
+WCA,+ operator FE (top 25),oil_eur,oil,underfill|BS3_C,0.9076664325488562,42,27
+WCA,+ operator FE (top 25),oil_eur,oil,underfill|BS3_S,0.9723298579213323,85,55
+WCA,+ operator FE (top 25),oil_eur,oil,underfill|WCA_1,0.8959100225997823,49,44
+WCA,+ operator FE (top 25),oil_eur,oil,underfill|WCXY,1.0793415564833775,33,27
+WCA,+ operator FE (top 25),oil_eur,oil,underfill|other,1.009902839845333,19,12
+WCA,+ operator FE (top 25),oil_eur,oil,infill,0.9426633604033515,1545,427
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,sandwich|all,0.7593811572314123,7,7
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,standalone,1.0704320994120244,1592,434
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|WCA_1,0.791989850627967,28,22
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|WCA_2,0.8434396315951947,62,51
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|WCB_1,0.9542223110762508,56,42
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|WCB_2,1.0492482878842473,53,38
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|WCC,0.9939201323521947,65,34
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|other,0.944579426119366,11,9
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|BS3_C,0.9352679496181893,42,27
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|BS3_S,0.8852778992141285,85,55
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|WCA_1,0.8723716759425734,49,44
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|WCXY,0.9058013586969647,33,27
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|other,0.9676584265302289,19,12
+WCA,5-mi block FE + vintage (location robustness),oil_cum12,oil,infill,0.9356888925773632,1545,427
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,sandwich|all,0.7942228252410769,7,7
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,standalone,1.1003585572428456,1592,434
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|WCA_1,0.9373248745551604,28,22
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|WCA_2,0.9355420570813743,62,51
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|WCB_1,0.9484864886808996,56,42
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|WCB_2,1.0214453428774088,53,38
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|WCC,1.031632453820628,65,34
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|other,1.0113931464736379,11,9
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|BS3_C,0.9033298243501614,42,27
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|BS3_S,0.9552254585995751,85,55
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|WCA_1,0.8819620678868547,49,44
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|WCXY,0.9947811603612576,33,27
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|other,0.9765372659020671,19,12
+WCA,5-mi block FE + vintage (location robustness),oil_eur,oil,infill,0.936801082889551,1545,427
+BS2_S,raw (no controls),oil_cum12,oil,sandwich|all,0.7251320466365799,9,8
+BS2_S,raw (no controls),oil_cum12,oil,standalone,1.1102158785012415,618,146
+BS2_S,raw (no controls),oil_cum12,oil,topfill|BS3_C,0.5846614431967531,48,27
+BS2_S,raw (no controls),oil_cum12,oil,topfill|BS3_S,0.9862669498500292,57,23
+BS2_S,raw (no controls),oil_cum12,oil,topfill|other,0.9530025045313042,11,8
+BS2_S,raw (no controls),oil_cum12,oil,underfill|BS1_S,1.0097059809943238,23,14
+BS2_S,raw (no controls),oil_cum12,oil,underfill|other,1.0907322395471437,15,14
+BS2_S,raw (no controls),oil_cum12,oil,infill,0.9255083340136694,486,152
+BS2_S,raw (no controls),oil_eur,oil,sandwich|all,0.7474507068774393,9,8
+BS2_S,raw (no controls),oil_eur,oil,standalone,1.0904392398604854,618,146
+BS2_S,raw (no controls),oil_eur,oil,topfill|BS3_C,0.6474245873742261,48,27
+BS2_S,raw (no controls),oil_eur,oil,topfill|BS3_S,0.9680470150637736,57,23
+BS2_S,raw (no controls),oil_eur,oil,topfill|other,0.9492689966706279,11,8
+BS2_S,raw (no controls),oil_eur,oil,underfill|BS1_S,1.0386218227949169,23,14
+BS2_S,raw (no controls),oil_eur,oil,underfill|other,1.1385309778567207,15,14
+BS2_S,raw (no controls),oil_eur,oil,infill,0.9400316036696236,486,152
+BS2_S,location FE,oil_cum12,oil,sandwich|all,0.7529726878116239,9,8
+BS2_S,location FE,oil_cum12,oil,standalone,1.0884156420408992,618,146
+BS2_S,location FE,oil_cum12,oil,topfill|BS3_C,0.6765950328011002,48,27
+BS2_S,location FE,oil_cum12,oil,topfill|BS3_S,1.0834377745201598,57,23
+BS2_S,location FE,oil_cum12,oil,topfill|other,1.206539097775294,11,8
+BS2_S,location FE,oil_cum12,oil,underfill|BS1_S,0.9509322990336303,23,14
+BS2_S,location FE,oil_cum12,oil,underfill|other,0.9640054433318687,15,14
+BS2_S,location FE,oil_cum12,oil,infill,0.8927664275485474,486,152
+BS2_S,location FE,oil_eur,oil,sandwich|all,0.76240524367208,9,8
+BS2_S,location FE,oil_eur,oil,standalone,1.1069567051066425,618,146
+BS2_S,location FE,oil_eur,oil,topfill|BS3_C,0.7836104198458297,48,27
+BS2_S,location FE,oil_eur,oil,topfill|BS3_S,1.0581240950069528,57,23
+BS2_S,location FE,oil_eur,oil,topfill|other,1.1230925434995962,11,8
+BS2_S,location FE,oil_eur,oil,underfill|BS1_S,0.9844378201365315,23,14
+BS2_S,location FE,oil_eur,oil,underfill|other,1.0265950796685492,15,14
+BS2_S,location FE,oil_eur,oil,infill,0.9095326113598813,486,152
+BS2_S,location + vintage FE (record),oil_cum12,oil,sandwich|all,0.7642421736133544,9,8
+BS2_S,location + vintage FE (record),oil_cum12,oil,standalone,1.0554677033986626,618,146
+BS2_S,location + vintage FE (record),oil_cum12,oil,topfill|BS3_C,0.6935311725012319,48,27
+BS2_S,location + vintage FE (record),oil_cum12,oil,topfill|BS3_S,1.0870940444632433,57,23
+BS2_S,location + vintage FE (record),oil_cum12,oil,topfill|other,1.2662856505235898,11,8
+BS2_S,location + vintage FE (record),oil_cum12,oil,underfill|BS1_S,0.9416174659124878,23,14
+BS2_S,location + vintage FE (record),oil_cum12,oil,underfill|other,0.9519339529746961,15,14
+BS2_S,location + vintage FE (record),oil_cum12,oil,infill,0.9091366915066332,486,152
+BS2_S,location + vintage FE (record),oil_eur,oil,sandwich|all,0.7759424510835742,9,8
+BS2_S,location + vintage FE (record),oil_eur,oil,standalone,1.065644562055108,618,146
+BS2_S,location + vintage FE (record),oil_eur,oil,topfill|BS3_C,0.8023287270585316,48,27
+BS2_S,location + vintage FE (record),oil_eur,oil,topfill|BS3_S,1.0668738524613677,57,23
+BS2_S,location + vintage FE (record),oil_eur,oil,topfill|other,1.182008963558964,11,8
+BS2_S,location + vintage FE (record),oil_eur,oil,underfill|BS1_S,0.9651380221619705,23,14
+BS2_S,location + vintage FE (record),oil_eur,oil,underfill|other,1.0025582623144018,15,14
+BS2_S,location + vintage FE (record),oil_eur,oil,infill,0.9304561196297667,486,152
+BS2_S,+ operator FE (top 25),oil_cum12,oil,sandwich|all,0.8769721855879921,9,8
+BS2_S,+ operator FE (top 25),oil_cum12,oil,standalone,1.0469322019214908,618,146
+BS2_S,+ operator FE (top 25),oil_cum12,oil,topfill|BS3_C,0.7231466434434181,48,27
+BS2_S,+ operator FE (top 25),oil_cum12,oil,topfill|BS3_S,1.1099698483094906,57,23
+BS2_S,+ operator FE (top 25),oil_cum12,oil,topfill|other,1.201249696228652,11,8
+BS2_S,+ operator FE (top 25),oil_cum12,oil,underfill|BS1_S,0.9234277601758,23,14
+BS2_S,+ operator FE (top 25),oil_cum12,oil,underfill|other,0.9808019439008047,15,14
+BS2_S,+ operator FE (top 25),oil_cum12,oil,infill,0.9086769989559279,486,152
+BS2_S,+ operator FE (top 25),oil_eur,oil,sandwich|all,0.7789992301661381,9,8
+BS2_S,+ operator FE (top 25),oil_eur,oil,standalone,1.0592970927121013,618,146
+BS2_S,+ operator FE (top 25),oil_eur,oil,topfill|BS3_C,0.8338255735811858,48,27
+BS2_S,+ operator FE (top 25),oil_eur,oil,topfill|BS3_S,1.1070965579504484,57,23
+BS2_S,+ operator FE (top 25),oil_eur,oil,topfill|other,1.1423874894654855,11,8
+BS2_S,+ operator FE (top 25),oil_eur,oil,underfill|BS1_S,0.9631960360772799,23,14
+BS2_S,+ operator FE (top 25),oil_eur,oil,underfill|other,1.0101367429439094,15,14
+BS2_S,+ operator FE (top 25),oil_eur,oil,infill,0.9315190608687611,486,152
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,sandwich|all,0.7642421736133544,9,8
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,standalone,1.0554677033986626,618,146
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|BS3_C,0.6935311725012319,48,27
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|BS3_S,1.0870940444632433,57,23
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,topfill|other,1.2662856505235898,11,8
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|BS1_S,0.9416174659124878,23,14
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,underfill|other,0.9519339529746961,15,14
+BS2_S,5-mi block FE + vintage (location robustness),oil_cum12,oil,infill,0.9091366915066332,486,152
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,sandwich|all,0.7759424510835742,9,8
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,standalone,1.065644562055108,618,146
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|BS3_C,0.8023287270585316,48,27
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|BS3_S,1.0668738524613677,57,23
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,topfill|other,1.182008963558964,11,8
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|BS1_S,0.9651380221619705,23,14
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,underfill|other,1.0025582623144018,15,14
+BS2_S,5-mi block FE + vintage (location robustness),oil_eur,oil,infill,0.9304561196297667,486,152
