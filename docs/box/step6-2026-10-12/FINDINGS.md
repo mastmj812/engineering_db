@@ -66,3 +66,36 @@ d. Post-cutoff information still inside the rebuild (stated on the page): the ex
 e. Production as-of 2025-06 is an assumption (Novi's actual data date isn't recoverable from the trimmed slices).
 f. No `box.hindcast_run / hindcast_score` DDL authored (plan §4.2 lists them for step 8's Accuracy tab) — needs a
    go-apply when wanted.
+
+## 5. Fail-branch follow-up (Michael 2026-10-12): rolling-origin backtest, lateral efficiency, density
+
+Review surface: `backtest/backtest.html` (`python -m scripts.box_backtest`, ~55 min, read-only; `box/backtest*.py`, 4 tests).
+Folds: cutoffs Dec 1 2021 / 2022 / 2023 / 2024, each rebuilt with the step-6 methods from wells first-producing before
+the cutoff, production through the month before it (no vendor lag); holdout = the next 12 months' gate-1 WCA wells
+(1,138 / 1,158 / 1,009 / 912), scored against actuals. Novi plays no part. Variants pre-registered (see page).
+
+**a. BOX as built, oil bias by fold** (− = BOX high): cum-6 +3.5 / −0.8 / −1.2 / −6.4 %; cum-12 −2.9 / −5.6 / −5.9 / −8.2 %;
+cum-24 −8.9 / −10.2 / −10.4 % (2024 fold has no cum-24). Inside ±10 % at cum-6 and cum-12 in every fold. **The miss
+grows with months on production in every fold, and with cutoff year** — a SHAPE drift (newer wells decline faster
+after month ~6 than the 2016+ cohort the curve averages), not a level miss; F(k) is calibrated per month on the
+training wells, so this is out-of-sample drift. (The earlier "not vintage" note was about 12-mo level only.) The
+step-6 Novi-matched subset (−9.4 % oil cum-6) was a harder draw than its full fold (−6.4 %, no-lag build). Gas:
+cum-6 +1.5…+7.5 %, cum-12 −1.3…+2.3 %, cum-24 −0.5…−4.2 %. Oil P10–P90 band 0.84–0.92 (cum-6), 0.75–0.80 (cum-12).
+
+**b. Lateral efficiency (Cui & Cross 2022, Delaware WCA, docs/box/ref/3723784.pdf) works.** All folds, oil cum-6:
+< 8k ft +7.6 → −1.5 %; 8–11k −2.3 → −0.1 %; 11–13.5k −9.8 → −4.4 %; ≥ 13.5k −10.7 → −1.2 % (358 wells, curve
+extended past 12,500 ft). Overall bias barely moves (the mix is mostly 8–11k); 2,000/60 vs 1,700/50 within 0.3 pt.
+Recommendation: adopt as a decision of record (per-well lateral scaling, normalised to each area curve's lateral mix).
+
+**c. The density term as specified does NOT earn its place.** Training multipliers are stable across folds (6+ near
+neighbours 0.92–0.94, 4–5 0.96–0.97, 0–1 1.03–1.06; no same-bench neighbour 0.93–0.95; same-bench < 660 ft ≈ 1.00–1.04,
+i.e. NO tight-spacing penalty in the data), but next year they over-correct (6+ neighbours −3.9 → +3.3 %), push overall
+bias ~3 pts the other way and widen bands. sql/47 keeps per-bench aggregates only (nearest dtvd per bench), too coarse to
+see a Burton-type cube. A real test needs well-to-well 3-D geometry (new warehouse SQL) — Michael's call.
+
+**d. k is unstable at the cutoffs:** the D29 rule picks 53 / 14 / 14 / 22 areas (record 35; step-6 build 15) — the CV
+curve is flat, so the 1-SE pick wanders. Worth a decision before areas are rebuilt quarterly (D17).
+
+**Asks:** (1) adopt the backtest as the acceptance basis (replacing D18 / §8) and set its thresholds; (2) adopt Cui lateral
+efficiency (touches eng_db #78/#80); (3) density: drop, or fund the 3-D geometry measure; (4) next diagnosis = the
+post-month-6 shape drift; (5) k stability.

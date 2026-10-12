@@ -109,6 +109,30 @@ def classify(bench: str, ctx: Mapping[str, Mapping[str, Any]] | None) -> dict[st
             "infill_parent_age_days": _num(own.get("parent_min_age_days")) if int(own.get("n_parent") or 0) > 0 else None}
 
 
+NEAR_DTVD_FT = 500.0  # step-6 density measure: a neighbour bench within this TVD shares the drainage volume
+
+
+def near_neighbours(ctx: Mapping[str, Mapping[str, Any]], dtvd_ft: float = NEAR_DTVD_FT) -> int:
+    """Package density at first production: co-extent neighbour laterals (sql/47 rule: within 1,320 ft and
+    covering >= 30 % of the subject lateral) that were online before it (parents) or came on with it (codev,
+    +-180 d), on any bench, whose TVD is within `dtvd_ft` of the subject. Later children are excluded (they
+    are future to the subject). A bench's vertical position = its nearest codev / parent dtvd, else the
+    bench median dtvd (sql/47 keeps per-bench facts only)."""
+    n = 0
+    for v in ctx.values():
+        v = v or {}
+        med = _num(v.get("median_dtvd_ft"))
+        cd = _num(v.get("codev_nearest_dtvd_ft"))
+        pd_ = _num(v.get("parent_nearest_dtvd_ft"))
+        cd = med if cd is None else cd
+        pd_ = med if pd_ is None else pd_
+        if int(v.get("n_codev") or 0) and cd is not None and abs(cd) <= dtvd_ft:
+            n += int(v["n_codev"])
+        if int(v.get("n_parent") or 0) and pd_ is not None and abs(pd_) <= dtvd_ft:
+            n += int(v["n_parent"])
+    return n
+
+
 def parent_bench(cls: str | None, below: str | None, above: str | None) -> str | None:
     """The parent bench a class is matched on: topfill -> below, underfill -> above, sandwich ->
     'below+above'; None for the parentless classes."""
