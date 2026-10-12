@@ -30,6 +30,7 @@ the same thing in every version, and a pool stamped 3 is refused. The caller sup
 
 from __future__ import annotations
 
+import functools
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -37,8 +38,7 @@ from typing import Any
 
 import numpy as np
 from boxfit.eur import DAYS_PER_YEAR
-from boxfit.ramp_arps import build_ramp_arps_rate, trapezoid_eur
-from boxfit.ratio import ratio_forecast_from_oil_params
+from boxfit.ramp_arps import build_ramp_arps_rate, model_cum_at_t, trapezoid_eur
 from boxfit.tc.aggregate import TypeCurveAggregate, WellSeries, aggregate
 from boxfit.tc.align import forecast_rates, peak_ramp_shift, ramp_anchor
 from boxfit.tc.fit_p50 import fit_p50_series
@@ -50,7 +50,7 @@ DAYS_PER_MONTH = DAYS_PER_YEAR / 12.0  # the fit + trapezoid_eur month length
 RECORD_STAT = "mean"  # curve of record (see module docstring); "p50" is fitted alongside
 STATS: tuple[str, ...] = ("mean", "p50")
 MIN_WELLS = 10  # D9 floor, reused as the curve floor per stream
-RECONCILE_TOL = 0.001  # stored (closed form) vs recomputed (trapezoid) EUR, rule 6 / §5b
+RECONCILE_TOL = 0.001  # stored (closed form) vs the sum of BOX's monthly volumes, rule 6 (D39: exact months)
 
 LADDER: tuple[tuple[int, str], ...] = (
     (1, "strict"),
@@ -106,15 +106,49 @@ def oil_grid(fit: Mapping[str, Any], n_months: int = N_MONTHS) -> list[float]:
     )
 
 
+def monthly_volumes(fit: Mapping[str, Any], n_months: int = N_MONTHS) -> np.ndarray:
+    """D39: each month's volume as the EXACT integral of the fit's own ramp + Arps model,
+    Cum(k/12) - Cum((k-1)/12) from boxfit's closed form (model_cum_at_t). Every BOX monthly number
+    (Steven's D16 table, cum-k, the step-6 predictions, F(k)) comes from here, so the monthly rows
+    sum to the stored EUR. The 600-month trapezoid (anduin's display convention) overstates a convex
+    curve in months 2-12 (cum-12 +0.3 % on oil, up to +1.3 % on steep water)."""
+    key = (float(fit["qo"]), int(fit["peak_index"]), float(fit["qi"]), float(fit["Di"]), float(fit["b"]), float(fit["Df"]), int(n_months))
+    return np.array(_exact_months(key))
+
+
+@functools.lru_cache(maxsize=4096)
+def _exact_months(key: tuple[float, int, float, float, float, float, int]) -> tuple[float, ...]:
+    """Cached core of monthly_volumes (~1.7 s per fit: boxfit's closed form runs per month; the same
+    fit is integrated by the curve row, the gas ratio and the GOR shift)."""
+    qo, pim, qi, di, b, df, n = key
+    cum = [model_cum_at_t(qo=qo, peak_index_months=pim, qi=qi, Di=di, b=b, Df=df, t_years=k / 12.0) for k in range(n + 1)]
+    return tuple(float(x) for x in np.diff(cum))
+
+
+def ratio_monthly_volumes(oil_volumes: Sequence[float], alpha: float, beta: float) -> np.ndarray:
+    """Ratio-mode gas month by month on exact oil months: the ratio at the month's mid-point Np x the
+    month's oil volume (boxfit.ratio.derive_ratio_stream's rule, on D39's oil volumes)."""
+    v = np.maximum(np.asarray(oil_volumes, dtype=float), 0.0)
+    np_mid = np.concatenate(([0.0], np.cumsum(v)[:-1])) + v / 2.0
+    return np.exp(alpha + beta * np_mid) * v
+
+
 def reconcile(fit: Mapping[str, Any] | None, n_months: int = N_MONTHS) -> float | None:
-    """Relative gap between the stored EUR (closed-form / quad ramp + Arps) and the recompute-from-
-    params trapezoid over the 600-month grid (rule 6: must stay < 0.1 %)."""
+    """Rule 6: the sum of BOX's monthly volumes (D39, exact per month) vs the stored EUR (closed form /
+    quad ramp + Arps). Must stay < 0.1 %."""
     if not fit:
         return None
     stored = float(fit["eur_per_unit"])
     if stored <= 0:
         return None
-    return trapezoid_eur(oil_grid(fit, n_months)) / stored - 1.0
+    return float(monthly_volumes(fit, n_months).sum()) / stored - 1.0
+
+
+def trapezoid_gap(fit: Mapping[str, Any] | None, n_months: int = N_MONTHS) -> float | None:
+    """Diagnostic: the 600-month trapezoid (anduin's display / export rule) vs the stored EUR."""
+    if not fit or float(fit["eur_per_unit"]) <= 0:
+        return None
+    return trapezoid_eur(oil_grid(fit, n_months)) / float(fit["eur_per_unit"]) - 1.0
 
 
 # ----------------------------------------------------------------------------
@@ -204,10 +238,10 @@ def curve_row(curve: Mapping[str, Any], stream: str, stat: str) -> dict[str, Any
     row: dict[str, Any] = {"stream": stream, "stat": stat, "mode": "arps", "n_wells": curve["n_by_stream"][stream]}
     if not f:
         return {**row, "fit_ok": False}
-    rates = oil_grid(f)
+    vol = monthly_volumes(f)
     row.update({"fit_ok": True, "qo": f["qo"], "qi": f["qi"], "peak_index": int(f["peak_index"]), "Di_nominal": f["Di"], "Di_eff_1yr": effective_decline(f["Di"], f["b"]),
-                "b": f["b"], "Df": f["Df"], "eur_per_kft": f["eur_per_unit"], "r2": f["r2"], "reconcile": reconcile(f),
-                "cum6_kft": cum_months(rates, 6), "cum12_kft": cum_months(rates, 12), "cum24_kft": cum_months(rates, 24)})
+                "b": f["b"], "Df": f["Df"], "eur_per_kft": f["eur_per_unit"], "r2": f["r2"], "reconcile": float(vol.sum()) / float(f["eur_per_unit"]) - 1.0,
+                "trapezoid_gap": trapezoid_gap(f), "cum6_kft": float(vol[:6].sum()), "cum12_kft": float(vol[:12].sum()), "cum24_kft": float(vol[:24].sum())})
     return row
 
 
@@ -216,11 +250,12 @@ def gas_ratio_row(curve: Mapping[str, Any]) -> dict[str, Any]:
     row: dict[str, Any] = {"stream": "gas", "stat": curve["record"], "mode": "ratio", "n_wells": curve["n_by_stream"]["gas"]}
     if not g:
         return {**row, "fit_ok": False}
-    oil = record_rates(curve, "oil") or []
-    gas = list(g["smoothed_rate"])
-    row.update({"fit_ok": True, "alpha": g["alpha"], "beta": g["beta"], "sub_mode": g["sub_mode"], "r2": g["r2"], "eur_per_kft": g["eur_per_unit"],
-                "Di_eff_1yr": g["implied_effective_decline_yr1"], "cum6_kft": cum_months(gas, 6), "cum12_kft": cum_months(gas, 12), "cum24_kft": cum_months(gas, 24),
-                "gor12_scf_bbl": window_gor(oil, gas, 12), "gor24_scf_bbl": window_gor(oil, gas, 24)})
+    ov = monthly_volumes(curve["fits"]["oil"][curve["record"]])
+    gv = ratio_monthly_volumes(ov, float(g["alpha"]), float(g["beta"]))
+    row.update({"fit_ok": True, "alpha": g["alpha"], "beta": g["beta"], "sub_mode": g["sub_mode"], "r2": g["r2"], "eur_per_kft": float(gv.sum()),
+                "eur_per_kft_trapezoid": g["eur_per_unit"], "Di_eff_1yr": g["implied_effective_decline_yr1"],
+                "cum6_kft": float(gv[:6].sum()), "cum12_kft": float(gv[:12].sum()), "cum24_kft": float(gv[:24].sum()),
+                "gor12_scf_bbl": window_gor(ov, gv, 12), "gor24_scf_bbl": window_gor(ov, gv, 24)})
     return row
 
 
@@ -229,10 +264,10 @@ def gas_ratio_row(curve: Mapping[str, Any]) -> dict[str, Any]:
 # ----------------------------------------------------------------------------
 
 
-def window_gor(oil_rates: Sequence[float], gas_rates: Sequence[float], months: int) -> float | None:
-    """Cum gas / cum oil over the first `months` months, scf/bbl (rates bopd / mcfd)."""
-    o = cum_months(oil_rates, months)
-    return None if o <= 0 else 1000.0 * cum_months(gas_rates, months) / o
+def window_gor(oil_volumes: Sequence[float], gas_volumes: Sequence[float], months: int) -> float | None:
+    """Cum gas / cum oil over the first `months` months, scf/bbl (monthly volumes, bbl / mcf)."""
+    o = float(np.sum(oil_volumes[:months]))
+    return None if o <= 0 else 1000.0 * float(np.sum(gas_volumes[:months])) / o
 
 
 def shift_gor_level(curve: Mapping[str, Any], target_gor12_scf_bbl: float, n_months: int = N_MONTHS) -> dict[str, Any] | None:
@@ -240,20 +275,20 @@ def shift_gor_level(curve: Mapping[str, Any], target_gor12_scf_bbl: float, n_mon
     the location's local 12-mo GOR. ln R = alpha + beta * Np, so alpha + ln(target / tc_gor12) scales
     the ratio — and the 12-mo GOR — by exactly target / tc_gor12 at every Np. Np stays per 1,000 ft:
     a PUD's rates are the curve x lateral / 1,000, so its ratio vs time is the curve's (the Np rescale
-    to the PUD lateral cancels). Returns the shifted params, the shifted gas grid and its EUR."""
+    to the PUD lateral cancels). Returns the shifted params, the shifted gas monthly volumes (D39)
+    and their EUR."""
     g = curve.get("gas_ratio")
     oil_fit = curve["fits"]["oil"].get(curve["record"])
     if not g or not oil_fit or not (target_gor12_scf_bbl and target_gor12_scf_bbl > 0):
         return None
-    oil = oil_grid(oil_fit, n_months)
-    tc12 = window_gor(oil, g["smoothed_rate"], 12)
+    ov = monthly_volumes(oil_fit, n_months)
+    tc12 = window_gor(ov, ratio_monthly_volumes(ov, float(g["alpha"]), float(g["beta"])), 12)
     if not tc12:
         return None
     alpha = float(g["alpha"]) + math.log(target_gor12_scf_bbl / tc12)
-    ser = ratio_forecast_from_oil_params(qi=oil_fit["qi"], Di=oil_fit["Di"], b=oil_fit["b"], Df=oil_fit["Df"], qo=oil_fit["qo"],
-                                         peak_index_months=int(oil_fit["peak_index"]), alpha=alpha, beta=float(g["beta"]), n_months=n_months)
+    gv = ratio_monthly_volumes(ov, alpha, float(g["beta"]))
     return {"alpha": alpha, "beta": float(g["beta"]), "alpha_shift": alpha - float(g["alpha"]), "tc_gor12": tc12, "target_gor12": target_gor12_scf_bbl,
-            "gas_rates": ser.rates, "eur_per_kft": ser.eur, "gor12_check": window_gor(oil, ser.rates, 12)}
+            "gas_volumes": gv, "eur_per_kft": float(gv.sum()), "gor12_check": window_gor(ov, gv, 12)}
 
 
 # ----------------------------------------------------------------------------

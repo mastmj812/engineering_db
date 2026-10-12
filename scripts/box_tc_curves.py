@@ -44,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
         res = run(conn, a.wells, a.out, boxfit_sha(), a.workers, a.asof)
     s = res["summary"]
     print(f"WCA: {s['n_areas']} area curves from {s['n_cohort']:,} cohort wells ({s['n_wells_fitted']:,} wells fitted), production through {s['prod_asof']}; "
-          f"rungs {s['rungs']}; max |stored - trapezoid| / stored {s['max_abs_reconcile']:.1e} ({'PASS' if s['reconcile_pass'] else 'FAIL'} < 0.1 %)")
+          f"rungs {s['rungs']}; max |sum of exact months - stored| / stored (D39) {s['max_abs_reconcile']:.1e} ({'PASS' if s['reconcile_pass'] else 'FAIL'} < 0.1 %)")
     print(f"wrote {a.out}  ({time.time() - t0:.0f} s)")
     return 0
 
