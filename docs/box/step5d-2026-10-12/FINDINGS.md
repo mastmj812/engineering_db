@@ -1,8 +1,7 @@
 # BOX step 5d — type-curve + risk-factor record (gate 5d summary)
 
-Built 2026-10-12 on branch `claude/box-step5d-record`. **Nothing is applied to Supabase and nothing is stored.**
-`sql/58` was validated on a throwaway PostGIS 16 container only. Applying it needs your "go apply", and the
-`--store --record` write needs its own go-ahead.
+Built 2026-10-12 on branch `claude/box-step5d-record`. **Gate 5d CLOSED 2026-10-12** (Michael: "go apply, then store as record") — see §7. Before that go, `sql/58` had been
+validated on a throwaway PostGIS 16 container only.
 
 **Review surface:** `record.html`. Open it directly, or serve it with
 `python -m http.server 8766 --directory docs/box` → `/step5d-2026-10-12/record.html`.
@@ -106,3 +105,16 @@ h. `box.risk_factor` is versioned globally, as one factor set across both benche
 1. **Go-apply sql/58?** (DDL on Supabase.)
 2. **Go-ahead for `--store --record`** of this record as v1.
 3. Flag c (store as-built + ref_mult, rec) and flag f (thin rung-3 floor: rec, keep D45 as is for now and revisit at step 6).
+
+## 7. Gate 5d outcome (Michael, 2026-10-12: "go apply, then store as record")
+
+- **`sql/58` applied to Supabase:** `apply_box_type_curve` 28/28 live. The smoke was rolled back on the `_APPLY_SMOKE` bench.
+- **Stored as version of record:** `box_tc_record --store --record` rebuilt the record (all identity checks pass again, 400 draws,
+  same seed) and wrote v1. Verified live by identity:
+  - `box.type_curve`: 105 rows, all record, covering exactly the 35 areas of record on extent 6 (0 areas without a record curve).
+  - `box.tc_member`: 22,581 rows (22,551 included), 7,527 distinct wells.
+  - `box.risk_factor`: 108 rows, all record.
+  - Live values vs this deliverable's CSVs: curve EUR and ref_mult within 5e-15; all 108 factors (factor and estimate) within 5e-15.
+  - Infill of record: oil WCA 0.923 / BS2_S 0.905; GOR 1.042 / 1.057; water 0.933 / 0.935.
+- Data dictionary regenerated (`_CONSUMERS` entries for the 3 tables).
+- Flags c and f were not answered, so the defaults stand: the as-built curve + ref_mult is stored, and D45 is unchanged.

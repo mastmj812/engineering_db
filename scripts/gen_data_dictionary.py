@@ -76,6 +76,9 @@ _CONSUMERS = {
     "box.extent": "BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)",
     "box.extent_edge": "geology review of the extent edge (rule + flag per boundary piece)",
     "box.tc_area": "BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)",
+    "box.type_curve": "BOX hindcast (plan step 6), PUD forecasts + monthly volumes (step 7), app toggle (step 8)",
+    "box.tc_member": "BOX curve provenance / review; hindcast exclusion of curve members (plan step 6)",
+    "box.risk_factor": "BOX PUD risking (plan step 7) and hindcast scoring (step 6)",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 

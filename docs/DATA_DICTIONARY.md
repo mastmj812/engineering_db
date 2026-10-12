@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-10-09 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-10-12 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -20,7 +20,7 @@
 
 Novi unified history+forecast time series. IsForecasted=false rows duplicate raw_novi."WellMonths" actuals; IsForecasted=true rows are Novi's algorithmic decline forecast. Curated layer should filter on IsForecasted=TRUE to isolate new information.
 
-~25,334,580 rows | nightly (scripts.run_daily raw load)
+~25,429,668 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -48,7 +48,7 @@ Novi unified history+forecast time series. IsForecasted=false rows duplicate raw
 
 Novi Insights extended per-well attributes (completion intensity, cums, EURs, spacing, peak rates), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV. Primary source behind curated.wells.
 
-~95,398 rows | nightly (scripts.run_daily raw load)
+~95,352 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -223,7 +223,7 @@ Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly IN
 
 Novi Insights per-well spacing metrics (closest-well distance ft, wells in radius, avg of closest two), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV.
 
-~62,581 rows | nightly (scripts.run_daily raw load)
+~61,988 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -249,7 +249,7 @@ Novi Insights per-well spacing metrics (closest-well distance ft, wells in radiu
 
 Novi Insights well header mirror, one row per wellbore keyed API10 (some synthetic Novi APIs). Nightly full TRUNCATE + COPY from the bulk TSV (etl/novi/load.py; sync forces no_diffs=True). Column names are quoted PascalCase as shipped.
 
-~95,398 rows | nightly (scripts.run_daily raw load)
+~95,352 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -1331,7 +1331,7 @@ Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitt
 
 Per producing horizontal (api10): adjacent-bench development context at first production, for deal-intake v2 co-development-aware type-curve selection. Neighbor = any producing horizontal (any TVD-corrected formation_blueox bench, NULL -> '(unmapped)') whose stick is within 1,320 ft (geography) AND whose lateral covers >= 30% of the subject lateral when projected onto it (co-extent, not min-distance). Per neighbor bench (bench_context jsonb): counts of codev (|dfp| <= 180 d), parent (neighbor online > 180 d earlier) and child (> 180 d later) neighbors, min |dfp| days, median stick distance ft, median TVD delta ft (neighbor minus subject). Arrays codev_/parent_/child_benches list benches per relation; helper counts split same vs other bench. Constants (1,320 ft, 180 d, 30%) are baked; the runner asserts its config matches. Empty arrays on a scorable well = genuinely no neighbors (stack standalone); scorable=FALSE (no stick geometry) -> NULL context. Tiering into codev / stack_standalone / topfill_underfill is deal-specific and done by dealintake, not here. Nightly refresh. sql/47.
 
-~64,090 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)
+~64,316 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)
 
 | column | type | description |
 |---|---|---|
@@ -1453,7 +1453,7 @@ erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read late
 
 Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Sources: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values; mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk edits are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh / curated.refresh_all().
 
-~94,916 rows | nightly (etl.refresh, 3/15) | reads: `curated.wells`, `ref.formation_crosswalk`, `ref.formation_tag_overrides`
+~95,346 rows | nightly (etl.refresh, 3/15) | reads: `curated.wells`, `ref.formation_crosswalk`, `ref.formation_tag_overrides`
 
 | column | type | description |
 |---|---|---|
@@ -1468,7 +1468,7 @@ Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k ro
 
 TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers (e.g. Enverus-substitution mis-tags). Audit object - the override is applied downstream in curated.wells_enriched. Refreshed nightly by etl.refresh / curated.refresh_all() after producing_reference.
 
-~60,777 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
+~60,800 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
 
 | column | type | description |
 |---|---|---|
@@ -1582,7 +1582,7 @@ Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer 
 
 Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage's own blind-producer population (first prod >= that vintage's per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload's sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.
 
-~103,525 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
+~105,301 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
 
 | column | type | description |
 |---|---|---|
@@ -1809,7 +1809,7 @@ Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locat
 
 Producing curated wells (first_production_date NOT NULL, delaware/midland, mapped bench), one row per api10, pre-buffered into a +/-150 ft corridor and GiST-indexed. The spatial system of record for PUD reconciliation (curated.reconciled_inventory) and the sql/23 TVD audit: realized = co-extent overlap in-corridor, same bench, TVD-guarded. Refreshed nightly by etl.refresh / curated.refresh_all().
 
-~60,667 rows | nightly (etl.refresh, 4/15) | reads: `curated.formation_blueox`, `curated.wells`
+~60,869 rows | nightly (etl.refresh, 4/15) | reads: `curated.formation_blueox`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1828,7 +1828,7 @@ Producing curated wells (first_production_date NOT NULL, delaware/midland, mappe
 
 Well-month production actuals from raw_novi.WellMonths (soft-deleted rows excluded), ~5M rows. Grain: one row per well-month; key (api10, prod_year, prod_month). Refreshed nightly by etl.refresh via curated.refresh_all(), per-view with settle().
 
-~5,218,227 rows | nightly (etl.refresh, 7/15) | reads: `raw_novi.WellMonths`
+~5,202,839 rows | nightly (etl.refresh, 7/15) | reads: `raw_novi.WellMonths`
 
 | column | type | description |
 |---|---|---|
@@ -1912,7 +1912,7 @@ Regular VIEW (no storage, always fresh): production_normalized actuals UNION ALL
 
 Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M rows) JOINed to curated.wells and normalized per 1,000 ft; column-identical to production_normalized for clean UNION. Key (api10, prod_year, prod_month); MoP 1-600. Nightly refresh is gated on ForecastWellMonths source change and runs LAST.
 
-~20,339,940 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
+~20,416,240 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
 
 | column | type | description |
 |---|---|---|
@@ -1959,7 +1959,7 @@ Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M 
 
 Actuals well-months: curated.production INNER JOIN curated.wells, adding BOE (oil + gas/6) and per-1,000-ft normalized rates plus cohort keys. Grain well-month; key (api10, prod_year, prod_month); MoP filtered 1-600. Refreshed nightly by etl.refresh after wells and production.
 
-~5,210,789 rows | nightly (etl.refresh, 9/15) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
+~5,223,736 rows | nightly (etl.refresh, 9/15) | reads: `curated.production`, `curated.wells` | consumers: anduin type-curve fitting
 
 | column | type | description |
 |---|---|---|
@@ -2024,7 +2024,7 @@ Novi PUD inventory reconciled against producing curated wells by co-extent overl
 
 Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.
 
-~181,476 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
+~182,563 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
 
 | column | type | description |
 |---|---|---|
@@ -2056,7 +2056,7 @@ Pre-aggregated type-curve cohorts over production_normalized: one row per (state
 
 Per-well water-stream provenance: measured vs vendor-calculated water, one row per api10 in curated.production. TX RRC has no monthly well-level water -- vendors backfill a static WOR from an initial filing (water = k*oil; 83.6% of TX public-water horizontals FP>=2019 have WOR CV < 2% over mop 1-24), while operator-share months (production.is_water_proprietary) and NM C-115 water are real. Signals: water_prop_share + wor_cv over mop 1-24 (oil>0 AND water>0 months). Labels: insufficient (<6 usable months) / measured (prop_share>=0.9 OR cv>=0.15) / calculated (prop_share<=0.1 AND cv<0.05) / indeterminate. Convention 2026-08-17: FLAG-ONLY surfacing -- apps badge and filter, nothing excluded by default. Piecewise-flat re-filed WORs can escape to indeterminate/measured (known v1 limit). No state column by design -- join wells_enriched. Nightly refresh after curated.production. sql/41.
 
-~65,478 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
+~65,705 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
 
 | column | type | description |
 |---|---|---|
@@ -2073,7 +2073,7 @@ Per-well water-stream provenance: measured vs vendor-calculated water, one row p
 
 One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpacing LEFT JOINed to the latest Enverus completion event via LEFT(api14, 10) = api10; per-column source precedence is Novi preferred, Enverus fallback unless noted. Permian-wide (~90k rows). Refreshed nightly by etl.refresh / curated.refresh_all() after the vendor loads.
 
-~95,242 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
+~95,346 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
 
 | column | type | description |
 |---|---|---|
@@ -2539,11 +2539,47 @@ Boundary of a generated extent split by the walked step-2 ring segment whose sec
 | `rule` | text |  |
 | `explanation` | text |  |
 
+### `box.risk_factor` (table)
+
+BOX development-scenario factors of record (D41-D47). Estimator Poisson PML (ratio of arithmetic means), location FE (TC area; 5-mi block where a bench has no areas) + first-prod-year FE, reference = codev_stack with no same-bench parent (level reference, factor 1), 90 % cluster-bootstrap CI over 3-mi blocks. estimate = the term's own estimate; factor = the factor of record after the D45 ladder (rung 1 pair n >= 30, 2 class in bench, 3 class across benches; n_basis = wells behind the factor used). Oil / water metric = cum-12 per 1,000 ft, applied as a uniform scale of the reference curve (D43, applies_to both). Gas metric = 12-mo GOR / the D30 local level, applied through alpha on top of the oil factor (D46). Factors combine: pair x infill. pud_applicable = false for standalone (scoring actual wells only; an unparented PUD gets the reference, D44). bench '*' = pooled across benches. See sql/58.
+
+~108 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX PUD risking (plan step 7) and hindcast scoring (step 6)
+
+| column | type | description |
+|---|---|---|
+| `risk_factor_id` | bigint |  |
+| `version` | integer |  |
+| `basin` | text |  |
+| `bench` | text |  |
+| `stream` | text |  |
+| `metric` | text |  |
+| `level` | text |  |
+| `term` | text |  |
+| `dev_scenario` | text |  |
+| `parent_bench` | text |  |
+| `estimate` | double precision |  |
+| `ci_lo` | double precision |  |
+| `ci_hi` | double precision |  |
+| `n_pairs` | integer |  |
+| `n_clusters` | integer |  |
+| `factor` | double precision |  |
+| `rung` | smallint |  |
+| `rung_label` | text |  |
+| `n_basis` | integer |  |
+| `applies_to` | text |  |
+| `estimator` | text |  |
+| `pud_applicable` | boolean |  |
+| `params` | jsonb |  |
+| `generated_from_run` | text |  |
+| `is_record` | boolean |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
+
 ### `box.tc_area` (table)
 
 BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record, built by box/tc_area.py (contiguity-constrained Ward agglomeration of 1-mi hex cells on log 12-mo oil/ft of the D9 cohort, k by 5-fold CV on 3-mi blocks, paired 1-SE rule). The areas of one (extent_id, version) tile the extent. is_record marks the area set of record per extent. n_wells = 12-mo D9 cohort wells (fp >= 2016, lateral 6,000-13,000 ft, 12 full months) inside the area. Vintage normalized by filter only; operator/completion confounding accepted for v1. See sql/57.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)
+~35 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)
 
 | column | type | description |
 |---|---|---|
@@ -2557,6 +2593,56 @@ BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record
 | `response` | text |  |
 | `cohort_stats` | jsonb | Per-area responses in bbl per lateral ft: 12-mo / 24-mo oil P50 (SPE: P10 = HIGH) with their own n, Novi 30-yr oil EUR/ft (vendor horizon, a screen), member tags (WCA_1 / WCA_2 / WCXY one-way, D19/D20), median first-prod year, top operator share, D1 PUD counts. |
 | `params` | jsonb | Method knobs (cell size, field kNN, D9 floor, CV folds/blocks/seed), the CV pick (k_1se, k_min, held-out R2) and the input well set. |
+| `generated_from_run` | text |  |
+| `is_record` | boolean |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
+
+### `box.tc_member` (table)
+
+Wells behind each BOX type curve (one row per curve x well). included = the well has a fit for the curve's stream; n_wells on box.type_curve = included rows. dev_scenario / parent_bench / infill = the BOX pooled-bench scenario (D42: same-pool vertical parents count as lateral infill); factor = the risk factor of record used for ref_mult; weight = actual cum-12 per 1,000 ft. See sql/58.
+
+~22,581 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX curve provenance / review; hindcast exclusion of curve members (plan step 6)
+
+| column | type | description |
+|---|---|---|
+| `tc_id` | bigint |  |
+| `api10` | text |  |
+| `included` | boolean |  |
+| `drop_reason` | text |  |
+| `lateral_ft` | double precision |  |
+| `dev_scenario` | text |  |
+| `parent_bench` | text |  |
+| `infill` | boolean |  |
+| `factor` | double precision |  |
+| `weight` | double precision |  |
+
+### `box.type_curve` (table)
+
+BOX type curves (plan step 5, D10/D15/D30/D32/D38-D40): one row per TC area of record x stream x version. Curve of record = the cohort MEAN per 1,000 ft of lateral (labelled mean, never P50) of the members' peak_ramp-aligned per-well forecasts, fitted by blueox-boxfit @ engine_sha. Oil / water: ramp + modified-hyperbolic Arps, Di NOMINAL per year, own Di cap per stream (oil 4.0, water 12.0), Df 0.08 (Delaware). Gas: ratio mode ln R = alpha + beta * Np (R mcf/bbl, Np cumulative oil bbl per 1,000 ft) on the oil curve; a location's local 12-mo GOR shifts alpha (D30). params = the AS-BUILT mixed-scenario cohort curve; reference-scenario curve = qo and qi x ref_mult (D43 uniform scale). EUR = raw 50-yr integral (no economic limit). Monthly volumes are exact per-month integrals of params (D39). See sql/58.
+
+~105 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX hindcast (plan step 6), PUD forecasts + monthly volumes (step 7), app toggle (step 8)
+
+| column | type | description |
+|---|---|---|
+| `tc_id` | bigint |  |
+| `area_id` | bigint |  |
+| `version` | integer |  |
+| `stream` | text |  |
+| `statistic` | text |  |
+| `mode` | text |  |
+| `relaxation_step` | smallint | D10 ladder rung that built the curve: 1 strict, 2 relax lateral, 4 borrow neighbouring areas, 5 parent bench. 3 (relax vintage) is retired (D37) and refused. |
+| `relaxation_label` | text |  |
+| `thin` | boolean |  |
+| `n_wells` | integer |  |
+| `anchors` | jsonb |  |
+| `params` | jsonb | Arps rows: qo / qi (calendar-day rate per 1,000 ft at the ramp start / peak), peak_index_months, Di_nominal (/yr), Di_eff_1yr, b, Df. Ratio row (gas): alpha, beta (per bbl/kft of cumulative oil), sub_mode, ratio units mcf/bbl. |
+| `eur_per_kft` | double precision |  |
+| `cum12_kft` | double precision |  |
+| `ref_mult` | double precision | Reference-scenario multiplier (D43): sum(w/f)/sum(w) over the included members, w = actual cum-12 per 1,000 ft, f = the member's factor of record (box.risk_factor, same stream). NULL for gas: the gas level is set per location (D30 local GOR + D46 factor). |
+| `fit_meta` | jsonb | Fit diagnostics: r2, rule-6 reconcile (exact months vs stored), trapezoid gap, cum-6/12/24 per kft, P50 fit (diagnostic), curve vs actual cohort mean cum-12/24. |
+| `engine_sha` | text |  |
+| `data_asof` | date |  |
 | `generated_from_run` | text |  |
 | `is_record` | boolean |  |
 | `created_at` | timestamp with time zone |  |
