@@ -321,3 +321,29 @@ twice. Worth asking him what he assumes before step 7.
 1 → 2 → 4 → 5. `box/tc_curve.py` refuses a pool stamped 3, and `area_pools` no longer builds one. No record curve changes,
 since all 35 sit at rung 1. The single rung-3 row in `subbench_WCA.csv` (area 23 WCA_1) is a pre-D37 record and is moot
 under D33.
+
+## 10. Re-run 2026-10-11 after D38 (water's own Di cap) and D37
+
+The deliverable files in this folder were regenerated with `blueox-boxfit` @ d3fabcc (anduin #94), with production
+pinned to the record cutoff (`--asof 2026-07-01`).
+
+- **Oil and gas: bit-identical** (largest change 0 on every oil and gas fit). Per-well fits are identical, so
+  `well_fits_WCA.csv` and `members_WCA.csv` are unchanged.
+- **Water:** only the five areas that were pinned at 4.0/yr move. None now sits at the 12/yr cap.
+
+  | Area | Water Di (nominal), before → after | R² | Water EUR (mean) |
+  |---|---|---|---|
+  | 1 | 4.00 → 8.32 | 0.71 → 1.00 | −1.0 % |
+  | 2 | 4.00 → 4.29 | 1.00 | +0.2 % |
+  | 5 | 4.00 → 4.52 | 1.00 | +0.3 % |
+  | 8 | 4.00 → 5.50 | 0.99 → 1.00 | +4.9 % |
+  | 9 | 4.00 → 4.16 | 1.00 | +0.1 % |
+
+- **Reconcile:** still 54 of 216 Arps fits above 0.1 %. The worst is now area 1 water at **0.47 %** (Di 8.3/yr, a
+  steeper curve, so more monthly-trapezoid error); oil's worst stays at 0.17 %. Flag (a) stays open.
+- **D37 in the sub-bench sensitivity:** area 23 WCA_1 no longer reaches the retired rung 3. It now sits at rung 4
+  (strict cohort of the area plus its neighbours, 603 wells, 73,884 bbl/kft). Under rung 3 it had read 34,520
+  bbl/kft from 13 wells that included pre-2016 ones — that gap is the case for D37.
+- `anduin_check.json` is the record from b7a0519. Oil and gas equivalence is unaffected, because #94 does not touch
+  those fits.
+- Flag (d) is resolved by D38.

@@ -37,10 +37,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--wells", type=Path, default=Path("docs") / "box" / "step1-2026-10-06")
     ap.add_argument("--out", type=Path, default=Path("docs") / "box" / f"step5b-{dt.datetime.now(tz=dt.UTC).astimezone():%Y-%m-%d}")
     ap.add_argument("--workers", type=int, default=None)
+    ap.add_argument("--asof", type=dt.date.fromisoformat, default=None, help="production cutoff (default: last fully reported month)")
     a = ap.parse_args(argv)
     t0 = time.time()
     with get_connection() as conn:
-        res = run(conn, a.wells, a.out, boxfit_sha(), a.workers)
+        res = run(conn, a.wells, a.out, boxfit_sha(), a.workers, a.asof)
     s = res["summary"]
     print(f"WCA: {s['n_areas']} area curves from {s['n_cohort']:,} cohort wells ({s['n_wells_fitted']:,} wells fitted), production through {s['prod_asof']}; "
           f"rungs {s['rungs']}; max |stored - trapezoid| / stored {s['max_abs_reconcile']:.1e} ({'PASS' if s['reconcile_pass'] else 'FAIL'} < 0.1 %)")

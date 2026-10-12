@@ -49,6 +49,7 @@ LOCAL_GOR_K = 15  # D30 / §6: median 12-mo GOR of the 15 nearest D9 cohort well
 FULL_MONTH_SHARE = 0.90  # a month is "fully reported" when it carries >= 90 % of the prior month's rows
 OIL_DI_BOUNDS = (0.5, 4.0)
 B_BOUNDS = (0.9, 1.2)
+WATER_TC_DI_HI = 12.0  # D38: water type-curve fits run under water's own nominal Di cap (boxfit >= d3fabcc)
 BOUND_TOL = 1e-3
 SUBS = ("WCA_1", "WCA_2")
 STREAM_UNIT = {"oil": "bbl", "gas": "mcf", "water": "bbl"}
@@ -684,12 +685,12 @@ def area_table(d: pd.DataFrame, rows: pd.DataFrame, n_areas: int) -> pd.DataFram
     return pd.DataFrame(out)
 
 
-def run(conn: Any, wells_dir: Path, out: Path, boxfit_sha: str, workers: int | None = None) -> dict[str, Any]:
+def run(conn: Any, wells_dir: Path, out: Path, boxfit_sha: str, workers: int | None = None, asof: dt.date | None = None) -> dict[str, Any]:
     out.mkdir(parents=True, exist_ok=True)
     wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, (POOL,)))
     areas = pull_areas(conn)
     n_areas = len(areas["geoms"])
-    asof = last_full_month(_read(conn, _MONTHS_SQL))
+    asof = asof or last_full_month(_read(conn, _MONTHS_SQL))  # --asof pins a re-run to the record cutoff
     # every well that can sit in any ladder pool: in an area, real lateral
     tr = eg._transformer()
     x, y = tr.transform(wells["mid_lon"].to_numpy(float), wells["mid_lat"].to_numpy(float))
@@ -765,7 +766,7 @@ def run(conn: Any, wells_dir: Path, out: Path, boxfit_sha: str, workers: int | N
                        for r in rows if r["area_no"] == "pool"},
         "area_eur_kft_oil": _dist(at["oil_eur_kft"]), "mean_over_p50": _dist(at["mean_over_p50"]),
         "oil_cum12_vs_actual": _dist(at["oil_cum12_vs_actual"]), "gas_cum12_vs_actual": _dist(at["gas_cum12_vs_actual"]),
-        "water_di_at_cap_areas": int((area_rows[(area_rows.stream == "water") & (area_rows.stat == "mean")]["Di_nominal"] >= tc_oil_di_hi() - BOUND_TOL).sum()),
+        "water_di_at_cap_areas": int((area_rows[(area_rows.stream == "water") & (area_rows.stat == "mean")]["Di_nominal"] >= WATER_TC_DI_HI - BOUND_TOL).sum()),
         "subbench": sbs, "gor_shape": gs, "gas_level": gls,
         "gas_cum12_vs_actual_at_area_gor": _dist(at["gas_cum12_vs_actual_at_area_gor"]),
         "pool_ex_oil_di_at_bound": {"n_wells": ex_row.get("n_wells"), "eur_per_kft": ex_row.get("eur_per_kft"), "Di_nominal": ex_row.get("Di_nominal"),
@@ -792,12 +793,6 @@ def run(conn: Any, wells_dir: Path, out: Path, boxfit_sha: str, workers: int | N
     pd.DataFrame(wf).to_csv(out / f"well_fits_{POOL}.csv", index=False)
     (out / "summary.json").write_text(json.dumps(_clean(summ), indent=2, default=_json), encoding="utf-8")
     return {"summary": summ, "area_table": at, "frame": d, "curves": curves, "fits": fits}
-
-
-def tc_oil_di_hi() -> float:
-    """fit_p50_series fits every stream with the OIL bounds (stream='oil' hard-coded in boxfit), so a
-    water curve pins at 4.0/yr, not the per-well water cap of 12 — counted, reported, not changed."""
-    return OIL_DI_BOUNDS[1]
 
 
 def _clean(o: Any) -> Any:
