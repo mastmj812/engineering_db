@@ -119,3 +119,32 @@ post-month-6 shape drift; (5) k stability.
     fall below it — exactly the backtest's growing-with-time miss. Remedies to test in the backtest (not built): (a)
     recency-weighted / last-N-years curve cohort (shape from recent vintages, level from the area), (b) a vintage term on
     the shape; (c) the 3-D spacing + parent-depletion features may carry part of the unexplained half.
+
+## 7. 3-D spacing prototype (Michael 2026-10-12: "spacing regime of the average well getting worse explains the steeper declines")
+
+`spacing3d/spacing3d.html` — `python -m scripts.box_spacing3d` (206 s, read-only; `box/spacing3d.py` geometry + features,
+3 tests). 11,100 WCA wells (fp ≥ 2016, in an area of record), 33,289 Delaware horizontals as the neighbour universe (any
+bench), 149,190 co-extent pairs. Features as of first production per SPACING_3D_SCOPE.md (A = 2, gate 2,640 ft, one TVD/well).
+
+- **The regime did tighten — a lot.** Median lateral spacing (nearest left/right within ±250 ft TVD) 2,255 ft (2016) →
+  1,470 (2018) → 885 (2020) → 847 (2024) → 806 (2026): horizontal spacing plateaus after 2020. The **drainage
+  cross-section** keeps shrinking — 8.6 M ft² (2016) → 3.7 M (2018) → 1.67 M (2024) → 1.27 M (2026) — stacking keeps
+  tightening after the horizontal plateau. Parent depletion (median parent cum per kft at first production) 10 → 45 kbbl.
+  Within area, 2024 vs 2018: cross-section ×0.44, lateral spacing ×0.74, parent depletion ≈ ×3.6.
+- **Tighter → steeper, as expected — but it explains only part of the shape drift.** ln(cum-24 / cum-6), within area, 2024 vs
+  2018: −16.3 % (+ lateral) → **−13.2 %** with the 3-D features → −13.7 % with parent depletion: ~3 of ~16 points (≈ 20 %).
+  Cross-section is the carrier (+3.4 % on the ratio per 1 SD; horizontal spacing alone ~0). Novi WellSpacing head-to-head
+  explains none of it (−17.5 %). Children arriving within 24 months: nothing. Early-time behaviour still takes the drift to
+  −6.0 % — possibly partly a *consequence* of tighter spacing (not tested yet: mediation).
+- **Level (12-mo oil / kft) is where spacing bites harder:** within-area 2024 vs 2018 −10.1 % (+ lateral) → −7.5 % (3-D) →
+  −5.8 % (+ parent depletion), ≈ 40 % of the level drift; our features beat Novi's (−8.5 %). Per 1 SD: lateral spacing
+  +3.1 %, parent depletion −4.6 %.
+- **Burton Flat 3 1:** the cube shows in the cross-section, not in lateral spacing — 626H 0.58 M ft² (2024 median 1.67 M),
+  339H 1.09 M, 624H 1.38 M with a 360-ft right neighbour; lateral spacing alone reads a normal ~1,200–1,400 ft.
+- Caveats: v1 one TVD per well; A = 2 not calibrated; the 660 × 300 ft ellipse is too small (median 0 neighbours — drop or
+  widen); "children within 24 months" is right-censored on young wells.
+
+Next (proposed): (1) backtest variant with cross-section + lateral spacing + parent depletion as of first production (the
+prototype computes per fold without warehouse writes); (2) mediation check — does spacing drive the early-time shift;
+(3) only if (1) earns it: sql/59 `well_neighbors` / `well_spacing_3d` (go-apply), which PUD forecasting at planned spacing
+needs regardless.

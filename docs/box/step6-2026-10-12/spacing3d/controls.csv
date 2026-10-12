@@ -1,0 +1,20 @@
+response,spec,control,coef,effect_of_1sd
+ln_r24_6,+ parent depletion,ln_lat,0.06942981344679412,0.023933811816163452
+ln_r24_6,+ parent depletion,ln_lat_spacing,0.001187549734863359,0.0007291599763441486
+ln_r24_6,+ parent depletion,ln_xsec,0.03227985651409542,0.03350673483476519
+ln_r24_6,+ parent depletion,n_ellipse,-0.013941456543829429,-0.012051837589371565
+ln_r24_6,+ parent depletion,bounded_sides,-0.04237123753381493,-0.02759477117551319
+ln_r24_6,+ parent depletion,ln1p_parent_cum,0.00901907559868198,0.01847692788506448
+ln_oil12_kft,+ parent depletion,ln_lat,-0.13690768146840643,-0.04590171526541374
+ln_oil12_kft,+ parent depletion,ln_lat_spacing,0.04951982432196005,0.03070062147236521
+ln_oil12_kft,+ parent depletion,ln_xsec,0.013430931138198944,0.013781354548508635
+ln_oil12_kft,+ parent depletion,n_ellipse,-0.011352745485877197,-0.009814428758068629
+ln_oil12_kft,+ parent depletion,bounded_sides,0.022592763081583853,0.014705789061134157
+ln_oil12_kft,+ parent depletion,ln1p_parent_cum,-0.023307770408395292,-0.04639606869507013
+ln_r24_6,+ children within 24 months (diagnostic),ln_lat,0.07031010326578087,0.024240913707715434
+ln_r24_6,+ children within 24 months (diagnostic),ln_lat_spacing,0.001593651295285526,0.0009786298273991951
+ln_r24_6,+ children within 24 months (diagnostic),ln_xsec,0.03288613716784014,0.03414668425050565
+ln_r24_6,+ children within 24 months (diagnostic),n_ellipse,-0.01332098517488425,-0.011518565970798294
+ln_r24_6,+ children within 24 months (diagnostic),bounded_sides,-0.043284197412654934,-0.028180890304430793
+ln_r24_6,+ children within 24 months (diagnostic),ln1p_parent_cum,0.00869670228424072,0.017810651748229284
+ln_r24_6,+ children within 24 months (diagnostic),n_child_24mo,-0.09198344463757582,-0.01911505139815822
