@@ -379,3 +379,34 @@ month's mid-point Np × that exact oil month.
 - anduin's displays and exports keep the trapezoid convention, so a BOX monthly number and an anduin chart of the same
   parameters can differ by up to ~0.5 % in EUR and ~1.3 % in a steep 12-mo cum.
 - `monthly_volumes` is cached on the fit parameters (each fit costs ~1.7 s in boxfit's closed form).
+
+## 12. D40 (2026-10-12): type-curve fits skip the per-well downtime filter
+
+`blueox-boxfit` is re-pinned to 3380317 (anduin #96). `fit_p50_series` now fits every post-peak month of the
+per-1,000-ft cohort series (`ForecastConfig.filter_downtime = False`; per-well fits are unchanged). The 5b
+deliverable was regenerated at `--asof 2026-07-01`.
+
+**Why.** The per-well filter's absolute floor (oil 5 bopd) and its 1.0-rate-unit clip read as 5 / 1 per kft
+on a type-curve series. The oil cohort mean falls under 5 bopd/kft around year 8, so oil type-curve fits saw
+~91 of ~600 post-peak months and extrapolated the rest. That ran up to +1.44 % above the cohort-mean 50-yr cum the
+curve summarises (median +0.31 %). With the filter off, a curve reproduces that cum to ≤ 0.21 % (median −0.04 %).
+
+**Effect on the record (mean) curves, 35 areas:**
+
+| Stream | EUR change, median | Range | 12-mo cum, median |
+|---|---|---|---|
+| Oil | **−0.36 %** | −1.47 to −0.04 % | −0.20 % |
+| Gas (ratio) | −0.41 % | −1.82 to −0.05 % | −0.20 % |
+| Water | −0.04 % | −0.43 to +0.20 % | −0.06 % |
+
+- Oil: b −0.013 and nominal Di −0.10/yr (medians).
+- Area median oil EUR goes from 65,939 to **65,731 bbl/kft**. The pool mean goes from 80,345 to 80,102.
+- Oil curve vs calendar actuals at cum-12 goes from +9.36 % to +9.21 % (median).
+- Rule 6 still passes: worst gap 0.035 %. No water curve sits at the 12/yr cap.
+
+**P50 diagnostic fits** move more in small-cohort areas, up to **+8.7 % in area 18** (17 wells; then −3.4 % area
+4, ±2–3 % in areas 1, 8, 11, 21, 23, 28). Over 50 years the cross-well P50 series passes from one member well's
+curve to another's, and those fits now see the whole tail. Median mean/P50 EUR ratio goes from 1.065 to 1.061.
+The record curve is the mean (D32).
+
+**All 5b items in plan §9 are now closed** (D32–D40).
