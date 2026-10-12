@@ -1,6 +1,11 @@
 # BOX step 6 — hindcast vs Novi 2025Q3 (acceptance) — gate 6
 
 **Verdict: FAIL** (oil FAIL, gas FAIL) under §8 + D48 + D49. Review surface: `acceptance.html`.
+Production plots: `production.html` — actual vs Novi 2025Q3 (scaled to the drilled lateral) vs BOX (of record × F(k), and
+uptime-free), monthly or cumulative, per holdout well and as bench / area averages; F(k) fitted for every month 1–24 on the
+training cohort (oil 0.59 in month 1 → 0.90 at 6 → 0.91 at 12 → 0.94 at 24). Each line reconciles to the scored numbers
+(BOX monthly × F summed = scored prediction to 4e-15; Novi monthly = sql/43 cums to 5e-15; actual sums = sql/43 on 99.9 %).
+Serve with `python -m http.server 8766 --directory docs/box` (the file is 1.5 MB).
 Builder: `python -m scripts.box_hindcast --out docs/box/step6-2026-10-12` (read-only, ~9 min; `box/hindcast.py`
 pure, `box/hindcast_report.py` rebuild + page; 9 DB-free tests in `tests/test_box_hindcast.py`). Nothing stored.
 

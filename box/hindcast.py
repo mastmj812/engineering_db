@@ -46,19 +46,24 @@ PASS, FAIL, INCONCLUSIVE = "PASS", "FAIL", "INCONCLUSIVE"
 # ----------------------------------------------------------------------------
 
 
-def curve_cums(curve: Mapping[str, Any], gor_target: float | None, horizons: Sequence[int] = HORIZONS) -> dict[str, float]:
-    """Per-1,000-ft cums of an as-built area curve at the location's GOR target (D30 level x D46 factor):
-    oil = the record (mean) Arps fit, D39 exact months; gas = the area ratio with alpha shifted so the
-    curve's 12-mo GOR equals the target. NaN gas when the curve has no ratio or the target is missing."""
+def curve_months(curve: Mapping[str, Any], gor_target: float | None, n: int = 24) -> dict[str, np.ndarray]:
+    """Per-1,000-ft monthly volumes (months 1..n) of an as-built area curve at the location's GOR target
+    (D30 level x D46 factor): oil = the record (mean) Arps fit, D39 exact months; gas = the area ratio with
+    alpha shifted so the curve's 12-mo GOR equals the target. NaN gas when the curve has no ratio or the
+    target is missing."""
     oil_fit = curve["fits"]["oil"].get(curve["record"])
     if not oil_fit:
         raise ValueError("curve has no record oil fit")
-    ov = tc.monthly_volumes(oil_fit)
-    out = {f"oil{k}": float(ov[:k].sum()) for k in horizons}
+    ov = tc.monthly_volumes(oil_fit)[:n]
     sh = tc.shift_gor_level(curve, gor_target) if gor_target and math.isfinite(gor_target) and gor_target > 0 else None
-    for k in horizons:
-        out[f"gas{k}"] = float(sh["gas_volumes"][:k].sum()) if sh else float("nan")
-    return out
+    gv = np.asarray(sh["gas_volumes"][:n], float) if sh else np.full(n, np.nan)
+    return {"oil": np.asarray(ov, float), "gas": gv}
+
+
+def curve_cums(curve: Mapping[str, Any], gor_target: float | None, horizons: Sequence[int] = HORIZONS) -> dict[str, float]:
+    """Per-1,000-ft cums at each horizon of curve_months (oil + gas)."""
+    m = curve_months(curve, gor_target, max(horizons))
+    return {f"{s}{k}": float(m[s][:k].sum()) for s in SCORED_STREAMS for k in horizons}
 
 
 def predict(cums_kft: Mapping[str, float], lateral_ft: float, ref_mult: float, f_oil: float,
@@ -85,6 +90,21 @@ def calendar_factor(actual: pd.DataFrame, pred: pd.DataFrame, horizons: Sequence
             ok = np.isfinite(a) & np.isfinite(p) & (p > 0)
             out[s][k] = {"F": float(a[ok].sum() / p[ok].sum()) if ok.any() else float("nan"), "n": int(ok.sum())}
     return out
+
+
+def calendar_factor_curve(actual_months: np.ndarray, pred_months: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """D36 F(k) for every month k = 1..K: Σ actual cum-k / Σ predicted cum-k over the wells whose cum-k is
+    known (actual_months [wells, K], NaN from the first month not yet reported; pred_months without F).
+    Returns (F, n wells) per k. At k = 6 / 12 this is calendar_factor on the same wells."""
+    a = np.asarray(actual_months, float)
+    p = np.asarray(pred_months, float)
+    ca, cp = np.cumsum(a, axis=1), np.cumsum(p, axis=1)  # NaN propagates: cum-k unknown once a month is missing
+    ok = np.isfinite(ca) & np.isfinite(cp) & (cp > 0)
+    num = np.where(ok, ca, 0.0).sum(axis=0)
+    den = np.where(ok, cp, 0.0).sum(axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        F = np.where(den > 0, num / den, np.nan)
+    return F, ok.sum(axis=0)
 
 
 # ----------------------------------------------------------------------------

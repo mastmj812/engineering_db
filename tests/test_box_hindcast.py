@@ -100,3 +100,15 @@ def test_curve_cums_gas_level_shift() -> None:
     up = hc.curve_cums(curve, 2.0 * gor12)
     assert up["gas12"] == pytest.approx(2.0 * at["gas12"])  # the alpha shift scales the ratio uniformly
     assert 1000 * at["gas12"] / at["oil12"] == pytest.approx(gor12)
+
+
+def test_calendar_factor_curve_matches_point_factor() -> None:
+    a = np.array([[10.0, 8, 6, np.nan], [20, 15, 12, 10], [5, 4, np.nan, np.nan]])
+    p = np.array([[12.0, 9, 7, 6], [22, 16, 12, 11], [6, 5, 4, 3]])
+    F, n = hc.calendar_factor_curve(a, p)
+    assert list(n) == [3, 3, 2, 1]
+    assert F[1] == pytest.approx((18 + 35 + 9) / (21 + 38 + 11))
+    assert F[3] == pytest.approx(57 / 61)  # only the well with 4 months
+    k2 = hc.calendar_factor(pd.DataFrame({"oil6": a[:, :2].sum(1), "oil12": 1.0, "gas6": 1.0, "gas12": 1.0}),
+                            pd.DataFrame({"oil6": p[:, :2].sum(1), "oil12": 1.0, "gas6": 1.0, "gas12": 1.0}))
+    assert k2["oil"][6]["F"] == pytest.approx(F[1])

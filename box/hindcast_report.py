@@ -47,6 +47,7 @@ from box import edge_gap as eg
 from box import edge_gap_report as egr
 from box import exclusions
 from box import hindcast as hc
+from box import hindcast_production as hp
 from box import tc_area as ta
 from box import tc_area_report as tar
 from box import tc_curve as tc
@@ -360,6 +361,10 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
                     "box_only_all_tiers": {f"{s}{k}": hc.stats(hs[f"box_err_{s}{k}"]) for s in hc.SCORED_STREAMS for k in hc.HORIZONS}},
         "verdict": ver,
     }
+    prod_data = hp.build(conn, cb, rm, trn, hs, asof, REPORT, BASIN)
+    summ["production_checks"] = prod_data["checks"]
+    summ["F_curve"] = {"F": prod_data["F"], "n": prod_data["F_n"]}
+    (out / "production.html").write_text(hp.render(prod_data, summ), encoding="utf-8")
     ctx = {"summary": summ, "area_tab": area_tab, "decomp": decomp, "by_class": by_class, "curves": curves_tab, "rf": fx["rf"], "overlap": ov,
            "map": map_png(geoms, ar["extent"]["geom_ft"], hs), "hist": hist_png(direct)}
     (out / "acceptance.html").write_text(render_page(ctx), encoding="utf-8")
@@ -514,6 +519,7 @@ def render_page(ctx: dict[str, Any]) -> str:
         ("<div class=meta>Error = actual / forecast − 1 (sql/43 sign: positive = the forecast was LOW). Bias = mean error over wells. Band = P10 − P90 of the errors, P10 = HIGH (90th percentile). "
         "Novi errors are sql/43's per-ft errors (its stick lateral vs the drilled lateral); BOX predicts at the drilled lateral, so its error is per-ft by construction. "
         "Actuals for both = sql/43 cum at months-on-production k (calendar months, partial first month), newest reported month excluded.</div>"),
+        "<div class=meta><b><a href='production.html'>Production plots</a></b> — actual vs Novi 2025Q3 vs BOX by month, per holdout well and as bench / area averages.</div>",
         "<h2>1. Error distributions, Novi-matched holdout wells</h2>", f"<img src='{ctx['hist']}'>",
         "<h2>2. Layer decomposition (bench level)</h2>",
         ("<div class=meta>1 = the hindcast area's as-built cohort-MEAN curve (D32) × lateral, gas at the area's own GOR; 2 = + D43 ref_mult, the well's scenario factor "
