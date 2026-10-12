@@ -9,4 +9,4 @@ keyring>=25                 # anduin token in the Windows Credential Manager (de
 # BOX batch (box/, scripts/box_*.py) installs from this file too. The shared fitting engine is
 # anduin's blueox-boxfit, pinned to a merged anduin commit (plan D15). NEVER list it by bare name:
 # an unrelated "boxfit" exists on PyPI. Bump the SHA only to a commit merged on anduin main.
-blueox-boxfit @ git+https://github.com/mastmj812/permiantypecurve.git@d3fabccee079bed67f5046260cd3de40025b2dc5#subdirectory=backend/packages/boxfit
+blueox-boxfit @ git+https://github.com/mastmj812/permiantypecurve.git@3380317134130f1fde4d9d7040115716ed3b2268#subdirectory=backend/packages/boxfit
