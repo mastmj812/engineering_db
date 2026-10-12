@@ -72,7 +72,7 @@ def test_gas_ratio_and_level_shift_keep_shape_move_level() -> None:
     assert sh["beta"] == g["beta"]
     assert sh["alpha_shift"] == pytest.approx(math.log(2.0))
     # the ratio scales by exactly 2 at every month, so the gas EUR doubles
-    assert sh["eur_per_kft"] == pytest.approx(2.0 * g["eur_per_unit"], rel=1e-9)
+    assert sh["eur_per_kft"] == pytest.approx(2.0 * row["eur_per_kft"], rel=1e-9)
     assert tc.shift_gor_level(curve, 0.0) is None
 
 
@@ -141,3 +141,17 @@ def test_at_bound_uses_the_stream_cap() -> None:
     assert rep.at_bound("oil", {"Di": 4.0, "b": 1.0}, 12.0)["di_at_bound"]
     assert not rep.at_bound("water", {"Di": 4.0, "b": 1.0}, 12.0)["di_at_bound"]
     assert rep.at_bound("water", {"Di": 12.0, "b": 0.9}, 12.0) == {"di_at_bound": True, "b_at_bound": True}
+
+
+def test_monthly_volumes_are_exact_and_sum_to_the_stored_eur() -> None:
+    """D39: BOX's monthly volumes integrate the fit exactly; the trapezoid overstates a steep curve."""
+    steep = {**WAT, "Di": 8.0, "b": 1.15}
+    curve = tc.fit_curve([tc.Member(api10=f"42{i:08d}", lateral_ft=10_000.0, params={"oil": OIL, "gas": GAS, "water": steep}) for i in range(12)])
+    f = curve["fits"]["water"]["mean"]
+    vol = tc.monthly_volumes(f)
+    assert len(vol) == tc.N_MONTHS and (vol >= 0).all()
+    assert abs(vol.sum() / f["eur_per_unit"] - 1.0) < tc.RECONCILE_TOL
+    assert tc.trapezoid_gap(f) > abs(tc.reconcile(f))
+    assert vol[:12].sum() < tc.cum_months(tc.oil_grid(f), 12)  # convex: trapezoid reads high in year 1
+    row = tc.curve_row(curve, "water", "mean")
+    assert row["cum12_kft"] == pytest.approx(float(vol[:12].sum())) and row["trapezoid_gap"] > 0

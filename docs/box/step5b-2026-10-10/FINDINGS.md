@@ -347,3 +347,35 @@ pinned to the record cutoff (`--asof 2026-07-01`).
 - `anduin_check.json` is the record from b7a0519. Oil and gas equivalence is unaffected, because #94 does not touch
   those fits.
 - Flag (d) is resolved by D38.
+
+## 11. D39 (2026-10-12): exact monthly volumes; rule-6 reconcile now passes
+
+**Which number was right.** Across the 144 oil and water Arps fits, the stored EUR (closed form) matches an independent
+0.01-month numerical integral of the same rate model to ≤ 0.03 %. The stored EUR was right all along. The 600-month
+monthly trapezoid is what overstates a convex curve, and all of that error sits in months 2–12:
+
+| Stream | Trapezoid EUR vs stored | Trapezoid 12-mo cum vs exact |
+|---|---|---|
+| Oil | +0.09 % median (worst 0.17 %) | +0.31 % median (worst 0.48 %) |
+| Water | worst +0.47 % (area 1, Di 8.3/yr) | worst +1.3 % |
+
+Month 1 is exact; beyond month 12 the gap is ≤ 0.015 %.
+
+**Decision (D39, amends D16).** BOX generates every monthly volume as the exact integral of the fit:
+month k = Cum(k/12) − Cum((k−1)/12), from boxfit's closed form `model_cum_at_t`. Ratio-mode gas = the ratio at the
+month's mid-point Np × that exact oil month.
+
+**Re-run** at `--asof 2026-07-01`, files regenerated:
+
+- **Rule 6 passes.** Worst |Σ exact months − stored| / stored = **0.035 %** (was 0.47 % vs the trapezoid).
+  `curves_WCA.csv` keeps the trapezoid gap as a diagnostic column (`trapezoid_gap`).
+- **Every fit parameter (qi, Di, b) is unchanged, and stored oil and water EUR are unchanged.**
+- What moves is the monthly split. 12-mo cum per 1,000 ft: oil −0.31 % median (−0.14 to −0.48 %), water −0.25 %
+  median (down to −1.3 %). Gas ratio EUR −0.12 % median, because gas now rides on exact oil months. 12-mo GOR moves
+  ≤ 0.05 %.
+- **Curve vs calendar actuals at 12 months** (the §9 #2 finding): oil +9.75 % → **+9.36 %** median across areas; gas
+  at the area's own GOR +10.2 % → +9.9 %. About 0.4 point of the year-1 gap was this quadrature error; the D36 calendar
+  factor covers the rest.
+- anduin's displays and exports keep the trapezoid convention, so a BOX monthly number and an anduin chart of the same
+  parameters can differ by up to ~0.5 % in EUR and ~1.3 % in a steep 12-mo cum.
+- `monthly_volumes` is cached on the fit parameters (each fit costs ~1.7 s in boxfit's closed form).

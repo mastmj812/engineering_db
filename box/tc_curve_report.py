@@ -606,7 +606,7 @@ def render_page(ctx: dict[str, Any]) -> str:
         "<h2>Area map</h2><div class=meta>Click an area to jump to its card.</div><div id=legend class=meta></div><div id=map></div>",
         ("<h2>Areas</h2><div class=meta>oil_* = record (mean) fit; oil_p50_eur_kft = the P50 fit's EUR; mean_over_p50 = record / P50 EUR. cum12_vs_actual = the record curve's 12-mo cum vs the members' mean actual 12-mo cum per 1,000 ft (calendar months from first report). "
         "gas_* = the area ratio curve as fitted; *_at_area_gor = the same curve shifted (D30) to the members' own 12-mo GOR — the area supplies shape, the location supplies level. "
-         "max_reconcile = worst |stored − trapezoid| / stored over the area's Arps fits (rule 6, must be < 0.1 %).</div>"),
+         "max_reconcile = worst |Σ exact monthly volumes − stored| / stored over the area's Arps fits (rule 6, must be < 0.1 %; D39). trapezoid_gap in curves_WCA.csv = anduin's display trapezoid vs stored, diagnostic only.</div>"),
         _table(ar.drop(columns=["top_operator"]), fmt),
         "<h2>Gate question: WCA_1 vs WCA_2 (D19)</h2>",
         (f"<div class=meta>Per area, a WCA_1 and a WCA_2 oil curve through the same ladder (rung 5 = the pooled WCA area curve). 'tag' = warehouse formation_blueox (WCXY → WCA_1, D20); 'consensus' = tag with the in-pool consensus "
@@ -652,7 +652,7 @@ def area_gas_at_own_level(d: pd.DataFrame, curves: dict[int, dict[str, Any]]) ->
         sh = tc.shift_gor_level(st["curve"], lvl) if np.isfinite(lvl) else None
         act = mem["gas12_kft"].dropna()
         out[a] = {"area_gor12_actual": lvl, "gas_eur_kft_at_area_gor": np.nan if not sh else sh["eur_per_kft"],
-                  "gas_cum12_vs_actual_at_area_gor": np.nan if (not sh or not len(act)) else tc.cum_months(sh["gas_rates"], 12) / act.mean() - 1.0}
+                  "gas_cum12_vs_actual_at_area_gor": np.nan if (not sh or not len(act)) else float(sh["gas_volumes"][:12].sum()) / act.mean() - 1.0}
     return out
 
 
