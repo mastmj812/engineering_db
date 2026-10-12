@@ -179,7 +179,7 @@ def fit_curve(members: Sequence[Member], *, df_terminal: float = 0.08, n_months:
     fits: dict[str, dict[str, Any]] = {}
     for s in STREAMS:
         st = agg.streams[s]
-        fits[s] = {k: fit_p50_series(getattr(st, k), df_terminal_per_year=df_terminal) for k in stats}
+        fits[s] = {k: fit_p50_series(getattr(st, k), df_terminal_per_year=df_terminal, stream=s) for k in stats}  # own Di cap, D38
     oil_rec = fits["oil"].get(record)
     gas_ratio = None
     if oil_rec:
