@@ -67,6 +67,13 @@ def load_frame(wells_dir: Path) -> pd.DataFrame:
         raise RuntimeError(f"{int(w['mid_lon'].isna().sum())} frame wells have no midpoint in the gate-1 final sets")
     w["infill"] = _bool(w["infill"])
     w["own_bench_in_pool"] = _bool(w["own_bench_in_pool"])
+    return add_pooled_view(w)
+
+
+def add_pooled_view(w: pd.DataFrame) -> pd.DataFrame:
+    """D42 columns on a 5c-shaped frame (view_class, parent_below / _above, bool infill, bench_pool, gor12,
+    gor_local): p_class, p_parent, p_infill, same_pool, p_raw_pair, plus fpy and gor12_vs_local."""
+    w = w.copy()
     w["scenario_class"] = w["view_class"]
     w["fpy"] = w["first_production_date"].astype(str).str[:4]
     w["gor12_vs_local"] = w["gor12"] / w["gor_local"]

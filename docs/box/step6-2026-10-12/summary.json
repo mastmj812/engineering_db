@@ -1,0 +1,329 @@
+{
+  "built_at": "2026-10-12T09:40:25-05:00",
+  "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+  "report": "2025Q3",
+  "basin": "delaware",
+  "cliff": "2024-12-01",
+  "prod_asof": "2025-06-01",
+  "extent_id": 6,
+  "n_excluded": 27,
+  "areas": {
+    "k": 15,
+    "pick": {
+      "k_min": 41,
+      "k_1se": 15
+    },
+    "n_cohort": 6668,
+    "record_k": 35,
+    "cv_r2_pick": 0.18913738322946672,
+    "median_share_in_one_record_area": 0.7303370786516064,
+    "median_iou": 0.5607427145277816
+  },
+  "curves": {
+    "n_fitted": 10874,
+    "rungs": {
+      "oil": {
+        "1": 15
+      },
+      "gas": {
+        "1": 15
+      },
+      "water": {
+        "1": 15
+      }
+    },
+    "oil_eur_kft": {
+      "median": 73631.66410772016,
+      "min": 38562.264877188376,
+      "max": 127694.62612696934,
+      "n": 15
+    },
+    "oil_di_nominal": {
+      "median": 2.8775583223092167,
+      "min": 1.972193726834275,
+      "max": 3.7678880856679164,
+      "n": 15
+    },
+    "oil_di_eff": {
+      "median": 0.7378803588432052,
+      "min": 0.6522394243861815,
+      "max": 0.7936612553613626,
+      "n": 15
+    },
+    "max_abs_reconcile": 0.0003441253924532095
+  },
+  "factors": {
+    "n_est": {
+      "WCA": 6579,
+      "BS2_S": 1433
+    },
+    "replication": {
+      "WCA": {
+        "n": 6668,
+        "n_unscored": 1,
+        "n_replicated": 6667,
+        "n_mismatch": 0,
+        "n_own_bench_outside_pool": 88
+      },
+      "BS2_S": {
+        "n": 1482,
+        "n_unscored": 0,
+        "n_replicated": 1482,
+        "n_mismatch": 0,
+        "n_own_bench_outside_pool": 49
+      }
+    },
+    "bs2s": {
+      "extent_id": 7,
+      "extent_version": 1,
+      "n_excluded": 19,
+      "n_in_extent_cohort": 1865,
+      "n_full12": 1482
+    },
+    "infill": {
+      "oil": 0.9223550574921567,
+      "gas": 1.0258810594606347
+    },
+    "ref_mult_oil": {
+      "median": 1.009315220501785,
+      "min": 0.9953532862158554,
+      "max": 1.017138833872673,
+      "n": 15
+    }
+  },
+  "F": {
+    "oil": {
+      "6": {
+        "F": 0.8981972257962689,
+        "n": 6668
+      },
+      "12": {
+        "F": 0.9137141431225386,
+        "n": 6668
+      }
+    },
+    "gas": {
+      "6": {
+        "F": 0.8628617716519236,
+        "n": 6666
+      },
+      "12": {
+        "F": 0.9246702629856198,
+        "n": 6666
+      }
+    }
+  },
+  "holdout": {
+    "n_sql43_in_gate1": 1364,
+    "n_in_areas": 1363,
+    "by_tier": {
+      "unmatched": 1106,
+      "direct": 257
+    },
+    "replication": {
+      "n": 1363,
+      "n_unscored": 2,
+      "n_replicated": 1361,
+      "n_mismatch": 0,
+      "n_own_bench_outside_pool": 32
+    },
+    "n_scenario_unscored": 34,
+    "n_scored_direct": {
+      "oil6": 174,
+      "oil12": 56,
+      "gas6": 174,
+      "gas12": 56
+    },
+    "box_only_all_tiers": {
+      "oil6": {
+        "n": 1053,
+        "bias": -0.07569482155793544,
+        "median": -0.10836622911648564,
+        "p10_high": 0.3548323445936866,
+        "p90_low": -0.47091648125481167,
+        "band": 0.8257488258484983
+      },
+      "oil12": {
+        "n": 602,
+        "bias": -0.08857750049509294,
+        "median": -0.12557880177571595,
+        "p10_high": 0.28191097125576153,
+        "p90_low": -0.4265102026150606,
+        "band": 0.7084211738708222
+      },
+      "gas6": {
+        "n": 1053,
+        "bias": -0.009217602960623583,
+        "median": -0.06183801716860604,
+        "p10_high": 0.46660074546619895,
+        "p90_low": -0.4736049775793542,
+        "band": 0.9402057230455532
+      },
+      "gas12": {
+        "n": 602,
+        "bias": -0.02584763828503497,
+        "median": -0.06816048690716064,
+        "p10_high": 0.4232703791571478,
+        "p90_low": -0.45800938162282434,
+        "band": 0.8812797607799722
+      }
+    }
+  },
+  "verdict": {
+    "overall": "FAIL",
+    "by_stream": {
+      "oil": "FAIL",
+      "gas": "FAIL"
+    },
+    "cells": [
+      {
+        "stream": "oil",
+        "horizon": 6,
+        "area": {
+          "n_qualifying": 6,
+          "n_pass": 1,
+          "qualifying": [
+            1,
+            2,
+            5,
+            6,
+            8,
+            9
+          ],
+          "verdict": "FAIL",
+          "n_wells_qualifying": 163,
+          "n_wells_thin": 11
+        },
+        "bench": {
+          "group": "bench",
+          "stream": "oil",
+          "horizon": 6,
+          "n": 174,
+          "box_bias": -0.09354869492828803,
+          "box_median": -0.1284170957158246,
+          "box_p10_high": 0.3016854383586991,
+          "box_p90_low": -0.4461405176367495,
+          "box_band": 0.7478259559954485,
+          "novi_bias": -0.13727009485830652,
+          "novi_median": -0.1639288509701185,
+          "novi_p10_high": 0.16425556567646413,
+          "novi_p90_low": -0.5028583772971934,
+          "novi_band": 0.6671139429736576,
+          "bias_ok": true,
+          "band_ok": false,
+          "pass": false,
+          "verdict": "FAIL"
+        }
+      },
+      {
+        "stream": "oil",
+        "horizon": 12,
+        "area": {
+          "n_qualifying": 2,
+          "n_pass": 1,
+          "qualifying": [
+            6,
+            9
+          ],
+          "verdict": "FAIL",
+          "n_wells_qualifying": 27,
+          "n_wells_thin": 29
+        },
+        "bench": {
+          "group": "bench",
+          "stream": "oil",
+          "horizon": 12,
+          "n": 56,
+          "box_bias": -0.14582484332543416,
+          "box_median": -0.16123043360206307,
+          "box_p10_high": 0.13696434492904075,
+          "box_p90_low": -0.3825491191584788,
+          "box_band": 0.5195134640875195,
+          "novi_bias": -0.12246287732290173,
+          "novi_median": -0.125241054491223,
+          "novi_p10_high": 0.1729110183550455,
+          "novi_p90_low": -0.3954335007650965,
+          "novi_band": 0.5683445191201419,
+          "bias_ok": false,
+          "band_ok": true,
+          "pass": false,
+          "verdict": "FAIL"
+        }
+      },
+      {
+        "stream": "gas",
+        "horizon": 6,
+        "area": {
+          "n_qualifying": 6,
+          "n_pass": 1,
+          "qualifying": [
+            1,
+            2,
+            5,
+            6,
+            8,
+            9
+          ],
+          "verdict": "FAIL",
+          "n_wells_qualifying": 163,
+          "n_wells_thin": 11
+        },
+        "bench": {
+          "group": "bench",
+          "stream": "gas",
+          "horizon": 6,
+          "n": 174,
+          "box_bias": -0.038486807551610915,
+          "box_median": -0.09719309005742921,
+          "box_p10_high": 0.38331713366573433,
+          "box_p90_low": -0.4246869741003008,
+          "box_band": 0.8080041077660352,
+          "novi_bias": -0.17206015966130453,
+          "novi_median": -0.23106259387014,
+          "novi_p10_high": 0.31982058968834415,
+          "novi_p90_low": -0.5952277461086627,
+          "novi_band": 0.9150483357970068,
+          "bias_ok": true,
+          "band_ok": true,
+          "pass": true,
+          "verdict": "PASS"
+        }
+      },
+      {
+        "stream": "gas",
+        "horizon": 12,
+        "area": {
+          "n_qualifying": 2,
+          "n_pass": 1,
+          "qualifying": [
+            6,
+            9
+          ],
+          "verdict": "FAIL",
+          "n_wells_qualifying": 27,
+          "n_wells_thin": 29
+        },
+        "bench": {
+          "group": "bench",
+          "stream": "gas",
+          "horizon": 12,
+          "n": 56,
+          "box_bias": -0.10618720143990712,
+          "box_median": -0.18051542028706719,
+          "box_p10_high": 0.2251229135963645,
+          "box_p90_low": -0.406901426509964,
+          "box_band": 0.6320243401063286,
+          "novi_bias": -0.22221847357394817,
+          "novi_median": -0.3344207758269665,
+          "novi_p10_high": 0.25551104558153603,
+          "novi_p90_low": -0.5128948360260005,
+          "novi_band": 0.7684058816075365,
+          "bias_ok": false,
+          "band_ok": true,
+          "pass": false,
+          "verdict": "FAIL"
+        }
+      }
+    ]
+  }
+}
