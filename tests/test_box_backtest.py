@@ -55,3 +55,13 @@ def test_near_neighbours_counts_within_window_parents_and_codev_only() -> None:
     }
     assert dfm.near_neighbours(ctx) == 2 + 2 + 1  # children never count; the 700-ft parent and 2,500-ft BS1_S are outside 500 ft
     assert dfm.near_neighbours(ctx, 800) == 6
+
+
+def test_lateral_relative_keeps_area_mix_as_reference() -> None:
+    from box import lateral as lat
+
+    members = [7500.0, 10000.0, 12500.0]
+    e = [lat.lateral_efficiency(x) for x in members]
+    assert lat.relative(10000.0, members) == pytest.approx(0.83 / np.mean(e))
+    assert np.mean([lat.relative(x, members) for x in members]) == pytest.approx(1.0)
+    assert lat.RECORD_CURVE == "2000-60"

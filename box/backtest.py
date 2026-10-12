@@ -15,7 +15,6 @@ unchanged — F(k) keeps the level, the density term only redistributes it betwe
 
 from __future__ import annotations
 
-import itertools
 import math
 from collections.abc import Sequence
 
@@ -29,31 +28,10 @@ SENTINEL_FT = 2800.0
 LATERAL_BINS: tuple[tuple[str, float, float], ...] = (("<8k", 0, 8000), ("8-11k", 8000, 11000), ("11-13.5k", 11000, 13500), (">=13.5k", 13500, math.inf))
 
 
-# Cui & Cross (Novi Labs), URTeC 3723784 (2022), Figure 8, Delaware Wolfcamp A: 3-yr oil per ft relative to a
-# 5,000-ft lateral, by completion size (lb/ft - bbl/ft). 10,000-ft values are the paper's labels; 7,500 / 12,500
-# read off the figure (+-0.005). docs/box/ref/3723784.pdf.
-CUI_DELAWARE: dict[str, tuple[tuple[float, float], ...]] = {
-    "1000-30": ((5000, 1.000), (7500, 1.000), (10000, 0.94), (12500, 0.896)),
-    "1350-40": ((5000, 1.000), (7500, 0.949), (10000, 0.89), (12500, 0.851)),
-    "1700-50": ((5000, 1.000), (7500, 0.910), (10000, 0.85), (12500, 0.820)),
-    "2000-60": ((5000, 1.000), (7500, 0.888), (10000, 0.83), (12500, 0.801)),
-}
-
-
-def lateral_efficiency(lateral_ft: float, curve: str = "2000-60") -> float:
-    """Per-ft efficiency vs a 5,000-ft lateral: linear between the paper's points, 1.0 below 5,000 ft, and the
-    last segment's slope extended past 12,500 ft (the paper's Delaware range ends there; flagged)."""
-    pts = CUI_DELAWARE[curve]
-    x = float(lateral_ft)
-    if not np.isfinite(x):
-        return float("nan")
-    if x <= pts[0][0]:
-        return pts[0][1]
-    for (x0, y0), (x1, y1) in itertools.pairwise(pts):
-        if x <= x1:
-            return y0 + (y1 - y0) * (x - x0) / (x1 - x0)
-    (x0, y0), (x1, y1) = pts[-2], pts[-1]
-    return y1 + (y1 - y0) * (x - x1) / (x1 - x0)
+from box.lateral import (  # noqa: F401  (D50; kept importable here)
+    CUI_DELAWARE,
+    lateral_efficiency,
+)
 
 
 def near_bin(n: float | None) -> str | None:

@@ -99,3 +99,23 @@ curve is flat, so the 1-SE pick wanders. Worth a decision before areas are rebui
 **Asks:** (1) adopt the backtest as the acceptance basis (replacing D18 / §8) and set its thresholds; (2) adopt Cui lateral
 efficiency (touches eng_db #78/#80); (3) density: drop, or fund the 3-D geometry measure; (4) next diagnosis = the
 post-month-6 shape drift; (5) k stability.
+
+## 6. Follow-up 2 (Michael 2026-10-12): Cui adopted (D50), 3-D spacing scoped, shape drift dug
+
+- **D50 recorded** (plan §2): lateral efficiency replaces linear per-ft scaling — Cui & Cross Delaware WCA, 2,000 lb /
+  60 bbl curve, relative to each area curve's own member mix; code `box/lateral.py` (the backtest imports it).
+- **3-D spacing scope:** `SPACING_3D_SCOPE.md` — pair table + per-well features (gunbarrel offsets, drainage cross-section
+  area, parent depletion at first production), PUD side at planned spacing, test plan, effort. Nothing built (new SQL =
+  go-apply). Novi's `raw_novi."WellSpacing"` carries 11 as-of-first-production features (only 3 passed through today).
+- **Shape drift** (`shape/shape.html`, `python -m scripts.box_shape_drift`, 25 s, read-only; 8,456 WCA wells with 24 months,
+  fp ≥ 2016, inside an area of record):
+  - Raw: median cum-24 / cum-6 falls 2.42 (2016) → 2.20 (2018) → 2.01 (2024); cum-12 / cum-6 1.61 → 1.47; calendar rate in
+    months 19–24 over months 4–6 0.36 → 0.29. Peak month median 2 in every vintage; uptime months 7–24 ~0.95–0.98, not falling.
+  - Inside a TC area, 2024 vs 2018: **−15.5 %** in cum-24 / cum-6 (2021–23 −13…−15 %). Lateral + completion size: −17.6 %;
+    + Novi spacing: −18.5 %; + operator: −18.4 % — **none of them absorbs it**. + early-time behaviour (peak month,
+    month-1 share) + GOR: **−8.6 %** — about half the drift travels with how wells come on (peak month alone: +30 % on
+    the ratio per 1 SD). Uptime adds nothing; the producing-day rate ratio drifts too (−12.7 %), so it is decline, not downtime.
+  - Implication for BOX: an area curve averaged over 2016+ wells carries older, shallower post-month-6 decline; newer wells
+    fall below it — exactly the backtest's growing-with-time miss. Remedies to test in the backtest (not built): (a)
+    recency-weighted / last-N-years curve cohort (shape from recent vintages, level from the area), (b) a vintage term on
+    the shape; (c) the 3-D spacing + parent-depletion features may carry part of the unexplained half.
