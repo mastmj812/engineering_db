@@ -274,3 +274,27 @@ g. Carried from 5b (§9), not touched here: the reconcile tolerance, the TC wate
 
 Water carries its own factors (independent Arps), from the same table. Next after the gate: **5d** (box.type_curve /
 tc_member / risk_factor DDL, go-apply), then step 6.
+
+## 8. Gate 5c outcome (Michael, 2026-10-11)
+
+Every §7 recommendation was accepted and is recorded in plan §2 as D41–D47:
+
+| Ask | Decision |
+|---|---|
+| 1 | **D41:** lateral infill is a risking term. |
+| 2 | **D42:** same-pool parents count as infill. |
+| 3 | **D43:** factors apply as a cum-12 uniform scale. |
+| 4 | **D44:** an unparented PUD gets the reference factor (1.00). |
+| 5 | **D45:** the pair → bench class → basin class ladder, n ≥ 30. |
+| 6 | **D46:** gas carries its own GOR-level factor through α. |
+| 7 | **D47:** PPML is the estimator. |
+
+**What this deliverable is now:** the evidence for those decisions. It is not yet the factor table of record:
+
+- `factors.csv` is the log-OLS record view, with sql/50 same-pool pairs kept separate.
+- `ladder.csv` is built on that view.
+
+5d regenerates the factors of record under D42 (pooled view) + D45 (ladder) + D47 (PPML), and stores them in
+`box.risk_factor` on go-apply. Expected values: WCA infill ≈ 0.93 (pooled-view log-OLS 0.929; the PPML estimate of the
+record-view infill term is 0.930).
+
