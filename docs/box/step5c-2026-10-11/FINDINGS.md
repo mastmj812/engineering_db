@@ -3,6 +3,25 @@
 Built 2026-10-11 on branch `claude/box-step5c-dev-factors`. Read-only against the warehouse. **Nothing stored**:
 `box.risk_factor` DDL is step 5d (go-apply).
 
+## 0. Re-run 2026-10-11 on the current 5b record (D37–D40, eng_db #115–#118)
+
+The deliverable was regenerated after the 5b follow-ups:
+
+- D37: ladder rung 3 retired.
+- D38: water TC Di cap.
+- D39: exact monthly volumes.
+- D40: TC fits skip the downtime filter.
+- Engine re-pinned to blueox-boxfit @ 3380317.
+
+| Output | Result |
+|---|---|
+| Every factor table (record, pooled view, mean-ratio, selection ladder, shape, parent age, pooling, ladder) | **Bit-identical** to the #114 build |
+| `wells.csv`, incl. the BS2_S per-well fits redone on the new engine | **Bit-identical** |
+| `normalisation_WCA.csv` | Only `record_oil_eur_kft` / `ref_oil_eur_kft` move (the 5b TC re-fits: ≤ 1.5 %, median ref EUR 65,492 bbl/kft). The multipliers are unchanged (×0.946–1.025, median 0.993). |
+
+Expected: 5c reads the per-well fits and calendar actuals, which D37–D40 did not change (D40 keeps the per-well
+downtime filter). Only the TC area curves moved. **No number in §4–§7 changes.**
+
 **Review surface:** `factors.html`. Open it directly, or serve it with `python -m http.server 8766 --directory docs/box` →
 `/step5c-2026-10-11/factors.html`. The page has a forest plot per bench, the factor tables per stream, the
 pooled-bench view, the selection-bias ladder, the shape, mean-ratio and parent-age checks, the per-bench vs
@@ -30,8 +49,8 @@ selection for both estimators, ladder, normalisation).
 ## 2. Inputs
 
 - **WCA:** the step-5b record. The strict D9 cohort is 7,527 wells (`members_WCA.csv`, area of record per well). The
-  per-well fits come from `well_fits_WCA.csv` (blueox-boxfit @ b7a0519; the run refuses a different installed
-  SHA). Actuals were re-cut from `curated.production` at the 5b as-of month (2026-07-01). The re-cut 12-mo oil
+  per-well fits come from `well_fits_WCA.csv` (the run refuses an installed blueox-boxfit SHA different from the 5b
+  record's; re-run on @ 3380317, see §0). Actuals were re-cut from `curated.production` at the 5b as-of month (2026-07-01). The re-cut 12-mo oil
   matches 5b on 100 % of wells.
 - **BS2_S:** the gate-1 final set minus `exclusions.csv` (19 wells). Kept: D9 cohort flag, lateral midpoint inside
   the BS2_S extent of record (extent 7), and 12 full months by 2026-07-01. That leaves **1,865 wells**, fitted

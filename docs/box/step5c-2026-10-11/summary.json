@@ -1,7 +1,7 @@
 {
-  "built_at": "2026-10-11T08:19:46-05:00",
+  "built_at": "2026-10-11T21:52:00-05:00",
   "prod_asof": "2026-07-01",
-  "boxfit_sha": "b7a051958d1556b4d21d924489bc01c048b91167",
+  "boxfit_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
   "n_boot": 400,
   "ci": 0.9,
   "reference": "codev_stack",
