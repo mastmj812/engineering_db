@@ -1,0 +1,231 @@
+{
+  "built_at": "2026-10-12T07:40:16-05:00",
+  "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+  "data_asof": "2026-07-01",
+  "n_boot": 400,
+  "n_est": {
+    "WCA": 7425,
+    "BS2_S": 1804
+  },
+  "relabel": {
+    "WCA": {
+      "same_pool": 187,
+      "sandwich": 7
+    },
+    "BS2_S": {
+      "same_pool": 1,
+      "sandwich": 0
+    }
+  },
+  "checks": [
+    {
+      "check": "installed blueox-boxfit = the 5b and 5c record SHA",
+      "result": "3380317",
+      "pass": true
+    },
+    {
+      "check": "5c frame re-estimates the committed factors.csv (log-OLS record view, 3 record metrics \u00d7 2 benches)",
+      "result": "66 terms, worst rel 2.2e-16",
+      "pass": true
+    },
+    {
+      "check": "estimation wells = 5c n_est",
+      "result": "WCA 7,425 / BS2_S 1,804 (5c 7,425 / 1,804)",
+      "pass": true
+    },
+    {
+      "check": "each area curve re-fitted from its members' fits = the 5b stored row (oil / water qo, qi, Di, b, EUR; gas \u03b1, \u03b2, EUR)",
+      "result": "105 rows, worst rel 0.0e+00 (tol 1e-07)",
+      "pass": true
+    },
+    {
+      "check": "members = the 5b strict cohort; included per curve = n_wells",
+      "result": "7,527 wells \u00d7 3 streams = 22,581 rows (5b cohort 7,527)",
+      "pass": true
+    },
+    {
+      "check": "no member in docs/box/exclusions.csv",
+      "result": "0",
+      "pass": true
+    },
+    {
+      "check": "relaxation rungs stored (rung 3 never emitted, D37)",
+      "result": "[1]",
+      "pass": true
+    },
+    {
+      "check": "live curated.dev_scenario vs the 5c frame (class, infill flag)",
+      "result": "9,391 scored: 0 class / 0 infill changed, 1 missing",
+      "pass": true
+    }
+  ],
+  "store_plan": [
+    {
+      "table": "box.type_curve",
+      "rows": 105,
+      "key": "35 areas of record (extent 6, areas v1) \u00d7 oil / gas / water, version 1"
+    },
+    {
+      "table": "box.tc_member",
+      "rows": 22581,
+      "key": "7,527 wells \u00d7 3 curves; included 22,551"
+    },
+    {
+      "table": "box.risk_factor",
+      "rows": 108,
+      "key": "3 streams \u00d7 (reference + pair + class per bench; class across benches), version 1"
+    }
+  ],
+  "frame_identity": {
+    "n_terms": 66,
+    "worst_rel": 2.220446049250313e-16,
+    "n_est": {
+      "WCA": 7425,
+      "BS2_S": 1804
+    }
+  },
+  "refit_worst_rel": 0.0,
+  "drift": {
+    "checked_at": "2026-10-12T07:40:16-05:00",
+    "n": 9391,
+    "n_missing_live": 1,
+    "n_class_changed": 0,
+    "n_infill_changed": 0,
+    "examples": []
+  },
+  "infill_record": {
+    "WCA/oil": 0.9226852042468761,
+    "BS2_S/oil": 0.9048176277205925,
+    "WCA/gas": 1.0422514629956225,
+    "BS2_S/gas": 1.0572379084301926,
+    "WCA/water": 0.9329652884615074,
+    "BS2_S/water": 0.9354746465773482
+  },
+  "ref_mult": {
+    "oil": {
+      "median": 1.0073047038647882,
+      "min": 0.968689390439556,
+      "max": 1.042310343067956
+    },
+    "water": {
+      "median": 1.0051922624862046,
+      "min": 0.9778352536097749,
+      "max": 1.0405501175816334
+    }
+  },
+  "wca_reference_gor_vs_local": {
+    "mean": 1.0409432695873742,
+    "median": 0.999914041023844,
+    "n": 4232
+  },
+  "rungs": [
+    {
+      "bench": "BS2_S",
+      "stream": "gas",
+      "rung": 1,
+      "n": 4
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "gas",
+      "rung": 2,
+      "n": 3
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "gas",
+      "rung": 3,
+      "n": 1
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "oil",
+      "rung": 1,
+      "n": 4
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "oil",
+      "rung": 2,
+      "n": 3
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "oil",
+      "rung": 3,
+      "n": 1
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "water",
+      "rung": 1,
+      "n": 4
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "water",
+      "rung": 2,
+      "n": 3
+    },
+    {
+      "bench": "BS2_S",
+      "stream": "water",
+      "rung": 3,
+      "n": 1
+    },
+    {
+      "bench": "WCA",
+      "stream": "gas",
+      "rung": 1,
+      "n": 7
+    },
+    {
+      "bench": "WCA",
+      "stream": "gas",
+      "rung": 2,
+      "n": 2
+    },
+    {
+      "bench": "WCA",
+      "stream": "gas",
+      "rung": 3,
+      "n": 1
+    },
+    {
+      "bench": "WCA",
+      "stream": "oil",
+      "rung": 1,
+      "n": 7
+    },
+    {
+      "bench": "WCA",
+      "stream": "oil",
+      "rung": 2,
+      "n": 2
+    },
+    {
+      "bench": "WCA",
+      "stream": "oil",
+      "rung": 3,
+      "n": 1
+    },
+    {
+      "bench": "WCA",
+      "stream": "water",
+      "rung": 1,
+      "n": 7
+    },
+    {
+      "bench": "WCA",
+      "stream": "water",
+      "rung": 2,
+      "n": 2
+    },
+    {
+      "bench": "WCA",
+      "stream": "water",
+      "rung": 3,
+      "n": 1
+    }
+  ]
+}
