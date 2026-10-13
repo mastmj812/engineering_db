@@ -88,7 +88,7 @@ def prep(fr: pd.DataFrame, sp: pd.Series) -> pd.DataFrame:
 
 
 def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, workers: int | None, last: dt.date, P: dict[str, Any],
-             horizons: tuple[int, ...] = HORIZONS, k_months: int = 24, keep_pred: bool = False) -> dict[str, Any]:
+             horizons: tuple[int, ...] = HORIZONS, k_months: int = 24, keep_pred: bool = False, return_internals: bool = False) -> dict[str, Any]:
     asof = _prev_month(cutoff)
     ar = hr.rebuild_areas(conn, wells, asof)
     cb = hr.rebuild_curves(conn, wells, ar, cutoff, asof, workers)
@@ -174,7 +174,8 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
     hs["cutoff"] = str(cutoff)
     for v in VARIANTS:
         hs[f"mult_{v}"] = mult_h[v]
-    return {"cutoff": cutoff, "asof": asof, "k_areas": len(ar["geoms"]), "n_train": len(trn), "n_hold": len(hs), "hold_repl": hrep,
+    extra = {"cb": cb, "trn": trn, "t_act": t_act, "sp": sp} if return_internals else {}
+    return {**extra, "cutoff": cutoff, "asof": asof, "k_areas": len(ar["geoms"]), "n_train": len(trn), "n_hold": len(hs), "hold_repl": hrep,
             "F": {v: {s: [float(x) for x in F[v][s]] for s in STREAMS} for v in VARIANTS}, "density": dens_fit, "s3d": s3d_fit, "scores": pd.DataFrame(rows), "hold": hs,
             "n_fitted": cb["n_fitted"]}
 

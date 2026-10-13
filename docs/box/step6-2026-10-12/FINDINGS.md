@@ -270,3 +270,36 @@ outside the early control (2021–24 wells: 1,588 infill ≤ 3 mi, 2,020 edge 3�
 §11 rock test only sees covered ground, exhaustion could have hidden in step-outs; tested directly — within the same TC
 area AND first-production year, step-outs perform like infill: level −0.5 % (t −0.3), shape +0.4 % (t 0.1); edge −0.3 % /
 +0.3 %. Tier-1 exhaustion is not visible either as poorer rock under infill or as weaker step-outs.
+
+## 12. D54 five-variant analog test (Michael 2026-10-13)
+
+`docs/box/acceptance/acceptance_tuning.html` (re-run with the analog candidate, `box/analog.py`; 3.0 h; D52 holdout sealed).
+Analog cohort per scored well = `dealintake/select_wells` rules (config v10, tier-blind), radius 5 → 20 mi; each variant
+calibrated by its own F(k) on 500 training wells with as-of cohorts (analogs first-producing before the well — a harness fix
+made before this run: the smoke run let later wells into calibration). Package bias, mean over folds (− = forecast high):
+
+| | oil cum-12 | cum-24 | cum-36 | cum-48 | gas cum-12 | cum-24 | cum-36 | judged cells failing |
+|---|---|---|---|---|---|---|---|---|
+| BOX `lat` (record) | −7.8 | −12.4 | −16.8 | −20.9 | +4.5 | +2.5 | +2.9 | 20 / 34 |
+| local offsets (benchmark) | −7.4 | −11.9 | −17.1 | −24.0 | +6.1 | +2.5 | −0.2 | — |
+| `di_p50` (deal-intake as is) | −7.7 | −10.0 | −13.4 | −18.3 | **+0.8** | +1.8 | −0.7 | 13 |
+| `di_mean` | −7.8 | −10.4 | −14.0 | −19.0 | +3.9 | +4.7 | +4.0 | 13 |
+| `di_mean_cui` | −7.7 | −10.3 | −14.0 | −18.9 | +4.0 | +4.8 | +4.0 | 13 |
+| `di_mean_cui_scen` | −7.0 | −9.8 | −13.6 | −18.7 | +5.0 | +5.6 | +4.9 | 14 |
+| `di_recent` | **−6.7** | **−9.4** | **−13.1** | **−17.4** | +5.2 | +5.9 | +5.0 | 14 (8 bias) |
+
+- **The analog workup is the better forecaster on oil at every horizon past 12 months** (−3 to −4 pts at cum-24/36 vs BOX)
+  **and has the tighter band** (oil cum-24 0.63–0.67 vs BOX 0.69, benchmark 0.68; gas 0.88–0.91 vs 0.94–0.97). Defensibility
+  and accuracy point the same way.
+- **It still fails D53 on oil bias at 2+ years**: the vintage drift is reduced, not removed (best: `di_recent` −9.4 % cum-24,
+  −13.1 % cum-36; per fold 2020–23 cum-24 −7…−9 % pass, cum-36 −9…−11.5 %; the 2019 fold is worst, −20.6 % at cum-36).
+- Small effects: Cui and dev-scenario factors move the PACKAGE result < 1 pt (Cui fixes the per-well length gradient, not the
+  aggregate); recency preference is worth ~1 pt (10 % of locations fell back to the full pool). P50 vs mean ≈ equal on oil.
+- **Gas surprise:** deal-intake's own gas Arps P50 is the least biased gas (+0.8 / +1.8 / −0.7 %) vs the D30 ratio-at-local-GOR
+  (+4…+6 %). Reported, not acted on (D30 is a decision of record).
+- Support: 3,011 of 4,491 locations filled within 5 mi, 508 at 7.5, 202 at 10, 173 at 15, 597 hit the 20-mi cap — mostly
+  short (~1-mile) actual laterals that the ±25 % lateral band can't fill (not the PUD case); wells with < 3 analogs drop from
+  the analog variants (~9 % fewer packages than BOX).
+
+**Read:** D54 is supported by the data — the defensible method is also the more accurate one. The remaining oil miss is the
+vintage drift (~−10 % at 2 yr, −13 % at 3 yr). Per D54 it must be disclosed or corrected by a stated, evidence-based rule.

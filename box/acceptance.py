@@ -33,6 +33,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from box import analog as an
 from box import backtest_report as br
 from box import edge_gap_report as egr
 from box import exclusions
@@ -47,7 +48,9 @@ HORIZONS: tuple[int, ...] = (12, 24, 36, 48)
 K_MONTHS = 48
 STREAMS = ("oil", "gas")
 RECORD = "lat"  # BOX model of record after D50 (Cui lateral efficiency)
-REPORTED = ("base", "lat", "lat+s3d")
+REPORTED = ("base", "lat", "lat+s3d", *an.VARIANTS)
+F_SAMPLE = 500  # training wells for each analog variant's F(k) (leave-self-out cohorts), seeded
+SEED = 20261013
 BIAS_TOL = 0.10
 BAND_TOL = 0.05  # D53 amendment (Michael 2026-10-13): BOX band may exceed the benchmark's by this much (sampling noise)
 MIN_PACKAGES = 30
@@ -97,9 +100,9 @@ def judge_cell(box: Mapping[str, float], bench: Mapping[str, float], n_pkg: int,
     return "PASS" if ok else "FAIL"
 
 
-def verdict(cells: pd.DataFrame) -> dict[str, Any]:
-    """Overall: every judged cell of the record model passes, oil AND gas."""
-    rec = cells[cells["variant"] == RECORD]
+def verdict(cells: pd.DataFrame, variant: str = RECORD) -> dict[str, Any]:
+    """Overall: every judged cell of `variant` passes, oil AND gas."""
+    rec = cells[cells["variant"] == variant]
     judged = rec[rec["verdict"] != "not judged"]
     by_stream = {s: ("PASS" if (judged[judged.stream == s]["verdict"] == "PASS").all() and (judged.stream == s).any() else "FAIL") for s in STREAMS}
     overall = "PASS" if all(v == "PASS" for v in by_stream.values()) else "FAIL"
@@ -109,6 +112,39 @@ def verdict(cells: pd.DataFrame) -> dict[str, Any]:
 # ----------------------------------------------------------------------------
 # Run
 # ----------------------------------------------------------------------------
+
+
+def add_analog_predictions(view: pd.DataFrame, f: dict[str, Any], cutoff: dt.date, workers: int | None) -> pd.DataFrame:
+    """D54 candidate: analog cohort per scored well (box/analog), each variant calibrated by its own F(k) from a seeded
+    training sample with leave-self-out cohorts; writes pred_<variant>_<stream><k> and <variant>_err_<stream><k>."""
+    cb, trn, t_act = f["cb"], f["trn"], f["t_act"]
+    f_oil = dict(zip(trn["api10"], trn["f_oil"], strict=True))
+    pool = an.build_pool(cb["frame"], cb["fits"], f["sp"], f_oil)
+    xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
+    xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
+
+    def locs(df: pd.DataFrame, xy: np.ndarray) -> list[dict[str, Any]]:
+        # fp_max: analogs must have first produced BEFORE the location (holdout: all pool wells are pre-cutoff anyway;
+        # training sample: excludes later wells, so F(k) is calibrated under the same as-of rule the holdout is predicted under)
+        return [{"api10": r.api10, "x": xy[i, 0], "y": xy[i, 1], "lateral_ft": float(r.lateral_ft), "spacing_ft": r.spacing_ft,
+                 "gor_local": r.gor_local, "f_oil": r.f_oil, "f_gor": r.f_gor, "fp_max": pd.Timestamp(r.first_production_date).date()} for i, r in enumerate(df.itertuples())]
+
+    rng = np.random.default_rng(SEED)
+    ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
+    pv = an.predict_many(locs(view, xy_v), pool, cutoff, K_MONTHS, workers)
+    pt = an.predict_many(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, cutoff, K_MONTHS, workers)
+    mv, mt = an.monthly_arrays(pv, K_MONTHS), an.monthly_arrays(pt, K_MONTHS)
+    for v in an.VARIANTS:
+        for s in STREAMS:
+            F, _ = hc.calendar_factor_curve(t_act[s][ti], mt[v][s])
+            pred = np.cumsum(mv[v][s], axis=1) * F[None, :]
+            for k in HORIZONS:
+                if f"actual_{s}{k}" not in view:
+                    continue
+                view[f"pred_{v}_{s}{k}"] = pred[:, k - 1]
+                view[f"{v}_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred[:, k - 1])
+    prov = pd.DataFrame([{k_: p.get(k_) for k_ in ("api10", "radius_mi", "n_analogs", "flags", "recent_radius_mi", "recent_n", "recent_fallback", "ref_mult")} for p in pv])
+    return prov
 
 
 def score_fold(hs: pd.DataFrame, cutoff: str) -> pd.DataFrame:
@@ -137,15 +173,17 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
     subj = wells[np.array([f >= dt.date(2016, 1, 1) for f in wells["first_production_date"]]) & (pd.to_numeric(wells["lateral_length_ft"], errors="coerce") > 0).to_numpy()]
     P = s3r.build_pairs(conn, subj.reset_index(drop=True))
-    cells, fold_meta = [], []
+    cells, fold_meta, analog_prov = [], [], []
     for c in cutoffs:
-        f = br.run_fold(conn, wells, wells_dir, c, workers, last, P, horizons=HORIZONS, k_months=K_MONTHS, keep_pred=True)
+        f = br.run_fold(conn, wells, wells_dir, c, workers, last, P, horizons=HORIZONS, k_months=K_MONTHS, keep_pred=True, return_internals=True)
         hs = f["hold"]
         hs["package"] = hs["api10"].map(packages(list(hs["api10"]), P["pairs"]))
         held = set(hs.loc[hs["holdout_block"], "package"])
         hs["package_held_out"] = hs["package"].isin(held)
-        view = hs[hs["package_held_out"] == score_holdout].copy()  # tuning view excludes held-out packages entirely
+        view = hs[hs["package_held_out"] == score_holdout].copy().reset_index(drop=True)  # tuning view excludes held-out packages entirely
+        aprov = add_analog_predictions(view, f, c, workers)
         cells.append(score_fold(view, str(c)))
+        analog_prov.append(aprov.assign(cutoff=str(c)))
         sizes = hs.drop_duplicates("package")["package"].map(hs["package"].value_counts())
         fold_meta.append({"cutoff": str(c), "asof": str(f["asof"]), "k_areas": f["k_areas"], "n_train": f["n_train"], "n_scored_wells": len(hs),
                           "n_packages": int(hs["package"].nunique()), "median_package_wells": float(sizes.median()), "max_package_wells": int(sizes.max()),
@@ -153,13 +191,18 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
                           "n_factor_no_estimate": int(hs["factor_no_estimate"].sum()) if "factor_no_estimate" in hs else 0,
                           "F_oil_12_36": [f["F"][RECORD]["oil"][11], f["F"][RECORD]["oil"][35]]})
     cells = pd.concat(cells, ignore_index=True)
-    v = verdict(cells)
+    prov = pd.concat(analog_prov, ignore_index=True)
+    v = {var: verdict(cells, var) for var in REPORTED}
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     summ = {"built_at": built, "engine_sha": engine_sha, "actuals_through": str(last), "view": "HOLDOUT (final scoring)" if score_holdout else "tuning (holdout excluded)",
-            "record_variant": RECORD, "bias_tol": BIAS_TOL, "min_packages": MIN_PACKAGES, "folds": fold_meta, "verdict": v, "n_excluded": len(excluded)}
+            "record_variant": RECORD, "bias_tol": BIAS_TOL, "band_tol": BAND_TOL, "min_packages": MIN_PACKAGES, "folds": fold_meta, "verdict": v[RECORD],
+            "verdict_by_variant": v, "n_excluded": len(excluded),
+            "analog_radius_mi": {str(k_): int(n_) for k_, n_ in prov["radius_mi"].value_counts().sort_index().items()},
+            "analog_recent_fallback_share": float(prov["recent_fallback"].mean()) if "recent_fallback" in prov else None}
     tag = "holdout" if score_holdout else "tuning"
     (out / f"acceptance_{tag}.html").write_text(render(summ, cells), encoding="utf-8")
     cells.to_csv(out / f"cells_{tag}.csv", index=False)
+    prov.to_csv(out / f"analog_provenance_{tag}.csv", index=False)
     (out / f"summary_{tag}.json").write_text(json.dumps(rep._clean(summ), indent=2, default=rep._json), encoding="utf-8")
     return {"summary": summ, "cells": cells}
 
@@ -185,6 +228,8 @@ def render(s: dict[str, Any], cells: pd.DataFrame) -> str:
         ("<div class=meta>Package = co-developed co-extent WCA wells (first production within 180 d, overlap ≥ 30 %), connected components; error = Σ actual / Σ predicted − 1 "
          "(negative = forecast HIGH). Benchmark = median per-1,000-ft cum-k of the 15 nearest pre-cutoff cohort wells whose cum-k was known at the cutoff × lateral. "
          "Held-out packages (any member in a D52 holdout block) are excluded before any statistic is computed; only their counts appear below.</div>"),
+        ("<div class=meta>Verdict by variant (same rule): " + " · ".join(f"<b>{k}</b> {x['overall']} ({x['n_failed']}/{x['n_judged']} fail)" for k, x in s.get("verdict_by_variant", {}).items())
+         + f". Analog radius reached (locations): {s.get('analog_radius_mi')}; recency fallback share {s.get('analog_recent_fallback_share')}.</div>"),
         "<h2>1. Package bias and band by fold</h2>", _table(tab, pct),
         "<h2>2. Folds</h2>", _table(folds, {"median_package_wells": ".1f"}),
         "</body></html>"])

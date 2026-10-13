@@ -1,10 +1,11 @@
 {
-  "built_at": "2026-10-13T10:00:33-05:00",
+  "built_at": "2026-10-13T16:08:55-05:00",
   "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
   "actuals_through": "2026-07-01",
   "view": "tuning (holdout excluded)",
   "record_variant": "lat",
   "bias_tol": 0.1,
+  "band_tol": 0.05,
   "min_packages": 30,
   "folds": [
     {
@@ -37,8 +38,8 @@
       "n_wells_held_out": 378,
       "n_factor_no_estimate": 1,
       "F_oil_12_36": [
-        0.9147605926985718,
-        1.0274198232502632
+        0.9147751546357662,
+        1.0269989533164032
       ]
     },
     {
@@ -54,8 +55,8 @@
       "n_wells_held_out": 318,
       "n_factor_no_estimate": 0,
       "F_oil_12_36": [
-        0.920259224813756,
-        0.9957314088317202
+        0.9203413053783692,
+        0.9959246993913073
       ]
     },
     {
@@ -71,8 +72,8 @@
       "n_wells_held_out": 346,
       "n_factor_no_estimate": 0,
       "F_oil_12_36": [
-        0.9205114386825727,
-        0.9700101297634899
+        0.9205869873925007,
+        0.9700847172760448
       ]
     },
     {
@@ -88,8 +89,8 @@
       "n_wells_held_out": 274,
       "n_factor_no_estimate": 0,
       "F_oil_12_36": [
-        0.9190417940135903,
-        0.9700700532130575
+        0.9191074915645985,
+        0.9701239144089852
       ]
     },
     {
@@ -105,8 +106,8 @@
       "n_wells_held_out": 349,
       "n_factor_no_estimate": 0,
       "F_oil_12_36": [
-        0.9201658268607514,
-        0.9631837472702057
+        0.9202459350857368,
+        0.9631075756855887
       ]
     }
   ],
@@ -119,15 +120,87 @@
     "n_judged": 34,
     "n_failed": 20
   },
-  "n_excluded": 27,
-  "verdict_strict": {
-    "overall": "FAIL",
-    "by_stream": {
-      "oil": "FAIL",
-      "gas": "FAIL"
+  "verdict_by_variant": {
+    "base": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 16
     },
-    "n_judged": 34,
-    "n_failed": 26
+    "lat": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 20
+    },
+    "lat+s3d": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 20
+    },
+    "di_p50": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 13
+    },
+    "di_mean": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 13
+    },
+    "di_mean_cui": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 13
+    },
+    "di_mean_cui_scen": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 14
+    },
+    "di_recent": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 14
+    }
   },
-  "band_tol": 0.05
+  "n_excluded": 27,
+  "analog_radius_mi": {
+    "5.0": 3011,
+    "7.5": 508,
+    "10.0": 202,
+    "15.0": 173,
+    "20.0": 597
+  },
+  "analog_recent_fallback_share": 0.10148454611827695
 }
