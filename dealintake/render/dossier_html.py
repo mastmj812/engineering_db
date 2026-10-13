@@ -59,6 +59,73 @@ def _cell(v: Any) -> str:
     return _esc(v)
 
 
+def _inj_cell(n: dict[str, Any] | None) -> Any:
+    if not n:
+        return "—"
+    so = n.get("standoff_ft")
+    st = "standoff n/a" if so is None else f"{abs(so):,.0f} ft {'above' if so > 0 else 'below'}"
+    iv = n.get("interval_ft") or [None, None]
+    ivs = f"{iv[0]:,.0f}–{iv[1]:,.0f} ft" if iv[0] is not None and iv[1] is not None else "interval n/p"
+    return _Raw(f'{html.escape(str(n.get("name")))} <span class="meta">{html.escape(str(n.get("operator") or ""))}</span><br>'
+                f"{n['dist_mi']:g} mi · {ivs} · {st}" + (" · <b>near</b>" if n.get("near") else ""))
+
+
+def _swd_blocks(G: dict[str, Any], sticks: dict[str, dict[str, Any]], name: dict[str, str],
+                meta: dict[str, Any] | None) -> list[str]:
+    """SWD context (C4): injector proximity per DSU + cohort exposure beside
+    performance. Reported, never selected on; older signals have no section."""
+    out: list[str] = []
+    sw = G.get("swd")
+    unit_rows = [(u, v.get("swd")) for u, v in sticks.items() if v.get("swd")]
+    if meta is not None and not meta.get("available"):
+        out.append(f'<div class="meta">SWD context unavailable ({_esc(meta.get("reason") or "not configured")}).</div>')
+        return out
+    if not sw and not unit_rows:
+        return out
+    r_mi = (meta or {}).get("radius_mi") or (unit_rows[0][1]["radius_mi"] if unit_rows else None)
+    vw = (meta or {}).get("vert_window_ft") or (unit_rows[0][1]["vert_window_ft"] if unit_rows else None)
+    out.append('<div><b>SWD context (C4)</b> <span class="meta">saltwater-disposal injectors within '
+               + (f"{r_mi:g} mi" if r_mi else "the radius") + " of a stick (surface point to the stick); standoff = landing TVD "
+               "− permitted interval bottom; 'near' = interval within " + (f"{vw:,.0f} ft" if vw else "the window")
+               + " of the landing; volumes = reported H-10 since 2015. Context for the reviewer — "
+               "on Toucan (2026-10-06) exposure did not predict BS2_S performance.</span></div>")
+    if unit_rows:
+        out.append(_table(["DSU", "Planned sticks exposed", "Injectors (near / active)", "Nearest counted injector",
+                           "Largest (MMbbl)", "Latest max psi"],
+                          [[name.get(u, u), f"{v['n_sticks_exposed']}/{v['n_sticks']}",
+                            f"{v['n_injectors']} ({v['n_near']} / {v['n_active']})" if v["n_injectors"] else "none within radius",
+                            _inj_cell(v["nearest"]),
+                            f"{v['biggest']['name']} {v['biggest']['cum_mmbbl']:g}" if v.get("biggest") else "—",
+                            num(v.get("max_latest_psi"), ",.0f")]
+                           for u, v in unit_rows]))
+    if sw and sw.get("n"):
+        out.append(f'<div><b>Cohort exposure</b> <span class="meta">{sw["n_exposed"]} of {sw["n"]} cohort wells have a counted '
+                   f'injector within the radius; {sw["n_suspect"]} are both poor (≤ {num(sw.get("poor_cutoff"), ",.0f")} '
+                   f'{_esc(sw["perf_metric"])}, half the cohort median {num(sw.get("perf_median"), ",.0f")}) and exposed.'
+                   + (f' Exposed median {num(sw["exposed_median"], ",.0f")} (n={sw["n_exposed_scored"]}) vs clear '
+                      f'{num(sw["clear_median"], ",.0f")} (n={sw["n_clear_scored"]}).'
+                      if sw.get("exposed_median") is not None and sw.get("clear_median") is not None else "")
+                   + "</span></div>")
+        shown = [r for r in sw["wells"] if r["exposed"] or r["poor"]]
+        if shown:
+            out.append(_table(["Well", "First prod", "TVD ft", _esc(sw["perf_metric"]), "Read", "Injectors (near)",
+                               "Nearest counted injector", "Injected before / first 24 mo (MMbbl)", "Latest max psi"],
+                              [[f"{r['well_name']} ({r['api10']})", r.get("first_production_date") or "—",
+                                num(r.get("tvd_ft"), ",.0f"), num(r.get("perf_per_1000ft"), ",.0f"),
+                                _chip("SUSPECT: poor + exposed", "#dc2626") if r["suspect"]
+                                else _chip("poor, not exposed", "#6b7280") if r["poor"]
+                                else "exposed, not poor",
+                                f"{r['n_injectors']} ({r['n_near']})" if r["n_injectors"] else "—",
+                                _inj_cell(r["nearest"]),
+                                (f"{r['nearest']['pre_mmbbl']:g} / {r['nearest']['w24_mmbbl']:g}"
+                                 if r["nearest"] and r["nearest"].get("pre_mmbbl") is not None else "—"),
+                                num(r.get("max_latest_psi"), ",.0f")]
+                               for r in shown]))
+            out.append('<div class="meta">Wells neither poor nor exposed are not listed. "Injected before" = the nearest '
+                       "injector's H-10 volume before the well's first production month.</div>")
+    return out
+
+
 def _table(headers: list[str], rows: list[list[Any]], cls: str = "") -> str:
     h = "".join(f"<th>{_esc(x)}</th>" for x in headers)
     body = "".join("<tr>" + "".join(f"<td>{_cell(c)}</td>" for c in r) + "</tr>" for r in rows)
@@ -375,6 +442,7 @@ def render(run_dir: Path) -> Path:
                                    if c["min_abs_dtvd_ft"] is None or abs(s["nearest_dtvd_ft"]) < (c["median_abs_dtvd_ft"] or 0)
                                    else "more standoff than the cohort median")]
                                  for u, s in so["units"].items() if s]))
+            p += _swd_blocks(G, sticks, name, sig.get("swd"))
             p.append(_table(["Scenario of the well (own history)" if so else "Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
                             [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)] for t in G.get("tier_order") or pool["tier_order"]]))
             for f in G["flags"]:

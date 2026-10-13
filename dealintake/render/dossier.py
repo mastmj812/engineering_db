@@ -272,6 +272,42 @@ def render(run_dir: Path) -> Path:
                             [[u, v["n_sticks"], v["n_with_parent"], v["nearest_bench"] or "—",
                               "—" if v["nearest_dtvd_ft"] is None else f"{v['nearest_dtvd_ft']:+,.0f}"]
                              for u, v in so["units"].items() if v]))
+            meta_swd = sig.get("swd")
+            if meta_swd is not None and not meta_swd.get("available"):
+                s.append(f"\nSWD context unavailable ({meta_swd.get('reason') or 'not configured'}).\n")
+            else:
+                urows = [(u, (B["units"].get(u) or {}).get("swd")) for u in G["units"]]
+                urows = [(u, v) for u, v in urows if v]
+                sw = G.get("swd")
+                if urows or (sw and sw.get("n")):
+                    s.append("\n**SWD context (C4)** — injectors near our sticks and the cohort; standoff = landing TVD − "
+                             "interval bottom (+ = above). Reported, never selected on.\n")
+                if urows:
+                    s.append(md(["Unit", "Sticks exposed", "Injectors (near/active)", "Nearest counted", "Distance mi",
+                                 "Interval ft", "Standoff ft", "Cum MMbbl", "Status"],
+                                [[u, f"{v['n_sticks_exposed']}/{v['n_sticks']}", f"{v['n_injectors']} ({v['n_near']}/{v['n_active']})",
+                                  (v["nearest"] or {}).get("name") or "—", (v["nearest"] or {}).get("dist_mi") if v["nearest"] else "—",
+                                  (f"{v['nearest']['interval_ft'][0]:,.0f}–{v['nearest']['interval_ft'][1]:,.0f}"
+                                   if v["nearest"] and v["nearest"]["interval_ft"][0] is not None and v["nearest"]["interval_ft"][1] is not None else "—"),
+                                  (f"{v['nearest']['standoff_ft']:+,.0f}" if v["nearest"] and v["nearest"]["standoff_ft"] is not None else "—"),
+                                  v["nearest"]["cum_mmbbl"] if v["nearest"] else "—", (v["nearest"] or {}).get("status") or "—"]
+                                 for u, v in urows]))
+                if sw and sw.get("n"):
+                    s.append(f"\nCohort exposure: {sw['n_exposed']} of {sw['n']} exposed; {sw['n_suspect']} poor AND exposed "
+                             f"(poor = ≤ {num(sw.get('poor_cutoff'), ',.0f')} {sw['perf_metric']}).\n")
+                    shown = [r for r in sw["wells"] if r["exposed"] or r["poor"]]
+                    if shown:
+                        s.append(md(["Well", "api10", "First prod", "TVD ft", sw["perf_metric"], "Read", "Nearest counted",
+                                     "Distance mi", "Standoff ft", "Cum MMbbl", "Before / first 24 mo MMbbl"],
+                                    [[r["well_name"], r["api10"], r.get("first_production_date") or "—", num(r.get("tvd_ft"), ",.0f"),
+                                      num(r.get("perf_per_1000ft"), ",.0f"),
+                                      "SUSPECT" if r["suspect"] else "poor" if r["poor"] else "exposed",
+                                      (r["nearest"] or {}).get("name") or "—", (r["nearest"] or {}).get("dist_mi") if r["nearest"] else "—",
+                                      (f"{r['nearest']['standoff_ft']:+,.0f}" if r["nearest"] and r["nearest"]["standoff_ft"] is not None else "—"),
+                                      r["nearest"]["cum_mmbbl"] if r["nearest"] else "—",
+                                      (f"{r['nearest']['pre_mmbbl']:g} / {r['nearest']['w24_mmbbl']:g}"
+                                       if r["nearest"] and r["nearest"].get("pre_mmbbl") is not None else "—")]
+                                     for r in shown]))
             s.append(md(["Tier", "TC wells", "Median Novi EUR/1,000 ft (group pool)"],
                         [[t, G["tier_counts"].get(t, 0), G["tier_medians_novi_eur_per_1000ft"].get(t)]
                          for t in G.get("tier_order") or pool["tier_order"]]))
