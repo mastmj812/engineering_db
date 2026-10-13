@@ -117,7 +117,17 @@
       "gas": "FAIL"
     },
     "n_judged": 34,
+    "n_failed": 20
+  },
+  "n_excluded": 27,
+  "verdict_strict": {
+    "overall": "FAIL",
+    "by_stream": {
+      "oil": "FAIL",
+      "gas": "FAIL"
+    },
+    "n_judged": 34,
     "n_failed": 26
   },
-  "n_excluded": 27
+  "band_tol": 0.05
 }

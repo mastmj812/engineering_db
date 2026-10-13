@@ -230,3 +230,35 @@ apply_wellstick_fix notes sql/59 as a post-rebuild follow-up. Not in the nightly
   terminal estimate for a sandwich holdout well (1 well, 2020 fold). Backtest gives it the reference (1.00), counted as
   `n_factor_no_estimate`; the record lookup is unchanged.
 - Area count by fold (D29 rule): 8 / 11 / 53 / 14 / 14 / 22.
+
+## 11. D53 band amendment + drift decomposition (Michael 2026-10-13)
+
+**D53 amended** (before any candidate is scored): band test = BOX package band ≤ benchmark band + 0.05. Tuning run re-graded
+from the stored cells (`cells_tuning.csv`; strict grading kept as `cells_tuning_strict.csv`): **FAIL 20 / 34** (was 26). Gas
+10 / 17 pass; oil 4 / 17 — 12 of the 13 oil failures are bias at cum-24+, so the oil failure is the drift, not band noise.
+
+**Decomposition** (`decomp/decomp.html`, `python -m scripts.box_drift_decomp`, ~3 min, read-only; `box/drift_decomp.py`).
+9,789 WCA wells fp 2016–24 in an area of record; within TC area throughout. Rock proxy FIXED IN TIME = median 12-mo oil/kft
+of the 15 nearest 2016–19 reference wells (6–13k ft laterals, self excluded). Coverage within 3 mi falls 65 % (2016) → 29 %
+(2024); within 5 mi 97 % → 73 % (sensitivity run on 8,621 wells).
+- **(i) Tier-1 exhaustion is NOT supported within areas:** the rock under newer wells is unchanged — +0.8…+3.9 % vs 2018
+  (3-mi coverage), +0.4…+2.6 % (5-mi). Adding the rock proxy absorbs nothing of the level or the shape drift (both coverages),
+  and the post-2021 shape effect is about the same on good / mid / poor rock (−16 / −18 / −14 %). Caveat: a 15-well, multi-mile
+  rock map can't see sub-mile sweet-spotting; across-area moves are absorbed by the area fixed effects by construction.
+- **(ii) The LEVEL drift is development context:** 12-mo oil/kft, mean 2021–24 vs 2018 (with lateral) −8.5 % → −2.8 % with
+  3-D spacing, → −0.2 % with spacing + regional development intensity (horizontals of any bench within 2 / 5 mi online > 180 d
+  before first production) + rock. ~98 % absorbed; the level trend (−2.8 %/yr) goes to 0 (+0.3 %/yr, t 0.4).
+- **(iii) The SHAPE drift is a steady time trend that none of rock, spacing or intensity carries:** rate months 19–24 / 4–6,
+  step-vs-trend model: no 2021 step (−1.8 %, t −0.4) but **−3.3 … −5.4 % per year** (t −3 … −4) with every control; cum-24 /
+  cum-6 the same (−2.6 … −3.9 %/yr). This corrects §6 / §8's "step around 2021" read: it is a trend. Only early-time behaviour
+  (diagnostic) absorbs part of it (~40 %).
+- **Heterogeneity:** the post-2021 shape effect is concentrated in developed areas — deep −21.6 % (t −6.6), mid −20.0 %, thin
+  −7.7 % (t −1.6, not significant) — so a uniform bench-wide shape correction would over-penalise thin areas. Regional
+  intensity measured per well does NOT explain this split, so it is an area-scale effect (operators / practice in the core?).
+
+**What it means for the fix:** two different problems, two different terms.
+- Level → a development-context term (3-D spacing + regional intensity), observable for a PUD at planned spacing — sql/59 is
+  the right infrastructure for it.
+- Shape → a time / practice trend in post-peak decline (~4 %/yr on months 19–24 vs 4–6), stronger in developed areas. Not a
+  rock effect, not a spacing effect. Forecasting it needs an explicit stance: persistence at the newest observed vintage vs
+  extrapolating the trend — Michael's call before candidates are pre-registered.

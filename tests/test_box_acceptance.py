@@ -39,7 +39,9 @@ def test_package_errors_and_judge() -> None:
     assert list(e["package"]) == ["p"] and e["err"].iloc[0] == 0.0
     assert ac.judge_cell({"bias": -0.05, "band": 0.5}, {"band": 0.6}, 40) == "PASS"
     assert ac.judge_cell({"bias": -0.12, "band": 0.5}, {"band": 0.6}, 40) == "FAIL"
-    assert ac.judge_cell({"bias": -0.05, "band": 0.7}, {"band": 0.6}, 40) == "FAIL"
+    assert ac.judge_cell({"bias": -0.05, "band": 0.7}, {"band": 0.6}, 40) == "FAIL"  # 0.10 wider: over the 0.05 tolerance
+    assert ac.judge_cell({"bias": -0.05, "band": 0.64}, {"band": 0.6}, 40) == "PASS"  # within tolerance
+    assert ac.judge_cell({"bias": -0.05, "band": 0.64}, {"band": 0.6}, 40, band_tol=0.0) == "FAIL"  # strict
     assert ac.judge_cell({"bias": -0.05, "band": 0.5}, {"band": 0.6}, 10) == "not judged"
 
 

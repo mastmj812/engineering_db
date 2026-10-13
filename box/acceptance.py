@@ -15,7 +15,7 @@ Benchmark = an engineer's quick look (backtest_report.local_offsets): median per
 cohort wells whose cum-k was known at the cutoff, x lateral. Novi stays an exhibit (step-6 hindcast).
 
 Verdict (D53): for the BOX model of record, each (fold, stream, horizon) cell with >= MIN_PACKAGES packages passes when
-|package bias| <= 10 % AND BOX's package band <= the benchmark's; BOX passes when every judged cell passes, oil AND gas.
+|package bias| <= 10 % AND BOX's package band <= the benchmark's + 0.05 (amendment 2026-10-13); BOX passes when every judged cell passes, oil AND gas.
 
 Holdout (D52): a package is HELD OUT when any member's lateral midpoint lies in a holdout block (box/holdout). Held-out
 packages are dropped BEFORE any statistic is computed and nothing about their errors is written; only their counts are.
@@ -49,6 +49,7 @@ STREAMS = ("oil", "gas")
 RECORD = "lat"  # BOX model of record after D50 (Cui lateral efficiency)
 REPORTED = ("base", "lat", "lat+s3d")
 BIAS_TOL = 0.10
+BAND_TOL = 0.05  # D53 amendment (Michael 2026-10-13): BOX band may exceed the benchmark's by this much (sampling noise)
 MIN_PACKAGES = 30
 PACKAGE_OVERLAP = 0.30
 PACKAGE_CODEV_DAYS = s3.CODEV_DAYS
@@ -88,10 +89,11 @@ def package_errors(df: pd.DataFrame, pkg: str, actual: str, pred: str) -> pd.Dat
     return g.reset_index()
 
 
-def judge_cell(box: Mapping[str, float], bench: Mapping[str, float], n_pkg: int, tol: float = BIAS_TOL, min_pkg: int = MIN_PACKAGES) -> str:
+def judge_cell(box: Mapping[str, float], bench: Mapping[str, float], n_pkg: int, tol: float = BIAS_TOL, min_pkg: int = MIN_PACKAGES,
+               band_tol: float = BAND_TOL) -> str:
     if n_pkg < min_pkg or not np.isfinite(box["bias"]):
         return "not judged"
-    ok = abs(box["bias"]) <= tol and (not np.isfinite(bench["band"]) or box["band"] <= bench["band"])
+    ok = abs(box["bias"]) <= tol and (not np.isfinite(bench["band"]) or box["band"] <= bench["band"] + band_tol)
     return "PASS" if ok else "FAIL"
 
 
@@ -179,10 +181,18 @@ def render(s: dict[str, Any], cells: pd.DataFrame) -> str:
          f"actuals curated.production through {s['actuals_through']} (each well's newest month dropped) · blueox-boxfit @ {s['engine_sha'][:7]} · read-only</div>"),
         (f"<div class='flag {cls}'><b>Verdict ({s['view']}): {v['overall']}</b> — oil {v['by_stream']['oil']}, gas {v['by_stream']['gas']}; "
          f"{v['n_failed']} of {v['n_judged']} judged cells fail. A cell (fold × stream × horizon) is judged when it has ≥ {s['min_packages']} packages and passes when "
-         f"|package bias| ≤ {s['bias_tol']:.0%} AND the {RECORD} package band ≤ the local-offsets benchmark's. Record model = <b>{RECORD}</b> (D50).</div>"),
+         f"|package bias| ≤ {s['bias_tol']:.0%} AND the {RECORD} package band ≤ the local-offsets benchmark's + {BAND_TOL:.2f} (D53 amendment). Record model = <b>{RECORD}</b> (D50).</div>"),
         ("<div class=meta>Package = co-developed co-extent WCA wells (first production within 180 d, overlap ≥ 30 %), connected components; error = Σ actual / Σ predicted − 1 "
          "(negative = forecast HIGH). Benchmark = median per-1,000-ft cum-k of the 15 nearest pre-cutoff cohort wells whose cum-k was known at the cutoff × lateral. "
          "Held-out packages (any member in a D52 holdout block) are excluded before any statistic is computed; only their counts appear below.</div>"),
         "<h2>1. Package bias and band by fold</h2>", _table(tab, pct),
         "<h2>2. Folds</h2>", _table(folds, {"median_package_wells": ".1f"}),
         "</body></html>"])
+
+
+def regrade(cells: pd.DataFrame, band_tol: float = BAND_TOL) -> pd.DataFrame:
+    """Re-judge stored cells under a band tolerance (no recomputation of any statistic)."""
+    c = cells.copy()
+    c["verdict"] = [judge_cell({"bias": b, "band": w}, {"band": bb}, int(n), band_tol=band_tol)
+                    for b, w, bb, n in zip(c["pkg_bias"], c["pkg_band"], c["bench_band"], c["n_packages"], strict=True)]
+    return c
