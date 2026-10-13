@@ -38,6 +38,7 @@ from box import exclusions
 from box import hindcast as hc
 from box import hindcast_production as hp
 from box import hindcast_report as hr
+from box import holdout as ho
 from box import spacing3d_report as s3r
 from box import tc_curve_report as rep
 from box import tc_record_report as trr
@@ -86,7 +87,8 @@ def prep(fr: pd.DataFrame, sp: pd.Series) -> pd.DataFrame:
     return fr
 
 
-def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, workers: int | None, last: dt.date, P: dict[str, Any]) -> dict[str, Any]:
+def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, workers: int | None, last: dt.date, P: dict[str, Any],
+             horizons: tuple[int, ...] = HORIZONS, k_months: int = 24, keep_pred: bool = False) -> dict[str, Any]:
     asof = _prev_month(cutoff)
     ar = hr.rebuild_areas(conn, wells, asof)
     cb = hr.rebuild_curves(conn, wells, ar, cutoff, asof, workers)
@@ -124,11 +126,13 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
     hs["xsec_bin"] = pd.cut(hs["xsec_ft2"], [0, 1e6, 2e6, 4e6, np.inf], labels=["<1M", "1-2M", "2-4M", ">=4M"]).astype(object)
     # ---- monthly predictions (no F) + actuals
     t_ids = list(trn["api10"])
-    t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof)
-    t_box = hp.box_months(trn, cb, rm)
+    t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof, k=k_months)
+    t_box = hp.box_months(trn, cb, rm, k_months)
     prod = rep.pull_production(conn, list(hs["api10"]), last)
-    h_act = hp.monthly_matrix(prod, list(hs["api10"]), drop_latest=True)
-    h_box = hp.box_months(hs, cb, rm)
+    h_act = hp.monthly_matrix(prod, list(hs["api10"]), drop_latest=True, k=k_months)
+    h_box = hp.box_months(hs, cb, rm, k_months)
+    hs["holdout_block"] = ho.is_holdout(*dfr._xy(hs["mid_lon"], hs["mid_lat"]))  # D52 frozen spatial holdout
+    bench = local_offsets(trn, t_act, hs, horizons)  # D53 benchmark: an engineer's quick look
     mult_t = {"base": np.ones(len(trn)), "lat": lateral_mult(trn, cb, "2000-60"), "lat1700": lateral_mult(trn, cb, "1700-50")}
     mult_h = {"base": np.ones(len(hs)), "lat": lateral_mult(hs, cb, "2000-60"), "lat1700": lateral_mult(hs, cb, "1700-50")}
     dens_fit = {}
@@ -157,11 +161,15 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
         for s in STREAMS:
             pred_cum = np.cumsum(h_box[s] * mult_h[v][:, None], axis=1) * F[v][s][None, :]
             act_cum = np.cumsum(h_act[s], axis=1)
-            for k in HORIZONS:
+            for k in horizons:
                 hs[f"{v}_err_{s}{k}"] = hc.pct_error(act_cum[:, k - 1], pred_cum[:, k - 1])
+                if keep_pred:
+                    hs[f"pred_{v}_{s}{k}"] = pred_cum[:, k - 1]
                 if v == "base":
                     hs[f"actual_{s}{k}"] = act_cum[:, k - 1]
                     hs[f"base_{s}{k}"] = pred_cum[:, k - 1]
+                    hs[f"bench_{s}{k}"] = bench[f"{s}{k}"]
+                    hs[f"bench_err_{s}{k}"] = hc.pct_error(act_cum[:, k - 1], bench[f"{s}{k}"])
                 rows.append({"cutoff": str(cutoff), "variant": v, "stream": s, "horizon": k, **hc.stats(hs[f"{v}_err_{s}{k}"])})
     hs["cutoff"] = str(cutoff)
     for v in VARIANTS:
@@ -172,6 +180,32 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
 
 
 MIN_CELL_N = 30  # a fold x horizon with fewer scored wells is not reported (e.g. cum-24 on the newest fold)
+
+
+BENCH_K = 15  # D53 local-offsets benchmark: nearest pre-cutoff cohort wells
+
+
+def local_offsets(trn: pd.DataFrame, t_act: dict[str, np.ndarray], hs: pd.DataFrame, horizons: tuple[int, ...], k_nn: int = BENCH_K) -> dict[str, np.ndarray]:
+    """D53 benchmark — what an engineer's quick look gives: for each scored well, the median per-1,000-ft actual cum-k of
+    its k_nn nearest pre-cutoff cohort wells (lateral midpoints) whose cum-k was KNOWN at the cutoff, x its lateral / 1,000
+    (linear per-ft, no curve, no factors)."""
+    from scipy.spatial import cKDTree
+
+    tx, ty = dfr._xy(trn["mid_lon"], trn["mid_lat"])
+    hx, hy = dfr._xy(hs["mid_lon"], hs["mid_lat"])
+    lat_t = trn["lateral_ft"].to_numpy(float) / 1000.0
+    out = {}
+    for s in STREAMS:
+        cum = np.cumsum(t_act[s], axis=1)
+        for k in horizons:
+            per = cum[:, k - 1] / lat_t
+            ok = np.isfinite(per) & (per > 0)
+            if ok.sum() < k_nn:
+                out[f"{s}{k}"] = np.full(len(hs), np.nan)
+                continue
+            _, j = cKDTree(np.column_stack([tx[ok], ty[ok]])).query(np.column_stack([hx, hy]), k=k_nn)
+            out[f"{s}{k}"] = np.median(per[ok][j], axis=1) * hs["lateral_ft"].to_numpy(float) / 1000.0
+    return out
 
 
 def mask_thin(scores: pd.DataFrame, min_n: int = MIN_CELL_N) -> pd.DataFrame:

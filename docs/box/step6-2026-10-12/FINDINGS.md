@@ -207,3 +207,26 @@ apply_wellstick_fix notes sql/59 as a post-rebuild follow-up. Not in the nightly
   64,321 Permian producing horizontals → 4,690 pairs, **identical pair set to the Python prototype** (0 only-SQL / 0
   only-Python; max |Δ| overlap 5e-5, dmin / dxy 0.05 ft = the 0.1-ft rounding, dz exact). Extrapolated ~1.5 M rows,
   **~93 min build** (+ a similar CONCURRENTLY smoke) → off-hours, outside the 11:15 UTC nightly.
+
+## 10. Holdout (D52) + acceptance of record (D53) — first tuning-view run (Michael 2026-10-13)
+
+`docs/box/acceptance/acceptance_tuning.html` (`python -m scripts.box_acceptance`, 66 min, read-only; `box/acceptance.py`,
+`box/holdout.py`, 4 tests). 6 folds (Dec 2019–2024), 6,419 scored WCA wells in 1,773 packages (median 2–3 wells, max
+17–46); D52 holdout packages excluded before any statistic (75–84 per fold, 263–378 wells; never scored, only counted).
+
+- **Verdict (tuning view): FAIL — 26 of 34 judged cells** (oil: 12 cells over ±10 % bias, 11 with a wider band than the
+  benchmark; gas: 3 bias, 10 band).
+- **The oil miss compounds with time on production, in every fold:** package bias, mean over folds — cum-12 −7.8 %,
+  cum-24 −12.4 %, cum-36 −16.8 %, cum-48 −21 % (2020 / 2021 folds). This is the EUR question answered: the drift does not
+  flatten inside four years. Gas is fine on bias (+2…+5 %).
+- **BOX ≈ the naive benchmark.** Median per-ft cum of the 15 nearest pre-cutoff offsets × lateral misses the same way
+  (oil −7.4 / −11.9 / −17.1 %) with the same band (oil cum-12 0.733 vs 0.715; cum-36 0.648 vs 0.641). At package grain BOX
+  currently adds no skill over an engineer's quick look; both fail on the same thing — next-year wells decline harder
+  than the history either method averages (the §6–§8 vintage drift). `lat+s3d` trims oil cum-36 to −15.3 % but widens bands.
+- **Band criterion is noisy:** BOX vs benchmark band gaps are mostly ≤ 0.05 either way, inside the sampling noise of a P10–P90
+  over ~140–290 packages; "BOX band ≤ benchmark band" flips on noise. Whether D53 wants a tolerance is Michael's call — not
+  changed.
+- **D45 gap (edge):** the 2019 fold's training years hold no sandwich wells on either bench, so the factor ladder had no
+  terminal estimate for a sandwich holdout well (1 well, 2020 fold). Backtest gives it the reference (1.00), counted as
+  `n_factor_no_estimate`; the record lookup is unchanged.
+- Area count by fold (D29 rule): 8 / 11 / 53 / 14 / 14 / 22.

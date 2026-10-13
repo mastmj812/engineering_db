@@ -187,10 +187,23 @@ def well_factors(fr: pd.DataFrame, tabs: dict[str, dict[tuple[str, str], float]]
     sits outside the pool (gate-1 moved it: its sql/50 relations are on the old bench), gets the reference."""
     scored = fr["view_class"].notna() & fr["own_bench_in_pool"].astype(bool)
     out = pd.DataFrame(index=fr.index)
+    no_est = np.zeros(len(fr), dtype=bool)
     for s, col in (("oil", "f_oil"), ("gas", "f_gor")):
-        out[col] = [tr.lookup(tabs[s], POOL, p if isinstance(p, str) else None, bool(i), pud=pud) if ok else 1.0
-                    for p, i, ok in zip(fr["p_raw_pair"], fr["p_infill"], scored, strict=True)]
+        vals = []
+        for n, (p, i, ok) in enumerate(zip(fr["p_raw_pair"], fr["p_infill"], scored, strict=True)):
+            if not ok:
+                vals.append(1.0)
+                continue
+            try:
+                vals.append(tr.lookup(tabs[s], POOL, p if isinstance(p, str) else None, bool(i), pud=pud))
+            except KeyError:
+                # the class has NO training wells on any bench (e.g. no sandwich before 2019): D45's terminal rung is
+                # empty -> reference, flagged (a backtest edge on early cutoffs; the record ladder is not changed)
+                vals.append(1.0)
+                no_est[n] = True
+        out[col] = vals
     out["scenario_scored"] = scored
+    out["factor_no_estimate"] = no_est
     return out
 
 

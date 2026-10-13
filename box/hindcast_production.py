@@ -41,10 +41,10 @@ FROM v JOIN raw_intel.production_forecast pf
 """
 
 
-def monthly_matrix(prod: pd.DataFrame, api10s: list[str], *, asof: dt.date | None = None, drop_latest: bool = False) -> dict[str, np.ndarray]:
-    """[wells, K] monthly oil / gas from each well's first reported month; months not yet known are NaN.
+def monthly_matrix(prod: pd.DataFrame, api10s: list[str], *, asof: dt.date | None = None, drop_latest: bool = False, k: int = K) -> dict[str, np.ndarray]:
+    """[wells, k] monthly oil / gas from each well's first reported month; months not yet known are NaN.
     Known = through `asof` (training) or through the well's newest reported month minus one (drop_latest)."""
-    out = {s: np.full((len(api10s), K), np.nan) for s in ("oil", "gas")}
+    out = {s: np.full((len(api10s), k), np.nan) for s in ("oil", "gas")}
     g = dict(tuple(prod.groupby("api10")))
     for i, a in enumerate(api10s):
         p = g.get(a)
@@ -57,24 +57,24 @@ def monthly_matrix(prod: pd.DataFrame, api10s: list[str], *, asof: dt.date | Non
             n = (asof.year - d0.year) * 12 + asof.month - d0.month + 1
         else:
             n = int(idx.max()) + (0 if drop_latest else 1)
-        n = min(n, K)
+        n = min(n, k)
         for s, col in (("oil", "oil_bbl"), ("gas", "gas_mcf")):
-            v = np.zeros(K)
-            m = idx < K
+            v = np.zeros(k)
+            m = idx < k
             v[idx[m]] = pd.to_numeric(p[col], errors="coerce").fillna(0.0).to_numpy(float)[m]
             out[s][i, :n] = v[:n]
     return out
 
 
-def box_months(fr: pd.DataFrame, cb: dict[str, Any], rm: dict[int, dict[str, Any]]) -> dict[str, np.ndarray]:
-    """[wells, K] BOX monthly oil / gas WITHOUT F(k): curve months x lateral / 1,000 x ref_mult x f_oil."""
-    out = {s: np.full((len(fr), K), np.nan) for s in ("oil", "gas")}
+def box_months(fr: pd.DataFrame, cb: dict[str, Any], rm: dict[int, dict[str, Any]], k: int = K) -> dict[str, np.ndarray]:
+    """[wells, k] BOX monthly oil / gas WITHOUT F(k): curve months x lateral / 1,000 x ref_mult x f_oil."""
+    out = {s: np.full((len(fr), k), np.nan) for s in ("oil", "gas")}
     for i, r in enumerate(fr.itertuples()):
         a = int(r.area_no)
         st = cb["curves"][a]["streams"]
         scale = float(r.lateral_ft) / 1000.0 * rm[a]["ref_mult"] * float(r.f_oil)
-        out["oil"][i] = hc.curve_months(st["oil"]["curve"], None, K)["oil"] * scale
-        out["gas"][i] = hc.curve_months(st["gas"]["curve"], r.gor_target, K)["gas"] * scale
+        out["oil"][i] = hc.curve_months(st["oil"]["curve"], None, k)["oil"] * scale
+        out["gas"][i] = hc.curve_months(st["gas"]["curve"], r.gor_target, k)["gas"] * scale
     return out
 
 
