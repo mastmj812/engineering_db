@@ -262,3 +262,11 @@ of the 15 nearest 2016–19 reference wells (6–13k ft laterals, self excluded)
 - Shape → a time / practice trend in post-peak decline (~4 %/yr on months 19–24 vs 4–6), stronger in developed areas. Not a
   rock effect, not a spacing effect. Forecasting it needs an explicit stance: persistence at the newest observed vintage vs
   extrapolating the trend — Michael's call before candidates are pre-registered.
+
+**Rock map + step-out check (2026-10-13).** `decomp/rock_map.png` (`python -m scripts.box_rock_map`): the fixed-in-time proxy
+on a ½-mi grid (P10 / P50 / P90 = 14.5 / 20.3 / 28.7 k bbl per 1,000 ft in 12 months) and its coverage — only 34 % of the
+extent has its 15th 2016–19 reference well within 3 mi, 38 % at 3–5 mi, 28 % beyond 5 mi; much 2021–24 drilling sits
+outside the early control (2021–24 wells: 1,588 infill ≤ 3 mi, 2,020 edge 3–5 mi, 825 step-out > 5 mi). Because the
+§11 rock test only sees covered ground, exhaustion could have hidden in step-outs; tested directly — within the same TC
+area AND first-production year, step-outs perform like infill: level −0.5 % (t −0.3), shape +0.4 % (t 0.1); edge −0.3 % /
++0.3 %. Tier-1 exhaustion is not visible either as poorer rock under infill or as weaker step-outs.
