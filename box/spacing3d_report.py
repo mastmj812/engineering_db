@@ -91,7 +91,7 @@ def cum_before(series: tuple[np.ndarray, np.ndarray] | None, when: dt.date) -> f
     return float(c[k]) if k >= 0 else 0.0
 
 
-def build_pairs(conn: Any, subj: pd.DataFrame) -> dict[str, Any]:
+def build_pairs(conn: Any, subj: pd.DataFrame, gate_ft: float = s3.GATE, min_overlap: float = s3.MIN_OVERLAP, parent_dz_ft: float = s3.PARENT_DZ) -> dict[str, Any]:
     """Co-extent pairs for every subject with geometry + the parents' cumulative oil series (one pass; reused by the
     backtest per fold)."""
     u = pull_universe(conn, subj)
@@ -104,13 +104,13 @@ def build_pairs(conn: Any, subj: pd.DataFrame) -> dict[str, Any]:
     for i in s_idx:
         a, g, tvd, fp = u.at[i, "api10"], lines[i], float(u.at[i, "tvd_ft"]), u.at[i, "fp"]
         ps = []
-        for j in tree.query(g, predicate="dwithin", distance=s3.GATE):
+        for j in tree.query(g, predicate="dwithin", distance=gate_ft):
             if j == i:
                 continue
-            p = s3.pair_geometry(g, lines[j], tvd, float(u.at[j, "tvd_ft"]), (u.at[j, "fp"] - fp).days, u.at[j, "api10"])
+            p = s3.pair_geometry(g, lines[j], tvd, float(u.at[j, "tvd_ft"]), (u.at[j, "fp"] - fp).days, u.at[j, "api10"], min_overlap)
             if p is not None:
                 ps.append(p)
-                if p.relation == "parent" and abs(p.dz) <= s3.PARENT_DZ:
+                if p.relation == "parent" and abs(p.dz) <= parent_dz_ft:
                     parents_needed.add(p.nbr)
         pairs[a] = ps
     return {"pairs": pairs, "cum": pull_cum(conn, sorted(parents_needed)), "length": {u.at[i, "api10"]: float(lines[i].length) for i in s_idx},
@@ -119,7 +119,7 @@ def build_pairs(conn: Any, subj: pd.DataFrame) -> dict[str, Any]:
                      "n_pairs": int(sum(len(v) for v in pairs.values())), "n_parents_cum": len(parents_needed)}}
 
 
-def features_table(P: dict[str, Any], ids: Any, cap: dt.date | None = None) -> pd.DataFrame:
+def features_table(P: dict[str, Any], ids: Any, cap: dt.date | None = None, prm: s3.Params = s3.DEFAULT) -> pd.DataFrame:
     """Per-well features as of first production; parent cum is read at min(first production, cap) — a hindcast at a
     cutoff cannot know production after it."""
     rows = []
@@ -128,9 +128,9 @@ def features_table(P: dict[str, Any], ids: Any, cap: dt.date | None = None) -> p
             continue
         ps, fp = P["pairs"][a], P["fp"][a]
         when = fp if cap is None or fp <= cap else cap
-        pc = {p.nbr: cum_before(P["cum"].get(p.nbr), when) for p in ps if p.relation == "parent" and abs(p.dz) <= s3.PARENT_DZ}
+        pc = {p.nbr: cum_before(P["cum"].get(p.nbr), when) for p in ps if p.relation == "parent" and abs(p.dz) <= prm.parent_dz_ft}
         ch24 = [p for p in ps if p.relation == "child" and p.dfp_days <= 730]
-        rows.append({"api10": a, "geom_lateral_ft": P["length"][a], **s3.features(ps, P["length"][a], pc, ch24)})
+        rows.append({"api10": a, "geom_lateral_ft": P["length"][a], **s3.features(ps, P["length"][a], pc, ch24, prm)})
     f = pd.DataFrame(rows)
     if len(f):
         f["ln_lat_spacing"] = np.log(f["lat_spacing_ft"].clip(lower=50))

@@ -34,3 +34,15 @@ def test_features_children_excluded_and_unbounded_side() -> None:
     assert f["lat_spacing_ft"] == pytest.approx((700 + s3.GATE) / 2)
     assert f["parent_cum_kbbl_per_kft"] == pytest.approx(200.0 / 10)
     assert f["n_child_24mo"] == 1 and f["n_ellipse"] == 1  # "up" (0, -250) is inside 660 x 300; "l" at 700 ft is not
+
+
+def test_params_filter_stored_pairs_by_gate_and_overlap() -> None:
+    from dataclasses import replace
+
+    near = s3.Pair("n", 0.9, 700, 0, -400, dmin=650)
+    far = s3.Pair("f", 0.9, -3000, 0, -400, dmin=2900)  # stored at the 3,960-ft gate, outside the default 2,640
+    thin = s3.Pair("t", 0.15, -900, 0, -400, dmin=850)  # stored at the 10 % floor, under the default 30 %
+    f = s3.features([near, far, thin], 10000.0)
+    assert f["n_pairs"] == 1 and f["nn_right_ft"] is None
+    g = s3.features([near, far, thin], 10000.0, prm=replace(s3.DEFAULT, gate_ft=3960.0, min_overlap=0.10))
+    assert g["n_pairs"] == 3 and g["nn_right_ft"] == pytest.approx(900)  # nearest right among the stored pairs

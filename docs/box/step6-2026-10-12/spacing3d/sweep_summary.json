@@ -1,0 +1,197 @@
+{
+  "built_at": "2026-10-13T07:11:09-05:00",
+  "asof": "2026-07-01",
+  "store": {
+    "gate_ft": 3960.0,
+    "min_overlap": 0.1,
+    "parent_dz_ft": 800.0
+  },
+  "meta": {
+    "n_universe": 33289,
+    "n_subjects": 11102,
+    "n_subjects_with_geometry": 11100,
+    "n_pairs": 242895,
+    "n_parents_cum": 11063
+  },
+  "reach": {
+    "n_pairs_stored": 147689,
+    "share_dmin_gt_2640": 0.3118986518968914,
+    "share_overlap_lt_0.30": 0.0832763442097922,
+    "pairs_per_subject": 13.305315315315315
+  },
+  "variants": {
+    "default (A 2, same-dz 250, ellipse 660x300, parent-dz 500, gate 2,640, overlap 0.30)": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "A 1": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 1.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "A 4": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 4.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "same-dz 150": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 150.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "same-dz 400": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 400.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "ellipse off": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": null,
+      "parent_dz_ft": 500.0
+    },
+    "ellipse 1,320 x 500": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        1320.0,
+        500.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "parent-dz 300": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 300.0
+    },
+    "parent-dz 800": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 800.0
+    },
+    "A 0.5": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 0.5,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "same-dz 600": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 600.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "gate 1,320": {
+      "gate_ft": 1320.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "gate 1,980": {
+      "gate_ft": 1980.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "gate 3,960": {
+      "gate_ft": 3960.0,
+      "min_overlap": 0.3,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "overlap 0.10": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.1,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    },
+    "overlap 0.50": {
+      "gate_ft": 2640.0,
+      "min_overlap": 0.5,
+      "same_dz_ft": 250.0,
+      "aniso": 2.0,
+      "ellipse_ft": [
+        660.0,
+        300.0
+      ],
+      "parent_dz_ft": 500.0
+    }
+  }
+}

@@ -920,3 +920,23 @@ COMMENT ON COLUMN curated.dev_scenario.codev_benches_other IS 'Other mapped benc
 COMMENT ON COLUMN curated.dev_scenario.child_benches_other IS 'Other mapped benches with >= 1 neighbor online > 180 d AFTER subject FP (subject later got a vertical child). Right-censored: see child_censored.';
 COMMENT ON COLUMN curated.dev_scenario.child_censored IS 'TRUE when subject FP is within 180 d of the newest first_production_date in the load: it cannot have a child yet, so child_benches_other reads short. Does NOT affect scenario_class.';
 COMMENT ON COLUMN curated.dev_scenario.bench_context IS 'Pass-through of codev_context.bench_context for BENCH-PAIR queries with no vertical window or shielding (e.g. WCA_1 wells with an LSSH parent above: bench_context->''LSSH'' n_parent > 0, parent_min_offset_ft <= 660, parent_nearest_dtvd_ft < 0). scripts/find_analogs.py --parent-bench does exactly this.';
+
+-- =============================================================================
+-- 31 (part J) -- curated.well_neighbors (sql/59, 3-D spacing pair table).
+-- GUARDED: sql/59 is applied on demand, and every applier re-runs this whole
+-- catalog — a bare COMMENT ON a relation that does not exist yet would fail them.
+-- =============================================================================
+DO $$
+BEGIN
+    IF to_regclass('curated.well_neighbors') IS NULL THEN
+        RETURN;
+    END IF;
+    EXECUTE $c$COMMENT ON MATERIALIZED VIEW curated.well_neighbors IS 'BOX 3-D spacing PAIR table: one row per (producing horizontal, co-extent neighbour lateral), any bench, both directions. Storage is deliberately generous (stick-to-stick closest distance <= 3,960 ft, overlap >= 10 %) so the per-well features (box/spacing3d.py: lateral spacing left / right, gunbarrel drainage cross-section, parent depletion) stay tunable downstream without DDL. Planar in UTM 13N (EPSG:32613), ft = m x 3.280839895 — reproduces box/spacing3d.pair_geometry exactly. Not in the nightly; refreshed on demand / quarterly. sql/59.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.api10 IS 'Subject well: producing horizontal with a stick (COALESCE(novi_slant_calculated, enverus_trajectory) ILIKE horizontal, first_production_date NOT NULL).'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.nbr_api10 IS 'Neighbour well (same universe, any bench). Directed: (a, b) and (b, a) are separate rows — overlap and the offset sign are subject-relative.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.overlap_frac IS 'Share of the SUBJECT lateral covered by the neighbour lateral projected onto it: |ST_LineLocatePoint(start) - ST_LineLocatePoint(end)|. Stored >= 0.10; rule 9 co-extent (sql/47, narvi) uses >= 0.30 — filter downstream.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dmin_ft IS 'Lateral-to-lateral closest distance, ft (planar EPSG:32613). The candidate gate measure; stored <= 3,960 ft. A closest approach (often heel / toe), NOT the spacing — use dxy_ft for spacing.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dxy_ft IS 'SIGNED mean perpendicular offset of the neighbour over the overlapped span, ft: 11 evenly spaced points on the subject lateral, each to its closest point on the neighbour; + = LEFT of the subject''s landing-point -> bottom-hole heading. The gunbarrel horizontal offset. |dxy_ft| < dmin_ft is possible only for crossing laterals (sign changes along the span).'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dz_ft IS 'Neighbour TVD minus subject TVD, ft (negative = shallower); one TVD per well (curated.wells.tvd_ft). NULL when either TVD is missing.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dfp_days IS 'Neighbour first production minus subject first production, days. Relation downstream (sql/47 window): < -180 parent, |.| <= 180 codev, > 180 child. Features as of first production use parents + codev only.'$c$;
+END $$;

@@ -44,19 +44,36 @@ N_SAMPLES = 11
 
 
 @dataclass(frozen=True)
+class Params:
+    """Feature knobs (computed from stored pairs, so tunable after the pair table is applied). Pair-level knobs:
+    gate_ft filters on the stick-to-stick closest distance (dmin), min_overlap on the stored overlap."""
+
+    gate_ft: float = GATE
+    min_overlap: float = MIN_OVERLAP
+    same_dz_ft: float = SAME_DZ
+    aniso: float = ANISO
+    ellipse_ft: tuple[float, float] | None = ELLIPSE
+    parent_dz_ft: float = PARENT_DZ
+
+
+DEFAULT = Params()
+
+
+@dataclass(frozen=True)
 class Pair:
     nbr: str
     overlap: float
     dxy: float
     dz: float
     dfp_days: int
+    dmin: float = 0.0  # stick-to-stick closest distance, ft (the candidate gate's measure)
 
     @property
     def relation(self) -> str:
         return "parent" if self.dfp_days < -CODEV_DAYS else ("codev" if self.dfp_days <= CODEV_DAYS else "child")
 
 
-def pair_geometry(s: LineString, n: LineString, s_tvd: float, n_tvd: float, dfp_days: int, nbr: str) -> Pair | None:
+def pair_geometry(s: LineString, n: LineString, s_tvd: float, n_tvd: float, dfp_days: int, nbr: str, min_overlap: float = MIN_OVERLAP) -> Pair | None:
     """Co-extent pair facts, or None when the overlap is below MIN_OVERLAP or the geometry is degenerate."""
     if s.length <= 0 or n.length <= 0:
         return None
@@ -64,7 +81,7 @@ def pair_geometry(s: LineString, n: LineString, s_tvd: float, n_tvd: float, dfp_
     b = s.project(Point(n.coords[-1]), normalized=True)
     lo, hi = min(a, b), max(a, b)
     ov = hi - lo
-    if ov < MIN_OVERLAP:
+    if ov < min_overlap:
         return None
     ts = np.linspace(lo, hi, N_SAMPLES)
     offs = []
@@ -80,7 +97,7 @@ def pair_geometry(s: LineString, n: LineString, s_tvd: float, n_tvd: float, dfp_
         offs.append(math.copysign(p.distance(q), cross if cross != 0 else 1.0))
     if not (math.isfinite(s_tvd) and math.isfinite(n_tvd)):
         return None
-    return Pair(nbr=nbr, overlap=float(ov), dxy=float(np.mean(offs)), dz=float(n_tvd - s_tvd), dfp_days=int(dfp_days))
+    return Pair(nbr=nbr, overlap=float(ov), dxy=float(np.mean(offs)), dz=float(n_tvd - s_tvd), dfp_days=int(dfp_days), dmin=float(s.distance(n)))
 
 
 def voronoi_xsec(pairs: Sequence[Pair], gate: float = GATE, aniso: float = ANISO) -> float:
@@ -107,23 +124,28 @@ def voronoi_xsec(pairs: Sequence[Pair], gate: float = GATE, aniso: float = ANISO
     return float(cell.area / aniso)
 
 
-def features(pairs: Sequence[Pair], lateral_ft: float, parent_cum: Mapping[str, float] | None = None, child_24: Sequence[Pair] = ()) -> dict[str, Any]:
-    """Per-subject features from its co-extent pairs (children are dropped here; pass them separately as child_24)."""
-    known = [p for p in pairs if p.relation != "child"]
-    same = [p for p in known if abs(p.dz) <= SAME_DZ]
+def features(pairs: Sequence[Pair], lateral_ft: float, parent_cum: Mapping[str, float] | None = None, child_24: Sequence[Pair] = (),
+             prm: Params = DEFAULT) -> dict[str, Any]:
+    """Per-subject features from its co-extent pairs (children are dropped here; pass them separately as child_24).
+    Pairs outside the gate (dmin) or under the overlap floor are ignored, so a generous stored pair set can be tuned."""
+    inn = [p for p in pairs if p.dmin <= prm.gate_ft and p.overlap >= prm.min_overlap]
+    child_24 = [p for p in child_24 if p.dmin <= prm.gate_ft and p.overlap >= prm.min_overlap]
+    known = [p for p in inn if p.relation != "child"]
+    same = [p for p in known if abs(p.dz) <= prm.same_dz_ft]
     left = [abs(p.dxy) for p in same if p.dxy > 0]
     right = [abs(p.dxy) for p in same if p.dxy < 0]
     nl = min(left) if left else None
     nr = min(right) if right else None
-    lat_sp = (min(nl if nl is not None else GATE, GATE) + min(nr if nr is not None else GATE, GATE)) / 2.0
-    ex, ez = ELLIPSE
-    inside = [p for p in known if (p.dxy / ex) ** 2 + (p.dz / ez) ** 2 <= 1.0]
+    g = prm.gate_ft
+    lat_sp = (min(nl if nl is not None else g, g) + min(nr if nr is not None else g, g)) / 2.0
+    ex, ez = prm.ellipse_ft or (0.0, 0.0)
+    inside = [p for p in known if (p.dxy / ex) ** 2 + (p.dz / ez) ** 2 <= 1.0] if prm.ellipse_ft else []
     pc = None
     if parent_cum is not None and lateral_ft and lateral_ft > 0:
-        pc = sum(p.overlap * float(parent_cum.get(p.nbr, 0.0) or 0.0) for p in known if p.relation == "parent" and abs(p.dz) <= PARENT_DZ) / 1000.0 / (lateral_ft / 1000.0)
-    return {"n_pairs": len(known), "nn_left_ft": nl, "nn_right_ft": nr, "lat_spacing_ft": lat_sp, "xsec_ft2": voronoi_xsec(known),
+        pc = sum(p.overlap * float(parent_cum.get(p.nbr, 0.0) or 0.0) for p in known if p.relation == "parent" and abs(p.dz) <= prm.parent_dz_ft) / 1000.0 / (lateral_ft / 1000.0)
+    return {"n_pairs": len(known), "nn_left_ft": nl, "nn_right_ft": nr, "lat_spacing_ft": lat_sp, "xsec_ft2": voronoi_xsec(known, prm.gate_ft, prm.aniso),
             "n_ellipse": len(inside), "n_parent_ellipse": sum(1 for p in inside if p.relation == "parent"),
-            "parent_cum_kbbl_per_kft": pc, "n_child_24mo": sum(1 for p in child_24 if (p.dxy / ex) ** 2 + (p.dz / ez) ** 2 <= 1.0),
+            "parent_cum_kbbl_per_kft": pc, "n_child_24mo": sum(1 for p in child_24 if (p.dxy / ex) ** 2 + (p.dz / ez) ** 2 <= 1.0) if prm.ellipse_ft else 0,
             "bounded_sides": int(nl is not None) + int(nr is not None)}
 
 

@@ -178,3 +178,32 @@ of the late-time miss. Most of the shape drift is a time trend the geometry does
 flowback / choke / lift practice — and an unexplained remainder). Next lever: recency-weighted area curves / a vintage
 shape term (§6 a/b); keep s3d as a candidate term on top. sql/59 remains justified for PUD forecasting at planned
 spacing, not by forecast skill alone.
+
+## 9. 3-D spacing tuning sweep + sql/59 authored (Michael 2026-10-13: "run the sweep then author sql/59")
+
+**Sweep** (`spacing3d/sweep.html`, `python -m scripts.box_spacing3d_sweep`, ~6 min, read-only): pairs built ONCE at the
+proposed storage settings (stick-to-stick gate 3,960 ft, overlap ≥ 10 %: 242,895 pairs on 11,100 WCA wells; 31 % of
+non-child pairs lie beyond 2,640 ft, 8 % under 30 % overlap), features re-derived per variant (box/spacing3d.Params),
+scored by blocked 5-fold CV (3-mi blocks) as the R² gain over area + year + ln lateral:
+- **Gate is the knob that matters — and narrower is better** on every response: Δ CV R² (pts) level / cum-24÷cum-6 /
+  rate 19–24÷4–6 = gate 1,320 **+1.72 / +1.20 / +0.70**; 1,980 +1.33 / +1.08 / +0.59; 2,640 (default) +1.03 / +0.93 / +0.35;
+  3,960 +0.69 / +0.91 / +0.19. Trade-off: the narrow gate predicts wells better but absorbs less of the vintage drift
+  (level 27 % vs 41 %) — local neighbours carry well-to-well skill, the wider halo carries the regional density trend.
+  1,320 is still the edge of the tested range → test 660–990 ft in the next backtest (a feature filter, no DDL).
+- **Everything else is flat** (≤ 0.15 pt): A 0.5–4, same-bench window 150–600 ft, parent window 300–800 ft (300 slightly
+  worse on level), overlap floor 0.10–0.50, ellipse off / 660×300 / 1,320×500 → keep the defaults; drop the ellipse or widen it.
+- Per-well skill is modest in absolute terms (base CV R² level 0.29, shape 0.03–0.05; spacing adds ~1 pt) — consistent with §8.
+- **Storage settings confirmed:** every best value sits inside 3,960 ft / 10 % (best gate ≤ 1,320; overlap flat), so the
+  stored pairs hold all of them; tuning after apply is a filter, never a rebuild.
+
+**sql/59 `curated.well_neighbors`** (authored, NOT applied): pair matview — api10, nbr_api10, overlap_frac, dmin_ft,
+dxy_ft (signed mean perpendicular offset), dz_ft, dfp_days; sql/47's lateral rule and co-extent definition; EPSG:32613 so it
+reproduces box/spacing3d exactly; UNIQUE (api10, nbr_api10) + nbr index; children stored, features exclude them. Apply
+script `scripts/apply_well_neighbors.py` (house pattern: build, sql/31, validate by identity — 0 dup / NULL keys,
+endpoints are producing horizontals, storage bounds hold, stored rows = Python on 100 subjects, EXPLAIN index —
+then a CONCURRENTLY smoke). sql/31 part J comments are guarded (no-op until sql/59 exists). `_CONSUMERS` entry added;
+apply_wellstick_fix notes sql/59 as a post-rebuild follow-up. Not in the nightly.
+- **Read-only dry run PASS** (`--dry-run`): EXPLAIN served by `idx_curated_wells_wellstick_geog`; 200 random subjects of
+  64,321 Permian producing horizontals → 4,690 pairs, **identical pair set to the Python prototype** (0 only-SQL / 0
+  only-Python; max |Δ| overlap 5e-5, dmin / dxy 0.05 ft = the 0.1-ft rounding, dz exact). Extrapolated ~1.5 M rows,
+  **~93 min build** (+ a similar CONCURRENTLY smoke) → off-hours, outside the 11:15 UTC nightly.
