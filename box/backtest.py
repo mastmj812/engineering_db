@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -103,3 +104,22 @@ def normaliser(weights: np.ndarray, mult: np.ndarray) -> float:
     w, m = np.asarray(weights, float), np.asarray(mult, float)
     ok = np.isfinite(w) & np.isfinite(m) & (w > 0)
     return float(w[ok].sum() / (w[ok] * m[ok]).sum())
+
+
+def fit_numeric(train: pd.DataFrame, actual_col: str, pred_col: str, cols: Sequence[str]) -> dict[str, Any]:
+    """Continuous multiplier from training wells: actual ~ pred x exp((x - mean_train) . b), PPML with the prediction
+    as offset; a missing feature sits at the training mean (multiplier 1 for that term)."""
+    ok = np.isfinite(train[actual_col].astype(float)) & np.isfinite(train[pred_col].astype(float)) & (train[pred_col].astype(float) > 0)
+    t = train[ok]
+    mean = t[list(cols)].astype(float).mean()
+    X = (t[list(cols)].astype(float) - mean).fillna(0.0).to_numpy()
+    b = ppml_offset(X, t[actual_col].to_numpy(float), np.log(t[pred_col].to_numpy(float)))
+    return {"cols": list(cols), "mean": {c: float(mean[c]) for c in cols}, "b": {c: float(v) for c, v in zip(cols, b[1:], strict=True)},
+            "sd": {c: float(t[c].astype(float).std()) for c in cols}}
+
+
+def numeric_multiplier(df: pd.DataFrame, fit: dict[str, Any]) -> np.ndarray:
+    z = np.zeros(len(df))
+    for c in fit["cols"]:
+        z += (df[c].astype(float) - fit["mean"][c]).fillna(0.0).to_numpy() * fit["b"][c]
+    return np.exp(z)

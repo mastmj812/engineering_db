@@ -104,12 +104,17 @@ def fe_ols(df: pd.DataFrame, y: str, num: Sequence[str], cats: Sequence[str], ye
         X.append(pd.get_dummies(d[c].astype(str), prefix=c, drop_first=True).astype(float))
     Xm = pd.concat(X, axis=1)
     Xm.insert(0, "_c", 1.0)
-    b, *_ = np.linalg.lstsq(Xm.to_numpy(), d[y].to_numpy(float), rcond=None)
+    Xa, ya = Xm.to_numpy(), d[y].to_numpy(float)
+    b, *_ = np.linalg.lstsq(Xa, ya, rcond=None)
     coef = pd.Series(b, index=Xm.columns)
+    resid = ya - Xa @ b
+    dof = max(1, len(ya) - Xa.shape[1])
+    se = pd.Series(np.sqrt(np.clip(np.diag(np.linalg.pinv(Xa.T @ Xa)) * float(resid @ resid) / dof, 0, None)), index=Xm.columns)  # classical (no spatial clustering)
     out = coef[[c for c in coef.index if c.startswith("y_")]]
     out.index = [c[2:] for c in out.index]
     out.attrs["n"] = len(d)
     out.attrs["coef"] = coef
+    out.attrs["se"] = se
     return out.sort_index()
 
 

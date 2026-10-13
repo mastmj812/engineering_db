@@ -30,6 +30,8 @@ def main(argv: list[str] | None = None) -> int:
     print(res["fe_trend"].round(3).to_string())
     print(res["yeff"].round(3).to_string())
     print(res["case"].round(1).to_string())
+    for k in ("early_year", "coefs", "mediated"):
+        print(res["med"][k].round(4).to_string())
     print(f"wrote {a.out}  ({time.time() - t0:.0f} s)")
     return 0
 

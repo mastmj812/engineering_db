@@ -65,3 +65,17 @@ def test_lateral_relative_keeps_area_mix_as_reference() -> None:
     assert lat.relative(10000.0, members) == pytest.approx(0.83 / np.mean(e))
     assert np.mean([lat.relative(x, members) for x in members]) == pytest.approx(1.0)
     assert lat.RECORD_CURVE == "2000-60"
+
+
+def test_fit_numeric_recovers_slope_and_keeps_training_total() -> None:
+    rng = np.random.default_rng(7)
+    n = 5000
+    d = pd.DataFrame({"x": rng.normal(13.0, 0.8, n), "pred": rng.uniform(50, 150, n)})
+    d.loc[:20, "x"] = np.nan  # missing -> training mean (multiplier 1)
+    d["act"] = d["pred"] * np.exp(0.25 * (d["x"].fillna(13.0) - 13.0)) * rng.gamma(40, 1 / 40, n)
+    f = bt.fit_numeric(d, "act", "pred", ["x"])
+    assert f["b"]["x"] == pytest.approx(0.25, abs=0.02)
+    m = bt.numeric_multiplier(d, f)
+    assert m[0] == pytest.approx(1.0)
+    k = bt.normaliser(d["pred"].to_numpy(), m)
+    assert (d["pred"] * m * k).sum() == pytest.approx(d["pred"].sum())

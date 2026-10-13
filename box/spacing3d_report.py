@@ -91,7 +91,9 @@ def cum_before(series: tuple[np.ndarray, np.ndarray] | None, when: dt.date) -> f
     return float(c[k]) if k >= 0 else 0.0
 
 
-def compute(conn: Any, subj: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
+def build_pairs(conn: Any, subj: pd.DataFrame) -> dict[str, Any]:
+    """Co-extent pairs for every subject with geometry + the parents' cumulative oil series (one pass; reused by the
+    backtest per fold)."""
     u = pull_universe(conn, subj)
     pos = {a: i for i, a in enumerate(u["api10"])}
     s_idx = [pos[a] for a in subj["api10"] if a in pos]
@@ -111,18 +113,35 @@ def compute(conn: Any, subj: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]
                 if p.relation == "parent" and abs(p.dz) <= s3.PARENT_DZ:
                     parents_needed.add(p.nbr)
         pairs[a] = ps
-    cum = pull_cum(conn, sorted(parents_needed))
+    return {"pairs": pairs, "cum": pull_cum(conn, sorted(parents_needed)), "length": {u.at[i, "api10"]: float(lines[i].length) for i in s_idx},
+            "fp": {u.at[i, "api10"]: u.at[i, "fp"] for i in s_idx},
+            "meta": {"n_universe": len(u), "n_subjects": len(subj), "n_subjects_with_geometry": len(s_idx),
+                     "n_pairs": int(sum(len(v) for v in pairs.values())), "n_parents_cum": len(parents_needed)}}
+
+
+def features_table(P: dict[str, Any], ids: Any, cap: dt.date | None = None) -> pd.DataFrame:
+    """Per-well features as of first production; parent cum is read at min(first production, cap) — a hindcast at a
+    cutoff cannot know production after it."""
     rows = []
-    for i in s_idx:
-        a, fp = u.at[i, "api10"], u.at[i, "fp"]
-        ps = pairs[a]
-        pc = {p.nbr: cum_before(cum.get(p.nbr), fp) for p in ps if p.relation == "parent" and abs(p.dz) <= s3.PARENT_DZ}
+    for a in ids:
+        if a not in P["pairs"]:
+            continue
+        ps, fp = P["pairs"][a], P["fp"][a]
+        when = fp if cap is None or fp <= cap else cap
+        pc = {p.nbr: cum_before(P["cum"].get(p.nbr), when) for p in ps if p.relation == "parent" and abs(p.dz) <= s3.PARENT_DZ}
         ch24 = [p for p in ps if p.relation == "child" and p.dfp_days <= 730]
-        f = s3.features(ps, float(lines[i].length), pc, ch24)
-        rows.append({"api10": a, "geom_lateral_ft": float(lines[i].length), **f})
-    meta = {"n_universe": len(u), "n_subjects": len(subj), "n_subjects_with_geometry": len(s_idx), "n_pairs": int(sum(len(v) for v in pairs.values())),
-            "n_parents_cum": len(parents_needed)}
-    return pd.DataFrame(rows), {**meta, "pairs": pairs}
+        rows.append({"api10": a, "geom_lateral_ft": P["length"][a], **s3.features(ps, P["length"][a], pc, ch24)})
+    f = pd.DataFrame(rows)
+    if len(f):
+        f["ln_lat_spacing"] = np.log(f["lat_spacing_ft"].clip(lower=50))
+        f["ln_xsec"] = np.log(f["xsec_ft2"].clip(lower=1e4))
+        f["ln1p_parent_cum"] = np.log1p(f["parent_cum_kbbl_per_kft"].astype(float).clip(lower=0))
+    return f
+
+
+def compute(conn: Any, subj: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
+    P = build_pairs(conn, subj)
+    return features_table(P, subj["api10"]).drop(columns=["ln_lat_spacing", "ln_xsec", "ln1p_parent_cum"]), {**P["meta"], "pairs": P["pairs"]}
 
 
 def run(conn: Any, wells_dir: Path, out: Path) -> dict[str, Any]:
@@ -188,6 +207,7 @@ def run(conn: Any, wells_dir: Path, out: Path) -> dict[str, Any]:
                 continue
             ctrl.append({"response": resp, "spec": lab, "control": k, "coef": float(full[k]), "effect_of_1sd": float(np.expm1(full[k] * pop[k].std()))})
     ctrl = pd.DataFrame(ctrl)
+    med = mediation(d)
     case = d[d["well_name"].astype(str).str.contains("BURTON FLAT 3 1", na=False)][["api10", "well_name", "formation_blueox", "first_production_date", "lateral_ft",
                                                                                      "nn_left_ft", "nn_right_ft", "lat_spacing_ft", "xsec_ft2", "n_ellipse",
                                                                                      "parent_cum_kbbl_per_kft", "n_child_24mo", "r24_6", "oil12_kft"]]
@@ -195,15 +215,55 @@ def run(conn: Any, wells_dir: Path, out: Path) -> dict[str, Any]:
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     summ = {"built_at": built, "asof": str(asof), **{k: v for k, v in meta.items() if k != "pairs"}, "params": {"gate_ft": s3.GATE, "min_overlap": s3.MIN_OVERLAP,
             "same_dz_ft": s3.SAME_DZ, "aniso": s3.ANISO, "ellipse_ft": s3.ELLIPSE, "parent_dz_ft": s3.PARENT_DZ, "codev_days": s3.CODEV_DAYS}, "population_median": pop_med}
-    ctx = {"summary": summ, "trend": trend, "fe_trend": fe_trend, "yeff": yeff, "ctrl": ctrl, "case": case, "png": trend_png(d)}
+    summ["mediation_n"] = med["n"]
+    ctx = {"summary": summ, "trend": trend, "fe_trend": fe_trend, "yeff": yeff, "ctrl": ctrl, "case": case, "png": trend_png(d), "med": med}
     (out / "spacing3d.html").write_text(render(ctx), encoding="utf-8")
     d[["api10", "well_name", "operator", "area_no", "fpy", "formation_blueox", "lateral_ft", "n_pairs", "nn_left_ft", "nn_right_ft", "lat_spacing_ft", "xsec_ft2",
        "n_ellipse", "n_parent_ellipse", "bounded_sides", "parent_cum_kbbl_per_kft", "n_child_24mo", "r12_6", "r24_6", "oil12_kft",
        "closest_xy", "wells_in_radius", "stack_z", "boundedness", "is_child", "parent_count"]].to_csv(out / "wells_spacing3d.csv", index=False)
-    for name, t in (("trend_by_vintage", trend), ("feature_year_effects", fe_trend), ("year_effects", yeff), ("controls", ctrl)):
+    for name, t in (("trend_by_vintage", trend), ("feature_year_effects", fe_trend), ("year_effects", yeff), ("controls", ctrl),
+                    ("mediation_early_year", med["early_year"]), ("mediation_coefs", med["coefs"]), ("mediation_share", med["mediated"])):
         t.to_csv(out / f"{name}.csv", index=False)
     (out / "summary.json").write_text(json.dumps(summ, indent=2, default=str), encoding="utf-8")
-    return {"summary": summ, "trend": trend, "fe_trend": fe_trend, "yeff": yeff, "ctrl": ctrl, "case": case}
+    return {"summary": summ, "trend": trend, "fe_trend": fe_trend, "yeff": yeff, "ctrl": ctrl, "case": case, "med": med}
+
+
+EARLY = ("peak_month", "m1_share6")
+SPACING = ("ln_xsec", "ln_lat_spacing", "ln1p_parent_cum")
+
+
+def mediation(d: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    """Does tighter spacing act on the post-month-6 shape THROUGH early-time behaviour?
+    (a) early-time ~ year + area + lateral [+ spacing]: does spacing predict early time, and absorb its year trend?
+    (b) ln r24_6 ~ year + area + lateral + spacing [+ early time]: how much of each spacing coefficient survives once
+        early time is controlled (share mediated = 1 - direct / total). One well set for every model; classical SEs
+        (neighbouring wells are correlated, so read |t| < ~3 as weak)."""
+    num = ["ln_lat", *FEATS_DEP]
+    pop = d.dropna(subset=["ln_r24_6", *EARLY, *num])
+    rows_a, rows_c = [], []
+    for e in EARLY:
+        for lab, cs in (("year + area + lateral", ["ln_lat"]), ("+ 3-D spacing + depletion", num)):
+            c = fe_years(pop, e, cs)
+            rows_a.append({"response": e, "spec": lab, "n": c.attrs["n"], **{yr: float(v) for yr, v in c.items()}})
+        full = fe_years(pop, e, num)
+        for k in SPACING:
+            co, se = float(full.attrs["coef"][k]), float(full.attrs["se"][k])
+            rows_c.append({"model": f"{e} ~ spacing", "term": k, "coef": co, "t": co / se if se else np.nan, "effect_of_1sd": co * float(pop[k].std())})
+    tot = fe_years(pop, "ln_r24_6", num)
+    dirc = fe_years(pop, "ln_r24_6", [*num, *EARLY])
+    med = []
+    for k in SPACING:
+        t_, d_ = float(tot.attrs["coef"][k]), float(dirc.attrs["coef"][k])
+        med.append({"term": k, "total_coef": t_, "total_t": t_ / float(tot.attrs["se"][k]), "direct_coef": d_, "direct_t": d_ / float(dirc.attrs["se"][k]),
+                    "share_mediated_by_early_time": (1 - d_ / t_) if t_ else np.nan, "total_effect_1sd": float(np.expm1(t_ * pop[k].std()))})
+    for e in EARLY:
+        rows_c.append({"model": "ln r24_6 ~ ... + early time", "term": e, "coef": float(dirc.attrs["coef"][e]), "t": float(dirc.attrs["coef"][e] / dirc.attrs["se"][e]),
+                       "effect_of_1sd": float(dirc.attrs["coef"][e] * pop[e].std())})
+    return {"early_year": pd.DataFrame(rows_a), "coefs": pd.DataFrame(rows_c), "mediated": pd.DataFrame(med), "n": len(pop)}
+
+
+def fe_years(pop: pd.DataFrame, y: str, num: list[str]) -> pd.Series:
+    return sd.fe_ols(pop, y, num, ["area_no"])
 
 
 def trend_png(d: pd.DataFrame) -> str:
@@ -248,7 +308,14 @@ def render(ctx: dict[str, Any]) -> str:
          "'Children within 24 months' is diagnostic only — not knowable when a well (or PUD) starts.</div>"),
         _table(ctx["yeff"], {y: "+.1%" for y in yrs}),
         "<h2>3. Feature effects (1-SD move)</h2>", _table(ctx["ctrl"], {"coef": ".4f", "effect_of_1sd": "+.1%"}),
-        "<h2>4. Case: Burton Flat 3 1</h2>",
+        "<h2>4. Mediation — does spacing act on decline through early-time behaviour?</h2>",
+        (f"<div class=meta>{ctx['med']['n']:,} wells with 24 months and every input; within TC area. (a) year effect on peak month (months) and on month-1 share of "
+         "cum-6, without and with the spacing block; (b) spacing coefficients on early time; (c) each spacing term's coefficient on ln(cum-24 / cum-6) before (total) and after "
+         "(direct) controlling for early time — share mediated = 1 − direct / total. Classical SEs; neighbouring wells are correlated, so |t| below ~3 is weak.</div>"),
+        _table(ctx["med"]["early_year"], {y: "+.3f" for y in yrs}),
+        _table(ctx["med"]["coefs"], {"coef": ".4f", "t": ".1f", "effect_of_1sd": "+.3f"}),
+        _table(ctx["med"]["mediated"], {"total_coef": ".4f", "total_t": ".1f", "direct_coef": ".4f", "direct_t": ".1f", "share_mediated_by_early_time": ".0%", "total_effect_1sd": "+.1%"}),
+        "<h2>5. Case: Burton Flat 3 1</h2>",
         _table(ctx["case"], {"lateral_ft": ",.0f", "nn_left_ft": ",.0f", "nn_right_ft": ",.0f", "lat_spacing_ft": ",.0f", "xsec_ft2": ",.0f", "parent_cum_kbbl_per_kft": ".1f",
                              "r24_6": ".3f", "oil12_kft": ",.0f"}),
         (f"<div class=meta>Population medians: lateral spacing {s['population_median']['lat_spacing_ft']:,.0f} ft, cross-section {s['population_median']['xsec_ft2']:,.0f} ft², "

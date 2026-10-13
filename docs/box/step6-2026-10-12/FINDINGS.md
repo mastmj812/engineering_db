@@ -148,3 +148,33 @@ Next (proposed): (1) backtest variant with cross-section + lateral spacing + par
 prototype computes per fold without warehouse writes); (2) mediation check — does spacing drive the early-time shift;
 (3) only if (1) earns it: sql/59 `well_neighbors` / `well_spacing_3d` (go-apply), which PUD forecasting at planned spacing
 needs regardless.
+
+## 8. Backtest variant with 3-D spacing + mediation check (Michael 2026-10-12)
+
+**Backtest** (`backtest/backtest.html`, re-run with two new variants; 35 min). `s3d` = BOX × exp(b · features) on ln drainage
+cross-section, ln lateral spacing, ln(1 + parent cum per kft), all as of first production, PPML with the base prediction as
+offset, training wells only; a holdout well's parent depletion read at the cutoff. `lat+s3d` = on top of D50.
+- Fitted multipliers are small and stable across folds (per 1 SD): lateral spacing ×1.03–1.05, parent depletion ×0.98–0.99,
+  cross-section ×0.99–1.01 (it adds nothing beyond lateral spacing + depletion once the area / scenario model is in).
+- Oil, mean |bias| over 4 folds — cum-6 / 12 / 24: base 3.0 / 5.6 / 9.8 %; lat 2.7 / 5.6 / 9.7; **s3d 2.7 / 4.3 / 8.3;
+  lat+s3d 2.2 / 4.5 / 8.4**; dens 3.4 / 2.9 / 6.8. Per fold, s3d moves every oil cell ~+1.3–1.5 pt (cum-24: −8.9 → −7.4,
+  −10.1 → −8.6, −10.4 → −8.9 %): newer (holdout) wells are tighter than the training mix, so the term lowers them — the
+  mechanism Michael proposed, worth ~1.5 of the ~9–10 pt cum-24 miss. P10–P90 bands unchanged (oil cum-12 0.76–0.80 base vs
+  0.76–0.79 s3d): it shifts the vintage level, it does not sharpen well-to-well prediction. Residual oil cum-6 bias by
+  cross-section band is already flat in base (−3.0 … +1.2 %).
+- `dens` scores better at cum-12/24 only by shifting the level ~+3 pt (it makes cum-6 and gas worse) — still not recommended.
+
+**Mediation** (`spacing3d/spacing3d.html` §4; 9,490 wells, within area, classical SEs):
+- Peak month moved earlier: 2021–24 wells peak ~0.5 month earlier than 2018. Spacing absorbs ~16 % of that (2024: −0.56 →
+  −0.47 month); its link to peak month is weak (cross-section t ≈ 1.8). Month-1 share has no year trend.
+- Spacing acts on decline mostly directly: cross-section's effect on ln(cum-24 / cum-6) is ~40 % mediated by early time,
+  60 % direct (t 2.8); parent depletion ~6 % mediated (t 4.1 direct); lateral spacing alone not significant.
+- Metric caveat: cum-24 / cum-6 is partly mechanical in peak timing (an earlier peak lowers it with identical decline), so
+  "early time absorbs half" (§6) overstates early time. The peak-free measure — rate in months 19–24 / months 4–6, both
+  past the median month-2 peak — still falls 0.336 → 0.286 from 2018 to 2024 (−15 %): the steeper decline is real.
+
+**Read:** the spacing regime did tighten and it does steepen decline and lower level, but as measured it explains ~15–20 %
+of the late-time miss. Most of the shape drift is a time trend the geometry doesn't carry (earlier peaks — likely
+flowback / choke / lift practice — and an unexplained remainder). Next lever: recency-weighted area curves / a vintage
+shape term (§6 a/b); keep s3d as a candidate term on top. sql/59 remains justified for PUD forecasting at planned
+spacing, not by forecast skill alone.

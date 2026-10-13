@@ -38,6 +38,7 @@ from box import exclusions
 from box import hindcast as hc
 from box import hindcast_production as hp
 from box import hindcast_report as hr
+from box import spacing3d_report as s3r
 from box import tc_curve_report as rep
 from box import tc_record_report as trr
 from box.edge_gap_report import _CSS, _png, _table
@@ -45,7 +46,8 @@ from box.edge_gap_report import _CSS, _png, _table
 CUTOFFS: tuple[dt.date, ...] = (dt.date(2021, 12, 1), dt.date(2022, 12, 1), dt.date(2023, 12, 1), dt.date(2024, 12, 1))
 HORIZONS: tuple[int, ...] = (6, 12, 24)
 STREAMS: tuple[str, ...] = ("oil", "gas")
-VARIANTS: tuple[str, ...] = ("base", "lat", "lat1700", "dens", "lat+dens")
+VARIANTS: tuple[str, ...] = ("base", "lat", "lat1700", "dens", "lat+dens", "s3d", "lat+s3d")
+S3D_COLS = ("ln_xsec", "ln_lat_spacing", "ln1p_parent_cum")  # 3-D spacing prototype, as of first production
 DENS_COLS = ("near", "spacing")
 DENS_REF = {"near": "2-3", "spacing": "880-1320"}
 _SPACING_SQL = "SELECT api10, lateral_closer_xy_ft FROM curated.wells_enriched WHERE api10 = ANY(%(a)s)"
@@ -84,7 +86,7 @@ def prep(fr: pd.DataFrame, sp: pd.Series) -> pd.DataFrame:
     return fr
 
 
-def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, workers: int | None, last: dt.date) -> dict[str, Any]:
+def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, workers: int | None, last: dt.date, P: dict[str, Any]) -> dict[str, Any]:
     asof = _prev_month(cutoff)
     ar = hr.rebuild_areas(conn, wells, asof)
     cb = hr.rebuild_curves(conn, wells, ar, cutoff, asof, workers)
@@ -116,6 +118,10 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
     hs["gor_target"] = hs["gor_local"] * hs["f_gor"]
     sp = spacing(conn, sorted(set(trn["api10"]) | set(hs["api10"])))
     trn, hs = prep(trn, sp), prep(hs, sp)
+    # 3-D spacing as of first production; a holdout well's parent depletion is read at the cutoff at the latest
+    trn = trn.merge(s3r.features_table(P, trn["api10"])[["api10", "xsec_ft2", "lat_spacing_ft", *S3D_COLS]], on="api10", how="left")
+    hs = hs.merge(s3r.features_table(P, hs["api10"], cap=cutoff)[["api10", "xsec_ft2", "lat_spacing_ft", *S3D_COLS]], on="api10", how="left")
+    hs["xsec_bin"] = pd.cut(hs["xsec_ft2"], [0, 1e6, 2e6, 4e6, np.inf], labels=["<1M", "1-2M", "2-4M", ">=4M"]).astype(object)
     # ---- monthly predictions (no F) + actuals
     t_ids = list(trn["api10"])
     t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof)
@@ -135,6 +141,16 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
         dens_fit[v] = {"factors": f, "norm": k}
         mult_t[v] = mult_t[basev] * m_t * k
         mult_h[v] = mult_h[basev] * bt.density_multiplier(hs, f, DENS_COLS, DENS_REF) * k
+    s3d_fit = {}
+    for v, basev in (("s3d", "base"), ("lat+s3d", "lat")):
+        tt = trn.assign(a12=np.nansum(t_act["oil"][:, :12], axis=1) * np.where(np.isfinite(t_act["oil"][:, 11]), 1, np.nan),
+                        p12=t_box["oil"][:, :12].sum(axis=1) * mult_t[basev])
+        f = bt.fit_numeric(tt, "a12", "p12", S3D_COLS)
+        m_t = bt.numeric_multiplier(trn, f)
+        k = bt.normaliser(tt["p12"].to_numpy(), m_t)
+        s3d_fit[v] = {**f, "norm": k}
+        mult_t[v] = mult_t[basev] * m_t * k
+        mult_h[v] = mult_h[basev] * bt.numeric_multiplier(hs, f) * k
     F = {v: {s: hc.calendar_factor_curve(t_act[s], t_box[s] * mult_t[v][:, None])[0] for s in STREAMS} for v in VARIANTS}
     rows = []
     for v in VARIANTS:
@@ -151,7 +167,7 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
     for v in VARIANTS:
         hs[f"mult_{v}"] = mult_h[v]
     return {"cutoff": cutoff, "asof": asof, "k_areas": len(ar["geoms"]), "n_train": len(trn), "n_hold": len(hs), "hold_repl": hrep,
-            "F": {v: {s: [float(x) for x in F[v][s]] for s in STREAMS} for v in VARIANTS}, "density": dens_fit, "scores": pd.DataFrame(rows), "hold": hs,
+            "F": {v: {s: [float(x) for x in F[v][s]] for s in STREAMS} for v in VARIANTS}, "density": dens_fit, "s3d": s3d_fit, "scores": pd.DataFrame(rows), "hold": hs,
             "n_fitted": cb["n_fitted"]}
 
 
@@ -180,38 +196,42 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
     out.mkdir(parents=True, exist_ok=True)
     wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, (hr.POOL,)))
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
-    folds = [run_fold(conn, wells, wells_dir, c, workers, last) for c in cutoffs]
+    subj = wells[np.array([f >= dt.date(2016, 1, 1) for f in wells["first_production_date"]]) & (pd.to_numeric(wells["lateral_length_ft"], errors="coerce") > 0).to_numpy()]
+    P = s3r.build_pairs(conn, subj.reset_index(drop=True))
+    folds = [run_fold(conn, wells, wells_dir, c, workers, last, P) for c in cutoffs]
     scores = mask_thin(pd.concat([f["scores"] for f in folds], ignore_index=True))
     hold = pd.concat([f["hold"] for f in folds], ignore_index=True)
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     lat = breakdown(hold, "lat_bin")
     near = breakdown(hold, "near")
     spc = breakdown(hold, "spacing")
+    xs = breakdown(hold, "xsec_bin")
     summ = {"built_at": built, "engine_sha": engine_sha, "actuals_through": str(last), "n_excluded": len(excluded),
             "folds": [{k: (str(v) if isinstance(v, dt.date) else v) for k, v in f.items() if k not in ("scores", "hold")} for f in folds]}
-    ctx = {"summary": summ, "scores": scores, "lat": lat, "near": near, "spc": spc, "png": bias_png(scores)}
+    ctx = {"summary": summ, "scores": scores, "lat": lat, "near": near, "spc": spc, "xs": xs, "png": bias_png(scores)}
     (out / "backtest.html").write_text(render(ctx), encoding="utf-8")
     scores.to_csv(out / "scores.csv", index=False)
     keep = ["cutoff", "api10", "well_name", "operator", "area_no", "first_production_date", "lateral_ft", "lat_bin", "n_near", "near", "spacing_ft", "spacing",
+            "xsec_ft2", "xsec_bin", "lat_spacing_ft", "ln1p_parent_cum",
             "p_class", "p_infill", "f_oil", *[f"mult_{v}" for v in VARIANTS]]
     keep += [f"{c}{s}{k}" for s in STREAMS for k in HORIZONS for c in ("actual_", "base_")]
     keep += [f"{v}_err_{s}{k}" for v in VARIANTS for s in STREAMS for k in HORIZONS]
     hold[keep].to_csv(out / "holdout.csv", index=False)
-    pd.concat([lat.assign(by="lateral"), near.assign(by="near"), spc.assign(by="spacing")]).to_csv(out / "breakdown_oil6.csv", index=False)
+    pd.concat([lat.assign(by="lateral"), near.assign(by="near"), spc.assign(by="spacing"), xs.assign(by="xsec")]).to_csv(out / "breakdown_oil6.csv", index=False)
     (out / "summary.json").write_text(json.dumps(rep._clean(summ), indent=2, default=rep._json), encoding="utf-8")
     return {"summary": summ, "scores": scores, "hold": hold}
 
 
 def bias_png(scores: pd.DataFrame) -> str:
     fig, axs = plt.subplots(1, 4, figsize=(17, 3.8), sharey=True)
-    colours = {"base": "#6b7280", "lat": "#2a78d6", "lat1700": "#93c5fd", "dens": "#eb6834", "lat+dens": "#1baf7a"}
+    colours = {"base": "#6b7280", "lat": "#2a78d6", "lat1700": "#93c5fd", "dens": "#eb6834", "lat+dens": "#1baf7a", "s3d": "#e87ba4", "lat+s3d": "#4a3aa7"}
     for ax, (s, k) in zip(axs, [("oil", 6), ("oil", 12), ("gas", 6), ("gas", 12)], strict=True):
         x = scores[(scores.stream == s) & (scores.horizon == k)]
         cut = sorted(x.cutoff.unique())
-        w = 0.16
+        w = 0.12
         for i, v in enumerate(VARIANTS):
             y = [float(x[(x.cutoff == c) & (x.variant == v)]["bias"].iloc[0]) for c in cut]
-            ax.bar(np.arange(len(cut)) + (i - 2) * w, y, w * 0.9, color=colours[v], label=v)
+            ax.bar(np.arange(len(cut)) + (i - 3) * w, y, w * 0.9, color=colours[v], label=v)
         ax.axhspan(-0.10, 0.10, color="#16a34a", alpha=0.07)
         ax.axhline(0, color="#111827", lw=0.8)
         ax.set_xticks(np.arange(len(cut)), [c[:4] for c in cut])
@@ -243,7 +263,8 @@ def render(ctx: dict[str, Any]) -> str:
           f"{s['actuals_through']} (each well's newest month dropped) · blueox-boxfit @ {s['engine_sha'][:7]} · read-only</div>"),
          ("<div class=flag>Error = actual / BOX − 1 (negative = BOX HIGH). Variants: <b>base</b> = BOX as built; <b>lat</b> = × Cui &amp; Cross (URTeC 3723784) Delaware lateral-length "
           "efficiency, 2,000 lb / 60 bbl per ft, normalised to the area curve's own lateral mix, extended past 12,500 ft on the last segment's slope; <b>lat1700</b> = the 1,700 / 50 curve; "
-          "<b>dens</b> = × package-density term (co-extent neighbours within ±500 ft TVD, parents + codev; same-bench spacing) fitted on training wells only; <b>lat+dens</b> = both. "
+          "<b>dens</b> = × package-density term (co-extent neighbours within ±500 ft TVD, parents + codev; same-bench spacing) fitted on training wells only; <b>lat+dens</b> = both; "
+          "<b>s3d</b> = × 3-D spacing prototype (ln drainage cross-section, ln lateral spacing, ln(1 + parent cum per kft), as of first production; a holdout well's parent depletion read at the cutoff), PPML on training wells; <b>lat+s3d</b> = both. "
           "Every variant calibrates its own F(k) on its own training predictions.</div>"),
          f"<img src='{ctx['png']}'>",
          "<h2>1. Bias by fold (mean error; green band = ±10 %)</h2>", _table(wide, pct),
@@ -251,7 +272,12 @@ def render(ctx: dict[str, Any]) -> str:
          "<h2>3. Oil cum-6 bias by lateral length (all folds)</h2>", _table(ctx["lat"], {**{f"{v} bias": "+.1%" for v in VARIANTS}, "lateral_ft_median": ",.0f"}),
          "<h2>4. Oil cum-6 bias by package density — co-extent neighbours within ±500 ft TVD (all folds)</h2>", _table(ctx["near"], {**{f"{v} bias": "+.1%" for v in VARIANTS}, "lateral_ft_median": ",.0f"}),
          "<h2>5. Oil cum-6 bias by same-bench spacing, lateral_closer_xy_ft (all folds)</h2>", _table(ctx["spc"], {**{f"{v} bias": "+.1%" for v in VARIANTS}, "lateral_ft_median": ",.0f"}),
-         "<h2>6. Folds</h2>", _table(folds, {}),
+         "<h2>6. Oil cum-6 bias by drainage cross-section, 3-D spacing prototype (all folds)</h2>",
+         _table(ctx["xs"], {**{f"{v} bias": "+.1%" for v in VARIANTS}, "lateral_ft_median": ",.0f"}),
+         "<h2>7. Folds</h2>", _table(folds, {}),
+         "<h3>3-D spacing multipliers per fold (exp(b x 1 SD) per term; training only)</h3>",
+         _table(pd.DataFrame([{"cutoff": f["cutoff"], "variant": v, **{c: round(float(np.exp(x["b"][c] * x["sd"][c])), 3) for c in x["cols"]}, "norm": round(x["norm"], 3)}
+                              for f in s["folds"] for v, x in f["s3d"].items()]), {}),
          "<h3>Density multipliers fitted per fold (reference: 2–3 near neighbours, 880–1,320 ft spacing; norm keeps the training total)</h3>", _table(dens, {}),
          "</body></html>"]
     return "\n".join(p)
