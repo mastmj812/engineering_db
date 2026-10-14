@@ -257,9 +257,14 @@ re-drop semantics so a split is an expected shape, not a surprise.
   **distinct zone names**: the bench code plus a short qualifying suffix
   (≤26 chars, Principle 2 charset). **Shipped form of record (bro_time
   re-drop, accepted by the Blue Ox loader): `WCB_2 West` / `WCB_2 East`** —
-  space-separated qualifiers, now final per Principle 2; future splits
-  follow this shape. (This file's first draft illustrated `WCB_2_W` /
-  `WCB_2_E`; the shipped names supersede the example.) Zone names remain
+  space-separated qualifiers, now final per Principle 2 for bro_time only.
+  **Superseded for new drops (Michael 2026-10-08; enforced by anduin
+  2026-10-14, permiantypecurve #98):** a zone name is the zone's
+  `formation_blueox` tag + optional `_SUFFIX` — letters, digits, single
+  underscores, no spaces or `_v2` tags (`WCB_2_N`, `WCB_2_NW`; Rally Caps
+  shipped this shape). anduin refuses any other name at config save and at
+  export; the bro_time pair is grandfathered. Loader impact: *tolerated* —
+  a stricter subset of the Principle 2 charset. Zone names remain
   labels; the `bench` column (§6) carries the SAME bench code (`WCB_2`) on
   both zones' inventory rows — `bench`, not the zone name, is the geologic
   identity.
