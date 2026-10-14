@@ -334,3 +334,28 @@ locations). `_wf` = walk-forward haircut from ≥ 2 earlier cutoffs (judged 2021
 
 **Read:** the analog workup with the D55 / D56 / short-lateral refinements and a stated walk-forward correction is at the
 pass line — bias passes everywhere; 2–3 band cells miss narrowly.
+
+## 14. D52 holdout — one-time scoring of the frozen spec (D58, code d5c3ebd; Michael 2026-10-14)
+
+`docs/box/acceptance/acceptance_holdout_v2.html` (`--mode v2 --score-holdout`, 2.4 h). Held-out packages only (60–84 per
+cutoff, 263–378 wells); walk-forward haircuts taken from the TUNING packages' earlier cutoffs. Scale-free spread test.
+
+**Verdict as written: FAIL — 2 of 18 judged cells** (gas PASS on every judged cell; oil fails 2). Record `box_v2_wf`:
+
+| cutoff | oil cum-12 | oil cum-24 | oil cum-36 | gas cum-12 | gas cum-24 | gas cum-36 |
+|---|---|---|---|---|---|---|
+| 2021 (83 packages) | +6.8 % PASS | +8.2 % PASS | +7.2 % PASS | −5.5 % PASS | −4.9 % PASS | −5.0 % PASS |
+| 2022 (75 / 57) | −4.8 % PASS | −2.2 % PASS | +1.9 % PASS | −8.3 % PASS | −7.0 % PASS | −5.4 % PASS |
+| 2023 (60 / 43) | −3.8 % **FAIL** (spread) | −4.3 % **FAIL** (spread) | — | −9.5 % PASS | −7.3 % PASS | — |
+| 2024 (46) | +1.0 % PASS | — | — | −8.8 % PASS | — | — |
+
+- **Bias passes in every judged cell** (oil −4.8 … +8.2 %, gas −4.9 … −9.5 %). Both failures are the spread test at the 2023
+  cutoff, the smallest judged holdout cells (60 and 43 packages): BOX scale-free spread 0.86 / 0.76 vs the benchmark's 0.65 /
+  0.59 + 0.05 — the benchmark's spread is unusually tight at that cutoff (raw 0.58 / 0.52 vs 0.60–0.83 elsewhere).
+- Without the correction, `box_v2` holdout oil bias −4.1 / −6.0 / −6.5 / −11.4 % (cum-12 / 24 / 36 / 48); the walk-forward
+  haircut (learned on tuning packages) over-corrects slightly here (+0.6 / +4.6 % at cum-24 / 36) — the held-out ground was
+  less optimistic than the tuning ground. Gas after correction sits at −5 … −10 % (cum-12 −8.0 % mean), near the edge.
+- Hierarchy holds out-of-sample: oil cum-36 bias BOX `lat` −15.0 %, `di_p50` −10.4 %, `box_v2` −6.5 %, `box_v2_wf` +4.6 %;
+  failing cells 17 / 10 / 6 (of 34) / 2 (of 18).
+- The holdout is now spent. Rules were not changed after scoring; any acceptance of the two failing cells is an owner's
+  judgment, recorded as such. Prospective confirmation (2026 first-production wells, D52) remains.
