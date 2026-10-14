@@ -3,7 +3,7 @@
   "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
   "actuals_through": "2026-07-01",
   "view": "tuning (holdout excluded)",
-  "record_variant": "di_p50_wf",
+  "record_variant": "box_v2_wf",
   "variants": [
     "lat",
     "di_p50",
@@ -126,7 +126,7 @@
       "gas": "FAIL"
     },
     "n_judged": 18,
-    "n_failed": 6
+    "n_failed": 2
   },
   "verdict_by_variant": {
     "lat": {
@@ -136,7 +136,7 @@
         "gas": "FAIL"
       },
       "n_judged": 34,
-      "n_failed": 19
+      "n_failed": 20
     },
     "di_p50": {
       "overall": "FAIL",
@@ -154,7 +154,7 @@
         "gas": "FAIL"
       },
       "n_judged": 18,
-      "n_failed": 6
+      "n_failed": 3
     },
     "box_v2": {
       "overall": "FAIL",
@@ -163,16 +163,16 @@
         "gas": "FAIL"
       },
       "n_judged": 34,
-      "n_failed": 10
+      "n_failed": 9
     },
     "box_v2_wf": {
       "overall": "FAIL",
       "by_stream": {
         "oil": "FAIL",
-        "gas": "PASS"
+        "gas": "FAIL"
       },
       "n_judged": 18,
-      "n_failed": 3
+      "n_failed": 2
     }
   },
   "n_excluded": 27,
@@ -870,5 +870,53 @@
       "horizon": 48,
       "haircut": 0.07162515071157513
     }
-  ]
+  ],
+  "verdict_by_variant_raw_band": {
+    "lat": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 19
+    },
+    "di_p50": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 13
+    },
+    "di_p50_wf": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 18,
+      "n_failed": 6
+    },
+    "box_v2": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 34,
+      "n_failed": 10
+    },
+    "box_v2_wf": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "PASS"
+      },
+      "n_judged": 18,
+      "n_failed": 3
+    }
+  },
+  "band_rule": "scale-free: band(actual/forecast)/(1+bias) <= benchmark's + 0.05 (D58)"
 }

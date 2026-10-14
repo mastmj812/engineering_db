@@ -92,11 +92,24 @@ def package_errors(df: pd.DataFrame, pkg: str, actual: str, pred: str) -> pd.Dat
     return g.reset_index()
 
 
+SCALE_FREE = True  # D58 (Michael 2026-10-14): spreads compared scale-free — band of (actual / forecast) / its mean
+
+
+def scale_free(band: float, bias: float) -> float:
+    """P10–P90 of actual / forecast divided by its mean (1 + bias): removes the 1 / (1 + h) widening a haircut causes and
+    the compression a high-biased forecast enjoys, so a corrected forecast is not penalised for being corrected."""
+    return band / (1.0 + bias) if np.isfinite(band) and np.isfinite(bias) and bias > -1 else float("nan")
+
+
 def judge_cell(box: Mapping[str, float], bench: Mapping[str, float], n_pkg: int, tol: float = BIAS_TOL, min_pkg: int = MIN_PACKAGES,
-               band_tol: float = BAND_TOL) -> str:
+               band_tol: float = BAND_TOL, scale_free_band: bool = SCALE_FREE) -> str:
     if n_pkg < min_pkg or not np.isfinite(box["bias"]):
         return "not judged"
-    ok = abs(box["bias"]) <= tol and (not np.isfinite(bench["band"]) or box["band"] <= bench["band"] + band_tol)
+    if scale_free_band:
+        bb, rb = scale_free(box["band"], box["bias"]), scale_free(bench["band"], bench.get("bias", float("nan")))
+    else:
+        bb, rb = box["band"], bench["band"]
+    ok = abs(box["bias"]) <= tol and (not np.isfinite(rb) or bb <= rb + band_tol)
     return "PASS" if ok else "FAIL"
 
 
@@ -149,7 +162,7 @@ def add_analog_predictions(view: pd.DataFrame, f: dict[str, Any], cutoff: dt.dat
 
 REPORTED_V2 = ("lat", "di_p50", "di_p50_wf", "box_v2", "box_v2_wf")  # pre-registered 2026-10-14 (D57)
 NON_WF_V2 = ("lat", "di_p50", "box_v2")
-RECORD_V2 = "di_p50_wf"  # D57 method of record
+RECORD_V2 = "box_v2_wf"  # D58 FROZEN spec of record (2026-10-14)
 WF_LOG: list[dict[str, Any]] = []
 
 
@@ -188,7 +201,7 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
     return pd.DataFrame([{k_: p.get(k_) for k_ in keys} for p in pv])
 
 
-def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame]) -> list[pd.DataFrame]:
+def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame], history: pd.DataFrame | None = None) -> list[pd.DataFrame]:
     """D57: <variant>_wf = prediction x (1 + mean package bias at the same horizon over >= 2 EARLIER cutoffs); cells for a
     cutoff without two earlier judged cutoffs are left unjudged (no prediction)."""
     WF_LOG.clear()
@@ -200,7 +213,8 @@ def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame]) -> l
                     col = f"pred_{base}_{s}{k}"
                     if col not in view:
                         continue
-                    hist = cells[(cells.variant == base) & (cells.stream == s) & (cells.horizon == k) & (cells.n_packages >= MIN_PACKAGES)]
+                    src = cells if history is None else history  # holdout scoring: haircuts from the TUNING packages only (D58)
+                    hist = src[(src.variant == base) & (src.stream == s) & (src.horizon == k) & (src.n_packages >= MIN_PACKAGES)]
                     h = an.walk_forward(dict(zip(hist["cutoff"], hist["pkg_bias"], strict=True)), c)
                     WF_LOG.append({"cutoff": c, "variant": base, "stream": s, "horizon": k, "haircut": h})
                     pred = view[col].to_numpy(float) * (1.0 + h) if h is not None else np.full(len(view), np.nan)
@@ -227,7 +241,7 @@ def score_fold(hs: pd.DataFrame, cutoff: str, variants: tuple[str, ...] = REPORT
                 rows.append({"cutoff": cutoff, "stream": s, "horizon": k, "variant": v, "n_packages": st["n"], "n_wells": int(pp["n"].sum()),
                              "pkg_bias": st["bias"], "pkg_median": st["median"], "pkg_band": st["band"],
                              "bench_bias": bstat["bias"], "bench_band": bstat["band"], "well_bias": wst["bias"], "well_band": wst["band"],
-                             "verdict": judge_cell({"bias": st["bias"], "band": st["band"]}, {"band": bstat["band"]}, st["n"])})
+                             "verdict": judge_cell({"bias": st["bias"], "band": st["band"]}, {"band": bstat["band"], "bias": bstat["bias"]}, st["n"])})
     return pd.DataFrame(rows)
 
 
@@ -264,7 +278,10 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
                           "F_oil_12_36": [f["F"][RECORD]["oil"][11], f["F"][RECORD]["oil"][35]]})
     cells = pd.concat(cells, ignore_index=True)
     if mode == "v2":
-        cells = pd.concat([cells, *apply_walk_forward(cells, views)], ignore_index=True)
+        history = pd.read_csv(out / "cells_tuning_v2.csv") if score_holdout else None
+        if score_holdout:
+            history = history[history.variant.isin(NON_WF_V2)]
+        cells = pd.concat([cells, *apply_walk_forward(cells, views, history)], ignore_index=True)
     prov = pd.concat(analog_prov, ignore_index=True)
     v = {var: verdict(cells, var) for var in variants}
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
@@ -317,9 +334,9 @@ def render(s: dict[str, Any], cells: pd.DataFrame) -> str:
         "</body></html>"])
 
 
-def regrade(cells: pd.DataFrame, band_tol: float = BAND_TOL) -> pd.DataFrame:
-    """Re-judge stored cells under a band tolerance (no recomputation of any statistic)."""
+def regrade(cells: pd.DataFrame, band_tol: float = BAND_TOL, scale_free_band: bool = SCALE_FREE) -> pd.DataFrame:
+    """Re-judge stored cells (no recomputation of any statistic)."""
     c = cells.copy()
-    c["verdict"] = [judge_cell({"bias": b, "band": w}, {"band": bb}, int(n), band_tol=band_tol)
-                    for b, w, bb, n in zip(c["pkg_bias"], c["pkg_band"], c["bench_band"], c["n_packages"], strict=True)]
+    c["verdict"] = [judge_cell({"bias": b, "band": w}, {"band": bb, "bias": bbi}, int(n), band_tol=band_tol, scale_free_band=scale_free_band)
+                    for b, w, bb, bbi, n in zip(c["pkg_bias"], c["pkg_band"], c["bench_band"], c["bench_bias"], c["n_packages"], strict=True)]
     return c
