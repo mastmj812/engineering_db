@@ -1,0 +1,333 @@
+<title>BOX Type Curves — Step 6 Brief</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (~980px) — status strip, then maps full-width, then GOR + remaining work. Field-report feel: survey-map greys, one well-log green accent. */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#1d2421; --muted:#5d6a64; --rule:#d9dfdb;
+  --accent:#1f7a5a; --warn:#c2671c; --drill:#a7b1ac; --ext:rgba(31,122,90,.10); --extline:#1f7a5a;
+  --state:#8c8f8d;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1b2220; --ink:#e3e9e5; --muted:#9aa8a1; --rule:#2e3834;
+  --accent:#4cc395; --warn:#e8964f; --drill:#55605b; --ext:rgba(76,195,149,.12); --extline:#4cc395; --state:#7d8581; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1b2220; --ink:#e3e9e5; --muted:#9aa8a1; --rule:#2e3834;
+  --accent:#4cc395; --warn:#e8964f; --drill:#55605b; --ext:rgba(76,195,149,.12); --extline:#4cc395; --state:#7d8581; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:28px 60px;display:flex;flex-direction:column;gap:34px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:2.1rem;font-weight:700}
+h2{font-size:1.45rem;font-weight:700;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0;max-width:72ch}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.num{font-variant-numeric:tabular-nums}
+code,.mono{font-family:var(--mono);font-size:.86em}
+/* step strip */
+.steps{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.step{background:var(--panel);border:1px solid var(--rule);padding:8px 8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.step b{font-family:var(--display);font-size:1.05rem}
+.step span{font-size:.74rem;color:var(--muted);line-height:1.3}
+.step.done{border-top:4px solid var(--accent)}
+.step.now{border:2px solid var(--warn);border-top:4px solid var(--warn)}
+.step.todo{border-top:4px solid var(--rule)}
+@media (max-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.r,th.r{text-align:right}
+.tbl{overflow-x:auto}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.mapbox{background:var(--panel);border:1px solid var(--rule);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0;position:relative}
+canvas{width:100%;display:block;max-width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+.legend i.box{height:12px;width:14px}
+.toggle{display:flex;gap:0;flex-wrap:wrap}
+.toggle button{font:inherit;font-size:.82rem;padding:5px 12px;background:var(--panel);color:var(--ink);border:1px solid var(--rule);cursor:pointer}
+.toggle button+button{border-left:none}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--ink);padding:6px 9px;font-size:.78rem;line-height:1.4;max-width:240px;z-index:3}
+.ramp{height:10px;flex:1;min-width:120px;max-width:260px}
+.rampwrap{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-family:var(--mono)}
+.callout{border-left:4px solid var(--warn);padding:8px 14px;background:var(--panel)}
+.kv{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.kv div{background:var(--panel);padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kv b{font-family:var(--display);font-size:1.35rem;font-variant-numeric:tabular-nums}
+.kv span{font-size:.76rem;color:var(--muted);line-height:1.3}
+@media (max-width:760px){.kv{grid-template-columns:repeat(2,1fr)}}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;font-size:.84rem}
+.flow div{background:var(--panel);border:1px solid var(--rule);padding:8px 10px;flex:1 1 150px;min-width:0}
+.flow div b{display:block;font-family:var(--display);font-size:.95rem}
+small.note{color:var(--muted);font-size:.78rem}
+</style>
+
+<div class="wrap">
+<header style="display:flex;flex-direction:column;gap:8px">
+  <div class="eyebrow">Blue Ox (BOX) type curves · Delaware pilot · status as of 2026-10-12</div>
+  <h1>BOX type curves: steps 0–5 done, step 6 hindcast next</h1>
+  <p>Goal: replace Novi's PUD forecasts, which we can't underwrite, with our own type curves. They are built from PDP data, risked by development scenario, and stored in oilgas next to Novi. The pilot benches are Delaware <b>WCA</b> (WCA_1 + WCA_2 + WCXY, pooled) and <b>BS2_S</b>. All work through step 5 is merged and live in the warehouse. Step 6 decides whether BOX beats Novi on wells it has not seen.</p>
+</header>
+
+<section>
+  <h2>Where we are</h2>
+  <div class="steps" role="list">
+    <div class="step done" role="listitem"><b>0</b><span>box_econ landing zone for Steven</span></div>
+    <div class="step done" role="listitem"><b>1</b><span>Bench QC, tag consensus</span></div>
+    <div class="step done" role="listitem"><b>2</b><span>Edge-gap metric</span></div>
+    <div class="step done" role="listitem"><b>3</b><span>Extents (v1 of record)</span></div>
+    <div class="step done" role="listitem"><b>4</b><span>35 WCA TC areas</span></div>
+    <div class="step done" role="listitem"><b>5</b><span>Engine, curves, risk factors, stored</span></div>
+    <div class="step now" role="listitem"><b>6</b><span>Hindcast vs Novi 2025Q3 (acceptance)</span></div>
+    <div class="step todo" role="listitem"><b>7</b><span>PUD forecast tables + Steven contract</span></div>
+    <div class="step todo" role="listitem"><b>8</b><span>App toggle Novi ↔ BOX</span></div>
+  </div>
+  <div class="kv">
+    <div><b class="num">6,169</b><span>sq mi WCA extent (box.extent v1)</span></div>
+    <div><b class="num">3,359</b><span>sq mi BS2_S extent (box.extent v1)</span></div>
+    <div><b class="num">35</b><span>WCA TC areas, 7,527 cohort wells</span></div>
+    <div><b class="num">105</b><span>stored curves (35 areas × oil / gas / water) + 108 risk factors</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>What has been done</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>Result</th><th>Key decisions</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Bench QC</td><td>Final well sets: WCA 12,306, BS2_S 4,359. Gunbarrel-consensus flags ratified by swap class from 142 calibration cards (84 agree / 41 reject / 17 inconclusive).</td><td>D19 pool WCA_1+WCA_2 · D20 WCXY counts as WCA, never the reverse · option A for planned-survey wells</td></tr>
+      <tr><td>2 · Edge metric</td><td>Union-of-discs outline (r 2,640 ft, closing 3,960 ft). Gap length between edge-pinning laterals, plus a step-out table.</td><td>D22 BS2_S west is a live front · D24 potash SOPA is ignore-gap · D25 structure grids are context only</td></tr>
+      <tr><td>3 · Extents</td><td>Development envelopes from ≥ 2016 laterals: <b>WCA 6,168.7 sq mi, BS2_S 3,358.5 sq mi</b>. Stored as v1 of record (sql/54, 56). Geology shapefile package delivered (NAD83 UTM14N US-ft).</td><td>D27 ≥ 3-lateral step-outs within 8 mi are in, no voids, no updip limit · D28 geology review doesn't block</td></tr>
+      <tr><td>4 · TC areas</td><td>35 contiguous WCA areas (Ward on 1-mi hexes, log 12-mo oil/ft, ≥ 10 wells). k picked by block CV; held-out R² 0.21 against a local ceiling of 0.22. Stored (sql/57).</td><td>D29 k = 35, El Campeon / Los Vaqueros excluded · D30 gas via GOR · D31 gas in acceptance</td></tr>
+      <tr><td>5a · Engine</td><td>Fitting code moved out of anduin into the shared <code>blueox-boxfit</code> package. anduin baselines and money test unchanged (60,959.3 bbl/kft).</td><td>D15 one Arps implementation</td></tr>
+      <tr><td>5b · Curves</td><td>One curve per area per stream, all on ladder rung 1 (strict). Median area oil EUR <b>65.9 Mbbl/kft</b> (IQR 47.2–79.0). Record Di 1.85–3.93/yr nominal = <b>63–80 % 1-yr effective</b>; b 0.94–1.19; Df 0.08.</td><td>D32 cohort MEAN is the curve of record (1.065× P50) · D33 keep WCA pooled · D34 keep at-bound fits · D36 calendar factor F(k) · D38–D40 engine fixes</td></tr>
+      <tr><td>5c · Risk factors</td><td>Dev-scenario factors versus codev_stack (PPML, area + vintage FE, 3-mi block bootstrap). Lateral infill is the main term: <b>oil cum-12 0.923 WCA / 0.905 BS2_S</b>. Topfill/underfill 0.92–0.94. No oil class differs between benches; the parent bench does.</td><td>D41 infill term · D42 same-pool parent = infill · D43 uniform cum-12 scale · D44 unparented PUD = 1.00 · D45 factor ladder · D46 gas GOR factor · D47 PPML</td></tr>
+      <tr><td>5d · Record</td><td>sql/58 live (28/28 checks). <code>box.type_curve</code> 105, <code>tc_member</code> 22,581, <code>risk_factor</code> 108 rows. Matches the reviewed deliverable to 5e-15.</td><td>Gate 5d closed 2026-10-12 (eng_db #121)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Our extents against Novi's BASE_CASE inventory</h2>
+  <p>Each line is one Novi BASE_CASE (PUD) stick on the bench, 2026Q3 vintage, drawn heel to toe. A stick is "inside" when ≥ 50 % of its length lies in our extent (co-extent overlap, rule 9). <b>Undrilled</b> means it is in the D1 universe (remaining_pud ∪ conflict ∪ not yet reconciled). <b>Already drilled</b> means reconciliation matched it to a producer (realized).</p>
+  <div class="two">
+    <div class="mapbox" id="mb-WCA"><h3>WCA (WCA_1 + WCA_2 + WCXY)</h3><canvas id="c-WCA" height="560"></canvas><div class="legend" id="lg-WCA"></div></div>
+    <div class="mapbox" id="mb-BS2_S"><h3>BS2_S</h3><canvas id="c-BS2_S" height="560"></canvas><div class="legend" id="lg-BS2_S"></div></div>
+  </div>
+  <div class="tbl"><table id="cmp">
+    <thead><tr><th>Bench</th><th class="r">Novi BASE_CASE sticks</th><th class="r">Undrilled (D1)</th><th class="r">D1 inside BOX extent</th><th class="r">D1 outside</th><th class="r">Share outside</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="callout">How to read it: in WCA, Novi's inventory mostly sits inside our development envelope (about 1 in 4 undrilled sticks are outside). In BS2_S, Novi books about as many undrilled locations <i>outside</i> our extent as inside: the west and south aprons and a separate SE Texas body about 40 mi out. BOX gives those locations no forecast. They will show as "not covered: outside extent", not as zero.</p>
+</section>
+
+<section>
+  <h2>WCA type-curve areas</h2>
+  <p>The 35 areas of record (box.tc_area v1). Area values are cohort statistics: D9 filter, first prod ≥ 2016, lateral 6,000–13,000 ft. Hover or tap an area to see its card.</p>
+  <div class="mapbox">
+    <div class="toggle" role="group" aria-label="Area metric">
+      <button id="m-bo" aria-pressed="true">Novi 30-yr EUR, bo/ft (P50)</button>
+      <button id="m-box" aria-pressed="false">BOX 50-yr EUR, bo/ft (mean)</button>
+      <button id="m-gor" aria-pressed="false">12-mo GOR, scf/bbl</button>
+    </div>
+    <canvas id="c-areas" height="680"></canvas>
+    <div class="rampwrap"><span id="r-lo"></span><canvas class="ramp" id="ramp" width="260" height="10"></canvas><span id="r-hi"></span><span id="r-lbl"></span></div>
+    <div class="tip" id="tip" hidden></div>
+  </div>
+  <small class="note">Novi bo/ft = Novi's 30-yr oil EUR ÷ lateral, a vendor forecast (step-4 gut-check map). BOX = the stored record oil curve's raw 50-yr integral per 1,000 ft ÷ 1,000 (cohort mean, not P50, before risking and F(k)). The horizons differ, so compare the patterns, not the levels. GOR = the area's actual cohort 12-mo GOR. Areas with one operator ≥ 70 % of wells are pad-scale (D9 confounding accepted).</small>
+</section>
+
+<section>
+  <h2>How GOR is handled</h2>
+  <p>GOR in the WCA runs as an east-to-west maturity trend. It cuts across the oil-performance areas. Switch the map above to GOR to see it. We use one rule set for it:</p>
+  <div class="flow">
+    <div><b>1 · Areas are oil-built</b>The TC areas cluster on 12-mo oil/ft. GOR does not shape them. 16 of 35 areas mix GOR regimes.</div>
+    <div><b>2 · Gas = ratio mode (D30)</b>ln GOR = α + β·Np, fitted against cumulative oil on the area's mean series. Gas = that ratio × the oil curve. There is no separate gas Arps.</div>
+    <div><b>3 · Level is local</b>Each location shifts α to its own neighborhood's GOR: the median 12-mo GOR of the 15 nearest cohort wells. The area supplies only the shape, β.</div>
+    <div><b>4 · Risked gas (D46)</b>Child wells run gassier than their neighborhood, so gas gets a GOR factor on α. Infill: 1.024 WCA / 1.063 BS2_S.</div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Evidence</th><th>Result</th><th>So</th></tr></thead>
+    <tbody>
+      <tr><td>Held-out ln GOR R² (6,960 wells with 24 mo)</td><td>Oil-built area curve alone: GOR24 R² 0.40 (actual/predicted 0.84). Local level × area shape: <b>R² 0.81, actual/predicted 1.05</b>.</td><td>The local level does the work (D30)</td></tr>
+      <tr><td>Does GOR change oil? (5b follow-up)</td><td>Split by a well's <i>own</i> GOR, the gassy half shows ~11 % less oil. That is circular, because GOR = gas ÷ oil. Against the <i>neighbors'</i> GOR the oil slope is <b>−0.012 ± 0.011</b> (zero). It adds nothing to held-out R² (0.441 → 0.441). Gas scales 1:1 with the neighbors' GOR.</td><td>D35: no GOR split, no GOR term on oil</td></tr>
+      <tr><td>Fitted ratio curve vs actual</td><td>Before the shift, the pool ratio curve overstates early GOR (12-mo 3,672 vs 3,120 actual; gas cum-12 +28 %). After the local shift, gas cum-12 runs +10 %, the same as oil, and F(k) corrects both.</td><td>α is a reference value. Every location shifts it.</td></tr>
+      <tr><td>Acceptance</td><td>Step 6 scores gas cum-6 and cum-12 against Novi 2025Q3 gas, next to oil (D31).</td><td>BOX passes only if oil <i>and</i> gas pass</td></tr>
+    </tbody>
+  </table></div>
+  <small class="note">Gas EUR per area ranges with GOR. Area 18, the gassy west edge (12-mo GOR ~16,000), has the lowest oil at 27.4 Mbbl/kft. Area 12 has the highest at 130.0 Mbbl/kft.</small>
+</section>
+
+<section>
+  <h2>Step 6: the hindcast (acceptance test)</h2>
+  <ul>
+    <li><b>Rebuild steps 4–5 using only wells online before the 2025Q3 report cutoff</b>, inside the same extents. That means areas, curves, factors, F(k) and local GOR levels all come from pre-cutoff wells.</li>
+    <li><b>Holdout:</b> the ~1,742 wells kept in the trimmed 2025Q3 slices (sql/42 / sql/43), with actuals through 2026-08.</li>
+    <li><b>Prediction per well:</b> area curve × lateral × factor (dev scenario computed by us, sql/50) × F(k). Gas = ratio at the well's pre-cutoff local GOR. Novi = its own 2025Q3 forecast.</li>
+    <li><b>Pass criteria (§8):</b> per bench-area with ≥ 10 holdout wells, for cum-6 and cum-12, oil and gas. BOX mean error must be within ±10 % and |BOX bias| &lt; |Novi bias|. BOX's P10–P90 error band must be no wider than Novi's. Both must hold on a majority of qualifying areas. Reference: Novi cum-6 oil bias was −24 % in the Delaware.</li>
+    <li><b>Deliverable:</b> an acceptance page with bias and P10–P90 band per bench-area, BOX vs Novi, and a pass/fail verdict. A fail means diagnose (areas, factors, or ladder) and re-run. No app work starts until it passes.</li>
+  </ul>
+  <div class="callout"><b>Two decisions needed before scoring (§9):</b>
+    <ul style="margin-top:6px">
+      <li>Does "majority" count bench-areas, or weight them by holdout wells?</li>
+      <li>Gas acceptance: same ±10 % / no-wider-band / majority rule as oil, with pass = oil AND gas? Or does gas get its own thresholds?</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>What remains after step 6</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>Scope</th><th>Open inputs</th></tr></thead>
+    <tbody>
+      <tr><td>7 · Production tables</td><td><code>box.location</code> keyed on our own id, with a quarterly crosswalk to Novi sticks. <code>box.pud_forecast</code>, plus the derived monthly table (exact per-month integrals, D39). Coverage classes: covered / emerging / outside extent / thin. Steven's <code>box_econ</code> contract table. CLAUDE.md scope rule reworded (D13). BOX refresh added to the quarterly-reload skill.</td><td>Steven's sandbox table shape. Whether deliveries carry F(k) (then Steven drops his downtime factor; never both, D36). Steven to run his deck on Novi once for comparison.</td></tr>
+      <tr><td>8 · Apps</td><td>erebor Highgrade gets a Novi | BOX source toggle and the Accuracy tab gets the hindcast surface. anduin dossier / Blue Ox drop gets the BOX regional curve beside the deal TC (D12: deal TCs don't override BOX).</td><td>Click-through on the pilot bench</td></tr>
+      <tr><td>Later</td><td>All in-scope benches in both basins. Our own location placement. Novi subscription decision.</td><td>BS2_S areas/curves (BS2_S so far has an extent + factors only)</td></tr>
+    </tbody>
+  </table></div>
+  <small class="note">Out of scope throughout: RES/UPSIDE, emerging benches (WDFD; Midland MISS/BRNT/MRMC/WDFD), surface constraints, and any economics. EUR is the raw 50-yr technical integral. Pending in parallel: geology's review of the v1 extents (non-blocking, D28).</small>
+</section>
+</div>
+
+<script>
+const DATA = __DATA__;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const K = Math.cos(32*Math.PI/180);
+const STATE = [[[-103.064,32.0],[-103.064,33.6]],[[-106.0,32.0],[-103.064,32.0]]];
+const TOWNS = [["Carlsbad",-104.23,32.42],["Pecos",-103.49,31.42],["Jal",-103.19,32.11],["Mentone",-103.60,31.70],["Orla",-103.93,31.83],["Kermit",-103.09,31.86],["Monahans",-102.89,31.59],["Fort Stockton",-102.88,30.89],["Loving",-104.10,32.29],["Hobbs",-103.14,32.70],["Toyah",-103.79,31.31]];
+
+function rings(geom){ // -> array of rings
+  if(geom.type==="Polygon") return geom.coordinates;
+  if(geom.type==="MultiPolygon") return geom.coordinates.flat();
+  return [];
+}
+function makeView(canvas, bbox){
+  const dpr = window.devicePixelRatio||1, w = canvas.clientWidth, h = +canvas.getAttribute("height");
+  const cw = w, ch = Math.min(h, w*1.15);
+  canvas.style.height = ch+"px"; canvas.width = cw*dpr; canvas.height = ch*dpr;
+  const ctx = canvas.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const [x0,y0,x1,y1] = bbox, pad=14;
+  const s = Math.min((cw-2*pad)/((x1-x0)*K), (ch-2*pad)/(y1-y0));
+  const ox = (cw - (x1-x0)*K*s)/2, oy = (ch - (y1-y0)*s)/2;
+  const P = (x,y)=>[ox+(x-x0)*K*s, ch-oy-(y-y0)*s];
+  return {ctx,P,cw,ch,s};
+}
+function bboxOf(rs){let a=[1e9,1e9,-1e9,-1e9];for(const r of rs)for(const [x,y] of r){a[0]=Math.min(a[0],x);a[1]=Math.min(a[1],y);a[2]=Math.max(a[2],x);a[3]=Math.max(a[3],y);}return a;}
+function pathOf(rs,P){const p=new Path2D();for(const r of rs){r.forEach(([x,y],i)=>{const [u,v]=P(x,y);i?p.lineTo(u,v):p.moveTo(u,v);});p.closePath();}return p;}
+function context(ctx,P,cw,ch){
+  ctx.save();ctx.strokeStyle=css("--state");ctx.setLineDash([6,4]);ctx.lineWidth=1.2;
+  for(const seg of STATE){ctx.beginPath();seg.forEach(([x,y],i)=>{const [u,v]=P(x,y);i?ctx.lineTo(u,v):ctx.moveTo(u,v);});ctx.stroke();}
+  ctx.setLineDash([]);
+  const [u,v]=P(-103.30,32.06); ctx.fillStyle=css("--state");ctx.font="600 10px "+css("--mono");ctx.fillText("NM",u-6,v-6);ctx.fillText("TX",u-6,v+14);
+  ctx.font="11px "+css("--body");
+  for(const [n,x,y] of TOWNS){const [a,b]=P(x,y);if(a<4||b<4||a>cw-4||b>ch-4)continue;ctx.fillStyle=css("--ink");ctx.beginPath();ctx.arc(a,b,2.4,0,7);ctx.fill();ctx.fillStyle=css("--muted");ctx.fillText(n,a+5,b-4);}
+  ctx.restore();
+}
+const fmt = n => n.toLocaleString("en-US");
+
+function drawPool(pool){
+  const d = DATA[pool], c = document.getElementById("c-"+pool);
+  const er = rings(d.extent);
+  let bb = bboxOf(er);
+  for(const s of d.sticks){bb[0]=Math.min(bb[0],s[0],s[2]);bb[1]=Math.min(bb[1],s[1],s[3]);bb[2]=Math.max(bb[2],s[0],s[2]);bb[3]=Math.max(bb[3],s[1],s[3]);}
+  const {ctx,P,cw,ch} = makeView(c,bb);
+  ctx.fillStyle=css("--panel");ctx.fillRect(0,0,cw,ch);
+  const ep = pathOf(er,P);
+  ctx.fillStyle=css("--ext");ctx.fill(ep,"evenodd");
+  ctx.lineCap="round";
+  const groups=[[s=>!s[5],css("--drill"),0.8],[s=>s[5]&&!s[4],css("--warn"),1.0],[s=>s[5]&&s[4],css("--ink"),0.8]];
+  for(const [f,col,lw] of groups){ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.globalAlpha=0.75;ctx.beginPath();
+    for(const s of d.sticks){if(!f(s))continue;const [a,b]=P(s[0],s[1]),[e,g]=P(s[2],s[3]);ctx.moveTo(a,b);ctx.lineTo(e,g);}ctx.stroke();}
+  ctx.globalAlpha=1;ctx.strokeStyle=css("--extline");ctx.lineWidth=2;ctx.stroke(ep);
+  context(ctx,P,cw,ch);
+  const n = k=>d.sticks.filter(k).length;
+  document.getElementById("lg-"+pool).innerHTML =
+    `<span><i class="box" style="background:${css("--ext")};border:2px solid ${css("--extline")}"></i>BOX extent v1</span>`+
+    `<span><i style="background:${css("--ink")}"></i>Undrilled, inside (${fmt(n(s=>s[5]&&s[4]))})</span>`+
+    `<span><i style="background:${css("--warn")}"></i>Undrilled, outside (${fmt(n(s=>s[5]&&!s[4]))})</span>`+
+    `<span><i style="background:${css("--drill")}"></i>Already drilled (${fmt(n(s=>!s[5]))})</span>`;
+}
+function fillTable(){
+  const tb=document.querySelector("#cmp tbody");tb.innerHTML="";
+  for(const pool of ["WCA","BS2_S"]){const s=DATA[pool].sticks;const d1=s.filter(x=>x[5]);const ins=d1.filter(x=>x[4]).length;
+    tb.insertAdjacentHTML("beforeend",`<tr><td>${pool}</td><td class="r num">${fmt(s.length)}</td><td class="r num">${fmt(d1.length)}</td><td class="r num">${fmt(ins)}</td><td class="r num">${fmt(d1.length-ins)}</td><td class="r num">${Math.round(100*(d1.length-ins)/d1.length)} %</td></tr>`);}
+}
+
+// ---- areas map ----
+const METRIC = {
+  bo:{key:"bo_ft",lbl:"bo/ft, Novi 30-yr P50",f:v=>v.toFixed(1)},
+  box:{key:"box_bo_ft",lbl:"bo/ft, BOX 50-yr mean",f:v=>v.toFixed(1)},
+  gor:{key:"gor12",lbl:"scf/bbl, 12-mo GOR",f:v=>fmt(Math.round(v)),log:true}
+};
+DATA.areas.forEach(a=>a.box_bo_ft = a.box_eur_kft/1000);
+let metric="bo", paths=[];
+// sequential ramp: light sand -> deep green (oil); GOR uses light -> deep red-brown
+function ramp(t,gor){
+  const A = gor?[[250,240,214],[214,140,70],[122,40,30]]:[[244,240,206],[110,180,120],[18,82,62]];
+  const seg = t<0.5?0:1, u = seg?(t-0.5)*2:t*2;
+  const c = A[seg].map((v,i)=>Math.round(v+(A[seg+1][i]-v)*u));
+  return `rgb(${c})`;
+}
+function drawAreas(){
+  const c=document.getElementById("c-areas"), m=METRIC[metric];
+  const all = DATA.areas.flatMap(a=>rings(a.geom));
+  const {ctx,P,cw,ch}=makeView(c,bboxOf(all));
+  ctx.fillStyle=css("--panel");ctx.fillRect(0,0,cw,ch);
+  const vals=DATA.areas.map(a=>a[m.key]).filter(v=>v!=null&&isFinite(v));
+  const tx=v=>m.log?Math.log(v):v;
+  const lo=Math.min(...vals),hi=Math.max(...vals);
+  const T=v=>(tx(v)-tx(lo))/(tx(hi)-tx(lo));
+  paths=[];
+  for(const a of DATA.areas){const p=pathOf(rings(a.geom),P);paths.push([p,a]);
+    const v=a[m.key];ctx.fillStyle=v==null?css("--rule"):ramp(T(v),metric==="gor");ctx.fill(p,"evenodd");
+    ctx.strokeStyle="rgba(255,255,255,.9)";ctx.lineWidth=1.2;ctx.stroke(p);}
+  context(ctx,P,cw,ch);
+  ctx.font="600 11px "+css("--mono");ctx.textAlign="center";
+  for(const a of DATA.areas){const rs=rings(a.geom);let big=rs[0];for(const r of rs)if(r.length>big.length)big=r;
+    let sx=0,sy=0;for(const [x,y] of big){sx+=x;sy+=y;}const [u,v]=P(sx/big.length,sy/big.length);
+    ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.85)";ctx.strokeText(a.area,u,v+4);ctx.fillStyle="#1d2421";ctx.fillText(a.area,u,v+4);}
+  ctx.textAlign="start";
+  const r=document.getElementById("ramp"),rc=r.getContext("2d");
+  for(let i=0;i<260;i++){rc.fillStyle=ramp(i/259,metric==="gor");rc.fillRect(i,0,1,10);}
+  document.getElementById("r-lo").textContent=m.f(lo);document.getElementById("r-hi").textContent=m.f(hi);
+  document.getElementById("r-lbl").textContent=m.lbl;
+}
+function areaCard(a){
+  const o=a.oil_p||{};
+  return `<b>Area ${a.area}</b> · ${a.sqmi.toFixed(0)} sq mi<br>`+
+  `Novi 30-yr: ${a.bo_ft.toFixed(1)} bo/ft (n ${a.n_eur})<br>`+
+  `BOX 50-yr mean: ${fmt(Math.round(a.box_eur_kft))} bbl/kft (n ${a.n_oil})<br>`+
+  `12-mo oil P50: ${a.oil12.toFixed(1)} bo/ft (n ${a.n12})<br>`+
+  (o.Di_nominal?`Di ${o.Di_nominal.toFixed(2)}/yr nom = ${(100*o.Di_eff_1yr).toFixed(0)} % eff 1-yr, b ${o.b.toFixed(2)}<br>`:"")+
+  `12-mo GOR ${fmt(Math.round(a.gor12))} scf/bbl<br>`+
+  `Top operator ${a.op} (${Math.round(100*a.op_share)} %)`;
+}
+const tip=document.getElementById("tip"), ca=document.getElementById("c-areas");
+function hover(ev){
+  const r=ca.getBoundingClientRect(),x=ev.clientX-r.left,y=ev.clientY-r.top;
+  const ctx=ca.getContext("2d");const hit=paths.find(([p])=>ctx.isPointInPath(p,x*(window.devicePixelRatio||1)/(window.devicePixelRatio||1),y));
+  if(!hit){tip.hidden=true;return;}
+  tip.innerHTML=areaCard(hit[1]);tip.hidden=false;
+  const box=ca.parentElement.getBoundingClientRect();
+  let lx=ev.clientX-box.left+14, ly=ev.clientY-box.top+14;
+  if(lx+250>box.width) lx=ev.clientX-box.left-254;
+  tip.style.left=Math.max(4,lx)+"px";tip.style.top=ly+"px";
+}
+ca.addEventListener("mousemove",hover);ca.addEventListener("click",hover);ca.addEventListener("mouseleave",()=>tip.hidden=true);
+for(const [id,m] of [["m-bo","bo"],["m-box","box"],["m-gor","gor"]])
+  document.getElementById(id).addEventListener("click",()=>{metric=m;document.querySelectorAll(".toggle button").forEach(b=>b.setAttribute("aria-pressed",b.id===id));drawAreas();});
+
+function drawAll(){drawPool("WCA");drawPool("BS2_S");drawAreas();}
+fillTable();drawAll();
+let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(drawAll,150);});
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+document.fonts&&document.fonts.ready.then(drawAll);
+</script>

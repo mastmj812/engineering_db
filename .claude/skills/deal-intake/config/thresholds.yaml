@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 10                # v10 2026-09-29: TIER-BLIND cohort (codev.tier_order_scope: none) — scenario is
+config_version: 11                # v11 2026-10-13: SWD context from C4 (swd: radius / vertical window / minimum
+                                  #    cumulative / poor fraction) — reported beside the standoff table, never selected on
+                                  # v10 2026-09-29: TIER-BLIND cohort (codev.tier_order_scope: none) — scenario is
                                   #    reported (tier table + standoff table), never selected on
                                   # v9 2026-09-29: tier order decided PER UNIT (codev.tier_order_scope: unit) — infill vs
                                   #    greenfield cohorts from the same bench pool
@@ -217,6 +219,19 @@ qc_flags:                         # gate 6 — flags only, never auto-drop
   # beyond this ratio either way is flagged on the curve, not buried — WCB_1 @
   # 9,900 on VaULt had Novi gas 3.6x the TC).
   stream_gap_flag_ratio: 1.5
+
+swd:                              # SWD context from C4 (v11, 2026-10-13; Michael). Reported, never selected on.
+  # Injectors within radius_mi of a stick (surface point to the stick line) are
+  # listed with the vertical standoff (landing TVD - permitted interval bottom).
+  # 'near' = the permitted interval comes within vert_window_ft of the landing.
+  # Shredder 33-59 2WA (BS2_C 9,244 ft; Pit Stop SWD 1 4,500-6,400 ft at ~1 mi,
+  # 22 MMbbl) is the calibration case: nothing overlaps, the well is terrible.
+  # Toucan BS2_S (2026-10-06): exposure did NOT predict performance -> a screen.
+  radius_mi: 2.0                  # provisional
+  vert_window_ft: 3000            # provisional; Shredder standoffs are 2,244 and 2,844 ft
+  min_cum_mmbbl: 5.0              # an injector counts as exposure only above this cumulative (H-10 since 2015)
+  poor_frac_of_median: 0.5        # cohort well is 'poor' at or below this x the cohort median EUR/1,000 ft;
+                                  # poor AND exposed -> 'suspect' (flag + table row), nothing else
 
 split:                            # gate 5b — one TC or per-polygon TCs
   min_wells_per_group: 6
