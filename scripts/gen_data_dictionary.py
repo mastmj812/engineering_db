@@ -76,10 +76,17 @@ _CONSUMERS = {
     "box.bench_scope": "BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)",
     "box.extent": "BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)",
     "box.extent_edge": "geology review of the extent edge (rule + flag per boundary piece)",
-    "box.tc_area": "BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)",
-    "box.type_curve": "BOX hindcast (plan step 6), PUD forecasts + monthly volumes (step 7), app toggle (step 8)",
-    "box.tc_member": "BOX curve provenance / review; hindcast exclusion of curve members (plan step 6)",
-    "box.risk_factor": "BOX PUD risking (plan step 7) and hindcast scoring (step 6)",
+    "box.tc_area": "SUPERSEDED (D66): record of the retired area-curve method; step-6 hindcast comparison only",
+    "box.type_curve": "SUPERSEDED (D66): record of the retired area-curve method; step-6 hindcast comparison only",
+    "box.tc_member": "SUPERSEDED (D66): provenance of the retired area curves",
+    "box.risk_factor": "SUPERSEDED (D66): factors of the retired factor chain; step-6 hindcast scoring only",
+    "box.location": "BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d)",
+    "box.location_source": "BOX quarterly Novi stick crosswalk (step 7c writer; quarterly-reload skill)",
+    "box.forecast_run": "BOX production run provenance + D62 haircut / D63 F(k) / D69 disclosure; erebor + anduin BOX toggle (step 8)",
+    "box.pud_forecast": "BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven",
+    "box.pud_forecast_stream": "BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven",
+    "box.pud_forecast_month": "BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)",
+    "box.location_analog": "BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 
@@ -100,7 +107,7 @@ def _cadence(rel: str, kind: str) -> str:
     if schema == "ref":
         return "static reference"
     if schema == "box":
-        return "on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches)"
+        return "on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches)"
     if rel in _CURATED_MATVIEWS:
         pos = _CURATED_MATVIEWS.index(rel) + 1
         gated = " — refresh gated on source change" if rel in _GATED_REFRESH else ""
