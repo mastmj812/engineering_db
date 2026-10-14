@@ -303,3 +303,34 @@ made before this run: the smoke run let later wells into calibration). Package b
 
 **Read:** D54 is supported by the data — the defensible method is also the more accurate one. The remaining oil miss is the
 vintage drift (~−10 % at 2 yr, −13 % at 3 yr). Per D54 it must be disclosed or corrected by a stated, evidence-based rule.
+
+## 13. D57 run: di_p50 vs box_v2, with walk-forward (Michael 2026-10-14)
+
+`docs/box/acceptance/acceptance_tuning_v2.html` (`python -m scripts.box_acceptance --mode v2`, 2.5 h, holdout sealed).
+`box_v2` = `di_p50` + D55 strike-ellipse search past 5 mi (used at 737 of 4,494 locations) + Cui translation for
+completed laterals < 7,500 ft (1,163 locations; analogs 7,500–12,500 ft) + D56 U-turn completed laterals (19 U-turn
+locations). `_wf` = walk-forward haircut from ≥ 2 earlier cutoffs (judged 2021–24 only: 18 cells).
+
+| package bias, mean over cutoffs | oil cum-12 | cum-24 | cum-36 | cum-48 | gas cum-12 | cum-24 | cum-36 | failing / judged |
+|---|---|---|---|---|---|---|---|---|
+| BOX `lat` | −7.9 | −12.3 | −16.8 | −20.9 | +4.5 | +2.6 | +3.0 | 19 / 34 |
+| benchmark | −7.4 | −11.9 | −17.0 | −24.1 | +6.1 | +2.5 | −0.2 | — |
+| `di_p50` | −7.7 | −9.9 | −13.4 | −18.3 | +1.0 | +2.0 | 0.0 | 13 / 34 |
+| `box_v2` | −6.9 | −7.9 | −9.0 | −12.7 | +0.4 | +2.1 | +2.8 | 10 / 34 |
+| `di_p50_wf` | −2.8 | +0.2 | +3.9 | — | −5.8 | −5.7 | −3.0 | 6 / 18 (0 on bias) |
+| **`box_v2_wf`** | **−4.1** | **−2.6** | **−0.9** | — | −5.8 | −6.5 | −5.5 | **3 / 18 (0 on bias); gas PASS** |
+
+- **The edge / length fixes are worth ~4–6 pts on oil past year 1** (`box_v2` vs `di_p50`: cum-36 −9.0 vs −13.4 %, cum-48
+  −12.7 vs −18.3 %), before any drift correction.
+- **With walk-forward, `box_v2_wf` passes bias in every judged cell** (oil −6.1 … +0.3 %, gas −4.3 … −8.5 %). Its 3 failures
+  are all the band test: oil cum-36 2021 (0.713 vs bench 0.655 + 0.05), oil cum-36 2022 (0.695 vs 0.620 + 0.05), oil cum-12
+  2024 (0.717 vs 0.583 + 0.05, the newest fold, 111 packages).
+- **The band test as defined rewards over-forecasting.** It compares spreads of actual / forecast − 1; scaling a forecast
+  down by a haircut h widens that spread by 1 / (1 + h), and the benchmark's −11…−16 % bias compresses its own. Measured
+  scale-free (spread of actual / forecast divided by its mean), `box_v2_wf` fails 2 / 18: gas cum-12 2023 (by 0.011) and oil
+  cum-12 2024 (by 0.046). Whether D53 should use the scale-free spread is Michael's call — not changed.
+- Walk-forward gas haircuts are positive (+1.6 … +7.4 %), learned from the 2019–20 cutoffs' gas under-forecast, and push
+  recent-cutoff gas to −5…−8 % (still inside ±10 %).
+
+**Read:** the analog workup with the D55 / D56 / short-lateral refinements and a stated walk-forward correction is at the
+pass line — bias passes everywhere; 2–3 band cells miss narrowly.

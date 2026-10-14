@@ -48,3 +48,17 @@ def test_as_of_rule_excludes_later_wells() -> None:
     loc = {"api10": "x", "x": 0.0, "y": 0.0, "lateral_ft": 10000.0, "spacing_ft": 900.0, "fp_max": dt.date(2020, 6, 1)}
     idx, _, flags = an.select_cohort(pool, tree, cfg, loc)
     assert sorted(idx) == list(range(6)) and any("under_count" in f for f in flags)
+
+
+def test_walk_forward_uses_only_earlier_cutoffs() -> None:
+    hist = {"2019-12-01": -0.10, "2020-12-01": -0.20, "2021-12-01": -0.40, "2022-12-01": 0.50}
+    assert an.walk_forward(hist, "2020-12-01") is None  # one earlier cutoff only
+    assert abs(an.walk_forward(hist, "2021-12-01") - (-0.15)) < 1e-12  # mean of 2019 + 2020; 2021 and later never used
+    assert abs(an.walk_forward(hist, "2022-12-01") - (-0.70 / 3)) < 1e-12
+
+
+def test_completed_lateral_d56() -> None:
+    ut = {"u": 1200.0}
+    assert an.completed_lateral("u", 10000.0, ut) == 8800.0
+    assert an.completed_lateral("s", 10000.0, ut) == 10000.0
+    assert an.completed_lateral("u", 1500.0, ut) == 1000.0  # floored

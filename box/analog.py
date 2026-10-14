@@ -240,3 +240,145 @@ def monthly_arrays(preds: list[dict[str, Any]], k: int) -> dict[str, dict[str, n
                 for s in STREAMS:
                     out[v][s][i] = p[v][s]
     return out
+
+
+# ============================================================================
+# v2 — the pre-registered follow-on run (Michael 2026-10-14): di_p50 (D57) vs box_v2
+#   box_v2 = di_p50 + D55 strike-ellipse search past the first ring + short-lateral Cui translation + D56 U-turn
+#            completed laterals (analogs and locations)
+# ============================================================================
+
+VARIANTS_V2: tuple[str, ...] = ("di_p50", "box_v2")
+SHORT_LAT_FT = 7_500.0  # a location whose COMPLETED lateral is shorter than this draws contemporary longer analogs ...
+SHORT_BAND_FT = (7_500.0, 12_500.0)  # ... from this band, translated to its length by Cui & Cross (D50)
+
+_UTURN_SQL = """
+SELECT w.api10,
+       extensions.ST_Distance(
+           COALESCE(CASE WHEN w.landing_point_lat IS NOT NULL AND w.landing_point_lon IS NOT NULL
+                         THEN extensions.ST_SetSRID(extensions.ST_Point(w.landing_point_lon, w.landing_point_lat), 4326) END,
+                    extensions.ST_StartPoint(w.wellstick_geom))::extensions.geography,
+           extensions.ST_EndPoint(w.wellstick_geom)::extensions.geography) * 3.28084 AS leg_spacing_ft
+FROM curated.wells w
+WHERE w.api10 = ANY(%(a)s) AND w.wellstick_geom IS NOT NULL
+  AND COALESCE(w.novi_slant_calculated, '') ILIKE 'u-turn%%'
+"""
+
+
+def uturn_leg_spacing(conn: Any, ids: Sequence[str]) -> dict[str, float]:
+    """D56: U-turn wells -> leg-to-leg spacing (landing point to bottom hole, ft); the skipped-curve estimate."""
+    from box import tc_curve_report as rep
+
+    return {a: float(d) for a, d in rep._read(conn, _UTURN_SQL, {"a": list(ids)}) if d is not None and d > 0}
+
+
+def completed_lateral(api10: str, lateral_ft: float, uturn: dict[str, float]) -> float:
+    """D56: reported lateral minus the skipped curve for a U-turn; unchanged otherwise (never below 1,000 ft)."""
+    sk = uturn.get(api10)
+    return max(1000.0, float(lateral_ft) - sk) if sk else float(lateral_ft)
+
+
+def with_completed_laterals(pool: dict[str, Any], uturn: dict[str, float], tvd: dict[str, float]) -> dict[str, Any]:
+    p = dict(pool)
+    p["lateral"] = np.array([completed_lateral(a, lv, uturn) for a, lv in zip(pool["api10"], pool["lateral"], strict=True)])
+    p["tvd"] = np.array([float(tvd.get(a, np.nan)) for a in pool["api10"]])
+    return p
+
+
+def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any]) -> tuple[list[int], float, list[str], str]:
+    """box_v2 selection: first ring circular; past it, a strike-aligned ellipse when local strike is trusted (D55);
+    short completed laterals draw the SHORT_BAND_FT analogs (translated later by Cui). Returns (idx, radius, flags, mode)."""
+    from box import strike as stk
+
+    sp = loc.get("spacing_ft")
+    planned_sp = float(sp) if sp is not None and np.isfinite(sp) and 0 < sp < 2800 else DEFAULT_SPACING_FT
+    lat = float(loc["lateral_ft"])
+    band = SHORT_BAND_FT if lat < SHORT_LAT_FT else None
+    min_w = int(cfg["type_curve"]["min_wells"])
+
+    def attempt(idx: Sequence[int], dist: dict[int, float] | None) -> tuple[list[int], list[str], int]:
+        cands = _candidates(pool, idx, loc)
+        if dist is not None:
+            for c in cands:
+                c["dist_ft"] = dist[c["_i"]]
+        eligible, _, _ = sw.classify(cands, cfg, bench="WCA", planned_stack=["WCA"], planned_lateral_ft=lat, basin="delaware",
+                                     planned_spacing_ft=planned_sp, lateral_band_ft=band)
+        sel = sw.fill(eligible, cfg, bench="WCA", adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
+        return [c["_i"] for c in sel.selected], sel.flags, len(eligible)
+
+    idx, flags, n = attempt(tree.query_ball_point([loc["x"], loc["y"]], r=RADII_MI[0] * MI), None)
+    if n >= min_w:
+        return idx, RADII_MI[0], flags, "circle"
+    near = tree.query_ball_point([loc["x"], loc["y"]], r=stk.RADIUS_FT)
+    s = stk.local_strike(pool["x"][near], pool["y"][near], pool["tvd"][near], loc["x"], loc["y"]) if len(near) else None
+    for r in RADII_MI[1:]:
+        cand = tree.query_ball_point([loc["x"], loc["y"]], r=r * MI * (stk.ASPECT if s else 1.0))
+        if s:
+            d = stk.ellipse_distance(pool["x"][cand] - loc["x"], pool["y"][cand] - loc["y"], s.azimuth_deg)
+            keep = [int(i) for i, dd in zip(cand, d, strict=True) if dd <= r * MI]
+            idx, flags, n = attempt(keep, {int(i): float(dd) for i, dd in zip(cand, d, strict=True)})
+        else:
+            idx, flags, n = attempt(cand, None)
+        if n >= min_w or r == RADII_MI[-1]:
+            return idx, r, flags, ("strike" if s else "circle")
+    return idx, RADII_MI[-1], flags, "circle"
+
+
+def _p50_months(idx: Sequence[int], pool: dict[str, Any], k: int) -> dict[str, np.ndarray] | None:
+    agg = tc.aggregate_only(members_with_transfer(pool, idx))
+    oil = fit_p50_series(agg.streams["oil"].p50, df_terminal_per_year=DF_DELAWARE, stream="oil")
+    gas = fit_p50_series(agg.streams["gas"].p50, df_terminal_per_year=DF_DELAWARE, stream="gas")
+    if not oil:
+        return None
+    return {"oil": _months(oil, k), "gas": _months(gas, k)}
+
+
+def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
+    """di_p50 exactly as v1 (raw laterals) and box_v2 (completed laterals, strike edges, short-lateral translation)."""
+    pool1, pool2, tree, cfg, k = _STATE["pool"], _STATE["pool2"], _STATE["tree"], _STATE["cfg"], _STATE["k"]
+    out: dict[str, Any] = {"api10": loc["api10"]}
+    idx, r, flags = select_cohort(pool1, tree, cfg, loc)
+    out.update({"radius_mi": r, "n_analogs": len(idx), "flags": ";".join(flags)})
+    if len(idx) >= 3:
+        m = _p50_months(idx, pool1, k)
+        if m:
+            out["di_p50"] = {s: m[s] * float(loc["lateral_ft"]) / 1000.0 for s in STREAMS}
+    loc2 = {**loc, "lateral_ft": loc["lateral_eff"]}
+    idx2, r2, _, mode = select_cohort_v2(pool2, tree, cfg, loc2)
+    out.update({"v2_radius_mi": r2, "v2_n": len(idx2), "v2_mode": mode, "v2_short": loc2["lateral_ft"] < SHORT_LAT_FT,
+                "v2_uturn": loc["lateral_eff"] != loc["lateral_ft"]})
+    if len(idx2) >= 3:
+        m2 = _p50_months(idx2, pool2, k)
+        if m2:
+            L = float(loc2["lateral_ft"])
+            mult = L / 1000.0 * (lat_eff.relative(L, [pool2["lateral"][i] for i in idx2]) if L < SHORT_LAT_FT else 1.0)
+            out["box_v2"] = {s: m2[s] * mult for s in STREAMS}
+    return out
+
+
+def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,
+                    workers: int | None = None) -> list[dict[str, Any]]:
+    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff}
+    workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
+    if workers == 1:
+        _init(state)
+        return [predict_location_v2(x) for x in locs]
+    with ProcessPoolExecutor(max_workers=workers, initializer=_init, initargs=(state,)) as ex:
+        return list(ex.map(predict_location_v2, locs, chunksize=16))
+
+
+def monthly_arrays_v2(preds: list[dict[str, Any]], k: int) -> dict[str, dict[str, np.ndarray]]:
+    out = {v: {s: np.full((len(preds), k), np.nan) for s in STREAMS} for v in VARIANTS_V2}
+    for i, p in enumerate(preds):
+        for v in VARIANTS_V2:
+            if v in p:
+                for s in STREAMS:
+                    out[v][s][i] = p[v][s]
+    return out
+
+
+def walk_forward(bias_by_cutoff: dict[str, float], cutoff: str, min_prior: int = 2) -> float | None:
+    """D57: the haircut for `cutoff` = mean package bias at the SAME horizon over strictly earlier cutoffs (>= min_prior
+    of them); None when too few. Corrected prediction = prediction x (1 + haircut)."""
+    prior = [b for c, b in sorted(bias_by_cutoff.items()) if c < cutoff and b is not None and np.isfinite(b)]
+    return float(np.mean(prior)) if len(prior) >= min_prior else None

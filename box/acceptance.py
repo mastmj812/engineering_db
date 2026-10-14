@@ -147,7 +147,70 @@ def add_analog_predictions(view: pd.DataFrame, f: dict[str, Any], cutoff: dt.dat
     return prov
 
 
-def score_fold(hs: pd.DataFrame, cutoff: str) -> pd.DataFrame:
+REPORTED_V2 = ("lat", "di_p50", "di_p50_wf", "box_v2", "box_v2_wf")  # pre-registered 2026-10-14 (D57)
+NON_WF_V2 = ("lat", "di_p50", "box_v2")
+RECORD_V2 = "di_p50_wf"  # D57 method of record
+WF_LOG: list[dict[str, Any]] = []
+
+
+def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], cutoff: dt.date, workers: int | None) -> pd.DataFrame:
+    """D57 run: di_p50 (raw laterals) and box_v2 (D56 completed laterals, D55 strike edges, short-lateral Cui translation),
+    each calibrated by its own F(k) on a seeded training sample with as-of, leave-self-out cohorts."""
+    cb, trn, t_act = f["cb"], f["trn"], f["t_act"]
+    f_oil = dict(zip(trn["api10"], trn["f_oil"], strict=True))
+    pool = an.build_pool(cb["frame"], cb["fits"], f["sp"], f_oil)
+    ut = an.uturn_leg_spacing(conn, sorted(set(pool["api10"]) | set(view["api10"]) | set(trn["api10"])))
+    tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
+    pool2 = an.with_completed_laterals(pool, ut, tvd)
+    xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
+    xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
+
+    def locs(df: pd.DataFrame, xy: np.ndarray) -> list[dict[str, Any]]:
+        return [{"api10": r.api10, "x": xy[i, 0], "y": xy[i, 1], "lateral_ft": float(r.lateral_ft),
+                 "lateral_eff": an.completed_lateral(r.api10, float(r.lateral_ft), ut), "spacing_ft": r.spacing_ft,
+                 "fp_max": pd.Timestamp(r.first_production_date).date()} for i, r in enumerate(df.itertuples())]
+
+    rng = np.random.default_rng(SEED)
+    ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
+    pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers)
+    pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers)
+    mv, mt = an.monthly_arrays_v2(pv, K_MONTHS), an.monthly_arrays_v2(pt, K_MONTHS)
+    for v in an.VARIANTS_V2:
+        for s in STREAMS:
+            F, _ = hc.calendar_factor_curve(t_act[s][ti], mt[v][s])
+            pred = np.cumsum(mv[v][s], axis=1) * F[None, :]
+            for k in HORIZONS:
+                if f"actual_{s}{k}" not in view:
+                    continue
+                view[f"pred_{v}_{s}{k}"] = pred[:, k - 1]
+                view[f"{v}_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred[:, k - 1])
+    keys = ("api10", "radius_mi", "n_analogs", "flags", "v2_radius_mi", "v2_n", "v2_mode", "v2_short", "v2_uturn")
+    return pd.DataFrame([{k_: p.get(k_) for k_ in keys} for p in pv])
+
+
+def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame]) -> list[pd.DataFrame]:
+    """D57: <variant>_wf = prediction x (1 + mean package bias at the same horizon over >= 2 EARLIER cutoffs); cells for a
+    cutoff without two earlier judged cutoffs are left unjudged (no prediction)."""
+    WF_LOG.clear()
+    out = []
+    for c, view in sorted(views.items()):
+        for base in ("di_p50", "box_v2"):
+            for s in STREAMS:
+                for k in HORIZONS:
+                    col = f"pred_{base}_{s}{k}"
+                    if col not in view:
+                        continue
+                    hist = cells[(cells.variant == base) & (cells.stream == s) & (cells.horizon == k) & (cells.n_packages >= MIN_PACKAGES)]
+                    h = an.walk_forward(dict(zip(hist["cutoff"], hist["pkg_bias"], strict=True)), c)
+                    WF_LOG.append({"cutoff": c, "variant": base, "stream": s, "horizon": k, "haircut": h})
+                    pred = view[col].to_numpy(float) * (1.0 + h) if h is not None else np.full(len(view), np.nan)
+                    view[f"pred_{base}_wf_{s}{k}"] = pred
+                    view[f"{base}_wf_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred)
+        out.append(score_fold(view, c, ("di_p50_wf", "box_v2_wf")))
+    return out
+
+
+def score_fold(hs: pd.DataFrame, cutoff: str, variants: tuple[str, ...] = REPORTED) -> pd.DataFrame:
     rows = []
     for s in STREAMS:
         for k in HORIZONS:
@@ -155,7 +218,9 @@ def score_fold(hs: pd.DataFrame, cutoff: str) -> pd.DataFrame:
                 continue
             bp = package_errors(hs, "package", f"actual_{s}{k}", f"bench_{s}{k}")
             bstat = hc.stats(bp["err"])
-            for v in REPORTED:
+            for v in variants:
+                if f"pred_{v}_{s}{k}" not in hs:
+                    continue
                 pp = package_errors(hs, "package", f"actual_{s}{k}", f"pred_{v}_{s}{k}")
                 st = hc.stats(pp["err"])
                 wst = hc.stats(hs[f"{v}_err_{s}{k}"])
@@ -167,13 +232,15 @@ def score_fold(hs: pd.DataFrame, cutoff: str) -> pd.DataFrame:
 
 
 def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | None = None, cutoffs: tuple[dt.date, ...] = CUTOFFS,
-        score_holdout: bool = False) -> dict[str, Any]:
+        score_holdout: bool = False, mode: str = "v2") -> dict[str, Any]:
+    variants = REPORTED_V2 if mode == "v2" else REPORTED
+    record = RECORD_V2 if mode == "v2" else RECORD
     out.mkdir(parents=True, exist_ok=True)
     wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, ("WCA",)))
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
     subj = wells[np.array([f >= dt.date(2016, 1, 1) for f in wells["first_production_date"]]) & (pd.to_numeric(wells["lateral_length_ft"], errors="coerce") > 0).to_numpy()]
     P = s3r.build_pairs(conn, subj.reset_index(drop=True))
-    cells, fold_meta, analog_prov = [], [], []
+    cells, fold_meta, analog_prov, views = [], [], [], {}
     for c in cutoffs:
         f = br.run_fold(conn, wells, wells_dir, c, workers, last, P, horizons=HORIZONS, k_months=K_MONTHS, keep_pred=True, return_internals=True)
         hs = f["hold"]
@@ -181,8 +248,13 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         held = set(hs.loc[hs["holdout_block"], "package"])
         hs["package_held_out"] = hs["package"].isin(held)
         view = hs[hs["package_held_out"] == score_holdout].copy().reset_index(drop=True)  # tuning view excludes held-out packages entirely
-        aprov = add_analog_predictions(view, f, c, workers)
-        cells.append(score_fold(view, str(c)))
+        if mode == "v2":
+            aprov = add_analog_predictions_v2(conn, view, f, c, workers)
+            cells.append(score_fold(view, str(c), NON_WF_V2))
+            views[str(c)] = view
+        else:
+            aprov = add_analog_predictions(view, f, c, workers)
+            cells.append(score_fold(view, str(c)))
         analog_prov.append(aprov.assign(cutoff=str(c)))
         sizes = hs.drop_duplicates("package")["package"].map(hs["package"].value_counts())
         fold_meta.append({"cutoff": str(c), "asof": str(f["asof"]), "k_areas": f["k_areas"], "n_train": f["n_train"], "n_scored_wells": len(hs),
@@ -191,15 +263,23 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
                           "n_factor_no_estimate": int(hs["factor_no_estimate"].sum()) if "factor_no_estimate" in hs else 0,
                           "F_oil_12_36": [f["F"][RECORD]["oil"][11], f["F"][RECORD]["oil"][35]]})
     cells = pd.concat(cells, ignore_index=True)
+    if mode == "v2":
+        cells = pd.concat([cells, *apply_walk_forward(cells, views)], ignore_index=True)
     prov = pd.concat(analog_prov, ignore_index=True)
-    v = {var: verdict(cells, var) for var in REPORTED}
+    v = {var: verdict(cells, var) for var in variants}
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     summ = {"built_at": built, "engine_sha": engine_sha, "actuals_through": str(last), "view": "HOLDOUT (final scoring)" if score_holdout else "tuning (holdout excluded)",
-            "record_variant": RECORD, "bias_tol": BIAS_TOL, "band_tol": BAND_TOL, "min_packages": MIN_PACKAGES, "folds": fold_meta, "verdict": v[RECORD],
+            "record_variant": record, "variants": list(variants), "mode": mode, "bias_tol": BIAS_TOL, "band_tol": BAND_TOL, "min_packages": MIN_PACKAGES,
+            "folds": fold_meta, "verdict": v[record],
             "verdict_by_variant": v, "n_excluded": len(excluded),
             "analog_radius_mi": {str(k_): int(n_) for k_, n_ in prov["radius_mi"].value_counts().sort_index().items()},
-            "analog_recent_fallback_share": float(prov["recent_fallback"].mean()) if "recent_fallback" in prov else None}
-    tag = "holdout" if score_holdout else "tuning"
+            "analog_recent_fallback_share": float(prov["recent_fallback"].mean()) if "recent_fallback" in prov else None,
+            "v2_mode_counts": prov["v2_mode"].value_counts().to_dict() if "v2_mode" in prov else None,
+            "v2_radius_mi": {str(k_): int(n_) for k_, n_ in prov["v2_radius_mi"].value_counts().sort_index().items()} if "v2_radius_mi" in prov else None,
+            "v2_short_locations": int(prov["v2_short"].sum()) if "v2_short" in prov else None,
+            "v2_uturn_locations": int(prov["v2_uturn"].sum()) if "v2_uturn" in prov else None,
+            "walk_forward": WF_LOG}
+    tag = ("holdout" if score_holdout else "tuning") + ("_v2" if mode == "v2" else "")
     (out / f"acceptance_{tag}.html").write_text(render(summ, cells), encoding="utf-8")
     cells.to_csv(out / f"cells_{tag}.csv", index=False)
     prov.to_csv(out / f"analog_provenance_{tag}.csv", index=False)
@@ -210,12 +290,14 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
 def render(s: dict[str, Any], cells: pd.DataFrame) -> str:
     v = s["verdict"]
     cls = "ok" if v["overall"] == "PASS" else "bad"
-    piv = cells.pivot_table(index=["stream", "horizon", "cutoff"], columns="variant", values="pkg_bias").reindex(columns=list(REPORTED))
-    bench = cells[cells.variant == RECORD].set_index(["stream", "horizon", "cutoff"])
+    shown = tuple(s.get("variants", REPORTED))
+    rec = s.get("record_variant", RECORD)
+    piv = cells.pivot_table(index=["stream", "horizon", "cutoff"], columns="variant", values="pkg_bias").reindex(columns=list(shown))
+    bench = cells[cells.variant == rec].set_index(["stream", "horizon", "cutoff"])
     tab = piv.join(bench[["n_packages", "n_wells", "pkg_band", "bench_bias", "bench_band", "verdict"]]).reset_index()
-    tab = tab.rename(columns={v_: f"{v_} pkg bias" for v_ in REPORTED} | {"pkg_band": f"{RECORD} pkg band"})
+    tab = tab.rename(columns={v_: f"{v_} pkg bias" for v_ in shown} | {"pkg_band": f"{rec} pkg band"})
     folds = pd.DataFrame(s["folds"])
-    pct = {f"{v_} pkg bias": "+.1%" for v_ in REPORTED} | {"bench_bias": "+.1%", f"{RECORD} pkg band": ".2f", "bench_band": ".2f"}
+    pct = {f"{v_} pkg bias": "+.1%" for v_ in shown} | {"bench_bias": "+.1%", f"{rec} pkg band": ".2f", "bench_band": ".2f"}
     return "\n".join([
         "<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>BOX acceptance (D53)</title>",
         f"<style>{_CSS} body{{overflow-x:hidden}} table{{display:block;overflow-x:auto;max-width:100%}}</style></head><body>",
@@ -224,7 +306,7 @@ def render(s: dict[str, Any], cells: pd.DataFrame) -> str:
          f"actuals curated.production through {s['actuals_through']} (each well's newest month dropped) · blueox-boxfit @ {s['engine_sha'][:7]} · read-only</div>"),
         (f"<div class='flag {cls}'><b>Verdict ({s['view']}): {v['overall']}</b> — oil {v['by_stream']['oil']}, gas {v['by_stream']['gas']}; "
          f"{v['n_failed']} of {v['n_judged']} judged cells fail. A cell (fold × stream × horizon) is judged when it has ≥ {s['min_packages']} packages and passes when "
-         f"|package bias| ≤ {s['bias_tol']:.0%} AND the {RECORD} package band ≤ the local-offsets benchmark's + {BAND_TOL:.2f} (D53 amendment). Record model = <b>{RECORD}</b> (D50).</div>"),
+         f"|package bias| ≤ {s['bias_tol']:.0%} AND the {rec} package band ≤ the local-offsets benchmark's + {BAND_TOL:.2f} (D53 amendment). Record model = <b>{rec}</b>.</div>"),
         ("<div class=meta>Package = co-developed co-extent WCA wells (first production within 180 d, overlap ≥ 30 %), connected components; error = Σ actual / Σ predicted − 1 "
          "(negative = forecast HIGH). Benchmark = median per-1,000-ft cum-k of the 15 nearest pre-cutoff cohort wells whose cum-k was known at the cutoff × lateral. "
          "Held-out packages (any member in a D52 holdout block) are excluded before any statistic is computed; only their counts appear below.</div>"),
