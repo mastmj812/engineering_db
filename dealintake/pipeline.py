@@ -38,7 +38,7 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 from dealintake import benches as benchmod
-from dealintake import cohort_qc, split_test, strat, unit_benches
+from dealintake import cohort_qc, split_test, strat, swd, unit_benches
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
@@ -963,7 +963,19 @@ def evaluate(
     known_units = set(all_units)
 
     winerack_memo: dict[str, tuple[dict[str, list[dict[str, Any]]], dict[str, float]]] = {}  # unit -> (legs, pins)
-    with wh.connect() as conn:
+    # SWD context from C4 (Michael 2026-10-13): injectors near our sticks and near
+    # the cohort, reported beside the standoff table. Unavailable = say so, go on.
+    scfg = cfg.raw.get("swd") or {}
+    with wh.connect() as conn, swd.maybe_connect() as sconn:
+        if sconn is None:
+            res["swd"] = {"available": False, "reason": swd.last_error or "not configured"}
+            res["flags"].append(f"SWD context unavailable ({res['swd']['reason']}): no injector proximity or "
+                                "cohort-exposure tables in this dossier")
+        else:
+            res["swd"] = {"available": True, "radius_mi": float(scfg.get("radius_mi", swd.DEFAULTS["radius_mi"])),
+                          "vert_window_ft": float(scfg.get("vert_window_ft", swd.DEFAULTS["vert_window_ft"])),
+                          "min_cum_mmbbl": float(scfg.get("min_cum_mmbbl", swd.DEFAULTS["min_cum_mmbbl"])),
+                          "poor_frac_of_median": float(scfg.get("poor_frac_of_median", swd.DEFAULTS["poor_frac_of_median"]))}
         for bench, class_units, key in jobs:
             units = {lb: all_units[lb] for lb in class_units}
             union = unary_union(list(units.values()))
@@ -1100,6 +1112,7 @@ def evaluate(
                     (u.get("gunbarrel") or {}).get("existing", []), bench, tvd_u,
                     float(PARENT_GATE_FT), float(cfg["codev"]["scenario_band_ft"]),
                     float(cfg["codev"].get("same_landing_ft", 0.0)))
+                UB["swd"] = swd.unit_context(sconn, geom, UB["locations"], tvd_u, scfg) if sconn else None
                 c3 = [r.get("pdp_count_3mi") for r in sup if r.get("pdp_count_3mi") is not None]
                 UB["gate3"] = {
                     "n_locations": len(sup),
@@ -1348,6 +1361,12 @@ def evaluate(
                 G["standoff"] = {"cohort": cohort_standoff(sel.selected),
                                  "units": {u: B["units"][u].get("standoff") for u in g["units"]}}
                 G["flags"] += standoff_flags(G["standoff"]["units"], G["standoff"]["cohort"])
+                if sconn:
+                    cohort_wkt = wh.wellsticks(conn, [c["api10"] for c in sel.selected])
+                    cover = swd.bounds_for(sel.selected, cohort_wkt, [units[u] for u in g["units"]])
+                    inj = swd.fetch_injectors(sconn, cover, float(scfg.get("radius_mi", swd.DEFAULTS["radius_mi"])) + 0.5) if cover else []
+                    G["swd"] = swd.cohort_context(sel.selected, cohort_wkt, inj, scfg)
+                    G["flags"] += swd.flags(G["swd"], {u: B["units"][u].get("swd") for u in g["units"]})
                 api10s = [c["api10"] for c in sel.selected]
                 if ad and api10s:
                     rows = [r for r in rows_all if r["api10"] in set(api10s)]

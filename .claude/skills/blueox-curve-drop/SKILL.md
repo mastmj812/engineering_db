@@ -104,9 +104,15 @@ is almost always wrong — re-pin instead. Red rows that won't pin = phantom pin
 
 ## 4. Zone list + scope check
 
-- Zone names ≤26 chars, no spaces, no `-A`/`-B` letter suffixes, none of `: \ / ? * [ ]`, no leading/trailing space/apostrophe, not a
-  reserved sheet name (`meta`, `inventory`, `manifest`, `analog_production`, `curve_params`,
-  `dsu_meta`, `novi_comparison`, `novi_comparison_meta`), unique.
+- Zone name = the zone's `formation_blueox` tag + optional `_SUFFIX` (`WCB_2`, `WCB_2_NW`; a
+  multi-bench zone may use the family tag, `WCA`) — letters, digits, single underscores; never
+  the curve name (no deal prefix, no `_v2`). anduin enforces this at config save AND at export
+  (`exports/zone_name.py`, permiantypecurve #98; the modal shows the bench-derived suggestion and
+  blocks Save on a bad name); bro_time `WCB_2 West`/`East` are grandfathered. Still eyeball the
+  tab list in the built workbook — Snare 2026-10-13 shipped a `W CB_2` tab before the guard.
+- Also ≤26 chars, not a reserved sheet name (`meta`, `inventory`, `manifest`,
+  `analog_production`, `curve_params`, `dsu_meta`, `novi_comparison`, `novi_comparison_meta`),
+  unique.
 - Same-bench splits (§11, e.g. `WCB_2_N`/`WCB_2_S`): shared `bench` code, **scenario scopes
   disjoint and covering** — anduin hard-errors overlap or a planned well no zone's scenario covers
   (`scope_missed`). PDP wells are never dropped (unzoned PDP lands on `inventory` with the bench
