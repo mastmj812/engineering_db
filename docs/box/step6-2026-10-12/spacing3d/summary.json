@@ -1,0 +1,27 @@
+{
+  "built_at": "2026-10-12T18:42:06-05:00",
+  "asof": "2026-07-01",
+  "n_universe": 33289,
+  "n_subjects": 11102,
+  "n_subjects_with_geometry": 11100,
+  "n_pairs": 149190,
+  "n_parents_cum": 7552,
+  "params": {
+    "gate_ft": 2640.0,
+    "min_overlap": 0.3,
+    "same_dz_ft": 250.0,
+    "aniso": 2.0,
+    "ellipse_ft": [
+      660.0,
+      300.0
+    ],
+    "parent_dz_ft": 500.0,
+    "codev_days": 180
+  },
+  "population_median": {
+    "lat_spacing_ft": 987.1735891320182,
+    "xsec_ft2": 2152664.6294698273,
+    "n_ellipse": 0.0
+  },
+  "mediation_n": 9490
+}

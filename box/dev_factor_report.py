@@ -157,6 +157,7 @@ def attach_scenario(conn: Any, d: pd.DataFrame) -> tuple[pd.DataFrame, dict[str,
         raise RuntimeError(f"sql/50 replication failed on {int(mism.sum())} wells, e.g. {list(d.loc[mism, 'api10'][:5])}")
     d["parent_bench"] = [dfm.parent_bench(c, b, a) for c, b, a in zip(d["scenario_class"], d["parent_below"], d["parent_above"], strict=True)]
     d["own_bench_in_pool"] = [b in POOL_BENCHES[p] for b, p in zip(d["ds_bench"], d["bench_pool"], strict=True)]
+    d["n_near"] = [dfm.near_neighbours(c) if isinstance(c, dict) else None for c in d["bench_context"]]  # density diagnostic (step 6 backtest)
     d = d.drop(columns=["bench_context"])
     return d, {"n": len(d), "n_unscored": int((~scored).sum()), "n_replicated": int(scored.sum()), "n_mismatch": 0,
                "n_own_bench_outside_pool": int((scored & ~d["own_bench_in_pool"]).sum())}

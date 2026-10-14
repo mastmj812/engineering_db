@@ -1,0 +1,1926 @@
+api10,radius_mi,n_analogs,flags,v2_radius_mi,v2_n,v2_mode,v2_short,v2_uturn,cutoff
+3001545083,15.0,11,,20.0,12,strike,False,False,2019-12-01
+3001545084,15.0,11,,20.0,12,strike,False,False,2019-12-01
+3001545085,15.0,11,,20.0,11,strike,False,False,2019-12-01
+3001545086,15.0,10,,20.0,10,strike,False,False,2019-12-01
+3001545087,15.0,10,,20.0,10,strike,False,False,2019-12-01
+3001545088,15.0,10,,20.0,17,strike,False,False,2019-12-01
+3001545585,5.0,11,,10.0,11,strike,True,False,2019-12-01
+3001545587,5.0,10,,10.0,11,strike,True,False,2019-12-01
+3001545589,5.0,11,,10.0,11,strike,True,False,2019-12-01
+3001545595,5.0,14,,5.0,10,circle,True,False,2019-12-01
+3001545596,10.0,13,,20.0,20,strike,True,False,2019-12-01
+3001545793,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,16,strike,True,False,2019-12-01
+3001545939,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,5,strike,True,False,2019-12-01
+3001545940,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,5,strike,True,False,2019-12-01
+3001545948,15.0,20,cohort capped: 20 nearest of 48 pool wells,15.0,20,circle,False,False,2019-12-01
+3001545949,15.0,20,cohort capped: 20 nearest of 54 pool wells,15.0,20,circle,False,False,2019-12-01
+3001545950,15.0,20,cohort capped: 20 nearest of 47 pool wells,15.0,20,circle,False,False,2019-12-01
+3001546274,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,17,strike,True,False,2019-12-01
+3001546275,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,12,strike,True,False,2019-12-01
+3001546276,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,12,strike,True,False,2019-12-01
+3001546277,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,13,strike,True,False,2019-12-01
+3001546279,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,13,strike,True,False,2019-12-01
+3001546304,10.0,19,,10.0,15,circle,True,False,2019-12-01
+3001546305,10.0,20,cohort capped: 20 nearest of 32 pool wells,10.0,15,circle,True,False,2019-12-01
+3001546307,10.0,20,cohort capped: 20 nearest of 32 pool wells,10.0,15,circle,True,False,2019-12-01
+3001546351,10.0,19,,10.0,15,circle,True,False,2019-12-01
+3001546377,20.0,8,under_count: 8 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,8,circle,False,False,2019-12-01
+3001546400,15.0,10,,20.0,12,strike,False,False,2019-12-01
+3001546401,15.0,10,,20.0,11,strike,False,False,2019-12-01
+3001546572,20.0,11,,20.0,7,strike,False,False,2019-12-01
+3001546573,15.0,10,,20.0,7,strike,False,False,2019-12-01
+3001546575,20.0,7,under_count: 7 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,2,strike,False,False,2019-12-01
+3001546576,15.0,10,,20.0,4,strike,False,False,2019-12-01
+3001546577,15.0,10,,20.0,5,strike,False,False,2019-12-01
+3001546580,15.0,10,,20.0,6,strike,False,False,2019-12-01
+3001546823,20.0,2,under_count: 2 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,5,strike,True,False,2019-12-01
+3001546824,20.0,2,under_count: 2 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,5,strike,True,False,2019-12-01
+3002544236,7.5,11,,7.5,11,circle,False,False,2019-12-01
+3002544238,7.5,15,,7.5,15,circle,False,False,2019-12-01
+3002544333,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,16,circle,True,False,2019-12-01
+3002544335,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,16,circle,True,False,2019-12-01
+3002544485,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,17,circle,True,False,2019-12-01
+3002544487,10.0,12,,5.0,10,circle,True,False,2019-12-01
+3002544603,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,16,circle,True,False,2019-12-01
+3002545360,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,15,strike,True,False,2019-12-01
+3002545532,5.0,11,,5.0,11,circle,False,False,2019-12-01
+3002545538,7.5,17,,7.5,10,strike,False,False,2019-12-01
+3002545539,5.0,13,,5.0,13,circle,False,False,2019-12-01
+3002545540,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,12,strike,False,False,2019-12-01
+3002545543,7.5,20,,7.5,10,strike,False,False,2019-12-01
+3002545546,7.5,17,,10.0,20,strike,False,False,2019-12-01
+3002545548,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,11,circle,True,False,2019-12-01
+3002545551,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,13,strike,True,False,2019-12-01
+3002545596,5.0,12,,5.0,12,circle,False,False,2019-12-01
+3002545598,5.0,12,,5.0,12,circle,False,False,2019-12-01
+3002545638,15.0,12,,20.0,20,strike,False,False,2019-12-01
+3002545639,15.0,14,,15.0,10,strike,False,False,2019-12-01
+3002545640,15.0,15,,15.0,10,strike,False,False,2019-12-01
+3002545642,5.0,13,,5.0,13,circle,False,False,2019-12-01
+3002545643,5.0,13,,5.0,13,circle,False,False,2019-12-01
+3002545644,15.0,20,cohort capped: 20 nearest of 21 pool wells,15.0,13,strike,False,False,2019-12-01
+3002545866,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,15,strike,True,False,2019-12-01
+3002546016,10.0,11,,15.0,12,strike,True,False,2019-12-01
+3002546017,7.5,10,,5.0,11,circle,True,False,2019-12-01
+3002546018,10.0,17,,10.0,12,strike,True,False,2019-12-01
+3002546019,5.0,12,,5.0,10,circle,True,False,2019-12-01
+3002546020,10.0,11,,10.0,11,circle,True,False,2019-12-01
+3002546096,10.0,10,,10.0,16,strike,True,False,2019-12-01
+3002546147,5.0,20,cohort capped: 20 nearest of 26 pool wells,7.5,14,strike,True,False,2019-12-01
+3002546276,15.0,10,,15.0,10,circle,False,False,2019-12-01
+3002546313,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,13,strike,True,False,2019-12-01
+3002546314,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,14,strike,True,False,2019-12-01
+3002546332,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,15,circle,True,False,2019-12-01
+3002546333,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,12,circle,True,False,2019-12-01
+3002546337,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,17,circle,True,False,2019-12-01
+3002546342,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,13,circle,True,False,2019-12-01
+3002546348,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,10,circle,True,False,2019-12-01
+3002546379,20.0,20,cohort capped: 20 nearest of 34 pool wells,20.0,20,strike,True,False,2019-12-01
+3002546381,20.0,20,cohort capped: 20 nearest of 35 pool wells,20.0,20,strike,True,False,2019-12-01
+3002546472,20.0,7,under_count: 7 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,circle,True,False,2019-12-01
+3002546620,5.0,12,,5.0,12,circle,False,False,2019-12-01
+3002546622,5.0,14,,5.0,14,circle,False,False,2019-12-01
+3002546628,20.0,16,,20.0,5,strike,True,False,2019-12-01
+3002546629,20.0,12,,20.0,6,strike,True,False,2019-12-01
+3002546658,20.0,2,under_count: 2 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2019-12-01
+3002546661,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2019-12-01
+3002546765,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,10,strike,True,False,2019-12-01
+3002546766,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2019-12-01
+3002546767,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,10,strike,True,False,2019-12-01
+4210933235,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933236,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933237,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933238,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933254,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933255,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933256,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933257,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933460,10.0,10,,20.0,12,strike,False,False,2019-12-01
+4210933461,10.0,11,,15.0,10,strike,False,False,2019-12-01
+4210933468,10.0,10,,20.0,13,strike,False,False,2019-12-01
+4210933469,10.0,12,,20.0,15,strike,False,False,2019-12-01
+4210933471,10.0,13,,15.0,11,strike,False,False,2019-12-01
+4210933481,15.0,12,,15.0,12,circle,False,False,2019-12-01
+4210933482,15.0,12,,15.0,12,circle,False,False,2019-12-01
+4210933483,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4210933484,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4210933489,15.0,10,,15.0,10,circle,False,False,2019-12-01
+4210933522,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4210933523,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4210933524,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4210933525,15.0,17,,15.0,17,circle,False,False,2019-12-01
+4210933526,15.0,12,,15.0,12,circle,False,False,2019-12-01
+4210933530,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2019-12-01
+4210933531,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,13,circle,True,False,2019-12-01
+4210933614,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,14,strike,True,False,2019-12-01
+4210933615,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,14,strike,True,False,2019-12-01
+4230133221,5.0,10,,7.5,13,strike,True,False,2019-12-01
+4230133654,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,18,strike,False,False,2019-12-01
+4230133655,7.5,19,,7.5,14,strike,False,False,2019-12-01
+4230133657,7.5,20,cohort capped: 20 nearest of 22 pool wells,7.5,16,strike,False,False,2019-12-01
+4230133660,7.5,20,cohort capped: 20 nearest of 21 pool wells,7.5,15,strike,False,False,2019-12-01
+4230133732,10.0,14,,15.0,12,strike,True,False,2019-12-01
+4230133734,7.5,20,cohort capped: 20 nearest of 35 pool wells,7.5,13,strike,True,False,2019-12-01
+4230133757,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2019-12-01
+4230133761,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2019-12-01
+4230133765,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2019-12-01
+4230133766,5.0,18,,5.0,18,circle,False,False,2019-12-01
+4230133767,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2019-12-01
+4230133769,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2019-12-01
+4230133913,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134237,7.5,19,,15.0,20,strike,True,False,2019-12-01
+4230134240,7.5,20,cohort capped: 20 nearest of 23 pool wells,15.0,20,strike,True,False,2019-12-01
+4230134273,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134274,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134275,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134276,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134324,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134325,5.0,20,,5.0,20,circle,True,False,2019-12-01
+4230134339,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134357,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,10,strike,True,False,2019-12-01
+4230134358,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,10,strike,True,False,2019-12-01
+4230134383,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,15,strike,True,False,2019-12-01
+4230134416,5.0,15,,5.0,15,circle,False,False,2019-12-01
+4230134417,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134418,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134423,7.5,20,cohort capped: 20 nearest of 28 pool wells,10.0,20,strike,False,False,2019-12-01
+4230134424,7.5,20,cohort capped: 20 nearest of 31 pool wells,10.0,20,strike,False,False,2019-12-01
+4230134427,20.0,16,,5.0,19,circle,True,False,2019-12-01
+4230134428,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,19,circle,True,False,2019-12-01
+4230134429,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,19,circle,True,False,2019-12-01
+4230134430,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2019-12-01
+4230134435,5.0,14,,5.0,14,circle,False,False,2019-12-01
+4230134438,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134440,5.0,18,,5.0,18,circle,False,False,2019-12-01
+4230134443,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134476,7.5,16,,7.5,16,circle,False,False,2019-12-01
+4230134478,7.5,13,,7.5,13,circle,False,False,2019-12-01
+4230134481,7.5,20,cohort capped: 20 nearest of 21 pool wells,7.5,15,strike,False,False,2019-12-01
+4230134482,15.0,17,,15.0,14,strike,False,False,2019-12-01
+4230134506,7.5,20,cohort capped: 20 nearest of 28 pool wells,10.0,20,strike,False,False,2019-12-01
+4230134508,7.5,20,cohort capped: 20 nearest of 31 pool wells,10.0,20,strike,False,False,2019-12-01
+4230134568,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,10,strike,False,False,2019-12-01
+4230134569,5.0,10,,5.0,10,circle,False,False,2019-12-01
+4230134606,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,20,strike,True,False,2019-12-01
+4230134622,7.5,20,cohort capped: 20 nearest of 31 pool wells,7.5,20,strike,False,False,2019-12-01
+4230134626,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,15,strike,False,False,2019-12-01
+4230134651,7.5,20,cohort capped: 20 nearest of 22 pool wells,7.5,14,strike,False,False,2019-12-01
+4230134702,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134707,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134711,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134712,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134713,5.0,15,,5.0,20,circle,True,False,2019-12-01
+4230134714,5.0,17,,5.0,20,circle,True,False,2019-12-01
+4230134715,5.0,17,,5.0,20,circle,True,False,2019-12-01
+4230134723,7.5,20,cohort capped: 20 nearest of 30 pool wells,7.5,20,circle,False,False,2019-12-01
+4230134724,7.5,20,cohort capped: 20 nearest of 28 pool wells,10.0,20,strike,False,False,2019-12-01
+4230134780,7.5,20,cohort capped: 20 nearest of 21 pool wells,7.5,14,strike,False,False,2019-12-01
+4230134783,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,17,strike,False,False,2019-12-01
+4230134786,7.5,17,,7.5,11,strike,False,False,2019-12-01
+4230134795,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134798,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134799,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134801,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2019-12-01
+4230134812,5.0,15,,5.0,15,circle,False,False,2019-12-01
+4230134827,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,20,strike,True,False,2019-12-01
+4230134871,20.0,3,under_count: 3 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2019-12-01
+4230134890,5.0,12,,5.0,12,circle,False,False,2019-12-01
+4230134897,5.0,10,,5.0,10,circle,False,False,2019-12-01
+4230134901,7.5,20,cohort capped: 20 nearest of 21 pool wells,7.5,20,circle,False,False,2019-12-01
+4230134903,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,16,strike,True,False,2019-12-01
+4237140007,10.0,20,cohort capped: 20 nearest of 29 pool wells,7.5,15,circle,True,False,2019-12-01
+4237140023,10.0,12,,15.0,15,strike,False,False,2019-12-01
+4237140026,10.0,13,,15.0,15,strike,False,False,2019-12-01
+4237140027,7.5,15,,7.5,12,strike,False,False,2019-12-01
+4237140075,15.0,13,,15.0,13,circle,False,False,2019-12-01
+4237140165,7.5,12,,15.0,20,strike,False,False,2019-12-01
+4238937461,15.0,15,,15.0,19,circle,True,False,2019-12-01
+4238937980,5.0,11,,10.0,14,strike,True,False,2019-12-01
+4238937982,5.0,11,,10.0,15,strike,True,False,2019-12-01
+4238938017,5.0,18,,5.0,18,circle,False,False,2019-12-01
+4238938051,5.0,15,,5.0,15,circle,False,False,2019-12-01
+4238938055,5.0,13,,5.0,13,circle,False,False,2019-12-01
+4238938056,5.0,16,,5.0,16,circle,False,False,2019-12-01
+4238938123,10.0,15,,10.0,15,circle,False,False,2019-12-01
+4238938152,5.0,10,,5.0,10,circle,False,False,2019-12-01
+4238938154,7.5,20,cohort capped: 20 nearest of 21 pool wells,7.5,20,circle,False,False,2019-12-01
+4238938195,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4238938305,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2019-12-01
+4238938307,15.0,12,,5.0,20,circle,True,False,2019-12-01
+4238938322,7.5,19,,7.5,10,strike,False,False,2019-12-01
+4238938342,7.5,12,,15.0,20,strike,False,False,2019-12-01
+4238938376,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2019-12-01
+4238938378,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2019-12-01
+4238938395,7.5,19,,5.0,18,circle,True,False,2019-12-01
+4238938397,5.0,13,,5.0,13,circle,False,False,2019-12-01
+4238938399,7.5,20,cohort capped: 20 nearest of 38 pool wells,10.0,13,strike,False,False,2019-12-01
+4238938418,5.0,14,,5.0,14,circle,False,False,2019-12-01
+4238938419,5.0,14,,5.0,14,circle,False,False,2019-12-01
+4238938426,7.5,16,,7.5,16,circle,False,False,2019-12-01
+4238938430,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,13,strike,False,False,2019-12-01
+4238938435,5.0,15,,5.0,15,circle,False,False,2019-12-01
+4238938451,10.0,19,,10.0,19,circle,False,False,2019-12-01
+4238938476,5.0,10,,7.5,20,circle,True,False,2019-12-01
+4238938478,5.0,13,,7.5,12,strike,True,False,2019-12-01
+4238938479,5.0,12,,7.5,12,strike,True,False,2019-12-01
+4238938480,5.0,15,,5.0,11,circle,True,False,2019-12-01
+4238938482,5.0,11,,7.5,20,circle,True,False,2019-12-01
+4238938521,10.0,15,,15.0,15,strike,False,False,2019-12-01
+4238938584,5.0,20,,5.0,20,circle,False,False,2019-12-01
+4238938586,5.0,17,,5.0,17,circle,False,False,2019-12-01
+4238938653,7.5,11,,7.5,11,circle,False,False,2019-12-01
+4238938654,5.0,11,,5.0,11,circle,False,False,2019-12-01
+4238938663,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2019-12-01
+4238938674,5.0,12,,5.0,12,circle,False,False,2019-12-01
+4238938679,5.0,12,,5.0,12,circle,False,False,2019-12-01
+4238938681,5.0,17,,5.0,17,circle,False,False,2019-12-01
+4238938713,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,19,circle,True,False,2019-12-01
+4238938741,20.0,16,,5.0,10,circle,True,False,2019-12-01
+4238938745,20.0,13,,5.0,10,circle,True,False,2019-12-01
+4238938903,5.0,13,,5.0,13,circle,False,False,2019-12-01
+4238939048,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2019-12-01
+4238939049,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2019-12-01
+4238939067,7.5,20,,15.0,18,strike,True,False,2019-12-01
+4247537834,5.0,12,,5.0,12,circle,False,False,2019-12-01
+4247537837,5.0,14,,5.0,14,circle,False,False,2019-12-01
+4247537905,10.0,12,,15.0,10,strike,False,False,2019-12-01
+4247537917,5.0,16,,5.0,16,circle,False,False,2019-12-01
+4247537935,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2019-12-01
+4247537936,5.0,18,,5.0,18,circle,False,False,2019-12-01
+4247537981,5.0,20,,5.0,20,circle,False,False,2019-12-01
+4247537984,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2019-12-01
+4247537985,5.0,20,,5.0,20,circle,False,False,2019-12-01
+4247538017,7.5,11,,15.0,20,strike,True,False,2019-12-01
+4247538018,7.5,11,,15.0,20,strike,True,False,2019-12-01
+4247538058,5.0,13,,5.0,20,circle,True,False,2019-12-01
+4247538060,5.0,13,,5.0,20,circle,True,False,2019-12-01
+4247538063,5.0,12,,5.0,12,circle,False,False,2019-12-01
+4247538065,5.0,10,,5.0,10,circle,False,False,2019-12-01
+4247538067,5.0,10,,5.0,10,circle,False,False,2019-12-01
+4249534258,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2019-12-01
+4249534305,5.0,13,,5.0,13,circle,False,False,2019-12-01
+4249534344,5.0,13,,5.0,13,circle,False,False,2019-12-01
+4249534348,5.0,15,,5.0,15,circle,False,False,2019-12-01
+3001545466,10.0,16,,10.0,16,circle,False,False,2020-12-01
+3001545467,10.0,16,,10.0,16,circle,False,False,2020-12-01
+3001545480,7.5,20,cohort capped: 20 nearest of 26 pool wells,10.0,20,strike,True,False,2020-12-01
+3001545482,7.5,12,,10.0,15,strike,True,False,2020-12-01
+3001545483,7.5,12,,10.0,20,circle,True,False,2020-12-01
+3001545485,10.0,20,cohort capped: 20 nearest of 30 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545507,10.0,20,cohort capped: 20 nearest of 21 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545508,10.0,17,,10.0,17,circle,False,False,2020-12-01
+3001545539,10.0,20,cohort capped: 20 nearest of 29 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545615,15.0,20,cohort capped: 20 nearest of 40 pool wells,15.0,20,circle,False,False,2020-12-01
+3001545616,10.0,16,,10.0,16,circle,False,False,2020-12-01
+3001545732,10.0,20,cohort capped: 20 nearest of 22 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545816,7.5,12,,7.5,12,circle,False,False,2020-12-01
+3001545817,20.0,7,under_count: 7 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,10,strike,True,False,2020-12-01
+3001545827,7.5,20,cohort capped: 20 nearest of 25 pool wells,10.0,12,strike,False,False,2020-12-01
+3001545828,10.0,20,cohort capped: 20 nearest of 25 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545829,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,circle,False,False,2020-12-01
+3001545838,7.5,20,cohort capped: 20 nearest of 31 pool wells,10.0,15,strike,False,False,2020-12-01
+3001545839,10.0,20,cohort capped: 20 nearest of 22 pool wells,10.0,20,circle,False,False,2020-12-01
+3001545841,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,circle,False,False,2020-12-01
+3001545842,7.5,20,cohort capped: 20 nearest of 34 pool wells,7.5,20,circle,False,False,2020-12-01
+3001545843,7.5,20,cohort capped: 20 nearest of 33 pool wells,10.0,17,strike,False,False,2020-12-01
+3001545844,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,20,circle,False,False,2020-12-01
+3001545880,7.5,20,cohort capped: 20 nearest of 22 pool wells,10.0,13,strike,True,False,2020-12-01
+3001545881,7.5,20,,10.0,20,strike,True,False,2020-12-01
+3001545893,5.0,15,,5.0,15,circle,False,False,2020-12-01
+3001545894,5.0,11,,5.0,11,circle,False,False,2020-12-01
+3001545895,5.0,12,,5.0,12,circle,False,False,2020-12-01
+3001545896,5.0,15,,5.0,15,circle,False,False,2020-12-01
+3001545898,5.0,16,,5.0,16,circle,False,False,2020-12-01
+3001545899,5.0,12,,5.0,12,circle,False,False,2020-12-01
+3001545914,10.0,20,cohort capped: 20 nearest of 32 pool wells,15.0,20,strike,True,False,2020-12-01
+3001545917,7.5,10,,15.0,20,strike,True,False,2020-12-01
+3001545919,5.0,10,,10.0,10,strike,True,False,2020-12-01
+3001545924,7.5,16,,10.0,15,strike,False,False,2020-12-01
+3001545931,7.5,16,,10.0,13,strike,False,False,2020-12-01
+3001545932,5.0,12,,10.0,12,strike,True,False,2020-12-01
+3001545933,7.5,20,cohort capped: 20 nearest of 22 pool wells,10.0,20,strike,True,False,2020-12-01
+3001545934,7.5,20,,10.0,13,strike,True,False,2020-12-01
+3001545935,5.0,14,,10.0,11,strike,True,False,2020-12-01
+3001545936,5.0,14,,10.0,19,strike,True,False,2020-12-01
+3001545937,7.5,15,,10.0,20,strike,False,False,2020-12-01
+3001546069,5.0,13,,5.0,13,circle,False,False,2020-12-01
+3001546106,7.5,20,cohort capped: 20 nearest of 35 pool wells,7.5,20,circle,False,False,2020-12-01
+3001546174,7.5,20,cohort capped: 20 nearest of 22 pool wells,10.0,12,strike,True,False,2020-12-01
+3001546175,7.5,14,,10.0,15,strike,True,False,2020-12-01
+3001546209,7.5,10,,7.5,10,circle,False,False,2020-12-01
+3001546248,7.5,13,,7.5,13,circle,False,False,2020-12-01
+3001546250,7.5,20,cohort capped: 20 nearest of 38 pool wells,10.0,20,strike,False,False,2020-12-01
+3001546251,7.5,20,cohort capped: 20 nearest of 32 pool wells,7.5,20,circle,False,False,2020-12-01
+3001546427,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,20,circle,False,False,2020-12-01
+3001546428,7.5,20,cohort capped: 20 nearest of 21 pool wells,10.0,15,strike,False,False,2020-12-01
+3001546477,7.5,17,,7.5,16,circle,True,False,2020-12-01
+3001546478,7.5,15,,7.5,16,circle,True,False,2020-12-01
+3001546506,7.5,16,,7.5,16,circle,False,False,2020-12-01
+3001546507,7.5,14,,7.5,14,circle,False,False,2020-12-01
+3001546510,7.5,10,,10.0,15,strike,True,False,2020-12-01
+3001546546,10.0,20,cohort capped: 20 nearest of 24 pool wells,15.0,20,strike,False,False,2020-12-01
+3001546550,7.5,14,,10.0,12,strike,False,False,2020-12-01
+3001546551,7.5,18,,10.0,13,strike,False,False,2020-12-01
+3001546552,7.5,18,,10.0,15,strike,False,False,2020-12-01
+3001546556,7.5,17,,10.0,16,strike,False,False,2020-12-01
+3001546557,7.5,17,,10.0,15,strike,False,False,2020-12-01
+3001546606,7.5,16,,10.0,16,strike,False,False,2020-12-01
+3001546622,7.5,16,,10.0,13,strike,False,False,2020-12-01
+3001546655,7.5,11,,10.0,13,strike,False,False,2020-12-01
+3001546659,7.5,15,,10.0,11,strike,False,False,2020-12-01
+3001546718,7.5,15,,10.0,20,strike,False,False,2020-12-01
+3001546731,7.5,12,,15.0,16,strike,False,False,2020-12-01
+3001546899,10.0,18,,10.0,18,circle,False,False,2020-12-01
+3001546900,7.5,13,,7.5,13,circle,False,False,2020-12-01
+3001546902,7.5,20,,7.5,20,circle,False,False,2020-12-01
+3001546904,7.5,12,,7.5,12,circle,False,False,2020-12-01
+3001546907,7.5,20,,7.5,20,circle,False,False,2020-12-01
+3001546909,7.5,16,,10.0,15,strike,False,False,2020-12-01
+3001546928,7.5,20,,5.0,15,circle,True,False,2020-12-01
+3001546929,5.0,18,,5.0,18,circle,False,False,2020-12-01
+3001546930,7.5,20,cohort capped: 20 nearest of 23 pool wells,5.0,14,circle,True,False,2020-12-01
+3001546974,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,15,circle,True,False,2020-12-01
+3001547020,7.5,15,,10.0,20,strike,False,False,2020-12-01
+3001547055,7.5,17,,7.5,17,circle,False,False,2020-12-01
+3001547082,10.0,11,,15.0,11,strike,False,False,2020-12-01
+3001547083,7.5,16,,10.0,15,strike,False,False,2020-12-01
+3001547128,15.0,12,,10.0,12,circle,True,False,2020-12-01
+3001547129,7.5,20,cohort capped: 20 nearest of 38 pool wells,7.5,20,circle,True,False,2020-12-01
+3001547130,7.5,20,cohort capped: 20 nearest of 44 pool wells,7.5,20,circle,False,False,2020-12-01
+3001547133,7.5,20,cohort capped: 20 nearest of 44 pool wells,7.5,20,circle,False,False,2020-12-01
+3001547139,7.5,19,,7.5,19,circle,False,False,2020-12-01
+3001547156,7.5,20,,7.5,20,circle,False,False,2020-12-01
+3001547157,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,20,circle,False,False,2020-12-01
+3001547159,7.5,20,cohort capped: 20 nearest of 22 pool wells,7.5,20,circle,False,False,2020-12-01
+3001547171,5.0,14,,5.0,14,circle,False,False,2020-12-01
+3001547172,7.5,20,,7.5,20,circle,False,False,2020-12-01
+3001547177,10.0,13,,10.0,13,circle,False,False,2020-12-01
+3001547178,10.0,15,,10.0,15,circle,False,False,2020-12-01
+3001547179,10.0,13,,10.0,13,circle,False,False,2020-12-01
+3001547200,10.0,13,,10.0,13,circle,False,False,2020-12-01
+3001547213,7.5,14,,10.0,13,strike,False,False,2020-12-01
+3001547221,7.5,12,,10.0,14,strike,False,False,2020-12-01
+3001547222,7.5,12,,10.0,13,strike,False,False,2020-12-01
+3001547224,7.5,17,,10.0,19,strike,False,False,2020-12-01
+3001547266,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2020-12-01
+3001547267,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,10,circle,True,False,2020-12-01
+3001547269,10.0,15,,10.0,15,circle,False,False,2020-12-01
+3001547369,10.0,11,,5.0,16,circle,True,False,2020-12-01
+3001547370,7.5,15,,10.0,14,strike,False,False,2020-12-01
+3001547371,7.5,12,,10.0,14,strike,False,False,2020-12-01
+3001547372,7.5,15,,10.0,15,strike,False,False,2020-12-01
+3001547373,7.5,16,,10.0,19,strike,False,False,2020-12-01
+3001547374,7.5,11,,10.0,11,strike,False,False,2020-12-01
+3001547409,7.5,15,,10.0,18,strike,False,False,2020-12-01
+3001547433,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,17,strike,True,False,2020-12-01
+3001547453,7.5,13,,7.5,13,circle,False,False,2020-12-01
+3001547454,7.5,14,,10.0,20,circle,True,False,2020-12-01
+3001547482,7.5,13,,15.0,20,strike,False,False,2020-12-01
+3001547483,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,13,strike,False,False,2020-12-01
+3001547484,7.5,18,,10.0,15,strike,False,False,2020-12-01
+3001547514,15.0,20,cohort capped: 20 nearest of 41 pool wells,15.0,20,circle,False,False,2020-12-01
+3001547612,7.5,13,,7.5,13,circle,False,False,2020-12-01
+3001547628,7.5,13,,7.5,13,circle,False,False,2020-12-01
+3001547701,5.0,12,,5.0,12,circle,False,False,2020-12-01
+3001547804,7.5,20,cohort capped: 20 nearest of 21 pool wells,10.0,18,strike,True,False,2020-12-01
+3001547807,7.5,20,,10.0,20,strike,True,False,2020-12-01
+3001547810,10.0,20,,10.0,20,circle,False,False,2020-12-01
+3001547817,10.0,12,,10.0,12,circle,False,False,2020-12-01
+3001547818,7.5,20,cohort capped: 20 nearest of 26 pool wells,10.0,20,strike,True,False,2020-12-01
+3002546258,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546320,5.0,18,,5.0,18,circle,False,False,2020-12-01
+3002546323,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546324,5.0,20,,5.0,20,circle,False,False,2020-12-01
+3002546507,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546509,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546511,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546707,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546709,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546711,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,18,circle,True,False,2020-12-01
+3002546713,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546758,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546763,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546764,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,True,False,2020-12-01
+3002546821,15.0,20,,15.0,11,strike,True,False,2020-12-01
+3002546822,15.0,20,,20.0,20,strike,True,False,2020-12-01
+3002546835,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,17,strike,True,False,2020-12-01
+3002546870,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2020-12-01
+3002546871,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2020-12-01
+3002546874,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2020-12-01
+3002546875,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,10,strike,True,False,2020-12-01
+3002546876,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,11,circle,True,False,2020-12-01
+3002546896,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546897,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546900,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546920,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546921,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546922,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546923,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2020-12-01
+3002546998,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,19,circle,True,False,2020-12-01
+3002547004,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547005,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547045,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547103,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547104,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547105,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547171,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547172,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547214,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547215,7.5,15,,5.0,12,circle,True,False,2020-12-01
+3002547216,7.5,15,,5.0,12,circle,True,False,2020-12-01
+3002547218,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547219,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547220,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,True,False,2020-12-01
+3002547291,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002547292,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002547546,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547605,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+3002547606,5.0,11,,5.0,11,circle,False,False,2020-12-01
+3002547607,5.0,11,,5.0,11,circle,False,False,2020-12-01
+3002547672,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,11,circle,True,False,2020-12-01
+3002547673,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,12,circle,True,False,2020-12-01
+3002547674,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,14,circle,True,False,2020-12-01
+3002547675,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,15,circle,True,False,2020-12-01
+3002547804,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002547805,15.0,20,cohort capped: 20 nearest of 30 pool wells,20.0,15,strike,False,False,2020-12-01
+3002547806,15.0,20,cohort capped: 20 nearest of 30 pool wells,20.0,15,strike,False,False,2020-12-01
+3002547807,15.0,20,cohort capped: 20 nearest of 31 pool wells,20.0,16,strike,False,False,2020-12-01
+3002547808,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002547809,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002547881,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+3002548254,5.0,14,,5.0,14,circle,False,False,2020-12-01
+3002548378,10.0,13,,10.0,13,circle,False,False,2020-12-01
+3002548380,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+3002548459,7.5,17,,7.5,13,strike,False,False,2020-12-01
+3002548460,7.5,19,,7.5,15,strike,False,False,2020-12-01
+3002548484,5.0,12,,5.0,12,circle,False,False,2020-12-01
+3002548485,5.0,10,,5.0,10,circle,False,False,2020-12-01
+3002548486,5.0,12,,5.0,12,circle,False,False,2020-12-01
+3002548487,5.0,11,,5.0,11,circle,False,False,2020-12-01
+3002548491,7.5,15,,7.5,11,strike,False,False,2020-12-01
+3002548492,7.5,17,,7.5,13,strike,False,False,2020-12-01
+3002549017,15.0,12,,15.0,12,circle,False,False,2020-12-01
+4210933529,5.0,19,,5.0,14,circle,True,False,2020-12-01
+4210933545,20.0,3,under_count: 3 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,10,circle,True,False,2020-12-01
+4210933547,7.5,20,cohort capped: 20 nearest of 24 pool wells,10.0,12,strike,False,False,2020-12-01
+4210933596,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2020-12-01
+4210933616,7.5,20,cohort capped: 20 nearest of 22 pool wells,10.0,12,strike,False,False,2020-12-01
+4210933617,7.5,20,cohort capped: 20 nearest of 21 pool wells,10.0,11,strike,False,False,2020-12-01
+4210933624,5.0,12,,5.0,12,circle,False,False,2020-12-01
+4210933646,7.5,19,,10.0,11,strike,False,False,2020-12-01
+4210933648,7.5,19,,10.0,12,strike,False,False,2020-12-01
+4210933665,5.0,12,,5.0,12,circle,False,False,2020-12-01
+4210933666,5.0,13,,5.0,15,circle,True,False,2020-12-01
+4210933668,5.0,20,,5.0,20,circle,False,False,2020-12-01
+4210933670,10.0,13,,15.0,12,strike,False,False,2020-12-01
+4210933672,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4210933674,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4210933680,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2020-12-01
+4210933681,5.0,18,,5.0,18,circle,False,False,2020-12-01
+4210933682,7.5,20,cohort capped: 20 nearest of 21 pool wells,5.0,14,circle,True,False,2020-12-01
+4210933714,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2020-12-01
+4210933715,5.0,20,,5.0,20,circle,False,False,2020-12-01
+4210933716,5.0,20,,5.0,20,circle,False,False,2020-12-01
+4230134666,7.5,11,,10.0,20,strike,False,False,2020-12-01
+4230134668,5.0,11,,5.0,11,circle,False,False,2020-12-01
+4230134670,5.0,11,,5.0,11,circle,False,False,2020-12-01
+4230134687,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134689,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134690,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134692,10.0,17,,15.0,19,strike,False,False,2020-12-01
+4230134721,7.5,19,,7.5,19,circle,False,False,2020-12-01
+4230134722,7.5,20,cohort capped: 20 nearest of 45 pool wells,7.5,20,circle,False,False,2020-12-01
+4230134729,7.5,20,cohort capped: 20 nearest of 25 pool wells,7.5,20,circle,False,False,2020-12-01
+4230134766,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134769,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134770,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134843,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,10,strike,False,False,2020-12-01
+4230134844,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,10,strike,False,False,2020-12-01
+4230134851,5.0,12,,5.0,12,circle,False,False,2020-12-01
+4230134862,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134864,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134867,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2020-12-01
+4230134907,7.5,13,,15.0,20,strike,False,False,2020-12-01
+4230134908,10.0,20,,15.0,20,strike,False,False,2020-12-01
+4230134988,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,13,circle,True,False,2020-12-01
+4230135024,7.5,12,,7.5,12,circle,False,False,2020-12-01
+4230135025,7.5,14,,7.5,14,circle,False,False,2020-12-01
+4230135026,7.5,19,,7.5,14,strike,False,False,2020-12-01
+4230135027,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135050,5.0,20,cohort capped: 20 nearest of 63 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135055,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2020-12-01
+4230135057,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,18,circle,True,False,2020-12-01
+4230135058,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,18,circle,True,False,2020-12-01
+4230135059,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,19,circle,True,False,2020-12-01
+4230135120,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,18,circle,True,False,2020-12-01
+4230135143,7.5,17,,10.0,17,strike,False,False,2020-12-01
+4230135145,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135148,7.5,20,cohort capped: 20 nearest of 33 pool wells,7.5,14,strike,False,False,2020-12-01
+4230135149,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4230135154,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135156,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135158,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135160,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135228,10.0,16,,15.0,20,strike,False,False,2020-12-01
+4230135243,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4230135244,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4230135245,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2020-12-01
+4230135246,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2020-12-01
+4230135252,5.0,19,,5.0,19,circle,False,False,2020-12-01
+4230135267,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4230135292,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4230135293,5.0,12,,5.0,12,circle,False,False,2020-12-01
+4230135294,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4230135295,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4230135296,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4230135297,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4230135298,5.0,18,,5.0,18,circle,False,False,2020-12-01
+4230135328,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135330,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135332,7.5,16,,10.0,20,strike,False,False,2020-12-01
+4230135338,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,13,circle,True,False,2020-12-01
+4230135339,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4230135340,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4230135341,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4230135411,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135495,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135496,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135497,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+4230135589,5.0,10,,5.0,10,circle,False,False,2020-12-01
+4230135642,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2020-12-01
+4237139930,7.5,13,,10.0,11,strike,False,False,2020-12-01
+4237140300,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+4237140302,7.5,20,,7.5,15,strike,False,False,2020-12-01
+4238937792,5.0,11,,5.0,14,circle,True,False,2020-12-01
+4238937917,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2020-12-01
+4238938230,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938231,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938488,5.0,16,,5.0,16,circle,False,False,2020-12-01
+4238938489,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4238938513,7.5,15,,15.0,20,strike,False,False,2020-12-01
+4238938659,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938723,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4238938727,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938762,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4238938766,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4238938854,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938857,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938893,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938927,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938928,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938930,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2020-12-01
+4238938954,7.5,11,,10.0,12,strike,False,False,2020-12-01
+4238938997,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939004,5.0,16,,5.0,16,circle,False,False,2020-12-01
+4238939019,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939021,5.0,12,,5.0,20,circle,True,False,2020-12-01
+4238939036,5.0,17,,5.0,17,circle,False,False,2020-12-01
+4238939037,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939041,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939074,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,16,strike,True,False,2020-12-01
+4238939102,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,True,False,2020-12-01
+4238939104,5.0,11,,5.0,11,circle,False,False,2020-12-01
+4238939146,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939149,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939151,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939153,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939173,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939204,15.0,12,,5.0,19,circle,True,False,2020-12-01
+4238939210,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4238939213,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4238939232,7.5,20,cohort capped: 20 nearest of 21 pool wells,5.0,14,circle,True,False,2020-12-01
+4238939233,7.5,17,,5.0,14,circle,True,False,2020-12-01
+4238939234,7.5,14,,10.0,12,strike,False,False,2020-12-01
+4238939235,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4238939262,5.0,18,,5.0,18,circle,False,False,2020-12-01
+4238939263,7.5,10,,7.5,10,circle,False,False,2020-12-01
+4238939272,5.0,19,,5.0,19,circle,False,False,2020-12-01
+4238939273,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4238939274,7.5,16,,15.0,20,strike,False,False,2020-12-01
+4238939275,10.0,12,,15.0,10,strike,False,False,2020-12-01
+4238939291,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939293,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939295,5.0,20,,5.0,20,circle,False,False,2020-12-01
+4238939304,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939307,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939308,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939334,5.0,11,,5.0,11,circle,False,False,2020-12-01
+4238939347,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2020-12-01
+4238939348,7.5,20,cohort capped: 20 nearest of 28 pool wells,10.0,20,strike,False,False,2020-12-01
+4238939349,7.5,20,cohort capped: 20 nearest of 34 pool wells,10.0,20,strike,False,False,2020-12-01
+4238939390,10.0,10,,10.0,10,circle,False,False,2020-12-01
+4238939479,7.5,10,,7.5,15,circle,True,False,2020-12-01
+4238939480,7.5,17,,7.5,17,circle,False,False,2020-12-01
+4247537282,5.0,10,,5.0,10,circle,False,False,2020-12-01
+4247537928,5.0,20,,5.0,20,circle,False,False,2020-12-01
+4247537931,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2020-12-01
+4247537937,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2020-12-01
+4247537980,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2020-12-01
+4247537988,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538015,5.0,10,,5.0,10,circle,False,False,2020-12-01
+4247538016,5.0,12,,5.0,12,circle,False,False,2020-12-01
+4247538061,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4247538069,15.0,20,cohort capped: 20 nearest of 21 pool wells,7.5,10,circle,True,False,2020-12-01
+4247538071,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4247538072,5.0,17,,5.0,17,circle,False,False,2020-12-01
+4247538073,5.0,13,,5.0,13,circle,False,False,2020-12-01
+4247538083,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538084,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538127,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538128,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538144,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538146,7.5,13,,7.5,12,strike,False,False,2020-12-01
+4247538148,7.5,13,,7.5,12,strike,False,False,2020-12-01
+4247538150,7.5,14,,7.5,12,strike,False,False,2020-12-01
+4247538155,5.0,19,,5.0,19,circle,False,False,2020-12-01
+4247538157,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538171,5.0,14,,5.0,14,circle,False,False,2020-12-01
+4247538176,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2020-12-01
+4247538185,5.0,15,,5.0,15,circle,False,False,2020-12-01
+4247538188,7.5,20,cohort capped: 20 nearest of 30 pool wells,10.0,20,strike,False,False,2020-12-01
+4249534494,5.0,13,,5.0,13,circle,False,False,2020-12-01
+3001544654,15.0,13,,15.0,20,strike,True,False,2021-12-01
+3001545475,7.5,20,cohort capped: 20 nearest of 30 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545477,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545513,7.5,20,,7.5,15,strike,False,False,2021-12-01
+3001545514,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545515,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545516,7.5,20,cohort capped: 20 nearest of 32 pool wells,7.5,19,strike,False,False,2021-12-01
+3001545517,7.5,20,cohort capped: 20 nearest of 34 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545518,7.5,20,cohort capped: 20 nearest of 31 pool wells,7.5,19,strike,False,False,2021-12-01
+3001545519,7.5,20,cohort capped: 20 nearest of 33 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545538,5.0,10,,5.0,10,circle,False,False,2021-12-01
+3001545624,5.0,10,,5.0,10,circle,False,False,2021-12-01
+3001545625,5.0,10,,5.0,10,circle,False,False,2021-12-01
+3001545626,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545627,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545696,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545698,7.5,20,cohort capped: 20 nearest of 35 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545701,7.5,20,cohort capped: 20 nearest of 33 pool wells,7.5,20,strike,False,False,2021-12-01
+3001545703,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,20,strike,False,False,2021-12-01
+3001546245,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,15,strike,False,False,2021-12-01
+3001546255,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546261,5.0,20,cohort capped: 20 nearest of 24 pool wells,7.5,18,strike,True,False,2021-12-01
+3001546264,7.5,20,cohort capped: 20 nearest of 28 pool wells,7.5,15,strike,False,False,2021-12-01
+3001546265,7.5,20,cohort capped: 20 nearest of 25 pool wells,7.5,14,strike,False,False,2021-12-01
+3001546266,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546290,7.5,20,cohort capped: 20 nearest of 25 pool wells,7.5,14,strike,False,False,2021-12-01
+3001546291,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,15,strike,False,False,2021-12-01
+3001546292,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,15,strike,False,False,2021-12-01
+3001546306,5.0,11,,7.5,11,circle,True,False,2021-12-01
+3001546308,5.0,13,,7.5,14,circle,True,False,2021-12-01
+3001546311,5.0,13,,7.5,13,circle,True,False,2021-12-01
+3001546321,20.0,14,,5.0,15,circle,True,False,2021-12-01
+3001546370,20.0,13,,5.0,15,circle,True,False,2021-12-01
+3001546371,20.0,13,,5.0,15,circle,True,False,2021-12-01
+3001546422,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546424,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546436,5.0,20,cohort capped: 20 nearest of 22 pool wells,7.5,13,strike,True,False,2021-12-01
+3001546677,20.0,13,,5.0,15,circle,True,False,2021-12-01
+3001546702,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546720,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2021-12-01
+3001546722,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547090,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547091,5.0,16,,5.0,16,circle,False,False,2021-12-01
+3001547092,5.0,20,,5.0,20,circle,False,False,2021-12-01
+3001547093,5.0,14,,5.0,14,circle,False,False,2021-12-01
+3001547094,10.0,20,cohort capped: 20 nearest of 25 pool wells,10.0,15,strike,False,False,2021-12-01
+3001547095,5.0,14,,5.0,14,circle,False,False,2021-12-01
+3001547148,15.0,19,,7.5,13,circle,True,False,2021-12-01
+3001547189,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547193,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547229,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547241,5.0,19,,5.0,19,circle,False,False,2021-12-01
+3001547247,5.0,17,,5.0,17,circle,False,False,2021-12-01
+3001547249,5.0,12,,5.0,12,circle,False,False,2021-12-01
+3001547258,5.0,17,,5.0,17,circle,False,False,2021-12-01
+3001547270,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547275,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547318,20.0,10,,5.0,15,circle,True,False,2021-12-01
+3001547319,20.0,14,,5.0,19,circle,True,False,2021-12-01
+3001547322,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547323,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547332,20.0,14,,5.0,16,circle,True,False,2021-12-01
+3001547340,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547441,7.5,20,cohort capped: 20 nearest of 25 pool wells,7.5,20,circle,False,False,2021-12-01
+3001547452,7.5,14,,7.5,14,circle,False,False,2021-12-01
+3001547587,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547646,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547647,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2021-12-01
+3001547845,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001547846,20.0,3,under_count: 3 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001547856,20.0,10,,5.0,20,circle,True,False,2021-12-01
+3001547860,20.0,8,under_count: 8 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001547861,20.0,7,under_count: 7 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001548064,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548169,7.5,20,cohort capped: 20 nearest of 23 pool wells,10.0,14,strike,False,False,2021-12-01
+3001548175,7.5,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2021-12-01
+3001548177,7.5,20,cohort capped: 20 nearest of 26 pool wells,7.5,20,circle,False,False,2021-12-01
+3001548295,20.0,12,,5.0,20,circle,True,False,2021-12-01
+3001548297,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001548313,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548314,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548315,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548316,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548553,5.0,11,,7.5,11,circle,True,False,2021-12-01
+3001548554,5.0,11,,7.5,13,circle,True,False,2021-12-01
+3001548608,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2021-12-01
+3001548609,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,13,strike,True,False,2021-12-01
+3001548610,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,18,strike,True,False,2021-12-01
+3001548611,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,13,strike,True,False,2021-12-01
+3001548783,5.0,10,,5.0,10,circle,False,False,2021-12-01
+3001548877,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548879,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548880,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548881,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548930,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548959,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548964,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2021-12-01
+3001548965,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2021-12-01
+3001549058,5.0,16,,5.0,16,circle,False,False,2021-12-01
+3001549060,5.0,18,,5.0,18,circle,False,False,2021-12-01
+3001549061,5.0,16,,5.0,16,circle,False,False,2021-12-01
+3001549068,5.0,15,,5.0,15,circle,False,False,2021-12-01
+3001549073,5.0,17,,5.0,17,circle,False,False,2021-12-01
+3001549074,5.0,15,,5.0,15,circle,False,False,2021-12-01
+3001549100,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+3001549322,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,11,strike,True,False,2021-12-01
+3001549323,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,14,strike,True,False,2021-12-01
+3001549324,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,17,strike,True,False,2021-12-01
+3001549325,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,14,strike,True,False,2021-12-01
+3001549414,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2021-12-01
+3001549415,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+3001549653,20.0,15,,20.0,15,circle,False,False,2021-12-01
+3001549683,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2021-12-01
+3002544215,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2021-12-01
+3002544216,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2021-12-01
+3002544217,5.0,18,,5.0,18,circle,False,False,2021-12-01
+3002544218,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2021-12-01
+3002546803,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,6,circle,True,False,2021-12-01
+3002546819,7.5,12,,10.0,10,circle,True,False,2021-12-01
+3002546820,15.0,20,cohort capped: 20 nearest of 29 pool wells,15.0,20,circle,True,False,2021-12-01
+3002546873,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,19,strike,True,False,2021-12-01
+3002546925,5.0,12,,5.0,12,circle,False,False,2021-12-01
+3002546926,5.0,10,,5.0,10,circle,False,False,2021-12-01
+3002546937,7.5,17,,7.5,17,circle,False,False,2021-12-01
+3002546961,15.0,20,cohort capped: 20 nearest of 26 pool wells,15.0,20,strike,True,False,2021-12-01
+3002547000,15.0,20,cohort capped: 20 nearest of 27 pool wells,15.0,20,strike,True,False,2021-12-01
+3002547002,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547007,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547411,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547413,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547414,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547608,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547609,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547610,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547611,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547612,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547668,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547669,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,13,circle,True,False,2021-12-01
+3002547670,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,18,circle,True,False,2021-12-01
+3002547671,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,19,circle,True,False,2021-12-01
+3002547690,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547691,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547693,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547694,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547724,5.0,13,,5.0,13,circle,False,False,2021-12-01
+3002547752,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+3002547754,5.0,19,,5.0,19,circle,False,False,2021-12-01
+3002547763,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548024,7.5,14,,7.5,14,circle,False,False,2021-12-01
+3002548025,7.5,14,,7.5,14,circle,False,False,2021-12-01
+3002548094,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548095,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548160,7.5,15,,7.5,15,circle,False,False,2021-12-01
+3002548345,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548346,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548366,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548443,5.0,20,cohort capped: 20 nearest of 72 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548448,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548449,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548450,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548451,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548541,10.0,16,,15.0,15,strike,False,False,2021-12-01
+3002548546,10.0,13,,15.0,13,strike,False,False,2021-12-01
+3002548547,10.0,13,,15.0,15,strike,False,False,2021-12-01
+3002548561,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548562,5.0,20,,5.0,20,circle,False,False,2021-12-01
+3002548880,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3002548882,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,18,circle,True,False,2021-12-01
+3002548885,7.5,14,,7.5,10,strike,True,False,2021-12-01
+3002549107,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549108,5.0,20,cohort capped: 20 nearest of 89 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549109,5.0,20,cohort capped: 20 nearest of 120 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549110,5.0,20,cohort capped: 20 nearest of 83 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549123,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549124,5.0,20,cohort capped: 20 nearest of 91 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549125,5.0,20,cohort capped: 20 nearest of 96 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549147,7.5,15,,7.5,15,circle,False,False,2021-12-01
+3002549148,7.5,15,,7.5,15,circle,False,False,2021-12-01
+3002549535,20.0,6,under_count: 6 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,6,circle,False,False,2021-12-01
+3002549536,20.0,6,under_count: 6 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,6,circle,False,False,2021-12-01
+3002549605,5.0,15,,5.0,15,circle,False,False,2021-12-01
+3002549606,5.0,18,,5.0,18,circle,False,False,2021-12-01
+3002549644,5.0,19,,5.0,19,circle,False,False,2021-12-01
+3002549645,7.5,20,cohort capped: 20 nearest of 22 pool wells,10.0,20,strike,False,False,2021-12-01
+3002549646,5.0,18,,5.0,18,circle,False,False,2021-12-01
+3002549687,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+3002549688,5.0,18,,5.0,18,circle,False,False,2021-12-01
+3002549689,5.0,16,,5.0,16,circle,False,False,2021-12-01
+3002549935,20.0,6,under_count: 6 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,6,circle,False,False,2021-12-01
+4210933561,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4210933563,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4210933564,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4210933571,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+4230134958,20.0,5,under_count: 5 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+4230135088,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135089,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135095,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135097,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135098,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135223,5.0,20,cohort capped: 20 nearest of 97 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135440,5.0,20,cohort capped: 20 nearest of 87 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135442,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135448,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135577,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,True,False,2021-12-01
+4230135644,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135647,5.0,16,,5.0,16,circle,False,False,2021-12-01
+4230135650,5.0,18,,5.0,18,circle,False,False,2021-12-01
+4230135651,5.0,12,,5.0,12,circle,False,False,2021-12-01
+4230135659,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135683,7.5,17,,7.5,15,circle,True,False,2021-12-01
+4230135684,7.5,17,,7.5,16,circle,True,False,2021-12-01
+4230135697,20.0,8,under_count: 8 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2021-12-01
+4230135706,5.0,16,,5.0,16,circle,False,False,2021-12-01
+4230135707,5.0,17,,5.0,17,circle,False,False,2021-12-01
+4230135708,5.0,17,,5.0,17,circle,False,False,2021-12-01
+4230135728,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135735,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135739,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135835,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2021-12-01
+4230135837,5.0,17,,5.0,17,circle,False,False,2021-12-01
+4230135870,5.0,10,,5.0,10,circle,False,False,2021-12-01
+4237140204,7.5,20,cohort capped: 20 nearest of 29 pool wells,7.5,20,circle,False,False,2021-12-01
+4237140205,5.0,10,,5.0,10,circle,False,False,2021-12-01
+4237140209,5.0,10,,5.0,10,circle,False,False,2021-12-01
+4237140259,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2021-12-01
+4237140260,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2021-12-01
+4237140308,5.0,14,,5.0,14,circle,False,False,2021-12-01
+4237140309,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2021-12-01
+4237140310,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4237140311,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2021-12-01
+4237140327,10.0,15,,15.0,14,strike,False,False,2021-12-01
+4238936406,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2021-12-01
+4238936407,5.0,10,,5.0,10,circle,False,False,2021-12-01
+4238936408,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938004,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938007,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938010,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938278,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938282,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938284,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938300,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938543,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238938725,5.0,13,,5.0,13,circle,False,False,2021-12-01
+4238938777,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938780,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938781,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2021-12-01
+4238938905,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939081,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,20,circle,False,False,2021-12-01
+4238939082,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,20,circle,False,False,2021-12-01
+4238939084,5.0,14,,5.0,14,circle,False,False,2021-12-01
+4238939088,5.0,16,,5.0,16,circle,False,False,2021-12-01
+4238939183,5.0,20,,5.0,20,circle,False,False,2021-12-01
+4238939193,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939205,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2021-12-01
+4238939207,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939231,10.0,14,,10.0,14,strike,True,False,2021-12-01
+4238939245,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939248,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939342,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939351,5.0,13,,5.0,13,circle,False,False,2021-12-01
+4238939373,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,18,circle,True,True,2021-12-01
+4238939376,5.0,16,,5.0,18,circle,True,True,2021-12-01
+4238939379,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,13,circle,True,False,2021-12-01
+4238939410,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,True,False,2021-12-01
+4238939416,7.5,20,cohort capped: 20 nearest of 30 pool wells,10.0,20,strike,False,False,2021-12-01
+4238939417,7.5,20,cohort capped: 20 nearest of 29 pool wells,10.0,20,strike,False,False,2021-12-01
+4238939419,7.5,20,cohort capped: 20 nearest of 33 pool wells,7.5,15,strike,False,False,2021-12-01
+4238939420,7.5,20,cohort capped: 20 nearest of 26 pool wells,7.5,10,strike,False,False,2021-12-01
+4238939430,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,17,circle,True,False,2021-12-01
+4238939440,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,True,False,2021-12-01
+4238939441,7.5,10,,5.0,18,circle,True,False,2021-12-01
+4238939442,7.5,10,,5.0,16,circle,True,False,2021-12-01
+4238939447,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939449,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939530,5.0,10,,5.0,20,circle,True,False,2021-12-01
+4238939531,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238939532,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238939548,5.0,10,,5.0,20,circle,True,False,2021-12-01
+4238939549,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238939552,5.0,15,,5.0,18,circle,True,True,2021-12-01
+4238939566,10.0,12,,15.0,13,strike,False,False,2021-12-01
+4238939567,5.0,13,,5.0,13,circle,False,False,2021-12-01
+4238939569,5.0,19,,5.0,20,circle,True,False,2021-12-01
+4238939570,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238939571,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4238939613,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939614,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939636,5.0,16,,5.0,16,circle,False,False,2021-12-01
+4238939637,7.5,15,,10.0,13,strike,False,False,2021-12-01
+4238939638,7.5,20,cohort capped: 20 nearest of 29 pool wells,7.5,20,circle,False,False,2021-12-01
+4238939639,5.0,18,,5.0,18,circle,False,False,2021-12-01
+4238939650,10.0,13,,15.0,20,strike,False,False,2021-12-01
+4238939675,5.0,11,,5.0,11,circle,False,False,2021-12-01
+4238939676,7.5,11,,10.0,13,strike,False,False,2021-12-01
+4238939677,5.0,14,,5.0,14,circle,False,False,2021-12-01
+4238939683,5.0,20,,5.0,20,circle,False,False,2021-12-01
+4238939684,5.0,15,,5.0,15,circle,False,False,2021-12-01
+4238939685,5.0,15,,5.0,15,circle,False,False,2021-12-01
+4238939686,5.0,13,,5.0,13,circle,False,False,2021-12-01
+4238939886,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2021-12-01
+4238939887,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2021-12-01
+4247538136,7.5,18,,7.5,18,circle,False,False,2021-12-01
+4247538139,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2021-12-01
+4247538214,5.0,11,,5.0,20,circle,True,False,2021-12-01
+4247538216,5.0,16,,5.0,16,circle,False,False,2021-12-01
+4247538232,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2021-12-01
+4247538234,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),10.0,15,strike,True,False,2021-12-01
+4247538249,5.0,12,,5.0,20,circle,True,False,2021-12-01
+4247538251,5.0,12,,5.0,20,circle,True,False,2021-12-01
+4247538255,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2021-12-01
+4247538333,5.0,11,,5.0,11,circle,False,False,2021-12-01
+4249534620,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,10,circle,True,False,2021-12-01
+4249534623,20.0,11,,5.0,20,circle,True,False,2021-12-01
+4249534625,20.0,5,under_count: 5 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+4249534703,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2021-12-01
+3001546350,5.0,15,,5.0,15,circle,False,False,2022-12-01
+3001546457,5.0,17,,5.0,17,circle,False,False,2022-12-01
+3001546462,5.0,13,,5.0,13,circle,False,False,2022-12-01
+3001546544,5.0,15,,5.0,15,circle,False,False,2022-12-01
+3001546581,5.0,15,,5.0,15,circle,False,False,2022-12-01
+3001546582,5.0,15,,5.0,15,circle,False,False,2022-12-01
+3001546611,5.0,15,,5.0,15,circle,False,False,2022-12-01
+3001546614,5.0,12,,5.0,12,circle,False,False,2022-12-01
+3001547625,7.5,19,,7.5,19,circle,False,False,2022-12-01
+3001547626,7.5,18,,7.5,18,circle,False,False,2022-12-01
+3001547627,7.5,18,,7.5,18,circle,False,False,2022-12-01
+3001547709,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,False,False,2022-12-01
+3001547711,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,13,circle,True,False,2022-12-01
+3001547713,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,14,circle,True,False,2022-12-01
+3001547714,7.5,13,,10.0,10,strike,False,False,2022-12-01
+3001547716,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,13,circle,True,False,2022-12-01
+3001547717,5.0,20,cohort capped: 20 nearest of 34 pool wells,7.5,17,strike,True,False,2022-12-01
+3001547718,5.0,20,cohort capped: 20 nearest of 34 pool wells,7.5,17,strike,True,False,2022-12-01
+3001547887,7.5,18,,7.5,18,circle,False,False,2022-12-01
+3001547949,7.5,18,,7.5,18,circle,False,False,2022-12-01
+3001547981,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,16,circle,True,False,2022-12-01
+3001547984,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,11,circle,True,False,2022-12-01
+3001548513,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548514,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548515,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548516,5.0,20,cohort capped: 20 nearest of 94 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548578,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548585,5.0,20,cohort capped: 20 nearest of 88 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548588,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548589,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548590,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548596,7.5,19,,7.5,19,circle,False,False,2022-12-01
+3001548597,7.5,19,,7.5,19,circle,False,False,2022-12-01
+3001548613,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+3001548724,5.0,20,cohort capped: 20 nearest of 71 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549062,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549069,5.0,20,,5.0,20,circle,False,False,2022-12-01
+3001549078,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549079,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549252,15.0,14,,15.0,11,strike,False,False,2022-12-01
+3001549254,15.0,16,,15.0,11,strike,False,False,2022-12-01
+3001549255,15.0,17,,15.0,13,strike,False,False,2022-12-01
+3001549256,15.0,17,,15.0,12,strike,False,False,2022-12-01
+3001549425,5.0,13,,10.0,20,strike,True,False,2022-12-01
+3001549433,5.0,13,,5.0,10,circle,True,False,2022-12-01
+3001549491,10.0,16,,10.0,16,circle,False,False,2022-12-01
+3001549565,10.0,16,,10.0,16,circle,False,False,2022-12-01
+3001549593,20.0,18,,20.0,18,circle,False,False,2022-12-01
+3001549599,20.0,13,,20.0,13,circle,False,False,2022-12-01
+3001549640,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549641,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549644,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549645,5.0,19,,5.0,19,circle,False,False,2022-12-01
+3001549646,5.0,16,,5.0,16,circle,False,False,2022-12-01
+3001549647,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,14,circle,True,False,2022-12-01
+3001549651,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549652,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+3001549873,5.0,16,,5.0,16,circle,False,False,2022-12-01
+3001549874,5.0,16,,5.0,16,circle,False,False,2022-12-01
+3001550011,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,True,False,2022-12-01
+3001550012,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,True,False,2022-12-01
+3001550013,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,True,False,2022-12-01
+3001550129,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2022-12-01
+3001550149,15.0,18,,15.0,15,strike,False,False,2022-12-01
+3001550208,15.0,14,,15.0,13,strike,False,False,2022-12-01
+3001550209,15.0,18,,15.0,14,strike,False,False,2022-12-01
+3001553183,20.0,17,,15.0,20,circle,True,False,2022-12-01
+3001553184,20.0,17,,15.0,20,circle,True,False,2022-12-01
+3001553777,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+3001553778,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+3002546305,20.0,10,,5.0,20,circle,True,False,2022-12-01
+3002546306,20.0,12,,5.0,20,circle,True,False,2022-12-01
+3002546318,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2022-12-01
+3002546321,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2022-12-01
+3002546322,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2022-12-01
+3002546355,20.0,9,under_count: 9 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+3002547760,20.0,16,,20.0,16,circle,True,False,2022-12-01
+3002548113,5.0,20,cohort capped: 20 nearest of 138 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548114,5.0,20,cohort capped: 20 nearest of 141 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548115,5.0,20,cohort capped: 20 nearest of 137 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548116,5.0,20,cohort capped: 20 nearest of 138 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548723,5.0,11,,5.0,11,circle,False,False,2022-12-01
+3002548854,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548855,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548856,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548857,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,True,False,2022-12-01
+3002548858,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549135,5.0,18,,5.0,18,circle,False,False,2022-12-01
+3002549198,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2022-12-01
+3002549199,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549284,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549285,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549286,5.0,17,,5.0,20,circle,True,False,2022-12-01
+3002549287,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549344,10.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,True,False,2022-12-01
+3002549361,5.0,18,,5.0,20,circle,True,False,2022-12-01
+3002550056,5.0,12,,5.0,12,circle,False,False,2022-12-01
+3002550057,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550062,5.0,17,,5.0,17,circle,False,False,2022-12-01
+3002550065,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550066,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550130,5.0,10,,10.0,12,strike,True,False,2022-12-01
+3002550131,7.5,12,,10.0,12,strike,True,False,2022-12-01
+3002550132,5.0,10,,10.0,13,strike,True,False,2022-12-01
+3002550135,5.0,20,cohort capped: 20 nearest of 65 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550152,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550153,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550154,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550231,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,True,False,2022-12-01
+3002550233,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550235,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+3002550237,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550244,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550245,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550246,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550248,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550291,20.0,12,,5.0,20,circle,True,False,2022-12-01
+3002550292,20.0,9,under_count: 9 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+3002550293,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,circle,True,False,2022-12-01
+3002550294,20.0,11,,5.0,20,circle,True,False,2022-12-01
+3002550319,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+3002550451,15.0,10,,15.0,10,circle,True,False,2022-12-01
+3002550762,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2022-12-01
+3002550784,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+3002550787,15.0,14,,5.0,20,circle,True,False,2022-12-01
+3002550857,5.0,19,,5.0,14,circle,True,False,2022-12-01
+3002550859,5.0,11,,5.0,11,circle,False,False,2022-12-01
+3002550861,5.0,10,,7.5,12,strike,True,False,2022-12-01
+3002550989,5.0,17,,5.0,12,circle,True,False,2022-12-01
+3002551173,5.0,20,cohort capped: 20 nearest of 71 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551174,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551177,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551180,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551181,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551185,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2022-12-01
+3002551305,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,11,circle,True,False,2022-12-01
+3002551306,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,11,circle,True,False,2022-12-01
+4210933868,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933869,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933870,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933871,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933872,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933873,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933874,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933875,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933876,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933879,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933880,15.0,20,,15.0,11,strike,False,False,2022-12-01
+4210933881,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933882,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933883,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933884,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933905,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933906,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933908,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933909,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933910,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933911,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933912,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933933,5.0,18,,5.0,18,circle,False,False,2022-12-01
+4210933934,5.0,18,,5.0,18,circle,False,False,2022-12-01
+4210933935,5.0,19,,5.0,19,circle,False,False,2022-12-01
+4210933936,5.0,20,,5.0,20,circle,False,False,2022-12-01
+4210933937,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933938,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933939,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2022-12-01
+4210933953,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,10,circle,True,False,2022-12-01
+4210933970,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2022-12-01
+4230132307,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135274,7.5,20,cohort capped: 20 nearest of 25 pool wells,7.5,20,circle,False,False,2022-12-01
+4230135522,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135523,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135527,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135645,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135652,5.0,20,cohort capped: 20 nearest of 67 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135654,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135655,5.0,14,,5.0,14,circle,False,False,2022-12-01
+4230135657,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135789,15.0,12,,5.0,20,circle,True,False,2022-12-01
+4230135790,15.0,11,,5.0,20,circle,True,False,2022-12-01
+4230135791,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135792,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135793,15.0,12,,5.0,20,circle,True,False,2022-12-01
+4230135794,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135795,15.0,11,,5.0,20,circle,True,False,2022-12-01
+4230135796,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135847,20.0,3,under_count: 3 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135866,20.0,9,under_count: 9 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4230135894,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135895,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135896,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135938,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2022-12-01
+4230135941,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,True,False,2022-12-01
+4230135942,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135945,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,True,False,2022-12-01
+4230135946,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,True,False,2022-12-01
+4230135948,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,True,False,2022-12-01
+4230135955,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135956,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135958,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135960,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135961,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135980,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135981,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135982,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135983,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135984,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135986,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4230135987,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136082,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136087,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136090,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136091,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136100,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136105,7.5,20,cohort capped: 20 nearest of 29 pool wells,7.5,15,strike,False,False,2022-12-01
+4230136116,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136117,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136118,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136143,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136145,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136146,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136147,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136148,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136149,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136159,5.0,19,,5.0,19,circle,False,False,2022-12-01
+4230136160,5.0,18,,5.0,18,circle,False,False,2022-12-01
+4230136163,5.0,16,,5.0,16,circle,False,False,2022-12-01
+4230136164,5.0,16,,5.0,16,circle,False,False,2022-12-01
+4230136167,5.0,16,,5.0,16,circle,False,False,2022-12-01
+4230136168,5.0,15,,5.0,15,circle,False,False,2022-12-01
+4230136171,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136172,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136196,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136233,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136234,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136259,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136260,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136261,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136262,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136263,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136266,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136320,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136322,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136324,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136325,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136429,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136431,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136432,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136433,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136434,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136475,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136476,5.0,17,,5.0,17,circle,False,False,2022-12-01
+4230136477,5.0,20,,5.0,20,circle,False,False,2022-12-01
+4230136479,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2022-12-01
+4230136480,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939206,5.0,10,,5.0,10,circle,True,False,2022-12-01
+4238939227,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4238939228,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,16,circle,True,False,2022-12-01
+4238939625,7.5,20,cohort capped: 20 nearest of 30 pool wells,7.5,16,strike,False,False,2022-12-01
+4238939626,5.0,18,,5.0,18,circle,False,False,2022-12-01
+4238939671,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238939672,5.0,15,,5.0,15,circle,False,False,2022-12-01
+4238939673,7.5,16,,10.0,12,strike,False,False,2022-12-01
+4238939674,7.5,15,,10.0,12,strike,False,False,2022-12-01
+4238939690,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939696,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939697,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939796,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939833,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939843,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939845,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939851,7.5,10,,15.0,20,strike,False,False,2022-12-01
+4238939852,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939903,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939904,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238939906,7.5,20,cohort capped: 20 nearest of 35 pool wells,7.5,11,strike,False,False,2022-12-01
+4238939948,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939949,5.0,19,,5.0,19,circle,False,False,2022-12-01
+4238939955,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4238939974,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939977,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939978,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+4238939982,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238940008,5.0,11,,5.0,11,circle,False,False,2022-12-01
+4238940026,7.5,20,cohort capped: 20 nearest of 35 pool wells,7.5,18,strike,False,False,2022-12-01
+4238940027,5.0,11,,5.0,11,circle,False,False,2022-12-01
+4238940028,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238940073,7.5,13,,10.0,12,strike,False,False,2022-12-01
+4238940075,5.0,16,,5.0,16,circle,False,False,2022-12-01
+4238940077,5.0,16,,5.0,16,circle,False,False,2022-12-01
+4238940078,7.5,15,,15.0,20,strike,False,False,2022-12-01
+4238940088,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940091,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940173,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940175,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940198,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940216,5.0,20,,5.0,20,circle,False,False,2022-12-01
+4238940218,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238940219,5.0,13,,5.0,13,circle,False,False,2022-12-01
+4238940220,5.0,10,,5.0,10,circle,False,False,2022-12-01
+4238940221,7.5,10,,5.0,20,circle,True,False,2022-12-01
+4238940252,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,True,False,2022-12-01
+4238940256,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4238940258,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940260,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940261,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,True,False,2022-12-01
+4238940271,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,11,circle,True,False,2022-12-01
+4238940273,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,11,circle,True,False,2022-12-01
+4238940281,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940282,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940318,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940384,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4238940390,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940488,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940489,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940491,5.0,19,,5.0,19,circle,False,False,2022-12-01
+4238940513,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940551,5.0,20,cohort capped: 20 nearest of 63 pool wells,5.0,20,circle,False,False,2022-12-01
+4238940584,5.0,11,,5.0,11,circle,False,False,2022-12-01
+4247538404,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538406,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538419,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538420,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538432,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538436,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538437,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538439,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538441,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538444,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538446,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2022-12-01
+4247538458,5.0,15,,5.0,15,circle,False,False,2022-12-01
+4247538465,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538499,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538503,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538504,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538505,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538506,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538508,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538509,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538548,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538551,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538593,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538595,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2022-12-01
+4247538619,5.0,20,,5.0,20,circle,False,False,2022-12-01
+4249534830,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2022-12-01
+4249534833,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2022-12-01
+3001546738,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2023-12-01
+3001547610,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548211,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548212,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548213,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548215,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548248,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548249,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548250,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2023-12-01
+3001548579,7.5,20,cohort capped: 20 nearest of 26 pool wells,7.5,20,circle,False,False,2023-12-01
+3001548581,20.0,1,under_count: 1 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+3001549049,5.0,20,cohort capped: 20 nearest of 74 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549050,5.0,20,cohort capped: 20 nearest of 67 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549051,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549052,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549055,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549067,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549382,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549384,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549385,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549575,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549628,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549629,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549630,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549631,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549632,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2023-12-01
+3001549633,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2023-12-01
+3001553394,7.5,20,cohort capped: 20 nearest of 69 pool wells,10.0,20,strike,False,False,2023-12-01
+3001553398,5.0,11,,5.0,11,circle,False,False,2023-12-01
+3001553399,5.0,10,,5.0,10,circle,False,False,2023-12-01
+3001553419,7.5,11,,7.5,10,strike,False,False,2023-12-01
+3001553420,5.0,17,,5.0,17,circle,False,False,2023-12-01
+3001553426,5.0,10,,5.0,10,circle,False,False,2023-12-01
+3001553468,7.5,20,cohort capped: 20 nearest of 25 pool wells,10.0,15,strike,False,False,2023-12-01
+3001553469,7.5,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,True,False,2023-12-01
+3001553470,7.5,20,,10.0,10,strike,False,False,2023-12-01
+3001553471,7.5,20,cohort capped: 20 nearest of 26 pool wells,10.0,16,strike,False,False,2023-12-01
+3001553472,7.5,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,True,False,2023-12-01
+3001553795,5.0,17,,5.0,17,circle,False,False,2023-12-01
+3001553988,10.0,11,,5.0,18,circle,True,False,2023-12-01
+3001554009,5.0,17,,5.0,17,circle,False,False,2023-12-01
+3001554055,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554123,5.0,10,,5.0,10,circle,False,False,2023-12-01
+3001554124,5.0,10,,5.0,10,circle,False,False,2023-12-01
+3001554142,7.5,16,,10.0,10,strike,False,False,2023-12-01
+3001554144,7.5,20,,7.5,20,circle,False,False,2023-12-01
+3001554192,7.5,19,,7.5,19,circle,False,False,2023-12-01
+3001554304,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554324,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554326,7.5,18,,15.0,20,strike,False,False,2023-12-01
+3001554402,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554481,7.5,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,True,False,2023-12-01
+3001554645,7.5,13,,7.5,13,circle,False,False,2023-12-01
+3001554646,7.5,10,,7.5,10,circle,False,False,2023-12-01
+3001554647,7.5,14,,10.0,11,strike,False,False,2023-12-01
+3001554734,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3001554746,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554747,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554748,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3001554749,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554755,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554757,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3001554863,7.5,16,,7.5,16,circle,False,False,2023-12-01
+3001554864,7.5,16,,7.5,16,circle,False,False,2023-12-01
+3002547079,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2023-12-01
+3002547080,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,False,False,2023-12-01
+3002547082,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2023-12-01
+3002547083,5.0,20,cohort capped: 20 nearest of 63 pool wells,5.0,20,circle,False,False,2023-12-01
+3002547944,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548434,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548435,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548436,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548437,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548438,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548439,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548440,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548441,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548464,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548589,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548590,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548591,5.0,12,,5.0,12,circle,False,False,2023-12-01
+3002548592,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548597,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548598,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2023-12-01
+3002548915,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549136,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549137,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549138,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549139,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549140,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549197,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549367,5.0,20,cohort capped: 20 nearest of 100 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549368,5.0,20,cohort capped: 20 nearest of 101 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549516,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549517,5.0,20,cohort capped: 20 nearest of 76 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549518,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2023-12-01
+3002549519,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2023-12-01
+3002550104,20.0,8,under_count: 8 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+3002550105,20.0,12,,5.0,20,circle,True,False,2023-12-01
+3002550298,5.0,15,,5.0,15,circle,False,False,2023-12-01
+3002550299,5.0,13,,5.0,13,circle,False,False,2023-12-01
+3002550300,5.0,14,,5.0,14,circle,False,False,2023-12-01
+3002550301,5.0,14,,5.0,14,circle,False,False,2023-12-01
+3002550310,5.0,15,,5.0,15,circle,False,False,2023-12-01
+3002550311,5.0,14,,5.0,14,circle,False,False,2023-12-01
+3002550375,5.0,17,,5.0,17,circle,False,False,2023-12-01
+3002550783,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,14,circle,True,False,2023-12-01
+3002551392,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551393,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551616,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551617,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551618,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551668,20.0,20,,20.0,20,circle,False,False,2023-12-01
+3002551701,10.0,17,,5.0,20,circle,True,False,2023-12-01
+3002551702,15.0,20,cohort capped: 20 nearest of 88 pool wells,5.0,20,circle,True,False,2023-12-01
+3002551707,7.5,18,,5.0,20,circle,True,False,2023-12-01
+3002551708,7.5,18,,5.0,20,circle,True,False,2023-12-01
+3002551733,10.0,18,,5.0,20,circle,True,False,2023-12-01
+3002551762,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551772,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551773,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551775,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551792,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551794,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551796,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002551881,5.0,12,,5.0,20,circle,True,False,2023-12-01
+3002551952,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551953,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551954,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2023-12-01
+3002551955,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2023-12-01
+3002552008,7.5,18,,5.0,20,circle,True,False,2023-12-01
+3002552064,7.5,18,,5.0,20,circle,True,False,2023-12-01
+3002552074,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2023-12-01
+3002552075,5.0,20,,5.0,20,circle,False,False,2023-12-01
+3002552154,15.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,True,False,2023-12-01
+3002552155,15.0,20,cohort capped: 20 nearest of 111 pool wells,5.0,20,circle,True,False,2023-12-01
+3002552156,15.0,20,cohort capped: 20 nearest of 109 pool wells,5.0,20,circle,True,False,2023-12-01
+3002552158,7.5,10,,15.0,20,strike,False,False,2023-12-01
+3002552903,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,12,circle,True,False,2023-12-01
+3002553020,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2023-12-01
+3002553021,20.0,10,,5.0,20,circle,True,False,2023-12-01
+3002553022,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+3002553272,10.0,11,,15.0,12,strike,False,False,2023-12-01
+4210933988,5.0,13,,5.0,13,circle,False,False,2023-12-01
+4210933989,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2023-12-01
+4210933990,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2023-12-01
+4210933991,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2023-12-01
+4210933992,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2023-12-01
+4210933993,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2023-12-01
+4210933996,7.5,20,,7.5,20,circle,False,False,2023-12-01
+4210933997,7.5,19,,7.5,19,circle,False,False,2023-12-01
+4210934053,20.0,12,,5.0,20,circle,True,False,2023-12-01
+4210934054,20.0,13,,5.0,20,circle,True,False,2023-12-01
+4210934055,20.0,13,,5.0,20,circle,True,False,2023-12-01
+4210934056,20.0,15,,5.0,20,circle,True,False,2023-12-01
+4210934057,20.0,15,,5.0,20,circle,True,False,2023-12-01
+4210934058,20.0,14,,5.0,20,circle,True,False,2023-12-01
+4210934059,20.0,16,,5.0,20,circle,True,False,2023-12-01
+4210934102,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136393,20.0,5,under_count: 5 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136417,20.0,9,under_count: 9 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136418,15.0,12,,5.0,20,circle,True,False,2023-12-01
+4230136419,15.0,12,,5.0,20,circle,True,False,2023-12-01
+4230136452,5.0,20,cohort capped: 20 nearest of 90 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136454,5.0,20,cohort capped: 20 nearest of 90 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136455,5.0,20,cohort capped: 20 nearest of 84 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136456,5.0,20,cohort capped: 20 nearest of 79 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136457,5.0,20,cohort capped: 20 nearest of 75 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136458,5.0,20,cohort capped: 20 nearest of 91 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136459,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136460,5.0,20,cohort capped: 20 nearest of 87 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136523,15.0,10,,5.0,20,circle,True,False,2023-12-01
+4230136524,20.0,15,,5.0,20,circle,True,False,2023-12-01
+4230136525,20.0,14,,5.0,20,circle,True,False,2023-12-01
+4230136627,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136628,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136631,20.0,3,under_count: 3 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136633,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136635,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136636,5.0,20,cohort capped: 20 nearest of 81 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136678,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136726,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136727,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136728,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136729,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136732,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2023-12-01
+4230136837,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136838,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4230136840,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4238939884,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2023-12-01
+4238939893,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4238939894,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940430,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940431,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940432,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940433,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940434,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940435,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940436,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940437,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940438,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940439,5.0,16,,5.0,16,circle,False,False,2023-12-01
+4238940440,5.0,12,,5.0,12,circle,False,False,2023-12-01
+4238940441,5.0,11,,5.0,11,circle,False,False,2023-12-01
+4238940442,7.5,20,cohort capped: 20 nearest of 44 pool wells,7.5,20,strike,False,False,2023-12-01
+4238940532,5.0,12,,5.0,13,circle,True,False,2023-12-01
+4238940541,5.0,12,,5.0,12,circle,False,False,2023-12-01
+4238940546,5.0,15,,5.0,15,circle,False,False,2023-12-01
+4238940547,5.0,17,,5.0,17,circle,False,False,2023-12-01
+4238940548,5.0,19,,5.0,19,circle,False,False,2023-12-01
+4238940552,5.0,18,,5.0,18,circle,False,False,2023-12-01
+4238940553,5.0,19,,5.0,19,circle,False,False,2023-12-01
+4238940554,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940599,7.5,18,,5.0,20,circle,True,False,2023-12-01
+4238940600,7.5,18,,5.0,20,circle,True,False,2023-12-01
+4238940601,7.5,17,,5.0,20,circle,True,False,2023-12-01
+4238940603,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940604,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940605,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940631,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940638,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940639,5.0,18,,5.0,18,circle,False,False,2023-12-01
+4238940642,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940644,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940645,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940648,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940649,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940696,5.0,18,,5.0,18,circle,False,False,2023-12-01
+4238940697,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940698,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940699,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940700,5.0,18,,5.0,18,circle,False,False,2023-12-01
+4238940810,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940812,7.5,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940813,7.5,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,True,False,2023-12-01
+4238940825,5.0,14,,5.0,14,circle,False,False,2023-12-01
+4238940857,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940867,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940915,7.5,18,,5.0,12,circle,True,False,2023-12-01
+4238940917,5.0,20,cohort capped: 20 nearest of 22 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940919,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940926,5.0,12,,5.0,12,circle,False,False,2023-12-01
+4238940928,5.0,14,,5.0,14,circle,False,False,2023-12-01
+4238940967,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940968,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940969,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940970,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940976,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940977,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940978,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2023-12-01
+4238940979,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2023-12-01
+4238941021,10.0,20,cohort capped: 20 nearest of 24 pool wells,10.0,11,strike,True,False,2023-12-01
+4238941155,7.5,19,,5.0,20,circle,True,False,2023-12-01
+4238941177,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2023-12-01
+4238941440,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2023-12-01
+4238941441,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538660,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538690,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538692,5.0,20,cohort capped: 20 nearest of 36 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538693,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538694,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538695,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538696,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538697,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538715,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538717,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4247538718,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2023-12-01
+4247538741,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2023-12-01
+4247538767,5.0,20,cohort capped: 20 nearest of 65 pool wells,5.0,20,circle,False,False,2023-12-01
+4249534913,5.0,13,,5.0,13,circle,False,False,2023-12-01
+4249534925,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2023-12-01
+4249534944,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2023-12-01
+4249534948,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2023-12-01
+4249534962,5.0,13,,5.0,13,circle,False,False,2023-12-01
+3001548318,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2024-12-01
+3001548320,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2024-12-01
+3001548782,5.0,20,cohort capped: 20 nearest of 33 pool wells,5.0,20,circle,False,False,2024-12-01
+3001549432,15.0,19,,10.0,13,strike,True,False,2024-12-01
+3001549434,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001549871,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2024-12-01
+3001549872,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+3001549879,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553214,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,strike,False,False,2024-12-01
+3001553220,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,strike,False,False,2024-12-01
+3001553221,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553223,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553252,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553253,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,strike,False,False,2024-12-01
+3001553258,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553259,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,strike,False,False,2024-12-01
+3001553261,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),20.0,0,strike,False,False,2024-12-01
+3001553262,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553263,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553265,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553454,5.0,17,,5.0,17,circle,False,False,2024-12-01
+3001553558,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553762,10.0,20,cohort capped: 20 nearest of 22 pool wells,15.0,13,strike,False,False,2024-12-01
+3001553767,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553770,5.0,15,,5.0,15,circle,False,False,2024-12-01
+3001553773,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553826,7.5,14,,10.0,19,strike,False,False,2024-12-01
+3001553827,7.5,14,,10.0,19,strike,False,False,2024-12-01
+3001553836,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553839,10.0,20,cohort capped: 20 nearest of 25 pool wells,15.0,20,strike,False,False,2024-12-01
+3001553840,7.5,14,,7.5,10,strike,False,False,2024-12-01
+3001553843,7.5,12,,15.0,20,strike,False,False,2024-12-01
+3001553844,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553896,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553899,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+3001553985,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554229,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554230,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554433,5.0,20,cohort capped: 20 nearest of 128 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554434,5.0,20,cohort capped: 20 nearest of 101 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554435,5.0,20,cohort capped: 20 nearest of 98 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554436,5.0,20,cohort capped: 20 nearest of 102 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554440,5.0,20,cohort capped: 20 nearest of 112 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554441,5.0,20,cohort capped: 20 nearest of 92 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554442,5.0,20,cohort capped: 20 nearest of 112 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554443,5.0,20,cohort capped: 20 nearest of 92 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554444,5.0,20,cohort capped: 20 nearest of 89 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554445,5.0,20,cohort capped: 20 nearest of 89 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554446,5.0,20,cohort capped: 20 nearest of 93 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554447,5.0,20,cohort capped: 20 nearest of 93 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554448,5.0,20,cohort capped: 20 nearest of 81 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554489,5.0,20,cohort capped: 20 nearest of 87 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554508,5.0,20,cohort capped: 20 nearest of 85 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554509,5.0,20,cohort capped: 20 nearest of 85 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554510,5.0,20,cohort capped: 20 nearest of 95 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554511,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554512,5.0,20,cohort capped: 20 nearest of 114 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554699,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554781,7.5,15,,7.5,10,strike,False,False,2024-12-01
+3001554843,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001554846,5.0,20,,5.0,20,circle,False,False,2024-12-01
+3001554862,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2024-12-01
+3001554894,7.5,10,,10.0,10,strike,False,False,2024-12-01
+3001554895,7.5,17,,7.5,11,strike,False,False,2024-12-01
+3001554904,10.0,18,,15.0,12,strike,False,False,2024-12-01
+3001554912,7.5,13,,7.5,10,strike,False,False,2024-12-01
+3001554913,7.5,15,,7.5,11,strike,False,False,2024-12-01
+3001554914,10.0,20,cohort capped: 20 nearest of 30 pool wells,10.0,11,strike,False,False,2024-12-01
+3001554915,7.5,14,,10.0,15,strike,False,False,2024-12-01
+3001554964,7.5,20,cohort capped: 20 nearest of 23 pool wells,7.5,12,strike,False,False,2024-12-01
+3001555007,7.5,16,,10.0,15,strike,False,False,2024-12-01
+3001555030,7.5,19,,7.5,11,strike,False,False,2024-12-01
+3001555135,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555217,5.0,20,,5.0,20,circle,False,False,2024-12-01
+3001555221,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555223,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555225,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555226,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555227,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555228,5.0,20,cohort capped: 20 nearest of 25 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555233,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001555349,15.0,20,cohort capped: 20 nearest of 68 pool wells,15.0,20,circle,False,False,2024-12-01
+3001555351,15.0,20,cohort capped: 20 nearest of 62 pool wells,15.0,20,circle,False,False,2024-12-01
+3001555446,7.5,13,,7.5,13,circle,False,False,2024-12-01
+3001555496,5.0,17,,5.0,17,circle,False,False,2024-12-01
+3001555497,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001555498,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001555499,5.0,17,,5.0,17,circle,False,False,2024-12-01
+3001555511,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,19,circle,True,False,2024-12-01
+3001555512,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,19,circle,True,False,2024-12-01
+3001555536,7.5,10,,7.5,10,circle,False,False,2024-12-01
+3001555537,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),7.5,18,circle,True,False,2024-12-01
+3001555578,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555582,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555583,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555585,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555586,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555587,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555589,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555591,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555637,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555638,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555639,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555640,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555642,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555643,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+3001555717,15.0,14,,15.0,14,circle,False,False,2024-12-01
+3001555769,5.0,18,,5.0,18,circle,False,False,2024-12-01
+3001555784,5.0,10,,5.0,13,circle,True,False,2024-12-01
+3001555785,5.0,10,,5.0,13,circle,True,False,2024-12-01
+3001555786,5.0,10,,5.0,10,circle,False,False,2024-12-01
+3001555867,7.5,14,,7.5,14,circle,False,False,2024-12-01
+3001555872,7.5,20,cohort capped: 20 nearest of 31 pool wells,7.5,20,circle,False,False,2024-12-01
+3001555873,7.5,20,cohort capped: 20 nearest of 32 pool wells,7.5,20,circle,False,False,2024-12-01
+3001555884,5.0,10,,5.0,12,circle,True,False,2024-12-01
+3001555925,5.0,18,,5.0,20,circle,True,False,2024-12-01
+3001555926,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,True,False,2024-12-01
+3001555928,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,True,False,2024-12-01
+3001555987,7.5,10,,7.5,10,circle,False,False,2024-12-01
+3001555999,5.0,15,,5.0,15,circle,False,False,2024-12-01
+3001556000,5.0,15,,5.0,15,circle,False,False,2024-12-01
+3001556001,5.0,16,,5.0,16,circle,False,False,2024-12-01
+3001556002,5.0,17,,5.0,17,circle,False,False,2024-12-01
+3001556031,5.0,17,,5.0,17,circle,False,False,2024-12-01
+3001556035,5.0,20,,5.0,20,circle,False,False,2024-12-01
+3001556112,5.0,20,cohort capped: 20 nearest of 21 pool wells,5.0,20,circle,False,False,2024-12-01
+3001556328,5.0,11,,5.0,11,circle,False,False,2024-12-01
+3001556468,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,True,False,2024-12-01
+3001556475,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,True,False,2024-12-01
+3001556679,5.0,13,,5.0,13,circle,False,False,2024-12-01
+3001556680,5.0,11,,5.0,11,circle,False,False,2024-12-01
+3002549888,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2024-12-01
+3002549889,5.0,16,,5.0,16,circle,False,False,2024-12-01
+3002549890,5.0,20,cohort capped: 20 nearest of 96 pool wells,5.0,20,circle,False,False,2024-12-01
+3002550120,5.0,20,cohort capped: 20 nearest of 108 pool wells,5.0,20,circle,False,False,2024-12-01
+3002551390,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2024-12-01
+3002551758,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2024-12-01
+3002551759,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+3002551760,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552146,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552147,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552369,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552424,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552430,5.0,20,cohort capped: 20 nearest of 49 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552431,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552432,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552433,5.0,20,cohort capped: 20 nearest of 81 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552974,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552975,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2024-12-01
+3002552978,5.0,20,cohort capped: 20 nearest of 67 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553003,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553048,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553247,20.0,14,,20.0,4,strike,False,False,2024-12-01
+3002553248,20.0,14,,20.0,4,strike,False,False,2024-12-01
+3002553486,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553487,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553488,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553489,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553492,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553670,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553671,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553673,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553708,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553709,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553780,5.0,10,,5.0,10,circle,False,False,2024-12-01
+3002553781,5.0,20,cohort capped: 20 nearest of 90 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553783,5.0,20,cohort capped: 20 nearest of 95 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553784,5.0,20,cohort capped: 20 nearest of 84 pool wells,5.0,20,circle,False,False,2024-12-01
+3002553785,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+3002554063,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+3002554299,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,True,2024-12-01
+3002554322,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934111,5.0,20,cohort capped: 20 nearest of 72 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934123,5.0,20,cohort capped: 20 nearest of 73 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934128,5.0,20,cohort capped: 20 nearest of 78 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934129,5.0,20,cohort capped: 20 nearest of 71 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934130,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934132,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934134,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934159,5.0,20,cohort capped: 20 nearest of 79 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934161,5.0,20,cohort capped: 20 nearest of 86 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934162,5.0,20,cohort capped: 20 nearest of 82 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934163,5.0,20,cohort capped: 20 nearest of 81 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934164,5.0,20,cohort capped: 20 nearest of 83 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934165,5.0,20,cohort capped: 20 nearest of 83 pool wells,5.0,20,circle,False,False,2024-12-01
+4210934242,5.0,20,cohort capped: 20 nearest of 61 pool wells,5.0,20,circle,True,True,2024-12-01
+4210934244,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4210934315,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4210934316,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4210934488,5.0,13,,5.0,13,circle,False,False,2024-12-01
+4210934491,5.0,13,,5.0,13,circle,False,False,2024-12-01
+4210934492,5.0,13,,5.0,13,circle,False,False,2024-12-01
+4210934493,5.0,13,,5.0,13,circle,False,False,2024-12-01
+4230133423,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230134959,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230135710,5.0,17,,5.0,17,circle,False,False,2024-12-01
+4230135717,5.0,14,,5.0,14,circle,False,False,2024-12-01
+4230135718,5.0,17,,5.0,17,circle,False,False,2024-12-01
+4230135719,5.0,12,,5.0,12,circle,False,False,2024-12-01
+4230135720,5.0,20,cohort capped: 20 nearest of 24 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136814,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136817,5.0,20,cohort capped: 20 nearest of 69 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136818,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136819,5.0,20,cohort capped: 20 nearest of 87 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136820,5.0,20,cohort capped: 20 nearest of 74 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136821,5.0,20,cohort capped: 20 nearest of 46 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136822,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136834,5.0,20,cohort capped: 20 nearest of 32 pool wells,5.0,20,circle,False,False,2024-12-01
+4230136847,20.0,6,under_count: 6 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230136848,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230136849,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230136850,20.0,6,under_count: 6 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230136851,20.0,7,under_count: 7 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4230136928,5.0,20,cohort capped: 20 nearest of 102 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137025,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137026,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137027,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137028,5.0,20,cohort capped: 20 nearest of 68 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137029,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137030,5.0,20,cohort capped: 20 nearest of 65 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137031,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137032,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137066,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,17,circle,True,False,2024-12-01
+4230137068,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),15.0,20,strike,True,False,2024-12-01
+4230137090,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137101,5.0,20,cohort capped: 20 nearest of 127 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137102,5.0,20,cohort capped: 20 nearest of 122 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137103,5.0,10,,5.0,10,circle,False,False,2024-12-01
+4230137105,5.0,20,cohort capped: 20 nearest of 124 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137106,5.0,20,cohort capped: 20 nearest of 133 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137108,5.0,12,,5.0,12,circle,False,False,2024-12-01
+4230137109,5.0,20,cohort capped: 20 nearest of 107 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137121,5.0,20,cohort capped: 20 nearest of 45 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137224,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137226,5.0,20,cohort capped: 20 nearest of 80 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137228,5.0,20,cohort capped: 20 nearest of 55 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137229,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137230,5.0,20,cohort capped: 20 nearest of 82 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137231,5.0,20,cohort capped: 20 nearest of 72 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137249,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137250,5.0,20,cohort capped: 20 nearest of 56 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137251,5.0,18,,5.0,18,circle,False,False,2024-12-01
+4230137252,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137276,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137277,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137278,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137279,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137280,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137281,5.0,20,cohort capped: 20 nearest of 57 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137283,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137284,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,True,False,2024-12-01
+4230137285,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2024-12-01
+4230137436,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2024-12-01
+4237140494,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2024-12-01
+4237140495,5.0,20,cohort capped: 20 nearest of 43 pool wells,5.0,20,circle,False,False,2024-12-01
+4238940874,5.0,16,,5.0,20,circle,True,False,2024-12-01
+4238940875,5.0,18,,5.0,20,circle,True,False,2024-12-01
+4238940880,5.0,17,,5.0,20,circle,True,False,2024-12-01
+4238940881,5.0,20,,5.0,20,circle,False,False,2024-12-01
+4238940882,5.0,17,,5.0,20,circle,True,False,2024-12-01
+4238941012,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941014,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941016,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941017,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,True,False,2024-12-01
+4238941019,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,True,False,2024-12-01
+4238941020,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941050,7.5,20,,5.0,20,circle,True,False,2024-12-01
+4238941051,5.0,20,cohort capped: 20 nearest of 62 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941052,5.0,20,cohort capped: 20 nearest of 66 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941053,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941054,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941055,20.0,9,under_count: 9 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941056,20.0,4,under_count: 4 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941058,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941059,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941061,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941062,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941063,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941064,7.5,18,,5.0,20,circle,True,False,2024-12-01
+4238941065,5.0,10,,5.0,20,circle,True,False,2024-12-01
+4238941092,5.0,10,,5.0,10,circle,False,False,2024-12-01
+4238941118,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941131,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941139,5.0,20,cohort capped: 20 nearest of 26 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941164,5.0,13,,5.0,13,circle,False,False,2024-12-01
+4238941166,5.0,19,,5.0,19,circle,False,False,2024-12-01
+4238941167,5.0,20,cohort capped: 20 nearest of 77 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941168,5.0,20,cohort capped: 20 nearest of 79 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941172,5.0,20,cohort capped: 20 nearest of 39 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941173,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941228,10.0,14,,10.0,14,circle,False,False,2024-12-01
+4238941229,7.5,11,,7.5,11,circle,False,False,2024-12-01
+4238941230,10.0,11,,10.0,11,circle,False,False,2024-12-01
+4238941232,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941234,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941237,10.0,13,,10.0,13,circle,False,False,2024-12-01
+4238941297,5.0,20,cohort capped: 20 nearest of 31 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941298,5.0,20,cohort capped: 20 nearest of 28 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941299,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941300,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941302,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941303,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941304,5.0,20,cohort capped: 20 nearest of 29 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941305,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941307,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941309,5.0,20,cohort capped: 20 nearest of 54 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941311,5.0,20,cohort capped: 20 nearest of 67 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941313,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941315,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941317,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941319,20.0,0,under_count: 0 < min_wells 10 (extend radius / strike-biased — reviewer),5.0,20,circle,True,False,2024-12-01
+4238941320,5.0,20,cohort capped: 20 nearest of 125 pool wells,5.0,20,circle,True,True,2024-12-01
+4238941322,15.0,11,,5.0,20,circle,True,False,2024-12-01
+4238941356,5.0,20,cohort capped: 20 nearest of 104 pool wells,5.0,20,circle,True,True,2024-12-01
+4238941401,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,True,False,2024-12-01
+4238941402,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,True,False,2024-12-01
+4238941415,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941424,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941425,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941426,5.0,20,cohort capped: 20 nearest of 23 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941459,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941460,5.0,20,cohort capped: 20 nearest of 34 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941461,5.0,20,cohort capped: 20 nearest of 41 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941475,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941477,5.0,20,cohort capped: 20 nearest of 40 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941481,5.0,20,cohort capped: 20 nearest of 42 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941482,5.0,20,cohort capped: 20 nearest of 30 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941706,5.0,20,cohort capped: 20 nearest of 47 pool wells,5.0,20,circle,False,False,2024-12-01
+4238941708,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538704,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538705,5.0,20,cohort capped: 20 nearest of 38 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538761,5.0,20,cohort capped: 20 nearest of 59 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538764,5.0,20,cohort capped: 20 nearest of 60 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538795,7.5,20,cohort capped: 20 nearest of 24 pool wells,7.5,13,strike,False,False,2024-12-01
+4247538796,7.5,20,cohort capped: 20 nearest of 27 pool wells,7.5,14,strike,False,False,2024-12-01
+4247538801,5.0,20,cohort capped: 20 nearest of 27 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538813,5.0,20,cohort capped: 20 nearest of 64 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538816,5.0,20,cohort capped: 20 nearest of 70 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538914,5.0,20,cohort capped: 20 nearest of 44 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538915,5.0,20,cohort capped: 20 nearest of 58 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538931,5.0,20,cohort capped: 20 nearest of 35 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538934,5.0,20,cohort capped: 20 nearest of 37 pool wells,5.0,20,circle,False,False,2024-12-01
+4247538936,5.0,20,cohort capped: 20 nearest of 48 pool wells,5.0,20,circle,False,False,2024-12-01
+4249534979,5.0,15,,5.0,15,circle,False,False,2024-12-01
+4249534982,5.0,12,,5.0,12,circle,False,False,2024-12-01
+4249535000,5.0,20,cohort capped: 20 nearest of 50 pool wells,5.0,20,circle,False,False,2024-12-01
+4249535003,5.0,20,cohort capped: 20 nearest of 51 pool wells,5.0,20,circle,False,False,2024-12-01
+4249535006,5.0,20,cohort capped: 20 nearest of 52 pool wells,5.0,20,circle,False,False,2024-12-01
+4249535009,5.0,20,cohort capped: 20 nearest of 53 pool wells,5.0,20,circle,False,False,2024-12-01

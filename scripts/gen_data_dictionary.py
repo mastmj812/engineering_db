@@ -67,6 +67,7 @@ _CONSUMERS = {
     "curated.intel_pad_geom": "erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)",
     "curated.codev_context": "deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)",
     "curated.dev_scenario": "scripts/find_analogs.py; anduin header sync (warehouse_client/wells.py)",
+    "curated.well_neighbors": "BOX 3-D spacing features (box/spacing3d.py): backtest / hindcast terms, PUD forecasts at planned spacing (plan step 7)",
     "curated.erebor_locations": "erebor tiles/selection, land team direct GIS",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
