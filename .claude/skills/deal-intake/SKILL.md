@@ -61,6 +61,7 @@ reading guide to its sections.
 | System | What the runner does | Persists? |
 |---|---|---|
 | oilgas warehouse | SELECTs only | never |
+| C4 (SWD database, `SWD_DSN`) | SELECTs only — injector proximity + cohort exposure tables | never |
 | narvi | parcel upload, azimuth, zones, `/api/generate` PREVIEW | nothing saved (no scenario) |
 | anduin | fits wells that have NO forecast row yet; TC `compute` previews | new forecast rows only |
 | anduin — short-history transfer (ON by default) | overwrites the short wells' **unlocked** forecast rows with cohort-transfer rows | **yes — listed per bench in the dossier** |
@@ -75,6 +76,13 @@ type curves and the narvi scenarios happens only at gate 8 (`handoff --apply`).
 ## Prerequisites
 
 - engineering_db `.venv` with `requirements-dealintake.txt` installed.
+- C4 (Phillip's SWD database) reachable: `SWD_DSN` in `.env`, else the sibling
+  `c4/.env` is read; `c4/start.cmd` brings its Postgres up. Optional: without
+  it the dossier states "SWD context unavailable" and everything else runs.
+  The SWD section (config `swd:`) is context — injectors within the radius of
+  our sticks with vertical standoff, and cohort wells that are both poor and
+  exposed (`SUSPECT`) — never a selection or a multiplier (Toucan 2026-10-06:
+  exposure did not predict BS2_S performance).
 - narvi backend on :8078 (`NARVI_URL` to override); anduin on :8000
   (`ANDUIN_URL`). anduin auth = the token `.\di login` keeps in the Windows
   Credential Manager (`ANDUIN_EMAIL` / `ANDUIN_PASSWORD` in the environment
