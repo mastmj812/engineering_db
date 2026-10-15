@@ -150,11 +150,22 @@ BOX (schema `box`, app-owned; the ETL never touches it) forecasts every in-exten
 workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX re-runs on top of the reloaded
 `intel_locations` / `reconciled_inventory`. Every write below needs its own explicit go, separate from the reload's.
 
-1. **Analog pool well set.** `build` reads the gate-1 well set (`docs/box/step1-2026-10-06/wells_final_WCA.csv`,
-   frozen 2026-10-06). New producers only enter the pool through a refreshed set (`--wells <dir>`).
-   **D84 (decided 2026-10-15): refresh = bench QC + the class rule of record** (`scripts/box_bench_qc.py`,
-   `scripts/box_apply_rule.py`) **on NEW wells only, no calibration cards.** The new-wells-only tooling is not built yet;
-   until it is, run on the frozen set and say so in the run notes.
+1. **Analog pool well set — D84 refresh (read-only, ~1 min).** `build` reads a `wells_final_WCA.csv` directory. New
+   producers enter the pool only through a refreshed set: bench QC + the class rule of record
+   (`box/bench_qc.py` consensus detector, `box/qc_rule.py`) **on wells never judged before, no calibration cards**:
+   ```powershell
+   python -m scripts.box_pool_refresh --dry-run      # classify + print, write nothing
+   python -m scripts.box_pool_refresh                # writes docs/box/pool-YYYY-MM-DD/
+   ```
+   - Base defaults to the newest `docs/box/pool-*` refresh, else the gate-1 set (`docs/box/step1-2026-10-06`).
+     "New" = not in the base's `universe.csv` (the gate-1 universe was not recorded, so the first refresh reconstructs
+     it once; see `box/pool_refresh.py`). Never re-run `box_apply_rule` over the whole set: re-deciding old wells
+     churns ~1 % each way and re-litigates gate 1.
+   - The log must say `identity OK` (the base file is a byte-identical prefix of the new one; BS2_S copied unchanged).
+   - Review `docs/box/pool-YYYY-MM-DD/index.html` (map of the added wells + flag classes; ruled-out and not-re-decided
+     wells listed) and get Michael's confirmation of the added wells before the build. Watch for new
+     `uncalibrated` classes (tag kept, no cards) and new rows already in `docs/box/exclusions.csv` (dropped at load).
+   - Commit the directory, then build with `--wells docs/box/pool-YYYY-MM-DD`. The run stamps `wells_dir`.
 2. **Build (read-only, ~40 min):** from a clean, committed checkout (the run stamps the HEAD SHA; `--record` refuses a
    dirty build):
    ```powershell
