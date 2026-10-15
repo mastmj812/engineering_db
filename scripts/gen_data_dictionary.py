@@ -34,6 +34,7 @@ SCHEMAS = (
     "curated",
     "vdr",
     "box",
+    "box_econ",
     "meta",
 )
 
@@ -87,6 +88,9 @@ _CONSUMERS = {
     "box.pud_forecast_stream": "BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven",
     "box.pud_forecast_month": "BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)",
     "box.location_analog": "BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)",
+    "box_econ.box_pud_econ": "Steven's econ on BOX locations (contract, sql/61): erebor Highgrade econ screen with provenance (step 8); never read by box (D13)",
+    "box_econ.box_pud_econ_tie": "tie-out of the EUR Steven priced vs the BOX EUR: QC before any screen (step 8)",
+    "box_econ.pud_econ": "Steven's sandbox econ on Novi sticks (his table): the BOX-vs-Novi exhibit",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
 }
 
@@ -106,6 +110,8 @@ def _cadence(rel: str, kind: str) -> str:
         return "on demand per data room (scripts.load_vdr)"
     if schema == "ref":
         return "static reference"
+    if schema == "box_econ":
+        return "on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches)"
     if schema == "box":
         return "on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches)"
     if rel in _CURATED_MATVIEWS:

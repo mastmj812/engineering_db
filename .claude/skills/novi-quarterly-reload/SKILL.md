@@ -152,9 +152,9 @@ workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX 
 
 1. **Analog pool well set.** `build` reads the gate-1 well set (`docs/box/step1-2026-10-06/wells_final_WCA.csv`,
    frozen 2026-10-06). New producers only enter the pool through a refreshed set (`--wells <dir>`).
-   **How that set is refreshed each quarter is an open decision (gate 7d):** e.g. bench QC + the class rule of record
-   (`scripts/box_bench_qc.py`, `scripts/box_apply_rule.py`) on new wells only, with no calibration cards. Until it's
-   decided, run on the frozen set and say so in the run notes.
+   **D84 (decided 2026-10-15): refresh = bench QC + the class rule of record** (`scripts/box_bench_qc.py`,
+   `scripts/box_apply_rule.py`) **on NEW wells only, no calibration cards.** The new-wells-only tooling is not built yet;
+   until it is, run on the frozen set and say so in the run notes.
 2. **Build (read-only, ~40 min):** from a clean, committed checkout (the run stamps the HEAD SHA; `--record` refuses a
    dirty build):
    ```powershell
