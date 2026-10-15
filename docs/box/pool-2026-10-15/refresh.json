@@ -1,0 +1,72 @@
+{
+ "label": "pool-2026-10-15",
+ "base_dir": "docs\\box\\step1-2026-10-06",
+ "out_dir": "docs\\box\\pool-2026-10-15",
+ "built_at": "2026-10-15T08:21:17-05:00",
+ "git_sha": "8d86c9ddf0dcca43f587aa14982be93344c16852",
+ "asof": "2026-08-01",
+ "n_live": 31623,
+ "decision": "D84",
+ "card_verdicts": "none (D84)",
+ "consensus_params": {
+  "radius_ft": 7920.0,
+  "min_witness": 3,
+  "iqr_max_ft": 150.0,
+  "sits_in_ft": 120.0,
+  "own_ratio": 2.0,
+  "runner_ratio": 1.5,
+  "merge_ft": 100.0
+ },
+ "extent_id": 6,
+ "seen": {
+  "method": "reconstructed",
+  "rule": "api10 named in docs\\box\\step1-2026-10-06/*.csv, or a live producer first producing on or before 2026-08-14",
+  "fp_cut": "2026-08-14",
+  "n_named": 16956,
+  "n_fp_cut": 31611,
+  "n": 31620,
+  "n_live_fp_cut_not_named": 14664,
+  "gate1_recorded_n": 31542
+ },
+ "n_universe": 31632,
+ "summary": {
+  "n_new_any_bench": 12,
+  "added": 1,
+  "added_by_tag": {
+   "WCA_1": 1
+  },
+  "added_by_action": {
+   "keep": 1
+  },
+  "added_by_class_status": {
+   "no_evidence": 1
+  },
+  "added_in_extent": 1,
+  "added_excluded": 0,
+  "rule_out": 0,
+  "rule_out_to": {},
+  "not_rejudged": 125,
+  "drift": {
+   "rule_now_out": 122,
+   "retagged": 89,
+   "gone": 3
+  },
+  "uncalibrated_classes_new": []
+ },
+ "identity": {
+  "WCA": {
+   "base_sha256": "913e92a5f4583c51db9500963407694053f69e4e20d45acc73cc2035b98f2331",
+   "new_sha256": "2b5b71056fac57bc90f26c19b2f94c113478ae60ae8e81027ab18e44e608dd10",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 2745924,
+   "n_base_rows": 12306,
+   "n_appended": 1,
+   "n_rows": 12307
+  },
+  "BS2_S": {
+   "copied": true,
+   "sha256": "fb3daa38244294556660974e785bc6b73bf9dd0d6662dc2af73599c0f484c46e",
+   "n_rows": 4359
+  }
+ }
+}
