@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-10-12 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-10-14 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -20,7 +20,7 @@
 
 Novi unified history+forecast time series. IsForecasted=false rows duplicate raw_novi."WellMonths" actuals; IsForecasted=true rows are Novi's algorithmic decline forecast. Curated layer should filter on IsForecasted=TRUE to isolate new information.
 
-~25,429,668 rows | nightly (scripts.run_daily raw load)
+~25,477,540 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -48,7 +48,7 @@ Novi unified history+forecast time series. IsForecasted=false rows duplicate raw
 
 Novi Insights extended per-well attributes (completion intensity, cums, EURs, spacing, peak rates), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV. Primary source behind curated.wells.
 
-~95,352 rows | nightly (scripts.run_daily raw load)
+~95,414 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -223,7 +223,7 @@ Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly IN
 
 Novi Insights per-well spacing metrics (closest-well distance ft, wells in radius, avg of closest two), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV.
 
-~61,988 rows | nightly (scripts.run_daily raw load)
+~62,605 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -249,7 +249,7 @@ Novi Insights per-well spacing metrics (closest-well distance ft, wells in radiu
 
 Novi Insights well header mirror, one row per wellbore keyed API10 (some synthetic Novi APIs). Nightly full TRUNCATE + COPY from the bulk TSV (etl/novi/load.py; sync forces no_diffs=True). Column names are quoted PascalCase as shipped.
 
-~95,352 rows | nightly (scripts.run_daily raw load)
+~95,414 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -1331,7 +1331,7 @@ Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitt
 
 Per producing horizontal (api10): adjacent-bench development context at first production, for deal-intake v2 co-development-aware type-curve selection. Neighbor = any producing horizontal (any TVD-corrected formation_blueox bench, NULL -> '(unmapped)') whose stick is within 1,320 ft (geography) AND whose lateral covers >= 30% of the subject lateral when projected onto it (co-extent, not min-distance). Per neighbor bench (bench_context jsonb): counts of codev (|dfp| <= 180 d), parent (neighbor online > 180 d earlier) and child (> 180 d later) neighbors, min |dfp| days, median stick distance ft, median TVD delta ft (neighbor minus subject). Arrays codev_/parent_/child_benches list benches per relation; helper counts split same vs other bench. Constants (1,320 ft, 180 d, 30%) are baked; the runner asserts its config matches. Empty arrays on a scorable well = genuinely no neighbors (stack standalone); scorable=FALSE (no stick geometry) -> NULL context. Tiering into codev / stack_standalone / topfill_underfill is deal-specific and done by dealintake, not here. Nightly refresh. sql/47.
 
-~64,316 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)
+~64,317 rows | nightly (etl.refresh, 6/15) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.wells` | consumers: deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)
 
 | column | type | description |
 |---|---|---|
@@ -1468,7 +1468,7 @@ Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k ro
 
 TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers (e.g. Enverus-substitution mis-tags). Audit object - the override is applied downstream in curated.wells_enriched. Refreshed nightly by etl.refresh / curated.refresh_all() after producing_reference.
 
-~60,800 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
+~60,808 rows | nightly (etl.refresh, 5/15) | reads: `curated.producing_reference`
 
 | column | type | description |
 |---|---|---|
@@ -1582,7 +1582,7 @@ Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer 
 
 Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage's own blind-producer population (first prod >= that vintage's per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload's sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.
 
-~105,301 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
+~105,464 rows | nightly (etl.refresh, 14/15) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
 
 | column | type | description |
 |---|---|---|
@@ -1809,7 +1809,7 @@ Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locat
 
 Producing curated wells (first_production_date NOT NULL, delaware/midland, mapped bench), one row per api10, pre-buffered into a +/-150 ft corridor and GiST-indexed. The spatial system of record for PUD reconciliation (curated.reconciled_inventory) and the sql/23 TVD audit: realized = co-extent overlap in-corridor, same bench, TVD-guarded. Refreshed nightly by etl.refresh / curated.refresh_all().
 
-~60,869 rows | nightly (etl.refresh, 4/15) | reads: `curated.formation_blueox`, `curated.wells`
+~60,871 rows | nightly (etl.refresh, 4/15) | reads: `curated.formation_blueox`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1912,7 +1912,7 @@ Regular VIEW (no storage, always fresh): production_normalized actuals UNION ALL
 
 Novi ML P50 forecast tail (raw_novi.ForecastWellMonths, IsForecasted=TRUE, ~17M rows) JOINed to curated.wells and normalized per 1,000 ft; column-identical to production_normalized for clean UNION. Key (api10, prod_year, prod_month); MoP 1-600. Nightly refresh is gated on ForecastWellMonths source change and runs LAST.
 
-~20,416,240 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
+~20,468,816 rows | nightly (etl.refresh, 15/15) — refresh gated on source change | reads: `curated.wells`, `raw_novi.ForecastWellMonths` | consumers: anduin (Novi ML forecast overlay)
 
 | column | type | description |
 |---|---|---|
@@ -2024,7 +2024,7 @@ Novi PUD inventory reconciled against producing curated wells by co-extent overl
 
 Pre-aggregated type-curve cohorts over production_normalized: one row per (state_code, county_code, formation, completion_vintage_bucket, months_on_production), MoP 1-240. SPE percentile orientation (P10 = HIGH case, P90 = LOW; flipped 2026-07-10). Nightly etl.refresh.
 
-~182,563 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
+~182,639 rows | nightly (etl.refresh, 10/15) | reads: `curated.production_normalized` | consumers: legacy delaware_basin_eval
 
 | column | type | description |
 |---|---|---|
@@ -2056,7 +2056,7 @@ Pre-aggregated type-curve cohorts over production_normalized: one row per (state
 
 Per-well water-stream provenance: measured vs vendor-calculated water, one row per api10 in curated.production. TX RRC has no monthly well-level water -- vendors backfill a static WOR from an initial filing (water = k*oil; 83.6% of TX public-water horizontals FP>=2019 have WOR CV < 2% over mop 1-24), while operator-share months (production.is_water_proprietary) and NM C-115 water are real. Signals: water_prop_share + wor_cv over mop 1-24 (oil>0 AND water>0 months). Labels: insufficient (<6 usable months) / measured (prop_share>=0.9 OR cv>=0.15) / calculated (prop_share<=0.1 AND cv<0.05) / indeterminate. Convention 2026-08-17: FLAG-ONLY surfacing -- apps badge and filter, nothing excluded by default. Piecewise-flat re-filed WORs can escape to indeterminate/measured (known v1 limit). No state column by design -- join wells_enriched. Nightly refresh after curated.production. sql/41.
 
-~65,705 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
+~65,725 rows | nightly (etl.refresh, 8/15) | reads: `curated.production` | consumers: anduin water-stream provenance badge/filter (planned)
 
 | column | type | description |
 |---|---|---|
@@ -2073,7 +2073,7 @@ Per-well water-stream provenance: measured vs vendor-calculated water, one row p
 
 One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpacing LEFT JOINed to the latest Enverus completion event via LEFT(api14, 10) = api10; per-column source precedence is Novi preferred, Enverus fallback unless noted. Permian-wide (~90k rows). Refreshed nightly by etl.refresh / curated.refresh_all() after the vendor loads.
 
-~95,346 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
+~95,414 rows | nightly (etl.refresh, 2/15) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
 
 | column | type | description |
 |---|---|---|
@@ -2481,7 +2481,7 @@ vdr.daily joined to vdr.property on the suite well key (api10 NOT NULL rows only
 
 Basin x bench in/out of BOX scope (plan D2). member_benches = the formation_blueox codes pooled into the bench (WCA = WCA_1 + WCA_2, with WCXY as one-way evidence, D19/D20). Michael-owned: sql/54 seeds with ON CONFLICT DO NOTHING.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX batch (box/extent_report.py); Michael-owned scope list (plan D2)
 
 | column | type | description |
 |---|---|---|
@@ -2497,7 +2497,7 @@ Basin x bench in/out of BOX scope (plan D2). member_benches = the formation_blue
 
 BOX bench extents, one row per version x source. generated = lateral lines + variable buffer (D21, box/extent.py); geology_edited = the geologist's shapefile edit of a generated version (D7, parent_extent_id), with diff_stats. is_record marks the single version of record per basin x bench. geom EPSG:4326; area_sqmi planar (UTM 13N ft).
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX TC areas + PUD forecasts (plan steps 4-7); geology round-trip (scripts/box_extents_import.py)
 
 | column | type | description |
 |---|---|---|
@@ -2522,7 +2522,7 @@ BOX bench extents, one row per version x source. generated = lateral lines + var
 
 Boundary of a generated extent split by the walked step-2 ring segment whose sector it lies in: edge_class pinned/gap/hole, or bridge where the D27 development envelope bridged a gap between development trends; perf_class (12-mo oil/ft of the edge wells vs the interior median, >=0.85 strong, <0.70 rolled), buffer_ft and the rule that set it, explanation = the geology flag text. seg_no = -1 for hole rings. See sql/54, sql/56.
 
-~564 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
+~564 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: geology review of the extent edge (rule + flag per boundary piece)
 
 | column | type | description |
 |---|---|---|
@@ -2539,11 +2539,156 @@ Boundary of a generated extent split by the walked step-2 ring segment whose sec
 | `rule` | text |  |
 | `explanation` | text |  |
 
+### `box.forecast_run` (table)
+
+BOX production runs (step 7, D58/D59/D62/D63/D69): the frozen analog workup box_v2_wf at code_sha, blueox-boxfit @ engine_sha, deal-intake config version, Novi report_version, actuals through data_through. haircut = D62 walk-forward factors per stream per horizon (cum-12/24/36/48, pooled over every cutoff 2019-2024, tuning + holdout; linear between horizons, cum-48 held flat to month 600, so EUR scales by the cum-48 factor). calendar_factor = F(k) PUBLISHED, NOT APPLIED (D63: volumes are uptime-free; Steven keeps his downtime factor). disclosure = the measured hindcast bias by horizon (D59 condition 3) and the radius-class package ranges (D69) every workup states. Exactly one is_record run. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX production run provenance + D62 haircut / D63 F(k) / D69 disclosure; erebor + anduin BOX toggle (step 8)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `spec` | text |  |
+| `code_sha` | text |  |
+| `engine_sha` | text |  |
+| `dealintake_config` | integer |  |
+| `report_version` | text |  |
+| `data_through` | date |  |
+| `volumes_basis` | text |  |
+| `horizon_months` | smallint |  |
+| `haircut` | jsonb |  |
+| `calendar_factor` | jsonb |  |
+| `disclosure` | jsonb |  |
+| `extents` | jsonb |  |
+| `counts` | jsonb |  |
+| `notes` | text |  |
+| `is_record` | boolean |  |
+| `superseded_by` | bigint |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
+
+### `box.location` (table)
+
+BOX location ids (plan step 7, D67): one row per drillable location, outliving Novi stick ids (which do not carry across vintages). geom / lateral_ft = the stick as last seen; formation_blueox is part of identity (a re-benched stick becomes a new location). box_econ (Steven) keys on location_id. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d)
+
+| column | type | description |
+|---|---|---|
+| `location_id` | bigint |  |
+| `basin` | text |  |
+| `formation_blueox` | text |  |
+| `geom` | geometry(Geometry,4326) |  |
+| `lateral_ft` | double precision |  |
+| `first_seen_vintage` | text |  |
+| `last_seen_vintage` | text |  |
+| `created_at` | timestamp with time zone |  |
+| `created_by` | text |  |
+
+### `box.location_analog` (table)
+
+The named analog wells behind each covered location (the workup's provenance, D54): rank in selection order, distance (ellipse distance on a strike search), lateral, first production, transfer = carried by the short-history transfer. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `api10` | text |  |
+| `rank` | smallint |  |
+| `dist_ft` | double precision |  |
+| `lateral_ft` | double precision |  |
+| `first_production` | date |  |
+| `transfer` | boolean |  |
+| `coverage` | text |  |
+
+### `box.location_source` (table)
+
+Quarterly crosswalk: the Novi stick (report_version, stick_id) a BOX location was in each vintage. match_method seed = first load; overlap = carried from the previous vintage by co-extent overlap (rule 9; match_overlap = the share of the shorter stick); new = no predecessor. One location per stick per vintage (unique). See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX quarterly Novi stick crosswalk (step 7c writer; quarterly-reload skill)
+
+| column | type | description |
+|---|---|---|
+| `location_id` | bigint |  |
+| `report_version` | text |  |
+| `stick_id` | bigint |  |
+| `match_method` | text |  |
+| `match_overlap` | double precision |  |
+| `pad_name` | text |  |
+
+### `box.pud_forecast` (table)
+
+One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every box.bench_scope bench. coverage: covered (in-scope bench pool, validated, >= 50 % of the stick inside the record extent, analogs found); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was not accepted on, D60 - BS2_S in v1); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden). Not-covered rows carry no forecast and no volumes. Gate 7 identity: covered rows = the in-extent WCA_1 + WCA_2 universe exactly. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `stick_id` | bigint |  |
+| `basin` | text |  |
+| `bench` | text |  |
+| `formation_blueox` | text |  |
+| `recon_status` | text |  |
+| `coverage` | text |  |
+| `inside_extent` | boolean |  |
+| `extent_id` | bigint |  |
+| `pad_name` | text |  |
+| `lateral_ft` | double precision |  |
+| `completed_lateral_ft` | double precision |  |
+| `planned_spacing_ft` | double precision | D64: in-bench perpendicular gap to the nearest same-bench sticks (PUD or PDP) in the as-planned inventory; spacing_source default_880 when none. Feeds the deal-intake representative-spacing analog filter. |
+| `spacing_source` | text |  |
+| `search_mode` | text |  |
+| `radius_mi` | double precision |  |
+| `radius_class` | text | D69: 5 mi ring (analogs found within the first 5-mi ring) or past 5 mi (search expanded; D55 strike ellipse where local strike is trusted). The workup states the measured package range of the class (box.forecast_run.disclosure). |
+| `n_analogs` | integer |  |
+| `short_lateral` | boolean |  |
+| `flags` | text[] |  |
+| `workup_ref` | text | D65: the per-pad workup page this location is rendered on. |
+
+### `box.pud_forecast_month` (table)
+
+Derived monthly volumes per covered location x stream, months 1-600: exact per-month integrals (D39) of params x lateral_mult, times the D62 haircut interpolated by month. UPTIME-FREE (D63): apply F(k) from box.forecast_run.calendar_factor OR a downtime factor, never both. Sum of months = eur within 0.1 %. Regenerated from box.pud_forecast_stream. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `stream` | text |  |
+| `month_no` | smallint |  |
+| `volume` | double precision |  |
+
+### `box.pud_forecast_stream` (table)
+
+Covered locations, per stream (oil bbl, gas mcf): params = the analog cohort P50 curve per 1,000 ft of lateral (D57: deal-intake P50, labelled P50; ramp + modified-hyperbolic Arps, Di NOMINAL per year, oil / gas Di cap 4.0, Df 0.08 Delaware). lateral_mult = completed lateral / 1,000 x the D50 Cui & Cross relative efficiency when the lateral is under 7,500 ft (else 1). eur_raw = the raw 50-yr integral of params x lateral_mult (rule 6, no economic limit); eur = eur_raw x eur_haircut (the cum-48 D62 factor). cum12 / cum24 haircut-applied, uptime-free. See sql/60.
+
+~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `stream` | text |  |
+| `params` | jsonb |  |
+| `lateral_mult` | double precision |  |
+| `eur_haircut` | double precision |  |
+| `eur_raw` | double precision |  |
+| `eur` | double precision |  |
+| `eur_per_kft` | double precision |  |
+| `cum12` | double precision |  |
+| `cum24` | double precision |  |
+| `coverage` | text |  |
+
 ### `box.risk_factor` (table)
 
-BOX development-scenario factors of record (D41-D47). Estimator Poisson PML (ratio of arithmetic means), location FE (TC area; 5-mi block where a bench has no areas) + first-prod-year FE, reference = codev_stack with no same-bench parent (level reference, factor 1), 90 % cluster-bootstrap CI over 3-mi blocks. estimate = the term's own estimate; factor = the factor of record after the D45 ladder (rung 1 pair n >= 30, 2 class in bench, 3 class across benches; n_basis = wells behind the factor used). Oil / water metric = cum-12 per 1,000 ft, applied as a uniform scale of the reference curve (D43, applies_to both). Gas metric = 12-mo GOR / the D30 local level, applied through alpha on top of the oil factor (D46). Factors combine: pair x infill. pud_applicable = false for standalone (scoring actual wells only; an unparented PUD gets the reference, D44). bench '*' = pooled across benches. See sql/58.
+SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-chain method; the production forecast is box.pud_forecast (sql/60). Kept, never read by apps. BOX development-scenario factors of record (D41-D47). Estimator Poisson PML (ratio of arithmetic means), location FE (TC area; 5-mi block where a bench has no areas) + first-prod-year FE, reference = codev_stack with no same-bench parent (level reference, factor 1), 90 % cluster-bootstrap CI over 3-mi blocks. estimate = the term's own estimate; factor = the factor of record after the D45 ladder (rung 1 pair n >= 30, 2 class in bench, 3 class across benches; n_basis = wells behind the factor used). Oil / water metric = cum-12 per 1,000 ft, applied as a uniform scale of the reference curve (D43, applies_to both). Gas metric = 12-mo GOR / the D30 local level, applied through alpha on top of the oil factor (D46). Factors combine: pair x infill. pud_applicable = false for standalone (scoring actual wells only; an unparented PUD gets the reference, D44). bench '*' = pooled across benches. See sql/58.
 
-~108 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX PUD risking (plan step 7) and hindcast scoring (step 6)
+~108 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: SUPERSEDED (D66): factors of the retired factor chain; step-6 hindcast scoring only
 
 | column | type | description |
 |---|---|---|
@@ -2577,9 +2722,9 @@ BOX development-scenario factors of record (D41-D47). Estimator Poisson PML (rat
 
 ### `box.tc_area` (table)
 
-BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record, built by box/tc_area.py (contiguity-constrained Ward agglomeration of 1-mi hex cells on log 12-mo oil/ft of the D9 cohort, k by 5-fold CV on 3-mi blocks, paired 1-SE rule). The areas of one (extent_id, version) tile the extent. is_record marks the area set of record per extent. n_wells = 12-mo D9 cohort wells (fp >= 2016, lateral 6,000-13,000 ft, 12 full months) inside the area. Vintage normalized by filter only; operator/completion confounding accepted for v1. See sql/57.
+SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-chain method; the production forecast is box.pud_forecast (sql/60). Kept, never read by apps. BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record, built by box/tc_area.py (contiguity-constrained Ward agglomeration of 1-mi hex cells on log 12-mo oil/ft of the D9 cohort, k by 5-fold CV on 3-mi blocks, paired 1-SE rule). The areas of one (extent_id, version) tile the extent. is_record marks the area set of record per extent. n_wells = 12-mo D9 cohort wells (fp >= 2016, lateral 6,000-13,000 ft, 12 full months) inside the area. Vintage normalized by filter only; operator/completion confounding accepted for v1. See sql/57.
 
-~35 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX type curves per area (plan step 5), hindcast (step 6), PUD forecasts (step 7)
+~35 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: SUPERSEDED (D66): record of the retired area-curve method; step-6 hindcast comparison only
 
 | column | type | description |
 |---|---|---|
@@ -2600,9 +2745,9 @@ BOX type-curve areas (plan step 4, D9): contiguous pieces of an extent of record
 
 ### `box.tc_member` (table)
 
-Wells behind each BOX type curve (one row per curve x well). included = the well has a fit for the curve's stream; n_wells on box.type_curve = included rows. dev_scenario / parent_bench / infill = the BOX pooled-bench scenario (D42: same-pool vertical parents count as lateral infill); factor = the risk factor of record used for ref_mult; weight = actual cum-12 per 1,000 ft. See sql/58.
+SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-chain method; the production forecast is box.pud_forecast (sql/60). Kept, never read by apps. Wells behind each BOX type curve (one row per curve x well). included = the well has a fit for the curve's stream; n_wells on box.type_curve = included rows. dev_scenario / parent_bench / infill = the BOX pooled-bench scenario (D42: same-pool vertical parents count as lateral infill); factor = the risk factor of record used for ref_mult; weight = actual cum-12 per 1,000 ft. See sql/58.
 
-~22,581 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX curve provenance / review; hindcast exclusion of curve members (plan step 6)
+~22,581 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: SUPERSEDED (D66): provenance of the retired area curves
 
 | column | type | description |
 |---|---|---|
@@ -2619,9 +2764,9 @@ Wells behind each BOX type curve (one row per curve x well). included = the well
 
 ### `box.type_curve` (table)
 
-BOX type curves (plan step 5, D10/D15/D30/D32/D38-D40): one row per TC area of record x stream x version. Curve of record = the cohort MEAN per 1,000 ft of lateral (labelled mean, never P50) of the members' peak_ramp-aligned per-well forecasts, fitted by blueox-boxfit @ engine_sha. Oil / water: ramp + modified-hyperbolic Arps, Di NOMINAL per year, own Di cap per stream (oil 4.0, water 12.0), Df 0.08 (Delaware). Gas: ratio mode ln R = alpha + beta * Np (R mcf/bbl, Np cumulative oil bbl per 1,000 ft) on the oil curve; a location's local 12-mo GOR shifts alpha (D30). params = the AS-BUILT mixed-scenario cohort curve; reference-scenario curve = qo and qi x ref_mult (D43 uniform scale). EUR = raw 50-yr integral (no economic limit). Monthly volumes are exact per-month integrals of params (D39). See sql/58.
+SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-chain method; the production forecast is box.pud_forecast (sql/60). Kept, never read by apps. BOX type curves (plan step 5, D10/D15/D30/D32/D38-D40): one row per TC area of record x stream x version. Curve of record = the cohort MEAN per 1,000 ft of lateral (labelled mean, never P50) of the members' peak_ramp-aligned per-well forecasts, fitted by blueox-boxfit @ engine_sha. Oil / water: ramp + modified-hyperbolic Arps, Di NOMINAL per year, own Di cap per stream (oil 4.0, water 12.0), Df 0.08 (Delaware). Gas: ratio mode ln R = alpha + beta * Np (R mcf/bbl, Np cumulative oil bbl per 1,000 ft) on the oil curve; a location's local 12-mo GOR shifts alpha (D30). params = the AS-BUILT mixed-scenario cohort curve; reference-scenario curve = qo and qi x ref_mult (D43 uniform scale). EUR = raw 50-yr integral (no economic limit). Monthly volumes are exact per-month integrals of params (D39). See sql/58.
 
-~105 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store; app-owned, ETL never touches) | consumers: BOX hindcast (plan step 6), PUD forecasts + monthly volumes (step 7), app toggle (step 8)
+~105 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: SUPERSEDED (D66): record of the retired area-curve method; step-6 hindcast comparison only
 
 | column | type | description |
 |---|---|---|
@@ -2654,7 +2799,7 @@ BOX type curves (plan step 5, D10/D15/D30/D32/D38-D40): one row per TC area of r
 
 One row per ETL step run (source x table_name), written by etl/db.py log_etl_run: status running/success/failed, row counts, timings. Doubles as the incremental cursor for Enverus pulls (updateddate > last success) and the curated refresh gate.
 
-~2,106 rows | continuous (ETL bookkeeping)
+~2,237 rows | continuous (ETL bookkeeping)
 
 | column | type | description |
 |---|---|---|
