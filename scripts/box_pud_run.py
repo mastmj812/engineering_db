@@ -11,8 +11,8 @@ gets the box_v2 P50 per stream (box/production.fit_location); an equivalence che
 sample and requires identical monthly volumes. F(k) is calibrated exactly as the harness does (seeded 500-well training sample,
 as-of cohorts) and PUBLISHED, not applied (D63). The D62 haircut comes from the stored tuning + holdout cells.
 
-store writes box.location / location_source (first run = seed; a re-run of the same vintage reuses its ids; a NEW vintage needs the
-D73 crosswalk, not built yet, and is refused), box.forecast_run, box.pud_forecast (every universe row), pud_forecast_stream,
+store writes box.location / location_source (first run = seed; a re-run of the same vintage reuses its ids; a NEW vintage carries
+locations forward by the D73 crosswalk from the most recent earlier vintage; an older vintage than one stored is refused), box.forecast_run, box.pud_forecast (every universe row), pud_forecast_stream,
 pud_forecast_month (COPY), location_analog, all in ONE transaction, with identity checks before COMMIT (any failure rolls back).
 --record makes the run the record (the previous record is superseded). !! A store against Supabase needs Michael's go.
 """
@@ -71,16 +71,16 @@ def _git_sha() -> str:
 # ----------------------------------------------------------------------------
 
 
-def build_pool(conn: Any, workers: int) -> dict[str, Any]:
+def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS) -> dict[str, Any]:
     """The harness's pool at a production cutoff (run_fold lines: areas -> curves -> factors -> trn / sp / t_act; then
     add_analog_predictions_v2: f_oil, build_pool, U-turn legs, completed laterals)."""
-    wells, excluded = exclusions.drop(egr.load_final_sets(WELLS, ("WCA",)))
+    wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, ("WCA",)))
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
     cutoff = br._add_months(last, 1)
     asof = br._prev_month(cutoff)
     ar = hr.rebuild_areas(conn, wells, asof)
     cb = hr.rebuild_curves(conn, wells, ar, cutoff, asof, workers)
-    fx = hr.rebuild_factors(conn, cb, wells, WELLS, asof, workers)
+    fx = hr.rebuild_factors(conn, cb, wells, wells_dir, asof, workers)
     tabs = {s: trr.factor_table(fx["rf"], hr.POOL, s) for s in ("oil", "gas")}
     wca = fx["frames"][hr.POOL].reset_index(drop=True)
     trn = wca.join(hr.well_factors(wca, tabs))
@@ -228,7 +228,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     with get_connection() as conn:
         u = pr.universe(conn)
         print(f"universe {len(u)}; candidates {(u.coverage == 'covered').sum()} ({time.time() - t0:.0f} s)", flush=True)
-        P = build_pool(conn, a.workers)
+        P = build_pool(conn, a.workers, a.wells)
         print(f"pool {len(P['pool']['api10'])} wells at cutoff {P['cutoff']} (production through {P['asof']}) ({time.time() - t0:.0f} s)", flush=True)
         locs = locations(u, conn)
     res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers)
@@ -245,7 +245,7 @@ def cmd_build(a: argparse.Namespace) -> int:
             st["months"] = pr.apply_haircut(st["months_raw"], curves[s])
             st["eur_raw"], st["eur"] = float(np.sum(st["months_raw"])), float(np.sum(st["months"]))
     run = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": code_sha, "engine_sha": boxfit_sha(),
-           "dealintake_config": int(cfg.raw.get("config_version")), "report_version": sorted(set(u["report_version"])),
+           "dealintake_config": int(cfg.raw.get("config_version")), "report_version": sorted(set(u["report_version"])), "wells_dir": str(a.wells),
            "data_through": P["asof"], "cutoff": P["cutoff"], "k_areas": P["k_areas"], "n_pool": len(P["pool"]["api10"]), "n_excluded": P["n_excluded"],
            "haircut": hcut, "calendar_factor": F, "disclosure": disc, "equivalence": eq}
     used = sorted({x["api10"] for r in res for x in r.get("analogs", [])})
@@ -291,11 +291,32 @@ def cmd_store(a: argparse.Namespace) -> int:
         with conn.cursor() as cur:
             q = cur.execute
             print(f"target {q('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
-            other = q("SELECT count(*) FROM box.location_source WHERE report_version <> %s", (rv,)).fetchone()[0]
-            if other:
-                raise SystemExit("box.location already holds other vintages: the D73 crosswalk is needed (not built yet)")
+            later = q("SELECT count(*) FROM box.location_source WHERE report_version > %s", (rv,)).fetchone()[0]
+            if later:
+                raise SystemExit(f"box.location already holds vintages after {rv}: refusing to store an older vintage")
             have = dict(q("SELECT stick_id, location_id FROM box.location_source WHERE report_version = %s", (rv,)).fetchall())
+            prev_v = q("SELECT max(report_version) FROM box.location_source WHERE report_version < %s", (rv,)).fetchone()[0]
             new = u[~u["stick_id"].isin(have)]
+            n_carried = 0
+            if len(new) and prev_v is not None:
+                # D73: carry locations forward from the most recent earlier vintage; the rest of `new` become 'new' locations
+                prev = q("SELECT location_id, basin, formation_blueox, extensions.ST_AsText(geom) FROM box.location WHERE last_seen_vintage = %s",
+                         (prev_v,)).fetchall()
+                pl = pr.project_ft([w for *_, w in prev])
+                nl = pr.project_ft(list(new["wkt"]))
+                xw = pr.crosswalk([(int(p[0]), p[1], p[2], g) for p, g in zip(prev, pl, strict=True)],
+                                  [(int(r.stick_id), r.basin, r.formation_blueox, g) for r, g in zip(new.itertuples(), nl, strict=True)])
+                mv = new[new["stick_id"].astype(int).isin(xw)]
+                cur.executemany("UPDATE box.location SET geom = extensions.ST_GeomFromText(%s, 4326), lateral_ft = %s, last_seen_vintage = %s WHERE location_id = %s",
+                                [(r.wkt, float(r.ll_ft) if np.isfinite(r.ll_ft) else float(r.stick_ft), rv, xw[int(r.stick_id)][0]) for r in mv.itertuples()])
+                cur.executemany("INSERT INTO box.location_source (location_id, report_version, stick_id, match_method, match_overlap, pad_name) "
+                                "VALUES (%s, %s, %s, 'overlap', %s, %s)",
+                                [(xw[int(r.stick_id)][0], rv, int(r.stick_id), xw[int(r.stick_id)][1], r.pad_name) for r in mv.itertuples()])
+                have.update({int(s): xw[int(s)][0] for s in mv["stick_id"]})
+                n_carried = len(mv)
+                new = new[~new["stick_id"].astype(int).isin(xw)]
+                print(f"crosswalk {prev_v} -> {rv}: {n_carried} carried of {len(prev)} previous locations; {len(new)} new", flush=True)
+            method = "seed" if prev_v is None else "new"
             if len(new):
                 cur.executemany(
                     "INSERT INTO box.location (basin, formation_blueox, geom, lateral_ft, first_seen_vintage, last_seen_vintage) "
@@ -307,10 +328,10 @@ def cmd_store(a: argparse.Namespace) -> int:
                     ids.append(cur.fetchone()[0])
                     if not cur.nextset():
                         break
-                cur.executemany("INSERT INTO box.location_source (location_id, report_version, stick_id, match_method, pad_name) VALUES (%s, %s, %s, 'seed', %s)",
-                                [(lid, rv, int(r.stick_id), r.pad_name) for lid, r in zip(ids, new.itertuples(), strict=True)])
+                cur.executemany("INSERT INTO box.location_source (location_id, report_version, stick_id, match_method, pad_name) VALUES (%s, %s, %s, %s, %s)",
+                                [(lid, rv, int(r.stick_id), method, r.pad_name) for lid, r in zip(ids, new.itertuples(), strict=True)])
                 have.update(dict(zip(new["stick_id"].astype(int), ids, strict=True)))
-            print(f"locations: {len(have)} ({len(new)} new) ({time.time() - t0:.0f} s)", flush=True)
+            print(f"locations: {len(have)} ({len(new)} {method}, {n_carried} carried) ({time.time() - t0:.0f} s)", flush=True)
             rid = q("INSERT INTO box.forecast_run (spec, code_sha, engine_sha, dealintake_config, report_version, data_through, haircut, calendar_factor, "
                     "disclosure, extents, counts, notes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING run_id",
                     (pr.SPEC, run["code_sha"], run["engine_sha"], run["dealintake_config"], rv, run["data_through"],
@@ -421,6 +442,7 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--workers", type=int, default=7)
         p.add_argument("--record", action="store_true")
         p.add_argument("--docs", type=Path, default=Path("docs") / "box" / "step7c-2026-10-15")
+        p.add_argument("--wells", type=Path, default=WELLS, help="analog-pool well set (gate-1 wells_final_*.csv dir)")
     a = ap.parse_args(argv)
     if a.cmd == "build":
         return cmd_build(a)

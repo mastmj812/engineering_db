@@ -143,3 +143,43 @@ disk). Everything else (core slices, arps, forecast mop <= 24) stays, so the
 vintage keeps scoring in `intel_forecast_accuracy_vintage`. Known effect: the
 anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
 forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).
+
+## 9. BOX refresh (after step 7 verifies; plan step 7, D58 / D67 / D73 / D76)
+
+BOX (schema `box`, app-owned; the ETL never touches it) forecasts every in-extent WCA PUD with the frozen analog
+workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX re-runs on top of the reloaded
+`intel_locations` / `reconciled_inventory`. Every write below needs its own explicit go, separate from the reload's.
+
+1. **Analog pool well set.** `build` reads the gate-1 well set (`docs/box/step1-2026-10-06/wells_final_WCA.csv`,
+   frozen 2026-10-06). New producers only enter the pool through a refreshed set (`--wells <dir>`).
+   **D84 (decided 2026-10-15): refresh = bench QC + the class rule of record** (`scripts/box_bench_qc.py`,
+   `scripts/box_apply_rule.py`) **on NEW wells only, no calibration cards.** The new-wells-only tooling is not built yet;
+   until it is, run on the frozen set and say so in the run notes.
+2. **Build (read-only, ~40 min):** from a clean, committed checkout (the run stamps the HEAD SHA; `--record` refuses a
+   dirty build):
+   ```powershell
+   python -m scripts.box_pud_run build [--wells <dir>]
+   ```
+   Check the log:
+   - `universe` = the D67 count for the new vintage;
+   - the harness equivalence `max_rel_diff` is 0.0 (the build refuses otherwise);
+   - `covered with forecast` vs candidates — any shortfall is `not_covered_no_analogs` (D74), and it gets reported.
+3. **Store (WRITE to Supabase, explicit go):**
+   ```powershell
+   python -m scripts.box_pud_run store --record
+   ```
+   - The D73 crosswalk carries locations forward from the most recent earlier vintage: same basin + formation_blueox,
+     ≥ 50 % of the shorter stick within 250 ft, 1:1, greedy by share. The log prints `carried` / `new`.
+   - Storing an older vintage than one already stored is refused.
+   - Identity checks run before COMMIT: rows = universe; covered + no_analogs = the in-extent WCA_1 + WCA_2 universe;
+     600 months per stream summing to EUR.
+4. **Verify live, read-only:**
+   - one `is_record` run;
+   - coverage counts match the log;
+   - `analyst_ro` reads `box.pud_forecast_month`.
+5. **Render** the review pages (`python -m scripts.box_pud_run render`). The DB is the record; pages are renders (D80).
+6. **Steven:** the record `run_id` changed, so his `box_econ.box_pud_econ` rows for the old run stay attached to it. That
+   run can't be deleted while priced. Tell him the new run_id, and before first pricing confirm `downtime_basis` (D63 / D81).
+   Check `box_econ.box_pud_econ_tie` after he loads.
+7. **Prospective confirmation (D59 condition 1 / D70):** when the frozen cohort's horizons have data, score it with
+   `python -m scripts.box_prospective score` (definition frozen in `box/prospective.py`). Rules unchanged.

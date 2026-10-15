@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-10-14 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-10-15 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -2571,7 +2571,7 @@ BOX production runs (step 7, D58/D59/D62/D63/D69): the frozen analog workup box_
 
 BOX location ids (plan step 7, D67): one row per drillable location, outliving Novi stick ids (which do not carry across vintages). geom / lateral_ft = the stick as last seen; formation_blueox is part of identity (a re-benched stick becomes a new location). box_econ (Steven) keys on location_id. See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d)
+~33,162 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d)
 
 | column | type | description |
 |---|---|---|
@@ -2589,7 +2589,7 @@ BOX location ids (plan step 7, D67): one row per drillable location, outliving N
 
 The named analog wells behind each covered location (the workup's provenance, D54): rank in selection order, distance (ellipse distance on a strike search), lateral, first production, transfer = carried by the short-history transfer. See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)
+~35,039 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)
 
 | column | type | description |
 |---|---|---|
@@ -2607,7 +2607,7 @@ The named analog wells behind each covered location (the workup's provenance, D5
 
 Quarterly crosswalk: the Novi stick (report_version, stick_id) a BOX location was in each vintage. match_method seed = first load; overlap = carried from the previous vintage by co-extent overlap (rule 9; match_overlap = the share of the shorter stick); new = no predecessor. One location per stick per vintage (unique). See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX quarterly Novi stick crosswalk (step 7c writer; quarterly-reload skill)
+~33,162 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX quarterly Novi stick crosswalk (step 7c writer; quarterly-reload skill)
 
 | column | type | description |
 |---|---|---|
@@ -2622,7 +2622,7 @@ Quarterly crosswalk: the Novi stick (report_version, stick_id) a BOX location wa
 
 One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every box.bench_scope bench. coverage: covered (in-scope bench pool, validated, >= 50 % of the stick inside the record extent, analogs found); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was not accepted on, D60 - BS2_S in v1); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden). Not-covered rows carry no forecast and no volumes. Gate 7 identity: covered rows = the in-extent WCA_1 + WCA_2 universe exactly. See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven
+~33,162 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven
 
 | column | type | description |
 |---|---|---|
@@ -2653,7 +2653,7 @@ One row per (run, location) for the whole D67 universe: Novi PUD category (no RE
 
 Derived monthly volumes per covered location x stream, months 1-600: exact per-month integrals (D39) of params x lateral_mult, times the D62 haircut interpolated by month. UPTIME-FREE (D63): apply F(k) from box.forecast_run.calendar_factor OR a downtime factor, never both. Sum of months = eur within 0.1 %. Regenerated from box.pud_forecast_stream. See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)
+~2,314,800 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)
 
 | column | type | description |
 |---|---|---|
@@ -2667,7 +2667,7 @@ Derived monthly volumes per covered location x stream, months 1-600: exact per-m
 
 Covered locations, per stream (oil bbl, gas mcf): params = the analog cohort P50 curve per 1,000 ft of lateral (D57: deal-intake P50, labelled P50; ramp + modified-hyperbolic Arps, Di NOMINAL per year, oil / gas Di cap 4.0, Df 0.08 Delaware). lateral_mult = completed lateral / 1,000 x the D50 Cui & Cross relative efficiency when the lateral is under 7,500 ft (else 1). eur_raw = the raw 50-yr integral of params x lateral_mult (rule 6, no economic limit); eur = eur_raw x eur_haircut (the cum-48 D62 factor). cum12 / cum24 haircut-applied, uptime-free. See sql/60.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven
+~3,858 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven
 
 | column | type | description |
 |---|---|---|
@@ -2792,6 +2792,123 @@ SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-
 | `is_record` | boolean |  |
 | `created_at` | timestamp with time zone |  |
 | `created_by` | text |  |
+
+## Schema `box_econ`
+
+### `box_econ.box_pud_econ` (table)
+
+Steven's economics on BOX forecasts (contract table, plan step 7d; D13 display-only, never flows back). One row per (box.forecast_run, box.location, deck, assumption set); only covered locations of a run can be priced; a priced run cannot be deleted. Metric names and provenance mirror his sandbox box_econ.pud_econ (schema_version 1.0.0). downtime_basis states which downtime treatment priced the uptime-free BOX volumes (D63 / D81: his own factor or BOX's published F(k), never both). oil_eur / gas_eur / ll_ft = what he priced, echoed for the tie-out view. A screen like Novi's NPV columns, not authoritative economics inside this stack. See sql/61.
+
+~0 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's econ on BOX locations (contract, sql/61): erebor Highgrade econ screen with provenance (step 8); never read by box (D13)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `coverage` | text |  |
+| `deck_id` | text |  |
+| `assumption_set_id` | text |  |
+| `downtime_basis` | text | steven_downtime_factor = BOX uptime-free volumes x his own downtime factor; box_calendar_factor = x box.forecast_run.calendar_factor F(k). Required: D63 forbids applying both and the row must say which. |
+| `wti` | double precision |  |
+| `hh` | double precision |  |
+| `pv0_mm` | double precision |  |
+| `pv10_mm` | double precision |  |
+| `pv15_mm` | double precision |  |
+| `pv20_mm` | double precision |  |
+| `pv25_mm` | double precision |  |
+| `pv30_mm` | double precision |  |
+| `irr_pct` | double precision |  |
+| `roi` | double precision |  |
+| `payback_months` | double precision |  |
+| `capex_mm` | double precision |  |
+| `breakeven_wti_pv20` | double precision |  |
+| `breakeven_reason` | text |  |
+| `unpriced_reason` | text |  |
+| `oil_eur` | double precision | The oil EUR (bbl) of the BOX curve as LOADED, before any downtime factor (a downtime factor scales volumes, not the curve); the tie-out view compares it with box.pud_forecast_stream.eur. Same for gas_eur (mcf). |
+| `gas_eur` | double precision |  |
+| `ll_ft` | double precision |  |
+| `screen_pass` | boolean |  |
+| `rejection_step` | text |  |
+| `build_id` | text |  |
+| `schema_version` | text |  |
+| `git_sha` | text |  |
+| `built_at` | timestamp with time zone |  |
+| `pushed_at` | timestamp with time zone |  |
+| `pushed_by` | text |  |
+
+### `box_econ.box_pud_econ_tie` (view)
+
+Tie-out: the EUR Steven priced vs the BOX stream EUR of the same run + location (gap = priced / box - 1; eur_tie_fail beyond +-0.5 %). See sql/61.
+
+~0 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | reads: `box.pud_forecast_stream`, `box_econ.box_pud_econ` | consumers: tie-out of the EUR Steven priced vs the BOX EUR: QC before any screen (step 8)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `deck_id` | text |  |
+| `assumption_set_id` | text |  |
+| `priced_oil_eur` | double precision |  |
+| `box_oil_eur` | double precision |  |
+| `oil_eur_gap` | double precision |  |
+| `priced_gas_eur` | double precision |  |
+| `box_gas_eur` | double precision |  |
+| `gas_eur_gap` | double precision |  |
+| `eur_tie_fail` | boolean |  |
+
+### `box_econ.pud_econ` (table)
+
+Blue Ox internal stick economics (basin_study.duckdb stick_economics_latest), pushed as-is. Row = stick_id x deck_id (wti60/wti70/wti80). unique_id = Novi location id. built_at = econ run date; pushed_at = load time (UTC).
+
+~501,063 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's sandbox econ on Novi sticks (his table): the BOX-vs-Novi exhibit
+
+| column | type | description |
+|---|---|---|
+| `pushed_at` | timestamp with time zone |  |
+| `stick_id` | bigint |  |
+| `assumption_set_id` | text |  |
+| `deck_id` | text |  |
+| `wti` | double precision |  |
+| `hh` | double precision |  |
+| `pv0_mm` | double precision |  |
+| `pv10_mm` | double precision |  |
+| `pv15_mm` | double precision |  |
+| `pv20_mm` | double precision |  |
+| `pv25_mm` | double precision |  |
+| `pv30_mm` | double precision |  |
+| `irr_pct` | double precision |  |
+| `roi` | double precision |  |
+| `payback_months` | double precision |  |
+| `capex_mm` | double precision |  |
+| `breakeven_wti_pv20` | double precision |  |
+| `breakeven_reason` | text |  |
+| `bo_per_ft` | double precision |  |
+| `oil_cut` | double precision |  |
+| `ll_ft` | double precision |  |
+| `county` | text |  |
+| `cost_basin` | text |  |
+| `oil_eur` | double precision |  |
+| `gas_eur` | double precision |  |
+| `eur_tie_fail` | boolean |  |
+| `screen_pass` | boolean |  |
+| `rejection_step` | text |  |
+| `deplet_t` | text |  |
+| `recon_status` | text |  |
+| `inflation_ratio` | double precision |  |
+| `pdp_count_3mi` | double precision |  |
+| `offset_median_eur_ft` | double precision |  |
+| `operator` | text |  |
+| `zone` | text |  |
+| `unique_id` | text |  |
+| `unpriced_reason` | text |  |
+| `build_id` | text |  |
+| `schema_version` | text |  |
+| `report_version` | text |  |
+| `values_digest` | text |  |
+| `gpkg_digest` | text |  |
+| `curve_cache_digest` | text |  |
+| `git_sha` | text |  |
+| `built_at` | text |  |
 
 ## Schema `meta`
 

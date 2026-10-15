@@ -121,3 +121,26 @@ def test_bound_flags_never_change_the_fit():
     assert any(x.startswith("oil Di at bound 4.0") for x in f) and any(x.startswith("gas b at bound") for x in f)
     assert any("possible realized PUD" in x for x in f)
     assert pr.bound_flags({"oil": {"params": {"Di_nominal": 3.0, "Di_eff_1yr": 0.75, "b": 1.0}}}, near_pdp_ft=600.0) == []
+
+
+def test_crosswalk_carries_coextent_sticks_one_to_one():
+    prev = [(1, "delaware", "WCA_1", LineString([(0, 0), (10000, 0)])),
+            (2, "delaware", "WCA_1", LineString([(0, 880), (10000, 880)])),
+            (3, "delaware", "WCA_2", LineString([(0, 0), (10000, 0)]))]
+    new = [(101, "delaware", "WCA_1", LineString([(500, 60), (10500, 60)])),     # re-issued #1, shifted 60 ft + 500 ft along: carried
+           (102, "delaware", "WCA_1", LineString([(0, 440), (10000, 440)])),     # halfway between 1 and 2: > 250 ft from both, new
+           (103, "delaware", "WCA_2", LineString([(0, 10), (6000, 10)])),        # shorter re-issue of #3 (same formation): carried
+           (104, "delaware", "WCA_1", LineString([(0, 880), (2000, 880)])),      # only 20 % of #2's length but it is the SHORTER stick: carried
+           (105, "midland", "WCA_1", LineString([(0, 0), (10000, 0)]))]          # other basin: new
+    xw = pr.crosswalk(prev, new)
+    assert set(xw) == {101, 103, 104}
+    assert xw[101][0] == 1 and xw[103][0] == 3 and xw[104][0] == 2
+    assert xw[101][1] == pytest.approx((10000 + (250**2 - 60**2) ** 0.5 - 500) / 10000, rel=1e-3)  # round (polygonal) buffer cap at the far end
+
+
+def test_crosswalk_is_greedy_by_share():
+    prev = [(1, "delaware", "WCA_1", LineString([(0, 0), (10000, 0)]))]
+    new = [(201, "delaware", "WCA_1", LineString([(0, 50), (10000, 50)])),
+           (202, "delaware", "WCA_1", LineString([(4000, 100), (10000, 100)]))]  # also qualifies, but #201 shares more
+    xw = pr.crosswalk(prev, new)
+    assert xw == {201: (1, pytest.approx(1.0))}
