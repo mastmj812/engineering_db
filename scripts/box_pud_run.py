@@ -138,21 +138,53 @@ def disclosure(cells: pd.DataFrame, hcut: dict[str, Any]) -> dict[str, Any]:
             "source": "docs/box/acceptance cells (tuning + holdout), docs/box/step7a-2026-10-14/spread_by_radius.csv"}
 
 
+def nearest_by_stick(conn: Any, u: pd.DataFrame, cand: pd.DataFrame) -> dict[int, tuple[float, str] | None]:
+    """D64 nearest neighbour per candidate. Neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical
+    staggering (~130 ft TVD apart), not lateral spacing; pooling them read 11-300 ft gaps (7c first build, 2026-10-15)."""
+    out: dict[int, tuple[float, str] | None] = {}
+    for form, t in cand.groupby("formation_blueox"):
+        nb_u = u[u["formation_blueox"] == form]
+        pdp = pr.pdp_sticks(conn, [form])
+        nb_lines = pr.project_ft(list(nb_u["wkt"]) + list(pdp["wkt"]))
+        nb_ids = [f"pud:{s}" for s in nb_u["stick_id"]] + [f"pdp:{x}" for x in pdp["api10"]]
+        g = pr.nearest_gaps(pr.project_ft(list(t["wkt"])), nb_lines, [f"pud:{s}" for s in t["stick_id"]], nb_ids)
+        out.update(dict(zip(t["stick_id"].astype(int), g, strict=True)))
+    return out
+
+
+def cmd_annotate(a: argparse.Namespace) -> int:
+    """Add the D64 nearest-neighbour identity to an artifact built before locations() recorded it (read-only). Refuses unless every
+    recomputed gap equals the stored planned spacing exactly: the annotation never changes a forecast input."""
+    A = _load(a.out)
+    u, locs = A["universe"], A["locs"]
+    with get_connection() as conn:
+        near = nearest_by_stick(conn, u, u[u["coverage"] == "covered"])
+    bad = 0
+    for loc in locs:
+        nb = near[loc["stick_id"]]
+        g = None if nb is None else float(nb[0])
+        if (g is None) != (loc["spacing_ft"] is None) or (g is not None and g != loc["spacing_ft"]):
+            bad += 1
+        loc["nearest"] = None if nb is None else nb[1]
+        loc["near_pdp_ft"] = g if nb is not None and str(nb[1]).startswith("pdp:") else None
+    if bad:
+        raise SystemExit(f"{bad} recomputed gaps differ from the stored planned spacing: not annotating")
+    A["run"]["annotations"] = {"nearest_neighbour": {"code_sha": _git_sha(), "at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds")}}
+    with open(a.out / "run.pkl", "wb") as fh:
+        pickle.dump(A, fh)
+    n = sum(loc["near_pdp_ft"] is not None and loc["near_pdp_ft"] < 500 for loc in locs)
+    print(f"annotated {len(locs)} locations; every gap reproduced exactly; {n} within 500 ft of an existing same-formation producer")
+    return 0
+
+
 def locations(u: pd.DataFrame, conn: Any) -> list[dict[str, Any]]:
     """Covered candidates as harness locations: midpoint xy (UTM 13N ft), Novi planned lateral (stick length if missing; Novi PUD
     sticks are straight, so the completed lateral = the lateral), D64 planned spacing."""
     cand = u[u["coverage"] == "covered"].reset_index(drop=True)
     # D64 neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical staggering (~130 ft TVD apart), not
     # lateral spacing — pooling them read 11-300 ft "gaps" (7c first build, 2026-10-15)
-    gap_by_stick: dict[int, float | None] = {}
-    for form, t in cand.groupby("formation_blueox"):
-        nb_u = u[u["formation_blueox"] == form]
-        pdp = pr.pdp_sticks(conn, [form])
-        nb_lines = pr.project_ft(list(nb_u["wkt"]) + list(pdp["wkt"]))
-        nb_ids = [f"pud:{s}" for s in nb_u["stick_id"]] + [f"pdp:{x}" for x in pdp["api10"]]
-        g = pr.planned_gaps(pr.project_ft(list(t["wkt"])), nb_lines, [f"pud:{s}" for s in t["stick_id"]], nb_ids)
-        gap_by_stick.update(dict(zip(t["stick_id"].astype(int), g, strict=True)))
-    gaps = [gap_by_stick[int(s)] for s in cand["stick_id"]]
+    near = nearest_by_stick(conn, u, cand)
+    gaps = [None if near[int(s)] is None else near[int(s)][0] for s in cand["stick_id"]]
     x, y = dfr._xy(cand["mid_lon"], cand["mid_lat"])
     out = []
     for i, r in enumerate(cand.itertuples()):
@@ -160,7 +192,9 @@ def locations(u: pd.DataFrame, conn: Any) -> list[dict[str, Any]]:
         g = gaps[i]
         out.append({"api10": f"pud{r.stick_id}", "stick_id": int(r.stick_id), "x": float(x[i]), "y": float(y[i]), "lateral_ft": lat, "lateral_eff": lat,
                     "spacing_ft": float(g) if g is not None else None, "planned_spacing_ft": float(g) if g is not None else pr.GAP_DEFAULT_FT,
-                    "spacing_source": "neighbour_gap" if g is not None else "default_880", "fp_max": None})
+                    "spacing_source": "neighbour_gap" if g is not None else "default_880", "fp_max": None,
+                    "nearest": None if near[int(r.stick_id)] is None else near[int(r.stick_id)][1],
+                    "near_pdp_ft": float(g) if g is not None and str(near[int(r.stick_id)][1]).startswith("pdp:") else None})
     return out
 
 
@@ -299,7 +333,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                            loc["spacing_source"] if cov == "covered" else None,
                            fit["search_mode"] if srch else None, fit["radius_mi"] if srch else None,
                            pr.radius_class(fit["radius_mi"]) if srch else None, fit["n_analogs"] if srch else None,
-                           fit["short_lateral"] if cov == "covered" else None, list(fit["flags"]) if fit else [],
+                           fit["short_lateral"] if cov == "covered" else None,
+                           (list(fit["flags"]) + pr.bound_flags(fit.get("streams", {}), loc.get("near_pdp_ft") if loc else None)) if fit else [],
                            f"pad:{r.pad_name}" if cov == "covered" and r.pad_name else None))
                 if cov != "covered":
                     continue
@@ -380,7 +415,7 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("build", "store", "render"):
+    for name in ("build", "annotate", "store", "render"):
         p = sub.add_parser(name)
         p.add_argument("--out", type=Path, default=Path("runs") / "box7c")
         p.add_argument("--workers", type=int, default=7)
@@ -391,6 +426,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_build(a)
     if a.cmd == "store":
         return cmd_store(a)
+    if a.cmd == "annotate":
+        return cmd_annotate(a)
     from box import production_pages as pp
 
     return pp.render(_load(a.out), a.out, a.docs)

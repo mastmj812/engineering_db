@@ -162,7 +162,7 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
                          "radius class": pr.radius_class(fit["radius_mi"]), "analogs": fit["n_analogs"],
                          "oil EUR bbl": o["eur"], "oil EUR/kft": o["eur"] / L, "oil cum-12": float(np.sum(o["months"][:12])),
                          "gas EUR mcf": gs["eur"] if gs else np.nan, "oil Di nominal": o["params"]["Di_nominal"], "oil Di eff 1-yr": o["params"]["Di_eff_1yr"],
-                         "oil b": o["params"]["b"], "flags": "; ".join(fit["flags"])})
+                         "oil b": o["params"]["b"], "flags": "; ".join(list(fit["flags"]) + pr.bound_flags(st, loc.get("near_pdp_ft")))})
             fc.append(np.cumsum(o["months"]) / L)
             for x in fit["analogs"]:
                 an_ids.setdefault(x["api10"], []).append(x["dist_ft"])

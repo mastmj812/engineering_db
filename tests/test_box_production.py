@@ -107,3 +107,17 @@ def test_de_eff_and_radius_class():
     assert pr.de_eff_1yr(3.0, 1.0) == pytest.approx(0.75)
     assert pr.de_eff_1yr(1.0, 0.0) == pytest.approx(1 - np.exp(-1))
     assert pr.radius_class(5.0) == "5 mi ring" and pr.radius_class(7.5) == "past 5 mi"
+
+
+def test_nearest_gaps_reports_the_neighbour():
+    t = [LineString([(0, 0), (10000, 0)])]
+    nb = [LineString([(0, 880), (10000, 880)]), LineString([(0, -150), (10000, -150)])]
+    assert pr.nearest_gaps(t, nb, ["pud:1"], ["pud:2", "pdp:3000000001"]) == [(pytest.approx(150), "pdp:3000000001")]
+
+
+def test_bound_flags_never_change_the_fit():
+    st = {"oil": {"params": {"Di_nominal": 4.0, "Di_eff_1yr": 0.817, "b": 1.05}}, "gas": {"params": {"Di_nominal": 2.5, "Di_eff_1yr": 0.7, "b": 1.2}}}
+    f = pr.bound_flags(st, near_pdp_ft=150.0)
+    assert any(x.startswith("oil Di at bound 4.0") for x in f) and any(x.startswith("gas b at bound") for x in f)
+    assert any("possible realized PUD" in x for x in f)
+    assert pr.bound_flags({"oil": {"params": {"Di_nominal": 3.0, "Di_eff_1yr": 0.75, "b": 1.0}}}, near_pdp_ft=600.0) == []

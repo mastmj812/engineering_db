@@ -161,21 +161,28 @@ def perpendicular_gap(line: Any, other: Any, min_overlap: float = GAP_OVERLAP) -
     return 0.5 * (off(lo) + off(hi))
 
 
-def planned_gaps(targets: Sequence[Any], neighbours: Sequence[Any], target_ids: Sequence[Any], neighbour_ids: Sequence[Any],
-                 max_ft: float = GAP_MAX_FT) -> list[float | None]:
-    """Nearest perpendicular gap (ft) per target among neighbours (projected ft lines), excluding itself; None = none in range."""
+def nearest_gaps(targets: Sequence[Any], neighbours: Sequence[Any], target_ids: Sequence[Any], neighbour_ids: Sequence[Any],
+                 max_ft: float = GAP_MAX_FT) -> list[tuple[float, Any] | None]:
+    """(gap ft, neighbour id) of the nearest perpendicular neighbour per target (projected ft lines), excluding itself; None = none
+    in range. Ties keep the first neighbour in STRtree order."""
     tree = shapely.STRtree(list(neighbours))
-    out: list[float | None] = []
+    out: list[tuple[float, Any] | None] = []
     for t, tid in zip(targets, target_ids, strict=True):
-        best: float | None = None
+        best: tuple[float, Any] | None = None
         for j in tree.query(t.buffer(max_ft)):
             if neighbour_ids[j] == tid:
                 continue
             g = perpendicular_gap(t, neighbours[j])
-            if g is not None and 1.0 <= g <= max_ft and (best is None or g < best):
-                best = g
+            if g is not None and 1.0 <= g <= max_ft and (best is None or g < best[0]):
+                best = (g, neighbour_ids[j])
         out.append(best)
     return out
+
+
+def planned_gaps(targets: Sequence[Any], neighbours: Sequence[Any], target_ids: Sequence[Any], neighbour_ids: Sequence[Any],
+                 max_ft: float = GAP_MAX_FT) -> list[float | None]:
+    """Nearest perpendicular gap (ft) per target; None = none in range."""
+    return [None if b is None else b[0] for b in nearest_gaps(targets, neighbours, target_ids, neighbour_ids, max_ft)]
 
 
 def project_ft(wkts: Sequence[str]) -> list[Any]:
@@ -297,6 +304,25 @@ def apply_haircut(months_raw: np.ndarray, f: np.ndarray) -> np.ndarray:
         v = np.maximum(v, 0.0)
         v *= cum[-1] / v.sum()
     return v
+
+
+DI_CAP = 4.0  # rule 1: oil / gas nominal Di cap (per year)
+B_BOUNDS = (0.9, 1.2)
+
+
+def bound_flags(streams: Mapping[str, Mapping[str, Any]], near_pdp_ft: float | None = None) -> list[str]:
+    """Review flags that never change the forecast: P50 fits pinned at a parameter bound (flagged, never silently accepted), and a
+    planned gap to an existing same-formation producer under 500 ft (possible realized-but-unreconciled PUD, rule 11)."""
+    out = []
+    for s, st in streams.items():
+        p = st["params"]
+        if p["Di_nominal"] >= DI_CAP - 1e-3:
+            out.append(f"{s} Di at bound {DI_CAP:.1f}/yr nominal ({p['Di_eff_1yr']:.0%} 1-yr effective): review")
+        if p["b"] <= B_BOUNDS[0] + 1e-4 or p["b"] >= B_BOUNDS[1] - 1e-4:
+            out.append(f"{s} b at bound {p['b']:.2f}: review")
+    if near_pdp_ft is not None and near_pdp_ft < 500:
+        out.append(f"planned gap {near_pdp_ft:,.0f} ft to an existing same-formation producer: possible realized PUD (reconciliation)")
+    return out
 
 
 def radius_class(radius_mi: float) -> str:
