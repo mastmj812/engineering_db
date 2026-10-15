@@ -178,3 +178,12 @@ def test_append_keeps_crlf_and_refuses_an_unterminated_base() -> None:
         pr.append_rows(old.rstrip(b"\r\n"), rows)
     with pytest.raises(ValueError, match="lack base columns"):
         pr.append_rows(old, rows.drop(columns=["cohort"]))
+
+
+def test_hashes_do_not_depend_on_the_checkout_line_endings() -> None:
+    lf = (HEADER + BASE_ROWS).encode()
+    crlf = lf.replace(b"\n", b"\r\n")
+    rows = pd.DataFrame([{c: "" for c in HEADER.strip().split(",")} | {"api10": "4238900101"}])
+    a = pr.verify_identity(lf, pr.append_rows(lf, rows), ["4238900101"])
+    b = pr.verify_identity(crlf, pr.append_rows(crlf, rows), ["4238900101"])
+    assert (a["base_sha256"], a["new_sha256"], a["base_prefix_bytes"]) == (b["base_sha256"], b["new_sha256"], b["base_prefix_bytes"])

@@ -185,7 +185,12 @@ def append_rows(old: bytes, rows: pd.DataFrame) -> bytes:
 
 
 def sha256(b: bytes) -> str:
-    return hashlib.sha256(b).hexdigest()
+    """sha256 of the LF-normalized bytes: the same on a CRLF Windows checkout (core.autocrlf) and on the committed blob."""
+    return hashlib.sha256(_lf(b)).hexdigest()
+
+
+def _lf(b: bytes) -> bytes:
+    return b.replace(b"\r\n", b"\n")
 
 
 def verify_identity(old: bytes, new: bytes, added_api10: list[str]) -> dict[str, Any]:
@@ -199,7 +204,8 @@ def verify_identity(old: bytes, new: bytes, added_api10: list[str]) -> dict[str,
     assert list(app) == list(added_api10), "appended rows are not exactly the added wells"
     assert not set(app) & set(base_ids), "an appended api10 is already in the base"
     assert base_ids.is_unique and app.is_unique, "duplicate api10"
-    return {"base_sha256": sha256(old), "new_sha256": sha256(new), "base_prefix_bytes": len(old), "n_base_rows": len(base_ids),
+    return {"base_sha256": sha256(old), "new_sha256": sha256(new), "sha256_of": "LF-normalized bytes", "base_prefix_bytes": len(_lf(old)),
+            "n_base_rows": len(base_ids),
             "n_appended": len(app), "n_rows": len(base_ids) + len(app)}
 
 
@@ -230,7 +236,7 @@ def write_refresh(out: Path, base_dir: Path, parts: dict[str, pd.DataFrame], uni
         if src.exists():
             b = src.read_bytes()
             (out / final_name(p)).write_bytes(b)
-            assert sha256((out / final_name(p)).read_bytes()) == sha256(b)
+            assert (out / final_name(p)).read_bytes() == b
             ident[p] = {"copied": True, "sha256": sha256(b), "n_rows": b.count(_terminator(b)) - 1}
     rep = pd.concat([added.assign(refresh_class="added"), parts["rule_out"].assign(refresh_class="rule_out")], ignore_index=True)
     rep[["refresh_class"] + [c for c in REPORT_COLS if c in rep.columns]].to_csv(out / NEW_WELLS, index=False)
