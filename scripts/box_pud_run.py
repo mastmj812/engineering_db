@@ -324,7 +324,9 @@ def cmd_store(a: argparse.Namespace) -> int:
             with cur.copy("COPY box.location_analog (run_id, location_id, api10, rank, dist_ft, lateral_ft, first_production, transfer) FROM STDIN") as cp:
                 for row in an_rows:
                     cp.write_row(row)
-            print(f"rows written ({time.time() - t0:.0f} s); checking identity", flush=True)
+            for t in ("location", "location_source", "pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog"):
+                q(f"ANALYZE box.{t}")  # fresh stats before the identity queries (bulk COPY leaves them stale)
+            print(f"rows written + analyzed ({time.time() - t0:.0f} s); checking identity", flush=True)
             fails = identity(q, rid, u)
             counts = dict(q("SELECT coverage, count(*) FROM box.pud_forecast WHERE run_id = %s GROUP BY 1", (rid,)).fetchall())
             q("UPDATE box.forecast_run SET counts = %s WHERE run_id = %s", (Jsonb(counts), rid))
@@ -360,11 +362,14 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
     chk(so == cov, f"oil stream rows {so} = covered {cov}")
     sg = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'gas'", (rid,)).fetchone()[0]
     chk(sg == cov, f"gas stream rows {sg} = covered {cov}")
-    bad = q("""SELECT count(*) FROM box.pud_forecast_stream s
-               JOIN (SELECT location_id, stream, count(*) n, sum(volume) v FROM box.pud_forecast_month WHERE run_id = %s GROUP BY 1, 2) m
-                 USING (location_id, stream)
-               WHERE s.run_id = %s AND (m.n <> 600 OR abs(m.v - s.eur) > 1e-3 * s.eur)""", (rid, rid)).fetchone()[0]
-    chk(bad == 0, f"every stream has 600 months summing to its eur within 0.1 % ({bad} off)")
+    # one grouped pass over this run's months (MATERIALIZED: aggregated once, then hash-joined — a nested loop that re-aggregated
+    # per stream row ran 37 min on 4.6 M month rows in the 7c container rehearsal)
+    grp, bad = q("""WITH m AS MATERIALIZED (
+                        SELECT location_id, stream, count(*) AS n, sum(volume) AS v FROM box.pud_forecast_month WHERE run_id = %s GROUP BY 1, 2)
+                    SELECT count(*), count(*) FILTER (WHERE m.n <> 600 OR abs(m.v - s.eur) > 1e-3 * s.eur)
+                    FROM m JOIN box.pud_forecast_stream s ON s.run_id = %s AND s.location_id = m.location_id AND s.stream = m.stream""",
+                 (rid, rid)).fetchone()
+    chk(grp == so + sg and bad == 0, f"every stream has 600 months summing to its eur within 0.1 % ({grp} stream groups, {bad} off)")
     na = q("SELECT min(c), max(c) FROM (SELECT count(*) c FROM box.location_analog WHERE run_id = %s GROUP BY location_id) x", (rid,)).fetchone()
     chk(na[0] is not None and na[0] >= 3, f"every covered location has >= 3 named analogs (min {na[0]}, max {na[1]})")
     nl = q("SELECT count(DISTINCT location_id) FROM box.location_analog WHERE run_id = %s", (rid,)).fetchone()[0]
