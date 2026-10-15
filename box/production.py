@@ -75,12 +75,16 @@ WHERE il.category = 'PUD'
 ORDER BY il.stick_id
 """
 
+# D64 "PDP" = wells that have PRODUCED (first_production_date set), the same test sql/20 producing_reference applies.
+# curated.wells also carries permits, cancelled permits and spuds; counting those read 172 of the 275 7c "near a
+# producer" flags off sticks that never produced (reconciliation audit, eng_db #134, 2026-10-15).
 _PDP_SQL = """
 SELECT w.api10, extensions.ST_AsText(w.wellstick_geom)
 FROM curated.wells w
 JOIN curated.formation_blueox f ON f.api10 = w.api10
 WHERE f.basin_blueox = 'delaware' AND f.formation_blueox = ANY (%(forms)s)
   AND w.wellstick_geom IS NOT NULL AND COALESCE(w.lateral_length_ft, 0) > 1000
+  AND w.first_production_date IS NOT NULL
 """
 
 
