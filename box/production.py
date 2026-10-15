@@ -325,5 +325,45 @@ def bound_flags(streams: Mapping[str, Mapping[str, Any]], near_pdp_ft: float | N
     return out
 
 
+# ----------------------------------------------------------------------------
+# D73 quarterly crosswalk
+# ----------------------------------------------------------------------------
+
+XWALK_BUFFER_FT = 250.0  # "co-extent": the shorter stick lies within this of the other (well under the ~755-ft P10 PUD-PUD gap)
+XWALK_SHARE = 0.5  # D73: >= 50 % of the shorter stick
+
+
+def crosswalk(prev: Sequence[tuple[int, str, str, Any]], new: Sequence[tuple[int, str, str, Any]],
+              buffer_ft: float = XWALK_BUFFER_FT, min_share: float = XWALK_SHARE) -> dict[int, tuple[int, float]]:
+    """D73: new-vintage stick -> (location_id, share) when basin + formation_blueox match and >= min_share of the SHORTER stick lies
+    within buffer_ft of the other (rule 9 co-extent overlap); 1:1, greedy by share then midpoint distance. Unmatched sticks are new
+    locations; unmatched locations stop at their last_seen_vintage. prev = (location_id, basin, formation, line_ft);
+    new = (stick_id, basin, formation, line_ft), projected ft."""
+    if not prev or not new:
+        return {}
+    tree = shapely.STRtree([p[3] for p in prev])
+    cands: list[tuple[float, float, int, int]] = []
+    for sid, basin, form, line in new:
+        for j in tree.query(line.buffer(buffer_ft)):
+            lid, pb, pf, pline = prev[int(j)]
+            if pb != basin or pf != form:
+                continue
+            short, long_ = (line, pline) if line.length <= pline.length else (pline, line)
+            if short.length <= 0:
+                continue
+            share = float(shapely.intersection(short, long_.buffer(buffer_ft)).length / short.length)
+            if share >= min_share:
+                d = float(shapely.distance(line.interpolate(0.5, normalized=True), pline.interpolate(0.5, normalized=True)))
+                cands.append((-share, d, int(sid), int(lid)))
+    out: dict[int, tuple[int, float]] = {}
+    taken: set[int] = set()
+    for neg_share, _, sid, lid in sorted(cands):
+        if sid in out or lid in taken:
+            continue
+        out[sid] = (lid, -neg_share)
+        taken.add(lid)
+    return out
+
+
 def radius_class(radius_mi: float) -> str:
     return "5 mi ring" if radius_mi <= RING_MI else "past 5 mi"

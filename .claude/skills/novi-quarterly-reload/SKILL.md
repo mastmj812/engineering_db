@@ -143,3 +143,54 @@ disk). Everything else (core slices, arps, forecast mop <= 24) stays, so the
 vintage keeps scoring in `intel_forecast_accuracy_vintage`. Known effect: the
 anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
 forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).
+
+## 9. BOX refresh (after step 7 verifies; plan step 7, D58 / D67 / D73 / D76)
+
+BOX (schema `box`, app-owned; the ETL never touches it) forecasts every in-extent WCA PUD with the frozen analog
+workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX re-runs on top of the reloaded
+`intel_locations` / `reconciled_inventory`. Every write below needs its own explicit go, separate from the reload's.
+
+1. **Analog pool well set — D84 refresh (read-only, ~1 min).** `build` reads a `wells_final_WCA.csv` directory. New
+   producers enter the pool only through a refreshed set: bench QC + the class rule of record
+   (`box/bench_qc.py` consensus detector, `box/qc_rule.py`) **on wells never judged before, no calibration cards**:
+   ```powershell
+   python -m scripts.box_pool_refresh --dry-run      # classify + print, write nothing
+   python -m scripts.box_pool_refresh                # writes docs/box/pool-YYYY-MM-DD/
+   ```
+   - Base defaults to the newest `docs/box/pool-*` refresh, else the gate-1 set (`docs/box/step1-2026-10-06`).
+     "New" = not in the base's `universe.csv` (the gate-1 universe was not recorded, so the first refresh reconstructs
+     it once; see `box/pool_refresh.py`). Never re-run `box_apply_rule` over the whole set: re-deciding old wells
+     churns ~1 % each way and re-litigates gate 1.
+   - The log must say `identity OK` (the base file is a byte-identical prefix of the new one; BS2_S copied unchanged).
+   - Review `docs/box/pool-YYYY-MM-DD/index.html` (map of the added wells + flag classes; ruled-out and not-re-decided
+     wells listed) and get Michael's confirmation of the added wells before the build. Watch for new
+     `uncalibrated` classes (tag kept, no cards) and new rows already in `docs/box/exclusions.csv` (dropped at load).
+   - Commit the directory, then build with `--wells docs/box/pool-YYYY-MM-DD`. The run stamps `wells_dir`.
+2. **Build (read-only, ~40 min):** from a clean, committed checkout (the run stamps the HEAD SHA; `--record` refuses a
+   dirty build):
+   ```powershell
+   python -m scripts.box_pud_run build [--wells <dir>]
+   ```
+   Check the log:
+   - `universe` = the D67 count for the new vintage;
+   - the harness equivalence `max_rel_diff` is 0.0 (the build refuses otherwise);
+   - `covered with forecast` vs candidates — any shortfall is `not_covered_no_analogs` (D74), and it gets reported.
+3. **Store (WRITE to Supabase, explicit go):**
+   ```powershell
+   python -m scripts.box_pud_run store --record
+   ```
+   - The D73 crosswalk carries locations forward from the most recent earlier vintage: same basin + formation_blueox,
+     ≥ 50 % of the shorter stick within 250 ft, 1:1, greedy by share. The log prints `carried` / `new`.
+   - Storing an older vintage than one already stored is refused.
+   - Identity checks run before COMMIT: rows = universe; covered + no_analogs = the in-extent WCA_1 + WCA_2 universe;
+     600 months per stream summing to EUR.
+4. **Verify live, read-only:**
+   - one `is_record` run;
+   - coverage counts match the log;
+   - `analyst_ro` reads `box.pud_forecast_month`.
+5. **Render** the review pages (`python -m scripts.box_pud_run render`). The DB is the record; pages are renders (D80).
+6. **Steven:** the record `run_id` changed, so his `box_econ.box_pud_econ` rows for the old run stay attached to it. That
+   run can't be deleted while priced. Tell him the new run_id, and before first pricing confirm `downtime_basis` (D63 / D81).
+   Check `box_econ.box_pud_econ_tie` after he loads.
+7. **Prospective confirmation (D59 condition 1 / D70):** when the frozen cohort's horizons have data, score it with
+   `python -m scripts.box_prospective score` (definition frozen in `box/prospective.py`). Rules unchanged.
