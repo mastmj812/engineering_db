@@ -205,6 +205,9 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
     P = pd.DataFrame(pads).sort_values("locations", ascending=False)
     counts = u["coverage"].value_counts().rename_axis("coverage").reset_index(name="rows")
     hc_rows = [{"stream": s, **{f"cum-{k}": run["haircut"][s][k]["factor"] for k in pr.HORIZONS}} for s in pr.STREAMS]
+    if "method" in run["haircut"]:  # D92: the targets above are applied by the C1 rate shape; show what it realises
+        hc_rows += [{"stream": f"{s} realised (median)", **{f"cum-{k}": run["haircut"][s][k]["realised_median"] for k in pr.HORIZONS}}
+                    for s in pr.STREAMS]
     F_rows = [{"stream": s, **{f"F({k})": run["calendar_factor"][s]["F"][k - 1] for k in pr.HORIZONS}} for s in pr.STREAMS]
     P_link = P.assign(pad=[f"<a href='{p}'>{n}</a>" for n, p in zip(P["pad"], P["page"], strict=True)]).drop(columns=["page"])
     idx = _page("BOX production run", [
@@ -212,7 +215,8 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
         (f"<div class=meta>Built {run['built_at']} · spec {pr.SPEC} · code {run['code_sha'][:12]} · production through {run['data_through']} · "
         f"analog pool {run['n_pool']:,} WCA wells · harness equivalence {json.dumps(run['equivalence'])}.</div>"),
         "<h2>Coverage (D67 universe)</h2>", _table(counts, {}),
-        "<h2>D62 haircut factors (applied; cum-48 held to month 600)</h2>", _table(pd.DataFrame(hc_rows), {f"cum-{k}": ".3f" for k in pr.HORIZONS}),
+        ("<h2>Haircut: D62 factors (targets) and the D92 C1 realised cum factor</h2>" if "method" in run["haircut"]
+                 else "<h2>D62 haircut factors (applied; cum-48 held to month 600)</h2>"), _table(pd.DataFrame(hc_rows), {f"cum-{k}": ".3f" for k in pr.HORIZONS}),
         "<h2>D63 calendar factor F(k) (published, NOT applied)</h2>", _table(pd.DataFrame(F_rows), {f"F({k})": ".3f" for k in pr.HORIZONS}),
         disclosure_html(run, {"5 mi ring", "past 5 mi"}),
         f"<h2>Pads ({len(P)})</h2>", _linked(_table(P_link, {"oil EUR/kft median": ",.0f", "past-5-mi share": ".0%"}))])

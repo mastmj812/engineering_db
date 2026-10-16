@@ -144,3 +144,46 @@ def test_crosswalk_is_greedy_by_share():
            (202, "delaware", "WCA_1", LineString([(4000, 100), (10000, 100)]))]  # also qualifies, but #201 shares more
     xw = pr.crosswalk(prev, new)
     assert xw == {201: (1, pytest.approx(1.0))}
+
+
+_TAB = {12: {"factor": 0.943}, 24: {"factor": 0.929}, 36: {"factor": 0.916}, 48: {"factor": 0.876}}  # record run 6 oil (D62)
+
+
+def _arps_months(qi=900.0, di=2.5, b=1.0):
+    t = np.arange(pr.N_MONTHS + 1) / 12.0
+    cum = qi * 30.4375 * 12 / (di * (1 - b)) * (1 - (1 + b * di * t) ** (1 - 1 / b)) if b != 1 else qi * 365.25 / di * np.log1p(di * t)
+    return np.diff(cum)
+
+
+def test_c1_haircut_rate_never_rises_where_raw_falls():
+    """D92: the D62 linear cum factor forced a rebound at month 49 (run 6: year-4 oil 0.735 x year 5); C1 never makes a rate rise."""
+    raw = _arps_months()
+    v, _info = pr.apply_haircut_c1(raw, _TAB)
+    assert (np.diff(v) <= 1e-9).all()
+    old = pr.apply_haircut(raw, pr.haircut_curve(_TAB))
+    assert old[48] > old[47]  # the D62 artifact this replaces
+    assert v[36:48].sum() > v[48:60].sum()
+
+
+def test_c1_haircut_fits_the_cum_targets_and_holds_after_48():
+    raw = _arps_months()
+    v, info = pr.apply_haircut_c1(raw, _TAB)
+    for k, t in _TAB.items():
+        assert info["realised"][str(k)] == pytest.approx(np.cumsum(v)[k - 1] / np.cumsum(raw)[k - 1])
+        assert abs(info["realised"][str(k)] - t["factor"]) < 0.02  # least squares over 4 knots, not exact
+    g = v / raw
+    assert np.allclose(g[47:], info["g_tail"])  # flat from month 48
+    assert info["eur_factor"] == pytest.approx(v.sum() / raw.sum())
+    assert v.sum() == pytest.approx((raw * g).sum())  # rule 6: months sum to the stored EUR
+
+
+def test_c1_haircut_flat_table_is_a_constant_factor():
+    raw = _arps_months()
+    v, info = pr.apply_haircut_c1(raw, {k: {"factor": 0.9} for k in (12, 24, 36, 48)})
+    assert np.allclose(v, raw * 0.9) and info["b"] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_c1_haircut_refuses_no_early_production():
+    raw = np.r_[np.zeros(20), _arps_months()[:-20]]
+    with pytest.raises(ValueError):
+        pr.apply_haircut_c1(raw, _TAB)
