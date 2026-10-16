@@ -1,0 +1,5 @@
+pool,cutoff,construction,area_sqmi,n_good,n_rolled,hit_good,hit_rolled,tpr,fpr,j
+BS1_S,2021-01-01,pre-D27 buffered,37.22756517161611,0,0,0,0,,,
+BS1_S,2021-01-01,D27 envelope,113.02103473904272,0,0,0,0,,,
+BS1_S,2023-01-01,pre-D27 buffered,117.62701112195302,0,0,0,0,,,
+BS1_S,2023-01-01,D27 envelope,335.23560846149394,0,0,0,0,,,

@@ -1,0 +1,620 @@
+{
+ "built_at": "2026-10-16T12:28:16-05:00",
+ "git_sha": "7c9b596+dirty",
+ "asof": "2026-08-01",
+ "n_delaware_prod_hz": 31645,
+ "n_witness": 25775,
+ "verdicts": {
+  "agree": 84,
+  "reject": 41
+ },
+ "asks": [],
+ "family": "WCB",
+ "benches": [
+  "WCB_1",
+  "WCB_2"
+ ],
+ "pool_dir": [
+  "docs\\box\\pool-2026-10-15",
+  "docs\\box\\step15a-2026-10-16"
+ ],
+ "set": {
+  "WCB_1": {
+   "tagged_live": 1920,
+   "member": 1806,
+   "old_churn_kept": 14,
+   "frozen_elsewhere": 103,
+   "frozen_to": {
+    "WCA": 102,
+    "BS2_S": 1
+   },
+   "frozen_retagged_since": 8,
+   "frozen_retagged_from": {
+    "WCA_2": 7,
+    "BS2_S": 1
+   },
+   "new_ruled_out": 1,
+   "new_ruled_out_to": {
+    "WCA": 1
+   },
+   "excluded": 0,
+   "joined_from_other_tags": 4,
+   "final": 1820,
+   "final_fp_ge_2016": 1664,
+   "final_cohort": 1114,
+   "final_tvd_suspect": 10,
+   "final_witness": 1687,
+   "final_tx": 1450,
+   "final_nm": 370
+  },
+  "WCB_2": {
+   "tagged_live": 1190,
+   "member": 1181,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 12,
+   "frozen_to": {
+    "WCA": 12
+   },
+   "frozen_retagged_since": 1,
+   "frozen_retagged_from": {
+    "WCA_2": 1
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 3,
+   "final": 1181,
+   "final_fp_ge_2016": 1090,
+   "final_cohort": 757,
+   "final_tvd_suspect": 10,
+   "final_witness": 1036,
+   "final_tx": 811,
+   "final_nm": 370
+  }
+ },
+ "pooled_final": 3001,
+ "pooled_fp_ge_2016": 2754,
+ "pooled_cohort": 1871,
+ "flags": [
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 95,
+   "n_cohort": 47
+  },
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 57,
+   "n_cohort": 39
+  },
+  {
+   "swap_class": "WCB_2->WCB_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 39,
+   "n_cohort": 31
+  },
+  {
+   "swap_class": "WCB_1->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 31,
+   "n_cohort": 24
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 18,
+   "n_cohort": 11
+  },
+  {
+   "swap_class": "WCB_2->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 10,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "tvd_suspect",
+   "n": 9,
+   "n_cohort": 5
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 7,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "into WCXY band (never applied, D20; witness kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCB_1->WCC",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCB_2->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCB_2->WCB_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 3,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCB_1->BS3_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_2->WCA",
+   "direction": "out of family",
+   "standing": "into WCXY band (never applied, D20; witness kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCB_2->WCD",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_1->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCA->WCB_1",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "keep",
+   "n": 120,
+   "n_cohort": 71
+  },
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 31,
+   "n_cohort": 9
+  },
+  {
+   "swap_class": "WCA->WCB_1",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "tvd_suspect",
+   "n": 8,
+   "n_cohort": 8
+  },
+  {
+   "swap_class": "BS3_S->WCB_1",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 7,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 6,
+   "n_cohort": 4
+  },
+  {
+   "swap_class": "WCA->WCB_2",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "tvd_suspect",
+   "n": 5,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCA->WCB_2",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "keep",
+   "n": 4,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCA->WCB_1",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCA->WCB_2",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "AVA_0->WCB_2",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "AVA_1->WCB_1",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "AVA_1->WCB_2",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS2_S->WCB_1",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS3_S->WCB_2",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "OTHER->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "OTHER->WCB_2",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCC->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCB_2",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  }
+ ],
+ "lith": {
+  "WCB_1": {
+   "n": 0,
+   "to": {}
+  },
+  "WCB_2": {
+   "n": 0,
+   "to": {}
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "WCB_1",
+   "n_tags": 1165,
+   "med_tags": 16878.938109707342,
+   "n_all_flags": 1165,
+   "med_all_flags": 16846.243395719528,
+   "rel_change": -0.0019370124930436772
+  },
+  {
+   "bench": "WCB_2",
+   "n_tags": 764,
+   "med_tags": 15277.67740414997,
+   "n_all_flags": 747,
+   "med_all_flags": 15277.943976067447,
+   "rel_change": 1.74484583241874e-05
+  }
+ ],
+ "pairs": [
+  {
+   "pooling": {
+    "a": "WCB_1",
+    "b": "WCB_2",
+    "coloc_WCB_1": {
+     "n": 1114,
+     "share_within_1p5mi": 0.5368043087971275,
+     "median_nn_mi": 1.388494179766192
+    },
+    "coloc_WCB_2": {
+     "n": 757,
+     "share_within_1p5mi": 0.6169088507265522,
+     "median_nn_mi": 1.0045025712397282
+    },
+    "oil12_kft": {
+     "coef": -0.13516036727204017,
+     "ratio": 0.8735758074851037,
+     "ci90": [
+      0.8297898320334427,
+      0.919239844713858
+     ],
+     "n_blocks_both": 120,
+     "n_a": 905,
+     "n_b": 662,
+     "n_boot_ok": 400
+    },
+    "gor12": {
+     "coef": 0.2974986352316088,
+     "ratio": 1.3464865377092556,
+     "ci90": [
+      1.2814038441508524,
+      1.4284491028253914
+     ],
+     "n_blocks_both": 120,
+     "n_a": 905,
+     "n_b": 661,
+     "n_boot_ok": 400
+    },
+    "cum24_over_cum12": {
+     "coef": 0.014432080213511937,
+     "ratio": 1.0145367254934874,
+     "ci90": [
+      0.9950142576139087,
+      1.032546853536694
+     ],
+     "n_blocks_both": 110,
+     "n_a": 803,
+     "n_b": 575,
+     "n_boot_ok": 400
+    },
+    "raw": {
+     "WCB_1": {
+      "n_cohort": 1114,
+      "med_oil12_kft": 16758.89041709618,
+      "med_gor12": 4077.5817172765437,
+      "med_tvd_ft": 11133.0,
+      "med_lateral_ft": 9853.5,
+      "share_nm": 0.22262118491921004
+     },
+     "WCB_2": {
+      "n_cohort": 757,
+      "med_oil12_kft": 15270.333583208396,
+      "med_gor12": 4546.153306914852,
+      "med_tvd_ft": 11050.0,
+      "med_lateral_ft": 9851.0,
+      "share_nm": 0.2892998678996037
+     }
+    },
+    "n_ratio_blocks": 59
+   },
+   "pair_sep": {
+    "other": "WCB_2",
+    "n_hoods": 270,
+    "med_sep_ft": 282.5,
+    "p25_sep_ft": 226.0,
+    "p75_sep_ft": 350.875,
+    "share_within_100ft": 0.08518518518518518,
+    "share_inverted": 0.022222222222222223,
+    "n_tx": 184,
+    "med_sep_ft_tx": 291.5,
+    "share_within_100ft_tx": 0.07608695652173914,
+    "n_nm": 86,
+    "med_sep_ft_nm": 248.0,
+    "share_within_100ft_nm": 0.10465116279069768
+   }
+  }
+ ],
+ "pooling": {
+  "a": "WCB_1",
+  "b": "WCB_2",
+  "coloc_WCB_1": {
+   "n": 1114,
+   "share_within_1p5mi": 0.5368043087971275,
+   "median_nn_mi": 1.388494179766192
+  },
+  "coloc_WCB_2": {
+   "n": 757,
+   "share_within_1p5mi": 0.6169088507265522,
+   "median_nn_mi": 1.0045025712397282
+  },
+  "oil12_kft": {
+   "coef": -0.13516036727204017,
+   "ratio": 0.8735758074851037,
+   "ci90": [
+    0.8297898320334427,
+    0.919239844713858
+   ],
+   "n_blocks_both": 120,
+   "n_a": 905,
+   "n_b": 662,
+   "n_boot_ok": 400
+  },
+  "gor12": {
+   "coef": 0.2974986352316088,
+   "ratio": 1.3464865377092556,
+   "ci90": [
+    1.2814038441508524,
+    1.4284491028253914
+   ],
+   "n_blocks_both": 120,
+   "n_a": 905,
+   "n_b": 661,
+   "n_boot_ok": 400
+  },
+  "cum24_over_cum12": {
+   "coef": 0.014432080213511937,
+   "ratio": 1.0145367254934874,
+   "ci90": [
+    0.9950142576139087,
+    1.032546853536694
+   ],
+   "n_blocks_both": 110,
+   "n_a": 803,
+   "n_b": 575,
+   "n_boot_ok": 400
+  },
+  "raw": {
+   "WCB_1": {
+    "n_cohort": 1114,
+    "med_oil12_kft": 16758.89041709618,
+    "med_gor12": 4077.5817172765437,
+    "med_tvd_ft": 11133.0,
+    "med_lateral_ft": 9853.5,
+    "share_nm": 0.22262118491921004
+   },
+   "WCB_2": {
+    "n_cohort": 757,
+    "med_oil12_kft": 15270.333583208396,
+    "med_gor12": 4546.153306914852,
+    "med_tvd_ft": 11050.0,
+    "med_lateral_ft": 9851.0,
+    "share_nm": 0.2892998678996037
+   }
+  },
+  "n_ratio_blocks": 59
+ },
+ "pair_sep": {
+  "other": "WCB_2",
+  "n_hoods": 270,
+  "med_sep_ft": 282.5,
+  "p25_sep_ft": 226.0,
+  "p75_sep_ft": 350.875,
+  "share_within_100ft": 0.08518518518518518,
+  "share_inverted": 0.022222222222222223,
+  "n_tx": 184,
+  "med_sep_ft_tx": 291.5,
+  "share_within_100ft_tx": 0.07608695652173914,
+  "n_nm": 86,
+  "med_sep_ft_nm": 248.0,
+  "share_within_100ft_nm": 0.10465116279069768
+ },
+ "n_ratio_blocks": 59,
+ "uncalibrated_flags": 148,
+ "uncalibrated_classes": [
+  "OTHER->WCB_1",
+  "OTHER->WCB_2",
+  "WCB_1->BS3_S",
+  "WCB_1->WCB_2",
+  "WCB_1->WCC",
+  "WCB_2->WCB_1",
+  "WCB_2->WCC",
+  "WCB_2->WCD",
+  "WCC->WCB_1",
+  "WCC->WCB_2",
+  "WCD->WCB_1",
+  "WCD->WCB_2"
+ ],
+ "bench_summaries": {
+  "WCB_1": {
+   "n_prod_hz": 1920,
+   "n_tx": 1532,
+   "n_nm": 388,
+   "n_cohort": 1165,
+   "planned_share": 0.030208333333333334,
+   "planned_share_nm": 0.13917525773195877,
+   "round_tvd_share": 0.013020833333333334,
+   "sql23_disagree_share": 0.21354166666666666,
+   "cons_flag_n": 201,
+   "cons_flag_share": 0.1046875,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 16878.938109707342,
+   "border_step": {
+    "verdict": "flag",
+    "border_rel_step": 0.1651382698565793,
+    "typical_rel_step": 0.06092194713236571,
+    "max_other_rel_step": 0.0984180788777167,
+    "n_other_steps": 7
+   }
+  },
+  "WCB_2": {
+   "n_prod_hz": 1190,
+   "n_tx": 818,
+   "n_nm": 372,
+   "n_cohort": 764,
+   "planned_share": 0.05126050420168067,
+   "planned_share_nm": 0.1586021505376344,
+   "round_tvd_share": 0.020168067226890758,
+   "sql23_disagree_share": 0.1546218487394958,
+   "cons_flag_n": 84,
+   "cons_flag_share": 0.07058823529411765,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 15277.67740414997,
+   "border_step": {
+    "verdict": "no_step",
+    "border_rel_step": 0.11093231070128891,
+    "typical_rel_step": 0.09572077331252667,
+    "max_other_rel_step": 0.23575506636299626,
+    "n_other_steps": 7
+   }
+  }
+ }
+}

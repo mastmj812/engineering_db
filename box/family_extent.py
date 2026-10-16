@@ -157,7 +157,8 @@ def index_html(builds: dict[str, dict[str, Any]], ctx: dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
-def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: int = 1, gate1_dir: Path | None = None, git_sha: str = "") -> dict[str, Any]:
+def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: int = 1, gate1_dir: Path | None = None, git_sha: str = "",
+        bodies_min: int | None = None) -> dict[str, Any]:
     out.mkdir(parents=True, exist_ok=True)
     geo_dir = out / "geology"
     bp = record_params()
@@ -202,6 +203,11 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
         b["prep"].stepouts.drop(columns=["ix"]).to_csv(out / f"stepouts_{pool}.csv", index=False)
         b["holes"].drop(columns=["geom"]).to_csv(out / f"holes_{pool}.csv", index=False)
         pud_tabs[pool].assign(pool=pool).to_csv(out / f"pud_counts_{pool}.csv", index=False)
+    if bodies_min is not None:  # the owner's visual-check maps (+ their pixel frames, read back by run_edits)
+        for pool, b in builds.items():
+            v = visual_check_png(pool, df[df.pool == pool], b["extent"], sopa, out / f"visual_{pool}.png", bodies_min=bodies_min)
+            b["stats"]["n_bodies_ge_min"] = v["n_bodies"]
+            b["stats"]["evidence_inside"] = v["n_inside"]
     (out / "index.html").write_text(index_html(builds, ctx), encoding="utf-8")
     env_bt.to_csv(out / "backtest_envelope.csv", index=False)
     ctx["overlap"].to_csv(out / "overlap.csv", index=False)
@@ -221,7 +227,8 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
 # ----------------------------------------------------------------------------
 
 
-def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110, label: str = "one-body D27 extent as is") -> dict[str, Any]:
+def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110, label: str = "one-body D27 extent as is",
+                     bodies_min: int | None = None) -> dict[str, Any]:
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
@@ -264,6 +271,22 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     for g in ex.as_multi(ext_g).geoms:
         c = np.asarray(g.exterior.coords)
         ax.plot(c[:, 0], c[:, 1], color="#111827", lw=2.2)
+    n_bodies = 0
+    if bodies_min is not None and len(ev):
+        # development bodies: step-2 outline components (D23 r / c) holding >= bodies_min modern laterals; #1 = the D27 body
+        lines = list(ev["geom"])
+        o = eg.outline(lines, er.EDGE)
+        cp = eg.components(o, lines, er.EDGE)
+        cp = cp[cp["n_laterals"] >= bodies_min].reset_index(drop=True)
+        n_bodies = len(cp)
+        for rank, r in cp.iterrows():
+            g = gio.ft13_to_geology([o.geoms[int(r["comp"])]])[0]
+            c = np.asarray(g.exterior.coords)
+            col = "#7c3aed" if rank == 0 else "#db2777"
+            ax.plot(c[:, 0], c[:, 1], color=col, lw=1.3, ls="--")
+            pt = g.representative_point()
+            ax.annotate(f"body {rank + 1}: {int(r['n_laterals'])} laterals", (pt.x, pt.y), fontsize=8, color=col, weight="bold",
+                        bbox={"boxstyle": "round,pad=0.2", "fc": "white", "ec": col, "alpha": 0.8})
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(lo, hi))
     cb2 = fig.colorbar(sm, ax=ax, shrink=0.55, pad=0.06, location="left")
     cb2.set_label(">= 2016 laterals: 12-mo oil, bbl / 1,000 ft (p5-p95; black = < 12 mo)")
@@ -292,7 +315,9 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     fig.savefig(path, dpi=dpi)
     plt.close(fig)
     inside = shapely.length(shapely.intersection(np.asarray(list(ev["geom"]), dtype=object), extent_ft13)) / shapely.length(np.asarray(list(ev["geom"]), dtype=object)) >= 0.5
-    return {"pool": pool, "n_evidence": len(ev), "n_inside": int(inside.sum()), "n_outside": int((~inside).sum()), "extent_sqmi": area, "frame": frame}
+    if bodies_min is not None:
+        (path.parent / f"{path.stem}.frame.json").write_text(json.dumps({"pool": pool, "png": path.name, **frame, "bodies_min": bodies_min, "n_bodies": n_bodies}, default=float), encoding="utf-8")
+    return {"pool": pool, "n_evidence": len(ev), "n_inside": int(inside.sum()), "n_outside": int((~inside).sum()), "extent_sqmi": area, "frame": frame, "n_bodies": n_bodies}
 
 
 # ----------------------------------------------------------------------------
@@ -373,6 +398,10 @@ def apply_hand_edit(generated_ft13: Any, edit_line_geo: list[tuple[float, float]
     poly = make_valid(Polygon(ring))
     polys = [g for g in getattr(poly, "geoms", [poly]) if g.geom_type == "Polygon"]
     add = shapely.union_all(polys)
+    if add.difference(generated_ft13).area < 0.5 * add.area:
+        # the closed edit lies mostly INSIDE the current extent: a cut (owner removes that piece)
+        edited = ex.as_multi(generated_ft13.difference(add).buffer(0))
+        return edited, generated_ft13.intersection(add)
     edited = ex.as_multi(shapely.union_all([generated_ft13, add]).buffer(0))
     edited = ex.as_multi(shapely.union_all([Polygon(g.exterior) for g in edited.geoms]))  # no voids (D27)
     return edited, add.difference(generated_ft13)
@@ -394,12 +423,15 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         feat = next(x for x in gj["features"] if x["properties"].get("layer") == "extent")
         gen = ex.as_multi(eg.to_ft([shape(feat["geometry"])])[0])
         w = df[df.pool == pool]
-        tmp = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png")
-        (edit_dir / f"_frame_{pool}.png").unlink()
-        if len(ff[k]["lines"]) != 1:
-            raise ValueError(f"slide {k}: expected one freeform, found {len(ff[k]['lines'])}")
-        geo_line = emu_to_geology(ff[k]["lines"][0], ff[k]["picture"], tmp["frame"])
-        edited, _added = apply_hand_edit(gen, geo_line)
+        fj = ext_dir / f"visual_{pool}.frame.json"
+        if fj.exists():  # the frame recorded when the reviewed PNG was published
+            frame = json.loads(fj.read_text(encoding="utf-8"))
+        else:  # 15a: re-render (verified bit-identical to the reviewed PNG)
+            frame = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png")["frame"]
+            (edit_dir / f"_frame_{pool}.png").unlink()
+        edited = gen
+        for ln in ff[k]["lines"]:  # each freeform in turn: additions outside, cuts inside; no freeform = accepted as generated
+            edited, _delta = apply_hand_edit(edited, emu_to_geology(ln, ff[k]["picture"], frame))
         # shapefile in the geology round-trip format (D7 / D28) + the step-3 diff page
         params = f"hand edit by Michael 2026-10-16 ({pptx.name} slide {k}) on generated v{version}"
         gio.write_layer(edit_dir / f"BOX_{pool}_extent_v{version}_edited", "polygon", gio.ft13_to_geology([edited]), pkg.EXTENT_FIELDS,
@@ -424,7 +456,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         ig, ie = inside(gen), inside(edited)
         d1 = pt[pt.status == "D1 universe"]
         res["pools"][pool] = {
-            "slide": k, "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
+            "slide": k, "n_freeforms": len(ff[k]["lines"]), "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
             "n_parts": len(edited.geoms), "n_evidence": len(ev), "inside_generated": int(ig.sum()), "inside_edited": int(ie.sum()), "outside_edited": int((~ie).sum()),
             "d1_in_generated": int(d1["in generated"].sum()) if len(d1) else 0, "d1_in_edited": int(d1["in edited"].sum()) if len(d1) else 0,
             "outside_by_county": ev.loc[~ie, "county"].value_counts().head(8).to_dict(), "visual": str(vis["pool"]),

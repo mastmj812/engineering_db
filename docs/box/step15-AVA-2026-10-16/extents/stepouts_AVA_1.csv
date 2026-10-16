@@ -1,0 +1,88 @@
+dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,cohort,formation_blueox,perf_ratio,role,class
+42.3694100289912,NW,3001543004,BRADLEY 8 FEE #005H,Spur Energy,Eddy,2016-05-27,10819.13470115968,False,AVA_1,0.4631206036596165,"excluded: isolated test (tested, not developed)",rolled
+41.97510878130547,NW,3001543289,SHERMAN 4 FEE #015H,Spur Energy,Eddy,2016-01-05,12684.065934065937,False,AVA_1,0.5429502852583344,"excluded: isolated test (tested, not developed)",rolled
+41.2074584656325,NW,3001543386,CUSTER 16 STATE COM #001H,Spur Energy,Eddy,2016-06-27,8427.408412483039,False,AVA_1,0.36074109243292174,"excluded: isolated test (tested, not developed)",rolled
+43.92192203374314,NW,3001543387,CLYDESDALE 1 FEE #008H,Spur Energy,Eddy,2016-11-04,16147.882434621615,False,AVA_1,0.6912213654336778,"excluded: isolated test (tested, not developed)",rolled
+44.029272587311794,NW,3001543396,CLYDESDALE 1 FEE #006H,Spur Energy,Eddy,2016-11-02,17368.677905944987,False,AVA_1,0.7434783666856914,"excluded: isolated test (tested, not developed)",ok
+42.87846404212946,NW,3001543397,GRAVE DIGGER STATE COM #008H,Spur Energy,Eddy,2016-01-01,18054.302807179018,False,AVA_1,0.7728270185801479,"excluded: isolated test (tested, not developed)",ok
+43.974524596265645,NW,3001543660,CLYDESDALE 1 FEE #007H,Spur Energy,Eddy,2016-11-02,14679.596052329583,False,AVA_1,0.6283703431944045,"excluded: isolated test (tested, not developed)",rolled
+44.22881514405203,NW,3001544365,GOODMAN 22 #006H,Spur Energy,Eddy,2018-01-11,25604.83870967742,False,AVA_1,1.096032971893942,"excluded: isolated test (tested, not developed)",ok
+44.2798319910274,NW,3001544366,GOODMAN 22 #004H,Spur Energy,Eddy,2018-01-13,34454.601861427094,False,AVA_1,1.474853253394239,"excluded: isolated test (tested, not developed)",ok
+44.50749679954565,NW,3001544382,GOODMAN 22 #001H,Spur Energy,Eddy,2017-11-21,29494.80415667466,False,AVA_1,1.262545654819991,"excluded: isolated test (tested, not developed)",ok
+44.44438606699467,NW,3001544383,GOODMAN 22 #002H,Spur Energy,Eddy,2017-11-21,32282.934738548847,False,AVA_1,1.3818935281781999,"excluded: isolated test (tested, not developed)",ok
+44.09253049504033,NW,3001544670,MORRIS BOYD STATE COM #002H,Spur Energy,Eddy,2018-06-19,17687.940323249066,False,AVA_1,0.7571446170385819,"excluded: isolated test (tested, not developed)",ok
+44.3272225644276,NW,3001544685,SOUTH BOYD FEDERAL COM #018H,Spur Energy,Eddy,2018-08-30,33643.46712211785,False,AVA_1,1.4401320653792753,"excluded: isolated test (tested, not developed)",ok
+44.26968684595505,NW,3001544686,SOUTH BOYD FEDERAL COM #019H,Spur Energy,Eddy,2018-08-30,37207.78145695364,False,AVA_1,1.5927050254150572,"excluded: isolated test (tested, not developed)",ok
+43.99801234123069,NW,3001544732,MORRIS BOYD STATE COM #003H,Spur Energy,Eddy,2018-06-21,16196.392379408187,False,AVA_1,0.6932978674399467,"excluded: isolated test (tested, not developed)",rolled
+43.83922184746394,NW,3001544748,MORRIS BOYD STATE COM #005H,Spur Energy,Eddy,2018-06-21,33237.14759535655,False,AVA_1,1.4227392747624608,"excluded: isolated test (tested, not developed)",ok
+43.76703080246821,NW,3001544867,MORRIS BOYD STATE COM #006H,Spur Energy,Eddy,2018-06-22,28048.77049180328,False,AVA_1,1.2006471756638362,"excluded: isolated test (tested, not developed)",ok
+43.6572885504713,NW,3001544879,MORRIS BOYD 26 FEE COM #007H,Spur Energy,Eddy,2018-06-22,34836.18028400905,False,AVA_1,1.4911869837979004,"excluded: isolated test (tested, not developed)",ok
+44.15771473045819,NW,3001544880,SOUTH BOYD FEDERAL COM #013H,Spur Energy,Eddy,2018-08-26,19379.859387923905,False,AVA_1,0.8295683921572554,"excluded: isolated test (tested, not developed)",ok
+43.71929375562889,NW,3001545113,ROSE #002H,Spur Energy,Eddy,2018-11-13,15103.658536585366,False,AVA_1,0.6465226334766286,"excluded: isolated test (tested, not developed)",rolled
+44.56361144410879,NW,3001546010,DORAMI 33 FEDERAL COM #002H,Spur Energy,Eddy,2020-03-12,14014.14102809096,False,AVA_1,0.5998850769465703,"excluded: isolated test (tested, not developed)",rolled
+45.57413271500824,NW,3001546072,OSAGE BOYD 15 FEDERAL COM #014H,Spur Energy,Eddy,2020-12-04,13987.797437461866,False,AVA_1,0.59875742118373,"excluded: isolated test (tested, not developed)",rolled
+45.73236656439944,NW,3001546216,OSAGE BOYD 15 FEDERAL COM #009H,Spur Energy,Eddy,2020-12-03,27109.97596153846,False,AVA_1,1.1604614212964388,"excluded: isolated test (tested, not developed)",ok
+43.91549805380641,NW,3001546624,SHELBY 23 #002H,Spur Energy,Eddy,2020-07-21,18158.305680265472,False,AVA_1,0.7772789340702998,"excluded: isolated test (tested, not developed)",ok
+43.9136822869205,NW,3001546625,SHELBY 23 #003H,Spur Energy,Eddy,2020-07-22,19637.529137529134,False,AVA_1,0.8405981254287347,"excluded: isolated test (tested, not developed)",ok
+43.74319492586195,NW,3001546626,SHELBY 23 #004H,Spur Energy,Eddy,2020-07-23,32017.43796109993,False,AVA_1,1.3705287535231025,"excluded: isolated test (tested, not developed)",ok
+43.741606729963856,NW,3001546627,SHELBY 23 #005H,Spur Energy,Eddy,2020-07-24,23732.697426796803,False,AVA_1,1.0158946590794409,"excluded: isolated test (tested, not developed)",ok
+43.70478254548383,NW,3001546628,SHELBY 23 #006H,Spur Energy,Eddy,2020-07-24,9095.817789122326,False,AVA_1,0.38935282179495234,"excluded: isolated test (tested, not developed)",rolled
+44.773545034867,NW,3001547906,LIVE OAK #010H,Spur Energy,Eddy,2021-10-17,27164.500406173844,False,AVA_1,1.1627953781618652,"excluded: isolated test (tested, not developed)",ok
+43.45215148042415,NW,3001547908,MORRIS BOYD #011H,Spur Energy,Eddy,2021-09-28,17411.050156739813,False,AVA_1,0.7452921404216274,"excluded: isolated test (tested, not developed)",ok
+43.51344421986155,NW,3001547909,MORRIS BOYD #010H,Spur Energy,Eddy,2021-09-27,22409.54625810253,False,AVA_1,0.9592562508421412,"excluded: isolated test (tested, not developed)",ok
+43.295018374017125,NW,3001547912,MORRIS BOYD #013H,Spur Energy,Eddy,2021-09-30,19918.291731669266,False,AVA_1,0.8526163640101695,"excluded: isolated test (tested, not developed)",ok
+44.757253666083784,NW,3001547915,LIVE OAK #020H,Spur Energy,Eddy,2021-10-15,19221.13659022931,False,AVA_1,0.8227741521451606,"excluded: isolated test (tested, not developed)",ok
+43.519256626623104,NW,3001548642,ROSE SOUTH #010H,Spur Energy,Eddy,2021-10-29,26231.387147335423,False,AVA_1,1.1228528145786867,"excluded: isolated test (tested, not developed)",ok
+43.43489948311642,NW,3001548643,ROSE SOUTH #020H,Spur Energy,Eddy,2021-10-30,34753.9184952978,False,AVA_1,1.4876657105816615,"excluded: isolated test (tested, not developed)",ok
+43.37592442198045,NW,3001548644,ROSE SOUTH #011H,Spur Energy,Eddy,2021-10-31,18760.758998435056,False,AVA_1,0.8030673683669475,"excluded: isolated test (tested, not developed)",ok
+44.44774370803465,NW,3001549708,BOYD Y #101H,Riley Permian,Eddy,2022-09-01,17058.382642998025,False,AVA_1,0.7301959616266886,"excluded: isolated test (tested, not developed)",ok
+44.507728402907304,NW,3001549723,BOYD Y #102H,Riley Permian,Eddy,2022-09-01,23441.443217665616,False,AVA_1,1.0034273196038743,"excluded: isolated test (tested, not developed)",ok
+44.55563740786374,NW,3001549748,BOYD Y #103H,Riley Permian,Eddy,2022-09-01,16985.573122529644,False,AVA_1,0.727079299342424,"excluded: isolated test (tested, not developed)",ok
+45.82988712260073,NW,3001549792,BOYD X STATE COM #101H,Riley Permian,Eddy,2022-10-01,12498.440545808966,False,AVA_1,0.5350044611015371,"excluded: isolated test (tested, not developed)",rolled
+45.5932012950856,NW,3001550158,ALTO AMM 21 #020H,Spur Energy,Eddy,2023-05-03,11822.727272727272,False,AVA_1,0.5060800833602316,"excluded: isolated test (tested, not developed)",rolled
+45.666006330606926,NW,3001550159,ALTO AMM 21 #010H,Spur Energy,Eddy,2023-05-03,14724.431818181818,False,AVA_1,0.6302895694098617,"excluded: isolated test (tested, not developed)",rolled
+45.506306125942885,NW,3001550160,ALTO AMM 21 #011H,Spur Energy,Eddy,2023-05-04,6771.988906497623,False,AVA_1,0.2898797063703475,"excluded: isolated test (tested, not developed)",rolled
+42.578494543971935,NW,3001554018,FOUR MILE DRAW #001H,Burnett,Eddy,2024-01-19,11468.74413365872,False,AVA_1,0.49092758830596617,"excluded: isolated test (tested, not developed)",rolled
+42.54376720341864,NW,3001554019,FOUR MILE DRAW #002H,Burnett,Eddy,2024-01-22,621.9992129083039,False,AVA_1,0.02662510994775057,"excluded: isolated test (tested, not developed)",rolled
+42.545691691698025,NW,3001554296,DARKO 25 FEDERAL #030H,Spur Energy,Eddy,2025-11-15,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+36.14188587606869,NW,3001554299,WELCH CD 28 STATE COM #051H,Spur Energy,Eddy,2024-08-20,27117.554240631165,False,AVA_1,1.160785814816351,"excluded: isolated test (tested, not developed)",ok
+44.671640410707404,NW,3001554766,LIVE OAK #011H,Spur Energy,Eddy,2025-09-09,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+24.942245304746166,NW,3001557112,FRESH SQUEEZED 6 5 FEDERAL COM #404H,Mewbourne,Eddy,2026-01-11,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+3.311830287422793,E,3002543286,SOMBRERO FEDERAL COM #004H,ConocoPhillips,Lea,2017-03-05,19159.184878913173,True,AVA_1,0.8201222659513967,"excluded: test (1-well step-out, not development)",ok
+2.228072569202931,N,3002543500,PERSIMMON 24 STATE COM #201H,EOG,Lea,2017-04-01,25550.743281875355,True,AVA_1,1.0937173793931636,"excluded: test (2-well step-out, not development)",ok
+6.401376732935085,NE,3002544032,PAPAYA 10 STATE #201H,EOG,Lea,2018-06-19,41747.64205198988,False,AVA_1,1.7870369232403358,"excluded: test (2-well step-out, not development)",ok
+2.0255609881417365,N,3002544211,LOCO DINERO 36 STATE COM #003H,Marshall & Winston,Lea,2018-04-28,15868.218709953013,False,AVA_1,0.6792501647260707,"excluded: test (2-well step-out, not development)",rolled
+5.507281692485087,E,3002545058,BONAID FEDERAL COM #014H,ConocoPhillips,Lea,2019-12-11,18401.72939979654,True,AVA_1,0.7876988560925493,"excluded: test (2-well step-out, not development)",ok
+1.5038055890870905,SE,3002545091,DOGIE DRAW 14 AV FEDERAL COM #024H,ConocoPhillips,Lea,2019-10-01,15115.282215122472,True,AVA_1,0.6470201931400898,"excluded: test (1-well step-out, not development)",rolled
+5.807979451931878,NE,3002545256,LYCHEE STATE COM #003H,ConocoPhillips,Lea,2019-04-27,139.47259991759373,True,AVA_1,0.005970221875589425,"excluded: test (2-well step-out, not development)",rolled
+5.591298313578932,NE,3002546022,TOUR BUS 23 STATE #101H,Permian Resources,Lea,2019-11-01,12395.566727605115,False,AVA_1,0.5306008755927782,"excluded: test (1-well step-out, not development)",rolled
+5.080860671974157,N,3002548629,GAVILON FEDERAL COM #306H,Matador,Lea,2023-05-09,30716.39245585875,True,AVA_1,1.3148365936213182,island,ok
+5.142164228501267,N,3002548867,GAVILON FEDERAL COM #305H,Matador,Lea,2023-05-03,27716.01966094894,True,AVA_1,1.186403544365209,island,ok
+4.915442708357759,E,3002549465,SAKER 6 7 FEDERAL COM #026H,Occidental,Lea,2024-12-01,13392.257658413764,True,AVA_1,0.5732649257490897,"excluded: test (2-well step-out, not development)",rolled
+9.1365241010115,E,3002549808,FMM FEDERAL COM #101H,Devon,Lea,2022-08-31,11869.284449536506,True,AVA_1,0.5080729957718193,"excluded: isolated test (tested, not developed)",rolled
+8.589861941048003,E,3002550924,MIRROR FEDERAL COM #302H,Devon,Lea,2024-04-20,18193.97651863196,True,AVA_1,0.7788058491752169,"excluded: isolated test (tested, not developed)",ok
+7.978926425786938,NE,3002551007,GRAMA RIDGE STATE COM #091H,Pride Energy Company,Lea,2024-07-21,20219.44977607165,False,AVA_1,0.8655076440591768,"excluded: test (1-well step-out, not development)",ok
+8.190173757070536,NE,3002551008,GRAMA RIDGE STATE COM #092H,Pride Energy Company,Lea,2024-07-22,27929.009819967265,False,AVA_1,1.1955207366123444,"excluded: isolated test (tested, not developed)",ok
+5.272362621379214,N,3002552667,GAVILON FEDERAL COM #104H,Matador,Lea,2024-09-22,26774.12502528829,True,AVA_1,1.1460850878250424,island,ok
+7.292665344464779,N,3002552879,SANDRA JEAN 23 FEDERAL COM #206H,Devon,Lea,2024-11-24,41263.37184424476,False,AVA_1,1.7663073993791298,"excluded: test (1-well step-out, not development)",ok
+2.199001441996751,NE,3002553572,BELL LAKE UNIT NORTH #118H,Kaiser Francis,Lea,2025-03-11,29318.88073140324,True,AVA_1,1.2550151299527077,"excluded: test (2-well step-out, not development)",ok
+2.199277550524848,NE,3002553573,BELL LAKE UNIT NORTH #618H,Kaiser Francis,Lea,2025-03-11,41037.74655881936,True,AVA_1,1.7566493517373085,"excluded: test (2-well step-out, not development)",ok
+8.831061789582046,N,3002553622,LEA UNIT #201H,Devon,Lea,2025-02-26,26059.52704539277,True,AVA_1,1.1154962230993188,"excluded: isolated test (tested, not developed)",ok
+8.843347841807825,N,3002553623,LEA UNIT #202H,Devon,Lea,2025-02-26,16392.745465916196,True,AVA_1,0.7017028981994095,"excluded: isolated test (tested, not developed)",ok
+8.98323654681272,N,3002553624,LEA UNIT #203H,Devon,Lea,2025-02-26,22542.927228127555,True,AVA_1,0.9649657162532773,"excluded: isolated test (tested, not developed)",ok
+8.71747833273844,NE,3002555297,CASA BONITA 5 STATE COM #104H,Permian Resources,Lea,2026-04-18,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+8.028582947182942,N,3002555840,QUAIL 16 STATE COM #201H,Avant Operating II,Lea,2026-08-10,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+8.028150191195934,N,3002555841,QUAIL 16 STATE COM #202H,Avant Operating II,Lea,2026-08-10,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+8.029023628183344,N,3002555842,QUAIL 16 STATE COM #203H,Avant Operating II,Lea,2026-08-10,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+8.03436145333372,N,3002555848,QUAIL 16 STATE COM #204H,Avant Operating II,Lea,2026-08-10,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+8.05440148583305,N,3002555850,QUAIL 16 STATE COM #206H,Avant Operating II,Lea,2026-08-10,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+2.4217894480417197,SE,4230132998,PISTOL 25-8 2H,ConocoPhillips,Loving,2017-01-12,19788.36987607245,False,AVA_1,0.8470549684037237,"excluded: test (1-well step-out, not development)",ok
+16.497772696054835,S,4230133225,BARNETT 90-TTT-B01 WF 104H,Matador,Loving,2017-08-20,,False,AVA_1,,"excluded: isolated test (tested, not developed)",no12
+2.05374433594446,S,4230133271,STATE MERCURY B 2 21H,EOG,Loving,2019-12-17,22036.35996364004,True,AVA_1,0.9432817513333737,"excluded: test (1-well step-out, not development)",ok
+3.793912231485412,S,4230133331,ATLAS 1H,EOG,Loving,2017-06-29,41602.45452553145,False,AVA_1,1.7808220699498902,"excluded: test (2-well step-out, not development)",ok
+3.860642290329626,S,4230133332,ATLAS 2H,EOG,Loving,2017-06-29,27487.697160883283,False,AVA_1,1.176630040570294,"excluded: test (2-well step-out, not development)",ok
+4.64818401838205,S,4230137186,WHITNEY BRUNSON UNIT 201H,EOG,Loving,2025-06-01,1729.0701266604883,True,AVA_1,0.07401405222757622,"excluded: test (1-well step-out, not development)",rolled
+97.72139578985418,SE,4237139500,JL NUTT HB 1H,Finaly Resources,Pecos,2017-08-12,3443.312378061999,False,AVA_1,0.14739338691714166,"excluded: isolated test (tested, not developed)",rolled
+59.27042436106459,S,4237140097,KARINO 48-19-30 AV1 101H,Exxon Mobil,Pecos,2020-08-27,8055.45436146529,True,AVA_1,0.3448193399638897,"excluded: isolated test (tested, not developed)",rolled
+60.6859772634316,SE,4237140134,JOLLY JUMPER 48-21-28 WB8 808H,Exxon Mobil,Pecos,2020-08-22,21.73329755835793,True,AVA_1,0.0009303089537892464,"excluded: isolated test (tested, not developed)",rolled
+50.05940478168164,SE,4238941571,EVERGREEN UNIT 12 W 72H,VTX Energy,Reeves,2025-08-05,7273.905056559992,False,AVA_1,0.31136457709466514,"excluded: isolated test (tested, not developed)",rolled

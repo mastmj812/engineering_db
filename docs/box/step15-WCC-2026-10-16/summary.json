@@ -1,0 +1,259 @@
+{
+ "built_at": "2026-10-16T12:29:22-05:00",
+ "git_sha": "7c9b596+dirty",
+ "asof": "2026-08-01",
+ "n_delaware_prod_hz": 31645,
+ "n_witness": 25775,
+ "verdicts": {
+  "agree": 84,
+  "reject": 41
+ },
+ "asks": [],
+ "family": "WCC",
+ "benches": [
+  "WCC"
+ ],
+ "pool_dir": [
+  "docs\\box\\pool-2026-10-15",
+  "docs\\box\\step15a-2026-10-16"
+ ],
+ "set": {
+  "WCC": {
+   "tagged_live": 1133,
+   "member": 1118,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 15,
+   "frozen_to": {
+    "WCA": 13,
+    "BS2_S": 2
+   },
+   "frozen_retagged_since": 8,
+   "frozen_retagged_from": {
+    "WCA_2": 3,
+    "BS2_S": 2,
+    "WCA_1": 1,
+    "WCXY": 1,
+    "WCB_2": 1
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 2,
+   "joined_from_other_tags": 2,
+   "final": 1118,
+   "final_fp_ge_2016": 923,
+   "final_cohort": 532,
+   "final_tvd_suspect": 9,
+   "final_witness": 925,
+   "final_tx": 511,
+   "final_nm": 607
+  }
+ },
+ "pooled_final": 1118,
+ "pooled_fp_ge_2016": 923,
+ "pooled_cohort": 532,
+ "flags": [
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 31,
+   "n_cohort": 9
+  },
+  {
+   "swap_class": "WCC->WCD",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 11,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "WCC->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.78)",
+   "box_action": "reassign",
+   "n": 8,
+   "n_cohort": 7
+  },
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 6,
+   "n_cohort": 4
+  },
+  {
+   "swap_class": "WCC->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.78)",
+   "box_action": "tvd_suspect",
+   "n": 3,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCC->WCA",
+   "direction": "out of family",
+   "standing": "into WCXY band (never applied, D20; witness kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCC->BS3_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCC->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.78)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCC->WCB_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 18,
+   "n_cohort": 11
+  },
+  {
+   "swap_class": "WCD->WCC",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 15,
+   "n_cohort": 10
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 7,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "WCA->WCC",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCB_1->WCC",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS3_S->WCC",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 2,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCA->WCC",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "tvd_suspect",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->WCC",
+   "direction": "into family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "OTHER->WCC",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCA->WCC",
+   "direction": "into family",
+   "standing": "accepted (1.00)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  }
+ ],
+ "lith": {
+  "WCC": {
+   "n": 0,
+   "to": {}
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "WCC",
+   "n_tags": 543,
+   "med_tags": 13618.19650610926,
+   "n_all_flags": 542,
+   "med_all_flags": 13729.178877657323,
+   "rel_change": 0.008149564554915667
+  }
+ ],
+ "pairs": [],
+ "uncalibrated_flags": 95,
+ "uncalibrated_classes": [
+  "OTHER->WCC",
+  "WCB_1->WCC",
+  "WCB_2->WCC",
+  "WCC->BS3_S",
+  "WCC->WCB_1",
+  "WCC->WCB_2",
+  "WCC->WCD",
+  "WCD->WCC"
+ ],
+ "bench_summaries": {
+  "WCC": {
+   "n_prod_hz": 1133,
+   "n_tx": 518,
+   "n_nm": 615,
+   "n_cohort": 543,
+   "planned_share": 0.09267431597528684,
+   "planned_share_nm": 0.16910569105691056,
+   "round_tvd_share": 0.02559576345984113,
+   "sql23_disagree_share": 0.13503971756398941,
+   "cons_flag_n": 67,
+   "cons_flag_share": 0.05913503971756399,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 13618.19650610926,
+   "border_step": {
+    "verdict": "no_step",
+    "border_rel_step": 0.0669554044714507,
+    "typical_rel_step": 0.22727026228989472,
+    "max_other_rel_step": 0.2559615492369333,
+    "n_other_steps": 4
+   }
+  }
+ }
+}
