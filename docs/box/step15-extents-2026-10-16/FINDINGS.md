@@ -129,3 +129,18 @@ exception only where the outside laterals are development, and they read as test
 
 Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the owner v1 (or
 the generated v1 for the unchanged benches) as the version of record.
+
+## 5. QC gate — CLOSED 2026-10-16 (Michael)
+
+1. **WCD dropped: emerging bench** ("not enough development history to be applicable for this type of workflow, the same
+   way we're not doing WDFD extents"). This is a D2 addition: WCD joins Delaware WDFD as out of scope, shown as
+   "not covered: emerging", worked by hand per deal. No WCD extent is stored; its generated extent and QC set stay
+   here as the record of why. The other eight sets are confirmed as built (rule of record + gate-1 cards, no new cards).
+2. WCB_1 and WCB_2 are **not pooled** (WCB_2 0.87× oil/kft [0.83–0.92], 1.35× GOR within block).
+3. AVA_0 / AVA_1 / AVA_2 stay **separate for now**; pooling is revisited at step 14 / tuning (thin cohorts).
+4. The WCB_1 state-line step (+16.5 % oil/kft, +817 ft TVD across the line) reads as **geology, not tagging**, for now.
+
+Open, not blocking: the WCB_2 37-well high-value tag review (memory `wcb2-deep-tvd-screening`); 72 OTHER wells in
+the AVA_0 band (step-14 thin-bench call).
+
+These are proposed decisions of record for the next sequential session to number into plan §2 (D2 gains WCD).

@@ -54,15 +54,55 @@ def _extent_geojson(path: Path) -> object:
     return ex.as_multi(eg.to_ft([shape(feat["geometry"])])[0])
 
 
+def _store_emerging(benches: list[str], dref: str, dry_run: bool) -> int:
+    """D2 emerging bench: a bench_scope row with in_scope = false and no extent (the WDFD pattern). Refuses if the bench
+    already has a scope row or any extent."""
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT bench FROM box.bench_scope WHERE basin = %s AND bench = ANY(%s) UNION SELECT bench FROM box.extent WHERE basin = %s AND bench = ANY(%s)",
+                        (BASIN, benches, BASIN, benches))
+            clash = sorted(r[0] for r in cur.fetchall())
+        conn.rollback()
+        if clash:
+            print(f"REFUSED: scope row or extent already exists for {clash}")
+            return 2
+        for b in benches:
+            print(f"{b}: bench_scope in_scope=false, reason 'emerging bench (D2)', no extent")
+        if dry_run:
+            print("dry run: nothing written")
+            return 0
+        with conn.cursor() as cur:
+            for b in benches:
+                cur.execute(
+                    """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
+                       VALUES (%s, %s, false, %s, %s, %s, %s)""",
+                    (BASIN, b, "{" + b + "}", "emerging bench: too little development history for the BOX workflow; hand-worked per deal; shown as not covered, never zero (D2)",
+                     dt.date(2026, 10, 16), dref),
+                )
+        conn.commit()
+        with conn.cursor() as cur:
+            cur.execute("SET TRANSACTION READ ONLY")
+            cur.execute("SELECT basin, bench, in_scope, member_benches FROM box.bench_scope WHERE basin = %s AND bench = ANY(%s)", (BASIN, benches))
+            for r in cur.fetchall():
+                print("  live:", r)
+        conn.rollback()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--wells", type=Path, required=True)
-    ap.add_argument("--pool", nargs="+", required=True, choices=sorted(SCOPE_ROW))
+    ap.add_argument("--wells", type=Path, default=None)
+    ap.add_argument("--pool", nargs="*", default=[], choices=sorted(SCOPE_ROW))
+    ap.add_argument("--emerging", nargs="*", default=[], help="benches recorded as D2 emerging: bench_scope row in_scope = false, NO extent (like WDFD)")
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--out-of-scope", nargs="*", default=[], help="benches whose bench_scope row is in_scope = false (extent stored for reference; D2 / step 14 pending)")
     ap.add_argument("--decision-ref", default=None)
     a = ap.parse_args(argv)
+    if a.emerging:
+        return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run)
+    if not a.pool or a.wells is None:
+        ap.error("--wells and --pool are required unless --emerging is given")
     ext_dir = a.wells / "extents"
     bp = fe.record_params()
     run_id = f"step15 {dt.date(2026, 10, 16)} {_git_sha()}"
