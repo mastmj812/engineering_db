@@ -116,3 +116,58 @@ Notes (no decision needed):
 
 These are proposed as decisions of record for the next sequential session to number into plan §2 (this session does not
 edit §2). Next: the extent half (`docs/box/step15a-2026-10-16/extents/`).
+
+# Extent half — AT THE EXTENT GATE (nothing stored)
+
+## 6. Generated D27 extents (method of record, unchanged)
+
+`python -m scripts.box_family_extents --wells docs/box/step15a-2026-10-16 --pool BS3_S BS3_C --regress docs/box/step1-2026-10-06`
+(~8 min, read only) → `extents/` (index.html, extent_<bench>.html, geology/ shapefile package NAD83 UTM 14N US-ft with
+3BSPGS / 3BSPGC structure + isopach context, CSVs, summary.json). Code `box/family_extent.py`; step-3 modules reused
+unchanged (one addition: `extent_package.GRIDS` gained BS3_C = 3BSPGC → 3BSPGS and BS3_S = 3BSPGS → WOLFCAMP_XY).
+Parameters = the step-3 calibration of record (k 0.75, cap 7,920 ft, floor 880 ft, pool reference, D23 r 2,640 / c
+3,960 ft, D27 envelope), read from `step3-2026-10-07/summary.json`, not re-picked.
+
+**Regression guard:** the same code + parameters rebuilt from the frozen gate-1 sets reproduce the record extents:
+WCA 6,168.65 sq mi exactly; BS2_S 3,358.13 vs 3,358.45 (−0.01 %, live lateral geometry drift since 2026-10-07).
+
+**Finding — D27 assumes one development body per bench; BS3 has two.** The step-2 outline's largest component is the
+body; anything > 8 mi from it is an "isolated test". BS3_S: NM body 1,489 laterals + a Texas trough-axis body
+(Reeves / Ward / Loving) of 592 ~30 mi away → 758 laterals classed as tests, 770 of 2,365 modern laterals outside
+(generated 2,991 sq mi). BS3_C: 1,135 + 283 SE → 413 of 1,651 outside (2,440 sq mi).
+
+## 7. Michael's visual check + hand edit (2026-10-16)
+
+Michael chose a visual check over a multi-body rule: the one-body extents rendered over each bench's own HCA structure
+top with the PDP laterals (`extents/visual_<bench>.png`), then edits drawn in red in PowerPoint
+(`Blue Ox Resources/Engineering - General/bs3_extents.pptx`, slide 1 = BS3_C, slide 2 = BS3_S).
+
+Ingest (`python -m scripts.box_family_extent_edits --pptx … --slide 1=BS3_C --slide 2=BS3_S`): each freeform
+(beziers sampled) is mapped slide EMU → PNG pixel → axes data (NAD83 UTM 14N US-ft). The maps were regenerated
+bit-identical (md5) to the ones edited, so the transform is exact. The open line is closed by a chord through the
+generated extent, unioned with it, voids filled (D27). Outputs in `extents/edited/`: `BOX_<bench>_extent_v1_edited.shp`
+(the geology round-trip format, D7/D28), the step-3 diff page `diff_<bench>_v1.html`, `visual_<bench>_edited.png`.
+
+| | BS3_S | BS3_C |
+|---|---:|---:|
+| generated v1, sq mi | 2,991 | 2,440 |
+| **edited v1, sq mi** (added / removed) | **4,998** (+2,007 / 0) | **3,840** (+1,401 / 0) |
+| parts | 1 | 1 |
+| ≥ 2016 laterals inside (≥ 50 % of length): generated → edited | 1,595 → 2,231 of 2,365 | 1,238 → 1,521 of 1,651 |
+| still outside, by county | Reeves 86 (the isolated W-Reeves cluster), Pecos 28, Eddy 14, other 6 | Eddy 47, Pecos 33, Lea 26, Reeves 16, other 8 |
+| D1 PUD universe inside (≥ 50 % of stick): generated → edited | 5,289 → **9,224** | 4,831 → **7,794** |
+
+(Plan evidence table: 13,073 / 12,621 drillable Novi PUDs basin-wide → 71 % / 62 % inside the edited extents.)
+Edits: BS3_S adds the south trough-axis trend (Reeves / Ward / Loving into TX) and the western Culberson / NW-Reeves
+shelf cluster; BS3_C adds the SE trough-axis trend (Reeves / Ward). Both leave the far-SE Pecos/Ward scatter out.
+
+## 8. Extent-gate asks
+
+1. **Accept the edited extents as v1 of record** (BS3_S 4,998 / BS3_C 3,840 sq mi). This is a hand edit by the owner,
+   stored the way D28 stores a geology edit (`source = geology_edited`, parent = generated v1). It is also a method
+   note for the plan: D27's one-body assumption does not hold for multi-trend benches; for this family the owner's
+   visual edit replaced a multi-body rule (record as a decision for the next sequential session).
+2. **Go-apply to store** (warehouse WRITE, nothing done yet). Three steps, in one session on your go:
+   (a) `box.bench_scope` gains `('delaware','BS3_S',true,'{BS3_S}',…)` and `('delaware','BS3_C',true,'{BS3_C}',…)`
+   (box.extent has an FK to bench_scope); (b) store generated v1 for each (not record); (c) store the edited v1 as the
+   version of record. No DDL, no sql/NN.

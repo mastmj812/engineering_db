@@ -221,7 +221,7 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
 # ----------------------------------------------------------------------------
 
 
-def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110) -> dict[str, Any]:
+def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110, label: str = "one-body D27 extent as is") -> dict[str, Any]:
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
@@ -280,10 +280,154 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     ax.set_xticks([])
     ax.set_yticks([])
     area = extent_ft13.area / eg.FT_PER_MI**2
-    ax.set_title(f"{pool}: one-body D27 extent as is ({area:,.0f} sq mi, black) over {top_f.split('_STRUCTURE')[0]} structure; "
+    ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_f.split('_STRUCTURE')[0]} structure; "
                  f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); potash area blue; dashed = TX/NM line", fontsize=9)
     fig.tight_layout()
+    fig.set_dpi(dpi)
+    fig.canvas.draw()
+    # pixel frame of the saved PNG (origin top-left) for reading hand edits drawn over it (pptx_edits)
+    (px0, py0), (px1, py1) = ax.transData.transform([(x0, y0), (x1, y1)])
+    H = fig.get_size_inches()[1] * dpi
+    frame = {"data": [x0, y0, x1, y1], "pix": [float(px0), float(H - py0), float(px1), float(H - py1)], "size": [fig.get_size_inches()[0] * dpi, H]}
     fig.savefig(path, dpi=dpi)
     plt.close(fig)
     inside = shapely.length(shapely.intersection(np.asarray(list(ev["geom"]), dtype=object), extent_ft13)) / shapely.length(np.asarray(list(ev["geom"]), dtype=object)) >= 0.5
-    return {"pool": pool, "n_evidence": len(ev), "n_inside": int(inside.sum()), "n_outside": int((~inside).sum()), "extent_sqmi": area}
+    return {"pool": pool, "n_evidence": len(ev), "n_inside": int(inside.sum()), "n_outside": int((~inside).sum()), "extent_sqmi": area, "frame": frame}
+
+
+# ----------------------------------------------------------------------------
+# Hand edits drawn over the visual-check PNG in PowerPoint (Michael 2026-10-16, bs3_extents.pptx)
+# ----------------------------------------------------------------------------
+
+
+
+def _bezier(p0: tuple[float, float], p1: tuple[float, float], p2: tuple[float, float], p3: tuple[float, float], n: int = 12) -> list[tuple[float, float]]:
+    t = np.linspace(0, 1, n + 1)[1:]
+    a, b, c, d = (np.asarray(p, float) for p in (p0, p1, p2, p3))
+    pts = ((1 - t) ** 3)[:, None] * a + (3 * (1 - t) ** 2 * t)[:, None] * b + (3 * (1 - t) * t**2)[:, None] * c + (t**3)[:, None] * d
+    return [tuple(x) for x in pts]
+
+
+def pptx_freeforms(pptx: Path) -> dict[int, dict[str, Any]]:
+    """slide no -> {'picture': (off_x, off_y, cx, cy) EMU, 'image': media name, 'lines': [[(x, y) EMU], ...]} for every
+    freeform shape (moveTo / lnTo / cubicBezTo, beziers sampled) drawn over the slide's picture."""
+    import re
+    import zipfile
+
+    out: dict[int, dict[str, Any]] = {}
+    with zipfile.ZipFile(pptx) as z:
+        slides = sorted(n for n in z.namelist() if re.fullmatch(r"ppt/slides/slide\d+\.xml", n))
+        for name in slides:
+            k = int(re.search(r"(\d+)\.xml$", name).group(1))
+            xml = z.read(name).decode("utf-8")
+            rels = z.read(f"ppt/slides/_rels/slide{k}.xml.rels").decode("utf-8")
+            pic = xml[xml.index("<p:pic>"):xml.index("</p:pic>")]
+            rid = re.search(r'r:embed="(rId\d+)"', pic).group(1)
+            media = re.search(rf'Id="{rid}"[^>]*Target="\.\./media/([^"]+)"', rels) or re.search(rf'Target="\.\./media/([^"]+)"[^>]*Id="{rid}"', rels)
+            po = tuple(int(v) for v in re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>', pic).groups())
+            if "<a:srcRect" in pic and re.search(r'<a:srcRect [^/]*[ltrb]="', pic):
+                raise ValueError(f"slide {k}: cropped picture not supported")
+            lines = []
+            for sp in re.findall(r"<p:sp>.*?</p:sp>", xml, flags=re.DOTALL):
+                if "<a:custGeom>" not in sp:
+                    continue
+                if re.search(r'<a:xfrm[^>]*(rot|flipH|flipV)=', sp):
+                    raise ValueError(f"slide {k}: rotated / flipped freeform not supported")
+                ox, oy, cx, cy = (int(v) for v in re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>', sp).groups())
+                for pw, ph, body in re.findall(r'<a:path w="(\d+)" h="(\d+)"[^>]*>(.*?)</a:path>', sp, flags=re.DOTALL):
+                    sx, sy = cx / int(pw), cy / int(ph)
+                    pts: list[tuple[float, float]] = []
+                    for tag, inner in re.findall(r"<a:(moveTo|lnTo|cubicBezTo)>(.*?)</a:\1>", body, flags=re.DOTALL):
+                        q = [(ox + int(a) * sx, oy + int(b) * sy) for a, b in re.findall(r'<a:pt x="(-?\d+)" y="(-?\d+)"/>', inner)]
+                        if tag == "cubicBezTo" and pts:
+                            pts += _bezier(pts[-1], q[0], q[1], q[2])
+                        else:
+                            pts += q
+                    lines.append(pts)
+            out[k] = {"picture": po, "image": media.group(1) if media else None, "lines": lines}
+    return out
+
+
+def emu_to_geology(pts: list[tuple[float, float]], picture: tuple[int, int, int, int], frame: dict[str, Any]) -> list[tuple[float, float]]:
+    """Slide EMU -> PNG pixel (the picture is the uncropped PNG) -> axes data (NAD83 UTM 14N US-ft)."""
+    ox, oy, cx, cy = picture
+    W, H = frame["size"]
+    x0, y0, x1, y1 = frame["data"]
+    px0, py0, px1, py1 = frame["pix"]  # pixel of (x0, y0) and (x1, y1), origin top-left
+    out = []
+    for ex_, ey in pts:
+        px = (ex_ - ox) / cx * W
+        py = (ey - oy) / cy * H
+        out.append((x0 + (px - px0) / (px1 - px0) * (x1 - x0), y0 + (py - py0) / (py1 - py0) * (y1 - y0)))
+    return out
+
+
+def apply_hand_edit(generated_ft13: Any, edit_line_geo: list[tuple[float, float]]) -> tuple[Any, Any]:
+    """An open hand-drawn line whose ends sit on (or near) the generated extent: close it with a straight chord, take
+    the enclosed area, union with the generated extent, fill voids (D27). Returns (edited extent, added polygon), UTM 13N ft."""
+    from shapely.geometry import LineString as _LS
+    from shapely.validation import make_valid
+
+    line = gio.geology_to_ft13([_LS(edit_line_geo)])[0]
+    ring = list(line.coords) + [line.coords[0]]
+    poly = make_valid(Polygon(ring))
+    polys = [g for g in getattr(poly, "geoms", [poly]) if g.geom_type == "Polygon"]
+    add = shapely.union_all(polys)
+    edited = ex.as_multi(shapely.union_all([generated_ft13, add]).buffer(0))
+    edited = ex.as_multi(shapely.union_all([Polygon(g.exterior) for g in edited.geoms]))  # no voids (D27)
+    return edited, add.difference(generated_ft13)
+
+
+def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path, ext_dir: Path, version: int = 1, git_sha: str = "") -> dict[str, Any]:
+    """Michael's hand edits -> edited extents (v1 edited, NOT stored): shapefile in the geology round-trip format, the
+    step-3 diff page, the visual check redrawn with the edited outline, laterals + D1 PUDs inside generated vs edited."""
+    built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
+    ff = pptx_freeforms(pptx)
+    df = egr.load_final_sets(wells_dir, tuple(slide_pool.values()))
+    df = egr.attach_geometry(df, egr.pull_laterals(conn, sorted(df["api10"].unique())))
+    sopa = er.load_sopa()
+    edit_dir = ext_dir / "edited"
+    edit_dir.mkdir(parents=True, exist_ok=True)
+    res: dict[str, Any] = {"built_at": built, "git_sha": git_sha, "source": str(pptx), "pools": {}}
+    for k, pool in slide_pool.items():
+        gj = json.loads((ext_dir / f"extent_{pool}_v{version}.geojson").read_text(encoding="utf-8"))
+        feat = next(x for x in gj["features"] if x["properties"].get("layer") == "extent")
+        gen = ex.as_multi(eg.to_ft([shape(feat["geometry"])])[0])
+        w = df[df.pool == pool]
+        tmp = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png")
+        (edit_dir / f"_frame_{pool}.png").unlink()
+        if len(ff[k]["lines"]) != 1:
+            raise ValueError(f"slide {k}: expected one freeform, found {len(ff[k]['lines'])}")
+        geo_line = emu_to_geology(ff[k]["lines"][0], ff[k]["picture"], tmp["frame"])
+        edited, _added = apply_hand_edit(gen, geo_line)
+        # shapefile in the geology round-trip format (D7 / D28) + the step-3 diff page
+        params = f"hand edit by Michael 2026-10-16 ({pptx.name} slide {k}) on generated v{version}"
+        gio.write_layer(edit_dir / f"BOX_{pool}_extent_v{version}_edited", "polygon", gio.ft13_to_geology([edited]), pkg.EXTENT_FIELDS,
+                        [[pool, "delaware", version, "geology_edited", edited.area / eg.FT_PER_MI**2, built, params]])
+        d = ex.diff(gen, edited, shapely.centroid(gen))
+        ev = w[w["evidence"] & w["geom"].notna()]
+        L = np.asarray(list(ev["geom"]), dtype=object)
+
+        def inside(g: Any, L: np.ndarray = L) -> np.ndarray:
+            return shapely.length(shapely.intersection(L, g)) / shapely.length(L) >= 0.5
+
+        env = eg.to_lonlat([shapely.box(*edited.bounds).buffer(eg.FT_PER_MI)])[0].bounds
+        pu = er.pull_puds(conn, [pool], env)
+        pt = er.pud_counts(pu, {"in generated": gen, "in edited": edited})
+        (edit_dir / f"diff_{pool}_v{version}.html").write_text(pages.diff_page(pool, version, d, gen, edited, built, f"{pptx.name} slide {k}", pt), encoding="utf-8")
+        pt.assign(pool=pool).to_csv(edit_dir / f"pud_counts_{pool}.csv", index=False)
+        (edit_dir / f"extent_{pool}_v{version}_edited.geojson").write_text(json.dumps({
+            "type": "FeatureCollection", "name": f"box_extent_{pool}_v{version}_edited", "crs_note": "EPSG:4326",
+            "features": [{"type": "Feature", "properties": {"layer": "extent", "pool": pool, "version": version, "source": "geology_edited", "note": params},
+                          "geometry": shapely.geometry.mapping(shapely.set_precision(eg.to_lonlat([edited])[0], 1e-6))}]}), encoding="utf-8")
+        vis = visual_check_png(pool, w, edited, sopa, edit_dir / f"visual_{pool}_edited.png", label=f"extent v{version} EDITED by Michael (hand edit, {pptx.name})")
+        ig, ie = inside(gen), inside(edited)
+        d1 = pt[pt.status == "D1 universe"]
+        res["pools"][pool] = {
+            "slide": k, "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
+            "n_parts": len(edited.geoms), "n_evidence": len(ev), "inside_generated": int(ig.sum()), "inside_edited": int(ie.sum()), "outside_edited": int((~ie).sum()),
+            "d1_in_generated": int(d1["in generated"].sum()) if len(d1) else 0, "d1_in_edited": int(d1["in edited"].sum()) if len(d1) else 0,
+            "outside_by_county": ev.loc[~ie, "county"].value_counts().head(8).to_dict(), "visual": str(vis["pool"]),
+        }
+    (edit_dir / "summary.json").write_text(json.dumps(res, indent=1, default=str), encoding="utf-8")
+    return res
