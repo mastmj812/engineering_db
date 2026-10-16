@@ -1,0 +1,170 @@
+{
+ "built_at": "2026-10-16T12:30:18-05:00",
+ "git_sha": "7c9b596+dirty",
+ "asof": "2026-08-01",
+ "n_delaware_prod_hz": 31645,
+ "n_witness": 25775,
+ "verdicts": {
+  "agree": 84,
+  "reject": 41
+ },
+ "asks": [],
+ "family": "WCD",
+ "benches": [
+  "WCD"
+ ],
+ "pool_dir": [
+  "docs\\box\\pool-2026-10-15",
+  "docs\\box\\step15a-2026-10-16"
+ ],
+ "set": {
+  "WCD": {
+   "tagged_live": 174,
+   "member": 168,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 6,
+   "frozen_to": {
+    "WCA": 6
+   },
+   "frozen_retagged_since": 2,
+   "frozen_retagged_from": {
+    "WCA_1": 1,
+    "WCA_2": 1
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 0,
+   "final": 168,
+   "final_fp_ge_2016": 150,
+   "final_cohort": 90,
+   "final_tvd_suspect": 0,
+   "final_witness": 147,
+   "final_tx": 66,
+   "final_nm": 102
+  }
+ },
+ "pooled_final": 168,
+ "pooled_fp_ge_2016": 150,
+ "pooled_cohort": 90,
+ "flags": [
+  {
+   "swap_class": "WCD->WCC",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 15,
+   "n_cohort": 10
+  },
+  {
+   "swap_class": "WCD->WCA",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCA",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCA",
+   "direction": "out of family",
+   "standing": "into WCXY band (never applied, D20; witness kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCD->WCB_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCC->WCD",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 11,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "WCB_2->WCD",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "OTHER->WCD",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  }
+ ],
+ "lith": {
+  "WCD": {
+   "n": 0,
+   "to": {}
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "WCD",
+   "n_tags": 94,
+   "med_tags": 11231.998735787587,
+   "n_all_flags": 88,
+   "med_all_flags": 11324.677351251501,
+   "rel_change": 0.00825130216304415
+  }
+ ],
+ "pairs": [],
+ "uncalibrated_flags": 31,
+ "uncalibrated_classes": [
+  "OTHER->WCD",
+  "WCB_2->WCD",
+  "WCC->WCD",
+  "WCD->WCB_1",
+  "WCD->WCB_2",
+  "WCD->WCC"
+ ],
+ "bench_summaries": {
+  "WCD": {
+   "n_prod_hz": 174,
+   "n_tx": 67,
+   "n_nm": 107,
+   "n_cohort": 94,
+   "planned_share": 0.06321839080459771,
+   "planned_share_nm": 0.102803738317757,
+   "round_tvd_share": 0.034482758620689655,
+   "sql23_disagree_share": 0.22988505747126436,
+   "cons_flag_n": 21,
+   "cons_flag_share": 0.1206896551724138,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 11231.998735787587,
+   "border_step": {
+    "verdict": "not_judged",
+    "reason": "a border bin has < 20 cohort wells"
+   }
+  }
+ }
+}

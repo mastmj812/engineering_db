@@ -39,7 +39,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--family", choices=sorted(fq.FAMILIES), required=True)
     ap.add_argument("--out", type=Path, default=None)
-    ap.add_argument("--pool-dir", type=Path, default=Path("docs") / "box" / "pool-2026-10-15")
+    ap.add_argument("--pool-dir", type=Path, nargs="+", default=[Path("docs") / "box" / "pool-2026-10-15", Path("docs") / "box" / "step15a-2026-10-16"],
+                    help="frozen pool dirs (wells_final_*.csv); the first with universe.csv gives the judged universe")
     ap.add_argument("--verdicts", type=Path, action="append", default=None)
     ap.add_argument("--cache", type=Path, default=None, help="pickle of the scored frame; read if present, else written")
     ap.add_argument("--asks", type=Path, default=None, help="JSON list of gate-ask strings (HTML) for the page")
@@ -71,9 +72,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{b}: tagged {r['tagged_live']:,} -> final {r['final']:,} (member {r['member']:,}, churn kept {r['old_churn_kept']}, "
               f"frozen elsewhere {r['frozen_elsewhere']} {r['frozen_to']}, new out {r['new_ruled_out']} {r['new_ruled_out_to']}, excluded {r['excluded']}); "
               f"cohort {r['final_cohort']:,}")
-    pe = s["pooling"]
-    for k in ("oil12_kft", "gor12", "cum24_over_cum12"):
-        print(f"  {pe['b']}/{pe['a']} {k}: {pe[k]['ratio']:.3f} [{pe[k]['ci90'][0]:.3f}-{pe[k]['ci90'][1]:.3f}] blocks {pe[k]['n_blocks_both']}")
+    for pr in s["pairs"]:
+        pe = pr["pooling"]
+        for k in ("oil12_kft", "gor12", "cum24_over_cum12"):
+            print(f"  {pe['b']}/{pe['a']} {k}: {pe[k]['ratio']:.3f} [{pe[k]['ci90'][0]:.3f}-{pe[k]['ci90'][1]:.3f}] blocks {pe[k]['n_blocks_both']}")
     print(f"uncalibrated flags {s['uncalibrated_flags']} in {s['uncalibrated_classes']}")
     print(f"wrote {out / 'index.html'}  ({time.time() - t0:.0f} s)")
     return 0

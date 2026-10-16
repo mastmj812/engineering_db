@@ -1,0 +1,119 @@
+dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,cohort,formation_blueox,perf_ratio,role,class
+3.2541385774719442,NW,3001542974,STERLING POUND 20 29 W2DE STATE COM #001H,Mewbourne,Eddy,2016-01-01,13257.50300120048,True,WCD,,island,no12
+3.4616752269394744,W,3001543296,COMMODORE 30 W2PA FEDERAL #001H,Mewbourne,Eddy,2017-01-03,13204.535637149029,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+2.389042580124938,NW,3001543452,GOOSE 29 28 W2BA STATE COM #001H,Mewbourne,Eddy,2016-06-01,8419.522776572669,True,WCD,,island,no12
+9.845608718346991,SE,3001543859,FULLER 14 23 W2LM FEDERAL COM #002H,Mewbourne,Eddy,2017-05-01,25193.93103448276,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+1.311374107331422,NW,3001543893,HOLLYWOOD 28 33 W2IP FEDERAL COM #001H,Mewbourne,Eddy,2017-03-01,16214.178205900062,True,WCD,,island,no12
+3.0431006356601147,NE,3001543919,JANIE CONNER 13 24S 28E RB #222H,Matador,Eddy,2018-03-31,15487.268018990071,False,WCD,,island,no12
+1.9883997571578815,NW,3001544075,VIPER 32 29 W2PI FEDERAL COM #001H,Mewbourne,Eddy,2019-04-01,10927.341453170937,True,WCD,,island,no12
+17.757416145280814,NW,3001544110,RIO BRAVO 17 20 W2AP FEDERAL COM #001H,Mewbourne,Eddy,2017-07-02,205.854706593259,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+7.501912353187863,SE,3001544118,COPPERHEAD 31 FEDERAL COM #021H,ConocoPhillips,Eddy,2017-08-01,23863.901781703848,True,WCD,,"excluded: test (1-well step-out, not development)",no12
+2.48079748676954,NE,3001544119,TIGER 14 24S 28E RB #222H,Matador,Eddy,2017-07-20,19470.525869380832,False,WCD,,island,no12
+2.3213824192660186,NE,3001544163,TIGER 14 24S 28E RB #221H,Matador,Eddy,2017-09-17,14429.791894852136,False,WCD,,island,no12
+3.2758494886225846,NE,3001544239,JANIE CONNER 13 24S 28E RB #223H,Matador,Eddy,2018-03-01,19262.384918895223,False,WCD,,island,no12
+3.534497297036447,NE,3001544241,ZACH MCCORMICK FEDERAL COM #221H,Matador,Eddy,2018-04-01,17448.182433958,False,WCD,,island,no12
+5.134957745763148,E,3001544256,GARRETT STATE COM #221H,Matador,Eddy,2018-01-01,22233.333333333336,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+1.3420359072319494,NW,3001544378,CYPRESS FEE 23 27 9 #006H,ConocoPhillips,Eddy,2018-06-01,6565.807327001357,False,WCD,,"excluded: test (1-well step-out, not development)",no12
+2.897651896730094,W,3001544462,ARCHDUKE 19 W2AP FEDERAL COM #001H,Mewbourne,Eddy,2018-03-01,13392.152466367714,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+29.536167594384565,NW,3001545114,ROSE #003H,Spur Energy,Eddy,2018-11-13,18562.62592343855,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+5.112463400280611,E,3001545182,GARRETT FEDERAL COM #222H,Matador,Eddy,2018-11-01,23929.90142387733,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+2.890081845728812,NE,3001545500,NASH UNIT #301H,Exxon Mobil,Eddy,2020-02-01,28043.474178403754,True,WCD,,"excluded: test (2-well step-out, not development)",no12
+3.3808802604316255,NE,3001546433,REMUDA SOUTH 25 STATE #163H,Exxon Mobil,Eddy,2021-07-01,23578.41391590193,True,WCD,,"excluded: test (2-well step-out, not development)",no12
+4.392301006847163,NE,3001547339,HEADS CC 9 4 FEDERAL COM #311H,Occidental,Eddy,2023-09-08,15664.751144443362,True,WCD,,island,no12
+4.432632684729293,NE,3001547588,HEADS CC 9 4 FEDERAL COM #034H,Occidental,Eddy,2023-09-08,11425.623471882642,True,WCD,,island,no12
+4.435024037419745,NE,3001547589,HEADS CC 9 4 FEDERAL COM #044H,Occidental,Eddy,2023-09-08,18968.306435932333,True,WCD,,island,no12
+4.4520832620772115,NE,3001547590,HEADS CC 9 4 FEDERAL COM #052H,Occidental,Eddy,2023-09-08,9094.174757281551,True,WCD,,island,no12
+11.459137401040097,SE,3001548264,BANJO 32 FEDERAL COM #771H,EOG,Eddy,2025-07-01,8468.54034451496,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.964876511626144,SW,3001549404,CHICKEN NOODLE FEDERAL COM #301H,SM Energy,Eddy,2023-10-22,4940.172126596336,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+5.191770240230677,S,3001549968,POTATO BABY STATE COM #902H,ConocoPhillips,Eddy,2024-09-27,11106.94514343231,True,WCD,,island,no12
+4.602409864402273,S,3001549970,POTATO BABY STATE COM #904H,ConocoPhillips,Eddy,2024-10-01,9244.79431183342,True,WCD,,island,no12
+4.164385211095422,S,3001550008,POTATO BABY STATE COM #909H,ConocoPhillips,Eddy,2024-09-23,10748.30154702464,True,WCD,,island,no12
+4.382230080857435,S,3001550009,POTATO BABY STATE COM #907H,ConocoPhillips,Eddy,2024-09-19,10808.13953488372,True,WCD,,island,no12
+2.9580918164572103,NE,3001553613,NASH UNIT #701H,Exxon Mobil,Eddy,2024-11-01,6929.002612848004,True,WCD,,"excluded: test (2-well step-out, not development)",no12
+5.2282129887892355,S,3001553649,KEG SHELL FEDERAL COM #906H,ConocoPhillips,Eddy,2024-10-29,10361.508560086011,True,WCD,,island,no12
+5.094500117723624,S,3001553655,KEG SHELL FEDERAL COM #908H,ConocoPhillips,Eddy,2024-10-22,10835.467085157346,True,WCD,,island,no12
+18.76143304605006,SE,3001554086,DEEP ELEM 4 FEDERAL COM #583H,EOG,Eddy,2024-09-17,12671.374253123302,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+5.397450219333194,E,3001554357,POKER LAKE UNIT 13 24 PC #165H,Exxon Mobil,Eddy,2025-03-17,24735.78426421573,True,WCD,,"excluded: test (2-well step-out, not development)",no12
+5.4936529961526785,S,3001554405,KEG SHELL FEDERAL COM #902H,ConocoPhillips,Eddy,2024-10-10,10001.08650229837,True,WCD,,island,no12
+5.311730182841586,S,3001554407,KEG SHELL FEDERAL COM #904H,ConocoPhillips,Eddy,2024-10-14,11410.91211995002,True,WCD,,island,no12
+9.94277880331311,SE,3001554815,BUFFALO TRACE 1 36 FEDERAL COM #878H,Mewbourne,Eddy,2024-12-06,6628.289807946347,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+7.37130333439536,NE,3001555828,JAMES RANCH UNIT DI 8 EAST #114H,Exxon Mobil,Eddy,2025-09-05,,False,WCD,,"excluded: test (1-well step-out, not development)",no12
+31.74852102751581,NE,3002542356,IGLOO 19 STATE #001H,3r Operating,Lea,2017-03-11,16542.079999999998,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+32.50892515035795,E,3002545189,ENDER WIGGINS 14 WD FEDERAL COM #002H,ConocoPhillips,Lea,2019-10-01,7660.746748706474,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+37.32641164253721,E,3002547830,SEINFELD MULVA FEDERAL UNIT #136H,SM Energy,Lea,2022-04-15,13020.827909398597,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+25.547826541663987,E,3002547837,BELL LAKE UNIT NORTH #204H,Kaiser Francis,Lea,2022-08-30,34437.704684607714,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+25.758170332763058,E,3002548517,BELL LAKE UNIT NORTH #404H,Kaiser Francis,Lea,2022-09-09,153110.614908966,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+17.279411995768324,E,3002548824,MESA VERDE WOLFCAMP UNIT #039H,Occidental,Lea,2025-01-15,17116.34093932262,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+33.38328810549112,NE,3002549691,GRACE 16 STATE COM #901H,EOG,Lea,2022-06-07,9298.101265822785,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+31.438052783840607,E,3002550076,OPHELIA 27 #901H,EOG,Lea,2022-06-21,219.3773043834494,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+37.85876206554417,E,3002550987,SEINFELD YADA FEDERAL UNIT #223H,SM Energy,Lea,2023-12-09,9485.452695829092,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+18.02080332079023,NE,3002551190,NINA CORTELL FEDERAL COM #241H,Matador,Lea,2025-01-31,20780.652057723142,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+24.511805893824768,NE,3002552682,SANDRA JEAN 23 FEDERAL COM #755H,Devon,Lea,2024-11-24,10882.08269525268,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+18.582859052350337,E,3002552981,CHINCOTEAGUE 8 32 FEDERAL STATE COM #823H,Devon,Lea,2025-03-26,21133.47955506815,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+18.857428472113817,E,3002552982,CHINCOTEAGUE 8 32 FEDERAL STATE COM #824H,Devon,Lea,2025-03-24,17958.86050767884,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+18.304473988788782,E,3002553000,CHINCOTEAGUE 8 32 FEDERAL STATE COM #831H,Devon,Lea,2026-07-27,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+29.23428903512435,NE,3002553471,MILLIE MILE 13 24 FEDERAL COM #801H,PBX,Lea,2026-02-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+20.81535092786689,E,3002553993,RODNEY ROBINSON FEDERAL COM #243H,Matador,Lea,2026-02-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+21.114653042497896,E,3002553994,RODNEY ROBINSON FEDERAL COM #244H,Matador,Lea,2026-01-22,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+32.72274371543334,NE,3002554152,ROYAL OAK 25 FEDERAL COM #009H,Devon,Lea,2025-12-07,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+38.095272419558825,NE,3002554228,DANJER 22 10 STATE COM #003H,Manzano,Lea,2025-06-25,3585.415065334358,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+23.247225442288997,E,3002554773,PARSELTONGUE 15 10 STATE COM #900H,Devon,Lea,2026-04-06,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+7.296413466623447,SW,4210933033,DR STATE WISE UNIT 1 302 3029H,Chevron,Culberson,2017-06-24,8657.938487115543,False,WCD,,"excluded: test (1-well step-out, not development)",no12
+27.570412171187087,S,4210933035,PLUMMER STATE 32 6HA,Moontower Resources,Culberson,2017-05-15,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+3.7643214477036597,S,4210933172,ANIMAL KINGDOM 44 B 4H,Devon,Culberson,2018-09-15,8683.14963757323,True,WCD,,island,no12
+3.7803513574694976,S,4210933176,ANIMAL KINGDOM 44 E 8H,Devon,Culberson,2018-09-13,6713.151364764268,True,WCD,,island,no12
+3.779198758535202,S,4210933178,ANIMAL KINGDOM 44 UNIT 1 10H,Devon,Culberson,2018-09-14,10395.860284605433,True,WCD,,island,no12
+7.970280749970988,S,4210933205,HAY ARIA 03/46 001 0012WD,Chevron,Culberson,2019-06-14,6527.314428690575,True,WCD,,"excluded: test (1-well step-out, not development)",no12
+8.230773979056528,S,4210933210,HAY ARIA 03/46 001 0016WD,Chevron,Culberson,2020-02-27,11208.64098982239,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.505916497359161,S,4210933232,TWISTER STATE 2H,ConocoPhillips,Culberson,2019-08-09,3934.169884169885,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+11.499284542981687,SW,4210933978,DR STATE WISE UNIT 1 034 0346WC,Chevron,Culberson,2024-03-15,4752.872480693162,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.409585455320148,S,4210934167,PANDA UNIT 80 803H,ConocoPhillips,Culberson,2025-05-12,3926.190233459068,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.182013394433953,S,4210934169,PANDA UNIT 80 805H,ConocoPhillips,Culberson,2025-05-06,5576.137834877004,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+4.387192602116468,SW,4210934175,DR STATE WISE UNIT 1 201 2012WC,Chevron,Culberson,2025-02-05,6690.3865577082,True,WCD,,"excluded: test (1-well step-out, not development)",no12
+29.725553742353842,SE,4230133469,VORTEX 54-1-40 UNIT 121H,Occidental,Loving,2021-08-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+11.739258115671406,SE,4230133746,ZUMA 3 W10 W202CN,Mewbourne,Loving,2018-05-17,10698.67189200958,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+23.032503307215276,SE,4230134032,SEMINOLE STATE 56-2-25 UNIT 1H,Occidental,Loving,2018-12-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+31.965826132483354,SE,4230136115,CHERRY CREEK 92 4H,CPX Energy,Loving,2024-10-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+46.229749536909864,SE,4230137390,JAMES WEST 1-0-41-39 C 12HA,Occidental,Loving,2026-05-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+46.827225532066926,SE,4230137391,JAMES WEST 1-41 14HU,Occidental,Loving,2026-05-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+81.37893620345761,SE,4237139432,PECAN STATE UNIT 4511GH,Continental Resources,Pecos,2017-05-11,45916.73989455184,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+81.11461051912678,SE,4237139454,PECAN STATE UNIT 4301JH,Continental Resources,Pecos,2018-04-23,17221.053611317944,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+81.21190464580611,SE,4237139455,PECAN STATE UNIT 4303JH,Continental Resources,Pecos,2018-04-23,15901.27417728481,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.22786902661448,SE,4237139467,TREES RANCH 12-11 4301H,Continental Resources,Pecos,2018-06-29,16763.383187209904,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.32177051451798,SE,4237139468,TREES RANCH '12-11' 4102H,Continental Resources,Pecos,2018-06-29,15702.096125344062,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+84.00713053212257,SE,4237139478,REDBUD STATE UNIT 4514MH,Continental Resources,Pecos,2018-02-21,17399.421407907426,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+82.38918077326569,SE,4237139617,REDBUD STATE UNIT 4301LH,Continental Resources,Pecos,2018-07-25,15466.50024962556,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+79.0750237067543,SE,4237139708,STATE WHISKEY RIVER 5-8 21H,Continental Resources,Pecos,2019-04-13,8894.113037515917,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+78.22209141268863,SE,4237139918,SOUTH TEXAS SYNDICATE J 2H,Repsol,Pecos,2019-08-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+83.73689244825049,SE,4237139928,REDBUD STATE UNIT 4510MH,Continental Resources,Pecos,2021-01-15,9906.322711178556,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+82.7418856716109,SE,4237140008,DAEDALUS OW-61-60 812H,Exxon Mobil,Pecos,2019-12-28,12292.96551724138,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+81.36263624354676,SE,4237140189,PECAN STATE UNIT 4505JH,Continental Resources,Pecos,2020-09-21,12310.883741848438,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+81.40273390875393,SE,4237140190,PECAN STATE UNIT 4306VJ,Continental Resources,Pecos,2020-09-28,19300.802785569205,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.39999085026629,SE,4237140341,TREES RANCH 11A 1H,Continental Resources,Pecos,2022-10-11,16201.060240963856,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.71540676796761,SE,4237140344,TREES RANCH 10H 8H,Continental Resources,Pecos,2022-10-17,17020.927765454722,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.5967302745791,SE,4237140346,TREES RANCH 10J 10H,Continental Resources,Pecos,2022-10-17,17498.263553926296,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.82523454094503,SE,4237140348,TREES RANCH 10L 12H,Continental Resources,Pecos,2022-10-17,9722.940382018136,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.82535188257637,SE,4237140349,TREES RANCH 10M 13H,Continental Resources,Pecos,2022-10-17,12026.125518172175,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.4169967695682,SE,4237140370,TREES RANCH 11D 4H,Continental Resources,Pecos,2022-10-17,12561.368015414258,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+80.83052180829011,SE,4237140373,TREES RANCH 10N 14H,Continental Resources,Pecos,2022-10-15,19067.317922429636,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+83.33385756431953,SE,4237140402,REDBUD STATE UNIT 3007MH,Continental Resources,Pecos,2023-07-15,10080.665411173886,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+83.59754535601891,SE,4237140408,REDBUD STATE UNIT 3013MH,Continental Resources,Pecos,2023-07-11,9767.360765168876,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+79.5586543910552,SE,4237140499,HIDEAWAY 6302H,Continental Resources,Pecos,2025-12-04,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+79.62756617716661,SE,4237140500,HIDEAWAY 6303H,Continental Resources,Pecos,2025-12-04,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+78.03932724527337,SE,4238935683,WHISKEY RIVER 3-8 1H,Continental Resources,Reeves,2017-06-22,13070.103933156714,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+46.4399278319913,S,4238935778,CYPRESS STATE 40 402BH,Apache,Reeves,2017-05-12,21918.46959690276,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+53.38390840450382,S,4238936695,MONT BLANC 50 501AH,Apache,Reeves,2018-07-05,13842.06081081081,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+10.43217892563165,SE,4238936805,EL JEFE 7H,ConocoPhillips,Reeves,2020-10-13,13123.106796116504,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+51.999914626853396,SE,4238937586,TINMAN 8180 1U B1H,Chevron,Reeves,2019-04-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+57.52088163068502,S,4238937914,CHINOOK 20 205AH,Apache,Reeves,2019-07-11,2967.734757454384,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+46.04518327896665,S,4238938472,SPRUCE STATE UNIT 40 402BH,Apache,Reeves,2019-10-19,10995.132859773745,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+10.735675271494909,SE,4238939163,BIG KAHUNA 7H,ConocoPhillips,Reeves,2022-05-11,11682.980866062437,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+10.53947876814274,SE,4238939171,BIG KAHUNA 9H,ConocoPhillips,Reeves,2022-05-11,11238.442582552982,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.678358590963617,SE,4238939181,HEAD HONCHO STATE 5H,ConocoPhillips,Reeves,2022-02-09,13437.650120096076,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.349802659932154,S,4238940039,LONESTAR STATE 9WC,ConocoPhillips,Reeves,2023-07-27,8896.382999136526,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.156418913807787,S,4238940041,LONESTAR STATE 1 11WC,ConocoPhillips,Reeves,2023-08-02,7998.368991653076,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.960280396362586,S,4238940043,LONESTAR STATE 1 13WC,ConocoPhillips,Reeves,2023-07-01,8056.67701863354,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.936601666051292,SE,4238941093,ROULETTE 80 802H,ConocoPhillips,Reeves,2025-09-08,7450.863609291245,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+75.5479406680896,SE,4247537237,EILAND 1806A-33 1H,Continental Resources,Ward,2017-09-23,29339.480301760268,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+76.09715015210888,SE,4247537979,EILAND 1806B-33 62H,Continental Resources,Ward,2020-01-07,32991.16179615111,True,WCD,,"excluded: isolated test (tested, not developed)",no12
+60.405559694030536,SE,4247538037,ENGLE UNIT B 43-54 6AH 868943,Surge Energy,Ward,2021-08-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12

@@ -1,0 +1,5 @@
+pool,cutoff,construction,area_sqmi,n_good,n_rolled,hit_good,hit_rolled,tpr,fpr,j
+WCD,2021-01-01,pre-D27 buffered,44.6153677405928,0,0,0,0,,,
+WCD,2021-01-01,D27 envelope,136.67515424418016,0,0,0,0,,,
+WCD,2023-01-01,pre-D27 buffered,59.693239391000404,0,0,0,0,,,
+WCD,2023-01-01,D27 envelope,169.58288887885772,0,0,0,0,,,

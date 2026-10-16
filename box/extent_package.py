@@ -38,6 +38,16 @@ GRIDS = {
     # step 15a: BS3 carbonate = 3BS carbonate top -> 3BS sand top; BS3 sand = 3BS sand top -> Wolfcamp (XY) top
     "BS3_C": ("HCA_3BSPGC_STRUCTURE_MDXYZ_grid.xyz", "HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
     "BS3_S": ("HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_WOLFCAMP_XY_STRUCTURE_MDXYZ_grid.xyz"),
+    # step 15 remaining benches: (bench top, next surface down). AVA_0 has no grid of its own -> Avalon 1 top (stated on its map)
+    "AVA_0": ("HCA_AVALON1_STRUCTURE_MDXYZ_grid.xyz", "HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz"),
+    "AVA_1": ("HCA_AVALON1_STRUCTURE_MDXYZ_grid.xyz", "HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz"),
+    "AVA_2": ("HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz", "HCA_1BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
+    "BS1_S": ("HCA_1BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_2BSPGC_STRUCTURE_MDXYZ_grid.xyz"),
+    "BS2_C": ("HCA_2BSPGC_STRUCTURE_MDXYZ_grid.xyz", "HCA_2BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
+    "WCB_1": ("WOLFCAMP-B1-STRUCTUREXYZ_grid.xyz", "WOLFCAMP-B2-STRUCTUREXYZ_grid.xyz"),
+    "WCB_2": ("WOLFCAMP-B2-STRUCTUREXYZ_grid.xyz", "WOLFCAMP-C-STRUCTUREXYZ_grid.xyz"),
+    "WCC": ("WOLFCAMP-C-STRUCTUREXYZ_grid.xyz", "HCA_WOLFCAMP_D_STRUCTURE_MDXYZ_grid.xyz"),
+    "WCD": ("HCA_WOLFCAMP_D_STRUCTURE_MDXYZ_grid.xyz", "HCA_STRAWN_STRUCTURE_MDXYZ_grid.xyz"),
 }
 STRUCT_STEP_FT, ISO_STEP_FT = 250.0, 25.0
 RULE_COLOURS = {

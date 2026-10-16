@@ -1,0 +1,34 @@
+{
+ "built_at": "2026-10-16T13:27:21-05:00",
+ "git_sha": "57526e1+dirty",
+ "source": "C:\\Users\\MICHAE~1\\AppData\\Local\\Temp\\claude\\C--Users-MichaelMast-Projects-engineering-db\\953b62df-58d0-47a0-b870-c74ea7a2b347\\scratchpad\\deck_v3.pptx",
+ "pools": {
+  "BS1_S": {
+   "slide": 4,
+   "n_freeforms": 0,
+   "n_ink_strokes": 1,
+   "stroke_kinds": [
+    "owner_outline"
+   ],
+   "generated_sqmi": 1535.3541569359654,
+   "edited_sqmi": 3247.461532526107,
+   "added_sqmi": 1713.990545138152,
+   "removed_sqmi": 1.8831695480095962,
+   "n_parts": 1,
+   "n_evidence": 962,
+   "inside_generated": 777,
+   "inside_edited": 894,
+   "outside_edited": 68,
+   "d1_in_generated": 2485,
+   "d1_in_edited": 5335,
+   "outside_by_county": {
+    "Reeves": 35,
+    "Pecos": 20,
+    "Eddy": 10,
+    "Culberson": 2,
+    "Lea": 1
+   },
+   "visual": "BS1_S"
+  }
+ }
+}

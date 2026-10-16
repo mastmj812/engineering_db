@@ -1,0 +1,43 @@
+edge_no,seg_no,edge_class,side,gap_ft,perf_class,perf_ratio,buffer_ft,rule,flag,length_ft
+0,26,pinned,S,0.0,unknown,,1320.0,pinned: floor,,34127.991858875765
+1,87,gap,NW,4499.459682725519,unknown,,2530.9460715331043,gap: k × gap,,17595.829329348548
+2,0,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12797.053944648422
+3,2,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9797.744426370016
+4,6,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,15796.269812811886
+5,10,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,10897.468206929047
+6,12,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11197.39868751981
+7,16,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3699.138471488724
+8,17,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,5798.646646246405
+9,18,gap,SW,5599.327605169535,unknown,,3149.6217779078634,gap: k × gap,,3899.1023737593973
+10,19,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,1499.6547591376343
+11,20,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,99.97698394271549
+12,21,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,15596.102557700626
+13,22,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,499.8849197131088
+14,23,gap,S,5299.3636263211665,unknown,,2980.892039805656,gap: k × gap,,4099.056341643615
+15,24,pinned,S,0.0,unknown,,1320.0,pinned: floor,,8398.010500858476
+16,25,gap,S,3099.627781433135,unknown,,1743.5406270561384,gap: k × gap,,3299.240470103783
+17,26,pinned,S,0.0,unknown,,1320.0,pinned: floor,,12996.414595295435
+18,27,bridge,S,2999.6397884836792,unknown,,1687.2973810220697,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,799.8158715418276
+19,28,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,37591.005339769996
+20,32,pinned,S,0.0,unknown,,1320.0,pinned: floor,,7698.0127532730185
+21,34,bridge,S,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,41390.1535485026
+22,36,pinned,SE,0.0,unknown,,1320.0,pinned: floor,,16296.227686581446
+23,38,bridge,SE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,16096.269176121235
+24,40,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4398.979822982166
+25,47,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,399.90793577081655
+26,48,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,99.97698394253298
+27,50,bridge,NE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,24494.000057646426
+28,64,bridge,NE,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,38390.645267744585
+29,65,gap,NE,1499.8198942418396,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",1599.6317430811268
+30,66,pinned,NE,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",999.7698394248678
+31,67,bridge,NE,2799.6638025847674,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2799.3555503915145
+32,68,pinned,NE,0.0,unknown,,1320.0,potash ignore-gap -> floor (D24),"inside the BLM Secretary's Potash Area: surface, not geology; gap not widened",17395.753060985127
+33,69,bridge,NE,6399.231548765182,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3699.1466497476003
+34,70,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3099.189825276402
+35,71,gap,N,4899.411654523343,unknown,,2755.91905566938,gap: k × gap,,4099.045779206025
+36,72,pinned,N,0.0,unknown,,1320.0,pinned: floor,,4698.79023284279
+37,73,pinned,N,0.0,unknown,,1320.0,pinned: floor,,3499.070318879
+38,74,bridge,N,1699.7958801407515,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1799.5857109657336
+39,75,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6098.596020496505
+40,77,pinned,N,0.0,unknown,,1320.0,pinned: floor,,12397.080240948933
+41,78,bridge,N,3399.591760281503,unknown,,1912.2703651583456,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,26093.641051083247

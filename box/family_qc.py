@@ -30,6 +30,7 @@ shape ratio, with a block-bootstrap 90 % CI.
 from __future__ import annotations
 
 import html
+import itertools
 import json
 import math
 from pathlib import Path
@@ -46,7 +47,15 @@ from box import bench_qc as bq
 from box import qc_rule as qr
 from box.flag_cards import NEVER_INTO, pool
 
-FAMILIES: dict[str, tuple[str, ...]] = {"BS3": ("BS3_S", "BS3_C")}
+FAMILIES: dict[str, tuple[str, ...]] = {
+    "BS3": ("BS3_S", "BS3_C"),  # 15a
+    "WCB": ("WCB_1", "WCB_2"),  # 15b (WCB_2 deep-TVD tagging problem, memory wcb2-deep-tvd-screening)
+    "BS1": ("BS1_S",),  # 15c
+    "WCC": ("WCC",),  # 15d
+    "BS2C": ("BS2_C",),  # step-14 thin-bench candidates
+    "AVA": ("AVA_0", "AVA_1", "AVA_2"),
+    "WCD": ("WCD",),
+}
 BLOCK_FT = 5 * bq.FT_PER_MI  # location FE grain (step 5c used 5-mi blocks where a bench had no TC areas)
 COLOC_FT = 1.5 * bq.FT_PER_MI  # the detector's neighbourhood radius
 N_BOOT = 400
@@ -58,10 +67,10 @@ BOOT_SEED = 20261016
 # ----------------------------------------------------------------------------
 
 
-def frozen_pools(pool_dir: Path) -> dict[str, str]:
-    """api10 -> pool for every wells_final_<pool>.csv in the frozen pool directory."""
+def frozen_pools(pool_dir: Path | list[Path]) -> dict[str, str]:
+    """api10 -> pool for every wells_final_<pool>.csv in the frozen pool directory (or directories)."""
     out: dict[str, str] = {}
-    for f in sorted(pool_dir.glob("wells_final_*.csv")):
+    for f in _finals(pool_dir):
         name = f.stem.removeprefix("wells_final_")
         for a in pd.read_csv(f, dtype={"api10": str}, usecols=["api10"])["api10"]:
             if a in out and out[a] != name:
@@ -70,10 +79,15 @@ def frozen_pools(pool_dir: Path) -> dict[str, str]:
     return out
 
 
-def frozen_tags(pool_dir: Path) -> dict[str, str]:
+def _finals(pool_dir: Path | list[Path]) -> list[Path]:
+    dirs = [pool_dir] if isinstance(pool_dir, Path) else list(pool_dir)
+    return [f for d in dirs for f in sorted(d.glob("wells_final_*.csv"))]
+
+
+def frozen_tags(pool_dir: Path | list[Path]) -> dict[str, str]:
     """api10 -> the formation_blueox tag the frozen pool file recorded (to tell a gate-1 reassignment from a re-tag since)."""
     out: dict[str, str] = {}
-    for f in sorted(pool_dir.glob("wells_final_*.csv")):
+    for f in _finals(pool_dir):
         d = pd.read_csv(f, dtype={"api10": str}, usecols=["api10", "formation_blueox"])
         out.update(zip(d["api10"], d["formation_blueox"]))
     return out
@@ -257,7 +271,7 @@ def _esc(v: Any) -> str:
 
 def family_map(ctx: pd.DataFrame, members: pd.DataFrame, family: tuple[str, ...]) -> str:
     fig, axes = plt.subplots(1, len(family), figsize=(8 * len(family), 8))
-    cols = {"BS3_S": "#0891b2", "BS3_C": "#c2410c"}
+    from box.flag_cards import _BENCH_COLORS as cols
     for ax, bench in zip(np.atleast_1d(axes), family):
         bq._basemap(ax, ctx, members)
         for other in family:
@@ -337,7 +351,7 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
     p.append(f"<img src=\"{imgs['map']}\" style='max-width:100%'>")
     # --- flags
     p.append("<h2 id=flags>2. Consensus flags touching the family, by swap class and how the rule of record treats them</h2>")
-    p.append("<p>Class standing is the gate-1 card ledger (box/qc_rule.py). No accepted class points INTO a Bone Spring 3 bench. "
+    p.append("<p>Class standing is the gate-1 card ledger (box/qc_rule.py). Accepted classes into the family are applied per the rule. "
              "Uncalibrated classes keep their tag (rule default) — the gate decides whether any needs calibration cards.</p>")
     fl = s["flags"]
     p.append(bq._table(["swap class", "direction", "standing", "rule action", "flags", "of which D9 cohort"],
@@ -348,30 +362,31 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
     p.append("<h2 id=sens>3. Do the flags move the evidence? (gate-1 sensitivity pattern)</h2>")
     p.append(bq._table(["bench", "cohort n, tags as-is", "median 12-mo oil / kft", "cohort n, every flag applied", "median", "change"],
                        [[r["bench"], f(r["n_tags"]), f(r["med_tags"], 0), f(r["n_all_flags"]), f(r["med_all_flags"], 0), f(r["rel_change"], pct=True)] for r in s["sensitivity"]]))
-    # --- pooling
-    pe = s["pooling"]
-    a, b = pe["a"], pe["b"]
-    p.append(f"<h2 id=pool>4. Pooling evidence: {a} vs {b} (D19 / D33 pattern)</h2>")
-    ps = s["pair_sep"]
-    if ps:
-        p.append(f"<p><b>Local depth separation</b> where both bands are coherent in the same 1.5-mi neighbourhood ({b} band − {a} band; + = {b} deeper): "
-                 f"median {f(ps['med_sep_ft'], 0)} ft (IQR {f(ps['p25_sep_ft'], 0)} … {f(ps['p75_sep_ft'], 0)}), {f(ps['n_hoods'])} neighbourhoods; "
-                 f"merged (&lt; 100 ft) in {f(ps['share_within_100ft'], pct=True)}; stack order inverted in {f(ps['share_inverted'], pct=True)}. "
-                 f"TX {f(ps['n_tx'])} / median {f(ps['med_sep_ft_tx'], 0)} ft / merged {f(ps['share_within_100ft_tx'], pct=True)}; "
-                 f"NM {f(ps['n_nm'])} / {f(ps['med_sep_ft_nm'], 0)} ft / {f(ps['share_within_100ft_nm'], pct=True)}.</p>")
-    else:
-        p.append("<p>Local depth separation: fewer than 30 neighbourhoods with both bands coherent.</p>")
-    rw = pe["raw"]
-    p.append(bq._table(["D9 cohort", "n", "median 12-mo oil / kft", "median 12-mo GOR scf/bbl", "median TVD ft", "median lateral ft", "NM share",
-                        "share with other bench's cohort well ≤ 1.5 mi", "median nearest other-bench well, mi"],
-                       [[x, f(rw[x]["n_cohort"]), f(rw[x]["med_oil12_kft"], 0), f(rw[x]["med_gor12"], 0), f(rw[x]["med_tvd_ft"], 0), f(rw[x]["med_lateral_ft"], 0),
-                         f(rw[x]["share_nm"], pct=True), f(pe.get(f"coloc_{x}", {}).get("share_within_1p5mi"), pct=True), f(pe.get(f"coloc_{x}", {}).get("median_nn_mi"), 2)] for x in (a, b)]))
-    p.append(f"<p><b>Within-location contrasts</b> ({b} relative to {a}), D9 cohort, 5-mi block FE + first-production-year FE, only blocks holding both benches; "
-             f"90 % CI = bootstrap over blocks ({N_BOOT} draws). This is the D33 test: a difference inside area-to-area noise argues for one pool.</p>")
-    p.append(bq._table(["measure", f"{b} / {a}", "90 % CI", "blocks with both", f"n {a}", f"n {b}"],
-                       [[lab, f(pe[k]["ratio"], 3), f"{f(pe[k]['ci90'][0], 3)} … {f(pe[k]['ci90'][1], 3)}", f(pe[k]["n_blocks_both"]), f(pe[k]["n_a"]), f(pe[k]["n_b"])]
-                        for k, lab in (("oil12_kft", "12-mo oil per 1,000 ft"), ("gor12", "12-mo GOR"), ("cum24_over_cum12", "cum-24 / cum-12 oil (shape)"))]))
-    p.append(f"<img src=\"{imgs['ratio']}\" style='max-width:700px'>")
+    # --- pooling (one section per adjacent pair; none for a one-bench family)
+    if not s["poolings"]:
+        p.append("<h2 id=pool>4. Pooling evidence</h2><p>One-bench family: nothing to pool.</p>")
+    for pe, ps, ratio_img in s["poolings"]:
+        a, b = pe["a"], pe["b"]
+        p.append(f"<h2 id=pool>4. Pooling evidence: {a} vs {b} (D19 / D33 pattern)</h2>")
+        if ps:
+            p.append(f"<p><b>Local depth separation</b> where both bands are coherent in the same 1.5-mi neighbourhood ({b} band − {a} band; + = {b} deeper): "
+                     f"median {f(ps['med_sep_ft'], 0)} ft (IQR {f(ps['p25_sep_ft'], 0)} … {f(ps['p75_sep_ft'], 0)}), {f(ps['n_hoods'])} neighbourhoods; "
+                     f"merged (&lt; 100 ft) in {f(ps['share_within_100ft'], pct=True)}; stack order inverted in {f(ps['share_inverted'], pct=True)}. "
+                     f"TX {f(ps['n_tx'])} / median {f(ps['med_sep_ft_tx'], 0)} ft / merged {f(ps['share_within_100ft_tx'], pct=True)}; "
+                     f"NM {f(ps['n_nm'])} / {f(ps['med_sep_ft_nm'], 0)} ft / {f(ps['share_within_100ft_nm'], pct=True)}.</p>")
+        else:
+            p.append("<p>Local depth separation: fewer than 30 neighbourhoods with both bands coherent.</p>")
+        rw = pe["raw"]
+        p.append(bq._table(["D9 cohort", "n", "median 12-mo oil / kft", "median 12-mo GOR scf/bbl", "median TVD ft", "median lateral ft", "NM share",
+                            "share with other bench's cohort well ≤ 1.5 mi", "median nearest other-bench well, mi"],
+                           [[x, f(rw[x]["n_cohort"]), f(rw[x]["med_oil12_kft"], 0), f(rw[x]["med_gor12"], 0), f(rw[x]["med_tvd_ft"], 0), f(rw[x]["med_lateral_ft"], 0),
+                             f(rw[x]["share_nm"], pct=True), f(pe.get(f"coloc_{x}", {}).get("share_within_1p5mi"), pct=True), f(pe.get(f"coloc_{x}", {}).get("median_nn_mi"), 2)] for x in (a, b)]))
+        p.append(f"<p><b>Within-location contrasts</b> ({b} relative to {a}), D9 cohort, 5-mi block FE + first-production-year FE, only blocks holding both benches; "
+                 f"90 % CI = bootstrap over blocks ({N_BOOT} draws). This is the D33 test: a difference inside area-to-area noise argues for one pool.</p>")
+        p.append(bq._table(["measure", f"{b} / {a}", "90 % CI", "blocks with both", f"n {a}", f"n {b}"],
+                           [[lab, f(pe[k]["ratio"], 3), f"{f(pe[k]['ci90'][0], 3)} … {f(pe[k]['ci90'][1], 3)}", f(pe[k]["n_blocks_both"]), f(pe[k]["n_a"]), f(pe[k]["n_b"])]
+                            for k, lab in (("oil12_kft", "12-mo oil per 1,000 ft"), ("gor12", "12-mo GOR"), ("cum24_over_cum12", "cum-24 / cum-12 oil (shape)"))]))
+        p.append(f"<img src=\"{ratio_img}\" style='max-width:700px'>")
     # --- asks
     p.append("<h2 id=asks>5. Gate asks</h2><ol>" + "".join(f"<li>{x}</li>" for x in s["asks"]) + "</ol>")
     p.append("</body></html>")
@@ -384,7 +399,7 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
 # ----------------------------------------------------------------------------
 
 
-def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path, verdicts: dict[str, str],
+def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path | list[Path], verdicts: dict[str, str],
           excluded_ids: set[str], meta: dict[str, Any]) -> dict[str, Any]:
     """Everything after the pull + consensus scoring (pure apart from file writes)."""
     family = FAMILIES[family_name]
@@ -399,7 +414,8 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path,
         bench_summaries[bench] = bs
     ruled = qr.apply_rule(scored, verdicts)
     frozen = frozen_pools(pool_dir)
-    universe = pd.read_csv(pool_dir / "universe.csv", dtype={"api10": str})
+    udir = next(d for d in ([pool_dir] if isinstance(pool_dir, Path) else pool_dir) if (d / "universe.csv").exists())
+    universe = pd.read_csv(udir / "universe.csv", dtype={"api10": str})
     seen_ids = set(universe["api10"])
     roles = family_membership(ruled, family, frozen, seen_ids, excluded_ids)
     roles["frozen_tag"] = roles["api10"].map(frozen_tags(pool_dir))
@@ -439,27 +455,32 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path,
     for bench in family:
         b = scored[(scored["formation_blueox"] == bench) & (scored["cons_status"] == "ambiguous_lith")]
         lith[bench] = {"n": len(b), "to": b["cons_suggest"].value_counts().to_dict()}
-    a, b = family
     fam_members = final.reset_index(drop=True)
     xy = bq._project_xy_ft(fam_members["mid_lon"].values, fam_members["mid_lat"].values)
-    pooling = pooling_evidence(fam_members, a, b, xy)
-    pair_sep = next((r for r in bench_summaries[a]["pair_separation"] if r["other"] == b), None)
     ctx = scored[~scored["formation_blueox"].isin(family) & scored["mid_lon"].notna()]
-    ratio_png, n_ratio_blocks = block_ratio_map(ctx, fam_members, xy, a, b)
-    imgs = {"map": family_map(ctx, fam_members, family), "ratio": ratio_png}
+    poolings, pool_json = [], []
+    for a, b in itertools.pairwise(family):
+        pe = pooling_evidence(fam_members, a, b, xy)
+        ps = next((r for r in bench_summaries[a]["pair_separation"] if r["other"] == b), None)
+        ratio_png, n_rb = block_ratio_map(ctx, fam_members, xy, a, b)
+        pe["n_ratio_blocks"] = n_rb
+        poolings.append((pe, ps, ratio_png))
+        pool_json.append({"pooling": pe, "pair_sep": ps})
+    imgs = {"map": family_map(ctx, fam_members, family)}
     flags = flag_ledger(ruled, family)
     unc = flags[flags["standing"].str.startswith("uncalibrated")]
     s: dict[str, Any] = {
-        **meta, "family": family_name, "benches": list(family), "pool_dir": str(pool_dir), "set": set_s,
+        **meta, "family": family_name, "benches": list(family), "pool_dir": str(pool_dir) if isinstance(pool_dir, Path) else [str(d) for d in pool_dir], "set": set_s,
         "pooled_final": len(final), "pooled_fp_ge_2016": int(sum(fp >= bq.COHORT_FP_MIN for fp in final["first_production_date"])),
         "pooled_cohort": int(final["cohort"].sum()), "flags": flags.to_dict(orient="records"), "lith": lith,
-        "sensitivity": sensitivity(ruled, family), "pooling": pooling, "pair_sep": pair_sep, "n_ratio_blocks": n_ratio_blocks,
+        "sensitivity": sensitivity(ruled, family), "pairs": pool_json,
+        **({"pooling": pool_json[0]["pooling"], "pair_sep": pool_json[0]["pair_sep"], "n_ratio_blocks": pool_json[0]["pooling"]["n_ratio_blocks"]} if pool_json else {}),
         "uncalibrated_flags": int(unc["n"].sum()), "uncalibrated_classes": sorted(set(unc["swap_class"])),
         "bench_summaries": {k: {kk: v[kk] for kk in ("n_prod_hz", "n_tx", "n_nm", "n_cohort", "planned_share", "planned_share_nm", "round_tvd_share",
                                                      "sql23_disagree_share", "cons_flag_n", "cons_flag_share", "cons_lith_n", "cohort_med_oil12_kft", "border_step")}
                             for k, v in bench_summaries.items()},
         "asks": meta.get("asks", []),
     }
-    render_family_page(out_dir / "index.html", family_name, family, s, imgs)
+    render_family_page(out_dir / "index.html", family_name, family, {**s, "poolings": poolings}, imgs)
     (out_dir / "summary.json").write_text(json.dumps(s, indent=1, default=str), encoding="utf-8")
     return s

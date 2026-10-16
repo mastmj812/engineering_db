@@ -33,8 +33,19 @@ from scripts.box_family_extents import _git_sha
 SCOPE_ROW = {
     "BS3_S": ("{BS3_S}", "Bone Spring 3 sand: 2,365 modern producers; step 15a QC gate (not pooled with BS3_C); extent = owner hand edit of generated D27 v1"),
     "BS3_C": ("{BS3_C}", "Bone Spring 3 carbonate: 1,651 modern producers; step 15a QC gate (not pooled with BS3_S); extent = owner hand edit of generated D27 v1"),
+    # step 15 remaining benches (2026-10-16): extent = owner pen loops (or the generated v1 where no loop was drawn)
+    "WCB_1": ("{WCB_1}", "Wolfcamp B1: 1,664 modern producers; step 15 extent pass (owner loops)"),
+    "WCB_2": ("{WCB_2}", "Wolfcamp B2: 1,090 modern producers; step 15 extent pass (owner loops); deep-TVD tagging caveat"),
+    "BS1_S": ("{BS1_S}", "Bone Spring 1 sand: 962 modern producers; step 15 extent pass (owner loops)"),
+    "WCC": ("{WCC}", "Wolfcamp C: 923 modern producers; step 15 extent pass (generated v1 accepted)"),
+    "BS2_C": ("{BS2_C}", "Bone Spring 2 carbonate: 650 modern producers; step 15 extent pass (owner loops, two bodies)"),
+    "AVA_0": ("{AVA_0}", "Avalon 0: 221 modern producers; step 15 extent pass (generated v1 accepted)"),
+    "AVA_1": ("{AVA_1}", "Avalon 1: 493 modern producers; step 15 extent pass (generated v1 accepted)"),
+    "AVA_2": ("{AVA_2}", "Avalon 2: 333 modern producers; step 15 extent pass (generated v1 accepted)"),
+    "WCD": ("{WCD}", "Wolfcamp D: 150 modern producers; step 15 extent pass (generated v1 accepted)"),
 }
 DECISION_REF = "step 15a gates (docs/box/step15a-2026-10-16/FINDINGS.md §5, §8)"
+DECISION_REF_15 = "step 15 extent pass (docs/box/step15-extents-2026-10-16/FINDINGS.md §4)"
 
 
 def _extent_geojson(path: Path) -> object:
@@ -49,10 +60,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pool", nargs="+", required=True, choices=sorted(SCOPE_ROW))
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--out-of-scope", nargs="*", default=[], help="benches whose bench_scope row is in_scope = false (extent stored for reference; D2 / step 14 pending)")
+    ap.add_argument("--decision-ref", default=None)
     a = ap.parse_args(argv)
     ext_dir = a.wells / "extents"
     bp = fe.record_params()
-    run_id = f"step15a {dt.date(2026, 10, 16)} {_git_sha()}"
+    run_id = f"step15 {dt.date(2026, 10, 16)} {_git_sha()}"
+    eds = json.loads((ext_dir / "edited" / "summary.json").read_text(encoding="utf-8"))
+    dref = a.decision_ref or (DECISION_REF if set(a.pool) <= {"BS3_S", "BS3_C"} else DECISION_REF_15)
     with get_connection() as conn:
         # --- identity, read-only
         with conn.cursor() as cur:
@@ -68,17 +83,24 @@ def main(argv: list[str] | None = None) -> int:
         plan = {}
         for pool in a.pool:
             reviewed = _extent_geojson(ext_dir / f"extent_{pool}_v{a.version}.geojson")
-            edited = _extent_geojson(ext_dir / "edited" / f"extent_{pool}_v{a.version}_edited.geojson")
+            ep = eds["pools"][pool]
+            owner_marks = int(ep.get("n_freeforms", 1)) + int(ep.get("n_ink_strokes", 0))
+            edited = _extent_geojson(ext_dir / "edited" / f"extent_{pool}_v{a.version}_edited.geojson") if owner_marks else None
             b = er.build_pool(df[df.pool == pool], pool, bp, sopa, None)
             d_area = abs(b["extent"].area - reviewed.area) / eg.FT_PER_MI**2
             d_sym = b["extent"].symmetric_difference(reviewed).area / eg.FT_PER_MI**2
             print(f"{pool}: rebuilt generated {b['stats']['extent_sqmi']:,.2f} vs reviewed {reviewed.area / eg.FT_PER_MI**2:,.2f} sq mi "
-                  f"(|d area| {d_area:.4f}, sym diff {d_sym:.4f}); edited {edited.area / eg.FT_PER_MI**2:,.2f}")
+                  f"(|d area| {d_area:.4f}, sym diff {d_sym:.4f}); "
+                  + (f"owner edit {edited.area / eg.FT_PER_MI**2:,.2f} sq mi = record" if edited is not None else "no owner marks: generated v1 = record")
+                  + f"; in_scope={pool not in a.out_of_scope}")
             if d_area > 0.01 or d_sym > 0.05:
                 print(f"REFUSED: {pool} rebuilt generated extent differs from the reviewed one")
                 return 3
+            if edited is None:
+                plan[pool] = (b, None, {})
+                continue
             diff = ex.diff(b["extent"], edited, b["extent"].centroid)
-            plan[pool] = (b, edited, {k: v for k, v in diff.items() if k != "pieces"} | {"source": "owner hand edit (bs3_extents.pptx, Michael 2026-10-16)"})
+            plan[pool] = (b, edited, {k: v for k, v in diff.items() if k != "pieces"} | {"source": f"owner hand edit ({Path(eds['source']).name}, Michael 2026-10-16)"})
         if a.dry_run:
             print("dry run: nothing written")
             return 0
@@ -88,12 +110,17 @@ def main(argv: list[str] | None = None) -> int:
                 members, reason = SCOPE_ROW[pool]
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
-                       VALUES (%s, %s, true, %s, %s, %s, %s) ON CONFLICT (basin, bench) DO NOTHING""",
-                    (BASIN, pool, members, reason, dt.date(2026, 10, 16), DECISION_REF),
+                       VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (basin, bench) DO NOTHING""",
+                    (BASIN, pool, pool not in a.out_of_scope, members,
+                     reason + ("; IN_SCOPE FALSE pending the step-14 D2 decision (extent stored for reference)" if pool in a.out_of_scope else ""),
+                     dt.date(2026, 10, 16), dref),
                 )
         conn.commit()
         for pool, (b, edited, dstats) in plan.items():
-            gid = store_generated(conn, pool, a.version, b, bp, run_id, make_record=False)
+            gid = store_generated(conn, pool, a.version, b, bp, run_id, make_record=edited is None)
+            if edited is None:
+                print(f"stored {pool}: generated v{a.version} extent_id {gid} = version of record (no owner marks)")
+                continue
             eid = store_edited(conn, pool, a.version, edited, dstats, make_record=True)
             print(f"stored {pool}: generated v{a.version} extent_id {gid}; edited v{a.version} extent_id {eid} = version of record")
         # --- verify, read-only
