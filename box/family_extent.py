@@ -552,12 +552,20 @@ def pptx_ink(pptx: Path) -> dict[int, list[list[tuple[float, float]]]]:
             for part in re.findall(r"<p:contentPart[^>]*>.*?</p:contentPart>", xml, flags=re.DOTALL):
                 rid = re.search(r'r:id="(rId\d+)"', part).group(1)
                 tgt = re.search(rf'Id="{rid}"[^>]*Target="\.\./ink/([^"]+)"', rels) or re.search(rf'Target="\.\./ink/([^"]+)"[^>]*Id="{rid}"', rels)
-                ox, oy = (int(v) for v in re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/>', part).groups())
+                ox, oy, cx, cy = (int(v) for v in re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>', part).groups())
                 ink = z.read(f"ppt/ink/{tgt.group(1)}").decode("utf-8")
-                for tr in re.findall(r"<inkml:trace[^>]*>(.*?)</inkml:trace>", ink, flags=re.DOTALL):
-                    pts = decode_inkml_trace(tr)
-                    if len(pts) >= 2:
-                        strokes.append([(ox + x * EMU_PER_HIMETRIC, oy + y * EMU_PER_HIMETRIC) for x, y in pts])
+                traces = [t for t in (decode_inkml_trace(tr) for tr in re.findall(r"<inkml:trace[^>]*>(.*?)</inkml:trace>", ink, flags=re.DOTALL)) if len(t) >= 2]
+                if not traces:
+                    continue
+                # trace coordinates carry their own origin: map the part's ink extent onto the box PowerPoint placed it in
+                # (verified against PowerPoint's own fallback rendering of the ink, 2026-10-16; offset-only was wrong)
+                allx = [x for t in traces for x, _ in t]
+                ally = [y for t in traces for _, y in t]
+                x0, x1, y0, y1 = min(allx), max(allx), min(ally), max(ally)
+                sx = cx / (x1 - x0) if x1 > x0 else EMU_PER_HIMETRIC
+                sy = cy / (y1 - y0) if y1 > y0 else EMU_PER_HIMETRIC
+                for t in traces:
+                    strokes.append([(ox + (x - x0) * sx, oy + (y - y0) * sy) for x, y in t])
             out[k] = strokes
     return out
 

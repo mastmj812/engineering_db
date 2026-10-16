@@ -104,26 +104,28 @@ copy while PowerPoint held it open. Outputs are in `step15-<family>-2026-10-16/e
 `reading_<bench>.png` (his loops on the exact PNG he drew on), and summary.json.
 
 **Convention of record (Michael, 2026-10-16): the red loops ARE the extent; ignore the black generated outline.**
-- Extent = union of his closed pen loops. No attaching to the outline, no chords, no joining; voids filled; clipped to
-  the map shown; pieces under 1 sq mi dropped. Benches with no loops keep the generated extent.
-- How we got here: two earlier readings (open strokes attached to the outline, then generated ∪ loops) mixed his red
-  with my black, and he called it.
-- Bookkeeping fix: the D1 PUD count window now covers both the generated and the edited extent.
+Extent = union of his closed pen loops, clipped to the map shown; voids filled; pieces under 1 sq mi dropped. Benches
+with no loops keep the generated extent.
 
-| bench | generated sq mi | **owner extent sq mi** | parts | ≥ 2016 laterals inside: generated → owner | D1 PUDs inside: generated → owner | developed laterals left outside (by county) |
+**Defect found and fixed: pen strokes were being placed in the wrong spot.** PowerPoint stores pen ink in InkML
+coordinates that carry their own origin. The first reader assumed "box offset + 0.01 mm × 360 EMU", which put every
+pen stroke up to ~1.7 in (on the slide) away from where it was drawn. That is why the first-pass readings and the
+first two readings of this deck looked wrong.
+- Fix: each ink part's extent is mapped onto the box PowerPoint placed it in.
+- Verified against PowerPoint's own rendering of the ink (the fallback picture): median 0.4 px, max 0.9 px on all four
+  slides.
+- The BS3 edits used freeforms, a separate code path that was already verified exact; they are unaffected.
+
+| bench | generated sq mi | **owner extent sq mi** | parts | ≥ 2016 laterals inside: generated → owner | D1 PUDs inside: generated → owner | developed laterals outside (by county) |
 |---|---:|---:|---:|---|---|---|
-| BS2_C | 1,083 | **1,524** | 2 | 367 → 265 of 650 | 2,247 → 3,089 | Loving 110, Reeves 89, Pecos 74, Eddy 64, Lea 39, other 9 |
-| WCB_1 | 3,921 | **3,533** | 1 | 1,580 → 864 of 1,664 | 4,523 → 2,825 | Reeves 560, Culberson 106, Ward 55, Pecos 30, Eddy 26, other 23 |
-| WCB_2 | 1,624 | **2,180** | 1 | 507 → 419 of 1,090 | 1,668 → 1,561 | Reeves 386, Ward 85, Eddy 61, Culberson 45, Loving 38, other 56 |
-| BS1_S | 1,535 | **3,243** | 1 | 777 → 186 of 962 | 2,485 → 3,964 | **Lea 614**, Loving 89, Reeves 35, Pecos 20, other 18 |
+| BS2_C | 1,083 | **1,525** | 2 (main + SE) | 367 → 547 of 650 | 2,247 → 3,005 | Eddy 44, Lea 29, Loving 13, other 17 |
+| WCB_1 | 3,921 | **3,554** | 1 | 1,580 → 1,538 of 1,664 | 4,523 → 4,144 | Eddy 44, Reeves 34, Pecos 23, Culberson 17, Lea 8 |
+| WCB_2 | 1,624 | **3,037** | 1 | 507 → 939 of 1,090 | 1,668 → 2,615 | Eddy 50, Ward 43, Reeves 26, Pecos 23, other 9 |
+| BS1_S | 1,535 | **3,247** | 1 | 777 → 894 of 962 | 2,485 → 5,335 | Reeves 35, Pecos 20, Eddy 10, other 3 |
 | WCC, AVA_0, AVA_1, AVA_2, WCD | as generated | unchanged | | | | |
 
-**Conflict to confirm, not resolve:** D27 says developed ground is always inside the extent. These owner extents
-leave developed laterals out on all four benches. That is legitimate as an owner decision; it would be recorded as a
-D27 exception for these benches.
-
-The largest case is BS1_S. The loop covers the western shelf, the north, and the west edge of the main Lea body. The
-main body itself (≈ 614 Lea laterals) is outside.
+The laterals left outside are mostly scattered step-out tests beyond the loops. That is the owner's call: a D27
+exception only where the outside laterals are development, and they read as tests.
 
 Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the owner v1 (or
 the generated v1 for the unchanged benches) as the version of record.
