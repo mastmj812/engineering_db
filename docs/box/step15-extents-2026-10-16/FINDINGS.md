@@ -129,3 +129,44 @@ exception only where the outside laterals are development, and they read as test
 
 Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the owner v1 (or
 the generated v1 for the unchanged benches) as the version of record.
+
+## 5. QC gate — CLOSED 2026-10-16 (Michael)
+
+1. **WCD dropped: emerging bench** ("not enough development history to be applicable for this type of workflow, the same
+   way we're not doing WDFD extents"). This is a D2 addition: WCD joins Delaware WDFD as out of scope, shown as
+   "not covered: emerging", worked by hand per deal. No WCD extent is stored; its generated extent and QC set stay
+   here as the record of why. The other eight sets are confirmed as built (rule of record + gate-1 cards, no new cards).
+2. WCB_1 and WCB_2 are **not pooled** (WCB_2 0.87× oil/kft [0.83–0.92], 1.35× GOR within block).
+3. AVA_0 / AVA_1 / AVA_2 stay **separate for now**; pooling is revisited at step 14 / tuning (thin cohorts).
+4. The WCB_1 state-line step (+16.5 % oil/kft, +817 ft TVD across the line) reads as **geology, not tagging**, for now.
+
+Open, not blocking: the WCB_2 37-well high-value tag review (memory `wcb2-deep-tvd-screening`); 72 OTHER wells in
+the AVA_0 band (step-14 thin-bench call).
+
+These are proposed decisions of record for the next sequential session to number into plan §2 (D2 gains WCD).
+
+## 6. Extent gate — CLOSED 2026-10-16: STORED LIVE (Michael: "go apply")
+
+`python -m scripts.box_family_extent_store --wells docs/box/step15-<family>-2026-10-16 --pool <benches>` for each
+family, plus `--emerging WCD`, at 6a4e12e. Before writing, each rebuilt generated extent matched the reviewed one
+(|Δ area| ≤ 0.0003 sq mi, symmetric difference ≤ 0.004 sq mi). No DDL, no sql/NN.
+
+| bench | box.bench_scope | generated v1 | **version of record** |
+|---|---|---|---|
+| BS2_C | in scope | 19 (1,082.7 sq mi, 41 edges) | **20**, owner, 1,524.6 sq mi (2 parts) |
+| WCB_1 | in scope | 21 (3,921.3, 165 edges) | **22**, owner, 3,554.1 |
+| WCB_2 | in scope | 23 (1,624.4, 48 edges) | **24**, owner, 3,036.7 |
+| BS1_S | in scope | 25 (1,535.4, 125 edges) | **26**, owner, 3,247.5 |
+| WCC | in scope | **27** = record (1,454.8, 105 edges) | generated |
+| AVA_0 | in scope | **28** = record (259.1, 62 edges) | generated |
+| AVA_1 | in scope | **29** = record (548.0, 59 edges) | generated |
+| AVA_2 | in scope | **30** = record (623.6, 82 edges) | generated |
+| WCD | **in_scope = false**, emerging (D2) | none | none |
+
+Read-only check after the writes:
+- 18 extent rows; 12 records, exactly one per in-scope Delaware bench.
+- WCA 6, BS2_S 7, BS3_S 16 and BS3_C 18 are unchanged.
+- bench_scope holds the 13 Delaware rows and the 4 Midland rows.
+
+Nothing downstream changes yet. The BOX production record (run 7) covers WCA only, and these benches stay
+"not covered" until each passes its own tuning view + holdout (steps 9a–9c pattern).
