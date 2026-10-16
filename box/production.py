@@ -12,8 +12,10 @@ Pieces (pure unless they take `conn`):
                             P50 fit per stream -> lateral multiplier), returning the fit dicts and the named analogs.
   haircut_table(cells)      D62: per stream x horizon, the package-weighted mean box_v2 package bias over every cutoff's tuning AND
                             holdout cells with >= 30 packages (the walk-forward history rule, pooled).
-  haircut_curve(tab)        D62: factor by month, cum-12 factor before month 12, linear between 12/24/36/48, cum-48 held to month 600.
-  apply_haircut(months, f)  corrected cumulative = cumulative x f(month); monthly = its differences (sums to eur_raw x f(600)).
+  apply_haircut_c1(m, tab)  D92 (current): the D62 factors applied to the RATE as g(k) = a + b ln(min(k, 48)), held after 48, (a, b)
+                            least squares to the cum factors at 12/24/36/48 per location — no rate rebound.
+  haircut_curve(tab)        D62 as built (runs 4, 6): factor by month, cum-12 before month 12, linear between 12/24/36/48, cum-48 held.
+  apply_haircut(months, f)  D62 as built: corrected cumulative = cumulative x f(month); monthly = its differences.
 
 The haircut is measured on CALENDAR predictions (F(k) applied, the D53 harness); BOX delivers uptime-free volumes x haircut (D63),
 which is right when the consumer's downtime factor plays F(k)'s role — the delivery says so.
@@ -300,8 +302,40 @@ def haircut_curve(tab: Mapping[int, Mapping[str, float]], n: int = N_MONTHS) -> 
     return np.interp(m, hs, fs, left=fs[0], right=fs[-1])
 
 
+HAIRCUT_METHOD = "D92 C1: rate factor g(k) = a + b ln(min(k, 48)), least squares to the D62 cum factors, held after month 48"
+
+
+def apply_haircut_c1(months_raw: np.ndarray, tab: Mapping[int, Mapping[str, float]]) -> tuple[np.ndarray, dict[str, Any]]:
+    """D92 (replaces the D62 APPLICATION for runs built after 2026-10-15; the D62 factors themselves are unchanged).
+
+    The haircut multiplies the monthly RATE by a smooth factor g(k) = a + b ln(min(k, 48)) — g held at g(48) from month 48 on —
+    with (a, b) chosen per location by least squares so the realised cumulative factor sum(raw x g) / sum(raw) at months
+    12 / 24 / 36 / 48 matches the D62 table's factors (each horizon weighted equally). D62's linear cum factor met the knots
+    exactly but, being a falling CUMULATIVE factor held flat after 48, forced the rate down through year 4 and back up at month 49
+    (record run 6: year-4 oil = 0.735 x year 5); g is monotone in k, so the haircut never makes a rate rise. Returns
+    (monthly volumes, info: a, b, g at months 1 and 48, realised cum factor per horizon, eur factor)."""
+    raw = np.asarray(months_raw, float)
+    ks = sorted(int(k) for k in tab)
+    fs = np.array([float(tab[k]["factor"]) for k in ks])
+    idx = np.array(ks) - 1
+    lnk = np.log(np.minimum(np.arange(1, len(raw) + 1, dtype=float), float(ks[-1])))
+    c = np.cumsum(raw)[idx]
+    if (c <= 0).any():
+        raise ValueError("haircut C1 needs production before every horizon")
+    A = np.column_stack([np.ones(len(ks)), np.cumsum(raw * lnk)[idx] / c])
+    a, b = np.linalg.lstsq(A, fs, rcond=None)[0]
+    g = a + b * lnk
+    if not (g > 0).all():
+        raise ValueError(f"haircut C1 factor not positive (a={a}, b={b})")
+    v = raw * g
+    real = np.cumsum(v)[idx] / c
+    return v, {"method": "c1_log_rate", "a": float(a), "b": float(b), "g_month1": float(g[0]), "g_tail": float(g[-1]),
+               "realised": {str(k): float(r) for k, r in zip(ks, real, strict=True)}, "eur_factor": float(v.sum() / raw.sum())}
+
+
 def apply_haircut(months_raw: np.ndarray, f: np.ndarray) -> np.ndarray:
-    """Corrected cumulative = raw cumulative x f(month); monthly = its differences (clipped at 0, re-normalised so the sum is exact)."""
+    """D62 AS BUILT for runs 4 and 6 (superseded by apply_haircut_c1, D92; kept to reproduce those stored runs).
+    Corrected cumulative = raw cumulative x f(month); monthly = its differences (clipped at 0, re-normalised so the sum is exact)."""
     cum = np.cumsum(np.asarray(months_raw, float)) * f
     v = np.diff(np.concatenate(([0.0], cum)))
     if (v < 0).any():

@@ -3,13 +3,16 @@
     python -m scripts.box_pud_run build  [--out runs/box7c] [--workers N]     read-only vs the warehouse; writes run.pkl
     python -m scripts.box_pud_run store  [--out runs/box7c] [--record]        writes run.pkl to the DB the DB_* env points at
     python -m scripts.box_pud_run render [--out runs/box7c] [--docs docs/box/step7c-2026-10-15]
+    python -m scripts.box_pud_run rehaircut --from runs/box7c_r2 --out runs/box8_c1   re-applies the CURRENT haircut (D92) to an
+                                                                                     existing build's raw months; nothing else changes
 
 build mirrors the D53 harness's analog pool construction (box/backtest_report.run_fold + box/acceptance.add_analog_predictions_v2) at
 a production cutoff = the month after the last full production month, with no holdout: gate-1 WCA well set (exclusions applied),
 per-well boxfit fits at the cutoff, D56 completed laterals, D55 strike search, short-lateral Cui translation. Each covered location
 gets the box_v2 P50 per stream (box/production.fit_location); an equivalence check re-runs the harness's own predict_location_v2 on a
 sample and requires identical monthly volumes. F(k) is calibrated exactly as the harness does (seeded 500-well training sample,
-as-of cohorts) and PUBLISHED, not applied (D63). The D62 haircut comes from the stored tuning + holdout cells.
+as-of cohorts) and PUBLISHED, not applied (D63). The D62 haircut factors come from the stored tuning + holdout cells and are applied
+to the rate by the D92 C1 shape (box/production.apply_haircut_c1); runs 4 and 6 used D62's linear cumulative factor.
 
 store writes box.location / location_source (first run = seed; a re-run of the same vintage reuses its ids; a NEW vintage carries
 locations forward by the D73 crosswalk from the most recent earlier vintage; an older vintage than one stored is refused), box.forecast_run, box.pud_forecast (every universe row), pud_forecast_stream,
@@ -239,15 +242,11 @@ def cmd_build(a: argparse.Namespace) -> int:
         raise SystemExit(f"box_v2 path is NOT the harness's: {eq}")
     F = calendar_factor(P, a.workers)
     disc = disclosure(cells, hcut)
-    curves = {s: pr.haircut_curve(hcut[s]) for s in pr.STREAMS}
-    for r in res:
-        for s, st in r.get("streams", {}).items():
-            st["months"] = pr.apply_haircut(st["months_raw"], curves[s])
-            st["eur_raw"], st["eur"] = float(np.sum(st["months_raw"])), float(np.sum(st["months"]))
+    apply_haircut_all(res, hcut)
     run = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": code_sha, "engine_sha": boxfit_sha(),
            "dealintake_config": int(cfg.raw.get("config_version")), "report_version": sorted(set(u["report_version"])), "wells_dir": str(a.wells),
            "data_through": P["asof"], "cutoff": P["cutoff"], "k_areas": P["k_areas"], "n_pool": len(P["pool"]["api10"]), "n_excluded": P["n_excluded"],
-           "haircut": hcut, "calendar_factor": F, "disclosure": disc, "equivalence": eq}
+           "haircut": haircut_record(hcut, res), "calendar_factor": F, "disclosure": disc, "equivalence": eq}
     used = sorted({x["api10"] for r in res for x in r.get("analogs", [])})
     fr = P["cb"]["frame"].set_index("api10")
     keep = [c for c in ("well_name", "operator", "first_production_date", "lateral_ft", "tvd_ft", "mid_lon", "mid_lat") if c in fr.columns]
@@ -259,6 +258,56 @@ def cmd_build(a: argparse.Namespace) -> int:
         pickle.dump({"run": run, "universe": u, "locs": locs, "results": res, "analog_meta": meta, "analog_cum_kft": actual_kft}, fh)
     n_ok = sum("oil" in r.get("streams", {}) for r in res)
     print(f"covered with forecast {n_ok} / {len(res)}; wrote {a.out / 'run.pkl'} ({time.time() - t0:.0f} s)", flush=True)
+    return 0
+
+
+def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any]) -> None:
+    """D92: every covered stream's months = months_raw x the C1 rate factor fitted to the D62 table; the fit lands in params."""
+    for r in res:
+        for s, st in r.get("streams", {}).items():
+            st["months"], info = pr.apply_haircut_c1(st["months_raw"], {k: hcut[s][k] for k in pr.HORIZONS})
+            st["params"] = {**st["params"], "haircut": info}
+            st["eur_raw"], st["eur"] = float(np.sum(st["months_raw"])), float(np.sum(st["months"]))
+
+
+def haircut_record(hcut: dict[str, Any], res: list[dict[str, Any]]) -> dict[str, Any]:
+    """forecast_run.haircut: the D62 factor table (the targets) + the D92 method and, per stream, the realised cumulative factor at
+    each horizon and the tail factor (median and P10-P90 across locations; P10 = the high value)."""
+    out: dict[str, Any] = {"method": pr.HAIRCUT_METHOD}
+    for s in pr.STREAMS:
+        infos = [r["streams"][s]["params"]["haircut"] for r in res if s in r.get("streams", {})]
+        out[s] = {k: dict(hcut[s][k]) for k in pr.HORIZONS}
+        for k in pr.HORIZONS:
+            x = np.array([i["realised"][str(k)] for i in infos])
+            out[s][k]["realised_median"] = float(np.median(x))
+            out[s][k]["realised_p10_p90"] = [float(np.percentile(x, 90)), float(np.percentile(x, 10))]
+        t = np.array([i["g_tail"] for i in infos])
+        out[s]["tail_factor_median"] = float(np.median(t))
+        out[s]["eur_factor_median"] = float(np.median([i["eur_factor"] for i in infos]))
+    return out
+
+
+def cmd_rehaircut(a: argparse.Namespace) -> int:
+    """Re-apply the CURRENT haircut to an existing build's raw months (same pool, fits, analogs, F(k), disclosure); the new artifact
+    carries the current code SHA and records the build it came from. Used for D92 on record run 6's build."""
+    code_sha = _git_sha()
+    A = _load(a.src)
+    run, res = A["run"], A["results"]
+    tab = {s: {k: {kk: vv for kk, vv in run["haircut"][s][k].items() if kk in ("factor", "bias", "n_packages", "n_cells", "cutoffs")}
+               for k in pr.HORIZONS} for s in pr.STREAMS}
+    apply_haircut_all(res, tab)
+    run["built_from"] = {"artifact": str(a.src), "code_sha": run["code_sha"], "built_at": run["built_at"]}
+    run["code_sha"] = code_sha
+    run["built_at"] = dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds")
+    run["haircut"] = haircut_record(tab, res)
+    a.out.mkdir(parents=True, exist_ok=True)
+    with open(a.out / "run.pkl", "wb") as fh:
+        pickle.dump(A, fh)
+    h = run["haircut"]
+    for s in pr.STREAMS:
+        print(f"{s}: target {[round(h[s][k]['factor'], 3) for k in pr.HORIZONS]} realised median {[round(h[s][k]['realised_median'], 3) for k in pr.HORIZONS]} "
+              f"tail {h[s]['tail_factor_median']:.3f} eur factor {h[s]['eur_factor_median']:.3f}")
+    print(f"rehaircut {a.src} (built {run['built_from']['code_sha'][:7]}) -> {a.out / 'run.pkl'} at {code_sha[:7]}")
     return 0
 
 
@@ -337,7 +386,10 @@ def cmd_store(a: argparse.Namespace) -> int:
                     (pr.SPEC, run["code_sha"], run["engine_sha"], run["dealintake_config"], rv, run["data_through"],
                      Jsonb(_jsonable(run["haircut"])), Jsonb(_jsonable(run["calendar_factor"])), Jsonb(_jsonable(run["disclosure"])),
                      Jsonb(_jsonable({str(k): int(v) for k, v in u.groupby("bench")["extent_id"].first().dropna().items()})),
-                     Jsonb({}), "uptime-free volumes x D62 haircut; F(k) published not applied (D63); no water (D72); no economics")).fetchone()[0]
+                     Jsonb({}), ("uptime-free volumes x D62 haircut factors applied by the D92 C1 rate shape" if "method" in run["haircut"]
+                                 else "uptime-free volumes x D62 haircut")
+                     + "; F(k) published not applied (D63); no water (D72); no economics"
+                     + (f"; re-haircut of build {run['built_from']['code_sha'][:7]}" if "built_from" in run else ""))).fetchone()[0]
             pf, st_rows, an_rows, months = [], [], [], []
             for r in u.itertuples():
                 lid = have[int(r.stick_id)]
@@ -436,13 +488,15 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("build", "annotate", "store", "render"):
+    for name in ("build", "annotate", "store", "render", "rehaircut"):
         p = sub.add_parser(name)
         p.add_argument("--out", type=Path, default=Path("runs") / "box7c")
         p.add_argument("--workers", type=int, default=7)
         p.add_argument("--record", action="store_true")
         p.add_argument("--docs", type=Path, default=Path("docs") / "box" / "step7c-2026-10-15")
         p.add_argument("--wells", type=Path, default=WELLS, help="analog-pool well set (gate-1 wells_final_*.csv dir)")
+        if name == "rehaircut":
+            p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
     a = ap.parse_args(argv)
     if a.cmd == "build":
         return cmd_build(a)
@@ -450,6 +504,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_store(a)
     if a.cmd == "annotate":
         return cmd_annotate(a)
+    if a.cmd == "rehaircut":
+        return cmd_rehaircut(a)
     from box import production_pages as pp
 
     return pp.render(_load(a.out), a.out, a.docs)
