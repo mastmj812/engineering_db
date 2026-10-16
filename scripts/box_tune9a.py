@@ -76,7 +76,6 @@ def main(argv: list[str] | None = None) -> int:
             int(((m["actual_oil12_a"] - m["actual_oil12_f"]).abs() > 1e-9).sum())
     c_h["inputs_moved_wells"] = c_h["cutoff"].map(moved).fillna(0).astype(int)
     code_ok = t9.guard_verdict(c_t) and t9.guard_verdict(c_h[c_h.inputs_moved_wells == 0])
-    code_worst = max(float(np.nanmax(g[[f"max_abs_{s}" for s in t9.STATS]].to_numpy())) for g in (c_t, c_h))
     # (c) data: per-well actuals of the scored holdout wells today vs the 7a frames written 2026-10-14 (same code, same cutoffs)
     drift = t9.actuals_drift(a.runs / "guard", Path("..") / ".." / ".." / "runs" / "box7a") if (Path("..") / ".." / ".." / "runs" / "box7a").exists() else pd.DataFrame()
     worst = max(float(np.nanmax(g[[f"max_abs_{s}" for s in t9.STATS]].to_numpy())) for g in (g_t, g_h))
