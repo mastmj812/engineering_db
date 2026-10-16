@@ -77,7 +77,8 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # PRE-REGISTERED 2026-10-16 (Michael, before scoring; proposed D93): WCXY targets draw analogs from WCXY + WCA_1 — the
     # stratigraphically adjacent bench (WCXY sits in the WCA_1 band); WCA_2 (~128 ft deeper) excluded; BS3_S deferred to step 15a QC.
     # Analog selection only: D20's one-way rule still governs extents and cohorts.
-    "WCXY_WCA1": {"wells": "WCA", "pool_tags": ("WCXY", "WCA_1"), "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
+    # Gate 9a (Michael 2026-10-16): D93 adopts this pool; D97 = WCXY's record is RAW box_v2 (no walk-forward haircut).
+    "WCXY_WCA1": {"wells": "WCA", "pool_tags": ("WCXY", "WCA_1"), "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY", "record": "box_v2",
                   "desc": "Delaware WCXY targets, analogs WCXY + WCA_1 (pre-registered 2026-10-16, proposed D93), inside the WCA extent of record"},
     # SENSITIVITY ONLY (not D20 as written): WCXY targets with the whole WCA pool as analogs - informs gate-9a decision 2.
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
@@ -313,7 +314,7 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         raise ValueError("fold='analog' produces the v2 variants only")
     spec = BENCH_SPECS[bench]
     variants = (REPORTED_V2 if fold == "full" else REPORTED_ANALOG) if mode == "v2" else REPORTED
-    record = RECORD_V2 if mode == "v2" else RECORD
+    record = spec.get("record", RECORD_V2) if mode == "v2" else RECORD  # D97: WCXY's record variant is raw box_v2
     out.mkdir(parents=True, exist_ok=True)
     wells, excluded, targets = bench_wells(wells_dir, bench)
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))

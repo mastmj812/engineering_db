@@ -1,4 +1,4 @@
-# BOX step 9a — BS2_S + WCXY tuning view (read-only) — AT GATE 9a
+# BOX step 9a — BS2_S + WCXY tuning view (read-only) — GATE 9a CLOSED 2026-10-16
 
 Review surface: `index.html` (this folder). Built by `python -m scripts.box_tune9a` from the `scripts.box_acceptance --fold analog` runs in
 `runs/box9a/` (git-ignored; per-location frames + monthly arrays). Nothing stored; no DDL; no sql number used. Frozen spec `box_v2_wf` (D58)
@@ -62,3 +62,12 @@ Other edges run +13…+23 % above forecast; the interior is −5 %.
 4. **BS2_S south edge:** no spec change. Make the south-edge over-forecast a named watch item for 9b and a stated workup caveat.
 
 Flag for 9b: BS2_S fails the spread test as tuned, so its one-time holdout is likely to fail as written (D59 pattern applies).
+
+## 6. Gate 9a outcome (Michael 2026-10-16)
+
+D93 WCXY analogs = WCXY + WCA_1 (selection only) · D94 per-bench walk-forward haircut (BS2_S its own) · D95 WCXY extent = WCA extent ·
+D96 no spec change at the BS2_S south edge (watch item for 9b + workup caveat) · D97 WCXY record = raw box_v2, no walk-forward haircut
+(`BENCH_SPECS["WCXY_WCA1"]["record"]`) · D98 guard accepted as code identical + data drift explained. Next: 9b, holdouts scored once —
+`--bench BS2_S` (box_v2_wf) and `--bench WCXY_WCA1` (box_v2), both with `--holdout-once`. BS2_S's haircuts must come from its OWN tuning cells (D94):
+`--history docs/box/step9a-2026-10-16/cells_tuning_BS2_S.csv` (the default would read WCA's). Same `--wells docs/box/pool-2026-10-15`,
+`--fold analog`; pin `--actuals-through` and state it.

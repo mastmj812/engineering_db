@@ -94,3 +94,8 @@ def test_walk_forward_suffix_and_history() -> None:
     assert set(oth.variant) == {"di_p50_wf_wca", "box_v2_wf_wca"} and len(ac.WF_LOG) == n_log and log
     r = oth[(oth.cutoff == "2021-12-01") & (oth.variant == "box_v2_wf_wca")]
     assert np.allclose(r["pkg_bias"], (1 - 0.10) / (1 + 0.05) - 1)
+
+
+def test_record_variant_per_bench_d97() -> None:
+    assert ac.BENCH_SPECS["WCXY_WCA1"]["record"] == "box_v2"  # D97: WCXY carries no walk-forward haircut
+    assert all("record" not in ac.BENCH_SPECS[b] for b in ("WCA", "BS2_S"))  # frozen box_v2_wf (D58)
