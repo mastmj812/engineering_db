@@ -32,6 +32,8 @@ def test_wcxy_pool_is_wcxy_tagged_only_d20(tmp_path: Path) -> None:
     assert t == {"4200000003", "4200000004"}
     w2, _, t2 = ac.bench_wells(wd, "WCXY_on_WCA")  # sensitivity: whole WCA pool, WCXY targets
     assert len(w2) == 5 and t2 == t
+    w4, _, t4 = ac.bench_wells(wd, "WCXY_WCA1")  # pre-registered pool: WCXY + WCA_1, never WCA_2
+    assert sorted(w4["formation_blueox"]) == ["WCA_1", "WCXY", "WCXY"] and t4 == t
     w3, _, t3 = ac.bench_wells(wd, "WCA")  # WCA unchanged: every row, every row scored
     assert len(w3) == 5 and t3 is None
 

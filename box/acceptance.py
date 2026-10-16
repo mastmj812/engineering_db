@@ -74,6 +74,11 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # (D20 forbids inferring one from WCA_1); the WCA extent of record is the frame here, pending gate-9a decision 3.
     "WCXY": {"wells": "WCA", "pool_tags": ("WCXY",), "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
              "desc": "Delaware WCXY targets, WCXY-tagged analogs only (D20), inside the WCA extent of record (no WCXY extent exists)"},
+    # PRE-REGISTERED 2026-10-16 (Michael, before scoring; proposed D93): WCXY targets draw analogs from WCXY + WCA_1 — the
+    # stratigraphically adjacent bench (WCXY sits in the WCA_1 band); WCA_2 (~128 ft deeper) excluded; BS3_S deferred to step 15a QC.
+    # Analog selection only: D20's one-way rule still governs extents and cohorts.
+    "WCXY_WCA1": {"wells": "WCA", "pool_tags": ("WCXY", "WCA_1"), "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
+                  "desc": "Delaware WCXY targets, analogs WCXY + WCA_1 (pre-registered 2026-10-16, proposed D93), inside the WCA extent of record"},
     # SENSITIVITY ONLY (not D20 as written): WCXY targets with the whole WCA pool as analogs - informs gate-9a decision 2.
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},
