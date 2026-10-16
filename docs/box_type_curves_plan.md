@@ -4,7 +4,11 @@
 (stored 2026-10-16, D92): 1,907 covered Delaware WCA_1 / WCA_2 PUDs inside extent 6, oil + gas, uptime-free, D62 haircut factors
 applied by the D92 rate shape. Live in erebor (Highgrade Novi | BOX toggle + per-pad workup; Map-tab well overlay). Steven has
 read access and the run-7 note (sent 2026-10-16); his econ loop is tabled. erebor Accuracy surface sidelined (Michael 2026-10-16).
-**Phase 2 drafted 2026-10-16 (§5 steps 9–15, §10 order). Next = step 9a (BS2_S + WCXY tuning view).**
+**Phase 2 drafted 2026-10-16 (§5 steps 9–15, §10 order).** **Step 9a built 2026-10-16, AT GATE 9a** (branch `claude/box-step9a-tuning`;
+deliverable `docs/box/step9a-2026-10-16/` — `FINDINGS.md`, `index.html`): harness bench-parameterised (`fold="analog"`; code identical to the
+step-6 fold on the same data; the WCA record is not bit-reproducible because curated.production was revised after 10-14 — FINDINGS §2);
+tuning view box_v2_wf: BS2_S 9 / 16 cells fail (mostly spread), WCXY on WCXY-only analogs 9 / 16, WCXY on the WCA pool (sensitivity) 4 / 16.
+Gate-9a asks in FINDINGS §5. Nothing stored.
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify

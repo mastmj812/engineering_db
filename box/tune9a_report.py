@@ -61,6 +61,28 @@ def identity(cells: pd.DataFrame, record: pd.DataFrame, variants: Sequence[str] 
     return pd.DataFrame(rows)
 
 
+def actuals_drift(new_dir: Path, old_dir: Path, cols: Sequence[str] = ("actual_oil12", "actual_oil24", "actual_gas12", "lateral_ft", "spacing_ft")) -> pd.DataFrame:
+    """Per cutoff: scored holdout wells in both frames, and per column the wells whose value changed + the worst relative change
+    (old = runs/box7a/view_<yyyy>.csv.gz written by the 7a re-run, new = this run's guard_holdout views)."""
+    rows = []
+    for f in sorted(old_dir.glob("view_*.csv.gz")):
+        y = f.stem.split("_")[1].split(".")[0]
+        nf = new_dir / f"view_guard_holdout_{y}.csv.gz"
+        if not nf.exists():
+            continue
+        m = pd.read_csv(f, dtype={"api10": str}).merge(pd.read_csv(nf, dtype={"api10": str}), on="api10", suffixes=("_o", "_n"))
+        r: dict[str, Any] = {"cutoff": y, "wells": len(m)}
+        for c in cols:
+            if f"{c}_o" not in m:
+                continue
+            o, n = m[f"{c}_o"].astype(float), m[f"{c}_n"].astype(float)
+            d = (n - o).abs()
+            r[f"{c} changed"] = int((d > 1e-9).sum())
+            r[f"{c} max rel"] = float(np.nanmax(d / o.abs().replace(0, np.nan))) if len(m) else np.nan
+        rows.append(r)
+    return pd.DataFrame(rows)
+
+
 def guard_verdict(t: pd.DataFrame, tol: float = 1e-12) -> bool:
     return bool(len(t) and t["counts_equal"].all() and t["verdicts_equal"].all() and (t[[f"max_abs_{s}" for s in STATS]] <= tol).all().all())
 

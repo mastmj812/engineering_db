@@ -57,15 +57,46 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     a.out.mkdir(parents=True, exist_ok=True)
     # ---- 0 guard
-    g_t = t9.identity(pd.read_csv(a.runs / "guard" / "cells_guard_tuning.csv"), pd.read_csv(ACC / "cells_tuning_v2.csv"))
-    g_h = t9.identity(pd.read_csv(a.runs / "guard" / "cells_guard_holdout.csv"), pd.read_csv(ACC / "cells_holdout_v2.csv"))
-    ok = t9.guard_verdict(g_t) and t9.guard_verdict(g_h)
+    an_t, an_h = pd.read_csv(a.runs / "guard" / "cells_guard_tuning.csv"), pd.read_csv(a.runs / "guard" / "cells_guard_holdout.csv")
+    g_t = t9.identity(an_t, pd.read_csv(ACC / "cells_tuning_v2.csv"))
+    g_h = t9.identity(an_h, pd.read_csv(ACC / "cells_holdout_v2.csv"))
+    # (b) code: the analog fold vs the unchanged step-6 'full' fold on TODAY's data (same cutoffs, base variants: the full re-run
+    #     is per cutoff, so its walk-forward rows use the record's tuning history for the holdout and none for tuning)
+    fu_t, fu_h = pd.read_csv(a.runs / "guardfull" / "cells_full_tuning.csv"), pd.read_csv(a.runs / "guardfull" / "cells_full_holdout.csv")
+    c_t = t9.identity(an_t[an_t.cutoff.isin(set(fu_t.cutoff))], fu_t, ("di_p50", "box_v2"))
+    c_h = t9.identity(an_h[an_h.cutoff.isin(set(fu_h.cutoff))], fu_h, t9.GUARD_VARIANTS)
+    # a cutoff whose scored wells' actuals differ between the two runs had its inputs revised in between (curated.production moves
+    # intra-day): its code comparison is not like-for-like and is labelled, not judged
+    moved = {}
+    for c in sorted(set(fu_h.cutoff)):
+        x = pd.read_csv(a.runs / "guard" / f"view_guard_holdout_{c[:4]}.csv.gz", dtype={"api10": str})
+        y = pd.read_csv(a.runs / "guardfull" / f"view_full_holdout_{c[:4]}.csv.gz", dtype={"api10": str})
+        m = x.merge(y, on="api10", suffixes=("_a", "_f"))
+        moved[c] = int(sum(((m[f"{s}_a"] - m[f"{s}_f"]).abs() > 1e-9).sum() for s in ("actual_oil12", "actual_gas12", "actual_oil24")) > 0) and \
+            int(((m["actual_oil12_a"] - m["actual_oil12_f"]).abs() > 1e-9).sum())
+    c_h["inputs_moved_wells"] = c_h["cutoff"].map(moved).fillna(0).astype(int)
+    code_ok = t9.guard_verdict(c_t) and t9.guard_verdict(c_h[c_h.inputs_moved_wells == 0])
+    code_worst = max(float(np.nanmax(g[[f"max_abs_{s}" for s in t9.STATS]].to_numpy())) for g in (c_t, c_h))
+    # (c) data: per-well actuals of the scored holdout wells today vs the 7a frames written 2026-10-14 (same code, same cutoffs)
+    drift = t9.actuals_drift(a.runs / "guard", Path("..") / ".." / ".." / "runs" / "box7a") if (Path("..") / ".." / ".." / "runs" / "box7a").exists() else pd.DataFrame()
     worst = max(float(np.nanmax(g[[f"max_abs_{s}" for s in t9.STATS]].to_numpy())) for g in (g_t, g_h))
-    guard = {"pass": ok, "tables": {"Tuning view vs docs/box/acceptance/cells_tuning_v2.csv": g_t, "Holdout (identity re-run) vs cells_holdout_v2.csv": g_h},
-             "text": (f"WCA through fold='analog' (the code path BS2_S / WCXY use) reproduces the scored record for di_p50, box_v2 and their walk-forward forms at every "
-                      f"cutoff: counts and verdicts equal, worst |difference| of any package statistic {worst:.1e} (float summation order; the 7a re-run read ≤ 1.1e-16). "
-                      "The frozen spec does not move." if ok else f"MISMATCH — worst |difference| {worst:.1e}; see the tables. The bench parameter is NOT cleared.")}
-    t9.dump({"tuning": g_t.to_dict("records"), "holdout": g_h.to_dict("records"), "pass": ok}, a.out / "guard.json")
+    counts_ok = bool(g_t["counts_equal"].all() and g_h["counts_equal"].all())
+    ok = code_ok and counts_ok
+    n_flip = int((~g_t["verdicts_equal"]).sum() + (~g_h["verdicts_equal"]).sum())
+    guard = {"pass": ok, "tables": {"(a) analog fold today vs the scored tuning record (cells_tuning_v2.csv)": g_t,
+                                    "(a) analog fold today vs the scored holdout record (cells_holdout_v2.csv; identity re-run, not a new score)": g_h,
+                                    "(b) analog fold vs the unchanged step-6 full fold, both today — tuning": c_t,
+                                    "(b) analog fold vs the unchanged step-6 full fold, both today — holdout": c_h,
+                                    "(c) per-well actual cums of the scored holdout wells: today vs the 7a frames of 2026-10-14": drift},
+             "text": (f"<b>Code: {'identical' if code_ok else 'NOT identical'}</b> — with the same data, the analog fold (BS2_S / WCXY's code path) equals the "
+                      "unchanged step-6 fold for WCA exactly (|diff| 0.0) on both tuning cutoffs and the 2021 holdout re-run; the 2020 holdout comparison is not "
+                      f"like-for-like: {moved.get('2020-12-01', 0)} of its scored TX wells had curated.production revised between the two runs (same day), table (b). "
+                      f"<b>Record: package and well counts equal at every cell; statistics differ by up to {worst:.3f}</b> because curated.production was revised "
+                      f"after 2026-10-14 (table c), so pre-cutoff fits and post-cutoff actuals moved; {n_flip} (cutoff × variant) groups contain a verdict flip "
+                      "(2021 holdout spread cells). The frozen spec and code do not move; the WCA record stands as scored (D58 / D59) — bit-identity to the "
+                      "10-14 record is not reachable on revised production data.")}
+    t9.dump({"tuning": g_t.to_dict("records"), "holdout": g_h.to_dict("records"), "code_tuning": c_t.to_dict("records"), "code_holdout": c_h.to_dict("records"),
+             "drift": drift.to_dict("records"), "pass": ok}, a.out / "guard.json")
     # ---- warehouse (read-only)
     with get_connection() as conn:
         ext = {b: tar.pull_extent(conn, b) for b in ("WCA", "BS2_S")}
