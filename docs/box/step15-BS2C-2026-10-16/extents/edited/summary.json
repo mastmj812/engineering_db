@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-16T13:19:17-05:00",
- "git_sha": "011ea40+dirty",
+ "built_at": "2026-10-16T13:23:17-05:00",
+ "git_sha": "bd70d6b+dirty",
  "source": "C:\\Users\\MICHAE~1\\AppData\\Local\\Temp\\claude\\C--Users-MichaelMast-Projects-engineering-db\\953b62df-58d0-47a0-b870-c74ea7a2b347\\scratchpad\\deck_v3.pptx",
  "pools": {
   "BS2_C": {
@@ -8,25 +8,26 @@
    "n_freeforms": 0,
    "n_ink_strokes": 2,
    "stroke_kinds": [
-    "loop_add",
-    "loop_add"
+    "owner_outline",
+    "owner_outline"
    ],
    "generated_sqmi": 1082.7280034529892,
-   "edited_sqmi": 2077.6698161675627,
-   "added_sqmi": 994.9418127145764,
-   "removed_sqmi": 0.0,
+   "edited_sqmi": 1523.8718631453316,
+   "added_sqmi": 994.9418127145767,
+   "removed_sqmi": 553.7979530222328,
    "n_parts": 2,
    "n_evidence": 650,
    "inside_generated": 367,
-   "inside_edited": 415,
-   "outside_edited": 235,
+   "inside_edited": 265,
+   "outside_edited": 385,
    "d1_in_generated": 2247,
-   "d1_in_edited": 4236,
+   "d1_in_edited": 3089,
    "outside_by_county": {
+    "Loving": 110,
     "Reeves": 89,
     "Pecos": 74,
-    "Eddy": 53,
-    "Lea": 10,
+    "Eddy": 64,
+    "Lea": 39,
     "Ward": 5,
     "Culberson": 3,
     "Winkler": 1

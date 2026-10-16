@@ -439,16 +439,16 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         emu_per_px = ff[k]["picture"][2] / frame["size"][0]
         outline_mode = bool(marks) and all(math.dist(m[0], m[-1]) <= CLOSED_PX * emu_per_px for m in marks)
         if outline_mode:
-            # Michael's convention (2026-10-16, as he drew it): every mark is a closed loop around ground to ADD; a loop may
-            # overlap the black outline. Extent = generated U loops (no attaching, chords or joining; voids filled; clipped
-            # to the map shown). Reading the loops as the complete extent cut out developed bodies on all four slides.
+            # Michael's convention (2026-10-16, stated twice): the red loops ARE the extent; ignore the black generated
+            # outline. Extent = union of the loops (no attaching, chords or joining; voids filled; clipped to the map
+            # shown; pieces < 1 sq mi dropped). Developed laterals left outside are the owner's call (D27 conflict, reported).
             loops = [Polygon(gio.geology_to_ft13([shapely.geometry.LineString(emu_to_geology(m, ff[k]["picture"], frame))])[0].coords) for m in marks]
             from shapely.validation import make_valid
 
-            u = shapely.union_all([gen, shapely.union_all([make_valid(q) for q in loops]).intersection(_clip_frame(frame))])
+            u = shapely.union_all([make_valid(q) for q in loops]).intersection(_clip_frame(frame))
             u = ex.as_multi(shapely.union_all([g for g in getattr(u, "geoms", [u]) if g.geom_type == "Polygon"]).buffer(0))
             edited = ex.as_multi(shapely.union_all([Polygon(g.exterior) for g in u.geoms if g.area >= eg.FT_PER_MI**2]))  # drop < 1 sq mi slivers
-            kinds = ["loop_add"] * len(marks)
+            kinds = ["owner_outline"] * len(marks)
             interpret_png(pool, ext_dir / f"visual_{pool}.png", frame, ff[k]["picture"], marks, gen, edited, edit_dir / f"reading_{pool}.png")
         for ln in ([] if outline_mode else ff[k]["lines"]):  # each freeform in turn: additions outside, cuts inside; no freeform = accepted as generated
             edited, _delta = apply_hand_edit(edited, emu_to_geology(ln, ff[k]["picture"], frame))
@@ -474,7 +474,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         def inside(g: Any, L: np.ndarray = L) -> np.ndarray:
             return shapely.length(shapely.intersection(L, g)) / shapely.length(L) >= 0.5
 
-        env = eg.to_lonlat([shapely.box(*edited.bounds).buffer(eg.FT_PER_MI)])[0].bounds
+        env = eg.to_lonlat([shapely.box(*shapely.union_all([gen, edited]).bounds).buffer(eg.FT_PER_MI)])[0].bounds
         pu = er.pull_puds(conn, [pool], env)
         pt = er.pud_counts(pu, {"in generated": gen, "in edited": edited})
         (edit_dir / f"diff_{pool}_v{version}.html").write_text(pages.diff_page(pool, version, d, gen, edited, built, f"{pptx.name} slide {k}", pt), encoding="utf-8")

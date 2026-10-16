@@ -100,31 +100,30 @@ explicit go-apply per bench.
 ## 4. Michael's edits (2026-10-16): ingested, AT THE EXTENT GATE (nothing stored)
 
 The edit record is the deck Michael saved here, `remaining_extents_2026-10-16.pptx` (13:15). It was read through a
-copy while PowerPoint held it open. Edited extents are in `step15-<family>-2026-10-16/extents/edited/`:
-shapefile, diff page, `reading_<bench>.png` (his strokes on the exact PNG plus BOX's reading), and summary.json.
+copy while PowerPoint held it open. Outputs are in `step15-<family>-2026-10-16/extents/edited/`: shapefile, diff page,
+`reading_<bench>.png` (his loops on the exact PNG he drew on), and summary.json.
 
-How the edits came in:
-- **First pass:** open pen strokes (InkML, not freeforms). Read by attaching loose ends to the outline. WCB_1 and
-  BS1_S were right; BS2_C (north lobe) and WCB_2 were misread (stray chords, 9 pieces, a branch read as a sliver).
-- **Second pass, the record:** one closed pen loop per edit area, each around ground to **add**, allowed to overlap
-  the black outline. Extent = generated ∪ loops: no attaching, no chords; voids filled; clipped to the map shown;
-  pieces under 1 sq mi dropped.
-- A "loops are the complete extent" reading was tried first. It cut every developed body (WCB_1 −716 laterals,
-  BS1_S's whole 717-lateral main body), so it was discarded as not his intent.
+**Convention of record (Michael, 2026-10-16): the red loops ARE the extent; ignore the black generated outline.**
+- Extent = union of his closed pen loops. No attaching to the outline, no chords, no joining; voids filled; clipped to
+  the map shown; pieces under 1 sq mi dropped. Benches with no loops keep the generated extent.
+- How we got here: two earlier readings (open strokes attached to the outline, then generated ∪ loops) mixed his red
+  with my black, and he called it.
+- Bookkeeping fix: the D1 PUD count window now covers both the generated and the edited extent.
 
-| bench | generated sq mi | **edited sq mi** | parts | ≥ 2016 laterals inside: generated → edited | D1 PUDs inside: generated → edited |
-|---|---:|---:|---:|---|---|
-| BS2_C | 1,083 | **2,078** | 2 (main + SE) | 367 → 415 of 650 | 2,247 → 4,236 |
-| WCB_1 | 3,921 | **5,642** | 1 | 1,580 → 1,594 of 1,664 | 4,523 → 5,366 |
-| WCB_2 | 1,624 | **2,759** | 1 | 507 → 560 of 1,090 | 1,668 → 2,291 |
-| BS1_S | 1,535 | **4,599** | 1 | 777 → 891 of 962 | 2,485 → 6,126 |
-| WCC, AVA_0, AVA_1, AVA_2, WCD | as generated | unchanged | | | |
+| bench | generated sq mi | **owner extent sq mi** | parts | ≥ 2016 laterals inside: generated → owner | D1 PUDs inside: generated → owner | developed laterals left outside (by county) |
+|---|---:|---:|---:|---|---|---|
+| BS2_C | 1,083 | **1,524** | 2 | 367 → 265 of 650 | 2,247 → 3,089 | Loving 110, Reeves 89, Pecos 74, Eddy 64, Lea 39, other 9 |
+| WCB_1 | 3,921 | **3,533** | 1 | 1,580 → 864 of 1,664 | 4,523 → 2,825 | Reeves 560, Culberson 106, Ward 55, Pecos 30, Eddy 26, other 23 |
+| WCB_2 | 1,624 | **2,180** | 1 | 507 → 419 of 1,090 | 1,668 → 1,561 | Reeves 386, Ward 85, Eddy 61, Culberson 45, Loving 38, other 56 |
+| BS1_S | 1,535 | **3,243** | 1 | 777 → 186 of 962 | 2,485 → 3,964 | **Lea 614**, Loving 89, Reeves 35, Pecos 20, other 18 |
+| WCC, AVA_0, AVA_1, AVA_2, WCD | as generated | unchanged | | | | |
 
-Still outside after the edits:
-- **WCB_2:** 366 Reeves and 85 Ward modern laterals. The south body 2 (317 laterals) is not enclosed.
-- **BS2_C:** 89 Reeves and 74 Pecos. The SE loop covers the western part of body 2.
+**Conflict to confirm, not resolve:** D27 says developed ground is always inside the extent. These owner extents
+leave developed laterals out on all four benches. That is legitimate as an owner decision; it would be recorded as a
+D27 exception for these benches.
 
-Both are owner calls to confirm, not readings to fix.
+The largest case is BS1_S. The loop covers the western shelf, the north, and the west edge of the main Lea body. The
+main body itself (≈ 614 Lea laterals) is outside.
 
-Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the edited v1
-(or the generated v1 for the unchanged benches) as the version of record.
+Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the owner v1 (or
+the generated v1 for the unchanged benches) as the version of record.
