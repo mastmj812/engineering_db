@@ -105,3 +105,14 @@ Notes (no decision needed):
 - b. The per-bench pages' §4 (NM planned-survey options A/B) is input already decided: option A, every bench (§9).
 - c. After this gate: the extent half (step-3 tooling, D27 envelope per bench, rendered extent + geology package),
   then stop at the extent gate. Nothing is stored in `box.extent` without Michael's explicit go-apply.
+
+## 5. QC gate — CLOSED 2026-10-16 (Michael: "accept all four recommendations")
+
+1. Well sets confirmed: BS3_S 3,041 / BS3_C 1,818 (`wells_final_BS3_S.csv`, `wells_final_BS3_C.csv`).
+2. No calibration cards for the uncalibrated classes; tags kept.
+3. **BS3_S and BS3_C are NOT pooled** — two benches through extents, analogs and acceptance.
+4. Re-tag drift: D84 stands here (frozen wells stay in their pool); the re-tag question goes to the next WCA / BS2_S
+   pool refresh / step 13.
+
+These are proposed as decisions of record for the next sequential session to number into plan §2 (this session does not
+edit §2). Next: the extent half (`docs/box/step15a-2026-10-16/extents/`).

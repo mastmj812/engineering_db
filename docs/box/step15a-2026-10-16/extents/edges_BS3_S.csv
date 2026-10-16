@@ -1,0 +1,130 @@
+edge_no,seg_no,edge_class,side,gap_ft,perf_class,perf_ratio,buffer_ft,rule,flag,length_ft
+0,212,pinned,SW,0.0,unknown,,1320.0,pinned: floor,,35870.41065519481
+1,523,gap,NW,699.9817610652364,unknown,,1320.0,gap: k × gap,,799.9971668956767
+2,524,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,1099.9961044815961
+3,525,gap,NW,2199.9426776336,unknown,,1320.0,gap: k × gap,,2099.9925631011106
+4,526,pinned,NW,0.0,unknown,,1320.0,pinned: floor,,3699.986896892571
+5,527,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1999.9929172391371
+6,528,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7399.973793786698
+7,533,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7599.9730855088865
+8,534,bridge,NW,199.9947888757818,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,799.9971668956767
+9,535,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4199.985126202329
+10,536,bridge,NW,1699.9557054441455,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,399.9985834477843
+11,537,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,499.9982293114074
+12,540,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6799.943144969611
+13,544,bridge,NW,0.0,rolled,0.696021178630877,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12499.94448878327
+14,545,pinned,NW,0.0,rolled,0.6392851738462907,880.0,pinned: floor,,799.9971668956701
+15,546,pinned,NW,0.0,rolled,0.6392851738462907,880.0,pinned: floor,,1599.9933008165635
+16,547,pinned,W,0.0,rolled,0.696021178630877,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1099.9932632359237
+17,0,pinned,W,0.0,rolled,0.696021178630877,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,999.9964586207692
+18,1,gap,W,199.9947888757818,rolled,0.696021178630877,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,199.99833151170293
+19,2,pinned,W,0.0,unknown,0.7051673383941881,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1599.9904807785545
+20,3,pinned,W,0.0,unknown,0.7143134981574993,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1399.9937219103615
+21,4,pinned,W,0.0,unknown,0.7143134981574993,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1499.9881932750468
+22,5,gap,W,299.99218331367274,unknown,0.7320953726182718,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,299.99843120538566
+23,6,pinned,W,0.0,unknown,0.7320953726182718,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,2199.989714953053
+24,7,pinned,W,0.0,unknown,0.7320953726182718,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,26199.812606286418
+25,9,bridge,W,0.0,unknown,0.7143134981574993,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,22499.86787561882
+26,17,pinned,W,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,14399.944388552041
+27,194,bridge,W,0.0,strong,0.9504859157976356,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,38699.85946585668
+28,198,pinned,W,0.0,unknown,0.8202864332204597,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,13299.95085154292
+29,200,bridge,W,0.0,unknown,,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12099.951889590771
+30,202,bridge,W,0.0,strong,1.0532038795737828,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4099.982402037296
+31,204,bridge,W,0.0,strong,1.0532038795737828,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11399.937015919128
+32,206,pinned,SW,0.0,strong,1.0719550783089502,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",34699.707406137495
+33,208,bridge,SW,0.0,strong,1.0719550783089502,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,23799.90370585683
+34,212,bridge,SW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,47799.55509141032
+35,254,bridge,SW,0.0,strong,1.481019977001835,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,18999.911337347956
+36,256,bridge,S,0.0,unknown,,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,499.9966115684813
+37,259,bridge,S,0.0,rolled,0.6345284467957221,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,26899.874183632215
+38,260,bridge,S,0.0,rolled,0.665317624985589,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11499.949027118517
+39,280,bridge,S,0.0,unknown,0.7797037087677738,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,5899.975362335554
+40,281,bridge,S,899.9765499410181,unknown,0.7797037087677738,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,199.99929172332546
+41,282,bridge,S,0.0,unknown,0.7797037087677738,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,13999.937808620505
+42,284,pinned,S,0.0,rolled,0.4932618104266012,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,21799.860883467827
+43,285,gap,S,899.9765499410181,rolled,0.4932618104266012,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1299.9932978987345
+44,286,pinned,S,0.0,rolled,0.4932618104266012,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,12699.934367291411
+45,290,bridge,S,0.0,rolled,0.523416941468253,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3499.984868241432
+46,295,bridge,S,0.0,strong,1.1533187467873063,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12399.949503010419
+47,300,bridge,S,0.0,rolled,0.266033449168684,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,55899.630967809026
+48,307,bridge,S,6799.822821776582,strong,1.100329595720735,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,43799.78137891382
+49,351,bridge,SE,0.0,unknown,0.802350515160248,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12899.946907606522
+50,352,bridge,SE,0.0,unknown,0.802350515160248,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1199.9946957021875
+51,354,bridge,SE,0.0,unknown,0.802350515160248,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,22099.812434284355
+52,370,pinned,SE,0.0,rolled,0.37242112397376376,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,7699.957341797605
+53,372,bridge,SE,0.0,unknown,,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,37199.849189764675
+54,373,pinned,SE,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,27599.89396560884
+55,374,gap,SE,3999.895777515636,rolled,0.6073118768592304,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3499.98631351768
+56,375,pinned,SE,0.0,rolled,0.6073118768592304,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,8999.9637761382
+57,376,gap,SE,5899.846271835563,rolled,0.6073118768592304,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1599.9933587100636
+58,377,pinned,SE,0.0,unknown,,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,24599.888708280814
+59,379,pinned,SE,0.0,strong,0.8910854520956427,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",8699.958362737254
+60,381,bridge,E,0.0,unknown,0.7531720449463358,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,13899.93239974268
+61,382,gap,E,499.9869721894545,unknown,,1320.0,gap: k × gap,,599.9978751712131
+62,383,pinned,E,0.0,strong,0.877246659857658,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",599.9978751715129
+63,384,gap,E,2799.9270442609454,rolled,0.6847358094628989,1049.9726415978546,gap: k × gap,,4599.9799979890095
+64,385,pinned,E,0.0,unknown,0.7809912346602785,1320.0,pinned: floor,,3399.985683056834
+65,386,bridge,E,0.0,rolled,0.6847358094628989,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1799.9923460309908
+66,387,bridge,E,0.0,rolled,0.6924047936660139,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2299.9905371278646
+67,388,bridge,E,299.99218331367274,rolled,0.6924047936660139,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,699.9975210329054
+68,389,bridge,E,0.0,rolled,0.6924047936660139,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2299.9905837929446
+69,390,bridge,E,399.9895777515636,rolled,0.6924047936660139,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2499.9888535858763
+70,396,bridge,E,0.0,strong,0.9184639957983285,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4799.9809594579565
+71,398,bridge,E,0.0,strong,1.4972277614706029,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,18299.926841174834
+72,399,bridge,E,499.9869721894545,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,499.9982293095818
+73,400,pinned,E,0.0,unknown,,1320.0,pinned: floor,,21099.919323464575
+74,402,bridge,E,0.0,strong,0.9204117229935046,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,15399.939799060927
+75,403,bridge,E,2099.945283195709,strong,1.0452376733904785,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1599.994333792048
+76,404,pinned,NE,0.0,strong,1.0452376733904785,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",21799.716904695266
+77,405,gap,NE,5799.848877397672,unknown,,3262.414993536191,gap: k × gap,,5799.979459994082
+78,406,pinned,NE,0.0,unknown,,1320.0,pinned: floor,,4499.9614702925555
+79,407,pinned,NE,0.0,unknown,0.8349402565280376,1320.0,pinned: floor,,2199.987129581119
+80,408,gap,NE,3099.919227574618,unknown,0.8060238445366789,1743.704565510723,gap: k × gap,,4299.97262963161
+81,409,bridge,NE,0.0,unknown,0.8060238445366789,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4399.977927908042
+82,410,bridge,NE,0.0,unknown,0.8060238445366789,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,7899.87920780139
+83,426,bridge,NE,0.0,strong,0.9469464370202653,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,12299.919524568519
+84,427,bridge,NE,1099.9713388168,strong,1.1545309519581364,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,699.997521033149
+85,428,bridge,NE,0.0,strong,1.025675541358343,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,9399.966711024394
+86,429,bridge,NE,1599.9583110062545,strong,0.8968201307585498,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,999.9964586195514
+87,430,bridge,NE,0.0,rolled,0.48429067426512507,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4799.9830013753035
+88,431,bridge,NE,2599.9322553851634,unknown,0.8194108131116308,1462.4618936541544,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2199.9922089633214
+89,432,pinned,NE,0.0,rolled,0.48429067426512507,880.0,pinned: floor,,14299.670539969226
+90,433,gap,NE,5199.864510770327,strong,0.93487523415628,3899.898383077745,gap: k × gap,,6199.772991123263
+91,434,pinned,NE,0.0,strong,0.93487523415628,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",2099.9536242169575
+92,435,gap,NE,1899.9504943199272,strong,0.93487523415628,1760.0,gap: k × gap,,1899.9096597247594
+93,436,pinned,NE,0.0,strong,0.8890508932913657,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",3199.9886675832013
+94,437,gap,NE,2099.945283195709,unknown,0.7423477320807442,1320.0,gap: k × gap,,2299.9918548260157
+95,438,pinned,NE,0.0,unknown,0.7423477320807442,1320.0,pinned: floor,,9299.770537154356
+96,439,gap,NE,4999.869721894545,strong,1.0411493276015413,3749.902291420909,gap: k × gap,,5299.981230684887
+97,440,pinned,N,0.0,strong,1.0411493276015413,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",5699.902523331419
+98,441,gap,N,3799.9009886398544,strong,1.0096771290873479,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,5499.980522408081
+99,442,pinned,N,0.0,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,5599.744909397118
+100,443,gap,N,1599.9583110062545,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,1599.994333791973
+101,444,pinned,N,0.0,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,599.9978751711044
+102,445,pinned,N,0.0,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,999.9964586199492
+103,446,pinned,N,0.0,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,3399.987959306909
+104,447,gap,N,2199.9426776336,rolled,0.40891729877399036,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,499.9982293098668
+105,448,bridge,N,0.0,unknown,,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,31599.808268501925
+106,488,pinned,N,0.0,strong,0.9347658348407416,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",20599.909301571122
+107,489,bridge,N,0.0,strong,0.9347658348407416,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,10399.951184697693
+108,490,bridge,N,0.0,strong,0.9347658348407416,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1199.9944517134668
+109,491,bridge,N,0.0,strong,0.9347658348407416,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11999.935720725674
+110,496,bridge,N,0.0,unknown,0.8329423444520618,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,28399.809279130804
+111,500,pinned,NW,0.0,unknown,0.8158289461593065,1320.0,pinned: floor,,39199.68903791228
+112,502,bridge,NW,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11999.92333667564
+113,503,bridge,NW,2099.945283195709,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,899.9953630891952
+114,504,bridge,NW,0.0,strong,1.306612874939631,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,3499.9722243520855
+115,506,bridge,NW,0.0,strong,1.1011763514022253,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4999.966956478336
+116,508,bridge,NW,0.0,rolled,0.6567472614752177,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,15399.874687195263
+117,511,bridge,NW,0.0,strong,1.3948158011085114,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,8399.970252405426
+118,512,gap,NW,5099.867116332436,strong,1.0694000666633787,3824.900337249327,gap: k × gap,,2999.989375859362
+119,513,bridge,NW,0.0,unknown,0.8277558240414846,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1399.9950420675714
+120,514,pinned,NW,0.0,unknown,0.8277558240414846,1320.0,pinned: floor,,12999.821909208296
+121,515,pinned,NW,0.0,strong,1.0694000666633787,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",8199.832314231318
+122,516,gap,NW,4599.880144142981,unknown,0.7971957024902754,2587.4325810804266,gap: k × gap,,3899.9861886169406
+123,517,pinned,NW,0.0,unknown,0.7971957024902754,1320.0,pinned: floor,,7899.872597329507
+124,518,gap,NW,4499.882749705091,unknown,0.7867279380880589,2531.1840467091133,gap: k × gap,,4399.984417926812
+125,519,pinned,NW,0.0,rolled,0.46455929742780744,880.0,pinned: floor,,5699.907985247741
+126,520,bridge,NW,6499.830638462909,rolled,0.6781935982823791,2437.4364894235905,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,2599.921267154426
+127,521,bridge,NW,0.0,rolled,0.6816784878892291,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,199.9992917243621
+128,522,bridge,NW,0.0,rolled,0.6816784878892291,880.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,18499.754885529233

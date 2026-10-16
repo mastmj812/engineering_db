@@ -69,3 +69,22 @@ def test_fe_contrast_ignores_single_bench_blocks():
     year = np.full(18, 2020)
     y = np.r_[np.zeros(3), np.full(3, -0.1), np.zeros(3), np.full(3, -0.1), np.full(6, 5.0)]
     assert abs(fq.fe_contrast(y, is_b, block, year) - (-0.1)) < 1e-9
+
+
+def test_record_params_match_step3_pick():
+    from box import family_extent as fe
+
+    bp = fe.record_params()
+    assert (bp.k, bp.cap_ft, bp.floor_ft, bp.perf_ref, bp.envelope, bp.min_cluster, bp.bridge_mi) == (0.75, 7920.0, 880.0, "pool", True, 3, 8.0)
+
+
+def test_record_extents_areas_match_summary():
+    import json
+
+    from box import edge_gap as eg
+    from box import family_extent as fe
+
+    rec = fe.record_extents()
+    s = json.loads((fe.STEP3_DIR / "summary.json").read_text(encoding="utf-8"))
+    for pool, g in rec.items():
+        assert abs(g.area / eg.FT_PER_MI**2 / s["pools"][pool]["extent_sqmi"] - 1) < 1e-3
