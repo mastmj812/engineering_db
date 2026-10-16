@@ -88,3 +88,20 @@ def test_record_extents_areas_match_summary():
     s = json.loads((fe.STEP3_DIR / "summary.json").read_text(encoding="utf-8"))
     for pool, g in rec.items():
         assert abs(g.area / eg.FT_PER_MI**2 / s["pools"][pool]["extent_sqmi"] - 1) < 1e-3
+
+
+def test_inkml_decode_and_pen_loop():
+    from shapely.geometry import box
+
+    from box import family_extent as fe
+
+    # explicit first point, then first differences ('), then second differences (") with the mode persisting
+    pts = fe.decode_inkml_trace("10 20 0,'5'0'0,0 0 0,\"1\"0\"0")
+    assert pts == [(10, 20), (15, 20), (15, 20), (16, 20)]
+    ext = box(0, 0, 10, 10)
+    clip = box(-100, -100, 100, 100)
+    loop = [(8, 2), (20, 2), (20, 8), (8, 8), (8.5, 2.2)]  # closed loop overlapping the extent's east edge
+    ed, _d, kind = fe.apply_pen_stroke(ext, loop, clip, closed_ft=1.0)
+    assert kind == "island" and abs(ed.area - 160.0) < 1.0
+    chained = fe.chain_strokes([[(0, 0), (1, 0)], [(1.1, 0), (2, 0)]], join_ft=0.5)
+    assert len(chained) == 1 and chained[0][-1] == (2, 0)

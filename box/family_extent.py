@@ -433,14 +433,28 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
             frame = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png")["frame"]
             (edit_dir / f"_frame_{pool}.png").unlink()
         edited = gen
-        for ln in ff[k]["lines"]:  # each freeform in turn: additions outside, cuts inside; no freeform = accepted as generated
-            edited, _delta = apply_hand_edit(edited, emu_to_geology(ln, ff[k]["picture"], frame))
         strokes = ink.get(k, [])
         kinds: list[str] = []
-        if strokes:  # pen ink (2026-10-16 deck): chain pen lifts, then one stroke at a time
+        marks = ff[k]["lines"] + strokes
+        emu_per_px = ff[k]["picture"][2] / frame["size"][0]
+        outline_mode = bool(marks) and all(math.dist(m[0], m[-1]) <= CLOSED_PX * emu_per_px for m in marks)
+        if outline_mode:
+            # Michael's convention from 2026-10-16 (second pass): every mark is a closed loop drawing the COMPLETE extent;
+            # the union of the loops IS the extent (no attaching, chords or joining; voids filled, clipped to the map shown)
+            loops = [Polygon(gio.geology_to_ft13([shapely.geometry.LineString(emu_to_geology(m, ff[k]["picture"], frame))])[0].coords) for m in marks]
+            from shapely.validation import make_valid
+
+            u = shapely.union_all([make_valid(q) for q in loops]).intersection(_clip_frame(frame))
+            u = ex.as_multi(shapely.union_all([g for g in getattr(u, "geoms", [u]) if g.geom_type == "Polygon"]).buffer(0))
+            edited = ex.as_multi(shapely.union_all([Polygon(g.exterior) for g in u.geoms]))
+            kinds = ["outline"] * len(marks)
+            interpret_png(pool, ext_dir / f"visual_{pool}.png", frame, ff[k]["picture"], marks, gen, edited, edit_dir / f"reading_{pool}.png")
+        for ln in ([] if outline_mode else ff[k]["lines"]):  # each freeform in turn: additions outside, cuts inside; no freeform = accepted as generated
+            edited, _delta = apply_hand_edit(edited, emu_to_geology(ln, ff[k]["picture"], frame))
+        if strokes and not outline_mode:  # pen ink, first pass (2026-10-16): chain pen lifts, then one stroke at a time
             ft_per_px = (frame["data"][2] - frame["data"][0]) / (frame["pix"][2] - frame["pix"][0])
-            emu_per_px = ff[k]["picture"][2] / frame["size"][0]
-            chained = chain_strokes(strokes, JOIN_PX * emu_per_px)
+            loops = [st for st in strokes if math.dist(st[0], st[-1]) <= CLOSED_PX * emu_per_px]  # closed loops never join
+            chained = loops + chain_strokes([st for st in strokes if math.dist(st[0], st[-1]) > CLOSED_PX * emu_per_px], JOIN_PX * emu_per_px)
             clip = _clip_frame(frame)
             for st in chained:
                 geo = emu_to_geology(st, ff[k]["picture"], frame)
