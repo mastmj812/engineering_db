@@ -100,7 +100,7 @@ needs; none can be judged yet. cum-12 for the earliest wells arrives around 2027
    - scored with the D62 haircut as delivered.
 
    Recommendation: accept as frozen.
-5. **Steven.** I have NOT contacted him. A draft for you to send:
+5. **Steven.** I have NOT contacted him. A draft for you to send (**superseded 2026-10-16 by `../steven-note-2026-10-16.md`** — run 7, D92, downtime check):
 
    > *Steven — BOX forecasts are live: `box.forecast_run` run_id 4 is the record (1,929 WCA PUD locations, oil/gas monthly,
    > uptime-free, haircut applied). Once Michael applies it, the contract table for pricing them is
