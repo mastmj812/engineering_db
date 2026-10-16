@@ -59,7 +59,7 @@ Checks: erebor `pytest -q` 57 passed (DB-free); frontend `tsc -b --noEmit` clean
 
 ## 3. Conflicts with the plan text (flagged, not resolved)
 
-1. **Step 8 says "BOX EUR/ft, risk factor".** The risk-factor chain was retired by D54/D57 and D66 says apps never read
+1. **DECIDED 2026-10-15 (D91): accepted** — haircut + analog provenance replace "risk factor"; built as described. Original note: **Step 8 says "BOX EUR/ft, risk factor".** The risk-factor chain was retired by D54/D57 and D66 says apps never read
    `box.type_curve` / `risk_factor`. Built instead: the D57-era equivalents — haircut by horizon (D62), analog
    count + radius + strike/circle search, D69 range, bound flags. Needs your word that this replaces "risk factor".
 2. **Step 8 says "Accuracy tab: BOX vs Novi hindcast from `box.hindcast_score`".** That table was never built
