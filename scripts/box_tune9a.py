@@ -31,6 +31,7 @@ from etl.db import get_connection
 ACC = Path("docs") / "box" / "acceptance"
 BENCHES = (("bs2s", "tuning_BS2_S", "BS2_S — gate-1 set + D84 refresh, extent 7"),
            ("wcxy", "tuning_WCXY", "WCXY targets — WCXY analogs only (D20), WCA extent as the frame"),
+           ("wcxy_wca1", "tuning_WCXY_WCA1", "WCXY targets — PRE-REGISTERED pool WCXY + WCA_1 (Michael 2026-10-16, proposed D93; WCA_2 out, BS3_S deferred)"),
            ("wcxy_on_wca", "tuning_WCXY_on_WCA", "SENSITIVITY — WCXY targets on the whole WCA analog pool (contradicts D20 as written)"))
 
 _RUN_SQL = "SELECT run_id, haircut FROM box.forecast_run WHERE is_record"

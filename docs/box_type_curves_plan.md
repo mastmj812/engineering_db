@@ -7,7 +7,7 @@ read access and the run-7 note (sent 2026-10-16); his econ loop is tabled. erebo
 **Phase 2 drafted 2026-10-16 (§5 steps 9–15, §10 order).** **Step 9a built 2026-10-16, AT GATE 9a** (branch `claude/box-step9a-tuning`;
 deliverable `docs/box/step9a-2026-10-16/` — `FINDINGS.md`, `index.html`): harness bench-parameterised (`fold="analog"`; code identical to the
 step-6 fold on the same data; the WCA record is not bit-reproducible because curated.production was revised after 10-14 — FINDINGS §2);
-tuning view box_v2_wf: BS2_S 9 / 16 cells fail (mostly spread), WCXY on WCXY-only analogs 9 / 16, WCXY on the WCA pool (sensitivity) 4 / 16.
+tuning view box_v2_wf: BS2_S 9 / 16 cells fail (mostly spread), WCXY on WCXY-only analogs 9 / 16, on the PRE-REGISTERED WCXY + WCA_1 pool 8 / 16 (raw box_v2 0 bias fails), on the whole WCA pool (sensitivity) 4 / 16.
 Gate-9a asks in FINDINGS §5. Nothing stored.
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says

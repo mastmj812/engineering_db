@@ -34,6 +34,7 @@ unchanged; blueox-boxfit @ 3380317; actuals pinned to 2026-07-01 (the scored WCA
 | BS2_S (4,340 wells, extent 7) | 9 / 16 | 8 spread, 1 bias (gas cum-12 2022 −13 %); oil bias −4.1…+3.9 % after the haircut |
 | BS2_S with WCA's haircut | 15 / 18 | raw box_v2 is 10–16 % high on BS2_S oil vs WCA's 5–9 % |
 | WCXY, WCXY-only analogs (D20) | 9 / 16 | 4 bias, 5 spread; raw box_v2 +10–16 % LOW at 2019–22; radius 15–20 mi common |
+| **WCXY on WCXY + WCA_1 (pre-registered 2026-10-16)** | **8 / 16** | 3 bias (all +10–12 %, walk-forward over-correction), 5 spread; raw box_v2 7 / 16 with 0 bias fails (max \|bias\| 7.6 %) |
 | WCXY on the whole WCA pool (sensitivity) | 4 / 16 | 3 bias (all from 2021); bands mostly tighter than the benchmark's |
 
 D62-style tables (tuning only, factor = 1 + package-weighted bias) at cum-12/24/36/48:
@@ -53,8 +54,10 @@ Other edges run +13…+23 % above forecast; the interior is −5 %.
 ## 5. Gate-9a decisions (recommendations; detail in index.html §5)
 
 1. **Haircut:** per bench (BS2_S its own table).
-2. **WCXY analog pool:** D20 as written fails 9 / 16; the WCA pool fails 4 / 16. Michael's call: keep D20 (WCXY stays uncovered), or amend D20
-   for analog selection only.
+2. **WCXY analog pool:** adopt the pre-registered WCXY + WCA_1 pool as **D93** (selection only; D20 still governs extents / cohorts; BS3_S after
+   15a). It fixes the WCXY-only pool's bias (raw within ±7.6 % everywhere). Not switching to the whole-WCA pool (4 / 16): it was seen before the
+   pool was declared. **Open before 9b:** whether WCXY keeps the walk-forward haircut — on this pool the raw curve is unbiased and the haircut
+   causes all 3 bias failures; dropping it for WCXY is a spec change.
 3. **WCXY extent:** the WCA extent as is. 1,678 / 1,679 WCXY producers and 3,188 / 3,385 WCXY PUDs are inside it; median 1.8 mi to a WCXY producer.
 4. **BS2_S south edge:** no spec change. Make the south-edge over-forecast a named watch item for 9b and a stated workup caveat.
 

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "built_at": "2026-10-16T15:48:10-05:00",
-    "code_sha": "649e2793969cb07574a62456d13fd12eb449c6db",
+    "built_at": "2026-10-16T17:28:09-05:00",
+    "code_sha": "99203a80be8a4fe37472fe33e71337c70b43aead",
     "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
     "actuals_through": "2026-07-01"
   },
@@ -25,6 +25,15 @@
       },
       "n_judged": 16,
       "n_failed": 9
+    },
+    "WCXY targets \u2014 PRE-REGISTERED pool WCXY + WCA_1 (Michael 2026-10-16, proposed D93; WCA_2 out, BS3_S deferred)": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 16,
+      "n_failed": 8
     },
     "SENSITIVITY \u2014 WCXY targets on the whole WCA analog pool (contradicts D20 as written)": {
       "overall": "FAIL",
