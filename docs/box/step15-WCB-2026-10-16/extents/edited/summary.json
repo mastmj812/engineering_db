@@ -1,30 +1,31 @@
 {
- "built_at": "2026-10-16T12:57:23-05:00",
- "git_sha": "802b3b7+dirty",
- "source": "C:\\Users\\MichaelMast\\OneDrive - Blue Ox Resources\\remaining_extents_2026-10-16.pptx",
+ "built_at": "2026-10-16T13:19:23-05:00",
+ "git_sha": "011ea40+dirty",
+ "source": "C:\\Users\\MICHAE~1\\AppData\\Local\\Temp\\claude\\C--Users-MichaelMast-Projects-engineering-db\\953b62df-58d0-47a0-b870-c74ea7a2b347\\scratchpad\\deck_v3.pptx",
  "pools": {
   "WCB_1": {
    "slide": 2,
    "n_freeforms": 0,
    "n_ink_strokes": 1,
    "stroke_kinds": [
-    "add"
+    "loop_add"
    ],
    "generated_sqmi": 3921.277912816443,
-   "edited_sqmi": 5778.252060195191,
-   "added_sqmi": 1856.9741473787612,
+   "edited_sqmi": 5641.912776156202,
+   "added_sqmi": 1720.634863339769,
    "removed_sqmi": 0.0,
    "n_parts": 1,
    "n_evidence": 1664,
    "inside_generated": 1580,
-   "inside_edited": 1616,
-   "outside_edited": 48,
+   "inside_edited": 1594,
+   "outside_edited": 70,
    "d1_in_generated": 4523,
-   "d1_in_edited": 4894,
+   "d1_in_edited": 5366,
    "outside_by_county": {
+    "Eddy": 26,
     "Culberson": 26,
     "Reeves": 11,
-    "Lea": 8,
+    "Lea": 4,
     "Pecos": 3
    },
    "visual": "WCB_1"
@@ -32,31 +33,30 @@
   "WCB_2": {
    "slide": 3,
    "n_freeforms": 0,
-   "n_ink_strokes": 4,
+   "n_ink_strokes": 1,
    "stroke_kinds": [
-    "add",
-    "add",
-    "add"
+    "loop_add"
    ],
    "generated_sqmi": 1624.3567108150576,
-   "edited_sqmi": 2621.2549190090303,
-   "added_sqmi": 996.8982081939671,
-   "removed_sqmi": 0.0,
-   "n_parts": 9,
+   "edited_sqmi": 2758.599902240316,
+   "added_sqmi": 1134.2431914252581,
+   "removed_sqmi": 1.730683752620446e-16,
+   "n_parts": 1,
    "n_evidence": 1090,
    "inside_generated": 507,
-   "inside_edited": 576,
-   "outside_edited": 514,
+   "inside_edited": 560,
+   "outside_edited": 530,
    "d1_in_generated": 1668,
-   "d1_in_edited": 2459,
+   "d1_in_edited": 2291,
    "outside_by_county": {
-    "Reeves": 380,
+    "Reeves": 366,
     "Ward": 85,
     "Pecos": 23,
-    "Loving": 9,
-    "Winkler": 8,
-    "Eddy": 5,
-    "Culberson": 4
+    "Eddy": 19,
+    "Winkler": 14,
+    "Lea": 9,
+    "Loving": 8,
+    "Culberson": 6
    },
    "visual": "WCB_2"
   }

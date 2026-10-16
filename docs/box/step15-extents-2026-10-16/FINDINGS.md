@@ -96,3 +96,35 @@ Checks on the ingest:
 
 Nothing is stored. Storing follows the 15a pattern (`box.bench_scope` rows, generated v1, edited v1 as record) on an
 explicit go-apply per bench.
+
+## 4. Michael's edits (2026-10-16): ingested, AT THE EXTENT GATE (nothing stored)
+
+The edit record is the deck Michael saved here, `remaining_extents_2026-10-16.pptx` (13:15). It was read through a
+copy while PowerPoint held it open. Edited extents are in `step15-<family>-2026-10-16/extents/edited/`:
+shapefile, diff page, `reading_<bench>.png` (his strokes on the exact PNG plus BOX's reading), and summary.json.
+
+How the edits came in:
+- **First pass:** open pen strokes (InkML, not freeforms). Read by attaching loose ends to the outline. WCB_1 and
+  BS1_S were right; BS2_C (north lobe) and WCB_2 were misread (stray chords, 9 pieces, a branch read as a sliver).
+- **Second pass, the record:** one closed pen loop per edit area, each around ground to **add**, allowed to overlap
+  the black outline. Extent = generated ∪ loops: no attaching, no chords; voids filled; clipped to the map shown;
+  pieces under 1 sq mi dropped.
+- A "loops are the complete extent" reading was tried first. It cut every developed body (WCB_1 −716 laterals,
+  BS1_S's whole 717-lateral main body), so it was discarded as not his intent.
+
+| bench | generated sq mi | **edited sq mi** | parts | ≥ 2016 laterals inside: generated → edited | D1 PUDs inside: generated → edited |
+|---|---:|---:|---:|---|---|
+| BS2_C | 1,083 | **2,078** | 2 (main + SE) | 367 → 415 of 650 | 2,247 → 4,236 |
+| WCB_1 | 3,921 | **5,642** | 1 | 1,580 → 1,594 of 1,664 | 4,523 → 5,366 |
+| WCB_2 | 1,624 | **2,759** | 1 | 507 → 560 of 1,090 | 1,668 → 2,291 |
+| BS1_S | 1,535 | **4,599** | 1 | 777 → 891 of 962 | 2,485 → 6,126 |
+| WCC, AVA_0, AVA_1, AVA_2, WCD | as generated | unchanged | | | |
+
+Still outside after the edits:
+- **WCB_2:** 366 Reeves and 85 Ward modern laterals. The south body 2 (317 laterals) is not enclosed.
+- **BS2_C:** 89 Reeves and 74 Pecos. The SE loop covers the western part of body 2.
+
+Both are owner calls to confirm, not readings to fix.
+
+Storing follows the 15a pattern on an explicit go-apply: `box.bench_scope` rows, generated v1, then the edited v1
+(or the generated v1 for the unchanged benches) as the version of record.
