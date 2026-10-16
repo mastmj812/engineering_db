@@ -171,3 +171,24 @@ shelf cluster; BS3_C adds the SE trough-axis trend (Reeves / Ward). Both leave t
    (a) `box.bench_scope` gains `('delaware','BS3_S',true,'{BS3_S}',…)` and `('delaware','BS3_C',true,'{BS3_C}',…)`
    (box.extent has an FK to bench_scope); (b) store generated v1 for each (not record); (c) store the edited v1 as the
    version of record. No DDL, no sql/NN.
+
+## 9. Extent gate — CLOSED 2026-10-16: STORED LIVE (Michael: "go apply: add BS3_S + BS3_C to box.bench_scope, store generated v1, then store the edited v1 as the version of record")
+
+`python -m scripts.box_family_extent_store --wells docs/box/step15a-2026-10-16 --pool BS3_S BS3_C` at 110c7d1 (dry run
+first). Identity before writing: the rebuilt generated extent = the reviewed v1 (|Δ area| ≤ 0.0005 sq mi, symmetric
+difference ≤ 0.0035 sq mi — GeoJSON 1e-6° rounding); the edited geometry = the reviewed `edited/*.geojson` exactly.
+No DDL, no sql/NN.
+
+| | box.bench_scope | generated v1 (not record) | edited v1 = **version of record** |
+|---|---|---|---|
+| BS3_S | `('delaware','BS3_S',true,'{BS3_S}')` | extent_id 15, 2,991.28 sq mi, 129 edges | **extent_id 16**, 4,998.33 sq mi, parent 15 |
+| BS3_C | `('delaware','BS3_C',true,'{BS3_C}')` | extent_id 17, 2,439.68 sq mi, 153 edges | **extent_id 18**, 3,840.21 sq mi, parent 17 |
+
+Read-only check after the writes: exactly one record per bench (WCA 6, BS2_S 7 unchanged; BS3_S 16, BS3_C 18). The
+geodesic areas read 0.04 % above the planar UTM 13N areas, the same projection scale as the Phase 1 records.
+
+**For the next sequential session (plan §2 / Status, which this session does not edit):** proposed decisions —
+BS3 bench QC sets + no cards (§5.1–2); BS3_S and BS3_C not pooled (§5.3); re-tag drift stays under D84 until the next
+refresh (§5.4); BS3 extents of record = the owner's hand edit of generated D27 v1 (§7–9), recording that D27's
+one-body assumption fails on multi-trend benches and a visual owner edit replaced a multi-body rule for this family.
+Next for 15a: 9a-style tuning view (D53 harness) on BS3_S / BS3_C — after step 9a generalises `box/acceptance.py`.
