@@ -35,6 +35,9 @@ GRID_DIR = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/St
 GRIDS = {
     "BS2_S": ("HCA_2BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_3BSPGC_STRUCTURE_MDXYZ_grid.xyz"),
     "WCA": ("HCA_WOLFCAMP_A_STRUCTURE_MDXYZ_grid.xyz", "WOLFCAMP-B1-STRUCTUREXYZ_grid.xyz"),
+    # step 15a: BS3 carbonate = 3BS carbonate top -> 3BS sand top; BS3 sand = 3BS sand top -> Wolfcamp (XY) top
+    "BS3_C": ("HCA_3BSPGC_STRUCTURE_MDXYZ_grid.xyz", "HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
+    "BS3_S": ("HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_WOLFCAMP_XY_STRUCTURE_MDXYZ_grid.xyz"),
 }
 STRUCT_STEP_FT, ISO_STEP_FT = 250.0, 25.0
 RULE_COLOURS = {
