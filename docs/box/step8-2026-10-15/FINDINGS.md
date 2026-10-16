@@ -73,7 +73,7 @@ Checks: erebor `pytest -q` 57 passed (DB-free); frontend `tsc -b --noEmit` clean
 
 ## 4. Gate-8 asks (Highgrade surface)
 
-1. **Click-through acceptance** of the toggle as built (§2).
+1. **ACCEPTED 2026-10-15** — click-through of the toggle as built (§2); gate 8 closed for the Highgrade surface.
 2. **DECIDED 2026-10-15 (D90): option (b)**, built in erebor commit on the same branch — BOX mode screens all depletion tiers by default; default BOX screen now shows 1,896 covered (TVD-excess ≤ 200 ft drops 11). Original ask: **Default Depletion-tier screen vs BOX.** Highgrade defaults Novi Depletion Tier-4 OFF ("drained rock"). On BOX
    that removes **1,307 of the 1,907 covered PUDs (69 %)** — the default screen shows 596 (TVD-excess ≤ 200 ft removes
    only 11 more). The BOX workup already prices depletion through its analogs, so Novi's tier may be double-counting
