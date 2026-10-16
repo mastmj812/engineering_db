@@ -1,7 +1,7 @@
 # D92 — haircut shape: C1 smooth rate factor (rehearsed, NOT stored)
 
 Built 2026-10-15 on branch `claude/box-d92-c1-haircut` (code 6d5ef2a). **Rehearsed as the record in a throwaway PostGIS
-container only; nothing is written to Supabase.** Live store needs Michael's go.
+container first.** **STORED LIVE 2026-10-16 as record run 7** (Michael's go; §5).
 
 ## 1. The defect (record run 6, every covered PUD)
 
@@ -56,3 +56,13 @@ identical (planned spacing equal to 5e-12 ft); only EUR + monthly volumes move. 
    small and early; C1b's extra −4.8 pt on oil EUR rests on extrapolating a steeper post-12 slope.
 3. After a live store: erebor's BOX disclosure shows "haircut applied ×factor" from the D62 table — follow-up to show the
    realised factor (`haircut[s][k].realised_median`) next to the target.
+
+## 5. Live store (2026-10-16, Michael's go: "store runs/box8_c1 live as the BOX record, keep the gas early bump as is")
+
+`python -m scripts.box_pud_run store --record --out runs/box8_c1` on Supabase (log `runs/box8_c1/store_live.txt`, 48 s): **run_id 7
+= record**, run 6 superseded (kept, D75); 33,228 locations reused (same vintage, 0 new); every identity check green (33,034
+universe rows; covered 1,907 + 5 no_analogs; 3,814 stream rows; 600 months per stream summing to EUR, 0 off; >= 3 analogs).
+Re-verified read-only: oil 1,096.7 MMbbl / gas 5,621.2 Bcf; oil EUR/kft median 63,605 bbl (run 6: 66,570); named analogs
+identical to run 6 (34,560 rows, 0 unmatched); **0 post-peak monthly rises** in either stream (the remaining month-over-month
+rises are the ramp to peaks at months 3–4 oil / up to 7 gas); Pad 3545 WCA 2 oil months 36→37 2,460→2,390, 48→49 1,819→1,783
+(run 6: 2,513→1,785, 992→2,031). erebor `/api/box/meta` serves run 7. Gas early bump kept as is (ask 2 answered).
