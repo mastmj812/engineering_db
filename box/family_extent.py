@@ -42,6 +42,8 @@ from box import extent_report as er
 from box import geology_io as gio
 
 STEP3_DIR = Path("docs") / "box" / "step3-2026-10-07"
+JOIN_PX = 110.0  # pen-lift gap (map pixels) joined into one stroke
+CLOSED_PX = 45.0  # a stroke whose ends meet within this is a closed loop (island)
 
 
 def record_params(step3_dir: Path = STEP3_DIR) -> ex.BufferParams:
@@ -412,6 +414,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
     step-3 diff page, the visual check redrawn with the edited outline, laterals + D1 PUDs inside generated vs edited."""
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     ff = pptx_freeforms(pptx)
+    ink = pptx_ink(pptx)
     df = egr.load_final_sets(wells_dir, tuple(slide_pool.values()))
     df = egr.attach_geometry(df, egr.pull_laterals(conn, sorted(df["api10"].unique())))
     sopa = er.load_sopa()
@@ -432,6 +435,19 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         edited = gen
         for ln in ff[k]["lines"]:  # each freeform in turn: additions outside, cuts inside; no freeform = accepted as generated
             edited, _delta = apply_hand_edit(edited, emu_to_geology(ln, ff[k]["picture"], frame))
+        strokes = ink.get(k, [])
+        kinds: list[str] = []
+        if strokes:  # pen ink (2026-10-16 deck): chain pen lifts, then one stroke at a time
+            ft_per_px = (frame["data"][2] - frame["data"][0]) / (frame["pix"][2] - frame["pix"][0])
+            emu_per_px = ff[k]["picture"][2] / frame["size"][0]
+            chained = chain_strokes(strokes, JOIN_PX * emu_per_px)
+            clip = _clip_frame(frame)
+            for st in chained:
+                geo = emu_to_geology(st, ff[k]["picture"], frame)
+                st13 = list(gio.geology_to_ft13([shapely.geometry.LineString(geo)])[0].coords)
+                edited, _delta, kind = apply_pen_stroke(edited, st13, clip, CLOSED_PX * ft_per_px)
+                kinds.append(kind)
+            interpret_png(pool, ext_dir / f"visual_{pool}.png", frame, ff[k]["picture"], strokes, gen, edited, edit_dir / f"reading_{pool}.png")
         # shapefile in the geology round-trip format (D7 / D28) + the step-3 diff page
         params = f"hand edit by Michael 2026-10-16 ({pptx.name} slide {k}) on generated v{version}"
         gio.write_layer(edit_dir / f"BOX_{pool}_extent_v{version}_edited", "polygon", gio.ft13_to_geology([edited]), pkg.EXTENT_FIELDS,
@@ -456,10 +472,165 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         ig, ie = inside(gen), inside(edited)
         d1 = pt[pt.status == "D1 universe"]
         res["pools"][pool] = {
-            "slide": k, "n_freeforms": len(ff[k]["lines"]), "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
+            "slide": k, "n_freeforms": len(ff[k]["lines"]), "n_ink_strokes": len(strokes), "stroke_kinds": kinds, "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
             "n_parts": len(edited.geoms), "n_evidence": len(ev), "inside_generated": int(ig.sum()), "inside_edited": int(ie.sum()), "outside_edited": int((~ie).sum()),
             "d1_in_generated": int(d1["in generated"].sum()) if len(d1) else 0, "d1_in_edited": int(d1["in edited"].sum()) if len(d1) else 0,
             "outside_by_county": ev.loc[~ie, "county"].value_counts().head(8).to_dict(), "visual": str(vis["pool"]),
         }
     (edit_dir / "summary.json").write_text(json.dumps(res, indent=1, default=str), encoding="utf-8")
     return res
+
+
+# ----------------------------------------------------------------------------
+# Pen (InkML) edits: PowerPoint stores pen strokes as ink content parts (ppt/ink/inkN.xml), not freeforms
+# ----------------------------------------------------------------------------
+
+EMU_PER_HIMETRIC = 360  # InkML X/Y channels at resolution 1000 / cm = 0.01 mm; 1 cm = 360,000 EMU
+
+
+def decode_inkml_trace(text: str, n_channels: int = 3) -> list[tuple[float, float]]:
+    """Points (x, y) of one <inkml:trace>: comma-separated points, per-channel value prefixes ! explicit, ' first
+    difference, " second difference (the mode persists per channel until changed). Extra channels (force) are read and
+    dropped; points carrying fewer than 2 values are skipped."""
+    import re
+
+    modes = ["!"] * n_channels
+    last = [0.0] * n_channels
+    vel = [0.0] * n_channels
+    out: list[tuple[float, float]] = []
+    for pt in text.strip().split(","):
+        vals = re.findall(r"""([!'"]?)(-?\d+(?:\.\d+)?)""", pt)
+        if not vals:
+            continue
+        cur = list(last)
+        for ch, (pre, num) in enumerate(vals[:n_channels]):
+            if pre:
+                modes[ch] = pre
+            v = float(num)
+            if modes[ch] == "!":
+                vel[ch] = v - last[ch]
+                cur[ch] = v
+            elif modes[ch] == "'":
+                vel[ch] = v
+                cur[ch] = last[ch] + v
+            else:
+                vel[ch] = vel[ch] + v
+                cur[ch] = last[ch] + vel[ch]
+        last = cur
+        if len(vals) >= 2:
+            out.append((cur[0], cur[1]))
+    return out
+
+
+def pptx_ink(pptx: Path) -> dict[int, list[list[tuple[float, float]]]]:
+    """slide no -> pen strokes in slide EMU (ink part offset + himetric x 360)."""
+    import re
+    import zipfile
+
+    out: dict[int, list[list[tuple[float, float]]]] = {}
+    with zipfile.ZipFile(pptx) as z:
+        for name in sorted(n for n in z.namelist() if re.fullmatch(r"ppt/slides/slide\d+\.xml", n)):
+            k = int(re.search(r"(\d+)\.xml$", name).group(1))
+            xml = z.read(name).decode("utf-8")
+            rels = z.read(f"ppt/slides/_rels/slide{k}.xml.rels").decode("utf-8")
+            strokes = []
+            for part in re.findall(r"<p:contentPart[^>]*>.*?</p:contentPart>", xml, flags=re.DOTALL):
+                rid = re.search(r'r:id="(rId\d+)"', part).group(1)
+                tgt = re.search(rf'Id="{rid}"[^>]*Target="\.\./ink/([^"]+)"', rels) or re.search(rf'Target="\.\./ink/([^"]+)"[^>]*Id="{rid}"', rels)
+                ox, oy = (int(v) for v in re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/>', part).groups())
+                ink = z.read(f"ppt/ink/{tgt.group(1)}").decode("utf-8")
+                for tr in re.findall(r"<inkml:trace[^>]*>(.*?)</inkml:trace>", ink, flags=re.DOTALL):
+                    pts = decode_inkml_trace(tr)
+                    if len(pts) >= 2:
+                        strokes.append([(ox + x * EMU_PER_HIMETRIC, oy + y * EMU_PER_HIMETRIC) for x, y in pts])
+            out[k] = strokes
+    return out
+
+
+def _clip_frame(frame: dict[str, Any]) -> Any:
+    """The visual-check map's data rectangle (geology frame) as a UTM 13N ft polygon: edits never reach past what was shown."""
+    x0, y0, x1, y1 = frame["data"]
+    return gio.geology_to_ft13([shapely.box(x0, y0, x1, y1)])[0]
+
+
+def chain_strokes(strokes: list[list[tuple[float, float]]], join_ft: float) -> list[list[tuple[float, float]]]:
+    """Join pen-lift pieces: two strokes whose ends meet within join_ft become one line (reversing as needed)."""
+    s = [list(x) for x in strokes]
+    merged = True
+    while merged and len(s) > 1:
+        merged = False
+        for i in range(len(s)):
+            for j in range(len(s)):
+                if i == j:
+                    continue
+                a, b = s[i], s[j]
+                for aa, bb in ((a, b), (a, b[::-1]), (a[::-1], b), (a[::-1], b[::-1])):
+                    if math.dist(aa[-1], bb[0]) <= join_ft:
+                        s[i] = aa + bb
+                        del s[j]
+                        merged = True
+                        break
+                if merged:
+                    break
+            if merged:
+                break
+    return s
+
+
+def apply_pen_stroke(current_ft13: Any, stroke_ft13: list[tuple[float, float]], clip_ft13: Any, closed_ft: float) -> tuple[Any, Any, str]:
+    """One pen stroke (UTM 13N ft) against the current extent. Closed (ends within closed_ft): the loop is an island
+    (added; a cut if it lies inside). Open: each end outside the extent attaches to its nearest point on the extent;
+    the stroke + attachments + a chord between the attachment points enclose the edit. Added area is clipped to the map
+    frame; voids are filled (D27). Returns (edited, delta, kind)."""
+    from shapely.geometry import Point
+    from shapely.ops import nearest_points
+    from shapely.validation import make_valid
+
+    pts = list(stroke_ft13)
+    closed = math.dist(pts[0], pts[-1]) <= closed_ft
+    if not closed:
+        def attach(p: tuple[float, float]) -> tuple[float, float]:
+            q = Point(p)
+            if current_ft13.covers(q):
+                return p
+            n = nearest_points(current_ft13.boundary, q)[0]
+            return (n.x, n.y)
+
+        pts = [attach(pts[0])] + pts + [attach(pts[-1])]
+    poly = make_valid(Polygon(pts + [pts[0]]))
+    area = shapely.union_all([g for g in getattr(poly, "geoms", [poly]) if g.geom_type == "Polygon"]).intersection(clip_ft13)
+    if area.is_empty:
+        return current_ft13, area, "empty"
+    if area.difference(current_ft13).area < 0.05 * area.area:
+        return ex.as_multi(current_ft13.difference(area).buffer(0)), current_ft13.intersection(area), "cut"
+    edited = ex.as_multi(shapely.union_all([current_ft13, area]).buffer(0))
+    edited = ex.as_multi(shapely.union_all([Polygon(g.exterior) for g in edited.geoms]))  # no voids (D27)
+    return edited, area.difference(current_ft13), "island" if closed else "add"
+
+
+def interpret_png(pool: str, base_png: Path, frame: dict[str, Any], picture: tuple[int, int, int, int], strokes_emu: list[list[tuple[float, float]]],
+                  generated: Any, edited: Any, out: Path) -> None:
+    """The owner's strokes (red) and BOX's reading of them (black = edited extent, dashed grey = generated) drawn on the
+    exact PNG he edited, so the interpretation is checked by eye before anything is used."""
+    from PIL import Image, ImageDraw
+
+    im = Image.open(base_png).convert("RGB")
+    W, H = im.size
+    dr = ImageDraw.Draw(im)
+    x0, y0, x1, y1 = frame["data"]
+    px0, py0, px1, py1 = frame["pix"]
+
+    def to_px(g: Any) -> list[tuple[float, float]]:
+        return [(px0 + (x - x0) / (x1 - x0) * (px1 - px0), py0 + (y - y0) / (y1 - y0) * (py1 - py0)) for x, y in g.exterior.coords]
+
+    for g in ex.as_multi(gio.ft13_to_geology([generated])[0]).geoms:
+        c = to_px(g)
+        for i in range(0, len(c) - 1, 2):
+            dr.line([c[i], c[i + 1]], fill=(120, 120, 120), width=3)
+    for g in ex.as_multi(gio.ft13_to_geology([edited])[0]).geoms:
+        dr.line(to_px(g), fill=(0, 0, 0), width=5)
+    for s in strokes_emu:
+        dr.line([((x - picture[0]) / picture[2] * W, (y - picture[1]) / picture[3] * H) for x, y in s], fill=(230, 18, 36), width=3)
+    dr.rectangle([4, 4, 760, 30], fill=(255, 255, 255))
+    dr.text((10, 10), f"{pool}: your strokes (red) -> BOX reading (black, {edited.area / eg.FT_PER_MI**2:,.0f} sq mi); generated dashed grey", fill=(0, 0, 0))
+    im.save(out)

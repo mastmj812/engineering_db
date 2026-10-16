@@ -1,0 +1,37 @@
+{
+ "built_at": "2026-10-16T12:57:44-05:00",
+ "git_sha": "802b3b7+dirty",
+ "source": "C:\\Users\\MichaelMast\\OneDrive - Blue Ox Resources\\remaining_extents_2026-10-16.pptx",
+ "pools": {
+  "BS1_S": {
+   "slide": 4,
+   "n_freeforms": 0,
+   "n_ink_strokes": 3,
+   "stroke_kinds": [
+    "island",
+    "add",
+    "add"
+   ],
+   "generated_sqmi": 1535.3541569359654,
+   "edited_sqmi": 4784.21890603461,
+   "added_sqmi": 3248.864749098644,
+   "removed_sqmi": 0.0,
+   "n_parts": 2,
+   "n_evidence": 962,
+   "inside_generated": 777,
+   "inside_edited": 892,
+   "outside_edited": 70,
+   "d1_in_generated": 2485,
+   "d1_in_edited": 6254,
+   "outside_by_county": {
+    "Reeves": 34,
+    "Pecos": 20,
+    "Ward": 9,
+    "Eddy": 3,
+    "Lea": 2,
+    "Culberson": 2
+   },
+   "visual": "BS1_S"
+  }
+ }
+}
