@@ -172,4 +172,5 @@ Re-verified read-only after COMMIT:
 - `haircut.by_bench` carries WCA, BS2_S and WCXY_WCA1.
 - 14,980,800 month rows; `box.pud_forecast_month` 2,705 MB, database 76 GB.
 - erebor `/api/box/meta?basin=delaware` serves run 8.
-- The erebor per-bench disclosure fix (ask 3) follows in its own session.
+- Ask 3 fix: erebor https://github.com/mastmj812/erebor/pull/14. /meta and /pad return one disclosure block per group from
+  by_bench; verified on live run 8 (Pad 1213: BS2_S ×0.891, WCXY ×1.000 with oil cum-36 −9.2 %). Open, awaiting merge.
