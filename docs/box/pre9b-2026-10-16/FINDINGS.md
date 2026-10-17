@@ -26,7 +26,7 @@ At holdout size a per-cutoff cell holds 16–25 BS2_S packages and 5–14 WCXY p
 At holdout size (60–90 packages) a single pooled cell's bias swings about ±8 pts (P5–P95) around its tuning value.
 A fixed ±10 % test on that bias is therefore a coin flip for a good forecast, and the spread test passes a good forecast only 60–90 % of the time per cell.
 
-## 3. Proposed D99 (Michael's call, before 9b)
+## 3. D99 — ADOPTED by Michael 2026-10-17, before 9b
 
 **Scoring.** Each bench's holdout is scored POOLED across cutoffs, per stream × horizon:
 - BS2_S: oil + gas at cum-12 and cum-24 (cum-36 reaches 30 packages in 0.3 % of draws);
@@ -49,3 +49,5 @@ tolerance; it would be stated on every WCXY workup.
 | gas cum-12 | −17.8 … +3.1 % | −10.3 … +10.4 % |
 | gas cum-24 | −18.2 … +8.3 % | −13.1 … +8.1 % |
 | gas cum-36 | — | −14.9 … +4.3 % |
+
+**For the 9b session:** score with `--fold analog --score-holdout --holdout-once`, then judge the pooled cells against the frozen interval CSVs in this folder (BS2_S also needs `--history docs/box/step9a-2026-10-16/cells_tuning_BS2_S.csv`, D94). Do not redraw or re-seed the intervals.
