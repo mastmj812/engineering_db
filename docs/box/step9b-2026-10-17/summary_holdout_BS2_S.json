@@ -1,0 +1,873 @@
+{
+  "built_at": "2026-10-17T06:56:00-05:00",
+  "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+  "actuals_through": "2026-07-01",
+  "live_last_full_month": "2026-07-01",
+  "bench": "BS2_S",
+  "bench_desc": "Delaware BS2_S (gate-1 set + D84 refresh; extent of record 7)",
+  "fold": "analog",
+  "wells_dir": "docs\\box\\pool-2026-10-15",
+  "n_pool_wells": 4340,
+  "n_targets": 4340,
+  "extent_id": 7,
+  "view": "HOLDOUT (final scoring)",
+  "record_variant": "box_v2_wf",
+  "variants": [
+    "di_p50",
+    "di_p50_wf",
+    "box_v2",
+    "box_v2_wf"
+  ],
+  "mode": "v2",
+  "bias_tol": 0.1,
+  "band_tol": 0.05,
+  "min_packages": 30,
+  "folds": [
+    {
+      "cutoff": "2019-12-01",
+      "asof": "2019-11-01",
+      "k_areas": 0,
+      "n_train": 181,
+      "n_scored_wells": 163,
+      "n_packages": 61,
+      "median_package_wells": 2.0,
+      "max_package_wells": 7,
+      "n_packages_held_out": 17,
+      "n_wells_held_out": 50,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        1.0285024255777087,
+        null
+      ]
+    },
+    {
+      "cutoff": "2020-12-01",
+      "asof": "2020-11-01",
+      "k_areas": 0,
+      "n_train": 292,
+      "n_scored_wells": 244,
+      "n_packages": 82,
+      "median_package_wells": 2.0,
+      "max_package_wells": 13,
+      "n_packages_held_out": 22,
+      "n_wells_held_out": 71,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        0.9648039206245121,
+        1.073332821389098
+      ]
+    },
+    {
+      "cutoff": "2021-12-01",
+      "asof": "2021-11-01",
+      "k_areas": 0,
+      "n_train": 418,
+      "n_scored_wells": 373,
+      "n_packages": 127,
+      "median_package_wells": 2.0,
+      "max_package_wells": 17,
+      "n_packages_held_out": 29,
+      "n_wells_held_out": 88,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        0.9450181044470505,
+        1.0129044668924911
+      ]
+    },
+    {
+      "cutoff": "2022-12-01",
+      "asof": "2022-11-01",
+      "k_areas": 0,
+      "n_train": 599,
+      "n_scored_wells": 379,
+      "n_packages": 144,
+      "median_package_wells": 2.0,
+      "max_package_wells": 12,
+      "n_packages_held_out": 40,
+      "n_wells_held_out": 104,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        0.9398715863148265,
+        0.9486260461056654
+      ]
+    },
+    {
+      "cutoff": "2023-12-01",
+      "asof": "2023-11-01",
+      "k_areas": 0,
+      "n_train": 890,
+      "n_scored_wells": 442,
+      "n_packages": 150,
+      "median_package_wells": 2.0,
+      "max_package_wells": 13,
+      "n_packages_held_out": 36,
+      "n_wells_held_out": 133,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        0.9125658308720181,
+        0.9510112600657279
+      ]
+    },
+    {
+      "cutoff": "2024-12-01",
+      "asof": "2024-11-01",
+      "k_areas": 0,
+      "n_train": 1216,
+      "n_scored_wells": 452,
+      "n_packages": 149,
+      "median_package_wells": 2.0,
+      "max_package_wells": 10,
+      "n_packages_held_out": 33,
+      "n_wells_held_out": 114,
+      "n_factor_no_estimate": 0,
+      "F_oil_12_36": [
+        0.9001122427415563,
+        0.9534000008200305
+      ]
+    }
+  ],
+  "verdict": {
+    "overall": "FAIL",
+    "by_stream": {
+      "oil": "FAIL",
+      "gas": "FAIL"
+    },
+    "n_judged": 6,
+    "n_failed": 2
+  },
+  "verdict_by_variant": {
+    "di_p50": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 4,
+      "n_failed": 3
+    },
+    "di_p50_wf": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "PASS",
+        "gas": "FAIL"
+      },
+      "n_judged": 4,
+      "n_failed": 1
+    },
+    "box_v2": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 6,
+      "n_failed": 2
+    },
+    "box_v2_wf": {
+      "overall": "FAIL",
+      "by_stream": {
+        "oil": "FAIL",
+        "gas": "FAIL"
+      },
+      "n_judged": 6,
+      "n_failed": 2
+    }
+  },
+  "n_excluded": 19,
+  "analog_radius_mi": {
+    "5.0": 210,
+    "7.5": 103,
+    "10.0": 58,
+    "15.0": 81,
+    "20.0": 108
+  },
+  "analog_recent_fallback_share": null,
+  "v2_mode_counts": {
+    "circle": 354,
+    "strike": 206
+  },
+  "v2_radius_mi": {
+    "5.0": 240,
+    "7.5": 46,
+    "10.0": 67,
+    "15.0": 154,
+    "20.0": 53
+  },
+  "v2_short_locations": 161,
+  "v2_uturn_locations": 1,
+  "walk_forward": [
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2019-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2020-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.1106449295297313
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13580301999817004
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.1747666392972673
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.0015858691238054504
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.06122227981916665
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.15752883399110545
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.0943918640164291
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.14633720162159675
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": 0.01692529784293655
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.0468707071514993
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": null
+    },
+    {
+      "cutoff": "2021-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.11192058210779372
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13365388226408303
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.17687601306967637
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": -0.17060791490327396
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.024394987587620733
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.07983818191436749
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.1474883197694646
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": -0.19277115134047512
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.0986626657571155
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13689177941709188
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.15930533490080684
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.014916457461980266
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.07107382427868947
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.1088851768437252
+    },
+    {
+      "cutoff": "2022-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.11681132976724447
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13573641122686014
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.17535312533799763
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": -0.17060791490327396
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.05634744083267369
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.09728186349783852
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.14750181616608862
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": -0.19277115134047512
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.10783350389022905
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13911540459696595
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.15963928614215056
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.04681130207870265
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.08830501866440385
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.11734188861106516
+    },
+    {
+      "cutoff": "2023-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.11785122344827433
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.12539617225142913
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.17535312533799763
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": -0.17060791490327396
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.06308227191684959
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.09551375680380123
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.14750181616608862
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "di_p50",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": -0.19277115134047512
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 12,
+      "haircut": -0.11112243306201419
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 24,
+      "haircut": -0.13246122819022027
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 36,
+      "haircut": -0.15963928614215056
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "oil",
+      "horizon": 48,
+      "haircut": null
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 12,
+      "haircut": -0.055696697766394174
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 24,
+      "haircut": -0.0912691452989863
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 36,
+      "haircut": -0.11734188861106516
+    },
+    {
+      "cutoff": "2024-12-01",
+      "variant": "box_v2",
+      "stream": "gas",
+      "horizon": 48,
+      "haircut": null
+    }
+  ],
+  "walk_forward_wca": []
+}
