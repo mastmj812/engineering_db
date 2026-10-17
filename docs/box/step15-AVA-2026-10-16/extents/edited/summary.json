@@ -1,0 +1,80 @@
+{
+ "built_at": "2026-10-16T13:27:33-05:00",
+ "git_sha": "57526e1+dirty",
+ "source": "C:\\Users\\MICHAE~1\\AppData\\Local\\Temp\\claude\\C--Users-MichaelMast-Projects-engineering-db\\953b62df-58d0-47a0-b870-c74ea7a2b347\\scratchpad\\deck_v3.pptx",
+ "pools": {
+  "AVA_0": {
+   "slide": 6,
+   "n_freeforms": 0,
+   "n_ink_strokes": 0,
+   "stroke_kinds": [],
+   "generated_sqmi": 259.1351341017073,
+   "edited_sqmi": 259.1351341017073,
+   "added_sqmi": 0.0,
+   "removed_sqmi": 0.0,
+   "n_parts": 2,
+   "n_evidence": 221,
+   "inside_generated": 202,
+   "inside_edited": 202,
+   "outside_edited": 19,
+   "d1_in_generated": 607,
+   "d1_in_edited": 607,
+   "outside_by_county": {
+    "Eddy": 9,
+    "Lea": 6,
+    "Loving": 4
+   },
+   "visual": "AVA_0"
+  },
+  "AVA_1": {
+   "slide": 7,
+   "n_freeforms": 0,
+   "n_ink_strokes": 0,
+   "stroke_kinds": [],
+   "generated_sqmi": 548.0200488013218,
+   "edited_sqmi": 548.0200488013218,
+   "added_sqmi": 0.0,
+   "removed_sqmi": 0.0,
+   "n_parts": 1,
+   "n_evidence": 493,
+   "inside_generated": 409,
+   "inside_edited": 409,
+   "outside_edited": 84,
+   "d1_in_generated": 1365,
+   "d1_in_edited": 1365,
+   "outside_by_county": {
+    "Eddy": 49,
+    "Lea": 25,
+    "Loving": 6,
+    "Pecos": 3,
+    "Reeves": 1
+   },
+   "visual": "AVA_1"
+  },
+  "AVA_2": {
+   "slide": 8,
+   "n_freeforms": 0,
+   "n_ink_strokes": 0,
+   "stroke_kinds": [],
+   "generated_sqmi": 623.6453242394355,
+   "edited_sqmi": 623.6453242394355,
+   "added_sqmi": 0.0,
+   "removed_sqmi": 0.0,
+   "n_parts": 1,
+   "n_evidence": 333,
+   "inside_generated": 298,
+   "inside_edited": 298,
+   "outside_edited": 35,
+   "d1_in_generated": 2851,
+   "d1_in_edited": 2851,
+   "outside_by_county": {
+    "Lea": 17,
+    "Eddy": 12,
+    "Loving": 4,
+    "Pecos": 1,
+    "Reeves": 1
+   },
+   "visual": "AVA_2"
+  }
+ }
+}

@@ -1,0 +1,481 @@
+{
+ "built_at": "2026-10-16T10:11:58-05:00",
+ "git_sha": "dbece0d",
+ "asof": "2026-08-01",
+ "n_delaware_prod_hz": 31645,
+ "n_witness": 25775,
+ "verdicts": {
+  "agree": 84,
+  "reject": 41
+ },
+ "asks": [
+  "<b>Confirm the QC'd well sets</b>: BS3_S 3,041 producing horizontals (2,365 first-producing \u2265 2016; 1,658 in the D9 cohort) and BS3_C 1,818 (1,651; 1,003), built with the class rule of record + your gate-1 card verdicts, no new cards. <i>Recommend: confirm.</i>",
+  "<b>Uncalibrated swap classes</b> (17 flags in 9 small classes, e.g. BS1_S\u2194BS3, WCB_1/WCC/OTHER\u2192BS3_S): the rule keeps the tag. Applying every consensus flag touching the family moves the cohort median 12-mo oil/kft +0.0 % (BS3_S) / \u22121.0 % (BS3_C). <i>Recommend: no calibration cards; tags kept.</i>",
+  "<b>Pooling (D19 / D33 pattern)</b>: BS3_S and BS3_C are depth-separable where they co-occur (BS3_C sits a median 496 ft shallower; bands merge in 3 % of shared neighbourhoods vs 36 % for WCA_1/WCA_2; order inverted in 1 %), only 55 sand\u2194carbonate ambiguous wells, and within the same 5-mi block BS3_C makes 0.90\u00d7 BS3_S 12-mo oil/kft [90 % CI 0.83\u20130.95] with the same GOR (1.03\u00d7) and shape (cum-24/cum-12 0.99\u00d7). Only ~half of each bench's cohort has the other within 1.5 mi. <i>Recommend: do NOT pool. Two benches through extents (two D27 envelopes), analogs (deal-intake same-bench rule, as WCA vs BS2_S) and acceptance.</i> Pooling would let one bench's development stand in for the other's in an extent, and would mix a ~10 % level difference into analog cohorts.",
+  "<b>Re-tag drift since gate 1</b> (flag, not resolved): 91 wells tagged BS3 in the live warehouse are held by a frozen Phase 1 pool under their gate-1 tag (43 in WCA: 22 WCA_1 / 10 WCA_2 / 11 WCXY \u2192 now BS3_S or BS3_C, 27 in the cohort; 48 in BS2_S), mostly Novi re-tags. Under D84 a frozen well is never re-decided, so they stay out of the BS3 sets (no well counts twice). It also means ~43 now-BS3 wells sit in the run-7 WCA analog pool. <i>Recommend: keep D84 here; take the re-tag question (should a warehouse re-tag move a frozen well?) to the next WCA / BS2_S pool refresh or step 13, not this step.</i>"
+ ],
+ "family": "BS3",
+ "benches": [
+  "BS3_S",
+  "BS3_C"
+ ],
+ "pool_dir": "docs\\box\\pool-2026-10-15",
+ "set": {
+  "BS3_S": {
+   "tagged_live": 3107,
+   "member": 3039,
+   "old_churn_kept": 2,
+   "frozen_elsewhere": 71,
+   "frozen_to": {
+    "WCA": 46,
+    "BS2_S": 25
+   },
+   "frozen_retagged_since": 63,
+   "frozen_retagged_from": {
+    "WCA_1": 22,
+    "BS2_S": 20,
+    "WCXY": 11,
+    "WCA_2": 8,
+    "BS3_C": 2
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 5,
+   "final": 3041,
+   "final_fp_ge_2016": 2365,
+   "final_cohort": 1658,
+   "final_tvd_suspect": 143,
+   "final_witness": 2405,
+   "final_tx": 1330,
+   "final_nm": 1711
+  },
+  "BS3_C": {
+   "tagged_live": 1892,
+   "member": 1812,
+   "old_churn_kept": 6,
+   "frozen_elsewhere": 75,
+   "frozen_to": {
+    "BS2_S": 73,
+    "WCA": 2
+   },
+   "frozen_retagged_since": 28,
+   "frozen_retagged_from": {
+    "BS2_S": 26,
+    "WCA_2": 2
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 1,
+   "final": 1818,
+   "final_fp_ge_2016": 1651,
+   "final_cohort": 1003,
+   "final_tvd_suspect": 4,
+   "final_witness": 1448,
+   "final_tx": 842,
+   "final_nm": 976
+  }
+ },
+ "pooled_final": 4859,
+ "pooled_fp_ge_2016": 4016,
+ "pooled_cohort": 2661,
+ "flags": [
+  {
+   "swap_class": "BS3_S->WCA",
+   "direction": "out of family",
+   "standing": "rejected (0.40)",
+   "box_action": "tvd_suspect",
+   "n": 138,
+   "n_cohort": 86
+  },
+  {
+   "swap_class": "BS3_S->WCA",
+   "direction": "out of family",
+   "standing": "into WCXY band (never applied, D20; witness kept)",
+   "box_action": "keep",
+   "n": 75,
+   "n_cohort": 31
+  },
+  {
+   "swap_class": "BS3_C->BS2_S",
+   "direction": "out of family",
+   "standing": "accepted (0.90)",
+   "box_action": "reassign",
+   "n": 48,
+   "n_cohort": 18
+  },
+  {
+   "swap_class": "BS3_C->BS2_S",
+   "direction": "out of family",
+   "standing": "accepted (0.90)",
+   "box_action": "keep",
+   "n": 14,
+   "n_cohort": 8
+  },
+  {
+   "swap_class": "BS3_S->WCB_1",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 7,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "BS3_S->BS2_S",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 6,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "BS3_C->BS2_S",
+   "direction": "out of family",
+   "standing": "accepted (0.90)",
+   "box_action": "tvd_suspect",
+   "n": 4,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "BS3_C->AVA_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS3_S->BS1_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS3_S->WCA",
+   "direction": "out of family",
+   "standing": "rejected (0.40)",
+   "box_action": "reassign",
+   "n": 2,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "BS3_S->WCC",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 2,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS3_C->WCA",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS3_S->BS2_C",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS3_S->WCB_2",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCA->BS3_S",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "keep",
+   "n": 115,
+   "n_cohort": 57
+  },
+  {
+   "swap_class": "BS2_S->BS3_C",
+   "direction": "into family",
+   "standing": "rejected (0.33)",
+   "box_action": "keep",
+   "n": 29,
+   "n_cohort": 9
+  },
+  {
+   "swap_class": "WCA->BS3_S",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "tvd_suspect",
+   "n": 13,
+   "n_cohort": 9
+  },
+  {
+   "swap_class": "OTHER->BS3_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 5,
+   "n_cohort": 5
+  },
+  {
+   "swap_class": "BS2_S->BS3_C",
+   "direction": "into family",
+   "standing": "rejected (0.33)",
+   "box_action": "tvd_suspect",
+   "n": 4,
+   "n_cohort": 4
+  },
+  {
+   "swap_class": "BS2_S->BS3_S",
+   "direction": "into family",
+   "standing": "hold (0.60)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "BS2_S->BS3_S",
+   "direction": "into family",
+   "standing": "hold (0.60)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCA->BS3_S",
+   "direction": "into family",
+   "standing": "rejected (0.40)",
+   "box_action": "reassign",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_1->BS3_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCC->BS3_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "AVA_2->BS3_C",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->BS3_C",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->BS3_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS2_S->BS3_C",
+   "direction": "into family",
+   "standing": "rejected (0.33)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 1
+  }
+ ],
+ "lith": {
+  "BS3_S": {
+   "n": 35,
+   "to": {
+    "BS3_C": 35
+   }
+  },
+  "BS3_C": {
+   "n": 20,
+   "to": {
+    "BS3_S": 20
+   }
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "BS3_S",
+   "n_tags": 1705,
+   "med_tags": 20312.431680413396,
+   "n_all_flags": 1657,
+   "med_all_flags": 20314.923776410804,
+   "rel_change": 0.00012268821560201815
+  },
+  {
+   "bench": "BS3_C",
+   "n_tags": 1033,
+   "med_tags": 17179.138795986622,
+   "n_all_flags": 1021,
+   "med_all_flags": 17014.620653319285,
+   "rel_change": -0.009576623404764173
+  }
+ ],
+ "pooling": {
+  "a": "BS3_S",
+  "b": "BS3_C",
+  "coloc_BS3_S": {
+   "n": 1658,
+   "share_within_1p5mi": 0.4601930036188179,
+   "median_nn_mi": 1.6726082242547478
+  },
+  "coloc_BS3_C": {
+   "n": 1003,
+   "share_within_1p5mi": 0.5174476570289133,
+   "median_nn_mi": 1.423702609175151
+  },
+  "oil12_kft": {
+   "coef": -0.10904203902392706,
+   "ratio": 0.8966927206191336,
+   "ci90": [
+    0.8292610217964667,
+    0.9517185958579922
+   ],
+   "n_blocks_both": 133,
+   "n_a": 1215,
+   "n_b": 731,
+   "n_boot_ok": 400
+  },
+  "gor12": {
+   "coef": 0.02477080127476361,
+   "ratio": 1.0250801465347372,
+   "ci90": [
+    0.9782250948246829,
+    1.086509417900831
+   ],
+   "n_blocks_both": 133,
+   "n_a": 1215,
+   "n_b": 731,
+   "n_boot_ok": 400
+  },
+  "cum24_over_cum12": {
+   "coef": -0.009646008815467177,
+   "ratio": 0.9904003647013365,
+   "ci90": [
+    0.9715054409797876,
+    1.0158658316894276
+   ],
+   "n_blocks_both": 109,
+   "n_a": 991,
+   "n_b": 532,
+   "n_boot_ok": 400
+  },
+  "raw": {
+   "BS3_S": {
+    "n_cohort": 1658,
+    "med_oil12_kft": 20133.677210603753,
+    "med_gor12": 2087.7196455330295,
+    "med_tvd_ft": 10909.5,
+    "med_lateral_ft": 9876.0,
+    "share_nm": 0.5772014475271411
+   },
+   "BS3_C": {
+    "n_cohort": 1003,
+    "med_oil12_kft": 17023.023499191324,
+    "med_gor12": 2836.012609041137,
+    "med_tvd_ft": 10054.0,
+    "med_lateral_ft": 9954.0,
+    "share_nm": 0.44167497507477566
+   }
+  }
+ },
+ "pair_sep": {
+  "other": "BS3_C",
+  "n_hoods": 240,
+  "med_sep_ft": -496.0,
+  "p25_sep_ft": -779.5,
+  "p75_sep_ft": -337.75,
+  "share_within_100ft": 0.03333333333333333,
+  "share_inverted": 0.0125,
+  "n_tx": 121,
+  "med_sep_ft_tx": -352.5,
+  "share_within_100ft_tx": 0.06611570247933884,
+  "n_nm": 119,
+  "med_sep_ft_nm": -636.0,
+  "share_within_100ft_nm": 0.0
+ },
+ "n_ratio_blocks": 66,
+ "uncalibrated_flags": 17,
+ "uncalibrated_classes": [
+  "AVA_2->BS3_C",
+  "BS1_S->BS3_C",
+  "BS1_S->BS3_S",
+  "BS3_C->AVA_1",
+  "BS3_S->BS1_S",
+  "BS3_S->BS2_C",
+  "OTHER->BS3_S",
+  "WCB_1->BS3_S",
+  "WCC->BS3_S"
+ ],
+ "bench_summaries": {
+  "BS3_S": {
+   "n_prod_hz": 3107,
+   "n_tx": 1341,
+   "n_nm": 1766,
+   "n_cohort": 1705,
+   "planned_share": 0.11200514966205342,
+   "planned_share_nm": 0.1942242355605889,
+   "round_tvd_share": 0.026713871902156423,
+   "sql23_disagree_share": 0.21564209848728677,
+   "cons_flag_n": 234,
+   "cons_flag_share": 0.07531380753138076,
+   "cons_lith_n": 35,
+   "cohort_med_oil12_kft": 20312.431680413396,
+   "border_step": {
+    "verdict": "no_step",
+    "border_rel_step": 0.08646386684756725,
+    "typical_rel_step": 0.13171850011120764,
+    "max_other_rel_step": 0.23424177228433488,
+    "n_other_steps": 9
+   }
+  },
+  "BS3_C": {
+   "n_prod_hz": 1892,
+   "n_tx": 850,
+   "n_nm": 1042,
+   "n_cohort": 1033,
+   "planned_share": 0.10359408033826638,
+   "planned_share_nm": 0.18809980806142035,
+   "round_tvd_share": 0.015856236786469344,
+   "sql23_disagree_share": 0.14429175475687103,
+   "cons_flag_n": 69,
+   "cons_flag_share": 0.03646934460887949,
+   "cons_lith_n": 20,
+   "cohort_med_oil12_kft": 17179.138795986622,
+   "border_step": {
+    "verdict": "no_step",
+    "border_rel_step": 0.09073687020971649,
+    "typical_rel_step": 0.1665063605972726,
+    "max_other_rel_step": 0.3688773065555043,
+    "n_other_steps": 9
+   }
+  }
+ }
+}

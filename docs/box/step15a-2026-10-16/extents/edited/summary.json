@@ -1,0 +1,53 @@
+{
+ "built_at": "2026-10-16T11:56:53-05:00",
+ "git_sha": "b9b036f+dirty",
+ "source": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\bs3_extents.pptx",
+ "pools": {
+  "BS3_C": {
+   "slide": 1,
+   "generated_sqmi": 2439.6844651551583,
+   "edited_sqmi": 3840.2087985889175,
+   "added_sqmi": 1400.5243334337606,
+   "removed_sqmi": 1.762651220403774e-14,
+   "n_parts": 1,
+   "n_evidence": 1651,
+   "inside_generated": 1238,
+   "inside_edited": 1521,
+   "outside_edited": 130,
+   "d1_in_generated": 4831,
+   "d1_in_edited": 7794,
+   "outside_by_county": {
+    "Eddy": 47,
+    "Pecos": 33,
+    "Lea": 26,
+    "Reeves": 16,
+    "Culberson": 5,
+    "Ward": 3
+   },
+   "visual": "BS3_C"
+  },
+  "BS3_S": {
+   "slide": 2,
+   "generated_sqmi": 2991.282664267724,
+   "edited_sqmi": 4998.329495437026,
+   "added_sqmi": 2007.0468311692753,
+   "removed_sqmi": 0.0,
+   "n_parts": 1,
+   "n_evidence": 2365,
+   "inside_generated": 1595,
+   "inside_edited": 2231,
+   "outside_edited": 134,
+   "d1_in_generated": 5289,
+   "d1_in_edited": 9224,
+   "outside_by_county": {
+    "Reeves": 86,
+    "Pecos": 28,
+    "Eddy": 14,
+    "Culberson": 3,
+    "Lea": 2,
+    "Winkler": 1
+   },
+   "visual": "BS3_S"
+  }
+ }
+}

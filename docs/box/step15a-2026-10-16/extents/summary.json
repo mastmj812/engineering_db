@@ -1,0 +1,408 @@
+{
+ "built_at": "2026-10-16T10:24:28-05:00",
+ "git_sha": "23558c5+dirty",
+ "wells_dir": "docs\\box\\step15a-2026-10-16",
+ "version": 1,
+ "edge_params": {
+  "pin_radius_ft": 2640.0,
+  "close_ft": 3960.0,
+  "quad_segs": 4,
+  "ring_step_ft": 100.0,
+  "pin_slack_ft": 60.0,
+  "edge_reach_ft": 2640.0,
+  "interior_depth_ft": 5280.0,
+  "neg_evidence_ft": 2640.0,
+  "min_body_wells": 5
+ },
+ "buffer_params": {
+  "k": 0.75,
+  "cap_ft": 7920.0,
+  "floor_ft": 880.0,
+  "perf_ref": "pool",
+  "local_radius_ft": 52800.0,
+  "local_min_n": 15,
+  "sample_ft": 200.0,
+  "stepout_reach_mi": 5.0,
+  "front_min_ok": 3,
+  "front_ok_over_rolled": 2.0,
+  "lateral_core_ft": 50.0,
+  "quantum_ft": 110.0,
+  "smooth_ft": 330.0,
+  "legacy_fill_cover": 0.9,
+  "bridge_mi": 8.0,
+  "envelope": true,
+  "min_cluster": 3,
+  "cluster_link_mi": 1.0,
+  "gen_tol_mi": 2.0,
+  "gen_shoulder_mi": 1.5,
+  "gen_round_mi": 0.75,
+  "uniform": false
+ },
+ "params_source": "docs\\box\\step3-2026-10-07\\summary.json",
+ "laterals_without_geometry": {
+  "BS3_C": 0,
+  "BS3_S": 0
+ },
+ "pools": {
+  "BS3_S": {
+   "pre_envelope_sqmi": 1867.2744931170394,
+   "envelope_raw_sqmi": 2978.2809816100535,
+   "n_tests_within_reach": 30,
+   "bridged_sqmi": 1176.3303541136745,
+   "updip_limit": null,
+   "developed_outside": 770,
+   "developed_outside_not_isolated": 0,
+   "n_isolated_tests": 788,
+   "bridge_edge_mi": 137.85904824374188,
+   "extent_sqmi": 2991.2821435632704,
+   "core_sqmi": 1171.9730566250644,
+   "outline_step2_sqmi": 2740.7657746319546,
+   "n_parts": 2,
+   "n_holes": 0,
+   "perimeter_mi": 233.63298575319195,
+   "walked_mi_by_rule": {
+    "gap: k \u00d7 gap": 42.6,
+    "live front -> cap (D22)": 224.1,
+    "pinned: floor": 97.1,
+    "potash ignore-gap -> floor (D24)": 166.8
+   },
+   "buffer_ft_median": 1760.0,
+   "buffer_ft_weighted_mean": 4262.171110324388,
+   "fronts": {
+    "N": {
+     "ok": 7,
+     "rolled": 0,
+     "no12": 2,
+     "perf_median": 1.196869621928213
+    },
+    "SE": {
+     "ok": 17,
+     "rolled": 6,
+     "no12": 1,
+     "perf_median": 0.9586428698948201
+    },
+    "S": {
+     "ok": 9,
+     "rolled": 1,
+     "no12": 0,
+     "perf_median": 1.195244722726448
+    },
+    "W": {
+     "ok": 12,
+     "rolled": 5,
+     "no12": 3,
+     "perf_median": 0.9548885633187167
+    }
+   },
+   "stepout_roles": {
+    "excluded: isolated test (tested, not developed)": 758,
+    "island": 88,
+    "excluded: test (1-well step-out, not development)": 20,
+    "excluded: test (2-well step-out, not development)": 10
+   },
+   "n_evidence": 2365,
+   "n_pre2016": 676,
+   "interior_median_oil12_kft": 23026.290300262903,
+   "flagged_pinned_strong_mi": 106.68282630087867,
+   "n_contours": {
+    "struct": 65,
+    "isopach": 1124
+   }
+  },
+  "BS3_C": {
+   "pre_envelope_sqmi": 1268.8609002078083,
+   "envelope_raw_sqmi": 2233.1380217669057,
+   "n_tests_within_reach": 39,
+   "bridged_sqmi": 1181.7799048932966,
+   "updip_limit": null,
+   "developed_outside": 413,
+   "developed_outside_not_isolated": 0,
+   "n_isolated_tests": 420,
+   "bridge_edge_mi": 185.65568940884745,
+   "extent_sqmi": 2439.6847111017973,
+   "core_sqmi": 892.9326627435679,
+   "outline_step2_sqmi": 2150.7934007388553,
+   "n_parts": 2,
+   "n_holes": 0,
+   "perimeter_mi": 298.3884952168402,
+   "walked_mi_by_rule": {
+    "gap: k \u00d7 gap": 143.4,
+    "gap: pre-2016 beyond -> floor (D5)": 1.5,
+    "live front -> cap (D22)": 55.9,
+    "pinned: floor": 268.8,
+    "potash ignore-gap -> floor (D24)": 110.8
+   },
+   "buffer_ft_median": 1320.0,
+   "buffer_ft_weighted_mean": 2464.8062545855882,
+   "fronts": {
+    "N": {
+     "ok": 8,
+     "rolled": 1,
+     "no12": 0,
+     "perf_median": 1.3835930569304848
+    },
+    "NE": {
+     "ok": 16,
+     "rolled": 4,
+     "no12": 0,
+     "perf_median": 1.6133087059059983
+    }
+   },
+   "stepout_roles": {
+    "excluded: isolated test (tested, not developed)": 381,
+    "island": 96,
+    "excluded: test (1-well step-out, not development)": 29,
+    "excluded: test (2-well step-out, not development)": 10
+   },
+   "n_evidence": 1651,
+   "n_pre2016": 167,
+   "interior_median_oil12_kft": 20099.464304744935,
+   "flagged_pinned_strong_mi": 111.62841970333743,
+   "n_contours": {
+    "struct": 72,
+    "isopach": 710
+   }
+  }
+ },
+ "envelope_backtest": [
+  {
+   "pool": "BS3_S",
+   "cutoff": "2021-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 206.05275578714478,
+   "n_good": 76,
+   "n_rolled": 268,
+   "hit_good": 9,
+   "hit_rolled": 37,
+   "tpr": 0.11842105263157894,
+   "fpr": 0.13805970149253732,
+   "j": -0.019638648860958383
+  },
+  {
+   "pool": "BS3_S",
+   "cutoff": "2021-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 588.7952822862467,
+   "n_good": 76,
+   "n_rolled": 268,
+   "hit_good": 34,
+   "hit_rolled": 147,
+   "tpr": 0.4473684210526316,
+   "fpr": 0.5485074626865671,
+   "j": -0.10113904163393556
+  },
+  {
+   "pool": "BS3_S",
+   "cutoff": "2023-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 416.116126412623,
+   "n_good": 101,
+   "n_rolled": 80,
+   "hit_good": 20,
+   "hit_rolled": 15,
+   "tpr": 0.19801980198019803,
+   "fpr": 0.1875,
+   "j": 0.01051980198019803
+  },
+  {
+   "pool": "BS3_S",
+   "cutoff": "2023-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 752.9859530558376,
+   "n_good": 101,
+   "n_rolled": 80,
+   "hit_good": 52,
+   "hit_rolled": 48,
+   "tpr": 0.5148514851485149,
+   "fpr": 0.6,
+   "j": -0.08514851485148511
+  },
+  {
+   "pool": "BS3_C",
+   "cutoff": "2021-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 42.39851342859292,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  },
+  {
+   "pool": "BS3_C",
+   "cutoff": "2021-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 75.54210883080493,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  },
+  {
+   "pool": "BS3_C",
+   "cutoff": "2023-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 332.7391067492733,
+   "n_good": 102,
+   "n_rolled": 90,
+   "hit_good": 45,
+   "hit_rolled": 68,
+   "tpr": 0.4411764705882353,
+   "fpr": 0.7555555555555555,
+   "j": -0.31437908496732025
+  },
+  {
+   "pool": "BS3_C",
+   "cutoff": "2023-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 460.8305628028424,
+   "n_good": 102,
+   "n_rolled": 90,
+   "hit_good": 57,
+   "hit_rolled": 68,
+   "tpr": 0.5588235294117647,
+   "fpr": 0.7555555555555555,
+   "j": -0.19673202614379082
+  }
+ ],
+ "overlap": [
+  {
+   "extent": "BS3_S",
+   "other": "BS3_C",
+   "shared_sqmi": 1650.8501636033475,
+   "share_of_extent": 0.5518871455023712
+  },
+  {
+   "extent": "BS3_S",
+   "other": "BS2_S (record)",
+   "shared_sqmi": 2734.4655389581244,
+   "share_of_extent": 0.9141449745361628
+  },
+  {
+   "extent": "BS3_S",
+   "other": "WCA (record)",
+   "shared_sqmi": 2247.7035716554337,
+   "share_of_extent": 0.751418108951076
+  },
+  {
+   "extent": "BS3_C",
+   "other": "BS3_S",
+   "shared_sqmi": 1650.850163603346,
+   "share_of_extent": 0.6766653724110924
+  },
+  {
+   "extent": "BS3_C",
+   "other": "BS2_S (record)",
+   "shared_sqmi": 2102.7623808235016,
+   "share_of_extent": 0.8618992328208932
+  },
+  {
+   "extent": "BS3_C",
+   "other": "WCA (record)",
+   "shared_sqmi": 2318.9593278275383,
+   "share_of_extent": 0.9505159897404375
+  }
+ ],
+ "pud_d1": [
+  {
+   "formation_blueox": "BS3_S",
+   "status": "D1 universe",
+   "in extent": 5289,
+   "in drilled core": 1723,
+   "in step-2 outline": 2753,
+   "pool": "BS3_S"
+  },
+  {
+   "formation_blueox": "BS3_C",
+   "status": "D1 universe",
+   "in extent": 4831,
+   "in drilled core": 1254,
+   "in step-2 outline": 2288,
+   "pool": "BS3_C"
+  }
+ ],
+ "regression": {
+  "WCA": {
+   "record_sqmi": 6168.651518800271,
+   "rebuilt_sqmi": 6168.651518800271,
+   "rel_diff": 0.0
+  },
+  "BS2_S": {
+   "record_sqmi": 3358.4518397799166,
+   "rebuilt_sqmi": 3358.1335888087815,
+   "rel_diff": -9.476121329643483e-05
+  }
+ },
+ "geology_files": [
+  "geology\\BOX_potash_SOPA.shp",
+  "geology\\BOX_potash_SOPA.shx",
+  "geology\\BOX_potash_SOPA.dbf",
+  "geology\\BOX_potash_SOPA.prj",
+  "geology\\BOX_potash_SOPA.cpg",
+  "geology\\BOX_BS3_S_extent_v1.shp",
+  "geology\\BOX_BS3_S_extent_v1.shx",
+  "geology\\BOX_BS3_S_extent_v1.dbf",
+  "geology\\BOX_BS3_S_extent_v1.prj",
+  "geology\\BOX_BS3_S_extent_v1.cpg",
+  "geology\\BOX_BS3_S_edges_v1.shp",
+  "geology\\BOX_BS3_S_edges_v1.shx",
+  "geology\\BOX_BS3_S_edges_v1.dbf",
+  "geology\\BOX_BS3_S_edges_v1.prj",
+  "geology\\BOX_BS3_S_edges_v1.cpg",
+  "geology\\BOX_BS3_S_laterals.shp",
+  "geology\\BOX_BS3_S_laterals.shx",
+  "geology\\BOX_BS3_S_laterals.dbf",
+  "geology\\BOX_BS3_S_laterals.prj",
+  "geology\\BOX_BS3_S_laterals.cpg",
+  "geology\\BOX_BS3_S_flags.shp",
+  "geology\\BOX_BS3_S_flags.shx",
+  "geology\\BOX_BS3_S_flags.dbf",
+  "geology\\BOX_BS3_S_flags.prj",
+  "geology\\BOX_BS3_S_flags.cpg",
+  "geology\\BOX_BS3_S_ctx_struct.shp",
+  "geology\\BOX_BS3_S_ctx_struct.shx",
+  "geology\\BOX_BS3_S_ctx_struct.dbf",
+  "geology\\BOX_BS3_S_ctx_struct.prj",
+  "geology\\BOX_BS3_S_ctx_struct.cpg",
+  "geology\\BOX_BS3_S_ctx_isopach.shp",
+  "geology\\BOX_BS3_S_ctx_isopach.shx",
+  "geology\\BOX_BS3_S_ctx_isopach.dbf",
+  "geology\\BOX_BS3_S_ctx_isopach.prj",
+  "geology\\BOX_BS3_S_ctx_isopach.cpg",
+  "geology\\BOX_BS3_C_extent_v1.shp",
+  "geology\\BOX_BS3_C_extent_v1.shx",
+  "geology\\BOX_BS3_C_extent_v1.dbf",
+  "geology\\BOX_BS3_C_extent_v1.prj",
+  "geology\\BOX_BS3_C_extent_v1.cpg",
+  "geology\\BOX_BS3_C_edges_v1.shp",
+  "geology\\BOX_BS3_C_edges_v1.shx",
+  "geology\\BOX_BS3_C_edges_v1.dbf",
+  "geology\\BOX_BS3_C_edges_v1.prj",
+  "geology\\BOX_BS3_C_edges_v1.cpg",
+  "geology\\BOX_BS3_C_laterals.shp",
+  "geology\\BOX_BS3_C_laterals.shx",
+  "geology\\BOX_BS3_C_laterals.dbf",
+  "geology\\BOX_BS3_C_laterals.prj",
+  "geology\\BOX_BS3_C_laterals.cpg",
+  "geology\\BOX_BS3_C_flags.shp",
+  "geology\\BOX_BS3_C_flags.shx",
+  "geology\\BOX_BS3_C_flags.dbf",
+  "geology\\BOX_BS3_C_flags.prj",
+  "geology\\BOX_BS3_C_flags.cpg",
+  "geology\\BOX_BS3_C_ctx_struct.shp",
+  "geology\\BOX_BS3_C_ctx_struct.shx",
+  "geology\\BOX_BS3_C_ctx_struct.dbf",
+  "geology\\BOX_BS3_C_ctx_struct.prj",
+  "geology\\BOX_BS3_C_ctx_struct.cpg",
+  "geology\\BOX_BS3_C_ctx_isopach.shp",
+  "geology\\BOX_BS3_C_ctx_isopach.shx",
+  "geology\\BOX_BS3_C_ctx_isopach.dbf",
+  "geology\\BOX_BS3_C_ctx_isopach.prj",
+  "geology\\BOX_BS3_C_ctx_isopach.cpg"
+ ]
+}
