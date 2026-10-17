@@ -7,7 +7,9 @@ read access and the run-7 note (sent 2026-10-16); his econ loop is tabled. erebo
 **Phase 2 drafted 2026-10-16 (§5 steps 9–15, §10 order).** **Step 9a done; GATE 9a CLOSED 2026-10-16** (eng_db #146, branch `claude/box-step9a-tuning`;
 deliverable `docs/box/step9a-2026-10-16/`): D93 (WCXY analogs = WCXY + WCA_1, selection only), D94 (per-bench walk-forward haircut),
 D95 (WCXY extent = WCA extent), D96 (no south-edge spec change; watch item), D97 (WCXY record = raw box_v2, no haircut), D98 (guard = code
-identical + data drift explained). **Next = step 9b: score BS2_S (box_v2_wf) and WCXY (raw box_v2, D93 pool) holdouts ONCE** (`--holdout-once`).
+identical + data drift explained). **Next = step 9b: score BS2_S (box_v2_wf) and WCXY (raw box_v2, D93 pool) holdouts ONCE** (`--holdout-once`). **Pre-9b rehearsal done 2026-10-16** (`docs/box/pre9b-2026-10-16/`, read-only, no holdout well read): the 9b rule as written judges no
+cell at holdout size (per-cutoff cells hold 5–25 packages vs the 30 floor) and so fails both benches by construction; proposed **D99** = pooled
+across cutoffs + "consistent with tuning" intervals (passes a good forecast 85–87 %, catches a 15 % miss 86–97 %). **9b waits on Michael's D99 call.**
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
