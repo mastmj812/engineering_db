@@ -1,4 +1,4 @@
-# BOX step 9b — BS2_S + WCXY holdout, scored ONCE under D99 (read-only) — AT GATE 9b
+# BOX step 9b — BS2_S + WCXY holdout, scored ONCE under D99 (read-only) — GATE 9b CLOSED 2026-10-17
 
 Review surface: `index.html` (this folder). Scored by `scripts.box_acceptance --fold analog --score-holdout --holdout-once` (frames in `runs/box9b/`,
 git-ignored); judged and rendered by `python -m scripts.box_holdout9b` (`box/holdout9b.py`, DB-free judge; `tests/test_box_holdout9b.py`).
@@ -65,3 +65,11 @@ The reported-only tests: every cell's bias is within ±10 %. One cell fails the 
 3. **For 9c (not decided here):** BS2_S's production haircut table. WCA's D62 pooled tuning + holdout packages across all cutoffs, and the holdout is now spent, so the same pooling is available for BS2_S (D94: from BS2_S's own packages). WCXY has none (D97). Confirm at the 9c kickoff.
 
 No conflict with §2 found. D99 was applied exactly as recorded: pooled cells, frozen intervals, ±10 % and spread reported only.
+
+## 5. Gate 9b outcome (Michael 2026-10-17)
+
+**D100:** both benches accepted. They enter 9c with disclosed bias = the tuning bias per cell.
+
+**D101:** the D96 south-edge caveat carries the measured numbers (oil cum-12 −26 % tuning / −31 % holdout). The other-edge under-forecast (oil cum-12 +13 % / +20 %) becomes a named watch item and a workup caveat, as text only.
+
+**Next = 9c.** BS2_S's production haircut pooling is to be confirmed at the 9c kickoff.
