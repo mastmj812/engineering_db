@@ -153,3 +153,23 @@ Edge region = ≤ 5 mi from the extent-7 boundary; south = bearing 135–225° f
 
 No §2 conflict found beyond ask 3 (the plan's "erebor needs no change" for the disclosure panel) and the sql/60 spec CHECK, which
 D103 settled.
+
+## 7. Live store (2026-10-17, Michael's go: "store runs/box9c live as the BOX record (run 8); fix erebor right after")
+
+Pre-check, read-only: live record = run 7; 33,228 locations / location_source (2026Q3 only); 18 bench_scope rows;
+`box_econ.box_pud_econ` 0 rows. That is exactly the state the container rehearsed.
+
+Store: `python -m scripts.box_pud_run store --record --out runs/box9c` against Supabase (session pooler 5432; log
+`runs/box9c/store_live.txt`, 313 s, one transaction).
+- **run_id 8 = RECORD.** Run 7 is superseded and kept (D75).
+- 121,921 locations: 88,693 new seeds + 33,228 reused.
+- Every identity check is green, the same numbers as the container: universe 121,727; WCA 1,907 + 5; BS2_S 7,394 + 15;
+  WCXY 3,183 + 5; 24,968 stream groups, 0 off; ≥ 3 analogs everywhere.
+
+Re-verified read-only after COMMIT:
+- Per-group EUR totals and EUR/kft medians equal §4 exactly. Oil 1,096.6 / 3,670.1 / 2,101.1 MMbbl; gas 5,620.7 / 13,592.8 /
+  10,401.0 Bcf.
+- `haircut.by_bench` carries WCA, BS2_S and WCXY_WCA1.
+- 14,980,800 month rows; `box.pud_forecast_month` 2,705 MB, database 76 GB.
+- erebor `/api/box/meta?basin=delaware` serves run 8.
+- The erebor per-bench disclosure fix (ask 3) follows in its own session.
