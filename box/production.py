@@ -4,8 +4,11 @@ Pieces (pure unless they take `conn`):
 
   universe(conn)            D67: Novi PUD category (no RES) x reconciled remaining_pud / conflict / not-yet-reconciled, on every
                             box.bench_scope bench; the share of each stick inside its bench's record extent (step 3's >= 50 % rule).
-  classify(row)             coverage class with the D67 precedence: emerging -> wcxy (D61) -> unvalidated (D60) -> outside_extent;
+  classify(row, covered)    coverage class with the D67 precedence: emerging -> wcxy (D61) -> unvalidated (D60) -> outside_extent;
                             the rest are candidates (covered, or no_analogs when selection finds < 3 analogs at the 20-mi cap).
+                            `covered` = the PRODUCTION_BENCHES groups this run covers (step 9c: WCA + BS2_S + WCXY_WCA1); the
+                            default (WCA only) is runs 4-7.
+  merge_cells_by_cutoff     D102: tuning + holdout cells of one bench merged per (cutoff, stream, horizon) before the floor.
   planned_gaps(...)         D64: perpendicular gap to the nearest SAME-FORMATION stick (PUD or PDP) whose along-axis span overlaps
                             the location's by >= 30 % of the shorter (rule 9); none within 2,800 ft -> 880 ft default.
   fit_location(loc)         the box_v2 path of box.analog.predict_location_v2 exactly (select_cohort_v2 -> members_with_transfer ->
@@ -43,8 +46,19 @@ N_MONTHS = tc.N_MONTHS  # 600 (rule 6: the raw 50-yr integral)
 STREAMS = ("oil", "gas")
 HORIZONS = (12, 24, 36, 48)
 MIN_PACKAGES = 30  # the walk-forward history rule (box.acceptance.MIN_PACKAGES)
-VALIDATED = {("delaware", "WCA")}  # D60: benches the frozen spec was accepted on
-COVERED_FORMATIONS = {"WCA_1", "WCA_2"}  # D61: WCXY PUDs are not covered
+VALIDATED = {("delaware", "WCA")}  # D60: benches the frozen spec was accepted on (runs 4-7)
+COVERED_FORMATIONS = {"WCA_1", "WCA_2"}  # D61: WCXY PUDs are not covered (runs 4-7)
+
+# Step 9c: the coverage groups a production run can cover. Key = the box.acceptance.BENCH_SPECS entry whose pool / spec the
+# group is forecast with; value = (basin, box.bench_scope bench, formations). WCXY rows sit under bench_scope 'WCA', so the
+# universe's extent join already gives them extent 6 (D95). Record spec per group: WCA + BS2_S box_v2_wf on their own
+# haircut (D58 / D94, D102), WCXY_WCA1 raw box_v2 (D97) on the D93 pool.
+PRODUCTION_BENCHES: dict[str, tuple[str, str, frozenset[str]]] = {
+    "WCA": ("delaware", "WCA", frozenset({"WCA_1", "WCA_2"})),
+    "BS2_S": ("delaware", "BS2_S", frozenset({"BS2_S"})),
+    "WCXY_WCA1": ("delaware", "WCA", frozenset({"WCXY"})),
+}
+RUN7_COVERED: tuple[str, ...] = ("WCA",)
 INSIDE_SHARE = 0.5  # step 3's in-extent rule
 GAP_MAX_FT = 2800.0  # beyond = no neighbour (Novi's no-neighbour sentinel distance)
 GAP_OVERLAP = 0.30  # rule 9 co-extent
@@ -90,7 +104,7 @@ WHERE f.basin_blueox = 'delaware' AND f.formation_blueox = ANY (%(forms)s)
 """
 
 
-def universe(conn: Any) -> pd.DataFrame:
+def universe(conn: Any, covered: Sequence[str] = RUN7_COVERED) -> pd.DataFrame:
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
         cur.execute(_UNIVERSE_SQL)
@@ -101,17 +115,28 @@ def universe(conn: Any) -> pd.DataFrame:
     for c in ("ll_ft", "mid_lon", "mid_lat", "stick_ft", "inside_share"):
         d[c] = pd.to_numeric(d[c], errors="coerce")
     d["inside_extent"] = np.where(d["extent_id"].notna(), d["inside_share"].fillna(0) >= INSIDE_SHARE, None)
-    d["coverage"] = [classify(r) for r in d.itertuples()]
+    d["prod_bench"] = [production_bench(r, covered) for r in d.itertuples()]
+    d["coverage"] = [classify(r, covered) for r in d.itertuples()]
     return d
 
 
-def classify(r: Any) -> str:
+def production_bench(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str | None:
+    """The covered PRODUCTION_BENCHES group a universe row belongs to, or None."""
+    for key in covered:
+        basin, bench, forms = PRODUCTION_BENCHES[key]
+        if r.basin == basin and r.bench == bench and r.formation_blueox in forms:
+            return key
+    return None
+
+
+def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
     """D67 precedence. Candidates come back as 'covered' and become 'not_covered_no_analogs' when selection fails."""
     if not bool(r.in_scope):
         return "not_covered_emerging"
-    if r.formation_blueox == "WCXY":
+    grp = production_bench(r, covered)
+    if r.formation_blueox == "WCXY" and grp is None:
         return "not_covered_wcxy"
-    if (r.basin, r.bench) not in VALIDATED or r.formation_blueox not in COVERED_FORMATIONS:
+    if grp is None:
         return "not_covered_unvalidated"
     if not bool(r.inside_extent):
         return "not_covered_outside_extent"
@@ -234,7 +259,7 @@ def fit_location(loc: dict[str, Any]) -> dict[str, Any]:
     """box_v2 at one location (box.analog.predict_location_v2's box_v2 branch, unchanged): returns provenance, per-stream fits,
     lateral multiplier and 600 uptime-free months (x multiplier, before the haircut)."""
     pool2, tree, cfg = _STATE["pool2"], _STATE["tree"], _STATE["cfg"]
-    idx, r, flags, mode = an.select_cohort_v2(pool2, tree, cfg, loc)
+    idx, r, flags, mode = an.select_cohort_v2(pool2, tree, cfg, loc, bench=_STATE.get("bench", an.BENCH))
     out: dict[str, Any] = {"key": loc["api10"], "radius_mi": float(r), "n_analogs": len(idx), "search_mode": mode, "flags": list(flags),
                            "short_lateral": float(loc["lateral_ft"]) < an.SHORT_LAT_FT}
     if len(idx) < 3:
@@ -260,10 +285,12 @@ def init_state(state: dict[str, Any]) -> None:
     _STATE.update(an._STATE)
 
 
-def fit_many(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cfg: Any, workers: int) -> list[dict[str, Any]]:
+def fit_many(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cfg: Any, workers: int,
+             bench: str = an.BENCH) -> list[dict[str, Any]]:
+    """`bench` = the deal-intake bench label passed to selection (the harness's BENCH_SPECS[...]["label"])."""
     from concurrent.futures import ProcessPoolExecutor
 
-    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None}
+    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None, "bench": bench}
     if workers == 1:
         init_state(state)
         return [fit_location(x) for x in locs]
@@ -292,6 +319,17 @@ def haircut_table(cells: pd.DataFrame, variant: str = "box_v2", min_packages: in
             out[s][k] = {"factor": 1.0 + bias, "bias": bias, "n_packages": int(w.sum()), "n_cells": len(x),
                          "cutoffs": sorted({str(v) for v in x["cutoff"]})}
     return out
+
+
+def merge_cells_by_cutoff(cells: pd.DataFrame) -> pd.DataFrame:
+    """D102 (BS2_S, Michael 2026-10-17): the tuning and holdout cells of one bench merged into one cell per (variant, cutoff,
+    stream, horizon) — n_packages summed, pkg_bias package-weighted — so the >= 30 floor applies to the merged cell (the 9b
+    holdout cells alone hold 0-40 packages). Equals D62's pooling wherever each part clears the floor on its own."""
+    c = cells[np.isfinite(cells["pkg_bias"].astype(float)) & (cells["n_packages"] > 0)].copy()
+    c["_w"] = c["n_packages"].astype(float) * c["pkg_bias"].astype(float)
+    g = c.groupby(["variant", "cutoff", "stream", "horizon"], as_index=False).agg(n_packages=("n_packages", "sum"), _w=("_w", "sum"))
+    g["pkg_bias"] = g["_w"] / g["n_packages"]
+    return g.drop(columns="_w")
 
 
 def haircut_curve(tab: Mapping[int, Mapping[str, float]], n: int = N_MONTHS) -> np.ndarray:
