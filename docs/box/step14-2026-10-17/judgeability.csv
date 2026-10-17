@@ -1,0 +1,53 @@
+horizon,d53_cells,wf_cutoffs,pooled_tuning,pooled_holdout_wf,pooled_holdout_raw,d99_wf,d99_raw,d102_cutoffs,bench
+12,6,4,502,123,162,True,True,6,BS2_S
+24,5,4,381,92,131,True,True,5,BS2_S
+36,3,3,234,24,74,False,True,3,BS2_S
+48,1,0,60,0,18,False,False,1,BS2_S
+12,6,4,482,120,166,True,True,6,BS3_S
+24,5,4,394,90,136,True,True,5,BS3_S
+36,3,3,221,23,79,False,True,3,BS3_S
+48,1,0,56,0,23,False,False,1,BS3_S
+12,6,4,395,92,107,True,True,6,BS3_C
+24,5,4,287,63,78,True,True,5,BS3_C
+36,3,3,164,14,46,False,True,3,BS3_C
+48,1,0,47,0,16,False,False,1,BS3_C
+12,6,4,338,84,138,True,True,6,WCB_1
+24,5,4,275,57,111,True,True,5,WCB_1
+36,3,3,152,11,66,False,True,3,WCB_1
+48,1,0,43,0,20,False,False,1,WCB_1
+12,5,3,247,44,74,True,True,6,WCB_2
+24,4,3,192,27,57,False,True,5,WCB_2
+36,3,3,123,14,38,False,True,3,WCB_2
+48,1,0,35,0,6,False,False,1,WCB_2
+12,4,2,230,28,58,False,True,4,BS1_S
+24,3,2,162,12,42,False,True,3,BS1_S
+36,2,2,92,0,20,False,False,2,BS1_S
+48,0,0,18,0,7,False,False,0,BS1_S
+12,1,0,138,0,49,False,True,5,WCC
+24,0,0,105,0,35,False,True,3,WCC
+36,0,0,56,0,24,False,False,1,WCC
+48,0,0,18,0,6,False,False,0,WCC
+12,3,2,163,19,46,False,True,4,BS2_C
+24,2,2,111,7,34,False,True,2,BS2_C
+36,1,0,76,0,21,False,False,1,BS2_C
+48,0,0,20,0,5,False,False,0,BS2_C
+12,0,0,37,0,7,False,False,0,AVA_0
+24,0,0,29,0,5,False,False,0,AVA_0
+36,0,0,16,0,3,False,False,0,AVA_0
+48,0,0,4,0,1,False,False,0,AVA_0
+12,0,0,58,0,21,False,False,0,AVA_1
+24,0,0,42,0,15,False,False,0,AVA_1
+36,0,0,24,0,10,False,False,0,AVA_1
+48,0,0,6,0,2,False,False,0,AVA_1
+12,0,0,71,0,10,False,False,0,AVA_2
+24,0,0,54,0,6,False,False,0,AVA_2
+36,0,0,33,0,5,False,False,0,AVA_2
+48,0,0,7,0,0,False,False,0,AVA_2
+12,0,0,34,0,10,False,False,0,WCD
+24,0,0,24,0,7,False,False,0,WCD
+36,0,0,15,0,2,False,False,0,WCD
+48,0,0,9,0,0,False,False,0,WCD
+12,0,0,116,0,23,False,False,1,"AVA (0+1+2 pooled, sensitivity)"
+24,0,0,86,0,17,False,False,0,"AVA (0+1+2 pooled, sensitivity)"
+36,0,0,48,0,12,False,False,0,"AVA (0+1+2 pooled, sensitivity)"
+48,0,0,12,0,2,False,False,0,"AVA (0+1+2 pooled, sensitivity)"
