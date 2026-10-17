@@ -125,3 +125,16 @@ production run then rows those PUDs `not_covered_emerging` instead of `not_cover
 
 Not done here: the `OTHER` / unmapped tag the plan's step-14 text mentions (not in the session brief; it has no
 `box.bench_scope` row).
+
+## 6. Gate 14 — DECIDED 2026-10-17 (Michael)
+
+"accept — AVA_0/1/2 emerging, BS2_C build as raw box_v2, WCD stays emerging. Pre-register stage 2 as proposed in FINDINGS §4 and
+run the tuning pass."
+
+- **AVA_0, AVA_1, AVA_2 → emerging (D2).** WCD stays emerging. The `box.bench_scope` write (`in_scope = false`) is a live store and
+  waits for its own go; the record run keeps rowing them `not_covered_unvalidated` until then.
+- **BS2_C → build**, record = raw `box_v2` (D97 pattern).
+- **Stage 2 pre-registered** (`box/acceptance.BENCH_SPECS`, committed before any scoring): BS3_S / BS3_C / WCB_1 record
+  `box_v2_wf` (D94 own haircut); WCB_2 / BS1_S / WCC / BS2_C record raw `box_v2`. Pool = the step-15 QC set, extent of record,
+  no pooling across benches. Thin benches get pooled tuning cells; D99 cells = pooled holdout cells reaching 30 packages
+  (from §4), frozen with their consistency intervals at the tuning gate.
