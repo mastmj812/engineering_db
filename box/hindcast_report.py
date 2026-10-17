@@ -123,7 +123,10 @@ def area_overlap(hind: list[Any], record: list[Any]) -> pd.DataFrame:
 # ----------------------------------------------------------------------------
 
 
-def rebuild_curves(conn: Any, wells: pd.DataFrame, areas: dict[str, Any], cliff: dt.date, asof: dt.date, workers: int | None) -> dict[str, Any]:
+def rebuild_curves(conn: Any, wells: pd.DataFrame, areas: dict[str, Any], cliff: dt.date, asof: dt.date, workers: int | None,
+                   area_curves: bool = True) -> dict[str, Any]:
+    """Per-well fits of every pre-cutoff well inside the areas + the area curves; `area_curves=False` stops after the frame
+    (the analog harness for benches without TC areas, step 9a: the retired area curves are not built)."""
     geoms = areas["geoms"]
     d4 = areas["frame"]
     x, y = d4["x"].to_numpy(), d4["y"].to_numpy()
@@ -138,6 +141,8 @@ def rebuild_curves(conn: Any, wells: pd.DataFrame, areas: dict[str, Any], cliff:
     rates = {r_.api10: {s: getattr(r_, f"rates_{s}") for s in tc.STREAMS} for r_ in act.itertuples()}
     d = rep.build_frame(cand, {"geoms": geoms}, act, fits, asof)
     d["c12"] = d["api10"].isin(set(d4.loc[d4["c12"], "api10"]))
+    if not area_curves:
+        return {"frame": d, "fits": fits, "prod": prod, "curves": {}, "rows": pd.DataFrame(), "n_fitted": len(fits)}
     nb = rep.neighbours(geoms)
     curves = rep.build_area_curves(d, fits, rates, nb, len(geoms))
     rows = []
@@ -152,11 +157,11 @@ def rebuild_curves(conn: Any, wells: pd.DataFrame, areas: dict[str, Any], cliff:
 # ----------------------------------------------------------------------------
 
 
-def wca_factor_frame(conn: Any, cb: dict[str, Any], wells: pd.DataFrame, asof: dt.date) -> pd.DataFrame:
+def wca_factor_frame(conn: Any, cb: dict[str, Any], wells: pd.DataFrame, asof: dt.date, pool: str = POOL) -> pd.DataFrame:
     d = cb["frame"]
     c = d[d["c12"]].copy()
     c = c.drop(columns=[k for k in ("mid_lon", "mid_lat", "tvd_ft") if k in c.columns]).merge(wells[["api10", "mid_lon", "mid_lat", "tvd_ft"]], on="api10", how="left")
-    c["bench_pool"] = POOL
+    c["bench_pool"] = pool
     c["loc"] = "a" + c["area_no"].astype(str)
     c["first_production_date"] = c["first_production_date"].astype(str)
     for s in tc.STREAMS:

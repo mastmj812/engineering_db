@@ -1,0 +1,25 @@
+<div class=flag><b>Read first:</b> every BS2_S / WCXY number here is a TUNING view (holdout packages dropped before any statistic, D52). Nothing is stored.
+The frozen spec (box_v2_wf, D58) is unchanged. A cell is judged with ≥ 30 packages; the D53/D58 rule is |package bias| ≤ 10 % AND scale-free band ≤ the local-offsets benchmark's + 0.05.</div>
+<ol>
+<li><b>Haircut per bench, or WCA's?</b> <b>Recommend per bench.</b> Raw box_v2 over-forecasts BS2_S oil by 10–16 % at every cutoff, against WCA's 5–9 %, so WCA's walk-forward haircut leaves BS2_S high. Results: 15 / 18 cells FAIL with WCA's haircut vs 9 / 16 with BS2_S's own. Under its own haircut, BS2_S oil package bias sits within −4.1 … +3.9 %; 8 of its 9 failures are the spread test, 1 is bias (gas cum-12 2022, −13 %).
+BS2_S's tuning D62-style table: oil 0.890 / 0.872 / 0.838 / 0.831, gas 0.926 / 0.899 / 0.879 / 0.816 at cum-12 / 24 / 36 / 48 (WCA record: oil 0.943 / 0.929 / 0.916 / 0.876). Its cum-48 factor rests on one cutoff (60 packages).</li>
+<li><b>WCXY analog pool.</b> Three pools were scored on the same WCXY targets (tuning view, box_v2_wf, judged cells failing):
+<table><tr><th>pool</th><th>wells</th><th>box_v2_wf</th><th>raw box_v2 (no haircut), same cells</th><th>locations closed in the 5-mi ring</th></tr>
+<tr><td>WCXY only (D20 as written)</td><td>1,963</td><td>9 / 16 (4 bias)</td><td>10 / 16 (6 bias, max |bias| 15.5 %)</td><td>32 %</td></tr>
+<tr><td><b>WCXY + WCA_1 — PRE-REGISTERED</b> (Michael 2026-10-16, before scoring; commit 99203a8)</td><td>7,619</td><td><b>8 / 16</b> (3 bias: oil cum-36 2021 +12.0 %, gas cum-24 2022 +11.2 %, gas cum-12 2022 +10.0 %)</td><td><b>7 / 16, 0 bias</b> (max |bias| 7.6 %; all fails = spread)</td><td>68 %</td></tr>
+<tr><td>whole WCA pool (sensitivity, seen before the pre-registration)</td><td>12,280</td><td>4 / 16</td><td>2 / 16, 0 bias</td><td>75 %</td></tr></table>
+Reads: (i) adding WCA_1 fixes the WCXY-only pool's under-forecast (raw bias +10–16 % at 2019–22 → within ±7.6 % at every judged cell) and closes most locations in the first ring;
+(ii) on this pool the walk-forward haircut adds noise rather than removing bias — WCXY's early-cutoff biases are small and of either sign, so the haircut built from them pushes later
+cells out to +10–12 %; the raw curve is unbiased; (iii) the remaining failures are the spread test at 50–60 packages per cell, where the test resolves only ±0.15–0.20 (7a §4).
+The whole-WCA pool scores better, but it was seen before the pool was declared; switching to it now would be choosing on the tuning folds (D52).
+<b>Recommend: adopt the pre-registered pool as D93</b> — <i>"For analog SELECTION only, WCXY targets draw from WCXY + WCA_1 wells (WCA_2 excluded; BS3_S revisited after step 15a QC). D20's one-way rule
+still governs extents and cohorts."</i> — and take it to the one-time 9b holdout as is. Open for you: whether WCXY carries the walk-forward haircut at all (the frozen spec says yes; on this
+pool it hurts). Changing that is a spec change for WCXY and needs to be decided BEFORE 9b.</li>
+<li><b>WCXY extent.</b> 1,678 of the 1,679 modern WCXY producers already sit inside the WCA extent of record. So do 3,188 of the 3,385 reconciled WCXY PUDs in run 7; 2,923 of those have a WCXY producer within 5 mi (median 1.8 mi). The 197 outside the WCA extent have a median 6.1 mi to the nearest WCXY producer.
+<b>Recommend: the WCA extent as is</b> for WCXY. It is already a development statement for that ground, and a step-3 WCXY envelope built from the WCXY producers alone (D20) would lie inside it. The cost: about 265 inside PUDs sit more than 5 mi from any WCXY producer, and their forecasts would carry the D69 "past 5 mi" range. Alternative: build a WCXY extent by step 3's method (1–2 sessions + a store go).</li>
+<li><b>BS2_S south edge (D55 strike search).</b> The search behaves mechanically as designed. On the south edge it fires on 35 % of locations, 84 % of them reach past 5 mi (median 15 mi), and its ellipse runs within about 29° of the local edge, i.e. along the edge, not across it.
+It does not fix the edge's performance: south-edge packages come in about 25 % <i>below</i> box_v2_wf at cum-12 (29 packages, thin), and the local-offsets benchmark is also about 19 % high there. Step-outs on the BS2_S south edge underperform every offset set, which matches step 2's weak S step-outs. The other edges (W live front etc.) run 13–23 % <i>above</i> forecast.
+<b>Recommend: no spec change</b> (a change would need its own acceptance). Carry the south-edge miss as a named watch item into 9b, and as a stated workup caveat for south-edge pads (the D69 pattern).</li>
+</ol>
+<div class=meta><b>Regression guard (§0):</b> code identical; the WCA record is not bit-reproducible on today's revised production data (2021 holdout spread cells flip). Accept as a stated exception, or ask for a dated snapshot rerun.
+<b>Before 9b:</b> BS2_S fails the spread test in 8 cells as tuned, so its one-time holdout score is likely to fail as written. Per the D59 pattern, you decide at 9b whether to accept with exceptions.</div>

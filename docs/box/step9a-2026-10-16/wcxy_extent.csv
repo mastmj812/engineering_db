@@ -1,0 +1,7 @@
+item,inside WCA extent,outside
+"WCXY producers, first prod ≥ 2016 (gate-1 WCA set, WCXY tag, D84 refresh)",1678,1
+"WCXY reconciled PUDs (record run 7, all not_covered_wcxy)",3188,197
+PUDs inside with a WCXY producer within 2 mi,1783,13
+PUDs inside with a WCXY producer within 5 mi,2923,48
+PUDs inside with a WCXY producer within 10 mi,3124,190
+PUDs inside: median distance to nearest WCXY producer (mi) / to nearest WCA_1-2 producer,1.8 / 0.7,6.1 / 2.2
