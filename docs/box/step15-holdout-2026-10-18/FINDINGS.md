@@ -181,9 +181,9 @@ Until you decide, run 9 can include only WCB_1 and WCC from this gate.
   | BS1_S | −10.1 / −10.3 · **−20.9 / −11.3** · −12.4 / −10.5 % | +4.4 / +15.1 · **−15.8 / −3.8** · +0.3 / +10.9 % |
 
   BS3_S raw on the holdout counts every scored cutoff (160 / 130 packages), not only the four that had a haircut.
-- **Live write — NOT done, needs an explicit go:** `box.bench_scope.validation = 'provisional'` for BS3_S, BS3_C, WCB_2, BS1_S
-  (`bench_scope_provisional.sql`; four rows, one transaction, asserts the before/after state). Until that write, run 9 would row
-  them `covered` (validated).
+- **Live write — APPLIED 2026-10-18 (Michael's go):** `box.bench_scope.validation = 'provisional'` for BS3_S, BS3_C, WCB_2, BS1_S
+  (`bench_scope_provisional.sql`; four rows, one transaction, before/after asserts passed). Verified live read-only: 8 provisional
+  (AVA_0 / 1 / 2, BS2_C, BS3_S, BS3_C, WCB_2, BS1_S) / 10 validated, WCB_1 + WCC unchanged.
 - **Run 9** then carries:
   - validated: WCA, BS2_S, WCXY, WCB_1, WCC;
   - provisional: AVA_0 / 1 / 2, BS2_C, BS3_S, BS3_C, WCB_2, BS1_S;

@@ -1,5 +1,5 @@
 -- Holdout gate 2026-10-18 (Michael): the four step-15 benches that FAILED their one-time D99 holdout join the D105 provisional tier.
--- NOT APPLIED. Run only on an explicit go (live write to box.bench_scope; Michael-owned table).
+-- APPLIED live 2026-10-18 on Michael's explicit go (asserts passed; 8 provisional / 10 validated after).
 BEGIN;
 DO $$ BEGIN
   IF (SELECT count(*) FROM box.bench_scope WHERE basin = 'delaware' AND bench IN ('BS3_S', 'BS3_C', 'WCB_2', 'BS1_S')

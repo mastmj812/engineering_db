@@ -1444,6 +1444,6 @@
     ],
     "provisional_record": "box_v2 (raw, no haircut)",
     "disclosure": "provisional/disclosure.csv (tuning, holdout, tuning + holdout)",
-    "bench_scope_write": "bench_scope_provisional.sql - NOT applied, needs go"
+    "bench_scope_write": "bench_scope_provisional.sql - APPLIED live 2026-10-18 (Michael's go); verified 8 provisional / 10 validated"
   }
 }
