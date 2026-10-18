@@ -1,0 +1,26 @@
+{
+ "built_at": "2026-10-17T20:40:24-05:00",
+ "code_sha": "e2115a726112302d5e1aea8927238bb3d6bdddbe",
+ "variant": "box_v2",
+ "n_boot": 2000,
+ "seed": 20261017,
+ "groups": {
+  "BS2_C": [
+   "BS2_C"
+  ],
+  "AVA_0": [
+   "AVA_0"
+  ],
+  "AVA_1": [
+   "AVA_1"
+  ],
+  "AVA_2": [
+   "AVA_2"
+  ],
+  "AVA (0+1+2 pooled)": [
+   "AVA_0",
+   "AVA_1",
+   "AVA_2"
+  ]
+ }
+}

@@ -80,6 +80,39 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # Gate 9a (Michael 2026-10-16): D93 adopts this pool; D97 = WCXY's record is RAW box_v2 (no walk-forward haircut).
     "WCXY_WCA1": {"wells": "WCA", "pool_tags": ("WCXY", "WCA_1"), "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY", "record": "box_v2",
                   "desc": "Delaware WCXY targets, analogs WCXY + WCA_1 (pre-registered 2026-10-16, proposed D93), inside the WCA extent of record"},
+    # PRE-REGISTERED 2026-10-17 (Michael, gate 14, before any scoring; docs/box/step14-2026-10-17 FINDINGS §4-§5): step-15 benches.
+    # Pool = the step-15 QC set wells_final_<bench>.csv (run with --wells <that step-15 folder>); extent of record per bench; no pooling
+    # (BS3_S / BS3_C separate, WCB_1 / WCB_2 separate, AVA emerging). WCB_2's set carries the gunbarrel-consensus tags + the 98
+    # ratified overrides (live in formation_blueox via sql/44 + sql/16). Record variant: box_v2_wf (D94 own haircut) where the bench's
+    # walk-forward holdout can be judged (BS3_S, BS3_C, WCB_1); raw box_v2 (D97 pattern) where it cannot (WCB_2, BS1_S, WCC, BS2_C).
+    "BS3_S": {"wells": "BS3_S", "pool_tags": None, "target_tags": None, "extent": "BS3_S", "label": "BS3_S",
+              "desc": "Delaware BS3_S (step-15a QC set; extent of record 16)"},
+    # Tuning gate 2026-10-17 (Michael, on tuning evidence, before any holdout): BS3_C and WCB_1 switch to raw box_v2 (their
+    # walk-forward haircut is thin / non-monotone and over-corrects; D92 tails 1.48 and 0.40 / 1.60).
+    "BS3_C": {"wells": "BS3_C", "pool_tags": None, "target_tags": None, "extent": "BS3_C", "label": "BS3_C", "record": "box_v2",
+              "desc": "Delaware BS3_C (step-15a QC set; extent of record 18); record raw box_v2 (tuning gate)"},
+    "WCB_1": {"wells": "WCB_1", "pool_tags": None, "target_tags": None, "extent": "WCB_1", "label": "WCB_1", "record": "box_v2",
+              "desc": "Delaware WCB_1 (step-15 QC set; extent of record 22; not pooled with WCB_2); record raw box_v2 (tuning gate)"},
+    "WCB_2": {"wells": "WCB_2", "pool_tags": None, "target_tags": None, "extent": "WCB_2", "label": "WCB_2", "record": "box_v2",
+              "desc": "Delaware WCB_2 (step-15 QC set, consensus tags + 98 overrides; extent of record 24); record raw box_v2"},
+    "BS1_S": {"wells": "BS1_S", "pool_tags": None, "target_tags": None, "extent": "BS1_S", "label": "BS1_S", "record": "box_v2",
+              "desc": "Delaware BS1_S (step-15 QC set; extent of record 26); record raw box_v2"},
+    "WCC": {"wells": "WCC", "pool_tags": None, "target_tags": None, "extent": "WCC", "label": "WCC", "record": "box_v2",
+            "desc": "Delaware WCC (step-15 QC set; extent of record 27); record raw box_v2"},
+    # Tuning gate 2026-10-17: BS2_C failed as a validated bench (unstable bias by vintage, cum-12 only judgeable); then D105
+    # (Michael, same day): forecast anyway as PROVISIONAL - raw box_v2, no haircut, no holdout, in-sample bias disclosed.
+    "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2", "provisional": True,
+              "desc": "Delaware BS2_C (step-15 QC set; extent of record 20) - PROVISIONAL (D105), raw box_v2, bias measured not validated"},
+    # PRE-REGISTERED 2026-10-17 (Michael: "a less robust forecast for AVA and BS2_C than simply null"): PROVISIONAL benches -
+    # too little development history for the D53 / D99 out-of-time test (step 14). Same analog engine, raw box_v2, no haircut,
+    # no holdout; the tuning run only MEASURES the bias to disclose (pooled across cutoffs; AVA_0/1/2 also pooled together for that
+    # measurement only - selection stays per bench, own pool, own extent).
+    "AVA_0": {"wells": "AVA_0", "pool_tags": None, "target_tags": None, "extent": "AVA_0", "label": "AVA_0", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_0 (step-15 QC set; extent of record 28) - PROVISIONAL, raw box_v2, bias measured not validated"},
+    "AVA_1": {"wells": "AVA_1", "pool_tags": None, "target_tags": None, "extent": "AVA_1", "label": "AVA_1", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_1 (step-15 QC set; extent of record 29) - PROVISIONAL, raw box_v2, bias measured not validated"},
+    "AVA_2": {"wells": "AVA_2", "pool_tags": None, "target_tags": None, "extent": "AVA_2", "label": "AVA_2", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_2 (step-15 QC set; extent of record 30) - PROVISIONAL, raw box_v2, bias measured not validated"},
     # SENSITIVITY ONLY (not D20 as written): WCXY targets with the whole WCA pool as analogs - informs gate-9a decision 2.
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},
