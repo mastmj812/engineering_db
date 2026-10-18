@@ -152,3 +152,32 @@ catches a 15 %-high forecast 78–92 % of the time where the holdout is big (BS3
 **Next after the gate:** one-time holdout per accepted bench (9b pattern); then one production run (run 9) that adds the accepted
 benches to WCA / BS2_S / WCXY. Emerging answers (AVA_0/1/2 from gate 14, BS2_C if item 7 is accepted) need a go for the
 `box.bench_scope` write.
+
+## 8. Tuning gate — DECIDED 2026-10-17 (Michael)
+
+"accept FINDINGS §7 with BS1_S raw + disclosure (~10% high, no haircut), WCC raw + pad-level edge caveats, BS2_C emerging; rest as
+recommended (BS3_S wf; BS3_C, WCB_1 raw; WCB_2 raw; 9c haircut guard; freeze chosen intervals)."
+
+| bench | record for the holdout + production | D99 cells (oil + gas) | disclosure on workups |
+|---|---|---|---|
+| BS3_S | `box_v2_wf` (D94 own haircut; holdout `--history cells_BS3_S.csv`) | cum-12, 24 | tuning bias; S / W edge caveat |
+| BS3_C | raw `box_v2` (switched from wf) | cum-12, 24, 36 | tuning bias; gas runs LOW (+6 / +12 / +19 %) |
+| WCB_1 | raw `box_v2` (switched from wf) | cum-12, 24, 36 | tuning bias; oil cum-36 −13 %; gas runs LOW (+11 / +19 / +35 %) |
+| WCB_2 | raw `box_v2` | cum-12, 24 | tuning bias; S-edge caveat (−13 / −15 %) |
+| BS1_S | raw `box_v2`, NO haircut | cum-12, 24 | **oil forecast ~10 % high** (−10.1 / −10.3 %); N / E / S edge caveats |
+| WCC | raw `box_v2` | cum-12, 24 | tuning bias; **pad-level edge caveat with that side's number** (E −23, S −33, W −29, N −14 % oil-12) |
+| BS2_C | **EMERGING (D2)** — reverses gate 14 | — | shown not covered; worked by hand per deal |
+
+- **Frozen D99 rule:** `frozen_d99.csv`: per bench, the chosen variant's judged cells with their intervals and a SHA-256 (LF bytes) of
+  the source interval file. Mirrored in `box/tune15_report.FROZEN`; `tests/test_box_tune15.py` pins spec ↔ manifest. Never redrawn.
+  `index.html` / the per-bench tables stay as built under the gate-14 pre-registration: for BS3_C / WCB_1 the chosen raw
+  variant is the "alternative" column there.
+- **BENCH_SPECS** updated: BS3_C / WCB_1 `record = box_v2`; BS2_C flagged `emerging` (tuning record only).
+- **9c haircut guard: DECIDED, built in 9c.** Refuse a haircut whose D92 g(48) leaves [0.6, 1.2] or whose cum-k factors are not
+  monotone in k. BS3_S's table (g(48) = 0.995) passes.
+- **Live writes waiting on a go:** `box.bench_scope.in_scope = false` (D2 reason) for AVA_0, AVA_1, AVA_2 and BS2_C. Their
+  extents (28 / 29 / 30 / 20) stay as context. Until that write, the record run keeps rowing them `not_covered_unvalidated`.
+- **Watch item:** raw gas runs LOW on BS3_S / BS3_C / WCB_1. Not a spec change.
+
+**Next:** one-time holdout per accepted bench (9b pattern, `--holdout-once`, judged against `frozen_d99.csv`). Then run 9 (a new,
+complete record run: WCA + BS2_S + WCXY + the accepted benches), with the 9c guard.

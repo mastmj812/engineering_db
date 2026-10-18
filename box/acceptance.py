@@ -87,18 +87,22 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # walk-forward holdout can be judged (BS3_S, BS3_C, WCB_1); raw box_v2 (D97 pattern) where it cannot (WCB_2, BS1_S, WCC, BS2_C).
     "BS3_S": {"wells": "BS3_S", "pool_tags": None, "target_tags": None, "extent": "BS3_S", "label": "BS3_S",
               "desc": "Delaware BS3_S (step-15a QC set; extent of record 16)"},
-    "BS3_C": {"wells": "BS3_C", "pool_tags": None, "target_tags": None, "extent": "BS3_C", "label": "BS3_C",
-              "desc": "Delaware BS3_C (step-15a QC set; extent of record 18)"},
-    "WCB_1": {"wells": "WCB_1", "pool_tags": None, "target_tags": None, "extent": "WCB_1", "label": "WCB_1",
-              "desc": "Delaware WCB_1 (step-15 QC set; extent of record 22; not pooled with WCB_2)"},
+    # Tuning gate 2026-10-17 (Michael, on tuning evidence, before any holdout): BS3_C and WCB_1 switch to raw box_v2 (their
+    # walk-forward haircut is thin / non-monotone and over-corrects; D92 tails 1.48 and 0.40 / 1.60).
+    "BS3_C": {"wells": "BS3_C", "pool_tags": None, "target_tags": None, "extent": "BS3_C", "label": "BS3_C", "record": "box_v2",
+              "desc": "Delaware BS3_C (step-15a QC set; extent of record 18); record raw box_v2 (tuning gate)"},
+    "WCB_1": {"wells": "WCB_1", "pool_tags": None, "target_tags": None, "extent": "WCB_1", "label": "WCB_1", "record": "box_v2",
+              "desc": "Delaware WCB_1 (step-15 QC set; extent of record 22; not pooled with WCB_2); record raw box_v2 (tuning gate)"},
     "WCB_2": {"wells": "WCB_2", "pool_tags": None, "target_tags": None, "extent": "WCB_2", "label": "WCB_2", "record": "box_v2",
               "desc": "Delaware WCB_2 (step-15 QC set, consensus tags + 98 overrides; extent of record 24); record raw box_v2"},
     "BS1_S": {"wells": "BS1_S", "pool_tags": None, "target_tags": None, "extent": "BS1_S", "label": "BS1_S", "record": "box_v2",
               "desc": "Delaware BS1_S (step-15 QC set; extent of record 26); record raw box_v2"},
     "WCC": {"wells": "WCC", "pool_tags": None, "target_tags": None, "extent": "WCC", "label": "WCC", "record": "box_v2",
             "desc": "Delaware WCC (step-15 QC set; extent of record 27); record raw box_v2"},
-    "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2",
-              "desc": "Delaware BS2_C (step-15 QC set; extent of record 20; gate 14 build); record raw box_v2"},
+    # Tuning gate 2026-10-17: BS2_C -> EMERGING (D2; reverses gate 14 - unstable bias by vintage, cum-12 only judgeable). Kept as
+    # the record of the tuning run; never scored on its holdout, never in a production run.
+    "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2", "emerging": True,
+              "desc": "Delaware BS2_C (step-15 QC set; extent of record 20) - EMERGING at the tuning gate (tuning record only)"},
     # SENSITIVITY ONLY (not D20 as written): WCXY targets with the whole WCA pool as analogs - informs gate-9a decision 2.
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},

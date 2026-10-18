@@ -26,6 +26,11 @@ from box import tune9a_report as t9
 # packages in the step-14 counts; for a box_v2_wf record only the cutoffs with a walk-forward haircut count).
 D99_CELLS: dict[str, tuple[int, ...]] = {"BS3_S": (12, 24), "BS3_C": (12, 24), "WCB_1": (12, 24), "WCB_2": (12, 24, 36),
                                          "BS1_S": (12, 24), "WCC": (12, 24), "BS2_C": (12, 24)}
+# FROZEN at the tuning gate 2026-10-17 (Michael): record variant + D99 horizons per bench for the one-time holdout (9b pattern).
+# The interval values are docs/box/step15-tuning-2026-10-17/frozen_d99.csv (with source digests); never redraw after a holdout look.
+FROZEN: dict[str, dict[str, Any]] = {"BS3_S": {"variant": "box_v2_wf", "horizons": (12, 24)}, "BS3_C": {"variant": "box_v2", "horizons": (12, 24, 36)},
+                                     "WCB_1": {"variant": "box_v2", "horizons": (12, 24, 36)}, "WCB_2": {"variant": "box_v2", "horizons": (12, 24)},
+                                     "BS1_S": {"variant": "box_v2", "horizons": (12, 24)}, "WCC": {"variant": "box_v2", "horizons": (12, 24)}}
 ORDER = ("BS3_S", "BS3_C", "WCB_1", "WCB_2", "BS1_S", "WCC", "BS2_C")
 
 

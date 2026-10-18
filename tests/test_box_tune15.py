@@ -7,7 +7,7 @@ from box import tune15_report as t15
 
 
 def test_preregistered_record_variants_and_cells():
-    assert [t15.record_variant(b) for b in t15.ORDER] == ["box_v2_wf"] * 3 + ["box_v2"] * 4
+    assert [t15.record_variant(b) for b in t15.ORDER] == ["box_v2_wf"] + ["box_v2"] * 6
     assert t15.d99_cells("WCB_2") == [("oil", 12), ("oil", 24), ("oil", 36), ("gas", 12), ("gas", 24), ("gas", 36)]
     assert set(t15.D99_CELLS) == set(t15.ORDER)
     for b in t15.ORDER:
@@ -43,3 +43,15 @@ def test_per_cutoff_drops_empty_cells():
                           "verdict": ["PASS", "not judged"]})
     p = t15.per_cutoff(cells, "box_v2")
     assert len(p) == 1 and np.isclose(p["sf band"].iloc[0], 0.8 / 1.05)
+
+
+def test_frozen_choices_match_specs_and_manifest():
+    from pathlib import Path
+
+    m = pd.read_csv(Path(__file__).resolve().parents[1] / "docs" / "box" / "step15-tuning-2026-10-17" / "frozen_d99.csv")
+    for b, f in t15.FROZEN.items():
+        assert t15.record_variant(b) == f["variant"]
+        g = m[m.bench == b]
+        assert set(g["horizon"]) == set(f["horizons"]) and set(g["record_variant"]) == {f["variant"]}
+        assert len(g) == 2 * len(f["horizons"])
+    assert ac.BENCH_SPECS["BS2_C"].get("emerging") and "BS2_C" not in t15.FROZEN
