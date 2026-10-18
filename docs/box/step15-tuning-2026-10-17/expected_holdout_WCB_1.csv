@@ -1,0 +1,4 @@
+horizon,holdout_counts_all_cutoffs,expected_holdout_scored,scored_cutoffs,d99_cell
+12,138,84.0,"2021, 2022, 2023, 2024",True
+24,111,57.0,"2021, 2022, 2023",True
+36,66,37.0,"2021, 2022",True

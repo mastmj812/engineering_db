@@ -187,3 +187,77 @@ def test_c1_haircut_refuses_no_early_production():
     raw = np.r_[np.zeros(20), _arps_months()[:-20]]
     with pytest.raises(ValueError):
         pr.apply_haircut_c1(raw, _TAB)
+
+
+# ----------------------------------------------------------------------------
+# Step 9c: coverage groups, D102 merged haircut, per-bench disclosure / caveats
+# ----------------------------------------------------------------------------
+
+C9 = ("WCA", "BS2_S", "WCXY_WCA1")
+
+
+@pytest.mark.parametrize(("kw", "want", "grp"), [
+    ({}, "covered", "WCA"),
+    ({"formation_blueox": "WCXY"}, "covered", "WCXY_WCA1"),
+    ({"formation_blueox": "WCXY", "inside_extent": False}, "not_covered_outside_extent", "WCXY_WCA1"),
+    ({"bench": "BS2_S", "formation_blueox": "BS2_S"}, "covered", "BS2_S"),
+    ({"bench": "BS2_S", "formation_blueox": "BS2_S", "inside_extent": False}, "not_covered_outside_extent", "BS2_S"),
+    ({"bench": "BS3_S", "formation_blueox": "BS3_S"}, "not_covered_unvalidated", None),
+    ({"in_scope": False, "bench": "WDFD", "formation_blueox": "WDFD", "inside_extent": None}, "not_covered_emerging", None),
+])
+def test_classify_step9c_groups(kw, want, grp):
+    r = _row(**kw)
+    assert pr.classify(r, C9) == want
+    assert pr.production_bench(r, C9) == grp
+
+
+def test_classify_default_is_run7():
+    assert pr.classify(_row(bench="BS2_S", formation_blueox="BS2_S")) == "not_covered_unvalidated"
+    assert pr.classify(_row(formation_blueox="WCXY")) == "not_covered_wcxy"
+    assert pr.classify(_row(formation_blueox="WCXY"), ("WCA", "BS2_S")) == "not_covered_wcxy"
+
+
+def test_merge_cells_by_cutoff_then_floor():
+    # tuning 40 packages + holdout 10 at one cutoff -> one merged cell of 50 (the holdout alone is under the floor)
+    c = pd.DataFrame([{"variant": "box_v2", "stream": s, "horizon": k, "cutoff": "2021-12-01", "n_packages": n, "pkg_bias": b}
+                      for s in pr.STREAMS for k in pr.HORIZONS for n, b in ((40, -0.10), (10, -0.20), (0, np.nan))])
+    m = pr.merge_cells_by_cutoff(c)
+    assert len(m) == len(pr.STREAMS) * len(pr.HORIZONS)
+    assert (m["n_packages"] == 50).all()
+    assert np.allclose(m["pkg_bias"], -0.12)
+    t = pr.haircut_table(m)
+    assert t["oil"][12]["factor"] == pytest.approx(0.88)
+    assert t["oil"][12]["n_packages"] == 50
+
+
+def test_haircut_for_d102_bs2s_and_d97_wcxy():
+    from box import production9c as p9
+
+    h = p9.haircut_for("BS2_S")
+    want = {"oil": (0.891, 0.873, 0.832, 0.828), "gas": (0.937, 0.912, 0.883, 0.810)}  # the table Michael chose at the 9c kickoff
+    for s, fs in want.items():
+        assert [round(h[s][k]["factor"], 3) for k in pr.HORIZONS] == list(fs)
+    assert h["oil"][12]["n_packages"] == 653
+    assert p9.haircut_for("WCXY_WCA1") is None
+
+
+def test_bench_disclosure_d100_numbers():
+    from box import production9c as p9
+
+    d = p9.bench_disclosure("WCXY_WCA1", None)["hindcast_bias"]
+    assert d["oil"]["36"]["disclosed_bias"] == pytest.approx(-0.0919, abs=5e-5)  # D100 call-out
+    assert d["oil"]["36"]["haircut_factor"] == 1.0 and d["oil"]["36"]["record_variant"] == "box_v2"
+    assert d["oil"]["48"]["d99_judged"] is False and d["oil"]["48"]["holdout_bias"] is None
+    b = p9.bench_disclosure("BS2_S", p9.haircut_for("BS2_S"))["hindcast_bias"]
+    assert b["oil"]["12"]["record_variant"] == "box_v2_wf"
+    assert b["oil"]["12"]["holdout_bias"] == pytest.approx(0.0104, abs=5e-5)
+    assert b["oil"]["24"]["d99_judged"] and not b["oil"]["36"]["d99_judged"]
+
+
+def test_edge_flags_d101():
+    from box import production9c as p9
+
+    f = p9.edge_flags(["south_edge", "other_edge", "interior"])
+    assert "-26 %" in f[0][0] and "-31 %" in f[0][0]
+    assert "+13 %" in f[1][0] and "WATCH" in f[1][0]
+    assert f[2] == []

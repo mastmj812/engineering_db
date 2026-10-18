@@ -1,0 +1,39 @@
+{
+  "group": "BS2_S",
+  "new_locations": 7409,
+  "old_locations": 7409,
+  "only_new": [],
+  "only_old": [],
+  "both_with_forecast": 7394,
+  "analog_set_identical": 7126,
+  "n_analogs_identical": 7213,
+  "oil_eur_raw_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 6818,
+    "sum_ratio": 1.0006902382934657
+  },
+  "oil_eur_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 6818,
+    "sum_ratio": 1.000698722215845
+  },
+  "gas_eur_raw_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0001593842431686,
+    "p90_low": 1.0,
+    "identical_1e-9": 6011,
+    "sum_ratio": 1.000364939988429
+  },
+  "gas_eur_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0001412321705185,
+    "p90_low": 1.0,
+    "identical_1e-9": 6011,
+    "sum_ratio": 1.0003583358895463
+  },
+  "oil_eur_raw_ratio_same_analogs": 1.0
+}

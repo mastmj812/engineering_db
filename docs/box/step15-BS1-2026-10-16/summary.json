@@ -1,0 +1,266 @@
+{
+ "built_at": "2026-10-16T12:29:13-05:00",
+ "git_sha": "7c9b596+dirty",
+ "asof": "2026-08-01",
+ "n_delaware_prod_hz": 31645,
+ "n_witness": 25775,
+ "verdicts": {
+  "agree": 84,
+  "reject": 41
+ },
+ "asks": [],
+ "family": "BS1",
+ "benches": [
+  "BS1_S"
+ ],
+ "pool_dir": [
+  "docs\\box\\pool-2026-10-15",
+  "docs\\box\\step15a-2026-10-16"
+ ],
+ "set": {
+  "BS1_S": {
+   "tagged_live": 1174,
+   "member": 1158,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 19,
+   "frozen_to": {
+    "BS2_S": 15,
+    "WCA": 4
+   },
+   "frozen_retagged_since": 16,
+   "frozen_retagged_from": {
+    "BS2_S": 14,
+    "WCA_1": 2
+   },
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 3,
+   "final": 1158,
+   "final_fp_ge_2016": 962,
+   "final_cohort": 552,
+   "final_tvd_suspect": 8,
+   "final_witness": 884,
+   "final_tx": 204,
+   "final_nm": 954
+  }
+ },
+ "pooled_final": 1158,
+ "pooled_fp_ge_2016": 962,
+ "pooled_cohort": 552,
+ "flags": [
+  {
+   "swap_class": "BS1_S->BS2_C",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 12,
+   "n_cohort": 8
+  },
+  {
+   "swap_class": "BS1_S->AVA_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 11,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "BS1_S->AVA_0",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 5,
+   "n_cohort": 5
+  },
+  {
+   "swap_class": "BS1_S->AVA_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 5,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS1_S->AVA_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->BS2_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->WCA",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 3,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "BS1_S->BS2_C",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS1_S->BS2_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS1_S->BS3_C",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->BS3_S",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS1_S->WCA",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS1_S->WCC",
+   "direction": "out of family",
+   "standing": "Bone Spring -> Wolfcamp (never applied)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "AVA_2->BS1_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 12,
+   "n_cohort": 6
+  },
+  {
+   "swap_class": "BS2_C->BS1_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 9,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS2_C->BS1_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 9,
+   "n_cohort": 7
+  },
+  {
+   "swap_class": "BS2_S->BS1_S",
+   "direction": "into family",
+   "standing": "hold (0.60)",
+   "box_action": "keep",
+   "n": 4,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "BS2_S->BS1_S",
+   "direction": "into family",
+   "standing": "hold (0.60)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "BS3_S->BS1_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "AVA_2->BS1_S",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "tvd_suspect",
+   "n": 1,
+   "n_cohort": 0
+  }
+ ],
+ "lith": {
+  "BS1_S": {
+   "n": 0,
+   "to": {}
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "BS1_S",
+   "n_tags": 556,
+   "med_tags": 19954.004270414767,
+   "n_all_flags": 545,
+   "med_all_flags": 19599.961608599675,
+   "rel_change": -0.01774293805980698
+  }
+ ],
+ "pairs": [],
+ "uncalibrated_flags": 76,
+ "uncalibrated_classes": [
+  "AVA_2->BS1_S",
+  "BS1_S->AVA_0",
+  "BS1_S->AVA_1",
+  "BS1_S->AVA_2",
+  "BS1_S->BS2_C",
+  "BS1_S->BS2_S",
+  "BS1_S->BS3_C",
+  "BS1_S->BS3_S",
+  "BS2_C->BS1_S",
+  "BS3_S->BS1_S"
+ ],
+ "bench_summaries": {
+  "BS1_S": {
+   "n_prod_hz": 1174,
+   "n_tx": 204,
+   "n_nm": 970,
+   "n_cohort": 556,
+   "planned_share": 0.1201022146507666,
+   "planned_share_nm": 0.14432989690721648,
+   "round_tvd_share": 0.022146507666098807,
+   "sql23_disagree_share": 0.09114139693356048,
+   "cons_flag_n": 48,
+   "cons_flag_share": 0.04088586030664395,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 19954.004270414767,
+   "border_step": {
+    "verdict": "no_step",
+    "border_rel_step": 0.045952825158429224,
+    "typical_rel_step": 0.08430942225352545,
+    "max_other_rel_step": 0.15423499247055927,
+    "n_other_steps": 4
+   }
+  }
+ }
+}

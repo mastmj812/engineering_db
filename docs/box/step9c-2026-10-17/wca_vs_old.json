@@ -1,0 +1,38 @@
+{
+  "new_wca_locations": 1912,
+  "old_locations": 1912,
+  "only_new": [],
+  "only_old": [],
+  "both_with_forecast": 1907,
+  "analog_set_identical": 1907,
+  "n_analogs_identical": 1907,
+  "oil_eur_raw_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 1723,
+    "sum_ratio": 0.9999742979152987
+  },
+  "oil_eur_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 1723,
+    "sum_ratio": 0.999971469461063
+  },
+  "gas_eur_raw_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 1745,
+    "sum_ratio": 0.9999142671759504
+  },
+  "gas_eur_ratio": {
+    "median": 1.0,
+    "p10_high": 1.0,
+    "p90_low": 1.0,
+    "identical_1e-9": 1745,
+    "sum_ratio": 0.9999153015727553
+  },
+  "oil_eur_raw_ratio_same_analogs": 1.0
+}

@@ -1,0 +1,220 @@
+{
+ "built_at": "2026-10-16T12:35:55-05:00",
+ "git_sha": "7c9b596+dirty",
+ "wells_dir": "docs\\box\\step15-WCC-2026-10-16",
+ "version": 1,
+ "edge_params": {
+  "pin_radius_ft": 2640.0,
+  "close_ft": 3960.0,
+  "quad_segs": 4,
+  "ring_step_ft": 100.0,
+  "pin_slack_ft": 60.0,
+  "edge_reach_ft": 2640.0,
+  "interior_depth_ft": 5280.0,
+  "neg_evidence_ft": 2640.0,
+  "min_body_wells": 5
+ },
+ "buffer_params": {
+  "k": 0.75,
+  "cap_ft": 7920.0,
+  "floor_ft": 880.0,
+  "perf_ref": "pool",
+  "local_radius_ft": 52800.0,
+  "local_min_n": 15,
+  "sample_ft": 200.0,
+  "stepout_reach_mi": 5.0,
+  "front_min_ok": 3,
+  "front_ok_over_rolled": 2.0,
+  "lateral_core_ft": 50.0,
+  "quantum_ft": 110.0,
+  "smooth_ft": 330.0,
+  "legacy_fill_cover": 0.9,
+  "bridge_mi": 8.0,
+  "envelope": true,
+  "min_cluster": 3,
+  "cluster_link_mi": 1.0,
+  "gen_tol_mi": 2.0,
+  "gen_shoulder_mi": 1.5,
+  "gen_round_mi": 0.75,
+  "uniform": false
+ },
+ "params_source": "docs\\box\\step3-2026-10-07\\summary.json",
+ "laterals_without_geometry": {
+  "WCC": 0
+ },
+ "pools": {
+  "WCC": {
+   "pre_envelope_sqmi": 738.6224708349414,
+   "envelope_raw_sqmi": 1363.8358060354128,
+   "n_tests_within_reach": 38,
+   "bridged_sqmi": 724.768164471498,
+   "updip_limit": null,
+   "developed_outside": 172,
+   "developed_outside_not_isolated": 0,
+   "n_isolated_tests": 183,
+   "bridge_edge_mi": 104.36738651100674,
+   "extent_sqmi": 1454.8044645545735,
+   "core_sqmi": 511.9217870253996,
+   "outline_step2_sqmi": 1181.50883679216,
+   "n_parts": 1,
+   "n_holes": 0,
+   "perimeter_mi": 167.31810657840327,
+   "walked_mi_by_rule": {
+    "gap: capped": 2.2,
+    "gap: k \u00d7 gap": 80.9,
+    "gap: pre-2016 beyond -> floor (D5)": 8.4,
+    "live front -> cap (D22)": 19.3,
+    "pinned: floor": 155.1,
+    "potash ignore-gap -> floor (D24)": 46.0
+   },
+   "buffer_ft_median": 1668.7373690707238,
+   "buffer_ft_weighted_mean": 2274.9082773560635,
+   "fronts": {
+    "NE": {
+     "ok": 3,
+     "rolled": 1,
+     "no12": 1,
+     "perf_median": 0.758717904610936
+    },
+    "E": {
+     "ok": 11,
+     "rolled": 1,
+     "no12": 2,
+     "perf_median": 0.9499465813032447
+    }
+   },
+   "stepout_roles": {
+    "excluded: isolated test (tested, not developed)": 145,
+    "island": 44,
+    "excluded: test (2-well step-out, not development)": 20,
+    "excluded: test (1-well step-out, not development)": 18
+   },
+   "n_evidence": 923,
+   "n_pre2016": 195,
+   "interior_median_oil12_kft": 15265.78912378673,
+   "flagged_pinned_strong_mi": 64.07148473006764,
+   "n_contours": {
+    "struct": 67,
+    "isopach": 896
+   },
+   "n_bodies_ge_min": 1,
+   "evidence_inside": 751
+  }
+ },
+ "envelope_backtest": [
+  {
+   "pool": "WCC",
+   "cutoff": "2021-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 277.3156022317103,
+   "n_good": 102,
+   "n_rolled": 45,
+   "hit_good": 33,
+   "hit_rolled": 11,
+   "tpr": 0.3235294117647059,
+   "fpr": 0.24444444444444444,
+   "j": 0.07908496732026146
+  },
+  {
+   "pool": "WCC",
+   "cutoff": "2021-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 490.8105134739374,
+   "n_good": 102,
+   "n_rolled": 45,
+   "hit_good": 82,
+   "hit_rolled": 24,
+   "tpr": 0.803921568627451,
+   "fpr": 0.5333333333333333,
+   "j": 0.2705882352941177
+  },
+  {
+   "pool": "WCC",
+   "cutoff": "2023-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 410.8649506047539,
+   "n_good": 64,
+   "n_rolled": 34,
+   "hit_good": 15,
+   "hit_rolled": 9,
+   "tpr": 0.234375,
+   "fpr": 0.2647058823529412,
+   "j": -0.03033088235294118
+  },
+  {
+   "pool": "WCC",
+   "cutoff": "2023-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 868.0176962354044,
+   "n_good": 64,
+   "n_rolled": 34,
+   "hit_good": 43,
+   "hit_rolled": 29,
+   "tpr": 0.671875,
+   "fpr": 0.8529411764705882,
+   "j": -0.1810661764705882
+  }
+ ],
+ "overlap": [
+  {
+   "extent": "WCC",
+   "other": "BS2_S (record)",
+   "shared_sqmi": 1066.5510455464273,
+   "share_of_extent": 0.7331232970012777
+  },
+  {
+   "extent": "WCC",
+   "other": "WCA (record)",
+   "shared_sqmi": 1454.8044645545724,
+   "share_of_extent": 0.9999999999999992
+  }
+ ],
+ "pud_d1": [
+  {
+   "formation_blueox": "WCC",
+   "status": "D1 universe",
+   "in extent": 1994,
+   "in drilled core": 502,
+   "in step-2 outline": 877,
+   "pool": "WCC"
+  }
+ ],
+ "regression": {},
+ "geology_files": [
+  "geology\\BOX_potash_SOPA.shp",
+  "geology\\BOX_potash_SOPA.shx",
+  "geology\\BOX_potash_SOPA.dbf",
+  "geology\\BOX_potash_SOPA.prj",
+  "geology\\BOX_potash_SOPA.cpg",
+  "geology\\BOX_WCC_extent_v1.shp",
+  "geology\\BOX_WCC_extent_v1.shx",
+  "geology\\BOX_WCC_extent_v1.dbf",
+  "geology\\BOX_WCC_extent_v1.prj",
+  "geology\\BOX_WCC_extent_v1.cpg",
+  "geology\\BOX_WCC_edges_v1.shp",
+  "geology\\BOX_WCC_edges_v1.shx",
+  "geology\\BOX_WCC_edges_v1.dbf",
+  "geology\\BOX_WCC_edges_v1.prj",
+  "geology\\BOX_WCC_edges_v1.cpg",
+  "geology\\BOX_WCC_laterals.shp",
+  "geology\\BOX_WCC_laterals.shx",
+  "geology\\BOX_WCC_laterals.dbf",
+  "geology\\BOX_WCC_laterals.prj",
+  "geology\\BOX_WCC_laterals.cpg",
+  "geology\\BOX_WCC_flags.shp",
+  "geology\\BOX_WCC_flags.shx",
+  "geology\\BOX_WCC_flags.dbf",
+  "geology\\BOX_WCC_flags.prj",
+  "geology\\BOX_WCC_flags.cpg",
+  "geology\\BOX_WCC_ctx_struct.shp",
+  "geology\\BOX_WCC_ctx_struct.shx",
+  "geology\\BOX_WCC_ctx_struct.dbf",
+  "geology\\BOX_WCC_ctx_struct.prj",
+  "geology\\BOX_WCC_ctx_struct.cpg",
+  "geology\\BOX_WCC_ctx_isopach.shp",
+  "geology\\BOX_WCC_ctx_isopach.shx",
+  "geology\\BOX_WCC_ctx_isopach.dbf",
+  "geology\\BOX_WCC_ctx_isopach.prj",
+  "geology\\BOX_WCC_ctx_isopach.cpg"
+ ]
+}

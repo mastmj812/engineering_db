@@ -1,0 +1,204 @@
+{
+ "built_at": "2026-10-16T12:38:07-05:00",
+ "git_sha": "7c9b596+dirty",
+ "wells_dir": "docs\\box\\step15-WCD-2026-10-16",
+ "version": 1,
+ "edge_params": {
+  "pin_radius_ft": 2640.0,
+  "close_ft": 3960.0,
+  "quad_segs": 4,
+  "ring_step_ft": 100.0,
+  "pin_slack_ft": 60.0,
+  "edge_reach_ft": 2640.0,
+  "interior_depth_ft": 5280.0,
+  "neg_evidence_ft": 2640.0,
+  "min_body_wells": 5
+ },
+ "buffer_params": {
+  "k": 0.75,
+  "cap_ft": 7920.0,
+  "floor_ft": 880.0,
+  "perf_ref": "pool",
+  "local_radius_ft": 52800.0,
+  "local_min_n": 15,
+  "sample_ft": 200.0,
+  "stepout_reach_mi": 5.0,
+  "front_min_ok": 3,
+  "front_ok_over_rolled": 2.0,
+  "lateral_core_ft": 50.0,
+  "quantum_ft": 110.0,
+  "smooth_ft": 330.0,
+  "legacy_fill_cover": 0.9,
+  "bridge_mi": 8.0,
+  "envelope": true,
+  "min_cluster": 3,
+  "cluster_link_mi": 1.0,
+  "gen_tol_mi": 2.0,
+  "gen_shoulder_mi": 1.5,
+  "gen_round_mi": 0.75,
+  "uniform": false
+ },
+ "params_source": "docs\\box\\step3-2026-10-07\\summary.json",
+ "laterals_without_geometry": {
+  "WCD": 0
+ },
+ "pools": {
+  "WCD": {
+   "pre_envelope_sqmi": 69.1620366571777,
+   "envelope_raw_sqmi": 178.42319051131622,
+   "n_tests_within_reach": 14,
+   "bridged_sqmi": 140.79554489697819,
+   "updip_limit": null,
+   "developed_outside": 94,
+   "developed_outside_not_isolated": 0,
+   "n_isolated_tests": 94,
+   "bridge_edge_mi": 52.50643731212074,
+   "extent_sqmi": 208.56313915003608,
+   "core_sqmi": 18.226459130892945,
+   "outline_step2_sqmi": 276.6743971699802,
+   "n_parts": 2,
+   "n_holes": 0,
+   "perimeter_mi": 84.85687308142602,
+   "walked_mi_by_rule": {
+    "gap: k \u00d7 gap": 32.4,
+    "pinned: floor": 50.1,
+    "potash ignore-gap -> floor (D24)": 13.0
+   },
+   "buffer_ft_median": 1320.0,
+   "buffer_ft_weighted_mean": 2075.122965269656,
+   "fronts": {},
+   "stepout_roles": {
+    "excluded: isolated test (tested, not developed)": 80,
+    "island": 24,
+    "excluded: test (2-well step-out, not development)": 8,
+    "excluded: test (1-well step-out, not development)": 6
+   },
+   "n_evidence": 150,
+   "n_pre2016": 18,
+   "interior_median_oil12_kft": NaN,
+   "flagged_pinned_strong_mi": 0.0,
+   "n_contours": {
+    "struct": 39,
+    "isopach": 488
+   },
+   "n_bodies_ge_min": 0,
+   "evidence_inside": 56
+  }
+ },
+ "envelope_backtest": [
+  {
+   "pool": "WCD",
+   "cutoff": "2021-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 44.6153677405928,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  },
+  {
+   "pool": "WCD",
+   "cutoff": "2021-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 136.67515424418016,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  },
+  {
+   "pool": "WCD",
+   "cutoff": "2023-01-01",
+   "construction": "pre-D27 buffered",
+   "area_sqmi": 59.693239391000404,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  },
+  {
+   "pool": "WCD",
+   "cutoff": "2023-01-01",
+   "construction": "D27 envelope",
+   "area_sqmi": 169.58288887885772,
+   "n_good": 0,
+   "n_rolled": 0,
+   "hit_good": 0,
+   "hit_rolled": 0,
+   "tpr": NaN,
+   "fpr": NaN,
+   "j": NaN
+  }
+ ],
+ "overlap": [
+  {
+   "extent": "WCD",
+   "other": "BS2_S (record)",
+   "shared_sqmi": 199.1767042135239,
+   "share_of_extent": 0.954994756145477
+  },
+  {
+   "extent": "WCD",
+   "other": "WCA (record)",
+   "shared_sqmi": 208.56313915003625,
+   "share_of_extent": 1.0000000000000009
+  }
+ ],
+ "pud_d1": [
+  {
+   "formation_blueox": "WCD",
+   "status": "D1 universe",
+   "in extent": 20,
+   "in drilled core": 2,
+   "in step-2 outline": 8,
+   "pool": "WCD"
+  }
+ ],
+ "regression": {},
+ "geology_files": [
+  "geology\\BOX_potash_SOPA.shp",
+  "geology\\BOX_potash_SOPA.shx",
+  "geology\\BOX_potash_SOPA.dbf",
+  "geology\\BOX_potash_SOPA.prj",
+  "geology\\BOX_potash_SOPA.cpg",
+  "geology\\BOX_WCD_extent_v1.shp",
+  "geology\\BOX_WCD_extent_v1.shx",
+  "geology\\BOX_WCD_extent_v1.dbf",
+  "geology\\BOX_WCD_extent_v1.prj",
+  "geology\\BOX_WCD_extent_v1.cpg",
+  "geology\\BOX_WCD_edges_v1.shp",
+  "geology\\BOX_WCD_edges_v1.shx",
+  "geology\\BOX_WCD_edges_v1.dbf",
+  "geology\\BOX_WCD_edges_v1.prj",
+  "geology\\BOX_WCD_edges_v1.cpg",
+  "geology\\BOX_WCD_laterals.shp",
+  "geology\\BOX_WCD_laterals.shx",
+  "geology\\BOX_WCD_laterals.dbf",
+  "geology\\BOX_WCD_laterals.prj",
+  "geology\\BOX_WCD_laterals.cpg",
+  "geology\\BOX_WCD_flags.shp",
+  "geology\\BOX_WCD_flags.shx",
+  "geology\\BOX_WCD_flags.dbf",
+  "geology\\BOX_WCD_flags.prj",
+  "geology\\BOX_WCD_flags.cpg",
+  "geology\\BOX_WCD_ctx_struct.shp",
+  "geology\\BOX_WCD_ctx_struct.shx",
+  "geology\\BOX_WCD_ctx_struct.dbf",
+  "geology\\BOX_WCD_ctx_struct.prj",
+  "geology\\BOX_WCD_ctx_struct.cpg",
+  "geology\\BOX_WCD_ctx_isopach.shp",
+  "geology\\BOX_WCD_ctx_isopach.shx",
+  "geology\\BOX_WCD_ctx_isopach.dbf",
+  "geology\\BOX_WCD_ctx_isopach.prj",
+  "geology\\BOX_WCD_ctx_isopach.cpg"
+ ]
+}

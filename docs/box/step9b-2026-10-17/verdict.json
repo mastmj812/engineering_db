@@ -1,0 +1,326 @@
+{
+  "built_at": "2026-10-17T07:20:54-05:00",
+  "code_sha": "617e3b51540a517de0949be0ef6600e704ecad28",
+  "rule": "D99 (pooled across cutoffs; every cell inside its frozen P2.5\u2013P97.5 interval)",
+  "frozen_intervals": [
+    {
+      "file": "docs/box/pre9b-2026-10-16/intervals_BS2_S.csv",
+      "sha256": "86ba7162f63d4a155f7ce1afa7d2493f2d8968458059ef156eec571e465105a8",
+      "identical_to": "22650ce",
+      "identical": true,
+      "last_commit": "22650ce 2026-10-16"
+    },
+    {
+      "file": "docs/box/pre9b-2026-10-16/intervals_WCXY_WCA1.csv",
+      "sha256": "08e87372d35703139739fc65c30861eddf3c3f9554399f057f4a92fc35a43556",
+      "identical_to": "22650ce",
+      "identical": true,
+      "last_commit": "22650ce 2026-10-16"
+    }
+  ],
+  "run_window_utc": [
+    {
+      "bench": "BS2_S",
+      "event": "started",
+      "utc": "2026-10-17T10:25:31Z"
+    },
+    {
+      "bench": "BS2_S",
+      "event": "finished",
+      "utc": "2026-10-17T11:56:00Z"
+    },
+    {
+      "bench": "WCXY_WCA1",
+      "event": "started",
+      "utc": "2026-10-17T10:25:31Z"
+    },
+    {
+      "bench": "WCXY_WCA1",
+      "event": "finished",
+      "utc": "2026-10-17T12:19:53Z"
+    }
+  ],
+  "etl_rows_during_runs": 0,
+  "benches": {
+    "BS2_S": {
+      "record": "box_v2_wf",
+      "verdict": {
+        "by_stream": {
+          "gas": "PASS",
+          "oil": "PASS"
+        },
+        "overall": "PASS",
+        "n_cells": 4,
+        "n_outside": 0,
+        "outside": []
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 181,
+          "n_scored_wells": 163,
+          "n_packages": 61,
+          "median_package_wells": 2.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 17,
+          "n_wells_held_out": 50,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            1.0285024255777087,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 292,
+          "n_scored_wells": 244,
+          "n_packages": 82,
+          "median_package_wells": 2.0,
+          "max_package_wells": 13,
+          "n_packages_held_out": 22,
+          "n_wells_held_out": 71,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9648039206245121,
+            1.073332821389098
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 418,
+          "n_scored_wells": 373,
+          "n_packages": 127,
+          "median_package_wells": 2.0,
+          "max_package_wells": 17,
+          "n_packages_held_out": 29,
+          "n_wells_held_out": 88,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9450181044470505,
+            1.0129044668924911
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 599,
+          "n_scored_wells": 379,
+          "n_packages": 144,
+          "median_package_wells": 2.0,
+          "max_package_wells": 12,
+          "n_packages_held_out": 40,
+          "n_wells_held_out": 104,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9398715863148265,
+            0.9486260461056654
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 890,
+          "n_scored_wells": 442,
+          "n_packages": 150,
+          "median_package_wells": 2.0,
+          "max_package_wells": 13,
+          "n_packages_held_out": 36,
+          "n_wells_held_out": 133,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9125658308720181,
+            0.9510112600657279
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 1216,
+          "n_scored_wells": 452,
+          "n_packages": 149,
+          "median_package_wells": 2.0,
+          "max_package_wells": 10,
+          "n_packages_held_out": 33,
+          "n_wells_held_out": 114,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9001122427415563,
+            0.9534000008200305
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 240,
+        "7.5": 46,
+        "10.0": 67,
+        "15.0": 154,
+        "20.0": 53
+      },
+      "v2_mode_counts": {
+        "circle": 354,
+        "strike": 206
+      },
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 6,
+        "n_failed": 2
+      }
+    },
+    "WCXY_WCA1": {
+      "record": "box_v2",
+      "verdict": {
+        "by_stream": {
+          "gas": "PASS",
+          "oil": "PASS"
+        },
+        "overall": "PASS",
+        "n_cells": 6,
+        "n_outside": 0,
+        "outside": []
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 757,
+          "n_scored_wells": 170,
+          "n_packages": 97,
+          "median_package_wells": 1.0,
+          "max_package_wells": 9,
+          "n_packages_held_out": 25,
+          "n_wells_held_out": 58,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8622674961022075,
+            0.9764476829520282
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 1416,
+          "n_scored_wells": 198,
+          "n_packages": 89,
+          "median_package_wells": 2.0,
+          "max_package_wells": 10,
+          "n_packages_held_out": 24,
+          "n_wells_held_out": 59,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9052249957025639,
+            0.918763068420529
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 2019,
+          "n_scored_wells": 150,
+          "n_packages": 79,
+          "median_package_wells": 2.0,
+          "max_package_wells": 8,
+          "n_packages_held_out": 17,
+          "n_wells_held_out": 26,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8830500534626209,
+            0.8929370300735711
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 2629,
+          "n_scored_wells": 178,
+          "n_packages": 73,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 18,
+          "n_wells_held_out": 52,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8860158338548169,
+            0.8728744955594642
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 3201,
+          "n_scored_wells": 149,
+          "n_packages": 66,
+          "median_package_wells": 2.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 14,
+          "n_wells_held_out": 29,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9044071852887396,
+            0.9006531940792087
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 3793,
+          "n_scored_wells": 144,
+          "n_packages": 50,
+          "median_package_wells": 2.0,
+          "max_package_wells": 20,
+          "n_packages_held_out": 18,
+          "n_wells_held_out": 73,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8825591081245414,
+            0.9076400819432624
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 199,
+        "7.5": 31,
+        "10.0": 36,
+        "15.0": 17,
+        "20.0": 14
+      },
+      "v2_mode_counts": {
+        "circle": 221,
+        "strike": 76
+      },
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    }
+  }
+}

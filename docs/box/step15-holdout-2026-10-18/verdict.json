@@ -1,0 +1,1449 @@
+{
+  "built_at": "2026-10-17T23:36:50-05:00",
+  "code_sha": "18b3be5146bc8f3e22f11bb62a0ddff198ab952d",
+  "rule": "D99 (pooled across cutoffs; every frozen cell inside its P2.5-P97.5 interval; frozen_d99.csv)",
+  "frozen_manifest": "docs/box/step15-tuning-2026-10-17/frozen_d99.csv",
+  "frozen_check": [
+    {
+      "bench": "BS3_S",
+      "source_file": "intervals_BS3_S.csv",
+      "manifest_sha256": "8554e4609d813359f25d2ada7e38caa883c35fefce0e92259b57f26a53f04201",
+      "sha256_now": "8554e4609d813359f25d2ada7e38caa883c35fefce0e92259b57f26a53f04201",
+      "digest_match": true,
+      "intervals_match_source": true
+    },
+    {
+      "bench": "BS3_C",
+      "source_file": "intervals_BS3_C_alt_box_v2.csv",
+      "manifest_sha256": "0565e8a979d77f0a96535f308d07e56441385501dcfe207fd5d925e31919013c",
+      "sha256_now": "0565e8a979d77f0a96535f308d07e56441385501dcfe207fd5d925e31919013c",
+      "digest_match": true,
+      "intervals_match_source": true
+    },
+    {
+      "bench": "WCB_1",
+      "source_file": "intervals_WCB_1_alt_box_v2.csv",
+      "manifest_sha256": "c3919d41bd9eaa6b9efdbec081122bb13aee3abb801b0f4157ddbacddb972ac3",
+      "sha256_now": "c3919d41bd9eaa6b9efdbec081122bb13aee3abb801b0f4157ddbacddb972ac3",
+      "digest_match": true,
+      "intervals_match_source": true
+    },
+    {
+      "bench": "WCB_2",
+      "source_file": "intervals_WCB_2.csv",
+      "manifest_sha256": "a1d6bdb72e9aed6e7a2682ebe599fbb7b0008d360a0ebabf22e5972115a40c50",
+      "sha256_now": "a1d6bdb72e9aed6e7a2682ebe599fbb7b0008d360a0ebabf22e5972115a40c50",
+      "digest_match": true,
+      "intervals_match_source": true
+    },
+    {
+      "bench": "BS1_S",
+      "source_file": "intervals_BS1_S.csv",
+      "manifest_sha256": "400cc8fb519d6740336b578cf9891ee8bd5410c29353c5b09875bab0ed676c62",
+      "sha256_now": "400cc8fb519d6740336b578cf9891ee8bd5410c29353c5b09875bab0ed676c62",
+      "digest_match": true,
+      "intervals_match_source": true
+    },
+    {
+      "bench": "WCC",
+      "source_file": "intervals_WCC.csv",
+      "manifest_sha256": "235776b333717a3d22abcc0d2105b6396450744c3122e69cb83da407e44413ba",
+      "sha256_now": "235776b333717a3d22abcc0d2105b6396450744c3122e69cb83da407e44413ba",
+      "digest_match": true,
+      "intervals_match_source": true
+    }
+  ],
+  "run_window_utc": [
+    {
+      "bench": "BS3_S",
+      "event": "started",
+      "utc": "2026-10-18T03:01:19Z"
+    },
+    {
+      "bench": "BS3_S",
+      "event": "finished",
+      "utc": "2026-10-18T04:07:36Z"
+    },
+    {
+      "bench": "BS3_C",
+      "event": "started",
+      "utc": "2026-10-18T03:04:08Z"
+    },
+    {
+      "bench": "BS3_C",
+      "event": "finished",
+      "utc": "2026-10-18T03:40:34Z"
+    },
+    {
+      "bench": "WCB_1",
+      "event": "started",
+      "utc": "2026-10-18T03:04:08Z"
+    },
+    {
+      "bench": "WCB_1",
+      "event": "finished",
+      "utc": "2026-10-18T04:09:03Z"
+    },
+    {
+      "bench": "WCB_2",
+      "event": "started",
+      "utc": "2026-10-18T04:00:54Z"
+    },
+    {
+      "bench": "WCB_2",
+      "event": "finished",
+      "utc": "2026-10-18T04:33:09Z"
+    },
+    {
+      "bench": "BS1_S",
+      "event": "started",
+      "utc": "2026-10-18T03:40:35Z"
+    },
+    {
+      "bench": "BS1_S",
+      "event": "finished",
+      "utc": "2026-10-18T04:00:54Z"
+    },
+    {
+      "bench": "WCC",
+      "event": "started",
+      "utc": "2026-10-18T04:09:03Z"
+    },
+    {
+      "bench": "WCC",
+      "event": "finished",
+      "utc": "2026-10-18T04:36:37Z"
+    }
+  ],
+  "etl_rows_during_runs": 0,
+  "benches": {
+    "BS3_S": {
+      "record": "box_v2_wf",
+      "d99_horizons": [
+        12,
+        24
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "PASS",
+          "oil": "FAIL"
+        },
+        "overall": "FAIL",
+        "n_cells": 4,
+        "n_outside": 1,
+        "outside": [
+          "oil cum-12"
+        ]
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 119,
+          "holdout_bias": 0.12088617859907325,
+          "interval_lo": -0.1024606339734918,
+          "interval_hi": 0.0986690578616987,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.0063088509913651,
+          "bench_band_scale_free": 0.9994101596095655,
+          "spread_ok": true,
+          "bench_bias": 0.008771967892908602
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 89,
+          "holdout_bias": 0.15061091899195983,
+          "interval_lo": -0.0668019564419296,
+          "interval_hi": 0.1669752538522285,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 0.9766387620265233,
+          "bench_band_scale_free": 0.8913959764783294,
+          "spread_ok": false,
+          "bench_bias": -0.025278923440000156
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 119,
+          "holdout_bias": -0.043724132990291285,
+          "interval_lo": -0.1682913266131276,
+          "interval_hi": 0.1492418337186214,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.1398855850717422,
+          "bench_band_scale_free": 1.351654222235296,
+          "spread_ok": true,
+          "bench_bias": 0.10958917048061217
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 89,
+          "holdout_bias": -0.023212452436620998,
+          "interval_lo": -0.1339309923169649,
+          "interval_hi": 0.2738042950331478,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.0600355482853212,
+          "bench_band_scale_free": 1.233423028118915,
+          "spread_ok": true,
+          "bench_bias": 0.10459016887053098
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.8745,
+        "catches_15pct_high": 0.8395
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 125,
+          "n_scored_wells": 146,
+          "n_packages": 88,
+          "median_package_wells": 1.0,
+          "max_package_wells": 5,
+          "n_packages_held_out": 22,
+          "n_wells_held_out": 40,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.7709097794151664,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 301,
+          "n_scored_wells": 231,
+          "n_packages": 100,
+          "median_package_wells": 2.0,
+          "max_package_wells": 15,
+          "n_packages_held_out": 24,
+          "n_wells_held_out": 83,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8728431296538205,
+            0.8273817108708007
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 451,
+          "n_scored_wells": 289,
+          "n_packages": 117,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 32,
+          "n_wells_held_out": 75,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8546473304537707,
+            0.820302403629785
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 655,
+          "n_scored_wells": 281,
+          "n_packages": 124,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 31,
+          "n_wells_held_out": 63,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9147719071898529,
+            0.9050695309275425
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 890,
+          "n_scored_wells": 273,
+          "n_packages": 137,
+          "median_package_wells": 1.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 37,
+          "n_wells_held_out": 66,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8780985353811038,
+            0.8708345283214323
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 1144,
+          "n_scored_wells": 284,
+          "n_packages": 118,
+          "median_package_wells": 2.0,
+          "max_package_wells": 15,
+          "n_packages_held_out": 37,
+          "n_wells_held_out": 102,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8845763741914067,
+            0.882421059662251
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 169,
+        "7.5": 33,
+        "10.0": 68,
+        "15.0": 71,
+        "20.0": 88
+      },
+      "v2_mode_counts": {
+        "circle": 314,
+        "strike": 115
+      },
+      "walk_forward_identical": true,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 10,
+        "n_failed": 6
+      }
+    },
+    "BS3_C": {
+      "record": "box_v2",
+      "d99_horizons": [
+        12,
+        24,
+        36
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "FAIL",
+          "oil": "PASS"
+        },
+        "overall": "FAIL",
+        "n_cells": 6,
+        "n_outside": 2,
+        "outside": [
+          "gas cum-12",
+          "gas cum-24"
+        ]
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 96,
+          "holdout_bias": -0.1413339210253881,
+          "interval_lo": -0.1608956000019904,
+          "interval_hi": 0.0655985830719971,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.0163775058369768,
+          "bench_band_scale_free": 0.9161167351836097,
+          "spread_ok": false,
+          "bench_bias": -0.12808034249551356
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 66,
+          "holdout_bias": -0.09729859701884337,
+          "interval_lo": -0.1393040142567638,
+          "interval_hi": 0.1048361100647936,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.032468157015259,
+          "bench_band_scale_free": 1.041232151654602,
+          "spread_ok": true,
+          "bench_bias": -0.061766569778164866
+        },
+        {
+          "stream": "oil",
+          "horizon": 36,
+          "packages": 32,
+          "holdout_bias": 0.032361174194480216,
+          "interval_lo": -0.0648439214993203,
+          "interval_hi": 0.2903972638944295,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.0106646766042964,
+          "bench_band_scale_free": 1.0971041292625063,
+          "spread_ok": true,
+          "bench_bias": 0.08332302434335088
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 96,
+          "holdout_bias": -0.14871876203769807,
+          "interval_lo": -0.0912945626584823,
+          "interval_hi": 0.2433030366896399,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.3171705018849538,
+          "bench_band_scale_free": 1.0670591920070727,
+          "spread_ok": false,
+          "bench_bias": -0.08910694620438571
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 66,
+          "holdout_bias": -0.11340933908427038,
+          "interval_lo": -0.0770194854507703,
+          "interval_hi": 0.3757860623323775,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.280802771547103,
+          "bench_band_scale_free": 1.266429214105617,
+          "spread_ok": true,
+          "bench_bias": -0.07867141068478085
+        },
+        {
+          "stream": "gas",
+          "horizon": 36,
+          "packages": 32,
+          "holdout_bias": -0.04681061772275646,
+          "interval_lo": -0.088764344462453,
+          "interval_hi": 0.705576510081246,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.549517644883877,
+          "bench_band_scale_free": 1.3893944386707344,
+          "spread_ok": false,
+          "bench_bias": 0.039996176714475536
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.8225,
+        "catches_15pct_high": 0.7795
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 34,
+          "n_scored_wells": 55,
+          "n_packages": 39,
+          "median_package_wells": 1.0,
+          "max_package_wells": 4,
+          "n_packages_held_out": 5,
+          "n_wells_held_out": 6,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.5626596592400164,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 68,
+          "n_scored_wells": 96,
+          "n_packages": 48,
+          "median_package_wells": 1.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 10,
+          "n_wells_held_out": 18,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8058922358166088,
+            null
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 122,
+          "n_scored_wells": 183,
+          "n_packages": 95,
+          "median_package_wells": 1.0,
+          "max_package_wells": 8,
+          "n_packages_held_out": 22,
+          "n_wells_held_out": 41,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.819375643690282,
+            0.6670787347328823
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 188,
+          "n_scored_wells": 213,
+          "n_packages": 102,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 22,
+          "n_wells_held_out": 52,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8919343694197835,
+            0.829979248430358
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 329,
+          "n_scored_wells": 266,
+          "n_packages": 114,
+          "median_package_wells": 2.0,
+          "max_package_wells": 9,
+          "n_packages_held_out": 25,
+          "n_wells_held_out": 64,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.849703058892392,
+            0.8562843108069494
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 502,
+          "n_scored_wells": 327,
+          "n_packages": 135,
+          "median_package_wells": 2.0,
+          "max_package_wells": 16,
+          "n_packages_held_out": 35,
+          "n_wells_held_out": 95,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.7986262762170938,
+            0.8974354312251225
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 40,
+        "7.5": 26,
+        "10.0": 26,
+        "15.0": 67,
+        "20.0": 117
+      },
+      "v2_mode_counts": {
+        "circle": 213,
+        "strike": 63
+      },
+      "walk_forward_identical": null,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    },
+    "WCB_1": {
+      "record": "box_v2",
+      "d99_horizons": [
+        12,
+        24,
+        36
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "PASS",
+          "oil": "PASS"
+        },
+        "overall": "PASS",
+        "n_cells": 6,
+        "n_outside": 0,
+        "outside": []
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 137,
+          "holdout_bias": 0.01042533815062758,
+          "interval_lo": -0.1117989499566903,
+          "interval_hi": 0.0476858722367477,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.7328832301756871,
+          "bench_band_scale_free": 0.7357952446944751,
+          "spread_ok": true,
+          "bench_bias": -0.015613952109563945
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 110,
+          "holdout_bias": -0.028708035298902868,
+          "interval_lo": -0.1285142705894398,
+          "interval_hi": 0.0542235877457899,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.7531693349820074,
+          "bench_band_scale_free": 0.8188991144972297,
+          "spread_ok": true,
+          "bench_bias": -0.03472617487587479
+        },
+        {
+          "stream": "oil",
+          "horizon": 36,
+          "packages": 90,
+          "holdout_bias": -0.13166623293288096,
+          "interval_lo": -0.2361511274266479,
+          "interval_hi": -0.0376014550161972,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 0.8416397592536013,
+          "bench_band_scale_free": 0.7704235717490693,
+          "spread_ok": false,
+          "bench_bias": -0.06562405929143524
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 137,
+          "holdout_bias": 0.12283165796288387,
+          "interval_lo": -0.0539923984247746,
+          "interval_hi": 0.276214030833655,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.1417255266030042,
+          "bench_band_scale_free": 1.0693028991733178,
+          "spread_ok": false,
+          "bench_bias": 0.1571119301590938
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 110,
+          "holdout_bias": 0.2115804517035206,
+          "interval_lo": -0.0075220443259559,
+          "interval_hi": 0.3849369049312342,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.2095539567095814,
+          "bench_band_scale_free": 1.1453987144943043,
+          "spread_ok": false,
+          "bench_bias": 0.12749346516309737
+        },
+        {
+          "stream": "gas",
+          "horizon": 36,
+          "packages": 90,
+          "holdout_bias": 0.344108380527706,
+          "interval_lo": 0.0868509737941818,
+          "interval_hi": 0.6362327569336971,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.3456775226732849,
+          "bench_band_scale_free": 1.2555680098321003,
+          "spread_ok": false,
+          "bench_bias": -0.07101742792093212
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.831,
+        "catches_15pct_high": 0.9205
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 161,
+          "n_scored_wells": 122,
+          "n_packages": 76,
+          "median_package_wells": 1.0,
+          "max_package_wells": 4,
+          "n_packages_held_out": 25,
+          "n_wells_held_out": 42,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9224375090074097,
+            1.2929131841088135
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 308,
+          "n_scored_wells": 138,
+          "n_packages": 76,
+          "median_package_wells": 1.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 29,
+          "n_wells_held_out": 58,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9060809921974653,
+            1.0648986387879427
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 417,
+          "n_scored_wells": 179,
+          "n_packages": 96,
+          "median_package_wells": 1.5,
+          "max_package_wells": 7,
+          "n_packages_held_out": 28,
+          "n_wells_held_out": 48,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9022858273495301,
+            0.9527505906716632
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 528,
+          "n_scored_wells": 161,
+          "n_packages": 78,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 14,
+          "n_wells_held_out": 38,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8890532903920476,
+            0.9140075454307055
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 654,
+          "n_scored_wells": 174,
+          "n_packages": 89,
+          "median_package_wells": 1.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 23,
+          "n_wells_held_out": 48,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.869322688141529,
+            0.8933685784175924
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 783,
+          "n_scored_wells": 183,
+          "n_packages": 90,
+          "median_package_wells": 2.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 27,
+          "n_wells_held_out": 48,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8869936517630985,
+            0.9001925926797486
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 67,
+        "7.5": 27,
+        "10.0": 50,
+        "15.0": 75,
+        "20.0": 63
+      },
+      "v2_mode_counts": {
+        "circle": 187,
+        "strike": 95
+      },
+      "walk_forward_identical": null,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    },
+    "WCB_2": {
+      "record": "box_v2",
+      "d99_horizons": [
+        12,
+        24
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "FAIL",
+          "oil": "PASS"
+        },
+        "overall": "FAIL",
+        "n_cells": 4,
+        "n_outside": 2,
+        "outside": [
+          "gas cum-12",
+          "gas cum-24"
+        ]
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 60,
+          "holdout_bias": 0.07135254529063251,
+          "interval_lo": -0.082438395511836,
+          "interval_hi": 0.1006494560638082,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.8460920419769631,
+          "bench_band_scale_free": 0.8718187203805673,
+          "spread_ok": true,
+          "bench_bias": -0.018731945645293402
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 43,
+          "holdout_bias": 0.036282222652731885,
+          "interval_lo": -0.1112467213874063,
+          "interval_hi": 0.1301137168528434,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.9731034614889459,
+          "bench_band_scale_free": 0.9476344610567536,
+          "spread_ok": true,
+          "bench_bias": -0.04960243679365659
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 60,
+          "holdout_bias": 0.20551610555473243,
+          "interval_lo": -0.1826088692940259,
+          "interval_hi": 0.1052464259664883,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.2664214644525709,
+          "bench_band_scale_free": 1.1221601426117795,
+          "spread_ok": false,
+          "bench_bias": 0.24070899713209273
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 43,
+          "holdout_bias": 0.26432359645151743,
+          "interval_lo": -0.1826451807950439,
+          "interval_hi": 0.1473787678307446,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.0221339807040908,
+          "bench_band_scale_free": 1.0834264060542738,
+          "spread_ok": true,
+          "bench_bias": 0.32476701296445704
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.866,
+        "catches_15pct_high": 0.8835
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 44,
+          "n_scored_wells": 42,
+          "n_packages": 32,
+          "median_package_wells": 1.0,
+          "max_package_wells": 3,
+          "n_packages_held_out": 6,
+          "n_wells_held_out": 7,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.7420699432281243,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 113,
+          "n_scored_wells": 76,
+          "n_packages": 47,
+          "median_package_wells": 1.0,
+          "max_package_wells": 8,
+          "n_packages_held_out": 12,
+          "n_wells_held_out": 23,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8703181552555911,
+            0.7708343603756862
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 155,
+          "n_scored_wells": 117,
+          "n_packages": 66,
+          "median_package_wells": 1.5,
+          "max_package_wells": 6,
+          "n_packages_held_out": 12,
+          "n_wells_held_out": 21,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8379828059905845,
+            0.7851392765480764
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 215,
+          "n_scored_wells": 129,
+          "n_packages": 63,
+          "median_package_wells": 2.0,
+          "max_package_wells": 5,
+          "n_packages_held_out": 18,
+          "n_wells_held_out": 37,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8383266443379578,
+            0.8782321588936933
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 307,
+          "n_scored_wells": 145,
+          "n_packages": 62,
+          "median_package_wells": 2.0,
+          "max_package_wells": 9,
+          "n_packages_held_out": 14,
+          "n_wells_held_out": 21,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8274467670120352,
+            0.8743759612235624
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 423,
+          "n_scored_wells": 171,
+          "n_packages": 72,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 21,
+          "n_wells_held_out": 63,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8380865015780139,
+            0.8630395323111197
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 33,
+        "7.5": 13,
+        "10.0": 21,
+        "15.0": 36,
+        "20.0": 69
+      },
+      "v2_mode_counts": {
+        "circle": 139,
+        "strike": 33
+      },
+      "walk_forward_identical": null,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    },
+    "BS1_S": {
+      "record": "box_v2",
+      "d99_horizons": [
+        12,
+        24
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "FAIL",
+          "oil": "PASS"
+        },
+        "overall": "FAIL",
+        "n_cells": 4,
+        "n_outside": 1,
+        "outside": [
+          "gas cum-12"
+        ]
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 48,
+          "holdout_bias": -0.20922499023971164,
+          "interval_lo": -0.2355381309506475,
+          "interval_hi": 0.0657348081456321,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.1368832552026171,
+          "bench_band_scale_free": 1.102644920890448,
+          "spread_ok": true,
+          "bench_bias": -0.11207845859964977
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 31,
+          "holdout_bias": -0.11283602199289931,
+          "interval_lo": -0.2651617023702408,
+          "interval_hi": 0.1416073467628932,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 0.9795068895271223,
+          "bench_band_scale_free": 0.7940265157223102,
+          "spread_ok": false,
+          "bench_bias": -0.039865562056791655
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 48,
+          "holdout_bias": -0.15780087511904578,
+          "interval_lo": -0.1219743723058793,
+          "interval_hi": 0.2055290392868282,
+          "inside_interval": false,
+          "bias_ok_10pct": false,
+          "band_scale_free": 1.5477381026733164,
+          "bench_band_scale_free": 1.1882239853711933,
+          "spread_ok": false,
+          "bench_bias": -0.1421354606929219
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 31,
+          "holdout_bias": -0.0378525732804904,
+          "interval_lo": -0.0711223041310458,
+          "interval_hi": 0.3844319344483006,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 1.0922238615118607,
+          "bench_band_scale_free": 1.0995904184795016,
+          "spread_ok": true,
+          "bench_bias": -0.12467930831691475
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.855,
+        "catches_15pct_high": 0.5609999999999999
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 8,
+          "n_scored_wells": 26,
+          "n_packages": 19,
+          "median_package_wells": 1.0,
+          "max_package_wells": 4,
+          "n_packages_held_out": 4,
+          "n_wells_held_out": 5,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            null,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 24,
+          "n_scored_wells": 48,
+          "n_packages": 28,
+          "median_package_wells": 1.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 2,
+          "n_wells_held_out": 6,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.7104403368085817,
+            null
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 44,
+          "n_scored_wells": 86,
+          "n_packages": 42,
+          "median_package_wells": 2.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 11,
+          "n_wells_held_out": 16,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            1.2477602739546207,
+            null
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 79,
+          "n_scored_wells": 117,
+          "n_packages": 65,
+          "median_package_wells": 1.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 13,
+          "n_wells_held_out": 23,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            1.103377226584376,
+            0.8428727113793758
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 141,
+          "n_scored_wells": 159,
+          "n_packages": 72,
+          "median_package_wells": 2.0,
+          "max_package_wells": 8,
+          "n_packages_held_out": 14,
+          "n_wells_held_out": 34,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9727103476167573,
+            1.0337557146386769
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 238,
+          "n_scored_wells": 224,
+          "n_packages": 83,
+          "median_package_wells": 2.0,
+          "max_package_wells": 11,
+          "n_packages_held_out": 23,
+          "n_wells_held_out": 67,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9245356058456369,
+            1.0100107377222256
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 3,
+        "7.5": 20,
+        "10.0": 18,
+        "15.0": 38,
+        "20.0": 72
+      },
+      "v2_mode_counts": {
+        "circle": 122,
+        "strike": 29
+      },
+      "walk_forward_identical": null,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    },
+    "WCC": {
+      "record": "box_v2",
+      "d99_horizons": [
+        12,
+        24
+      ],
+      "verdict": {
+        "by_stream": {
+          "gas": "PASS",
+          "oil": "PASS"
+        },
+        "overall": "PASS",
+        "n_cells": 4,
+        "n_outside": 0,
+        "outside": []
+      },
+      "cells": [
+        {
+          "stream": "oil",
+          "horizon": 12,
+          "packages": 45,
+          "holdout_bias": -0.014076062767689463,
+          "interval_lo": -0.2151097158794975,
+          "interval_hi": 0.1741775212603914,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.8082926276732334,
+          "bench_band_scale_free": 0.7477341606121405,
+          "spread_ok": false,
+          "bench_bias": -0.044583924428884106
+        },
+        {
+          "stream": "oil",
+          "horizon": 24,
+          "packages": 31,
+          "holdout_bias": -0.0811557859096785,
+          "interval_lo": -0.3318115784376572,
+          "interval_hi": 0.108277172502822,
+          "inside_interval": true,
+          "bias_ok_10pct": true,
+          "band_scale_free": 0.7863699495773037,
+          "bench_band_scale_free": 0.6891857709242475,
+          "spread_ok": false,
+          "bench_bias": -0.10428714409630802
+        },
+        {
+          "stream": "gas",
+          "horizon": 12,
+          "packages": 45,
+          "holdout_bias": -0.10731463099627364,
+          "interval_lo": -0.1934140949574767,
+          "interval_hi": 0.0989625822765231,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 0.8052593071924233,
+          "bench_band_scale_free": 0.8093152044644968,
+          "spread_ok": true,
+          "bench_bias": -0.16896807547185835
+        },
+        {
+          "stream": "gas",
+          "horizon": 24,
+          "packages": 31,
+          "holdout_bias": -0.10552951261397875,
+          "interval_lo": -0.2253775256622346,
+          "interval_hi": 0.0888861797706795,
+          "inside_interval": true,
+          "bias_ok_10pct": false,
+          "band_scale_free": 0.9378820624892228,
+          "bench_band_scale_free": 0.7731219430326054,
+          "spread_ok": false,
+          "bench_bias": -0.21480317923357792
+        }
+      ],
+      "rule_power_from_tuning": {
+        "passes_good": 0.867,
+        "catches_15pct_high": 0.5445
+      },
+      "engine_sha": "3380317134130f1fde4d9d7040115716ed3b2268",
+      "actuals_through": "2026-07-01",
+      "live_last_full_month": "2026-07-01",
+      "folds": [
+        {
+          "cutoff": "2019-12-01",
+          "asof": "2019-11-01",
+          "k_areas": 0,
+          "n_train": 51,
+          "n_scored_wells": 50,
+          "n_packages": 31,
+          "median_package_wells": 1.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 5,
+          "n_wells_held_out": 5,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9056658276431839,
+            null
+          ]
+        },
+        {
+          "cutoff": "2020-12-01",
+          "asof": "2020-11-01",
+          "k_areas": 0,
+          "n_train": 97,
+          "n_scored_wells": 45,
+          "n_packages": 19,
+          "median_package_wells": 2.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 7,
+          "n_wells_held_out": 15,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9011874284089136,
+            1.2209337367179371
+          ]
+        },
+        {
+          "cutoff": "2021-12-01",
+          "asof": "2021-11-01",
+          "k_areas": 0,
+          "n_train": 141,
+          "n_scored_wells": 91,
+          "n_packages": 35,
+          "median_package_wells": 2.0,
+          "max_package_wells": 7,
+          "n_packages_held_out": 10,
+          "n_wells_held_out": 32,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.9397072035562688,
+            0.9392682655694843
+          ]
+        },
+        {
+          "cutoff": "2022-12-01",
+          "asof": "2022-11-01",
+          "k_areas": 0,
+          "n_train": 166,
+          "n_scored_wells": 77,
+          "n_packages": 33,
+          "median_package_wells": 2.0,
+          "max_package_wells": 6,
+          "n_packages_held_out": 9,
+          "n_wells_held_out": 22,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.880435386333141,
+            0.9445876471608564
+          ]
+        },
+        {
+          "cutoff": "2023-12-01",
+          "asof": "2023-11-01",
+          "k_areas": 0,
+          "n_train": 244,
+          "n_scored_wells": 76,
+          "n_packages": 39,
+          "median_package_wells": 1.0,
+          "max_package_wells": 8,
+          "n_packages_held_out": 6,
+          "n_wells_held_out": 15,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8628214748010283,
+            0.9087485364214584
+          ]
+        },
+        {
+          "cutoff": "2024-12-01",
+          "asof": "2024-11-01",
+          "k_areas": 0,
+          "n_train": 310,
+          "n_scored_wells": 118,
+          "n_packages": 47,
+          "median_package_wells": 2.0,
+          "max_package_wells": 15,
+          "n_packages_held_out": 19,
+          "n_wells_held_out": 64,
+          "n_factor_no_estimate": 0,
+          "F_oil_12_36": [
+            0.8643472776076943,
+            0.8998411919558155
+          ]
+        }
+      ],
+      "v2_radius_mi": {
+        "5.0": 30,
+        "7.5": 13,
+        "10.0": 24,
+        "15.0": 25,
+        "20.0": 61
+      },
+      "v2_mode_counts": {
+        "circle": 104,
+        "strike": 49
+      },
+      "walk_forward_identical": null,
+      "verdict_as_written_d53": {
+        "overall": "FAIL",
+        "by_stream": {
+          "oil": "FAIL",
+          "gas": "FAIL"
+        },
+        "n_judged": 0,
+        "n_failed": 0
+      }
+    }
+  },
+  "gate_decision": {
+    "decided_on": "2026-10-18",
+    "by": "Michael",
+    "text": "accept these four as fails -> option 2 (D105 provisional tier)",
+    "validated": [
+      "WCB_1",
+      "WCC"
+    ],
+    "provisional": [
+      "BS3_S",
+      "BS3_C",
+      "WCB_2",
+      "BS1_S"
+    ],
+    "provisional_record": "box_v2 (raw, no haircut)",
+    "disclosure": "provisional/disclosure.csv (tuning, holdout, tuning + holdout)",
+    "bench_scope_write": "bench_scope_provisional.sql - APPLIED live 2026-10-18 (Michael's go); verified 8 provisional / 10 validated"
+  }
+}

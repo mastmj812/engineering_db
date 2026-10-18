@@ -180,6 +180,53 @@ def run_fold(conn: Any, wells: pd.DataFrame, wells_dir: Path, cutoff: dt.date, w
             "n_fitted": cb["n_fitted"]}
 
 
+def run_fold_analog(conn: Any, wells: pd.DataFrame, extent_ft: Any, cutoff: dt.date, workers: int | None, last: dt.date,
+                    horizons: tuple[int, ...] = HORIZONS, k_months: int = 24, targets: set[str] | None = None, pool: str = hr.POOL) -> dict[str, Any]:
+    """The analog harness's fold for ANY bench (step 9a): exactly what the D57/D58 analog variants read from run_fold — the
+    per-well fits of every pre-cutoff well inside the extent (the analog pool), the D9 12-mo training cohort (F(k) sample and
+    the D53 benchmark), and the next 12 months' wells scored with actuals + benchmark — without the retired TC-area / factor
+    chain (D66). One 'area' = the extent: run_fold's rebuilt D29 areas tile the extent, so membership is the same (the WCA
+    regression guard checks it). `targets` (api10s) restricts the SCORED wells (WCXY targets scored against a wider pool —
+    a sensitivity only); None = every well of `wells`."""
+    asof = _prev_month(cutoff)
+    geoms = [extent_ft]
+    d4 = hr.cohort_frame(wells, extent_ft, asof)
+    cb = hr.rebuild_curves(conn, wells, {"geoms": geoms, "frame": d4}, cutoff, asof, workers, area_curves=False)
+    # ---- training (= run_fold's trn rows in the same order; no scenario factors: the reference, as the v2 variants never read them)
+    trn = hr.wca_factor_frame(conn, cb, wells, asof, pool=pool)
+    trn["lateral_ft"] = pd.to_numeric(trn["lateral_ft"], errors="coerce")
+    trn = trn[(trn["lateral_ft"] > 0) & trn["area_no"].notna()].reset_index(drop=True)
+    trn["area_no"] = trn["area_no"].astype(int)
+    trn["f_oil"], trn["f_gor"] = 1.0, 1.0
+    # ---- scored wells
+    end = _add_months(cutoff, 12)
+    hw = wells[[cutoff <= f < end for f in wells["first_production_date"]]].copy()
+    if targets is not None:
+        hw = hw[hw["api10"].isin(targets)]
+    hx, hy = dfr._xy(hw["mid_lon"], hw["mid_lat"])
+    hw["area_no"] = rep.assign_area(np.column_stack([hx, hy]), geoms)
+    hw["lateral_ft"] = pd.to_numeric(hw["lateral_length_ft"], errors="coerce")
+    hs = hw[(hw["area_no"] > 0) & (hw["lateral_ft"] > 0)].reset_index(drop=True)
+    hs["bench_pool"] = pool
+    sp = spacing(conn, sorted(set(trn["api10"]) | set(hs["api10"])))
+    trn["spacing_ft"], hs["spacing_ft"] = trn["api10"].map(sp), hs["api10"].map(sp)
+    t_ids = list(trn["api10"])
+    t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof, k=k_months)
+    prod = rep.pull_production(conn, list(hs["api10"]), last)
+    h_act = hp.monthly_matrix(prod, list(hs["api10"]), drop_latest=True, k=k_months)
+    hs["holdout_block"] = ho.is_holdout(*dfr._xy(hs["mid_lon"], hs["mid_lat"]))  # D52 frozen spatial holdout
+    bench = local_offsets(trn, t_act, hs, horizons)  # D53 benchmark
+    for s in STREAMS:
+        act_cum = np.cumsum(h_act[s], axis=1)
+        for k in horizons:
+            hs[f"actual_{s}{k}"] = act_cum[:, k - 1]
+            hs[f"bench_{s}{k}"] = bench[f"{s}{k}"]
+            hs[f"bench_err_{s}{k}"] = hc.pct_error(act_cum[:, k - 1], bench[f"{s}{k}"])
+    hs["cutoff"] = str(cutoff)
+    return {"cb": cb, "trn": trn, "t_act": t_act, "sp": sp, "cutoff": cutoff, "asof": asof, "k_areas": 0, "n_train": len(trn), "n_hold": len(hs),
+            "hold": hs, "n_fitted": cb["n_fitted"], "F": None}
+
+
 MIN_CELL_N = 30  # a fold x horizon with fewer scored wells is not reported (e.g. cum-24 on the newest fold)
 
 

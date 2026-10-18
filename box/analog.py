@@ -48,6 +48,7 @@ TRANSFER_MONTHS = 9
 DF_DELAWARE = 0.08
 MI = 5280.0
 STREAMS = ("oil", "gas")
+BENCH = "WCA"  # the frozen spec's bench (D58); step 9a passes others (BS2_S, WCXY) through the same selection
 
 _STATE: dict[str, Any] = {}
 
@@ -84,8 +85,9 @@ def _candidates(pool: dict[str, Any], idx: Sequence[int], loc: dict[str, Any]) -
 
 
 def select_cohort(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any], *, fp_from: dt.date | None = None,
-                  radii: Sequence[float] = RADII_MI) -> tuple[list[int], float, list[str]]:
-    """deal-intake classify + tier-blind fill over a growing radius; returns (pool indices, radius mi, flags)."""
+                  radii: Sequence[float] = RADII_MI, bench: str = BENCH) -> tuple[list[int], float, list[str]]:
+    """deal-intake classify + tier-blind fill over a growing radius; returns (pool indices, radius mi, flags). `bench` is the
+    deal-intake bench label (a single-bench plan: no adjacent bench, so it never changes which wells are selected)."""
     sp = loc.get("spacing_ft")
     planned_sp = float(sp) if sp is not None and np.isfinite(sp) and 0 < sp < 2800 else DEFAULT_SPACING_FT
     min_w = int(cfg["type_curve"]["min_wells"])
@@ -94,10 +96,10 @@ def select_cohort(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, lo
         cands = _candidates(pool, idx, loc)
         if fp_from is not None:
             cands = [c for c in cands if c["first_production_date"] >= fp_from]
-        eligible, _, _ = sw.classify(cands, cfg, bench="WCA", planned_stack=["WCA"], planned_lateral_ft=float(loc["lateral_ft"]),
+        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=float(loc["lateral_ft"]),
                                      basin="delaware", planned_spacing_ft=planned_sp)
         if len(eligible) >= min_w or r == radii[-1]:
-            sel = sw.fill(eligible, cfg, bench="WCA", adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
+            sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
             return [c["_i"] for c in sel.selected], r, sel.flags
     return [], radii[-1], ["no candidates"]
 
@@ -285,9 +287,11 @@ def with_completed_laterals(pool: dict[str, Any], uturn: dict[str, float], tvd: 
     return p
 
 
-def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any]) -> tuple[list[int], float, list[str], str]:
+def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any], *, bench: str = BENCH,
+                     diag: dict[str, Any] | None = None) -> tuple[list[int], float, list[str], str]:
     """box_v2 selection: first ring circular; past it, a strike-aligned ellipse when local strike is trusted (D55);
-    short completed laterals draw the SHORT_BAND_FT analogs (translated later by Cui). Returns (idx, radius, flags, mode)."""
+    short completed laterals draw the SHORT_BAND_FT analogs (translated later by Cui). Returns (idx, radius, flags, mode).
+    `diag`, when given, receives the local-strike diagnostics (azimuth, R², n) — read-only provenance, no effect on selection."""
     from box import strike as stk
 
     sp = loc.get("spacing_ft")
@@ -301,9 +305,9 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
         if dist is not None:
             for c in cands:
                 c["dist_ft"] = dist[c["_i"]]
-        eligible, _, _ = sw.classify(cands, cfg, bench="WCA", planned_stack=["WCA"], planned_lateral_ft=lat, basin="delaware",
+        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin="delaware",
                                      planned_spacing_ft=planned_sp, lateral_band_ft=band)
-        sel = sw.fill(eligible, cfg, bench="WCA", adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
+        sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
         return [c["_i"] for c in sel.selected], sel.flags, len(eligible)
 
     idx, flags, n = attempt(tree.query_ball_point([loc["x"], loc["y"]], r=RADII_MI[0] * MI), None)
@@ -311,6 +315,9 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
         return idx, RADII_MI[0], flags, "circle"
     near = tree.query_ball_point([loc["x"], loc["y"]], r=stk.RADIUS_FT)
     s = stk.local_strike(pool["x"][near], pool["y"][near], pool["tvd"][near], loc["x"], loc["y"]) if len(near) else None
+    if diag is not None:
+        diag.update({"strike_az_deg": s.azimuth_deg if s else None, "strike_r2": s.r2 if s else None, "strike_n": s.n if s else None,
+                     "strike_dip_ft_mi": s.dip_ft_per_mi if s else None})
     for r in RADII_MI[1:]:
         cand = tree.query_ball_point([loc["x"], loc["y"]], r=r * MI * (stk.ASPECT if s else 1.0))
         if s:
@@ -337,14 +344,17 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
     """di_p50 exactly as v1 (raw laterals) and box_v2 (completed laterals, strike edges, short-lateral translation)."""
     pool1, pool2, tree, cfg, k = _STATE["pool"], _STATE["pool2"], _STATE["tree"], _STATE["cfg"], _STATE["k"]
     out: dict[str, Any] = {"api10": loc["api10"]}
-    idx, r, flags = select_cohort(pool1, tree, cfg, loc)
+    bench = _STATE.get("bench", BENCH)
+    idx, r, flags = select_cohort(pool1, tree, cfg, loc, bench=bench)
     out.update({"radius_mi": r, "n_analogs": len(idx), "flags": ";".join(flags)})
     if len(idx) >= 3:
         m = _p50_months(idx, pool1, k)
         if m:
             out["di_p50"] = {s: m[s] * float(loc["lateral_ft"]) / 1000.0 for s in STREAMS}
     loc2 = {**loc, "lateral_ft": loc["lateral_eff"]}
-    idx2, r2, _, mode = select_cohort_v2(pool2, tree, cfg, loc2)
+    diag: dict[str, Any] = {}
+    idx2, r2, _, mode = select_cohort_v2(pool2, tree, cfg, loc2, bench=bench, diag=diag)
+    out.update({f"v2_{k_}": v_ for k_, v_ in diag.items()})
     out.update({"v2_radius_mi": r2, "v2_n": len(idx2), "v2_mode": mode, "v2_short": loc2["lateral_ft"] < SHORT_LAT_FT,
                 "v2_uturn": loc["lateral_eff"] != loc["lateral_ft"]})
     if len(idx2) >= 3:
@@ -357,8 +367,8 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
 
 
 def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,
-                    workers: int | None = None) -> list[dict[str, Any]]:
-    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff}
+                    workers: int | None = None, bench: str = BENCH) -> list[dict[str, Any]]:
+    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench}
     workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
     if workers == 1:
         _init(state)
