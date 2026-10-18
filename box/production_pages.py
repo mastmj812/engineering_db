@@ -346,9 +346,10 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
     rng = np.random.default_rng(7)
     sample = list(P.head(2)["page"]) + list(P.iloc[rng.choice(len(P), size=min(N_SAMPLE - 2, len(P)), replace=False)]["page"])
     if run.get("by_bench"):  # step 9c: also the largest pad of each group mix and of each D101 edge class
-        for col, vals in (("groups", P["groups"].unique()), ("edge", ("south_edge", "other_edge"))):
+        run9 = any("tier" in x for x in run["by_bench"].values())  # run 9: one pad per GROUP (13 groups -> hundreds of mixes)
+        for col, vals in (("groups", run["benches"] if run9 else P["groups"].unique()), ("edge", ("south_edge", "other_edge"))):
             for v in vals:
-                hit = P[P[col].str.contains(v, regex=False)] if col == "edge" else P[P[col] == v]
+                hit = P[P[col].str.split(" + ").apply(lambda gs, v=v: v in gs)] if col == "groups" and run9 else                     P[P[col].str.contains(v, regex=False)] if col == "edge" else P[P[col] == v]
                 if len(hit):
                     sample.append(hit.iloc[0]["page"])
     for p in dict.fromkeys(sample):
