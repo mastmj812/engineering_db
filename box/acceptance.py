@@ -99,10 +99,10 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
               "desc": "Delaware BS1_S (step-15 QC set; extent of record 26); record raw box_v2"},
     "WCC": {"wells": "WCC", "pool_tags": None, "target_tags": None, "extent": "WCC", "label": "WCC", "record": "box_v2",
             "desc": "Delaware WCC (step-15 QC set; extent of record 27); record raw box_v2"},
-    # Tuning gate 2026-10-17: BS2_C -> EMERGING (D2; reverses gate 14 - unstable bias by vintage, cum-12 only judgeable). Kept as
-    # the record of the tuning run; never scored on its holdout, never in a production run.
-    "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2", "emerging": True,
-              "desc": "Delaware BS2_C (step-15 QC set; extent of record 20) - EMERGING at the tuning gate (tuning record only)"},
+    # Tuning gate 2026-10-17: BS2_C failed as a validated bench (unstable bias by vintage, cum-12 only judgeable); then D105
+    # (Michael, same day): forecast anyway as PROVISIONAL - raw box_v2, no haircut, no holdout, in-sample bias disclosed.
+    "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2", "provisional": True,
+              "desc": "Delaware BS2_C (step-15 QC set; extent of record 20) - PROVISIONAL (D105), raw box_v2, bias measured not validated"},
     # PRE-REGISTERED 2026-10-17 (Michael: "a less robust forecast for AVA and BS2_C than simply null"): PROVISIONAL benches -
     # too little development history for the D53 / D99 out-of-time test (step 14). Same analog engine, raw box_v2, no haircut,
     # no holdout; the tuning run only MEASURES the bias to disclose (pooled across cutoffs; AVA_0/1/2 also pooled together for that

@@ -54,4 +54,4 @@ def test_frozen_choices_match_specs_and_manifest():
         g = m[m.bench == b]
         assert set(g["horizon"]) == set(f["horizons"]) and set(g["record_variant"]) == {f["variant"]}
         assert len(g) == 2 * len(f["horizons"])
-    assert ac.BENCH_SPECS["BS2_C"].get("emerging") and "BS2_C" not in t15.FROZEN
+    assert ac.BENCH_SPECS["BS2_C"].get("provisional") and "BS2_C" not in t15.FROZEN

@@ -181,3 +181,7 @@ recommended (BS3_S wf; BS3_C, WCB_1 raw; WCB_2 raw; 9c haircut guard; freeze cho
 
 **Next:** one-time holdout per accepted bench (9b pattern, `--holdout-once`, judged against `frozen_d99.csv`). Then run 9 (a new,
 complete record run: WCA + BS2_S + WCXY + the accepted benches), with the 9c guard.
+
+**Superseded the same day (D105, Michael):** BS2_C and AVA_0/1/2 are not emerging. They are forecast as a PROVISIONAL tier: raw
+`box_v2`, no haircut, no holdout, in-sample bias disclosed, coverage `covered_provisional` (sql/63). See
+`docs/box/step15-provisional-2026-10-17/FINDINGS.md`.
