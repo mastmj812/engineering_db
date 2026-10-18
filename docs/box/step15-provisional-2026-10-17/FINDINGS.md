@@ -82,3 +82,20 @@ after each cutoff):
 - **Steven:** a note that provisional rows can appear in `box_pud_econ` (contract amendment).
 - **The holdouts for the validated step-15 benches** (BS3_S, BS3_C, WCB_1, WCB_2, BS1_S, WCC) are still the next gate in that
   chain.
+
+## 5. Gate DECIDED + APPLIED 2026-10-17 (Michael: "Go apply")
+
+- **sql/63 LIVE** on Supabase: `python -m scripts.apply_box_provisional` 21 / 21 checks. The named constraints carry the new value;
+  no generated coverage CHECK is left; `box.pud_forecast` coverage counts are unchanged by identity; the rolled-back smoke passed.
+- **`box.bench_scope`:** AVA_0, AVA_1, AVA_2, BS2_C → `in_scope = true`, `validation = 'provisional'`, reason prefixed with the D105
+  text. Exactly 4 rows were updated; every other bench reads `validated`. The record run (run 8) is untouched: these benches stay
+  `not_covered_unvalidated` until run 9 rows them `covered_provisional`.
+- **Workup disclosure of record (ask 2 accepted):** lead with the pooled bias + 95 % range, AND the latest-vintage line:
+  - AVA: "recent cohorts (2022–24) produced 14–18 % below forecast at 12 months";
+  - BS2_C: "the miss changed sign; the 2023–24 cohorts came in ~12 % above forecast".
+
+  Both are in-sample, never validated. No haircut.
+- **Data dictionary regenerated** (83 relations): `bench_scope.validation` and the `pud_forecast` coverage comment.
+- **Nit (not changed):** `validation` defaults to `'validated'`, so out-of-scope benches (WCD, WDFD) and the step-15 benches
+  still awaiting their holdouts also read "validated". Coverage remains the authority for whether a forecast is validated.
+  A third value (e.g. `pending`) would be a small follow-up DDL if wanted.
