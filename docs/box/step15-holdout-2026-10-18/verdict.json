@@ -1427,5 +1427,23 @@
         "n_failed": 0
       }
     }
+  },
+  "gate_decision": {
+    "decided_on": "2026-10-18",
+    "by": "Michael",
+    "text": "accept these four as fails -> option 2 (D105 provisional tier)",
+    "validated": [
+      "WCB_1",
+      "WCC"
+    ],
+    "provisional": [
+      "BS3_S",
+      "BS3_C",
+      "WCB_2",
+      "BS1_S"
+    ],
+    "provisional_record": "box_v2 (raw, no haircut)",
+    "disclosure": "provisional/disclosure.csv (tuning, holdout, tuning + holdout)",
+    "bench_scope_write": "bench_scope_provisional.sql - NOT applied, needs go"
   }
 }

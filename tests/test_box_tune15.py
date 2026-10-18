@@ -7,7 +7,8 @@ from box import tune15_report as t15
 
 
 def test_preregistered_record_variants_and_cells():
-    assert [t15.record_variant(b) for b in t15.ORDER] == ["box_v2_wf"] + ["box_v2"] * 6
+    # BS3_S was pre-registered box_v2_wf (FROZEN keeps that); the 2026-10-18 holdout gate moved it to the provisional tier (raw)
+    assert [t15.record_variant(b) for b in t15.ORDER] == ["box_v2"] * 7
     assert t15.d99_cells("WCB_2") == [("oil", 12), ("oil", 24), ("oil", 36), ("gas", 12), ("gas", 24), ("gas", 36)]
     assert set(t15.D99_CELLS) == set(t15.ORDER)
     for b in t15.ORDER:
@@ -50,8 +51,11 @@ def test_frozen_choices_match_specs_and_manifest():
 
     m = pd.read_csv(Path(__file__).resolve().parents[1] / "docs" / "box" / "step15-tuning-2026-10-17" / "frozen_d99.csv")
     for b, f in t15.FROZEN.items():
-        assert t15.record_variant(b) == f["variant"]
+        # a provisional bench (holdout fail -> D105 tier) is raw box_v2 whatever variant its holdout was scored on
+        assert t15.record_variant(b) == ("box_v2" if ac.BENCH_SPECS[b].get("provisional") else f["variant"])
         g = m[m.bench == b]
         assert set(g["horizon"]) == set(f["horizons"]) and set(g["record_variant"]) == {f["variant"]}
         assert len(g) == 2 * len(f["horizons"])
     assert ac.BENCH_SPECS["BS2_C"].get("provisional") and "BS2_C" not in t15.FROZEN
+    # holdout gate 2026-10-18: four fails -> provisional; the two passes stay validated
+    assert {b for b in t15.FROZEN if ac.BENCH_SPECS[b].get("provisional")} == {"BS3_S", "BS3_C", "WCB_2", "BS1_S"}

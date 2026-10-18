@@ -151,3 +151,40 @@ BS3_C / WCB_1, whose tuning page tabulated `box_v2_wf`.
    56 %).
 
 Until you decide, run 9 can include only WCB_1 and WCC from this gate.
+
+## 7. Holdout gate — DECIDED 2026-10-18 (Michael)
+
+"accept these four as fails" → **option 2: the D105 provisional tier**, not null.
+
+| bench | standing | record for run 9 | coverage |
+|---|---|---|---|
+| WCB_1 | **validated** (PASS 6 / 6) | raw `box_v2` | `covered` |
+| WCC | **validated** (PASS 4 / 4; weak-evidence caveat, rule power 54 %) | raw `box_v2` | `covered` |
+| BS3_S | **FAIL → provisional** | raw `box_v2`, no haircut (leaves `box_v2_wf` by tier change, not as a variant picked after the look) | `covered_provisional` |
+| BS3_C | **FAIL → provisional** | raw `box_v2` | `covered_provisional` |
+| WCB_2 | **FAIL → provisional** | raw `box_v2` | `covered_provisional` |
+| BS1_S | **FAIL → provisional** | raw `box_v2` | `covered_provisional` |
+
+- **No re-tune, no redraw.** The FAILs stand as scored. `box/tune15_report.FROZEN` keeps the variant each holdout was scored on.
+  `box/acceptance.BENCH_SPECS` now marks the four `provisional: True`, `record = box_v2`, and the tests pin both.
+- **Disclosure** (`provisional/`, `python -m scripts.box_provisional_disclosure --set holdout15`). This uses the D105 method, raw `box_v2`
+  (pooled package bias, 95 % 3-mi-block cluster bootstrap, by vintage), measured three ways: tuning, holdout, and both pooled. Unlike the
+  D105 benches, these four HAVE an out-of-time number and it failed, so a workup must not show the pooled figure alone. The pooling
+  dilutes the holdout miss: WCB_2 gas-12 reads +1.8 % pooled vs **+20.6 %** on the holdout.
+  - **Proposed workup line** (to confirm with run 9): pooled bias + range, then the holdout line, then the latest-vintage line.
+
+  | bench | oil cum-12 / 24: tuning · holdout · pooled | gas cum-12 / 24: tuning · holdout · pooled |
+  |---|---|---|
+  | BS3_S (raw) | −6.2 / −3.2 · **+5.5 / +6.6** · −3.2 / −0.7 % | +5.2 / +10.5 · +6.4 / +7.5 · +5.5 / +9.7 % |
+  | BS3_C | −5.0 / −2.9 · **−14.1 / −9.7** · −7.0 / −4.4 % | +6.4 / +11.8 · **−14.9 / −11.3** · +1.8 / +6.6 % |
+  | WCB_2 | +1.2 / +0.6 · +7.1 / +3.6 · +2.5 / +1.2 % | −3.7 / −2.5 · **+20.6 / +26.4** · +1.8 / +3.9 % |
+  | BS1_S | −10.1 / −10.3 · **−20.9 / −11.3** · −12.4 / −10.5 % | +4.4 / +15.1 · **−15.8 / −3.8** · +0.3 / +10.9 % |
+
+  BS3_S raw on the holdout counts every scored cutoff (160 / 130 packages), not only the four that had a haircut.
+- **Live write — NOT done, needs an explicit go:** `box.bench_scope.validation = 'provisional'` for BS3_S, BS3_C, WCB_2, BS1_S
+  (`bench_scope_provisional.sql`; four rows, one transaction, asserts the before/after state). Until that write, run 9 would row
+  them `covered` (validated).
+- **Run 9** then carries:
+  - validated: WCA, BS2_S, WCXY, WCB_1, WCC;
+  - provisional: AVA_0 / 1 / 2, BS2_C, BS3_S, BS3_C, WCB_2, BS1_S;
+  - the 9c haircut guard, which now has no step-15 wf bench to guard.
