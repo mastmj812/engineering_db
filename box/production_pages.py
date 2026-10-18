@@ -9,6 +9,10 @@ The record is the database (box.pud_forecast / _stream / location_analog) — pa
 
 Step 9c (a run carrying run["by_bench"]): every page shows one disclosure block per coverage group on it (WCA D62 / BS2_S D102 /
 WCXY raw box_v2, D97), with D100's disclosed bias (= the tuning bias per cell) and the D101 BS2_S edge caveats.
+
+Run 9 (groups with by_bench[...]["tier"]): validated step-15 groups (WCB_1, WCC) use the 9c block; PROVISIONAL groups (D105,
+coverage `covered_provisional`) get a provisional block - every measured line (pooled, holdout, tuning + holdout), the latest-vintage
+line and the radius range - under a banner that they are not validated.
 """
 
 from __future__ import annotations
@@ -26,12 +30,17 @@ import pandas as pd
 from box import edge_gap as eg
 from box import production as pr
 from box import production9c as p9
+from box import production_run9 as p9r
 from box.edge_gap_report import _CSS, _table
 
 N_SAMPLE = 6
 GROUP_DESC = {"WCA": "WCA_1 / WCA_2 — box_v2_wf, D62 haircut",
               "BS2_S": "BS2_S — box_v2_wf on its own walk-forward haircut (D94, pooled per D102)",
-              "WCXY_WCA1": "WCXY — raw box_v2 on WCXY + WCA_1 analogs, no haircut (D93 / D97)"}
+              "WCXY_WCA1": "WCXY — raw box_v2 on WCXY + WCA_1 analogs, no haircut (D93 / D97)",
+              "WCB_1": "WCB_1 — validated (holdout PASS 6 / 6), raw box_v2, no haircut",
+              "WCC": "WCC — validated (holdout PASS 4 / 4, weak evidence), raw box_v2, no haircut",
+              **{b: f"{b} — PROVISIONAL (D105), raw box_v2, no haircut, never out-of-time validated" for b in p9r.D105_BENCHES},
+              **{b: f"{b} — PROVISIONAL (D105; one-time holdout FAILED 2026-10-18), raw box_v2, no haircut" for b in p9r.HOLDOUT_FAIL}}
 K_CHART = 48
 
 
@@ -68,6 +77,35 @@ def bench_disclosure_html(run: dict[str, Any], bench: str, radius_classes: set[s
         f"<h3>{html.escape(GROUP_DESC.get(bench, bench))}</h3>",
         _table(t, {"raw box_v2 bias (tuning)": "+.1%", "haircut factor applied": ".3f", f"DISCLOSED bias ({rv}, D100)": "+.1%", "9b holdout bias": "+.1%"}),
         f"<div class=meta>Measured spread for this pad's analog-radius class (D69; {html.escape(d['radius_ranges_basis'])}):</div>",
+        _table(pd.DataFrame(rr), {}) if rr else ""])
+
+
+def provisional_disclosure_html(run: dict[str, Any], bench: str, radius_classes: set[str]) -> str:
+    """D105 block: the measured lines (never the pooled figure alone for a holdout fail), latest vintage, radius-class range."""
+    d = run["by_bench"][bench]["disclosure"]
+    L = pd.DataFrame(d["lines"])
+    L = L.assign(range95=[f"{a:+.1%} … {b:+.1%}" for a, b in L["range_95"]]).drop(columns=["range_95"])
+    t = L.pivot_table(index=["stream", "horizon"], columns=["label", "scope"], values="bias", aggfunc="first")
+    t.columns = [f"{lab} · {sc}" for lab, sc in t.columns]
+    n = L.pivot_table(index=["stream", "horizon"], columns=["label", "scope"], values="packages", aggfunc="first")
+    n.columns = [f"{lab} · {sc} pkgs" for lab, sc in n.columns]
+    tab = t.join(n).reset_index()
+    tab["horizon"] = [f"cum-{k}" for k in tab["horizon"]]
+    rr = []
+    for key, v in d["radius_ranges"].items():
+        rc, hz = key.split("|")
+        if rc in radius_classes:
+            rr.append({"analog radius": rc, "horizon": hz, "80 % of tuning packages within": f"{v['p90_low']:+.0%} … {v['p10_high']:+.0%}",
+                       "packages": v["packages"]})
+    lv = "; ".join(x["text"] for x in d["latest_vintage"])
+    return "\n".join([
+        f"<h3>{html.escape(GROUP_DESC.get(bench, bench))}</h3>",
+        (f"<div class='flag bad'><b>Provisional — not validated.</b> {html.escape(d['label'])}. Holdout: {html.escape(d['holdout'])}. "
+         f"Lead number: {html.escape(d['lead']['label'])}, {html.escape(d['lead']['scope'])}. Latest vintage: {html.escape(d['latest_vintage_text'])}"
+         f"{' (' + html.escape(lv) + ')' if d['latest_vintage_text'] != lv else ''}.</div>"),
+        _table(tab, {c: "+.1%" for c in t.columns}),
+        (f"<div class=meta>Bias per package, + = forecast LOW; 95 % block-bootstrap ranges in {html.escape(d['source'])}. Spread for this pad's "
+         f"analog-radius class (D69; {html.escape(d['radius_ranges_basis'])}):</div>"),
         _table(pd.DataFrame(rr), {}) if rr else ""])
 
 
@@ -109,6 +147,8 @@ def disclosure_html(run: dict[str, Any], radius_classes: set[str], benches: list
     for b in benches or list(bb):
         if b == "WCA":
             parts += [f"<h3>{html.escape(GROUP_DESC['WCA'])}</h3>", wca_disclosure_html(bb["WCA"]["disclosure"], bb["WCA"]["haircut"], radius_classes)]
+        elif bb[b].get("tier") == "provisional":
+            parts.append(provisional_disclosure_html(run, b, radius_classes))
         else:
             parts.append(bench_disclosure_html(run, b, radius_classes))
     return "\n".join(parts)
@@ -192,7 +232,7 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
     meta = A["analog_meta"].set_index("api10")
     cum = A["analog_cum_kft"]
     by_stick = {loc["stick_id"]: (loc, r) for loc, r in zip(locs, res, strict=True)}
-    cov = u[(u["coverage"] == "covered") & u["stick_id"].astype(int).isin(by_stick)].copy()  # = every covered row unless a --limit smoke
+    cov = u[u["coverage"].isin(pr.COVERED) & u["stick_id"].astype(int).isin(by_stick)].copy()  # = every covered row unless a --limit smoke
     lines = dict(zip(cov["stick_id"], pr.project_ft(list(cov["wkt"])), strict=True))
     wdir = out / "workups"
     wdir.mkdir(parents=True, exist_ok=True)
@@ -244,6 +284,12 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
             caveats.append(f"<div class='flag'><b>D101 watch item.</b> {html.escape(p9.D101_OTHER)}. The forecast is NOT adjusted.</div>")
         if "WCXY_WCA1" in groups:
             caveats.append(f"<div class='flag'><b>D100 WCXY call-out.</b> {html.escape(p9.WCXY_FLAG)}.</div>")
+        for b in groups:  # run 9: tier, call-outs, the tuning-gate edge caveats of the sides this pad touches
+            if b not in p9r.GROUPS[3:]:
+                continue
+            sides = {str(x).split(" ")[0] for x in t.loc[t["group"] == b, "edge region"] if str(x).endswith(" edge")}
+            for f in dict.fromkeys(f for sd in [None, *sorted(sides)] for f in p9r.group_flags(b, run["by_bench"][b]["disclosure"], sd)):
+                caveats.append(f"<div class='flag{' bad' if 'PROVISIONAL' in f else ''}'>{html.escape(f)}.</div>")
         slug = _slug(str(pad))
         body = [f"<h1>BOX workup — pad {html.escape(str(pad))}</h1>",
                 (f"<div class=meta>Run built {run['built_at']} · spec {pr.SPEC} · code {run['code_sha'][:12]} · blueox-boxfit {run['engine_sha'][:7]} · deal-intake config v{run['dealintake_config']} · "
@@ -276,14 +322,14 @@ def render(A: dict[str, Any], out: Path, docs: Path) -> int:
     hc_rows, F_rows = [], []
     for b, x in bb.items():
         h = x["haircut"]
-        hc_rows += [{"group": b, "stream": s, **{f"cum-{k}": h[s][k]["factor"] for k in pr.HORIZONS}} for s in pr.STREAMS]
+        hc_rows += [{"group": b, "tier": x.get("tier", "validated"), "stream": s, **{f"cum-{k}": h[s][k]["factor"] for k in pr.HORIZONS}} for s in pr.STREAMS]
         if "realised_median" in h["oil"][pr.HORIZONS[0]]:  # D92: the targets above are applied by the C1 rate shape; show what it realises
-            hc_rows += [{"group": b, "stream": f"{s} realised (median)", **{f"cum-{k}": h[s][k]["realised_median"] for k in pr.HORIZONS}} for s in pr.STREAMS]
+            hc_rows += [{"group": b, "tier": x.get("tier", "validated"), "stream": f"{s} realised (median)", **{f"cum-{k}": h[s][k]["realised_median"] for k in pr.HORIZONS}} for s in pr.STREAMS]
         F_rows += [{"group": b, "stream": s, **{f"F({k})": x["calendar_factor"][s]["F"][k - 1] for k in pr.HORIZONS}} for s in pr.STREAMS]
     P_link = P.assign(pad=[f"<a href='{p}'>{n}</a>" for n, p in zip(P["pad"], P["page"], strict=True)]).drop(columns=["page"])
     pools = ", ".join(f"{b} {x['n_pool']:,} wells" for b, x in run.get("by_bench", {}).items())
     idx = _page("BOX production run", [
-        f"<h1>BOX production run — analog workups ({'step 9c: ' + ' + '.join(run['benches']) if run.get('by_bench') else 'step 7c'})</h1>",
+        f"<h1>BOX production run — analog workups ({('run 9: ' if any('tier' in x for x in run.get('by_bench', {}).values()) else 'step 9c: ') + ' + '.join(run['benches']) if run.get('by_bench') else 'step 7c'})</h1>",
         (f"<div class=meta>Built {run['built_at']} · spec {pr.SPEC} · code {run['code_sha'][:12]} · production through {run['data_through']} · " +
         (f"analog pools {pools} · harness equivalence "
          f"{json.dumps({b: x['equivalence'] for b, x in run['by_bench'].items()})}.</div>" if run.get("by_bench") else

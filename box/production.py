@@ -5,7 +5,8 @@ Pieces (pure unless they take `conn`):
   universe(conn)            D67: Novi PUD category (no RES) x reconciled remaining_pud / conflict / not-yet-reconciled, on every
                             box.bench_scope bench; the share of each stick inside its bench's record extent (step 3's >= 50 % rule).
   classify(row, covered)    coverage class with the D67 precedence: emerging -> wcxy (D61) -> unvalidated (D60) -> outside_extent;
-                            the rest are candidates (covered, or no_analogs when selection finds < 3 analogs at the 20-mi cap).
+                            the rest are candidates (covered, or no_analogs when selection finds < 3 analogs at the 20-mi cap);
+                            a provisional group's candidates are `covered_provisional` (D105, run 9).
                             `covered` = the PRODUCTION_BENCHES groups this run covers (step 9c: WCA + BS2_S + WCXY_WCA1); the
                             default (WCA only) is runs 4-7.
   merge_cells_by_cutoff     D102: tuning + holdout cells of one bench merged per (cutoff, stream, horizon) before the floor.
@@ -35,6 +36,7 @@ import pandas as pd
 import shapely
 from boxfit.tc.fit_p50 import fit_p50_series
 
+from box import acceptance as ac
 from box import analog as an
 from box import edge_gap as eg
 from box import lateral as lat_eff
@@ -57,7 +59,12 @@ PRODUCTION_BENCHES: dict[str, tuple[str, str, frozenset[str]]] = {
     "WCA": ("delaware", "WCA", frozenset({"WCA_1", "WCA_2"})),
     "BS2_S": ("delaware", "BS2_S", frozenset({"BS2_S"})),
     "WCXY_WCA1": ("delaware", "WCA", frozenset({"WCXY"})),
+    # Run 9 (2026-10-18): the step-15 benches, each its own bench_scope bench + formation + extent of record. Validated after a
+    # passed one-time holdout: WCB_1, WCC. PROVISIONAL (D105, sql/63 `covered_provisional`): AVA_0/1/2, BS2_C (never out-of-time
+    # tested) and BS3_S, BS3_C, WCB_2, BS1_S (holdout FAIL 2026-10-18) - BENCH_SPECS["provisional"] is the authority.
+    **{b: ("delaware", b, frozenset({b})) for b in ("WCB_1", "WCC", "AVA_0", "AVA_1", "AVA_2", "BS2_C", "BS3_S", "BS3_C", "WCB_2", "BS1_S")},
 }
+COVERED = ("covered", "covered_provisional")  # the two forecast-carrying classes; `covered` alone = VALIDATED in every reader
 RUN7_COVERED: tuple[str, ...] = ("WCA",)
 INSIDE_SHARE = 0.5  # step 3's in-extent rule
 GAP_MAX_FT = 2800.0  # beyond = no neighbour (Novi's no-neighbour sentinel distance)
@@ -130,7 +137,8 @@ def production_bench(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str | Non
 
 
 def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
-    """D67 precedence. Candidates come back as 'covered' and become 'not_covered_no_analogs' when selection fails."""
+    """D67 precedence. Candidates come back as 'covered' / 'covered_provisional' and become 'not_covered_no_analogs' when selection
+    fails."""
     if not bool(r.in_scope):
         return "not_covered_emerging"
     grp = production_bench(r, covered)
@@ -140,7 +148,12 @@ def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
         return "not_covered_unvalidated"
     if not bool(r.inside_extent):
         return "not_covered_outside_extent"
-    return "covered"
+    return covered_class(grp)
+
+
+def covered_class(group: str) -> str:
+    """'covered_provisional' for a D105 provisional group (BENCH_SPECS["provisional"]), else 'covered'."""
+    return "covered_provisional" if ac.BENCH_SPECS[group].get("provisional") else "covered"
 
 
 def pdp_sticks(conn: Any, forms: Sequence[str]) -> pd.DataFrame:
