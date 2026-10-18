@@ -1,0 +1,22 @@
+{
+ "built_at": "2026-10-18T09:11:06-05:00",
+ "code_sha": "d7f85b0b00d3dbe73d247da7626ed4554d05701f",
+ "variant": "box_v2",
+ "n_boot": 2000,
+ "seed": 20261017,
+ "set": "holdout15",
+ "groups": {
+  "BS3_S": [
+   "BS3_S"
+  ],
+  "BS3_C": [
+   "BS3_C"
+  ],
+  "WCB_2": [
+   "WCB_2"
+  ],
+  "BS1_S": [
+   "BS1_S"
+  ]
+ }
+}

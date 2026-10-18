@@ -85,18 +85,21 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # (BS3_S / BS3_C separate, WCB_1 / WCB_2 separate, AVA emerging). WCB_2's set carries the gunbarrel-consensus tags + the 98
     # ratified overrides (live in formation_blueox via sql/44 + sql/16). Record variant: box_v2_wf (D94 own haircut) where the bench's
     # walk-forward holdout can be judged (BS3_S, BS3_C, WCB_1); raw box_v2 (D97 pattern) where it cannot (WCB_2, BS1_S, WCC, BS2_C).
-    "BS3_S": {"wells": "BS3_S", "pool_tags": None, "target_tags": None, "extent": "BS3_S", "label": "BS3_S",
-              "desc": "Delaware BS3_S (step-15a QC set; extent of record 16)"},
+    # Holdout gate 2026-10-18 (Michael): BS3_S, BS3_C, WCB_2, BS1_S FAILED their one-time D99 holdout (scored once, as frozen in
+    # tune15_report.FROZEN; docs/box/step15-holdout-2026-10-18) and are recorded as fails -> PROVISIONAL tier (D105): raw box_v2,
+    # no haircut, tuning + holdout bias disclosed. BS3_S leaves box_v2_wf by tier change, not as a variant picked after the look.
+    "BS3_S": {"wells": "BS3_S", "pool_tags": None, "target_tags": None, "extent": "BS3_S", "label": "BS3_S", "record": "box_v2", "provisional": True,
+              "desc": "Delaware BS3_S (step-15a QC set; extent of record 16) - PROVISIONAL (holdout fail 2026-10-18), raw box_v2"},
     # Tuning gate 2026-10-17 (Michael, on tuning evidence, before any holdout): BS3_C and WCB_1 switch to raw box_v2 (their
     # walk-forward haircut is thin / non-monotone and over-corrects; D92 tails 1.48 and 0.40 / 1.60).
-    "BS3_C": {"wells": "BS3_C", "pool_tags": None, "target_tags": None, "extent": "BS3_C", "label": "BS3_C", "record": "box_v2",
-              "desc": "Delaware BS3_C (step-15a QC set; extent of record 18); record raw box_v2 (tuning gate)"},
+    "BS3_C": {"wells": "BS3_C", "pool_tags": None, "target_tags": None, "extent": "BS3_C", "label": "BS3_C", "record": "box_v2", "provisional": True,
+              "desc": "Delaware BS3_C (step-15a QC set; extent of record 18); record raw box_v2 (tuning gate) - PROVISIONAL (holdout fail 2026-10-18)"},
     "WCB_1": {"wells": "WCB_1", "pool_tags": None, "target_tags": None, "extent": "WCB_1", "label": "WCB_1", "record": "box_v2",
               "desc": "Delaware WCB_1 (step-15 QC set; extent of record 22; not pooled with WCB_2); record raw box_v2 (tuning gate)"},
-    "WCB_2": {"wells": "WCB_2", "pool_tags": None, "target_tags": None, "extent": "WCB_2", "label": "WCB_2", "record": "box_v2",
-              "desc": "Delaware WCB_2 (step-15 QC set, consensus tags + 98 overrides; extent of record 24); record raw box_v2"},
-    "BS1_S": {"wells": "BS1_S", "pool_tags": None, "target_tags": None, "extent": "BS1_S", "label": "BS1_S", "record": "box_v2",
-              "desc": "Delaware BS1_S (step-15 QC set; extent of record 26); record raw box_v2"},
+    "WCB_2": {"wells": "WCB_2", "pool_tags": None, "target_tags": None, "extent": "WCB_2", "label": "WCB_2", "record": "box_v2", "provisional": True,
+              "desc": "Delaware WCB_2 (step-15 QC set, consensus tags + 98 overrides; extent of record 24); raw box_v2 - PROVISIONAL (holdout fail 2026-10-18)"},
+    "BS1_S": {"wells": "BS1_S", "pool_tags": None, "target_tags": None, "extent": "BS1_S", "label": "BS1_S", "record": "box_v2", "provisional": True,
+              "desc": "Delaware BS1_S (step-15 QC set; extent of record 26); raw box_v2 - PROVISIONAL (holdout fail 2026-10-18)"},
     "WCC": {"wells": "WCC", "pool_tags": None, "target_tags": None, "extent": "WCC", "label": "WCC", "record": "box_v2",
             "desc": "Delaware WCC (step-15 QC set; extent of record 27); record raw box_v2"},
     # Tuning gate 2026-10-17: BS2_C failed as a validated bench (unstable bias by vintage, cum-12 only judgeable); then D105
