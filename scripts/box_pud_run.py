@@ -543,23 +543,25 @@ def cmd_store(a: argparse.Namespace) -> int:
                     continue
                 for s, st in fit["streams"].items():
                     L = loc["lateral_ft"] / 1000.0
-                    st_rows.append((rid, lid, s, Jsonb(st["params"]), fit["lateral_mult"], st["eur"] / st["eur_raw"], st["eur_raw"], st["eur"], st["eur"] / L,
+                    st_rows.append((rid, lid, cov, s, Jsonb(st["params"]), fit["lateral_mult"], st["eur"] / st["eur_raw"], st["eur_raw"], st["eur"], st["eur"] / L,
                                     float(np.sum(st["months"][:12])), float(np.sum(st["months"][:24]))))
                     months.append((lid, s, st["months"]))
                 for x in fit["analogs"]:
-                    an_rows.append((rid, lid, x["api10"], x["rank"], x["dist_ft"], x["lateral_ft"], x["first_production"], bool(x["transfer"])))
+                    an_rows.append((rid, lid, cov, x["api10"], x["rank"], x["dist_ft"], x["lateral_ft"], x["first_production"], bool(x["transfer"])))
             with cur.copy("COPY box.pud_forecast (run_id, location_id, stick_id, basin, bench, formation_blueox, recon_status, coverage, inside_extent, "
                           "extent_id, pad_name, lateral_ft, completed_lateral_ft, planned_spacing_ft, spacing_source, search_mode, radius_mi, radius_class, "
                           "n_analogs, short_lateral, flags, workup_ref) FROM STDIN") as cp:
                 for row in pf:
                     cp.write_row(row)
-            cur.executemany("INSERT INTO box.pud_forecast_stream (run_id, location_id, stream, params, lateral_mult, eur_haircut, eur_raw, eur, eur_per_kft, cum12, cum24) "
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", st_rows)
+            # coverage rides in the (run_id, location_id, coverage) FK of the child tables (sql/63): a provisional row's streams /
+            # analogs must say covered_provisional (the column default 'covered' would orphan them)
+            cur.executemany("INSERT INTO box.pud_forecast_stream (run_id, location_id, coverage, stream, params, lateral_mult, eur_haircut, eur_raw, eur, "
+                            "eur_per_kft, cum12, cum24) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", st_rows)
             with cur.copy("COPY box.pud_forecast_month (run_id, location_id, stream, month_no, volume) FROM STDIN") as cp:
                 for lid, s, v in months:
                     for m, x in enumerate(v, start=1):
                         cp.write_row((rid, lid, s, m, float(x)))
-            with cur.copy("COPY box.location_analog (run_id, location_id, api10, rank, dist_ft, lateral_ft, first_production, transfer) FROM STDIN") as cp:
+            with cur.copy("COPY box.location_analog (run_id, location_id, coverage, api10, rank, dist_ft, lateral_ft, first_production, transfer) FROM STDIN") as cp:
                 for row in an_rows:
                     cp.write_row(row)
             for t in ("location", "location_source", "pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog"):
