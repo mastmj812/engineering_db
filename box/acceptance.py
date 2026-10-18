@@ -103,6 +103,16 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     # the record of the tuning run; never scored on its holdout, never in a production run.
     "BS2_C": {"wells": "BS2_C", "pool_tags": None, "target_tags": None, "extent": "BS2_C", "label": "BS2_C", "record": "box_v2", "emerging": True,
               "desc": "Delaware BS2_C (step-15 QC set; extent of record 20) - EMERGING at the tuning gate (tuning record only)"},
+    # PRE-REGISTERED 2026-10-17 (Michael: "a less robust forecast for AVA and BS2_C than simply null"): PROVISIONAL benches -
+    # too little development history for the D53 / D99 out-of-time test (step 14). Same analog engine, raw box_v2, no haircut,
+    # no holdout; the tuning run only MEASURES the bias to disclose (pooled across cutoffs; AVA_0/1/2 also pooled together for that
+    # measurement only - selection stays per bench, own pool, own extent).
+    "AVA_0": {"wells": "AVA_0", "pool_tags": None, "target_tags": None, "extent": "AVA_0", "label": "AVA_0", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_0 (step-15 QC set; extent of record 28) - PROVISIONAL, raw box_v2, bias measured not validated"},
+    "AVA_1": {"wells": "AVA_1", "pool_tags": None, "target_tags": None, "extent": "AVA_1", "label": "AVA_1", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_1 (step-15 QC set; extent of record 29) - PROVISIONAL, raw box_v2, bias measured not validated"},
+    "AVA_2": {"wells": "AVA_2", "pool_tags": None, "target_tags": None, "extent": "AVA_2", "label": "AVA_2", "record": "box_v2", "provisional": True,
+              "desc": "Delaware AVA_2 (step-15 QC set; extent of record 30) - PROVISIONAL, raw box_v2, bias measured not validated"},
     # SENSITIVITY ONLY (not D20 as written): WCXY targets with the whole WCA pool as analogs - informs gate-9a decision 2.
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},
