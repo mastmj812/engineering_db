@@ -29,6 +29,12 @@ bench's deal-intake label. Haircut per group (box.production9c.haircut_for: WCA 
 disclosure per group. forecast_run.haircut / calendar_factor / disclosure keep the FIRST group's (WCA) keys at the top level - what
 erebor reads today - and carry every group under "by_bench" (D103: run-level spec stays 'box_v2_wf', per-group spec in by_bench).
 Identity: per group, covered + no_analogs = that group's in-extent universe, exactly.
+
+Run 9 (`--benches` = box.production_run9.GROUPS): the first COMPLETE record run - the 9c groups plus the step-15 benches, each built
+on the well set it was tuned / holdout-scored on (production_run9.wells_dir). Validated WCB_1 / WCC row as `covered`; the D105
+provisional groups (AVA_0/1/2, BS2_C; holdout fails BS3_S, BS3_C, WCB_2, BS1_S) row as `covered_provisional` (sql/63), raw box_v2,
+with their disclosure under by_bench and the tier text in pud_forecast.flags. The 9c haircut guard (production_run9.GUARD) refuses
+a box_v2_wf group's D62 table before any fit and its applied D92 tail after; the verdict is recorded per group.
 """
 
 from __future__ import annotations
@@ -58,10 +64,12 @@ from box import hindcast_production as hp
 from box import hindcast_report as hr
 from box import production as pr
 from box import production9c as p9
+from box import production_run9 as p9r
 from box import tc_area_report as tar
 from box import tc_curve_report as rep
 from box import tc_record_report as trr
 from box import tune9a_report as t9
+from box import tune15_report as t15
 from dealintake import config as di_config
 from etl.db import get_connection
 from scripts.box_tc_curves import boxfit_sha
@@ -206,7 +214,7 @@ def cmd_annotate(a: argparse.Namespace) -> int:
     A = _load(a.out)
     u, locs = A["universe"], A["locs"]
     with get_connection() as conn:
-        near = nearest_by_stick(conn, u, u[u["coverage"] == "covered"])
+        near = nearest_by_stick(conn, u, u[u["coverage"].isin(pr.COVERED)])
     bad = 0
     for loc in locs:
         nb = near[loc["stick_id"]]
@@ -229,7 +237,7 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
     """Covered candidates as harness locations: midpoint xy (UTM 13N ft), Novi planned lateral (stick length if missing; Novi PUD
     sticks are straight, so the completed lateral = the lateral), D64 planned spacing. `bench` = one PRODUCTION_BENCHES group
     (None = every covered row, runs 4-7)."""
-    cov = u["coverage"] == "covered"
+    cov = u["coverage"].isin(pr.COVERED)
     cand = u[cov & (u["prod_bench"] == bench) if bench is not None else cov].reset_index(drop=True)
     # D64 neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical staggering (~130 ft TVD apart), not
     # lateral spacing — pooling them read 11-300 ft "gaps" (7c first build, 2026-10-15)
@@ -269,13 +277,23 @@ def equivalence(P: dict[str, Any], locs: list[dict[str, Any]], res: list[dict[st
 
 def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, cfg: Any, t0: float) -> dict[str, Any]:
     """One PRODUCTION_BENCHES group: pool, locations, fits, harness equivalence, F(k), haircut (applied), disclosure."""
-    P = build_pool(conn, a.workers, a.wells, bench)
-    print(f"[{bench}] pool {len(P['pool']['api10'])} wells at cutoff {P['cutoff']} (production through {P['asof']}) ({time.time() - t0:.0f} s)", flush=True)
+    hcut = p9.haircut_for(bench)
+    if hcut is not None:  # 9c haircut guard, table half: refuse before any fit
+        bad = p9r.guard_table(hcut)
+        if bad:
+            raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the D62 table: {bad}")
+    wells_dir = p9r.wells_dir(bench, a.wells)
+    P = build_pool(conn, a.workers, wells_dir, bench)
+    print(f"[{bench}] wells {wells_dir}; pool {len(P['pool']['api10'])} wells at cutoff {P['cutoff']} (production through {P['asof']}) ({time.time() - t0:.0f} s)", flush=True)
     locs = locations(u, conn, bench)
     if a.limit:  # smoke only: the identity check refuses to store a limited build
         locs = locs[: a.limit]
     if bench == "BS2_S":  # D101: edge region of each covered BS2_S location vs the extent of record (workup text, no spec change)
         reg = t9.edge_classes(np.array([x["x"] for x in locs]), np.array([x["y"] for x in locs]), P["extent_ft"])
+        for x, r, d in zip(locs, reg["region"], reg["edge_dist_mi"], strict=True):
+            x["edge_region"], x["edge_dist_mi"] = str(r), float(d)
+    elif bench in p9r.GROUPS[3:]:  # run 9 step-15 groups: compass-side edge region (tuning gate 2026-10-17 caveats)
+        reg = t15.side_classes(np.array([x["x"] for x in locs]), np.array([x["y"] for x in locs]), P["extent_ft"])
         for x, r, d in zip(locs, reg["region"], reg["edge_dist_mi"], strict=True):
             x["edge_region"], x["edge_dist_mi"] = str(r), float(d)
     res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers, bench=P["label"])
@@ -285,19 +303,32 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
     if not eq["max_rel_diff"] <= 1e-12:
         raise SystemExit(f"[{bench}] box_v2 path is NOT the harness's: {eq}")
     F = calendar_factor(P, a.workers)
-    hcut = p9.haircut_for(bench)
     if bench == "WCA":
         cells = pd.concat([pd.read_csv(ACC / "cells_tuning_v2.csv"), pd.read_csv(ACC / "cells_holdout_v2.csv")], ignore_index=True)
         disc = disclosure(cells, hcut)
-    else:
+    elif bench in ("BS2_S", "WCXY_WCA1"):
         disc = p9.bench_disclosure(bench, hcut)
+    else:
+        disc = p9r.disclosure_for(bench)
     apply_haircut_all(res, hcut)
+    guard: dict[str, Any] = {"applies": hcut is not None, **p9r.GUARD}
+    if hcut is not None:  # 9c haircut guard, tail half: the applied D92 g(48)
+        bad, guard["g48"] = p9r.guard_tail({s: np.array([r["streams"][s]["params"]["haircut"]["g_tail"] for r in res if s in r.get("streams", {})])
+                                            for s in pr.STREAMS})
+        print(f"[{bench}] haircut guard g(48): {guard['g48']}", flush=True)
+        if bad:
+            raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the applied haircut: {bad}")
+    guard["verdict"] = "pass" if hcut is not None else "not applicable (no haircut)"
     for x, r in zip(locs, res, strict=True):  # caveat text travels with the row (pud_forecast.flags -> erebor's workup table)
         if x.get("edge_region") in ("south_edge", "other_edge"):
             r["flags"] = list(r["flags"]) + p9.edge_flags([x["edge_region"]])[0]
         if bench == "WCXY_WCA1":
             r["flags"] = list(r["flags"]) + [p9.WCXY_FLAG]
-    rec = {"spec": p9.record_variant(bench), "label": P["label"], "extent_id": P["extent_id"], "n_pool": len(P["pool"]["api10"]),
+        if bench in p9r.GROUPS[3:]:
+            side = x.get("edge_region", "interior").split(" ")[0] if x.get("edge_region", "interior") != "interior" else None
+            r["flags"] = list(r["flags"]) + p9r.group_flags(bench, disc, side)
+    rec = {"spec": p9.record_variant(bench), "tier": p9r.tier(bench), "coverage_class": pr.covered_class(bench), "guard": guard,
+           "wells_dir": str(wells_dir), "label": P["label"], "extent_id": P["extent_id"], "n_pool": len(P["pool"]["api10"]),
            "n_excluded": P["n_excluded"], "k_areas": P["k_areas"], "haircut": haircut_record(hcut, res), "calendar_factor": F,
            "disclosure": disc, "equivalence": eq, "n_locations": len(locs), "n_forecast": sum("oil" in r.get("streams", {}) for r in res)}
     used = sorted({x["api10"] for r in res for x in r.get("analogs", [])})
@@ -322,7 +353,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     B: dict[str, dict[str, Any]] = {}
     with get_connection() as conn:
         u = pr.universe(conn, a.benches)
-        n_in = {b: int(((u.coverage == "covered") & (u.prod_bench == b)).sum()) for b in a.benches}
+        n_in = {b: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == b)).sum()) for b in a.benches}
         print(f"universe {len(u)}; in-extent candidates per group {n_in} ({time.time() - t0:.0f} s)", flush=True)
         for b in a.benches:
             B[b] = build_bench(conn, a, u, b, cfg, t0)
@@ -492,42 +523,45 @@ def cmd_store(a: argparse.Namespace) -> int:
             for r in u.itertuples():
                 lid = have[int(r.stick_id)]
                 cov, loc, fit = r.coverage, None, None
-                if cov == "covered":
+                if cov in pr.COVERED:
                     loc, fit = by_stick[int(r.stick_id)]
                     if "oil" not in fit.get("streams", {}):
                         cov = "not_covered_no_analogs"
-                srch = loc is not None and fit is not None and (cov == "covered" or fit["n_analogs"] < 3)
+                fc = cov in pr.COVERED
+                srch = loc is not None and fit is not None and (fc or fit["n_analogs"] < 3)
                 pf.append((rid, lid, int(r.stick_id), r.basin, r.bench, r.formation_blueox, r.recon_status, cov,
                            None if r.inside_extent is None else bool(r.inside_extent), None if pd.isna(r.extent_id) else int(r.extent_id), r.pad_name,
                            float(r.ll_ft) if np.isfinite(r.ll_ft) else None,
-                           loc["lateral_ft"] if cov == "covered" else None, loc["planned_spacing_ft"] if cov == "covered" else None,
-                           loc["spacing_source"] if cov == "covered" else None,
+                           loc["lateral_ft"] if fc else None, loc["planned_spacing_ft"] if fc else None,
+                           loc["spacing_source"] if fc else None,
                            fit["search_mode"] if srch else None, fit["radius_mi"] if srch else None,
                            pr.radius_class(fit["radius_mi"]) if srch else None, fit["n_analogs"] if srch else None,
-                           fit["short_lateral"] if cov == "covered" else None,
+                           fit["short_lateral"] if fc else None,
                            (list(fit["flags"]) + pr.bound_flags(fit.get("streams", {}), loc.get("near_pdp_ft") if loc else None)) if fit else [],
-                           f"pad:{r.pad_name}" if cov == "covered" and r.pad_name else None))
-                if cov != "covered":
+                           f"pad:{r.pad_name}" if fc and r.pad_name else None))
+                if not fc:
                     continue
                 for s, st in fit["streams"].items():
                     L = loc["lateral_ft"] / 1000.0
-                    st_rows.append((rid, lid, s, Jsonb(st["params"]), fit["lateral_mult"], st["eur"] / st["eur_raw"], st["eur_raw"], st["eur"], st["eur"] / L,
+                    st_rows.append((rid, lid, cov, s, Jsonb(st["params"]), fit["lateral_mult"], st["eur"] / st["eur_raw"], st["eur_raw"], st["eur"], st["eur"] / L,
                                     float(np.sum(st["months"][:12])), float(np.sum(st["months"][:24]))))
                     months.append((lid, s, st["months"]))
                 for x in fit["analogs"]:
-                    an_rows.append((rid, lid, x["api10"], x["rank"], x["dist_ft"], x["lateral_ft"], x["first_production"], bool(x["transfer"])))
+                    an_rows.append((rid, lid, cov, x["api10"], x["rank"], x["dist_ft"], x["lateral_ft"], x["first_production"], bool(x["transfer"])))
             with cur.copy("COPY box.pud_forecast (run_id, location_id, stick_id, basin, bench, formation_blueox, recon_status, coverage, inside_extent, "
                           "extent_id, pad_name, lateral_ft, completed_lateral_ft, planned_spacing_ft, spacing_source, search_mode, radius_mi, radius_class, "
                           "n_analogs, short_lateral, flags, workup_ref) FROM STDIN") as cp:
                 for row in pf:
                     cp.write_row(row)
-            cur.executemany("INSERT INTO box.pud_forecast_stream (run_id, location_id, stream, params, lateral_mult, eur_haircut, eur_raw, eur, eur_per_kft, cum12, cum24) "
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", st_rows)
+            # coverage rides in the (run_id, location_id, coverage) FK of the child tables (sql/63): a provisional row's streams /
+            # analogs must say covered_provisional (the column default 'covered' would orphan them)
+            cur.executemany("INSERT INTO box.pud_forecast_stream (run_id, location_id, coverage, stream, params, lateral_mult, eur_haircut, eur_raw, eur, "
+                            "eur_per_kft, cum12, cum24) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", st_rows)
             with cur.copy("COPY box.pud_forecast_month (run_id, location_id, stream, month_no, volume) FROM STDIN") as cp:
                 for lid, s, v in months:
                     for m, x in enumerate(v, start=1):
                         cp.write_row((rid, lid, s, m, float(x)))
-            with cur.copy("COPY box.location_analog (run_id, location_id, api10, rank, dist_ft, lateral_ft, first_production, transfer) FROM STDIN") as cp:
+            with cur.copy("COPY box.location_analog (run_id, location_id, coverage, api10, rank, dist_ft, lateral_ft, first_production, transfer) FROM STDIN") as cp:
                 for row in an_rows:
                     cp.write_row(row)
             for t in ("location", "location_source", "pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog"):
@@ -551,9 +585,10 @@ def cmd_store(a: argparse.Namespace) -> int:
 
 def run_notes(run: dict[str, Any]) -> str:
     bb = run.get("by_bench")
-    if bb:  # step 9c: one clause per group (D103: run-level spec box_v2_wf; WCXY raw box_v2 per D97)
+    if bb:  # step 9c: one clause per group (D103: run-level spec box_v2_wf; WCXY raw box_v2 per D97); run 9 adds the tier
         per = "; ".join(f"{b}: {x['spec']}" + (" on its own D102 haircut" if b == "BS2_S" else " x D62 haircut" if x["spec"] == "box_v2_wf" else
-                                                " raw, no haircut (D97)") for b, x in bb.items())
+                                                " raw, no haircut (D97)" if b == "WCXY_WCA1" else " raw, no haircut")
+                        + (" - PROVISIONAL (D105, covered_provisional)" if x.get("tier") == "provisional" else "") for b, x in bb.items())
         return (f"covers {', '.join(bb)} ({per}); haircuts applied by the D92 C1 rate shape; uptime-free volumes; F(k) per group published "
                 "not applied (D63); no water (D72); no economics; per-group haircut / F(k) / disclosure under by_bench")
     return (("uptime-free volumes x D62 haircut factors applied by the D92 C1 rate shape" if "method" in run["haircut"]
@@ -572,25 +607,33 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
 
     n = q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s", (rid,)).fetchone()[0]
     chk(n == len(u), f"pud_forecast rows {n} = universe {len(u)}")
-    # per coverage group (step 9c): covered + no_analogs = that group's in-extent universe, exactly
+    # per coverage group (step 9c): covered + no_analogs = that group's in-extent universe, exactly; run 9: a provisional group
+    # carries ONLY covered_provisional and a validated group ONLY covered (the tier never leaks across classes)
     got = q("SELECT basin, bench, formation_blueox, coverage, count(*) FROM box.pud_forecast WHERE run_id = %s "
-            "AND coverage IN ('covered', 'not_covered_no_analogs') GROUP BY 1, 2, 3, 4", (rid,)).fetchall()
+            "AND coverage IN ('covered', 'covered_provisional', 'not_covered_no_analogs') GROUP BY 1, 2, 3, 4", (rid,)).fetchall()
     groups = sorted({g for g in u["prod_bench"].dropna()}) if "prod_bench" in u else ["WCA"]
     for g in groups:
         basin, bench, forms = pr.PRODUCTION_BENCHES[g]
-        exp_g = int(((u.coverage == "covered") & (u["prod_bench"] == g)).sum()) if "prod_bench" in u else int((u.coverage == "covered").sum())
-        cg = sum(c for b_, be, f, cv, c in got if b_ == basin and be == bench and f in forms and cv == "covered")
-        ng = sum(c for b_, be, f, cv, c in got if b_ == basin and be == bench and f in forms and cv == "not_covered_no_analogs")
-        chk(cg + ng == exp_g, f"[{g}] covered {cg} + no_analogs {ng} = in-extent {'/'.join(sorted(forms))} universe {exp_g}")
-    exp_cov = int(((u.coverage == "covered")).sum())
-    cov = q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND coverage = 'covered'", (rid,)).fetchone()[0]
+        want = pr.covered_class(g)
+        exp_g = int((u.coverage.isin(pr.COVERED) & (u["prod_bench"] == g)).sum()) if "prod_bench" in u else int((u.coverage == "covered").sum())
+        mine = [(cv, c) for b_, be, f, cv, c in got if b_ == basin and be == bench and f in forms]
+        cg = sum(c for cv, c in mine if cv == want)
+        wrong = sum(c for cv, c in mine if cv in pr.COVERED and cv != want)
+        ng = sum(c for cv, c in mine if cv == "not_covered_no_analogs")
+        chk(cg + ng == exp_g and wrong == 0, f"[{g}] {want} {cg} + no_analogs {ng} = in-extent {'/'.join(sorted(forms))} universe {exp_g}"
+                                             f" (other forecast class {wrong})")
+    exp_cov = int(u.coverage.isin(pr.COVERED).sum())
+    byc = dict(q("SELECT coverage, count(*) FROM box.pud_forecast WHERE run_id = %s AND coverage IN ('covered', 'covered_provisional') GROUP BY 1",
+                 (rid,)).fetchall())
+    cov = int(byc.get("covered", 0)) + int(byc.get("covered_provisional", 0))
     noa = q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND coverage = 'not_covered_no_analogs'", (rid,)).fetchone()[0]
-    chk(cov + noa == exp_cov, f"covered {cov} + no_analogs {noa} = in-extent universe of every covered group {exp_cov}")
+    chk(cov + noa == exp_cov, f"covered {byc.get('covered', 0)} + covered_provisional {byc.get('covered_provisional', 0)} + no_analogs {noa} = "
+                              f"in-extent universe of every covered group {exp_cov}")
     print(f"    note no_analogs rows = {noa} (D74: reported, never dropped; covered falls short of the universe by this many)", flush=True)
     so = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'oil'", (rid,)).fetchone()[0]
-    chk(so == cov, f"oil stream rows {so} = covered {cov}")
+    chk(so == cov, f"oil stream rows {so} = covered + covered_provisional {cov}")
     sg = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'gas'", (rid,)).fetchone()[0]
-    chk(sg == cov, f"gas stream rows {sg} = covered {cov}")
+    chk(sg == cov, f"gas stream rows {sg} = covered + covered_provisional {cov}")
     # one grouped pass over this run's months (MATERIALIZED: aggregated once, then hash-joined — a nested loop that re-aggregated
     # per stream row ran 37 min on 4.6 M month rows in the 7c container rehearsal)
     grp, bad = q("""WITH m AS MATERIALIZED (
@@ -602,7 +645,7 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
     na = q("SELECT min(c), max(c) FROM (SELECT count(*) c FROM box.location_analog WHERE run_id = %s GROUP BY location_id) x", (rid,)).fetchone()
     chk(na[0] is not None and na[0] >= 3, f"every covered location has >= 3 named analogs (min {na[0]}, max {na[1]})")
     nl = q("SELECT count(DISTINCT location_id) FROM box.location_analog WHERE run_id = %s", (rid,)).fetchone()[0]
-    chk(nl == cov, f"analog rows cover all {cov} covered locations ({nl})")
+    chk(nl == cov, f"analog rows cover all {cov} covered + covered_provisional locations ({nl})")
     return fails
 
 
