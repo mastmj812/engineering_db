@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 11                # v11 2026-10-13: SWD context from C4 (swd: radius / vertical window / minimum
+config_version: 12                # v12 2026-10-19: screen-curve WATER = WOR vs cum oil on MEASURED-water analogs (water:;
+                                  #    BOX D107 / D110, Michael Option A); save_ratio off until the drop accepts it (ledger §14)
+                                  # v11 2026-10-13: SWD context from C4 (swd: radius / vertical window / minimum
                                   #    cumulative / poor fraction) — reported beside the standoff table, never selected on
                                   # v10 2026-09-29: TIER-BLIND cohort (codev.tier_order_scope: none) — scenario is
                                   #    reported (tier table + standoff table), never selected on
@@ -219,6 +221,13 @@ qc_flags:                         # gate 6 — flags only, never auto-drop
   # beyond this ratio either way is flagged on the curve, not buried — WCB_1 @
   # 9,900 on VaULt had Novi gas 3.6x the TC).
   stream_gap_flag_ratio: 1.5
+
+water:                            # screen-curve water (v12, 2026-10-19; Michael Option A). dealintake/water.py
+  method: ratio_measured          # ratio_measured = WOR vs cum oil fitted on a MEASURED-water cohort (BOX D107) x the TC oil;
+                                  #   arps = the old independent Arps fit of the oil cohort (vendor-calculated TX water included)
+  save_ratio: false               # handoff saves water as ratio only when true — flipped with the Blue Ox drop change (ledger §14);
+                                  #   until then the dossier shows ratio water beside Arps and the saved curve keeps Arps
+  validated_benches: [WCA_1, WCA_2, BS2_S]   # D110: Delaware benches where BOX water passed its one-time holdout; else provisional
 
 swd:                              # SWD context from C4 (v11, 2026-10-13; Michael). Reported, never selected on.
   # Injectors within radius_mi of a stick (surface point to the stick line) are

@@ -465,6 +465,33 @@ the signal (different reservoir or an unreliable autofit). Di spread flags
 oil only; gas and water spreads are report-only (gas tracks real GOR
 behavior; TX water is often a vendor-calculated flat WOR).
 
+### Gate 6b — screen water from MEASURED-water analogs (config v12, `water:`)
+
+The cohort's own water is often vendor-calculated (a frozen filing WOR). So each TC
+group's water is rebuilt as BOX does it (D107 / D110; Michael, Option A, 2026-10-19).
+
+1. **Pick the measured-water cohort.** `dealintake/water.py` selects same-bench wells
+   whose water is MEASURED, around the group's units:
+   - "measured" = sql/41 measured; NM wells unless insufficient; seller VDR daily water;
+   - same rules as the oil cohort, on circles of 5 → 20 mi, then 30 / 40 / 50 mi, until
+     10 wells are eligible;
+   - if fewer than 3 are found at 50 mi, fall back to the bench's mixed water, flagged.
+2. **Fill missing forecasts.** anduin fits any of those wells that lack one.
+3. **Preview water.** Water = WOR vs cumulative oil fitted on that cohort × the TC's own
+   oil (anduin `ratio_cohorts`).
+
+The dossier shows it beside the Arps water, with:
+- the cohort's size, reach and source;
+- its **water tier**: validated only on Delaware WCA_1 / WCA_2 / BS2_S (where BOX water
+  passed its one-time holdout), provisional elsewhere, including all of Midland.
+
+`water.save_ratio` decides what the handoff saves. While false, the saved curve keeps
+Arps water; this lasts until the Blue Ox drop accepts ratio water (ledger §14). When
+true, the curve is saved with `stream_modes.water = ratio` + `ratio_cohorts.water`, and
+the tier and source go in `filter_spec.dealintake.water`.
+
+This is the SCREEN drop only. Michael's manual drop uses his own TCs.
+
 ### Gate 7 — the comparison, and the surface
 
 Charts per TC group: rate vs time (log) AND cumulative vs time, oil and gas,

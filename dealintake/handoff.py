@@ -223,6 +223,17 @@ def codename_for(deal_folder: str) -> str:
     return re.sub(r"[^a-z0-9]", "", deal_folder.lower())
 
 
+def water_save(sig: dict[str, Any], G: dict[str, Any]) -> dict[str, Any] | None:
+    """Save the screen curve's water as WOR-on-measured-analogs (anduin ratio_cohorts) when the run's config says so
+    (water.save_ratio — off until the Blue Ox drop accepts ratio water, ledger §14) and the preview built one."""
+    wc, prev = G.get("water_cohort") or {}, G.get("tc_preview_water_ratio")
+    if not (sig.get("water_save_ratio") and wc.get("api10s") and prev):
+        return None
+    return {"api10s": list(wc["api10s"]),
+            "record": {k: wc.get(k) for k in ("method", "tier", "source", "radius_mi", "thin", "nm_share", "n_eligible")}
+                      | {"n_wells": len(wc["api10s"])}}
+
+
 def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codename: str = "") -> list[dict[str, Any]]:
     """One saved type curve + one Blue Ox zone per dossier curve, in tab order.
     The saved CURVE name carries the deal codename in front (`rallycaps_WCB_2_SE`)
@@ -244,6 +255,7 @@ def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codena
             if not api10s:
                 issues.append("empty cohort")
             oil = (G.get("tc_preview") or {}).get("oil") or {}
+            water_ratio = water_save(sig, G)
             out.append({
                 "name": name, "bench": B["bench"], "key": key, "units": G["units"],
                 "dsus": [next((u.get("dsu_name") for u in prop["units"] if u["label"] == lb), lb) for lb in G["units"]],
@@ -258,10 +270,13 @@ def plan_curves(sig: dict[str, Any], prop: dict[str, Any], run_dir: Path, codena
                     "filter_spec": {**ANDUIN_DEFAULT_FILTER, "formations": [B["bench"]],
                                     "dealintake": {"run_dir": run_dir.as_posix(),
                                                    "config_version": sig.get("config_version"),
-                                                   "units": G["units"], "cohort_rule": G.get("order_reason")}},
+                                                   "units": G["units"], "cohort_rule": G.get("order_reason"),
+                                                   **({"water": water_ratio["record"]} if water_ratio else {})}},
                     "included_api10s": api10s,
                     "normalization_basis": "per_lateral_ft",
                     "alignment_method": "peak_ramp",
+                    **({"stream_modes": {"water": "ratio"}, "ratio_cohorts": {"water": water_ratio["api10s"]}}
+                       if water_ratio else {}),
                     "provenance": {
                         "selection_events": [{"kind": "click_add", "at": datetime.now(UTC).isoformat(),
                                               "api10s": api10s,
