@@ -94,3 +94,25 @@ def test_water12a_identity():
                       "pkg_band": [1.0, 1.1], "bench_bias": [0.0, 0.0], "bench_band": [0.9, 0.9]})
     assert wa.identity(a, a)["identical"].all()
     assert not wa.identity(a, a.assign(pkg_bias=[0.01, 0.0201]))["identical"].all()
+
+
+def test_water_production_tier_and_row():
+    from box import water_production as wp
+
+    assert wp.water_tier("WCA", "covered") == "validated"
+    assert wp.water_tier("BS2_S", "covered") == "validated"
+    assert wp.water_tier("WCA", "covered_provisional") == "provisional"  # never above the location's coverage
+    assert wp.water_tier("WCC", "covered") == "provisional"
+    oil = np.full(600, 1000.0)
+    m = wp.water_months(oil, 10_000.0, {"alpha": np.log(1.5), "beta": 0.0})
+    r = wp.stream_row(m, 10_000.0, 10.0)
+    assert r["eur"] == r["eur_raw"] == float(np.sum(m)) and r["eur_haircut"] == 1.0
+    np.testing.assert_allclose(r["cum12"], 1.5 * 12_000.0)
+    np.testing.assert_allclose(r["eur_per_kft"], r["eur"] / 10.0)
+    try:
+        wp.water_months(oil[:48], 10_000.0, {"alpha": 0.0, "beta": 0.0})
+        raise AssertionError("48 months accepted")
+    except ValueError:
+        pass
+    sel = {"source": "calculated_fallback", "thin": True, "radius_mi": 30.0, "api10s": ["1"] * 4, "n_eligible": 4, "nm_share": float("nan")}
+    assert len(wp.flags(sel)) == 3 and wp.params({"alpha": 0.1, "beta": 0.0}, sel)["nm_share"] is None
