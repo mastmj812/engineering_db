@@ -1,0 +1,28 @@
+{
+  "intervals_sha256": "969981e5d1f5355bbf4af76eab5c61eabbb50f70f5b683c553ba30a5146fe5ea",
+  "identity": {
+    "cells": 39,
+    "identical": 39,
+    "max_abs_diff": 4.440892098500626e-16
+  },
+  "holdout_rows": 3409,
+  "holdout_sources": {
+    "measured": 3402,
+    "calculated_fallback": 7
+  },
+  "tiers": {
+    "WCA": "validated",
+    "BS2_S": "validated",
+    "WCXY_WCA1": "provisional",
+    "WCB_1": "provisional",
+    "WCB_2": "provisional",
+    "WCC": "provisional",
+    "BS1_S": "provisional",
+    "BS2_C": "provisional",
+    "BS3_S": "provisional",
+    "BS3_C": "provisional",
+    "AVA_0": "provisional",
+    "AVA_1": "provisional",
+    "AVA_2": "provisional"
+  }
+}

@@ -1,0 +1,14 @@
+group,oil_validated,tuning_all_pass,holdout_judged,holdout_all_inside,water_tier,reasons
+WCA,True,True,3,True,validated,all three conditions met
+BS2_S,True,True,3,True,validated,all three conditions met
+WCXY_WCA1,True,False,3,True,provisional,tuning: 2 of 3 judged cells fail the water test
+WCB_1,True,False,3,True,provisional,tuning: 3 of 3 judged cells fail the water test
+WCB_2,False,False,3,True,provisional,oil provisional (D105): water never ranks above its oil; tuning: 1 of 3 judged cells fail the water test
+WCC,True,False,3,True,provisional,tuning: 3 of 3 judged cells fail the water test
+BS1_S,False,False,2,True,provisional,oil provisional (D105): water never ranks above its oil; tuning: 1 of 3 judged cells fail the water test
+BS2_C,False,False,0,False,provisional,oil provisional (D105): water never ranks above its oil; tuning: 1 of 3 judged cells fail the water test; no judged holdout cell
+BS3_S,False,False,3,True,provisional,oil provisional (D105): water never ranks above its oil; tuning: 1 of 3 judged cells fail the water test
+BS3_C,False,False,3,True,provisional,oil provisional (D105): water never ranks above its oil; tuning: 2 of 3 judged cells fail the water test
+AVA_0,False,False,0,False,provisional,oil provisional (D105): water never ranks above its oil; tuning: 1 of 1 judged cells fail the water test; no judged holdout cell
+AVA_1,False,False,0,False,provisional,oil provisional (D105): water never ranks above its oil; tuning: 3 of 3 judged cells fail the water test; no judged holdout cell
+AVA_2,False,False,0,False,provisional,oil provisional (D105): water never ranks above its oil; tuning: 3 of 3 judged cells fail the water test; no judged holdout cell
