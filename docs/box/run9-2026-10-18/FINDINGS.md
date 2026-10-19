@@ -157,3 +157,24 @@ representative-spacing / lateral band filters) was not traced; the other 12 grou
 
 Nothing here changes a frozen rule, a factor table, an interval or a tier. Live run_id sequence is at 9 (a rolled-back smoke burned one
 id), so the live record will be run_id 10 or later, not "9" — the plan text calls it run 9.
+
+## 8. Gate DECIDED + STORED LIVE (2026-10-18, Michael)
+
+Answers: (1) yes, store live; (2) yes, prune run 8; (3) store first, fix erebor after; (4) BS1_S's 345 no-analog PUDs accepted as
+reported (D74). eng_db #154 merged 979f1e0 before the store.
+
+- **Pre-check (read-only):** live record = run 8 (only run); `box_econ.box_pud_econ` 0 rows; 121,921 locations (2026Q3); bench_scope
+  8 provisional + 4 validated in scope; no ETL running — the state the container rehearsed.
+- **Store:** `python -m scripts.box_pud_run store --record --out runs/box9` from the main checkout at c637a6c (artifact sha256
+  9c45e262…7082852 = the build), Supabase session pooler, one transaction, **1,174 s**. **Live run_id = 10** (this document's "run 9";
+  ids 9 / 11 / 12 were never live). Every identity check green, the same numbers as the container (§2): universe 121,727; covered
+  18,607 + covered_provisional 32,356 + no_analogs 480 = 51,443; 101,926 streams × 600 months, 0 off; ≥ 3 analogs everywhere. Log
+  `runs/box9/store_live.txt`.
+- **Re-verified read-only after COMMIT:** all 26 group × stream rows match the artifact (location count and EUR sum to 1e-9; coverage
+  class = the group's tier); `by_bench` carries all 13 groups; `analyst_ro` reads the month table.
+- **Prune (D104):** `python -m scripts.box_prune_runs` dry run listed run 8 only (14,980,800 month rows, 0 priced); `--apply`: run 8
+  deleted in one transaction (163 s), run 10 record unchanged, no orphan rows. Log `runs/box9/prune_live.txt`.
+- **Live size:** database 83 GB; `box.pud_forecast_month` 9.6 GB before the prune's space is reused by autovacuum.
+
+**Open (follow-ups, not done here):** erebor tier-aware coverage + provisional badge (until then the 32,356 provisional rows do not show
+a BOX forecast in Highgrade); Steven note for run 10 (Michael sends); `--reuse-from` incremental build (optional).
