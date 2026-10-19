@@ -485,10 +485,12 @@ The dossier shows it beside the Arps water, with:
 - its **water tier**: validated only on Delaware WCA_1 / WCA_2 / BS2_S (where BOX water
   passed its one-time holdout), provisional elsewhere, including all of Midland.
 
-`water.save_ratio` decides what the handoff saves. While false, the saved curve keeps
-Arps water; this lasts until the Blue Ox drop accepts ratio water (ledger §14). When
-true, the curve is saved with `stream_modes.water = ratio` + `ratio_cohorts.water`, and
-the tier and source go in `filter_spec.dealintake.water`.
+`water.save_ratio` decides what the handoff saves.
+- **true** (config v13 onward, the default): the curve is saved with
+  `stream_modes.water = ratio` + `ratio_cohorts.water`, and the tier and source go in
+  `filter_spec.dealintake.water`. The Blue Ox drop ships that water as P50 volumes and
+  declares it as `zone_water_basis[<zone>]` (ledger §14).
+- **false:** the saved curve keeps Arps water.
 
 This is the SCREEN drop only. Michael's manual drop uses his own TCs.
 

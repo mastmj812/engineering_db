@@ -387,7 +387,45 @@ read East → West, and E-W units read North → South.
 
 ---
 
-*Column/sheet/key names in §6–§13 are final once the first workbook carrying
+## 14. Screen-drop water from measured-water analogs (ratio-mode water) — **NEW (2026-10-19)** (tolerated)
+
+Engineering-side decision (Michael, 2026-10-19, "Option A"). In the deal-intake
+**screen** drop, a zone's water is no longer the cohort's independent Arps fit.
+That fit is mostly vendor-calculated TX water: a frozen filing ratio, sql/41.
+Instead the water is built from **measured-water analogs**, the BOX method
+(D107, validated on WCA / BS2_S in BOX's one-time holdout, D110). Michael's
+manual drops, built from his own type curves, may also carry it when he chooses
+ratio water.
+
+- **Since:** permiantypecurve #100 (export) + engineering_db #163 (this entry,
+  deal-intake config v13 `water.save_ratio: true`). First screen drop after both
+  merge.
+- **What — zone sheets' P50 `water_bbl`:** unchanged column. On a ratio-water
+  zone the values are the curve's published ratio stream:
+  WOR(cum oil) = exp(α + β·Np per 1,000 ft), fitted on the measured-water
+  cohort's mean series, × this zone's P50 oil, month by month. Risked like any
+  stream. Still P50 only; there are still no percentile water columns.
+- **What — `curve_params`:** unchanged. Water never had rows, and a ratio-mode
+  **gas** stream is still refused (gas carries Arps params).
+- **What — manifest Block A key `zone_water_basis[<zone>]`** (optional):
+  declared only on ratio-water zones. Arps-water zones add nothing, so legacy
+  drops are byte-identical. Example value: `ratio_vs_cum_oil: P50 water =
+  WOR(cum oil) x this zone's P50 oil; WOR fitted on 16 measured wells, 7.5 mi;
+  water tier VALIDATED`.
+  - Tier: VALIDATED on Delaware WCA_1 / WCA_2 / BS2_S, PROVISIONAL elsewhere
+    (including all of Midland).
+  - A `calculated_fallback` cohort says so in place of `measured`.
+- **Consequence:** water volumes move per zone. On VaULt (Ward / Winkler) they
+  moved by 0.70×–1.50× vs the old Arps water, with mixed sign; most TX cohorts
+  had been 50–90 % vendor-calculated. Oil and gas are unchanged.
+- **Loader impact: tolerated.** The volumes keep their column, and the only
+  addition is an optional manifest key that a loader ignoring unknown keys
+  already copes with. A loader that reads it can surface the water tier next to
+  the zone.
+
+---
+
+*Column/sheet/key names in §6–§14 are final once the first workbook carrying
 them ships; any rename during implementation updates this file in the same
 commit.*
 
