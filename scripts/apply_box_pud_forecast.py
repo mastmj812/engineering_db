@@ -155,7 +155,7 @@ def smoke(conn) -> None:
             q(_ST, (run, loc[0], "oil", 0.9, 500000.0, 450000.0, 450000.0))
             q(_ST, (run, loc[0], "gas", 1.0, 900000.0, 900000.0, 900000.0))
             _refused(q, _ST, (run, loc[1], "oil", 0.9, 500000.0, 450000.0, 450000.0), errors.ForeignKeyViolation, "a stream row for a not-covered location")
-            _refused(q, _ST, (run, loc[0], "water", 1.0, 1.0, 1.0, 1.0), errors.CheckViolation, "a water stream (not in the frozen spec)")
+            _refused(q, _ST, (run, loc[0], "condensate", 1.0, 1.0, 1.0, 1.0), errors.CheckViolation, "an unknown stream (sql/62 admits oil, gas, water)")
             q("DELETE FROM box.pud_forecast_stream WHERE run_id = %s AND location_id = %s AND stream = 'gas'", (run, loc[0]))
             _refused(q, _ST, (run, loc[0], "gas", 0.9, 500000.0, 500000.0, 500000.0), errors.CheckViolation, "eur != eur_raw x eur_haircut")
             q("INSERT INTO box.pud_forecast_month (run_id, location_id, stream, month_no, volume) SELECT %s, %s, 'oil', m, 100 FROM generate_series(1, 600) m",
