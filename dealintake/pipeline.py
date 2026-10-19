@@ -38,7 +38,7 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 from dealintake import benches as benchmod
-from dealintake import cohort_qc, split_test, strat, swd, unit_benches
+from dealintake import cohort_qc, split_test, strat, swd, unit_benches, water
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
@@ -908,6 +908,7 @@ def evaluate(
         raise ValueError(f"planned_lateral.pooling must be bench|class, got {pooling!r}")
     res: dict[str, Any] = {
         "run_dir": str(run_dir), "config_version": cfg.version, "snapshot": prop["snapshot"],
+        "water_save_ratio": bool((cfg.raw.get("water") or {}).get("save_ratio")),
         "planned_stack": stack, "bench_tvd_ft": bench_tvd,
         "planned_lateral_ft": _median(list(ll_by_unit.values())) or 0.0,
         "pooling": pooling,
@@ -1389,6 +1390,31 @@ def evaluate(
                         k: gr.get(k) for k in ("mode", "sub_mode", "alpha", "beta", "r2", "n_months",
                                                "r_const", "eur_per_unit", "implied_effective_decline_yr1")
                     } if gr else None
+                    # Screen water = WOR vs cum oil on MEASURED-water analogs x this TC's oil (BOX D107 /
+                    # D110 tier; Michael 2026-10-19, Option A). Arps water stays in tc_preview for comparison.
+                    wcfg = cfg.raw.get("water") or {}
+                    if wcfg.get("method") == "ratio_measured":
+                        g_area = unary_union([units[u] for u in g["units"]])
+                        g_ll = float(statistics.median([ll_by_unit[u] for u in g["units"]]))
+                        wc = water.measured_cohort(conn, cfg, g_area, bench, basin, g_ll, sp,
+                                                   wcfg.get("validated_benches") or [])
+                        G["flags"] += water.flags(wc)
+                        if wc["api10s"]:
+                            wc["anduin_forecast"] = ad.forecast(wc["api10s"])  # only_missing: fit the ones anduin lacks
+                            try:
+                                tcw = ad.compute_type_curve(api10s, stream_modes={"water": "ratio"},
+                                                            ratio_cohorts={"water": wc["api10s"]})
+                                G["tc_preview_water_ratio"] = water.summary(
+                                    ((tcw.get("streams") or {}).get("water") or {}).get("fitted"))
+                                if G["tc_preview_water_ratio"] and not G["tc_preview_water_ratio"].get("ratio_cohort"):
+                                    # an anduin without ratio_cohorts (#99) ignores the field and fits the TC cohort
+                                    G["tc_preview_water_ratio"] = None
+                                    G["flags"].append("water: this anduin ignored ratio_cohorts (needs permiantypecurve #99); "
+                                                      "Arps water kept")
+                            except AnduinError as exc:  # < 3 cohort wells with forecasts, or no valid months
+                                G["tc_preview_water_ratio"] = None
+                                G["flags"].append(f"water: ratio on the measured cohort failed ({exc}); Arps water kept")
+                        G["water_cohort"] = wc
                 ids = sorted({i for u in g["units"] for i in B["units"][u]["novi_ids"]})
                 G["novi"] = _novi_summary(wh.novi_params(conn, ids))
                 G["novi"]["n_sticks"] = len(ids)

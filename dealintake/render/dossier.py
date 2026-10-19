@@ -9,6 +9,7 @@ No economics.
 from __future__ import annotations
 
 import json
+import math
 import re
 import zlib
 from pathlib import Path
@@ -130,6 +131,17 @@ def _stream_rows(B: dict[str, Any]) -> list[list[Any]]:
             rows.append([stream, f"anduin TC — ratio to cum oil ({fit}{vs})", None,
                          "— (derived)", pct(gr.get("implied_effective_decline_yr1")), None,
                          gr["eur_per_unit"]])
+        wr = B.get("tc_preview_water_ratio") if stream == "water" else None
+        wc = B.get("water_cohort") or {}
+        if wr and wr.get("eur_per_unit") is not None:
+            arps = ((B.get("tc_preview") or {}).get("water") or {}).get("eur_per_unit")
+            vs = f"; {wr['eur_per_unit'] / arps:.2f}x Arps EUR" if arps else ""
+            wor = math.exp(wr["alpha"]) if wr.get("alpha") is not None else None
+            src = "measured" if wc.get("source") == "measured" else "CALCULATED fallback"
+            rows.append([stream, f"anduin TC — WOR vs cum oil on {len(wc.get('api10s') or [])} {src} wells, "
+                                 f"{wc.get('radius_mi') or 0:g} mi (WOR@0 {wor:.2f}; water tier {str(wc.get('tier', '')).upper()}{vs})"
+                                 if wor is not None else f"anduin TC — WOR on measured-water analogs{vs}",
+                         None, "— (derived)", pct(wr.get("implied_effective_decline_yr1")), None, wr["eur_per_unit"]])
     return rows
 
 

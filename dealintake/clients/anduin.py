@@ -208,6 +208,7 @@ class Anduin:
         api10s: list[str],
         n_months: int | None = None,
         stream_modes: dict[str, str] | None = None,
+        ratio_cohorts: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
         """POST /api/type-curves/compute — PREVIEW, persists nothing. peak_ramp,
         per 1,000 ft of lateral. streams[s].fitted.Di is NOMINAL /yr.
@@ -215,7 +216,11 @@ class Anduin:
         stream_modes {"gas": "ratio"} builds the gas stream as ln(GOR) vs
         cumulative oil x this TC's own oil curve (anduin type_curves/
         ratio_mode.py); its fitted block has mode/alpha/beta/sub_mode/r2/
-        eur_per_unit/implied_effective_decline_yr1 instead of qi/Di/b."""
+        eur_per_unit/implied_effective_decline_yr1 instead of qi/Di/b.
+
+        ratio_cohorts {"water": [api10, ...]} fits that ratio-mode stream's ratio on a SEPARATE
+        well set (anduin #99; the measured-water cohort, dealintake/water.py) and applies it to
+        this TC's oil."""
         body: dict[str, Any] = {
             "api10s": api10s, "normalization_basis": "per_lateral_ft", "alignment_method": "peak_ramp",
         }
@@ -223,4 +228,6 @@ class Anduin:
             body["n_months"] = n_months
         if stream_modes:
             body["stream_modes"] = stream_modes
+        if ratio_cohorts:
+            body["ratio_cohorts"] = ratio_cohorts
         return self._req("POST", "/api/type-curves/compute", json=body)

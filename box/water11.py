@@ -169,8 +169,9 @@ def vdr_months_asof(vdr: pd.DataFrame, asof: dt.date | None) -> dict[str, int]:
 
 
 def select_water(pool: Mapping[str, Any], tree: cKDTree, cfg: Any, loc: Mapping[str, Any], radii: Sequence[float], bench: str,
-                 min_w: int = MIN_WELLS) -> tuple[list[int], float, int]:
-    """(pool indices, radius reached mi, eligible count at that radius): box_v2's first-ring selection on circles over `radii`."""
+                 min_w: int = MIN_WELLS, basin: str = "delaware") -> tuple[list[int], float, int]:
+    """(pool indices, radius reached mi, eligible count at that radius): box_v2's first-ring selection on circles over `radii`.
+    `basin` sets deal-intake's per-basin lateral tolerance (BOX is Delaware-only; deal-intake screens pass their own)."""
     from dealintake import select_wells as sw
 
     sp = loc.get("spacing_ft")
@@ -180,7 +181,7 @@ def select_water(pool: Mapping[str, Any], tree: cKDTree, cfg: Any, loc: Mapping[
     for r in radii:
         idx = tree.query_ball_point([loc["x"], loc["y"]], r=r * MI)
         cands = an._candidates(pool, idx, loc)
-        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin="delaware",
+        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin=basin,
                                      planned_spacing_ft=planned_sp, lateral_band_ft=band)
         if len(eligible) >= min_w or r == radii[-1]:
             sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
