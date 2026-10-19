@@ -1,8 +1,8 @@
-# BOX step 12b — water: sql/62 + water on the record run — CONTAINER-VALIDATED, AT THE LIVE-APPLY ASK
+# BOX step 12b — water: sql/62 + water on the record run — APPLIED LIVE 2026-10-19 (§5)
 
 2026-10-19. Plan §5 step 12b, under D107 (method), D108 (raw box_v2 oil), D109 / D110 (tiers).
 
-**Status.** Nothing is applied live yet. sql/62 and the water store were validated in a throwaway PostGIS container
+**Status.** Applied and stored live on Michael's go (§5); before that, sql/62 and the water store were validated in a throwaway PostGIS container
 (`box12b`, port 5436) that holds the live box state, copied read-only.
 
 ## 0. Headline
@@ -117,3 +117,25 @@ python -m scripts.box_water_run store --out runs/box12b                         
 
 Logs: `runs/box12b_container/*.txt`, `runs/box12b/store_container.txt` (git-ignored); container `box12b` kept until the live
 store is done.
+
+## 5. Live (Michael's go, 2026-10-19) — plan D111
+
+- **Pre-checks.** Record = run 10, `box_econ.box_pud_econ` = 0 rows, no water rows, no other active sessions, no nightly in
+  flight.
+- **`python -m scripts.apply_box_water`: 16 / 16** on Supabase (`runs/box12b/apply_box_water_live.txt`).
+- **`python -m scripts.box_water_run store --out runs/box12b`: stored in one transaction, 806 s** (`runs/box12b/store_live.txt`;
+  artifact sha256 9519614d…). Every identity check green, with the same numbers as the container:
+  - oil / gas rows unchanged: ordered md5 `oil 873f10a6…` / `gas ff0db292…`; 61,155,600 oil / gas month rows untouched;
+  - 50,963 water rows; 600 months each summing to EUR (0 off);
+  - validated 9,301 (WCA + BS2_S `covered`), provisional 41,662;
+  - ≥ 3 water analogs per location (829,345 rows); 49 calculated-fallback locations.
+- **Read-only re-verification.**
+  - Tier × coverage: validated 9,301 covered; provisional 9,306 covered (= WCXY 3,183 + WCB_1 4,133 + WCC 1,990) and
+    32,356 covered_provisional.
+  - `analyst_ro` reads `location_water_analog` and the stream table.
+  - The run notes say "D72 retired"; `disclosure ? 'water'`.
+  - WCA median water EUR 235,894 bbl / 1,000 ft = the build's.
+  - DB 83 → 86 GB; month table 9.6 → 12 GB.
+- **Data dictionary regenerated** from the live catalog (`docs/data_dictionary.html`, `docs/DATA_DICTIONARY.md`).
+- **Steven note:** draft in `steven-note-water.md`; Michael sends it.
+- The throwaway container `box12b` can be removed.
