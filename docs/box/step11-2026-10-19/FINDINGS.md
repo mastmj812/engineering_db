@@ -1,4 +1,4 @@
-# BOX step 11 — water: method + acceptance design (read-only) — AT GATE 11
+# BOX step 11 — water: method + acceptance design (read-only) — GATE 11 CLOSED 2026-10-19 (§8)
 
 2026-10-19. Plan §5 step 11.
 
@@ -283,3 +283,14 @@ reach / tune / counts runs ran at 51d589c (the pre-registration commit); the rep
   wells than its oil package.
 - **Water is a technical forecast.** Nothing here touches oil or gas forecasts, and no economics is computed. Water volumes go
   to Steven as a stream, not as cost.
+
+## 8. Gate 11 decisions (Michael 2026-10-19)
+
+1. **Approved: `ratio` is the BOX water method of record** (WOR vs cumulative oil on measured-water analogs, §2 reach,
+   calculated fallback flagged) — plan D107.
+2. **The WOR rides on the RAW box_v2 oil months** (what was scored), for every group; WCA / BS2_S water does not inherit their
+   oil haircut. PREREGISTRATION §2's production sentence amended accordingly — plan D108.
+3. **The gate-12a rule is accepted as written** (§4; PREREGISTRATION §5; `intervals_water.csv` frozen), knowing it can
+   validate water only for WCA and BS2_S — plan D109.
+
+Next = step 12a (freeze spec + code SHA, tuning identity re-score, holdout scored once), on Michael's go.

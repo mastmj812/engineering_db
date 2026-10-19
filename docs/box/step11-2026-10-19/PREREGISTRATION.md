@@ -43,8 +43,13 @@ after a score is seen. A change needs Michael, and a later commit that says why.
 
 - F_oil(k) is the tuning fold's own oil calendar factor. The tuning runs calibrated no water factor, and downtime takes oil and
   water together.
-- The scored oil is raw box_v2 for every group. In production, water rides on the DELIVERED oil, which carries the D62 / D92
-  haircut for WCA and BS2_S. Gate 12a reports that difference; it does not score it separately.
+- The scored oil is raw box_v2 for every group. ~~In production, water rides on the DELIVERED oil, which carries the D62 / D92
+  haircut for WCA and BS2_S. Gate 12a reports that difference; it does not score it separately.~~
+- **Amended at gate 11 (Michael 2026-10-19, after the tuning score; FINDINGS §3.4 / §8): in production the WOR rides on the
+  RAW box_v2 oil months, exactly what was scored**, for every group. For 11 of 13 groups that is also the delivered oil. For
+  WCA and BS2_S the delivered oil keeps its D62 / D102 haircut, but water does not inherit it: on the haircut oil BS2_S water
+  would run +14 / +17 / +21 % low. This changes which oil production multiplies, not the scored spec, the tolerance or the
+  12a rule.
 
 ## 3. Scoring grain and cell test
 
