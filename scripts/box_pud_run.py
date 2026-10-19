@@ -310,7 +310,8 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
         disc = p9.bench_disclosure(bench, hcut)
     else:
         disc = p9r.disclosure_for(bench)
-    apply_haircut_all(res, hcut)
+    method_none = p9r.haircut_method_none(bench)
+    apply_haircut_all(res, hcut, method_none)
     guard: dict[str, Any] = {"applies": hcut is not None, **p9r.GUARD}
     if hcut is not None:  # 9c haircut guard, tail half: the applied D92 g(48)
         bad, guard["g48"] = p9r.guard_tail({s: np.array([r["streams"][s]["params"]["haircut"]["g_tail"] for r in res if s in r.get("streams", {})])
@@ -329,7 +330,7 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
             r["flags"] = list(r["flags"]) + p9r.group_flags(bench, disc, side)
     rec = {"spec": p9.record_variant(bench), "tier": p9r.tier(bench), "coverage_class": pr.covered_class(bench), "guard": guard,
            "wells_dir": str(wells_dir), "label": P["label"], "extent_id": P["extent_id"], "n_pool": len(P["pool"]["api10"]),
-           "n_excluded": P["n_excluded"], "k_areas": P["k_areas"], "haircut": haircut_record(hcut, res), "calendar_factor": F,
+           "n_excluded": P["n_excluded"], "k_areas": P["k_areas"], "haircut": haircut_record(hcut, res, method_none), "calendar_factor": F,
            "disclosure": disc, "equivalence": eq, "n_locations": len(locs), "n_forecast": sum("oil" in r.get("streams", {}) for r in res)}
     used = sorted({x["api10"] for r in res for x in r.get("analogs", [])})
     fr = P["cb"]["frame"].set_index("api10")
@@ -381,24 +382,27 @@ def cmd_build(a: argparse.Namespace) -> int:
     return 0
 
 
-def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any] | None) -> None:
+def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any] | None,
+                      method_none: str = p9.HAIRCUT_METHOD_NONE) -> None:
     """D92: every covered stream's months = months_raw x the C1 rate factor fitted to the D62 table; the fit lands in params.
-    hcut None = no haircut (D97, WCXY): months = months_raw, stated in params."""
+    hcut None = no haircut (D97 WCXY, step-15 raw box_v2 groups): months = months_raw, stated in params as `method_none`
+    (the group's own wording, box.production_run9.haircut_method_none)."""
     for r in res:
         for s, st in r.get("streams", {}).items():
             if hcut is None:
-                st["months"], info = np.array(st["months_raw"], float), {"method": p9.HAIRCUT_METHOD_NONE, "eur_factor": 1.0}
+                st["months"], info = np.array(st["months_raw"], float), {"method": method_none, "eur_factor": 1.0}
             else:
                 st["months"], info = pr.apply_haircut_c1(st["months_raw"], {k: hcut[s][k] for k in pr.HORIZONS})
             st["params"] = {**st["params"], "haircut": info}
             st["eur_raw"], st["eur"] = float(np.sum(st["months_raw"])), float(np.sum(st["months"]))
 
 
-def haircut_record(hcut: dict[str, Any] | None, res: list[dict[str, Any]]) -> dict[str, Any]:
+def haircut_record(hcut: dict[str, Any] | None, res: list[dict[str, Any]],
+                   method_none: str = p9.HAIRCUT_METHOD_NONE) -> dict[str, Any]:
     """forecast_run.haircut: the D62 factor table (the targets) + the D92 method and, per stream, the realised cumulative factor at
     each horizon and the tail factor (median and P10-P90 across locations; P10 = the high value). hcut None (D97): factors 1.0."""
     if hcut is None:
-        return {"method": p9.HAIRCUT_METHOD_NONE,
+        return {"method": method_none,
                 **{s: {k: {"factor": 1.0, "bias": None, "n_packages": 0, "n_cells": 0, "cutoffs": [], "realised_median": 1.0,
                            "realised_p10_p90": [1.0, 1.0]} for k in pr.HORIZONS} | {"tail_factor_median": 1.0, "eur_factor_median": 1.0}
                    for s in pr.STREAMS}}

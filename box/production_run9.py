@@ -31,6 +31,7 @@ import pandas as pd
 
 from box import acceptance as ac
 from box import production as pr
+from box import production9c as p9
 
 DOCS = Path("docs") / "box"
 STEP15_TUNING = DOCS / "step15-tuning-2026-10-17"
@@ -50,6 +51,21 @@ _WELLS: dict[str, Path] = {"WCB_1": DOCS / "step15-WCB-2026-10-16", "WCB_2": DOC
                            "BS2_C": DOCS / "step15-BS2C-2026-10-16", "BS3_S": DOCS / "step15a-2026-10-16",
                            "BS3_C": DOCS / "step15a-2026-10-16", "AVA_0": DOCS / "step15-AVA-2026-10-16",
                            "AVA_1": DOCS / "step15-AVA-2026-10-16", "AVA_2": DOCS / "step15-AVA-2026-10-16"}
+
+
+_RAW_MONTHS = "months = the uptime-free analog P50 x lateral"
+
+
+def haircut_method_none(group: str) -> str:
+    """The haircut.method a raw box_v2 group states (no haircut): WCXY keeps D97's wording; the step-15 groups name their own
+    reason instead of borrowing WCXY's. Starts with "none" — erebor reads that prefix as "raw box_v2, no haircut"."""
+    if group in VALIDATED_15:
+        return f"none (step 15: {group} record = raw box_v2, holdout PASS; {_RAW_MONTHS})"
+    if group in D105_BENCHES:
+        return f"none (D105: {group} provisional record = raw box_v2, never out-of-time validated; {_RAW_MONTHS})"
+    if group in HOLDOUT_FAIL:
+        return f"none (D105: {group} provisional record = raw box_v2, holdout FAIL 2026-10-18; {_RAW_MONTHS})"
+    return p9.HAIRCUT_METHOD_NONE
 
 
 def wells_dir(group: str, default: Path) -> Path:
