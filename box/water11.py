@@ -84,6 +84,12 @@ TUNING_TAG: dict[str, str] = {"WCA": "guard_tuning", "BS2_S": "tuning_BS2_S", "W
     g: f"tuning_v2_{g}_analog" for g in GROUPS if g not in ("WCA", "BS2_S", "WCXY_WCA1")}
 
 
+# step 12a: each group's SPENT oil holdout run (holdout views + box_v2 oil months; runs/step12a_inputs/<group>/, digests). AVA_0 / 1 / 2
+# and BS2_C have none: D105 provisional benches were never holdout-scored, so no holdout oil forecast exists for them.
+HOLDOUT_TAG: dict[str, str] = {"WCA": "guard_holdout", "BS2_S": "holdout_BS2_S", "WCXY_WCA1": "holdout_WCXY_WCA1"} | {
+    g: f"holdout_v2_{g}_analog" for g in ("WCB_1", "WCC", "BS3_S", "BS3_C", "WCB_2", "BS1_S")}
+
+
 def ac_label(group: str) -> str:
     """The deal-intake bench label a group's selection runs under (BENCH_SPECS)."""
     return str(ac.BENCH_SPECS[group]["label"])

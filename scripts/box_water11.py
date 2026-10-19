@@ -193,19 +193,22 @@ def cohort_curves(jobs: list[tuple[str, list[str]]], pool_f: pd.DataFrame, fits:
         return dict(ex.map(_cohort_job, jobs, chunksize=4))
 
 
-def run_tune(conn: Any, out: Path, inputs: Path, groups: tuple[str, ...], workers: int | None) -> None:
+def run_tune(conn: Any, out: Path, inputs: Path, groups: tuple[str, ...], workers: int | None, side: str = "tuning") -> None:
+    """side='tuning' (step 11 / the 12a identity re-score) or 'holdout' (step 12a: the ONE-TIME water holdout score, on the
+    frozen holdout views + box_v2 oil months of each group's spent oil holdout run). Same code path either way."""
     vdr = pull_vdr(conn)
     out.mkdir(parents=True, exist_ok=True)
     for g in groups:
         t0 = time.time()
-        tag = w.TUNING_TAG[g]
+        tag = (w.TUNING_TAG if side == "tuning" else w.HOLDOUT_TAG)[g]
         d = inputs / g
         z = np.load(d / f"months_{tag}.npz")
         views = {int(Path(p).name.split("_")[-1][:4]): p for p in sorted(glob.glob(str(d / f"view_{tag}_20*.csv.gz")))}
         wells = group_frame(conn, g)
         tgt_all = pd.concat([pd.read_csv(p, dtype={"api10": str, "package": str, "state_code": str}) for p in views.values()], ignore_index=True)
-        if tgt_all["package_held_out"].astype(bool).any():
-            raise RuntimeError(f"{g}: a tuning view carries a held-out package")
+        held = tgt_all["package_held_out"].astype(bool)
+        if (side == "tuning" and held.any()) or (side == "holdout" and not held.all()):
+            raise RuntimeError(f"{g}: a {side} view carries a package of the other side")
         ids_all = sorted(set(wells["api10"]) | set(tgt_all["api10"]))
         cls = pull_cls(conn, ids_all)
         prod = rep.pull_production(conn, ids_all, w.LAST)
@@ -271,7 +274,7 @@ def run_tune(conn: Any, out: Path, inputs: Path, groups: tuple[str, ...], worker
                     row |= {f"arps_w{k}": cw[k] for k in w.HORIZONS}
                 rows.append(row)
             print(f"[{g} {y}] {len(v)} measured targets, {len(need)} analogs fitted ({time.time() - t0:.0f} s)", flush=True)
-        pd.DataFrame(rows).to_csv(out / f"tune_{g}.csv.gz", index=False)
+        pd.DataFrame(rows).to_csv(out / f"{'tune' if side == 'tuning' else 'holdout'}_{g}.csv.gz", index=False)
         print(f"[{g}] done ({time.time() - t0:.0f} s)", flush=True)
 
 
@@ -354,17 +357,21 @@ def rep_extent(conn: Any, bench: str) -> Any:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=("reach", "tune", "counts"))
+    ap.add_argument("cmd", choices=("reach", "tune", "counts", "holdout"))
+    ap.add_argument("--holdout-once", action="store_true", help="required for 'holdout': the ONE-TIME water holdout score (step 12a)")
     ap.add_argument("--out", type=Path, default=Path("runs") / "step11")
     ap.add_argument("--inputs", type=Path, default=Path("runs") / "step11_inputs")
     ap.add_argument("--groups", default=",".join(w.GROUPS))
     ap.add_argument("--workers", type=int, default=None)
     a = ap.parse_args(argv)
     groups = tuple(a.groups.split(","))
+    if a.cmd == "holdout" and not a.holdout_once:
+        ap.error("'holdout' is the one-time D52 water score (step 12a): pass --holdout-once deliberately")
     t0 = time.time()
     with get_connection() as conn:
         {"reach": lambda: run_reach(conn, a.out, groups, a.workers), "tune": lambda: run_tune(conn, a.out, a.inputs, groups, a.workers),
-         "counts": lambda: run_counts(conn, a.out, groups)}[a.cmd]()
+         "counts": lambda: run_counts(conn, a.out, groups),
+         "holdout": lambda: run_tune(conn, a.out, a.inputs, groups, a.workers, side="holdout")}[a.cmd]()
     print(f"{a.cmd} done ({time.time() - t0:.0f} s)")
     return 0
 

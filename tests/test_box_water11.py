@@ -68,3 +68,29 @@ def test_group_of():
     assert w.group_of("WCA", "WCXY") == "WCXY_WCA1"
     assert w.group_of("WCA", "WCA_2") == "WCA"
     assert w.group_of("BS3_S", "BS3_S") == "BS3_S"
+
+
+def test_water12a_tier_rule():
+    import pandas as pd
+
+    from box import water12a as wa
+
+    tun = pd.DataFrame({"group": ["G"] * 3, "method": ["ratio"] * 3, "horizon": [12, 24, 36], "verdict": ["PASS", "PASS", "not judged"]})
+    hold = pd.DataFrame({"group": ["G"] * 3, "horizon": [12, 24, 36], "consistency": ["INSIDE", "INSIDE", "not judged"]})
+    assert wa.tier("G", True, tun, hold)["water_tier"] == "validated"
+    assert wa.tier("G", False, tun, hold)["water_tier"] == "provisional"  # never above its oil
+    assert wa.tier("G", True, tun, hold.assign(consistency=["INSIDE", "OUTSIDE", "not judged"]))["water_tier"] == "provisional"
+    assert wa.tier("G", True, tun, hold.assign(consistency="not judged"))["water_tier"] == "provisional"  # needs one judged cell
+    assert wa.tier("G", True, tun.assign(verdict=["PASS", "FAIL", "PASS"]), hold)["water_tier"] == "provisional"
+    assert wa.tier("G", True, tun, None)["water_tier"] == "provisional"
+
+
+def test_water12a_identity():
+    import pandas as pd
+
+    from box import water12a as wa
+
+    a = pd.DataFrame({"group": ["G", "G"], "horizon": [12, 24], "method": ["ratio"] * 2, "pkg_n_packages": [40, 35], "pkg_bias": [0.01, 0.02],
+                      "pkg_band": [1.0, 1.1], "bench_bias": [0.0, 0.0], "bench_band": [0.9, 0.9]})
+    assert wa.identity(a, a)["identical"].all()
+    assert not wa.identity(a, a.assign(pkg_bias=[0.01, 0.0201]))["identical"].all()
