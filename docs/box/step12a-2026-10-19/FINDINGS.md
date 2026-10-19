@@ -1,4 +1,4 @@
-# BOX step 12a — water: freeze, tuning identity, ONE-TIME holdout score — AT GATE 12a
+# BOX step 12a — water: freeze, tuning identity, ONE-TIME holdout score — GATE 12a CLOSED 2026-10-19 (§7)
 
 2026-10-19. Plan §5 step 12a, under the rule frozen at gate 11.
 
@@ -131,3 +131,11 @@ python -m scripts.box_water12a_report                                           
 
 The holdout ran 2026-10-19 15:01–15:28 UTC at 546c51a (`runs/step12a_holdout_sha.txt`). The report script came after; it only
 aggregates the stored rows.
+
+## 7. Gate 12a decisions (Michael 2026-10-19) — plan D110
+
+1. **Tiers accepted as scored.** Water is validated for WCA and BS2_S and provisional for the other 11 groups. Each workup
+   carries its §4 water line.
+2. **WCA-TX caveat** goes in as workup text: TX water ~15–17 % high in the holdout, NM ~0.
+3. **AVA_0 / 1 / 2 and BS2_C** carry a tuning-only water disclosure.
+4. **Go on 12b.** sql/62 is container-validated first; Michael is asked before anything is applied live.
