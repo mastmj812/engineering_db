@@ -112,3 +112,13 @@ def test_inputs_cover_every_step15_group():
         rr = pd.read_csv(p9r.RUN9_INPUTS / f"spread_by_radius_{g}.csv")
         assert set(rr["radius_class"]) <= {"5 mi ring", "past 5 mi"} and len(rr)
         assert "interior" in set(pd.read_csv(p9r.RUN9_INPUTS / f"edge_regions_{g}.csv")["region"])
+
+
+def test_haircut_method_none_names_each_raw_groups_own_reason():
+    assert p9r.haircut_method_none("WCXY_WCA1") == p9.HAIRCUT_METHOD_NONE  # D97 wording unchanged
+    for g in (*p9r.VALIDATED_15, *p9r.D105_BENCHES, *p9r.HOLDOUT_FAIL):
+        m = p9r.haircut_method_none(g)
+        assert m.startswith("none (") and g in m and "WCXY" not in m, m  # erebor reads the "none" prefix
+    assert "holdout PASS" in p9r.haircut_method_none("WCB_1")
+    assert "never out-of-time validated" in p9r.haircut_method_none("AVA_1")
+    assert "holdout FAIL" in p9r.haircut_method_none("BS3_S")
