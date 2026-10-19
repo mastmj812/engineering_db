@@ -16,15 +16,15 @@ from typing import Any
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-import shapely  # noqa: E402
-from matplotlib.collections import LineCollection  # noqa: E402
-from matplotlib.colors import BoundaryNorm, ListedColormap  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import shapely
+from matplotlib.collections import LineCollection
+from matplotlib.colors import BoundaryNorm, ListedColormap
 
-from box import production_run9 as p9r  # noqa: E402
-from scripts import box_update_deck as bud  # noqa: E402
+from box import production_run9 as p9r
+from scripts import box_update_deck as bud
 
 BLUE = ["#86b6ef", "#5598e7", "#3987e5", "#2a78d6", "#1c5cab", "#184f95", "#0d366b"]  # sequential blue, steps 250-700 (ordinal, >= 2:1)
 ORANGE = ["#f7b899", "#f29a72", "#ee804f", "#eb6834", "#c4521f", "#9a3e15", "#6e2a0b"]  # one-hue orange ramp (second sequential context)

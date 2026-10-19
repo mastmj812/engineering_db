@@ -161,7 +161,7 @@ def coverage(A: dict[str, Any]) -> pd.DataFrame:
 def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
     run = A["run"]
     pres = Presentation(str(bud.TEMPLATE))
-    sld = pres.slides._sldIdLst  # noqa: SLF001 — python-pptx has no delete API; drop the two template slides
+    sld = pres.slides._sldIdLst
     for sid in list(sld):
         pres.part.drop_rel(sid.rId)
         sld.remove(sid)
@@ -240,8 +240,8 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
                      "holdout oil / gas cum-12": "–" if g == "WCA" or o12h is None else f"{_pct(o12h)} / {_pct(g12h)}"})
     _table(s, LEFT, TOP, WIDTH, pd.DataFrame(rows), [0.8, 0.9, 1.6, 2.4, 0.9, 0.8, 0.8, 1.3], size=9, row_h=0.29, flag_col="holdout")
     _text(s, LEFT, Inches(5.75), WIDTH, Inches(0.5), [
-        ("Bias = the number each workup discloses (validated: tuning bias, WCA after its haircut on held-out ground; provisional: tuning + holdout "
-         "pooled, AVA pooled 0+1+2). − = forecast HIGH. Provisional benches carry no haircut, so their stated bias is the expected miss.",
+        (("Bias = the number each workup discloses (validated: tuning bias, WCA after its haircut on held-out ground; provisional: tuning + holdout "
+         "pooled, AVA pooled 0+1+2). − = forecast HIGH. Provisional benches carry no haircut, so their stated bias is the expected miss."),
          {"size": 9, "color": MUTED})])
 
     # 6 BOX vs Novi
@@ -267,15 +267,15 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
     # 7 provisional tier
     s = _slide(pres, "The provisional tier — forecast, labelled, never validated")
     _text(s, LEFT, TOP, Inches(12.4), Inches(4.6), [
-        "• A bench that cannot support the out-of-time test (too little development history), or that failed it, is still forecast — "
-        "a representative ≥ 2016 analog workup is more useful than a blank (Michael, 2026-10-17)",
+        ("• A bench that cannot support the out-of-time test (too little development history), or that failed it, is still forecast — "
+        "a representative ≥ 2016 analog workup is more useful than a blank (Michael, 2026-10-17)"),
         "• Same analog engine as every bench; raw analog P50, no haircut, no re-tuning after a failed holdout",
         "• Stored as `covered_provisional`, so 'covered' keeps meaning VALIDATED in every app, query and count",
         ("Disclosure on every provisional workup", {"bold": True, "size": 14}),
-        "• AVA_0 / 1 / 2, BS2_C — never tested: the in-sample bias with a 95 % range, and the latest-vintage line "
-        "(AVA: recent 2022–24 cohorts produced 14–18 % below forecast at 12 months; BS2_C: the miss changed sign, 2023–24 came in ~12 % above)",
-        "• BS3_S, BS3_C, WCB_2, BS1_S — FAILED the holdout: the tuning line, the HOLDOUT line and the pooled line are always shown together, "
-        "never the pooled figure alone (WCB_2 gas cum-12: +2 % pooled hides +21 % on the holdout)",
+        ("• AVA_0 / 1 / 2, BS2_C — never tested: the in-sample bias with a 95 % range, and the latest-vintage line "
+        "(AVA: recent 2022–24 cohorts produced 14–18 % below forecast at 12 months; BS2_C: the miss changed sign, 2023–24 came in ~12 % above)"),
+        ("• BS3_S, BS3_C, WCB_2, BS1_S — FAILED the holdout: the tuning line, the HOLDOUT line and the pooled line are always shown together, "
+        "never the pooled figure alone (WCB_2 gas cum-12: +2 % pooled hides +21 % on the holdout)"),
         "• Edge caveats where tuning measured them (e.g. BS1_S south edge oil cum-12 −56 %, BS3_S south −18 %)",
         ("Not yet visible in erebor's Highgrade screen — the tier-aware display is the next app change.", {"size": 11, "color": FLAG}),
     ], size=13)
@@ -285,8 +285,8 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
     _text(s, LEFT, TOP, Inches(12.4), Inches(4.6), [
         "• Same sticks on both maps of a pair: the BOX-forecast Novi PUD locations, each matched 1:1 to its own Novi BASE_CASE forecast (no RES, no realized sticks)",
         "• One shared color scale per pair: the same color means the same value on BOX and on Novi; bins are quantiles of the pooled values",
-        "• Oil EUR per ft of lateral on a 30-YEAR basis for both — Novi BASE_CASE runs 359 months; BOX's record EUR is the raw 50-yr integral "
-        "(30-yr ≈ 95–97 % of it on every bench)",
+        ("• Oil EUR per ft of lateral on a 30-YEAR basis for both — Novi BASE_CASE runs 359 months; BOX's record EUR is the raw 50-yr integral "
+        "(30-yr ≈ 95–97 % of it on every bench)"),
         "• GOR = 12-month cumulative (1,000 × cum-12 gas Mcf ÷ cum-12 oil bbl, scf/bbl): gas peaks ~4 months after oil, so 6-month GOR reads low; cum-12 is a scored horizon",
         "• BOX = analog-cohort P50 per location (× the walk-forward haircut on WCA / BS2_S); volumes uptime-free",
         "• Ratio map: BOX ÷ Novi oil EUR; grey = within ±10 %, red = BOX below Novi, blue = BOX above",
