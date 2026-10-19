@@ -13,14 +13,14 @@ byte for byte.
 - `box.pud_forecast_stream` / `box.pud_forecast_month` with `stream = 'water'`: 600 monthly volumes, uptime-free like oil
   and gas, and no haircut.
 - Each water row has a `tier`:
-  - `validated` on WCA and BS2_S. Out-of-sample water bias on those benches was within about ±10 % at cum-12 / 24 / 36.
+  - `validated` on WCA and BS2_S. Out-of-sample (holdout) water: WCA forecast ran 8–11 % high; BS2_S within ±3 %, at cum-12 / 24 / 36.
   - `provisional` everywhere else.
 - The named water analogs per location are in `box.location_water_analog`.
 - The per-bench bias lines (tuning / holdout / pooled) are in `box.forecast_run.disclosure -> 'water'`.
 
 **Caveats**
 - On WCA in Texas, the holdout water ran about 15–17 % high (NM about on target).
-- On the provisional benches, water runs well below actual on AVA (about 50–65 %), and at cum-36 on BS1_S / BS3_C.
+- On the provisional benches, actual water ran 50–65 % above the forecast on AVA_0 / AVA_1, and 30–40 % above it at cum-36 on BS1_S / BS3_C.
 - The disclosure lines carry the numbers.
 
 Your existing downtime treatment applies to water the same way it applies to oil and gas.
