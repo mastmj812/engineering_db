@@ -1,7 +1,9 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 13                # v13 2026-10-19: water.save_ratio ON — handoff saves screen water as WOR-on-measured-analogs
+config_version: 14                # v14 2026-10-19: PDP-proximity cull (pdp_proximity:) — planned rows within 300 ft vt /
+                                  #    800 ft hz of a producer running >= 30 % alongside are culled; ALL PROVISIONAL
+                                  # v13 2026-10-19: water.save_ratio ON — handoff saves screen water as WOR-on-measured-analogs
                                   #    (anduin ratio_cohorts); the Blue Ox drop carries it (ledger §14)
                                   # v12 2026-10-19: screen-curve WATER = WOR vs cum oil on MEASURED-water analogs (water:;
                                   #    BOX D107 / D110, Michael Option A); save_ratio off until the drop accepts it (ledger §14)
@@ -180,6 +182,25 @@ codev:                            # gate 5.2b — co-development tiering
   # bench tag — a neighbour, not a parent. Reported apart. PROVISIONAL.
   same_landing_ft: 150
   min_tier1_frac_warn: 0.5        # flag cohorts whose first-tier share is below
+
+pdp_proximity:                    # v14 (Michael 2026-10-19, Chevron Farmouts: "from my head") — ALL PROVISIONAL.
+  # A planned stick is CULLED when an existing producer (any bench, its own
+  # included) sits within vertical_ft AND horizontal_ft of it while running
+  # alongside >= overlap_min_frac of OUR stick (rule-9 co-extent, pairwise).
+  # Horizontal = MEDIAN perpendicular gap over the shared length; vertical =
+  # |producer TVD - our landing TVD|. Applied to generated rows in propose
+  # (preview + seed: an all-culled bench seeds off) and evaluate (row rule,
+  # before keep_side / drop_<side>_rows / n_wells). Novi-sourced benches are
+  # flagged, never culled. Reviewer `pdp_proximity: false` per bench keeps the
+  # rows (decision-logged). NOT the sql/50 660-ft vertical-parent gate (analog
+  # tagging, never culls) — the two share no constants. dealintake/proximity.py
+  enabled: true
+  vertical_ft: 300                # PROVISIONAL (49-50-5 BS3_C, 332-358 ft over BS3_S PDP, is a near-miss at 300)
+  horizontal_ft: 800              # PROVISIONAL (15-22 WCA_2 hit is 783 ft; his 15-22 note said 1,000)
+  overlap_min_frac: 0.30          # share of OUR planned stick alongside the producer
+  near_miss_ratio: 1.25           # PROVISIONAL: within 1.25x either distance (375 ft / 1,000 ft) -> flag, never cull
+  producer_radius_mi: 1.5         # producers considered (= the review page's offset-PDP layer)
+  permit_tvd_culls: false         # a producer at a round-100 TVD (permit depth, rule 10) flags, never culls
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no
   method: density_gradient        # structure surface / play polygon exists)

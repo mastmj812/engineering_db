@@ -19,12 +19,14 @@ from dealintake.decline import effective_from_nominal
 from dealintake.render import maps
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
+    PROXIMITY_HEADERS,
     buildup_rows,
     di_pair,
     md,
     num,
     p_value,
     pct,
+    proximity_rows,
     write_csv,
 )
 from dealintake.select_wells import bench_code
@@ -193,6 +195,12 @@ def render(run_dir: Path) -> Path:
                          "yes" if B["edge_trigger"]["fired"] else "no"])
     s.append(md(["Unit", "Bench", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
                  "PDP in adjacent bench", "TC group", "Edge"], rows))
+    prox = proximity_rows(sig)
+    if prox:
+        s.append(f"\n## PDP proximity (unit x bench) — {sig['pdp_proximity']['rule']} (PROVISIONAL)\n")
+        s.append("Rows inside an existing producer's depletion envelope are culled before the reviewer's row rules "
+                 "(Novi-sourced benches: flagged only). Near-miss = kept, inside the flag band.\n")
+        s.append(md(PROXIMITY_HEADERS, prox))
 
     sticks = maps.load_sticks(run_dir)
     for bench, B in sig["benches"].items():            # key: "WCB_1" or "WCB_1 @ 12,620 ft" (lateral class)

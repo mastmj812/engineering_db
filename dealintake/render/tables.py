@@ -106,3 +106,22 @@ def cohort_rows(wells: list[dict[str, Any]], names: dict[str, str]) -> list[list
                     num(w.get("lateral_length_ft"), ",.0f"), names.get(w.get("unit"), w.get("unit") or "—"),
                     "—" if d is None else f"{d / 5280.0:.1f}", num(w.get("anduin_oil_eur_per_1000ft"), ",.0f"), came_on(w)])
     return out
+
+
+PROXIMITY_HEADERS = ["Unit", "Bench", "Source", "Rows", "Culled", "Culled rows ft", "Near-miss kept",
+                     "Permit-TVD (kept)", "Overridden / flag-only", "Nearest producer (hz / vt / alongside)"]
+
+
+def proximity_rows(sig: dict[str, Any]) -> list[list[Any]]:
+    """One row per unit x bench the PDP-proximity rule touched (config v14)."""
+    out = []
+    for key, B in sig.get("benches", {}).items():
+        for label, ub in B["units"].items():
+            s = ub.get("pdp_proximity")
+            if not s or not (s["culled"] or s["would_cull"] or s["near"] or s["permit"]):
+                continue
+            first = (s["culled"] or s["would_cull"] or s["near"] or s["permit"])[0]
+            out.append([label, key, ub["gate2"]["source"], s["n_rows"], s["n_culled"],
+                        ", ".join(f"{c['offset_ft']:+,.0f}" for c in s["culled"]) or "—",
+                        len(s["near"]), len(s["permit"]), len(s["would_cull"]), first["text"]])
+    return out

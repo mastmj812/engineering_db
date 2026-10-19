@@ -39,6 +39,54 @@ BENCH_COLOR = {
 CLASS_COLORS = ["#2563eb", "#16a34a", "#d97706", "#7c3aed", "#db2777", "#0891b2"]
 FT_PER_DEG_LAT = 364_000.0
 INK = "#111827"
+NEAR_MISS = "#d97706"
+
+
+def _prox_summaries(gb: dict[str, Any]) -> list[dict[str, Any]]:
+    return ([pl["proximity"] for pl in gb.get("planned", {}).values() if pl.get("proximity")]
+            + list((gb.get("culled_benches") or {}).values()))
+
+
+def culled_rows(gb: dict[str, Any]) -> list[tuple[str, float, list[float], bool]]:
+    """(bench, tvd, culled offsets, whole bench seeded off) for the gunbarrel ×s:
+    rows the PDP-proximity rule removed from a drawn bench, plus the benches the
+    seed turned off because every row was culled."""
+    out = []
+    for b, pl in gb.get("planned", {}).items():
+        c = (pl.get("proximity") or {}).get("culled") or []
+        if c and not pl.get("error"):
+            out.append((b, float(pl["tvd_ft"]), [x["offset_ft"] for x in c], False))
+    for b, s in (gb.get("culled_benches") or {}).items():
+        out.append((b, float(s["tvd_ft"]), [x["offset_ft"] for x in s.get("culled") or []], True))
+    return out
+
+
+def proximity_cell(b: str, gb: dict[str, Any]) -> str:
+    """The bench table's PDP-proximity column."""
+    s = (gb.get("culled_benches") or {}).get(b) or (gb.get("planned", {}).get(b) or {}).get("proximity")
+    if not s:
+        return "—"
+    parts = []
+    if s.get("n_culled"):
+        parts.append(f"{s['n_culled']} of {s['n_rows']} culled · nearest {s['culled'][0]['text']}")
+    if s.get("would_cull"):
+        parts.append(f"OVERRIDDEN: {len(s['would_cull'])} would cull ({s['would_cull'][0]['text']})")
+    if s.get("near"):
+        parts.append(f"near-miss {len(s['near'])} ({s['near'][0]['text']})")
+    if s.get("permit"):
+        parts.append(f"permit-TVD producer, not culled ({s['permit'][0]['text']})")
+    return "; ".join(parts) or "clear"
+
+
+def proximity_look(gb: dict[str, Any]) -> list[str]:
+    """Benches the reviewer should look at for PDP proximity: near-misses,
+    permit-TVD producers, overrides, every row culled."""
+    out = []
+    for b, pl in gb.get("planned", {}).items():
+        s = pl.get("proximity") or {}
+        if s.get("near") or s.get("permit") or s.get("would_cull") or (s.get("n_culled") and not pl.get("offsets_ft")):
+            out.append(b)
+    return out
 
 
 def _color(bench: str) -> str:
@@ -207,10 +255,11 @@ def gunbarrel(u: dict[str, Any]) -> str:
     if not gb:
         return ""
     rows = {b: pl for b, pl in gb["planned"].items() if not pl.get("error") and pl.get("offsets_ft")}
-    if not rows and not gb["existing"]:
+    ghosts = culled_rows(gb)
+    if not rows and not gb["existing"] and not ghosts:
         return ""
-    if rows:
-        t = [pl["tvd_ft"] for pl in rows.values()]
+    if rows or ghosts:
+        t = [pl["tvd_ft"] for pl in rows.values()] + [g[1] for g in ghosts]
         y_lo, y_hi = min(t) - 1500.0, max(t) + 1500.0
     else:
         t = [w["tvd_ft"] for w in gb["existing"]]
@@ -232,17 +281,31 @@ def gunbarrel(u: dict[str, Any]) -> str:
                    alpha=1.0 if w["inside"] else 0.4, zorder=3)
         seen.add(w["bench"])
     row_labels: list[str] = []
+    n_near = 0
     for b, pl in rows.items():
         ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.7, alpha=0.6)
         ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=110, marker="s", facecolors="white",
                    edgecolors=_color(b), linewidths=2.0, zorder=5)
+        near = [n["offset_ft"] for n in ((pl.get("proximity") or {}).get("near") or [])]
+        if near:
+            n_near += len(near)
+            ax.scatter(near, [pl["tvd_ft"]] * len(near), s=260, marker="s", facecolors="none",
+                       edgecolors=NEAR_MISS, linewidths=1.8, zorder=6)
+        rules = [r for r in pl.get("rules") or [] if "culled by PDP proximity" not in r]
+        n_cull = (pl.get("proximity") or {}).get("n_culled") or 0
         row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}"
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
                           + (" [UPSIDE]" if pl.get("role") == "upside" else "")
                           + (" [winerack]" if pl.get("winerack") else "")
                           + (" [880-ft fallback]" if pl.get("spacing_source") != "reviewer" else "")
                           + (f" (Novi's pattern {pl['novi_spacing_ft']:,.0f} ft — not used)" if pl.get("novi_spacing_ft") and pl.get("spacing_source") != "reviewer" else "")
-                          + (f" — {'; '.join(pl['rules'])}" if pl.get("rules") else ""))
+                          + (f" — {n_cull} culled by PDP proximity" if n_cull else "")
+                          + (f" — {'; '.join(rules)}" if rules else ""))
+    for b, tv, offs, whole in ghosts:
+        ax.scatter(offs, [tv] * len(offs), s=80, marker="x", color=_color(b), linewidths=2.0, alpha=0.9, zorder=5)
+        if whole:
+            ax.axhline(tv, color=_color(b), linewidth=0.7, alpha=0.3, linestyle=":")
+            row_labels.append(f"{b}: all {len(offs)} rows culled by PDP proximity — seeded OFF, TVD {tv:,.0f}")
     ax.set_ylim(y_hi, y_lo)
     flip, left, right = cross_section_ends(float(gb["azimuth_deg"]))
     ax.set_xlim((c_hi + 1500, c_lo - 1500) if flip else (c_lo - 1500, c_hi + 1500))
@@ -258,8 +321,16 @@ def gunbarrel(u: dict[str, Any]) -> str:
     if n_permit:
         handles += [plt.Line2D([], [], marker="o", linestyle="", markerfacecolor="white", markeredgecolor="#6b7280",
                                label=f"hollow = round-100 TVD (permit depth, suspect) x{n_permit}")]
-    handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="white", markeredgecolor=_color(lbl.split(":")[0]),
-                           markersize=8, label="proposed " + lbl) for lbl in row_labels]
+    handles += [plt.Line2D([], [], marker="x" if "seeded OFF" in lbl else "s", linestyle="", markerfacecolor="white",
+                           markeredgecolor=_color(lbl.split(":")[0]), color=_color(lbl.split(":")[0]),
+                           markersize=8, label=("" if "seeded OFF" in lbl else "proposed ") + lbl) for lbl in row_labels]
+    if ghosts:
+        rule = next((s["rule"] for s in _prox_summaries(gb) if s.get("rule")), "the PDP-proximity rule")
+        handles += [plt.Line2D([], [], marker="x", linestyle="", color="#6b7280", markersize=8,
+                               label=f"× = culled: {rule} of a producer (PROVISIONAL)")]
+    if n_near:
+        handles += [plt.Line2D([], [], marker="s", linestyle="", markerfacecolor="none", markeredgecolor=NEAR_MISS,
+                               markersize=11, label=f"amber = near-miss, kept (inside the flag band) x{n_near}")]
     ax.legend(handles=handles, fontsize=6.8, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     src = gb.get("benches_source", "seed")
     ax.set_title(f"{u.get('dsu_name') or u['label']} — gunbarrel: proposed rows at the "
@@ -360,13 +431,19 @@ def render(run_dir: Path) -> Path:
              "depths</b>; formation phrases are resolved by stratigraphic order, never into a depth), and the bench "
              "table with the proposed scope and why. Tell me the exceptions; <code>benches.yaml</code> is the record "
              "behind this page.</p>")
+    if prop.get("pdp_proximity"):
+        p.append(f"<p><b>PDP proximity (PROVISIONAL):</b> a generated row within {_esc(prop['pdp_proximity'])} of an "
+                 "existing producer (any bench; share of OUR stick alongside it) is culled — drawn as × on the gunbarrel; "
+                 "a bench with every row culled seeds off. Amber squares are near-misses (kept, flagged). "
+                 "<code>pdp_proximity: false</code> on a bench keeps its rows.</p>")
     p.append(overview_map(prop, classes))
     p.append('<div class="toc">' + " ".join(f'<a href="#{_esc(u["label"])}">{_esc(name[u["label"]])}</a>' for u in units) + "</div>")
     summary = []
     for u in units:
         seed = u.get("bench_seed") or {}
         on = [b for b, r in seed.items() if r["evaluate"]]
-        look = [b for b, r in seed.items() if r["why"].startswith(("edge", "thin"))]
+        look = [b for b, r in seed.items() if r["why"].startswith(("edge", "thin", "PDP proximity"))]
+        look += [f"{b} (PDP proximity)" for b in proximity_look(u.get("gunbarrel") or {}) if b not in look]
         summary.append([_Raw(f'<a href="#{_esc(u["label"])}">{_esc(name[u["label"]])}</a>'), f"{u['area_ac']:,.0f}",
                         u.get("rights"), f"{ll[u['label']]:,.0f}", f"{cls_ft[u['label']]:,.0f}",
                         ", ".join(on) or "— (not evaluated)", ", ".join(look) or "—"])
@@ -430,10 +507,11 @@ def render(run_dir: Path) -> Path:
                 loc = _Raw(str(_chip("Novi", "#7c3aed") if gg.get("source") == "novi" else _chip("generate", "#db2777"))
                            + (f'<br><span class="meta">{_esc(gg.get("reason"))}</span>' if gg.get("reason") else ""))
             rows.append([_chip(b, _color(b)), tvd, r.get("status", "—"), pdp3.get(b, 0), in_unit.get(b, 0), novi, loc,
+                         proximity_cell(b, u.get("gunbarrel") or {}),
                          _chip("ON", "#059669") if on else _chip("off", "#9ca3af"),
                          _Raw(f'<span class="why">{_esc(st["why"] if st else "not a target bench")}</span>')])
         p.append(_table(["Bench", "Local TVD", "vs window", "Offset PDP ≤3 mi", "PDP in unit", "Novi BASE_CASE",
-                         "Locations", "Scope", "Why"], rows))
+                         "Locations", "PDP proximity", "Scope", "Why"], rows))
     p.append("</body></html>")
     out = run_dir / "review.html"
     out.write_text("\n".join(p), encoding="utf-8")

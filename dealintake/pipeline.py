@@ -38,7 +38,7 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 from dealintake import benches as benchmod
-from dealintake import cohort_qc, split_test, strat, swd, unit_benches, water
+from dealintake import cohort_qc, proximity, split_test, strat, swd, unit_benches, water
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
@@ -59,6 +59,7 @@ from dealintake.geo import (
     stick_spacing_ft,
     true_to_grid,
 )
+from dealintake.proximity import ProximityRule
 from dealintake.render.tables import p_value
 from dealintake.select_wells import (
     adjacent_benches,
@@ -126,20 +127,40 @@ def staggered(opts: dict[str, Any]) -> bool:
     return opts.get("winerack", True) is not False
 
 
+def prox_enabled(opts: dict[str, Any]) -> bool:
+    """The PDP-proximity cull applies unless the reviewer set `pdp_proximity: false`."""
+    return opts.get("pdp_proximity", True) is not False
+
+
+def leg_rows(lg: list[dict[str, Any]], project: Callable[[Any], tuple[float, float]],
+             prox: ProximityRule | None, tvd_ft: float | None) -> list[dict[str, Any]]:
+    """Generated legs -> row-rule rows (offset in the rule-16 frame, lateral,
+    the leg, and the PDP-proximity test at the bench's landing TVD)."""
+    rows = []
+    for leg in lg:
+        r: dict[str, Any] = {"offset_ft": round(project(leg["geom"])[0]),
+                             "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0)), "leg": leg}
+        if prox is not None and tvd_ft is not None:
+            r["proximity"] = prox.check(leg["geom"], float(tvd_ft))
+        rows.append(r)
+    return rows
+
+
 def rule_counter(
     unit: Any, azimuth_deg: float, bench_opts: dict[str, dict[str, Any]], min_leg_ft: float | None,
+    prox: ProximityRule | None = None, zones: dict[str, tuple[float, float]] | None = None,
 ) -> Callable[[str, list[dict[str, Any]]], int]:
-    """How many of a bench's generated legs survive the reviewer's row rules."""
+    """How many of a bench's generated legs survive the row rules (PDP proximity
+    included when `prox` and the bench's zone TVD are given)."""
     project, _, _ = gunbarrel_frame(unit, azimuth_deg)
 
     def kept(bench: str, lg: list[dict[str, Any]]) -> int:
         o = bench_opts.get(bench) or {}
-        rows = [{"offset_ft": round(project(x["geom"])[0]),
-                 "lateral_ft": round(float(x.get("completed_lateral_ft") or 0))} for x in lg]
+        rows = leg_rows(lg, project, prox, (zones or {}).get(bench, (None, None))[0])
         k, _ = apply_row_rules(rows, azimuth_deg, n_wells=o.get("n_wells"), keep_side=o.get("keep_side"),
                                drop_rows={sd: o[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south")
                                           if o.get(f"drop_{sd}_rows")},
-                               min_leg_ft=min_leg_ft)
+                               min_leg_ft=min_leg_ft, cull_pdp=prox_enabled(o))
         return len(k)
     return kept
 
@@ -193,11 +214,14 @@ def gunbarrel_preview(
     gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
     bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
+    prox: ProximityRule | None = None,
 ) -> dict[str, Any]:
     """Cross-section data for the review page: existing producers and Novi
     BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
     bench (spacing = the bench's Novi de-facto spacing, else 880 ft; TVD = the
-    unit's local median). Offsets in the rule-16 frame (ft), TVD in ft."""
+    unit's local median). Offsets in the rule-16 frame (ft), TVD in ft. With
+    `prox`, rows inside a producer's depletion envelope are culled (row rule)
+    and each bench carries the proximity summary."""
     project, (c_lo, c_hi), (a_lo, a_hi) = gunbarrel_frame(unit, azimuth_deg)
     tvd_by = {bench_code(r["bench"]): r["median_tvd_ft"] for r in bench_proposal if r.get("median_tvd_ft") is not None}
     frame = LocalFrame.around(unit)
@@ -246,7 +270,7 @@ def gunbarrel_preview(
     if wr_zones:
         try:
             wr, _ = winerack_legs(narvi, unit, azimuth_deg, wr_zones, setback_ft=setback_ft,
-                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft))
+                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft, prox, wr_zones))
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             wr = e
     for b, row in bench_seed.items():
@@ -270,23 +294,62 @@ def gunbarrel_preview(
                 lg = legs(narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
                                          setback_ft=setback_ft, spacing_ft=sp,
                                          azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
-            rows = [{"offset_ft": round(project(leg["geom"])[0]),
-                     "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0))} for leg in lg]
+            rows = leg_rows(lg, project, prox, tvd)
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             planned[b] = {"error": str(e)[:160]}
             continue
         kept, notes = apply_row_rules(
             rows, azimuth_deg, n_wells=opts.get("n_wells"), keep_side=opts.get("keep_side"),
             drop_rows={sd: opts[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south") if opts.get(f"drop_{sd}_rows")},
-            min_leg_ft=min_leg_ft)
+            min_leg_ft=min_leg_ft, cull_pdp=prox_enabled(opts))
         planned[b] = {"tvd_ft": tvd, "tvd_source": "reviewer" if "tvd_ft" in opts else "local median",
                       "spacing_ft": sp, "spacing_source": sp_src,
                       "novi_spacing_ft": g2.get("novi_spacing_ft"),
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
                       "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
-                      "winerack": b in wr_zones}
+                      "winerack": b in wr_zones,
+                      "proximity": proximity.summarize(rows, kept, enabled=prox_enabled(opts))}
     return {"azimuth_deg": azimuth_deg, "cross_extent_ft": [round(c_lo), round(c_hi)],
             "bench_tvd_ft": tvd_by, "existing": existing, "novi": novi, "planned": planned}
+
+
+def preview_and_seed(
+    preview: Callable[[dict[str, dict[str, Any]]], dict[str, Any]], bench_seed: dict[str, dict[str, Any]],
+    *, apply_to_seed: bool, rounds: int = 3,
+) -> dict[str, Any]:
+    """Gunbarrel preview + the PDP-proximity seed call (config v14). On a FIRST
+    propose (`apply_to_seed`), a seeded bench whose every generated row is
+    culled seeds OFF, with the producers in its why (Chevron 6-7 / 49-50-5:
+    Michael dropped every bench but BS2_C for depletion), and the preview is
+    redrawn without it — a bench leaving the stagger moves the others' pins,
+    so this repeats until stable (`rounds` at most). A partly culled bench
+    stays on with the count in its why. With a reviewer benches.yaml the
+    reviewer's file is never touched: the page shows the culls only.
+    gunbarrel['culled_benches'] keeps what the seed turned off, for the page."""
+    culled: dict[str, dict[str, Any]] = {}
+    gun = preview(bench_seed)
+    for _ in range(rounds if apply_to_seed else 0):
+        newly = {b: pl for b, pl in gun["planned"].items()
+                 if bench_seed.get(b, {}).get("evaluate") and not pl.get("error") and not pl.get("offsets_ft")
+                 and (pl.get("proximity") or {}).get("n_culled") and pl["proximity"]["n_culled"] == pl["n_generated"]}
+        if not newly:
+            break
+        for b, pl in newly.items():
+            s = pl["proximity"]
+            culled[b] = {"tvd_ft": pl["tvd_ft"], "spacing_ft": pl["spacing_ft"], **s}
+            near = sorted({f"{c['api10']} {c['bench']}" for c in s["culled"]})
+            bench_seed[b] = {"evaluate": False,
+                             "why": f"PDP proximity: all {s['n_rows']} rows within {s['rule']} of {', '.join(near)} "
+                                    f"(seed: {bench_seed[b]['why']})"}
+        gun = preview(bench_seed)
+    if apply_to_seed:
+        for b, pl in gun["planned"].items():
+            s = pl.get("proximity") or {}
+            if s.get("n_culled") and bench_seed.get(b, {}).get("evaluate"):
+                bench_seed[b]["why"] += (f"; PDP proximity culled {s['n_culled']} of {s['n_rows']} rows "
+                                         f"(nearest {s['culled'][0]['text']})")
+    gun["culled_benches"] = culled
+    return gun
 
 
 def tract_check(
@@ -392,9 +455,11 @@ def propose(
         "config_path": str(cfg.path),
         "correlated_window": correlated_window,
         "window_basis": window_basis,
+        "pdp_proximity": proximity.rule_text(pc_) if (pc_ := proximity.settings(cfg.raw)) else None,
         "units": [],
     }
     tol = float(cfg["alignment"]["stick_inside_tolerance_ft"])
+    prox_radius = float((cfg.raw.get("pdp_proximity") or {}).get("producer_radius_mi", 1.5))
     review_geoms: dict[str, Any] = {}
     with wh.connect() as conn:
         out["snapshot"] = wh.snapshot(conn)
@@ -473,7 +538,8 @@ def propose(
                 s["relation"] = stick_relation(s["geom"], u, tol)
                 rel.setdefault(s["formation_blueox"] or "(unmapped)", Counter())[(s["category"], s["relation"])] += 1
             # Review-page layers (display only): Novi sticks near the unit + offset PDP laterals.
-            pdp_near = wh.pdp_laterals_near(conn, u)
+            pdp_near = wh.pdp_laterals_near(conn, u, prox_radius)
+            prox = ProximityRule.build(u, pl.azimuth_deg, pdp_near, cfg.raw)
             review_geoms[pc["label"]] = {
                 "novi": [{"stick_id": s["stick_id"], "bench": s["formation_blueox"] or "(unmapped)",
                           "category": s["category"], "relation": s["relation"], "wkt": s["geom"].wkt} for s in sticks],
@@ -504,13 +570,14 @@ def propose(
             # page, never automatically. Sticks are narvi PREVIEWS at the seed's
             # benches; evaluate regenerates them with the class-level spacing.
             rv = reviewed.get(pc["label"]) if reviewed else None
-            gun = gunbarrel_preview(
-                u, pl.azimuth_deg, proposal,
-                {b: {"evaluate": True} for b in rv["benches"]} if rv is not None else bench_seed,
-                gate2, sticks, pdp_near, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
-                bench_opts=rv["bench_opts"] if rv is not None else None,
-                min_leg_ft=rv["min_leg_ft"] if rv is not None else None,
-            )
+            gun = preview_and_seed(
+                lambda seed, _u=u, _pl=pl, _p=proposal, _g2=gate2, _s=sticks, _pn=pdp_near, _rv=rv, _px=prox: gunbarrel_preview(
+                    _u, _pl.azimuth_deg, _p,
+                    {b: {"evaluate": True} for b in _rv["benches"]} if _rv is not None else seed,
+                    _g2, _s, _pn, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
+                    bench_opts=_rv["bench_opts"] if _rv is not None else None,
+                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px),
+                bench_seed, apply_to_seed=rv is None)
             gun["benches_source"] = unit_benches.FILENAME if rv is not None else "seed"
             out["units"].append({
                 "label": pc["label"],
@@ -964,6 +1031,12 @@ def evaluate(
     known_units = set(all_units)
 
     winerack_memo: dict[str, tuple[dict[str, list[dict[str, Any]]], dict[str, float]]] = {}  # unit -> (legs, pins)
+    # PDP-proximity cull (config v14): one rule per unit, producers read live once.
+    prox_cfg = proximity.settings(cfg.raw)
+    prox_memo: dict[str, ProximityRule | None] = {}
+    if prox_cfg:
+        res["pdp_proximity"] = {"rule": proximity.rule_text(prox_cfg),
+                                "near_miss_ratio": float(prox_cfg["near_miss_ratio"]), "provisional": True}
     # SWD context from C4 (Michael 2026-10-13): injectors near our sticks and near
     # the cohort, reported beside the standoff table. Unavailable = say so, go on.
     scfg = cfg.raw.get("swd") or {}
@@ -1040,12 +1113,22 @@ def evaluate(
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
                                       "spacing_ft": sp_u, "role": opts.get("role", "base"), "row_rules": []}
+                az_u = u["planned_lateral"]["azimuth_deg"]
+                if prox_cfg and label not in prox_memo:
+                    prox_memo[label] = ProximityRule(
+                        geom, az_u, wh.pdp_laterals_near(conn, geom, float(prox_cfg["producer_radius_mi"])), prox_cfg)
+                prox = prox_memo.get(label)
                 if g2["source"] == "novi":
                     sticks = [s for s in wh.novi_sticks(conn, geom)
                               if s["formation_blueox"] == bench and s["category"] == "PUD"
                               and stick_relation(s["geom"], geom, float(cfg["alignment"]["stick_inside_tolerance_ft"])) == "inside"]
                     UB["locations"] = [{"id": s["stick_id"], "src": "novi", "ll_ft": s["ll_ft"],
                                         "tvd": s["tvd"], "wkt": s["geom"].wkt} for s in sticks]
+                    if prox is not None:      # Novi's own pattern is never culled — flag only
+                        project_n, _, _ = gunbarrel_frame(geom, az_u)
+                        nrows = [{"offset_ft": round(project_n(s["geom"])[0]),
+                                  "proximity": prox.check(s["geom"], float(s["tvd"] or tvd_u))} for s in sticks]
+                        UB["pdp_proximity"] = proximity.summarize(nrows, nrows, enabled=False)
                     sup = [{k: s.get(k) for k in ("pdp_count_1mi", "pdp_count_3mi", "pdp_count_5mi",
                                                   "dist_nearest_ft", "offset_median_eur_ft",
                                                   "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
@@ -1070,7 +1153,7 @@ def evaluate(
                             narvi, geom, u["planned_lateral"]["azimuth_deg"], zones,
                             setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                             kept=rule_counter(geom, u["planned_lateral"]["azimuth_deg"],
-                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"]))
+                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"], prox, zones))
                     lg = winerack_memo[label][0].get(bench, [])
                     UB["winerack"] = True
                     if bench in winerack_memo[label][1]:
@@ -1086,17 +1169,17 @@ def evaluate(
                 if g2["source"] != "novi":
                     # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
                     project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
-                    rows = [{"offset_ft": round(project(leg["geom"])[0]),
-                             "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0)), "leg": leg} for leg in lg]
+                    rows = leg_rows(lg, project, prox, tvd_u)
                     kept, notes = apply_row_rules(
                         rows, u["planned_lateral"]["azimuth_deg"], n_wells=opts.get("n_wells"),
                         keep_side=opts.get("keep_side"),
                         drop_rows={sd: opts[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south")
                                    if opts.get(f"drop_{sd}_rows")},
-                        min_leg_ft=plan[label]["min_leg_ft"])
+                        min_leg_ft=plan[label]["min_leg_ft"], cull_pdp=prox_enabled(opts))
                     lg = [r["leg"] for r in kept]
                     UB["row_rules"] = notes
                     UB["n_generated"] = len(rows)
+                    UB["pdp_proximity"] = proximity.summarize(rows, kept, enabled=prox_enabled(opts))
                     UB["locations"] = [{"id": f"gen-{i}", "src": "narvi_preview",
                                         "ll_ft": leg.get("completed_lateral_ft"), "tvd": tvd_u,
                                         "wkt": leg["geom"].wkt} for i, leg in enumerate(lg)]
@@ -1132,6 +1215,7 @@ def evaluate(
                 UB["novi_ids"] = sorted(set(unit_novi))
                 support_all += sup
                 B["units"][label] = UB
+                _log_proximity(res, key, label, UB.get("pdp_proximity"), g2["source"], opts, cfg.version)
 
             # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
@@ -1440,6 +1524,33 @@ def evaluate(
         write_json(run_dir / "well_sticks.json", wh.wellsticks(conn, map_api10s(res)))
     write_json(run_dir / "signals.json", res)
     return res
+
+
+def _log_proximity(res: dict[str, Any], key: str, label: str, s: dict[str, Any] | None, source: str,
+                   opts: dict[str, Any], version: int) -> None:
+    """PDP-proximity record for one unit x bench: culls -> decision log (rule),
+    a reviewer `pdp_proximity: false` that kept would-cull rows -> decision log
+    (reviewer); near-misses, permit-TVD producers, all-culled benches, Novi
+    benches and possible double drops -> flags."""
+    if not s:
+        return
+    where = f"{label} {key}"
+    manual = [f"drop_{sd}_rows" for sd in ("west", "east", "north", "south") if opts.get(f"drop_{sd}_rows")]
+    res["flags"] += proximity.flags(where, s, source=source, manual_drops=manual)
+    if s["n_culled"]:
+        res["decision_log"].append({
+            "gate": "1b PDP proximity", "bench": key,
+            "signal": (f"{label}: {s['n_culled']} of {s['n_rows']} rows within {s['rule']} of "
+                       + ", ".join(sorted({f"{c['api10']} {c['bench']}" for c in s["culled"]}))),
+            "decision": "culled rows " + ", ".join(f"{c['offset_ft']:+,.0f}" for c in s["culled"]) + " ft",
+            "by": f"rule (config v{version}, PROVISIONAL)",
+        })
+    if s["would_cull"] and source != "novi":
+        res["decision_log"].append({
+            "gate": "1b PDP proximity", "bench": key,
+            "signal": f"{label}: {len(s['would_cull'])} of {s['n_rows']} rows within {s['rule']}",
+            "decision": "kept (rule overridden)", "by": "reviewer (benches.yaml pdp_proximity: false)",
+        })
 
 
 def map_api10s(res: dict[str, Any]) -> list[str]:

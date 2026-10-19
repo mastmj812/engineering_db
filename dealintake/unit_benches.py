@@ -163,7 +163,10 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
                       are placed TOGETHER in one narvi call, adjacent benches
                       staggered by half a spacing. false = place this bench on its
                       own (rows may stack directly over the neighbouring bench).
-                      Give each bench its own spacing_ft."""
+                      Give each bench its own spacing_ft.
+      pdp_proximity   DEFAULT true (config v14): generated rows inside an existing
+                      producer's depletion envelope (pdp_proximity: in thresholds.yaml)
+                      are culled. false = keep them — a reviewer call, decision-logged."""
     out: dict[str, Any] = {}
     for k in ("tvd_ft", "spacing_ft"):
         if v.get(k) is not None:
@@ -188,10 +191,11 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
         if v["role"] not in ROLES:
             raise ValueError(f"{FILENAME}: {where}.role must be one of {ROLES}, got {v['role']!r}")
         out["role"] = v["role"]
-    if v.get("winerack") is not None:
-        if not isinstance(v["winerack"], bool):
-            raise ValueError(f"{FILENAME}: {where}.winerack must be true or false, got {v['winerack']!r}")
-        out["winerack"] = v["winerack"]
+    for k in ("winerack", "pdp_proximity"):
+        if v.get(k) is not None:
+            if not isinstance(v[k], bool):
+                raise ValueError(f"{FILENAME}: {where}.{k} must be true or false, got {v[k]!r}")
+            out[k] = v[k]
     return out
 
 

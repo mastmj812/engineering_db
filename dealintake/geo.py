@@ -11,6 +11,7 @@ from __future__ import annotations
 import itertools
 import math
 import statistics
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from pyproj import Proj, Transformer
@@ -54,6 +55,12 @@ class LocalFrame:
     def to_local(self, geom: BaseGeometry) -> BaseGeometry:
         t = Transformer.from_crs("EPSG:4326", self._proj(), always_xy=True)
         return transform(t.transform, geom)
+
+    def projector(self) -> Callable[[BaseGeometry], BaseGeometry]:
+        """`to_local` with ONE transformer — for loops over many geometries
+        (building a Transformer per call dominates a per-row proximity test)."""
+        t = Transformer.from_crs("EPSG:4326", self._proj(), always_xy=True)
+        return lambda g: transform(t.transform, g)
 
     def to_wgs84(self, geom: BaseGeometry) -> BaseGeometry:
         t = Transformer.from_crs(self._proj(), "EPSG:4326", always_xy=True)
@@ -322,11 +329,16 @@ def apply_row_rules(
     keep_side: str | None = None,
     drop_rows: dict[str, int] | None = None,
     min_leg_ft: float | None = None,
+    cull_pdp: bool = True,
 ) -> tuple[list[dict], list[str]]:
-    """Reviewer row rules on generated legs — each row has offset_ft and
-    lateral_ft. Order of application: min_leg_ft (drop stubs), keep_side,
-    drop_<side>_rows (nearest that side first), n_wells (trim the outermost
-    rows alternately from each side). Returns (kept rows, notes)."""
+    """Row rules on generated legs — each row has offset_ft and lateral_ft,
+    and `proximity` when the PDP-proximity rule ran (dealintake.proximity).
+    Order of application: min_leg_ft (drop stubs), PDP proximity (rows inside
+    an existing producer's depletion envelope; cull_pdp=False = the reviewer's
+    `pdp_proximity: false`, rows kept), keep_side, drop_<side>_rows (nearest
+    that side first), n_wells (trim the outermost rows alternately from each
+    side) — so the reviewer's caps act on the rows that survive. Returns
+    (kept rows, notes)."""
     notes: list[str] = []
     kept = sorted(rows, key=lambda r: r["offset_ft"])
     if min_leg_ft:
@@ -334,6 +346,12 @@ def apply_row_rules(
         if short:
             notes.append(f"{len(short)} leg(s) shorter than {min_leg_ft:,.0f} ft dropped")
             kept = [r for r in kept if r not in short]
+    if cull_pdp:
+        culled = [r for r in kept if (r.get("proximity") or {}).get("cull")]
+        if culled:
+            notes.append(f"{len(culled)} row(s) culled by PDP proximity ({culled[0]['proximity']['rule']}): "
+                         + "; ".join(f"row {r['offset_ft']:+,.0f} ft <- {r['proximity']['cull'][0]['text']}" for r in culled))
+            kept = [r for r in kept if r not in culled]
     if keep_side:
         sgn = side_sign(keep_side, azimuth_deg)
         before = len(kept)
