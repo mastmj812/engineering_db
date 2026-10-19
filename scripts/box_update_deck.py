@@ -1,6 +1,7 @@
 """BOX progress-update deck (Blue Ox brand template) for the 2026-10-19 group meeting — read-only.
 
     python -m scripts.box_update_deck frame --artifact runs/box9 --out runs/box9_deck     BOX run 9 (live run_id 10) x Novi BASE_CASE
+    python -m scripts.box_update_deck novi-all --artifact runs/box9 --out runs/box9_deck  every Novi BASE_CASE PUD on each bench
     python -m scripts.box_update_deck maps  --out runs/box9_deck                          4 + 1 maps per bench (PNG)
     python -m scripts.box_update_deck deck  --out runs/box9_deck --pptx <file.pptx>      the deck
 
@@ -8,7 +9,9 @@ frame: one row per BOX-forecast location (covered + covered_provisional) with th
 (curated.intel_locations + raw_intel.production_forecast, latest report): oil EUR per ft of lateral on a 30-YEAR basis for both
 (Novi BASE_CASE runs 359 months; BOX months 1-360 of the stored record, whose own EUR is the raw 50-yr integral — stated on every
 slide), and 12-month cumulative GOR (scf/bbl = 1,000 x cum-12 gas Mcf / cum-12 oil bbl; Novi volumes = rate x 30 d per 30-day step,
-the sql/43 convention). Extents of record + the TX/NM survey blocks (anduin infra/basemap) are context layers.
+the sql/43 convention). novi-all: the same Novi numbers for EVERY run-9 universe PUD on the bench (inside the BOX extent or not;
+remaining_pud / conflict / not_reconciled, no RES, no realized sticks), so the Novi maps show Novi's full bench footprint against
+the tighter BOX extent. Extents of record + the TX/NM survey blocks (anduin infra/basemap) are context layers.
 No database writes; no economics.
 """
 
@@ -26,6 +29,7 @@ import pandas as pd
 import shapely
 
 from box import edge_gap as eg
+from box import production as pr
 from box import production_run9 as p9r
 
 ANDUIN = Path(r"C:\Users\MichaelMast\Projects\permian_type_curve")
@@ -100,6 +104,55 @@ def cmd_frame(a: argparse.Namespace) -> int:
     return 0
 
 
+def bench_universe(A: dict[str, Any], g: str) -> pd.DataFrame:
+    """Every run-9 universe PUD on group g's bench + formations, whatever its coverage class (the Novi bench footprint)."""
+    u = A["universe"]
+    basin, bench, forms = pr.PRODUCTION_BENCHES[g]
+    return u[(u["basin"] == basin) & (u["bench"] == bench) & u["formation_blueox"].isin(forms)]
+
+
+def cmd_novi_all(a: argparse.Namespace) -> int:
+    from etl.db import get_connection
+
+    with open(a.artifact / "run.pkl", "rb") as fh:
+        A = pickle.load(fh)
+    parts = []
+    for g in p9r.GROUPS:
+        b = bench_universe(A, g)
+        parts.append(pd.DataFrame({"group": g, "stick_id": b["stick_id"].astype(int), "wkt": b["wkt"], "coverage": b["coverage"]}))
+    u = pd.concat(parts, ignore_index=True)
+    if u["stick_id"].duplicated().any():
+        raise SystemExit(f"{int(u['stick_id'].duplicated().sum())} sticks fall in more than one group")
+    cols = ["stick_id", "oil_eur", "gas_eur", "ll_ft", "category", "oil12", "gas12", "last_day"]
+    have = pd.read_csv(a.out / "novi.csv") if (a.out / "novi.csv").exists() else pd.DataFrame(columns=cols)
+    miss = sorted(set(u["stick_id"]) - set(have["stick_id"].astype(int)))
+    print(f"{len(u):,} bench PUDs; {len(miss):,} need a Novi pull", flush=True)
+    got = []
+    with get_connection() as conn, conn.cursor() as cur:
+        for i in range(0, len(miss), 10000):
+            cur.execute("SET TRANSACTION READ ONLY")
+            cur.execute("SET LOCAL statement_timeout = '1800s'")
+            got.append(pd.DataFrame(cur.execute(_NOVI_SQL, {"sids": miss[i:i + 10000]}).fetchall(), columns=cols))
+            conn.rollback()
+            print(f"  {min(i + 10000, len(miss)):,} / {len(miss):,}", flush=True)
+    n = pd.concat([have, *got], ignore_index=True).drop_duplicates("stick_id")
+    n["stick_id"] = n["stick_id"].astype(int)
+    m = u.merge(n, on="stick_id", how="left", validate="1:1")
+    lost = m["oil_eur"].isna()
+    if (m.loc[~lost, "category"] != "PUD").any():
+        raise SystemExit(f"non-PUD categories {set(m['category'])}")
+    m = m[~lost].copy()
+    L = m["ll_ft"].astype(float)
+    m["novi_eur_ft"] = m["oil_eur"].astype(float) / L
+    m["novi_gor12"] = 1000 * m["gas12"].astype(float) / m["oil12"].astype(float)
+    m["inside"] = m["coverage"].isin(pr.COVERED)
+    m[["group", "stick_id", "wkt", "coverage", "inside", "ll_ft", "oil_eur", "oil12", "gas12", "novi_eur_ft", "novi_gor12"]].to_csv(
+        a.out / "novi_all.csv", index=False)
+    print(f"{int(lost.sum()):,} bench PUDs without a Novi BASE_CASE forecast (dropped)")
+    print(m.groupby("group", sort=False).agg(novi_puds=("stick_id", "size"), inside_extent=("inside", "sum")).to_string())
+    return 0
+
+
 def summary(f: pd.DataFrame) -> pd.DataFrame:
     out = []
     for g in p9r.GROUPS:
@@ -121,7 +174,7 @@ def project(wkts: list[str]) -> list[Any]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("frame", "maps", "deck"):
+    for name in ("frame", "novi-all", "maps", "deck"):
         p = sub.add_parser(name)
         p.add_argument("--artifact", type=Path, default=Path("runs") / "box9")
         p.add_argument("--out", type=Path, default=Path("runs") / "box9_deck")
@@ -130,6 +183,8 @@ def main(argv: list[str] | None = None) -> int:
     a.out.mkdir(parents=True, exist_ok=True)
     if a.cmd == "frame":
         return cmd_frame(a)
+    if a.cmd == "novi-all":
+        return cmd_novi_all(a)
     from scripts import box_update_deck_render as rd
 
     return rd.cmd_maps(a) if a.cmd == "maps" else rd.cmd_deck(a)

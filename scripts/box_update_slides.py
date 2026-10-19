@@ -6,6 +6,7 @@ from the run's own by_bench disclosure (what each workup states). Error conventi
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -166,6 +167,7 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
         pres.part.drop_rel(sid.rId)
         sld.remove(sid)
     cov = coverage(A)
+    em = json.loads((maps / "edges.json").read_text(encoding="utf-8"))
     summ = bud.summary(f)
     val, prov = cov[cov.tier == "validated"], cov[cov.tier == "provisional"]
 
@@ -283,14 +285,16 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
     # 8 reading the maps
     s = _slide(pres, "Reading the bench maps")
     _text(s, LEFT, TOP, Inches(12.4), Inches(4.6), [
-        "• Same sticks on both maps of a pair: the BOX-forecast Novi PUD locations, each matched 1:1 to its own Novi BASE_CASE forecast (no RES, no realized sticks)",
+        ("• BOX maps: the BOX-forecast Novi PUD locations. Novi maps: EVERY Novi BASE_CASE PUD on the bench, inside the BOX extent or not "
+        "(remaining inventory only: no RES, no realized sticks) — the difference in footprint is the extent story"),
+        "• Ratio map + every BOX ÷ Novi number: only the BOX-forecast sticks, each matched 1:1 to its own Novi BASE_CASE forecast",
         "• One shared color scale per pair: the same color means the same value on BOX and on Novi; bins are quantiles of the pooled values",
         ("• Oil EUR per ft of lateral on a 30-YEAR basis for both — Novi BASE_CASE runs 359 months; BOX's record EUR is the raw 50-yr integral "
         "(30-yr ≈ 95–97 % of it on every bench)"),
         "• GOR = 12-month cumulative (1,000 × cum-12 gas Mcf ÷ cum-12 oil bbl, scf/bbl): gas peaks ~4 months after oil, so 6-month GOR reads low; cum-12 is a scored horizon",
         "• BOX = analog-cohort P50 per location (× the walk-forward haircut on WCA / BS2_S); volumes uptime-free",
         "• Ratio map: BOX ÷ Novi oil EUR; grey = within ±10 %, red = BOX below Novi, blue = BOX above",
-        "• Context: dashed = TX / NM line; black outline = the bench's BOX extent of record; grey = survey blocks",
+        "• Black outline (drawn over the sticks) = the bench's BOX extent of record; all maps of a bench share one window; dashed = TX / NM line; grey = survey blocks",
     ], size=13)
 
     # per bench
@@ -313,6 +317,8 @@ def build(A: dict[str, Any], f: pd.DataFrame, maps: Path, out: Path) -> None:
             (f"{p9r.tier(g).capitalize()} · holdout: {HOLDOUT[g]}", {"bold": True, "size": 14, "color": FLAG if HOLDOUT[g].startswith("FAIL") else INK}),
             f"• {SPEC.get(g, 'raw analog P50, no haircut')}; extent {bud.EXTENT_OF[g]}",
             f"• {len(x):,} PUD locations forecast" + (f"; {noa} with < 3 analogs (not forecast)" if noa else ""),
+            (f"• Extent: {em[g]['novi_inside']:,} of Novi's {em[g]['novi_puds']:,} BASE_CASE PUDs on the bench "
+             f"({em[g]['novi_inside'] / em[g]['novi_puds']:.0%}) sit inside the BOX extent"),
             f"• Oil EUR/ft P50 (30-yr): BOX {r['BOX oil EUR/ft (30-yr) P50']:.1f} vs Novi {r['Novi oil EUR/ft P50']:.1f} bbl/ft",
             f"• BOX ÷ Novi oil: {r['BOX / Novi (sum)']:.2f} in total; P90–P10 {r['BOX / Novi P90 (low)']:.2f}–{r['BOX / Novi P10 (high)']:.2f}",
             f"• GOR12 P50: BOX {r['BOX GOR12 P50']:,.0f} vs Novi {r['Novi GOR12 P50']:,.0f} scf/bbl",

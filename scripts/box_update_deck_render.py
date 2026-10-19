@@ -1,8 +1,10 @@
 """Maps + deck for scripts.box_update_deck (pure: reads the frame / extents / artifact written by `frame`; no database access).
 
 Maps per bench (PNG, UTM 13N ft, north up): oil EUR/ft BOX | Novi on ONE shared binned blue ramp, GOR12 BOX | Novi on one shared
-orange ramp, and BOX / Novi oil EUR on a diverging red | grey | blue scale (red = BOX below Novi). Context: TX/NM survey blocks,
-the state line, the bench's extent of record. Deck: the Blue Ox brand template (anduin deal_slide.pptx: top / bottom bars,
+orange ramp, and BOX / Novi oil EUR on a diverging red | grey | blue scale (red = BOX below Novi). BOX maps (and the ratio) carry the
+BOX-forecast sticks; Novi maps carry EVERY Novi BASE_CASE PUD on the bench (novi_all.csv), so Novi's footprint reads against the
+tighter BOX extent. All maps of a bench share one window (extent + Novi footprint). Context: TX/NM survey blocks, the state line;
+the bench's BOX extent of record is drawn ON TOP of the sticks (white halo + ink line). Deck: the Blue Ox brand template (anduin deal_slide.pptx: top / bottom bars,
 CONFIDENTIAL footer), slides added on its "Title Only" layout.
 """
 
@@ -75,10 +77,19 @@ def _lines(geoms: list[Any]) -> list[np.ndarray]:
     return out
 
 
-def draw(ctx: Context, bench_ext: str, sticks: list[np.ndarray], vals: np.ndarray, edges: list[float], colors: list[str], title: str,
-         cbar_label: str, ticklabels: list[str], fname: Path, note: str) -> None:
-    ext = ctx.ext_ft[bench_ext]
+def window(ext: Any, sticks: list[np.ndarray]) -> tuple[float, float, float, float]:
+    """Bounds of the extent of record plus every stick drawn on any map of the bench."""
     x0, y0, x1, y1 = ext.bounds
+    if sticks:
+        c = np.concatenate(sticks)
+        x0, y0, x1, y1 = min(x0, c[:, 0].min()), min(y0, c[:, 1].min()), max(x1, c[:, 0].max()), max(y1, c[:, 1].max())
+    return float(x0), float(y0), float(x1), float(y1)
+
+
+def draw(ctx: Context, bench_ext: str, sticks: list[np.ndarray], vals: np.ndarray, edges: list[float], colors: list[str], title: str,
+         cbar_label: str, ticklabels: list[str], fname: Path, note: str, win: tuple[float, float, float, float]) -> None:
+    ext = ctx.ext_ft[bench_ext]
+    x0, y0, x1, y1 = win
     pad = 0.04 * max(x1 - x0, y1 - y0)
     x0, y0, x1, y1 = x0 - pad, y0 - pad, x1 + pad, y1 + pad
     fig = plt.figure(figsize=(FIG_W, FIG_H), dpi=DPI)
@@ -87,21 +98,24 @@ def draw(ctx: Context, bench_ext: str, sticks: list[np.ndarray], vals: np.ndarra
     bl = [ctx.blocks[i] for i in ctx.tree.query(box)]
     ax.add_collection(LineCollection(_lines([b.intersection(box) for b in bl]), colors=GRID, linewidths=0.25, zorder=1))
     ax.add_collection(LineCollection(_lines([ctx.state.intersection(box)]), colors=MUTED, linewidths=0.8, linestyles="--", zorder=2))
-    ax.add_collection(LineCollection(_lines([ext.boundary]), colors=INK, linewidths=0.9, zorder=3))
+    vals = np.where(np.isfinite(np.asarray(vals, float)), np.asarray(vals, float), np.nan)
     order = np.argsort(np.nan_to_num(vals, nan=-np.inf))
     cmap, norm = ListedColormap(colors), BoundaryNorm(edges, len(colors))
     lc = LineCollection([sticks[i] for i in order], array=np.asarray(vals)[order], cmap=cmap, norm=norm, linewidths=1.0, zorder=4,
                         capstyle="round")
     ax.add_collection(lc)
+    ring = _lines([ext.boundary])  # extent of record ON TOP of the sticks: white halo, then ink
+    ax.add_collection(LineCollection(ring, colors="white", linewidths=3.2, zorder=5, capstyle="round", joinstyle="round"))
+    ax.add_collection(LineCollection(ring, colors=INK, linewidths=1.4, zorder=6, capstyle="round", joinstyle="round"))
     ax.set_xlim(x0, x1)
     ax.set_ylim(y0, y1)
     ax.set_aspect("equal")
     ax.set_axis_off()
     sb = 10 * MI if (x1 - x0) > 40 * MI else 5 * MI
-    ax.plot([x0 + pad * 0.5, x0 + pad * 0.5 + sb], [y0 + pad * 0.5] * 2, color=INK, lw=2, solid_capstyle="butt", zorder=5)
-    ax.text(x0 + pad * 0.5, y0 + pad * 0.5 + 0.012 * (y1 - y0), f"{sb / MI:.0f} mi", fontsize=7, color=INK, zorder=5)
-    fig.text(0.015, 0.955, title, fontsize=11, fontweight="bold", color=INK, va="center")
-    fig.text(0.985, 0.955, note, fontsize=7.5, color=MUTED, va="center", ha="right")
+    ax.plot([x0 + pad * 0.5, x0 + pad * 0.5 + sb], [y0 + pad * 0.5] * 2, color=INK, lw=2, solid_capstyle="butt", zorder=7)
+    ax.text(x0 + pad * 0.5, y0 + pad * 0.5 + 0.012 * (y1 - y0), f"{sb / MI:.0f} mi", fontsize=7, color=INK, zorder=7)
+    fig.text(0.015, 0.968, title, fontsize=11, fontweight="bold", color=INK, va="center")
+    fig.text(0.015, 0.932, note, fontsize=7.5, color=MUTED, va="center")
     cax = fig.add_axes((0.10, 0.075, 0.80, 0.035))
     for i, c in enumerate(colors):
         cax.add_patch(plt.Rectangle((i, 0), 0.97, 1, color=c))
@@ -124,6 +138,7 @@ def _fmt(e: float) -> str:
 
 def cmd_maps(a: Any) -> int:
     f = pd.read_csv(a.out / "frame.csv")
+    nall = pd.read_csv(a.out / "novi_all.csv")
     ctx = Context(a.out)
     md = a.out / "maps"
     md.mkdir(exist_ok=True)
@@ -131,22 +146,27 @@ def cmd_maps(a: Any) -> int:
     for g in p9r.GROUPS:
         x = f[f["group"] == g].reset_index(drop=True)
         sticks = [np.asarray(s.coords) for s in bud.project(list(x["wkt"]))]
+        nx = nall[nall["group"] == g].reset_index(drop=True)
+        nsticks = [np.asarray(s.coords) for s in bud.project(list(nx["wkt"]))]
         be = bud.EXTENT_OF[g]
-        n = f"{len(x):,} PUD locations"
-        e_eur = shared_edges(x["box_eur_ft"].to_numpy(), x["novi_eur_ft"].to_numpy())
-        e_gor = shared_edges(x["box_gor12"].to_numpy(), x["novi_gor12"].to_numpy())
+        win = window(ctx.ext_ft[be], sticks + nsticks)
+        n = f"{len(x):,} BOX-forecast PUDs"
+        nn = f"{len(nx):,} Novi PUDs on the bench · {int(nx['inside'].sum()):,} inside the BOX extent"
+        e_eur = shared_edges(x["box_eur_ft"].to_numpy(), nx["novi_eur_ft"].to_numpy())
+        e_gor = shared_edges(x["box_gor12"].to_numpy(), nx["novi_gor12"].to_numpy())
         lab_eur, lab_gor = [_fmt(e) for e in e_eur[1:-1]], [_fmt(e) for e in e_gor[1:-1]]
         ce, cg = BLUE[: len(e_eur) - 1], ORANGE[: len(e_gor) - 1]
         L = bud.label(g)
-        jobs = [("eur_box", x["box_eur_ft"], e_eur, ce, f"{L} — BOX run 9 oil EUR / ft", "Oil EUR, bbl per ft of lateral, 30-yr basis (shared scale)", lab_eur),
-                ("eur_novi", x["novi_eur_ft"], e_eur, ce, f"{L} — Novi BASE_CASE oil EUR / ft", "Oil EUR, bbl per ft of lateral, 30-yr basis (shared scale)", lab_eur),
-                ("gor_box", x["box_gor12"], e_gor, cg, f"{L} — BOX run 9 GOR, first 12 months", "12-month cumulative GOR, scf/bbl (shared scale)", lab_gor),
-                ("gor_novi", x["novi_gor12"], e_gor, cg, f"{L} — Novi BASE_CASE GOR, first 12 months", "12-month cumulative GOR, scf/bbl (shared scale)", lab_gor),
-                ("ratio", x["ratio"], RATIO_EDGES, DIVERGE, f"{L} — BOX ÷ Novi oil EUR", "BOX ÷ Novi oil EUR (30-yr): red = BOX below Novi, blue = BOX above",
+        jobs = [("eur_box", sticks, x["box_eur_ft"], n, e_eur, ce, f"{L} — BOX run 9 oil EUR / ft", "Oil EUR, bbl per ft of lateral, 30-yr basis (shared scale)", lab_eur),
+                ("eur_novi", nsticks, nx["novi_eur_ft"], nn, e_eur, ce, f"{L} — Novi BASE_CASE oil EUR / ft", "Oil EUR, bbl per ft of lateral, 30-yr basis (shared scale)", lab_eur),
+                ("gor_box", sticks, x["box_gor12"], n, e_gor, cg, f"{L} — BOX run 9 GOR, first 12 months", "12-month cumulative GOR, scf/bbl (shared scale)", lab_gor),
+                ("gor_novi", nsticks, nx["novi_gor12"], nn, e_gor, cg, f"{L} — Novi BASE_CASE GOR, first 12 months", "12-month cumulative GOR, scf/bbl (shared scale)", lab_gor),
+                ("ratio", sticks, x["ratio"], n, RATIO_EDGES, DIVERGE, f"{L} — BOX ÷ Novi oil EUR", "BOX ÷ Novi oil EUR (30-yr): red = BOX below Novi, blue = BOX above",
                  [f"{e:g}" for e in RATIO_EDGES[1:-1]])]
-        for key, v, edges, cols, title, cl, tl in jobs:
-            draw(ctx, be, sticks, v.to_numpy(float), edges, cols, title, cl, tl, md / f"{g}_{key}.png", n)
-        meta[g] = {"eur_edges": e_eur[1:-1], "gor_edges": e_gor[1:-1]}
+        for key, st, v, note, edges, cols, title, cl, tl in jobs:
+            draw(ctx, be, st, v.to_numpy(float), edges, cols, title, cl, tl, md / f"{g}_{key}.png", note, win)
+        meta[g] = {"eur_edges": e_eur[1:-1], "gor_edges": e_gor[1:-1], "box_puds": len(x), "novi_puds": len(nx),
+                   "novi_inside": int(nx["inside"].sum())}
         print(f"{g}: 5 maps", flush=True)
     (md / "edges.json").write_text(json.dumps(meta, indent=1), encoding="utf-8")
     return 0
