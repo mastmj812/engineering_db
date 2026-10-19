@@ -1,0 +1,40 @@
+{
+  "reach": {
+    "locations": 50963,
+    "by_source": {
+      "measured": 50914,
+      "calculated_fallback": 49
+    },
+    "radius_counts": {
+      "5.0": 20846,
+      "7.5": 12626,
+      "10.0": 7223,
+      "15.0": 6411,
+      "20.0": 1739,
+      "30.0": 1170,
+      "40.0": 437,
+      "50.0": 462
+    },
+    "tx_locations": 21703,
+    "tx_with_nm_analog": 4597,
+    "tx_majority_nm": 1692
+  },
+  "choice": {
+    "ratio": {
+      "judged": 37,
+      "passed": 16,
+      "median_abs_bias": 0.06235905418702921
+    },
+    "arps": {
+      "judged": 37,
+      "passed": 19,
+      "median_abs_bias": 0.13520175065206866
+    },
+    "chosen": "ratio"
+  },
+  "tuning_rows": 9222,
+  "tuning_sources": {
+    "measured": 9193,
+    "calculated_fallback": 29
+  }
+}
