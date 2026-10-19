@@ -90,7 +90,7 @@ life on every group (EUR WOR > cum-12 WOR).
 
 1. **Apply sql/62 live:** `python -m scripts.apply_box_water` (expect 16 / 16; DDL on box only, no ETL object touched).
 2. **Store water on record run 10 live:** `python -m scripts.box_water_run store --out runs/box12b`, from this worktree.
-   - Artifact `runs/box12b/water.pkl`, sha256 e0b12593…; code 00ca983, the build's code. The `-dirty` stamp was edited out
+   - Artifact `runs/box12b/water.pkl`, sha256 9519614d…; code 83bd86f (built at 00ca983, the same box/ + water scripts; the branch was rebased onto main after #160 merged). The `-dirty` stamp was edited out
      with the reason recorded in the artifact: two unrelated scripts (apply_box_pud_forecast.py, gen_data_dictionary.py) were
      edited during the build and are not imported by it.
    - Pre-checks: record = run 10; `box_econ.box_pud_econ` = 0; live oil / gas md5 = the container's (verified above).
