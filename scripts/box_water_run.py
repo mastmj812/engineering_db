@@ -118,6 +118,11 @@ def disclosure_json() -> dict[str, Any]:
             "sources": ["docs/box/step11-2026-10-19", "docs/box/step12a-2026-10-19"], "by_bench": by}
 
 
+# exact, plan-independent identity of the oil / gas stream rows (a float sum() is not bit-reproducible across query plans)
+_OILGAS = ("SELECT stream, count(*), md5(string_agg(concat_ws(':', location_id, coverage, tier, params::text, lateral_mult, eur_haircut, eur_raw, eur, "
+           "eur_per_kft, cum12, cum24), ',' ORDER BY location_id)) FROM box.pud_forecast_stream WHERE run_id = %s AND stream <> 'water' GROUP BY 1 ORDER BY 1")
+
+
 def cmd_store(a: argparse.Namespace) -> int:
     t0 = time.time()
     with open(a.out / "water.pkl", "rb") as fh:
@@ -142,7 +147,7 @@ def cmd_store(a: argparse.Namespace) -> int:
                 raise SystemExit(f"run {rid} already carries water")
             pf = {int(s): (int(lid), c) for s, lid, c in q("SELECT stick_id, location_id, coverage FROM box.pud_forecast WHERE run_id = %s "
                                                            "AND coverage IN ('covered', 'covered_provisional')", (rid,)).fetchall()}
-            before = q("SELECT stream, count(*), sum(eur), sum(cum12) FROM box.pud_forecast_stream WHERE run_id = %s GROUP BY 1 ORDER BY 1", (rid,)).fetchall()
+            before = q(_OILGAS, (rid,)).fetchall()
             mbefore = q("SELECT count(*) FROM box.pud_forecast_month WHERE run_id = %s", (rid,)).fetchone()[0]
             missing = sorted(set(pf) - set(water))
             extra = sorted(set(water) - set(pf))
@@ -179,9 +184,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                 q(f"ANALYZE box.{t}")
             print(f"rows written ({len(st)} water streams, {len(an)} water analogs, {nf} without water) ({time.time() - t0:.0f} s); identity", flush=True)
             # identity
-            after = q("SELECT stream, count(*), sum(eur), sum(cum12) FROM box.pud_forecast_stream WHERE run_id = %s AND stream <> 'water' "
-                      "GROUP BY 1 ORDER BY 1", (rid,)).fetchall()
-            chk(after == before, f"oil / gas stream rows unchanged (count, sum eur, sum cum12): {after == before}")
+            after = q(_OILGAS, (rid,)).fetchall()
+            chk(after == before, f"oil / gas stream rows unchanged (count + ordered md5 of every row): {after}")
             ma = q("SELECT count(*) FROM box.pud_forecast_month WHERE run_id = %s AND stream <> 'water'", (rid,)).fetchone()[0]
             chk(ma == mbefore, f"oil / gas month rows unchanged ({ma} = {mbefore})")
             nw = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (rid,)).fetchone()[0]
