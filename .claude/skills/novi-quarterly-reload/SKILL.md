@@ -184,6 +184,20 @@ workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX 
    - Storing an older vintage than one already stored is refused.
    - Identity checks run before COMMIT: rows = universe; covered + no_analogs = the in-extent WCA_1 + WCA_2 universe;
      600 months per stream summing to EUR.
+3b. **Water on the new record run (D107 / D108 / D110; sql/62).** `box_pud_run store` writes oil + gas only. Add the water
+   stream, built from the same run artifact (read-only build, then a WRITE on the explicit go):
+   ```powershell
+   python -m scripts.box_water_run build --run-pkl runs/<run>/run.pkl --out runs/<run>_water
+   python -m scripts.box_water_run store --out runs/<run>_water
+   ```
+   - The build refuses a run whose data-through differs from the water spec's `water11.LAST`. On a new vintage that pin
+     moves with the run: bump it in a reviewed commit, never silently.
+   - The store's identity checks run before COMMIT:
+     - oil / gas rows unchanged (ordered md5);
+     - one water row per covered + covered_provisional location;
+     - 600 months summing to EUR;
+     - validated water = the WCA + BS2_S `covered` rows;
+     - ≥ 3 named water analogs per location.
 4. **Verify live, read-only:**
    - one `is_record` run;
    - coverage counts match the log;
