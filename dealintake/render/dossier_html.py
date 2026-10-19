@@ -30,12 +30,14 @@ from dealintake.render.dossier import _slug, _stream_rows, _transfer_rows
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
     COHORT_HEADERS,
+    PROXIMITY_HEADERS,
     buildup_rows,
     cohort_rows,
     di_pair,
     num,
     p_value,
     pct,
+    proximity_rows,
 )
 
 INK = "#111827"
@@ -322,6 +324,12 @@ def render(run_dir: Path) -> Path:
     p.append("<details><summary>Bench matrix (unit × bench): locations, support, edge</summary>"
              + _table(["Unit", "Bench @ class", "Locations (src)", "pdp_count_3mi med", "Gate 3", "TVD excess max ft",
                        "PDP in adjacent bench", "Curve", "Edge"], rows) + "</details>")
+    prox = proximity_rows(sig)
+    if prox:
+        p.append(f"<details open><summary>PDP proximity (unit × bench) — {_esc(sig['pdp_proximity']['rule'])} "
+                 "(PROVISIONAL)</summary><div class=\"meta\">Rows inside an existing producer's depletion envelope are "
+                 "culled before the reviewer's row rules; Novi-sourced benches are flagged only. Near-miss = kept, inside "
+                 "the flag band.</div>" + _table(PROXIMITY_HEADERS, prox) + "</details>")
     p.append('<div class="toc">' + " ".join(f'<a href="#{_slug(k)}">{_esc(k)}</a>' for k in sig["benches"]) + "</div>")
 
     # ---- per bench x class -------------------------------------------------------

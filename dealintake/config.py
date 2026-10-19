@@ -32,6 +32,8 @@ _REQUIRED = {
     "spacing": ("tight_below_frac", "sentinel_ft"),
     "qc_flags": ("peak_month_tolerance", "eur_ft_mad_z", "di_dispersion"),
     "split": ("min_wells_per_group", "median_ratio", "alpha"),
+    "pdp_proximity": ("enabled", "vertical_ft", "horizontal_ft", "overlap_min_frac", "near_miss_ratio",
+                      "producer_radius_mi", "permit_tvd_culls"),
 }
 
 

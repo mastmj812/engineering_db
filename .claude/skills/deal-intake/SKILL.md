@@ -182,7 +182,37 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   at the REVIEWED benches when `benches.yaml` exists, else at the seed. It
   exists so topfill/underfill calls are made by eye on the page (BS3_S rows
   sitting over WCA_1/WCXY producers) — the runner never excludes a bench for
-  being a topfill or underfill. Stacked DSUs say "same footprint as …".
+  its development SCENARIO; it does cull rows inside a producer's depletion
+  envelope (PDP proximity, next bullet) and draws them. Stacked DSUs say
+  "same footprint as …".
+- **PDP proximity** (config v14, Michael 2026-10-19, Chevron Farmouts — "from
+  my head", every number PROVISIONAL; `dealintake/proximity.py`): a generated
+  row is CULLED when an existing producer (any bench, its own included) sits
+  within `pdp_proximity.vertical_ft` (300 ft, |producer TVD − our landing
+  TVD|) AND `horizontal_ft` (800 ft, the MEDIAN perpendicular gap over the
+  shared length — not the midpoint offset) while running alongside ≥
+  `overlap_min_frac` (30 %) of OUR stick (rule-9 co-extent, pairwise).
+  Producers = every horizontal within 1.5 mi, not just the gunbarrel's
+  in-unit set (6-7's BS3_C edge row is culled by a parallel well in the
+  next unit, 0 % in ours). The cull runs after `min_leg_ft` and BEFORE
+  `keep_side` / `drop_<side>_rows` / `n_wells`, in `propose` (preview) and
+  `evaluate` (locations), and the winerack anchor is chosen after it. On a
+  first propose a bench with EVERY row culled seeds off ("PDP proximity:
+  all n rows within …"), and the stagger is redrawn without it; a partly
+  culled bench stays on with the count in its why. The gunbarrel draws
+  culled rows as ×, near-misses (inside `near_miss_ratio` 1.25× either
+  distance — 375 ft / 1,000 ft) in amber; the bench table has a "PDP
+  proximity" column; near-misses, permit-TVD producers (round-100 TVD, rule
+  10: flagged, never culled) and all-culled benches go to "Needs a look".
+  Novi-sourced benches are flagged, never culled. NOT the sql/50 660-ft
+  vertical-parent gate: that one TAGS analog wells (midpoint offset, 1,000-ft
+  band, other-bench parents, shielding) and never removes anything; this one
+  removes OUR rows and shares no constant with it. Calibration (Chevron seed,
+  2026-10-19): it reproduces Michael's hand calls on 15-22 (west rows 783 /
+  123 ft off WCB_1 4238935214) and 6-7; on 49-50-5 BS3_C (332–358 ft over
+  the BS3_S producers) survives at 300 ft as near-misses — he dropped it by
+  hand. Old `benches.yaml` files with `drop_<side>_rows` written for
+  proximity double-drop under v14 (flagged) — remove those keys.
   **Michael reviews the page and states the exceptions in chat; the operator
   records them in `benches.yaml` — he never reads the YAML** (feedback
   2026-09-22).
@@ -197,7 +227,9 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   upside`, `winerack: false` (opt OUT of the default stagger — a unit's
   generated benches are placed together, adjacent benches half a spacing
   apart, Michael 2026-10-08; on a narrow unit the stagger can cost a row:
-  Rally Caps 1-12 WCB_2 4 -> 3); per unit `min_leg_ft` (drop stair-step stubs). Sides are compass
+  Rally Caps 1-12 WCB_2 4 -> 3), `pdp_proximity: false` (keep the rows the
+  PDP-proximity rule would cull — a reviewer call, decision-logged); per
+  unit `min_leg_ft` (drop stair-step stubs). Sides are compass
   words; the runner maps them onto the rule-16 frame (on a 162° plan the
   +offset side is WSW, so "east" is the negative side). Every key lands in
   the decision log.
@@ -209,7 +241,9 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   or thin control; numeric windows judged on LOCAL medians (in → on, out →
   off); a bench within 200 ft of a window edge is decided by the formation
   in the DSU NAME when there is one ("(WCB)"), else inside-edge on /
-  outside-edge off. The file also carries each unit's `planned_lateral_ft`
+  outside-edge off; a bench whose every generated row is inside the PDP
+  depletion envelope → off (why names the producers). The file also carries
+  each unit's `planned_lateral_ft`
   for the reviewer to correct. A re-run of `propose` never overwrites it
   (fresh seed → `benches.seed.yaml`).
 - **Bench proposal:** each local bench's offset-median TVD vs the window →
@@ -598,7 +632,8 @@ Reviewer levers, all decision-logged or visible in the dossier:
   runner flags and stops extending; the reviewer supplies a radius or a
   manual set.
 - Provisional / uncalibrated: edge-trigger thresholds, `min_wells: 10`,
-  `di_bounds_per_stream`. Residual +6–11 % transfer bias is unexplained
+  `di_bounds_per_stream`, every `pdp_proximity` distance (300 / 800 ft, the
+  1.25× near-miss band — one deal of calibration). Residual +6–11 % transfer bias is unexplained
   (vintage-matched lenders did not remove it).
 - A well's `scenario_class` is relative to ANY bench; the tier is relative
   to what is producing in the unit within the band. Read the class column
