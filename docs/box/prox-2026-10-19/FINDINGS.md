@@ -1,4 +1,4 @@
-# PDP-proximity study — step 1 precedent atlas + step 2 dose-response (Delaware) — AT GATE 2
+# PDP-proximity study — step 1 precedent atlas + step 2/2b dose-response (Delaware) — AT GATE 2b
 
 Built 2026-10-19 by `python -m scripts.box_prox_study` (133 s, read-only; nothing written to the warehouse).
 Code: `box/prox_study.py` (pure), `box/prox_study_report.py`, tests `tests/test_box_prox_study.py`.
@@ -184,3 +184,79 @@ TX is steeper close in than NM: at 0–400 ft, cum-12 is TX 0.66 vs NM 0.87. GOR
    I recommend ≥ 15 %. These are the infills operators *chose* to drill, so an undrilled PUD at that geometry would do worse still, and a 15 % haircut on the best case is already the "wouldn't drill it" line. The ≥ 10 % line culls a lot of same-pool 800–1,400 ft spacing that operators routinely drill.
 3. **Shielding.** Shielded and permit-only children still lose 8 %. Keep the shielding exemption, or count shielded parents for the PUD cull?
 4. **Step 4 next.** Measure every run-10 PUD against the chosen rule (cull counts per bench, the BS3_S share, a crosstab with Novi Tier-4). Read-only.
+
+## 11. Gate 2 — Michael's answer (2026-10-20)
+- "Undrillable" means uneconomic. His rough floor is ~50 bo/ft of 50-yr raw EUR. But that floor varies by bench AND by Steven's price deck, so **no bo/ft floor enters our logic** (the scope rule stands).
+- **The cull is a FIXED haircut, looked up by configuration.** A PUD with several depleted parents must never get the step-2 average, which lone single-parent tests diluted.
+- That led to step 2b.
+
+---
+
+# Step 2b — haircut by configuration (AT GATE 2b)
+
+Built 2026-10-20 by `python -m scripts.box_prox_study config` (DB-free, seconds).
+- Code: `box/prox_config_report.py`, plus `prox_dose.configuration`. The signed parent side was added to the step-1 pair metric (`prox_study.pair_signed`, `Link.dxy_ft`).
+- Page: `config.html`. Tables: `config_*.csv`. Per child: `config_children.csv.gz`.
+- **Re-check:** the step-1 re-run with sides reproduced every atlas CSV byte-for-byte; only timestamps changed.
+
+## 12. Method
+- **Class envelopes** (where step 2's effects faded):
+
+  | class | envelope |
+  |---|---|
+  | same pool | 1,400 ft hz |
+  | topfill | 800 ft vt / 1,400 ft hz |
+  | underfill | 500 ft vt / 1,400 ft hz |
+
+  Parents use the gate-1 filter: ≥ 12 mo, ≥ 30 % alongside, no permit TVD, not shielded.
+- **Configuration** = the class (or *mixed* when parents sit in 2+ classes) × parent count (1 / 2 / 3+) × the nearest parent's geometry band. **Flanked** = parents on both sides of the child; a parent within 100 ft counts for both.
+- **Haircuts are against BOX's calibrated level.** Each child's ln(actual ÷ as-of box_v2) minus the mean of ALL scored children of its bench group and cutoff, which is the mix BOX's analogs and walk-forward calibration represent. So **0.80 = the well makes 80 % of what BOX forecasts.**
+  - Unexposed controls sit at **1.05** on this scale. The old physical-effect number is kept as `oil24_vs_control`.
+- **precedent_n** counts every Delaware well drilled since 2016 in that configuration, from the 25,889-well universe. The gate-1 floor of 30 applies to it.
+
+## 13. Results — oil cum-24 vs BOX's level (cum-36 in parentheses; 90 % CI on cum-24)
+
+| configuration | precedent | cum-24 | CI | cum-36 | vs unexposed |
+|---|---:|---:|---|---:|---:|
+| **Topfill** — 1 parent | 1,192 | 0.95 | 0.92–0.98 | (0.94) | 0.88 |
+| topfill — 2 parents | 340 | 0.88 | 0.82–0.94 | (0.88) | 0.77 |
+| topfill — 3+ parents | 283 | **0.77** | 0.68–0.86 | (0.79) | 0.69 |
+| topfill — 2+ **flanked** | 493 | **0.79** | 0.73–0.85 | (0.80) | 0.70 |
+| topfill — 2+ one side only | 130 | 0.95 | 0.85–1.05 | (0.97) | 0.84 |
+| **Same pool** — 1 parent | 2,691 | 0.95 | 0.93–0.96 | (0.95) | 0.90 |
+| same — 2 parents | 631 | 0.93 | 0.90–0.97 | (0.93) | 0.89 |
+| same — 3+ parents | 223 | **0.85** | 0.81–0.91 | (0.81) | 0.82 |
+| same — 2+ flanked | 322 | 0.86 | 0.81–0.92 | (0.85) | 0.82 |
+| **Underfill** — 1 parent | 857 | 0.96 | 0.93–1.00 | (0.95) | 0.93 |
+| underfill — 2 parents | 270 | 0.89 | 0.84–0.94 | (0.85) | 0.85 |
+| underfill — 3+ parents | 172 | 0.94 | 0.85–1.04 | (0.94) | 0.91 |
+| underfill — 2+ flanked | 333 | 0.91 | 0.85–0.98 | (0.88) | 0.87 |
+| **Mixed** — 2 parents total | 509 | 0.92 | 0.88–0.96 | (0.93) | 0.86 |
+| mixed — 3 total | 319 | 0.84 | 0.80–0.89 | (0.83) | 0.80 |
+| mixed — 4+ total | 277 | **0.78** | 0.72–0.85 | (0.77) | 0.73 |
+| **BS3_S over WCA** — 1 parent | 227 | 0.96 | 0.90–1.03 | (0.95) | 0.88 |
+| BS3_S over WCA — 2 parents | 64 | 0.83 | 0.66–1.00 | (0.87) | 0.76 |
+| BS3_S over WCA — 3+ parents | 45 | **0.54** | 0.35–0.84 | (0.79, n=7) | 0.50 |
+| BS3_S over WCA — 2+ flanked | 75 | **0.60** | 0.48–0.80 | (0.76) | 0.56 |
+
+**What changed versus step 2.**
+- **Parent count is the dominant variable.** A single parent costs about 5 % against BOX in every class. Most of step 2's "close-in" haircut came from multi-parent wells.
+- **Flanking matters most for topfills.** Flanked topfills make 0.79 of BOX's forecast; one-sided topfills make 0.95.
+- **Bench pair matters on top of count.** BS3_S over a flanking WCA DSU makes **0.54–0.60** of BOX, against 0.77–0.79 for topfills generally. The cells are thin: BS3_S 3+ is 14 wells at cum-24, CI 0.35–0.84.
+- **Underfill stays mild** (0.89–0.96). GOR rises 16–19 % in the 2-parent cells, a depletion signature.
+- **Precedent:** every pooled cell is above 30. BS3_S over WCA flanked has 75 drilled examples. Some geometry sub-bands fall below the floor (see `config_*.csv`, `below_floor`).
+
+## 14. Gate-2b asks
+1. **Lookup granularity.** I recommend a ladder: bench pair × parent count where precedent ≥ 30 (e.g. BS3_S over WCA), else class × parent count (+ flanked), else class. This mirrors D45. The geometry sub-bands are too thin to key on, so they stay as diagnostics.
+2. **Horizon.** I recommend cum-24 for the haircut: most wells, tight CIs. cum-36 sits within ±0.04 everywhere it has n. Applying it to EUR assumes the haircut holds into the tail, which is untested beyond 36 months.
+3. **The fixed cut X.** What each cut would cull:
+
+   | X | culls |
+   |---|---|
+   | ≤ 0.80 | topfill 3+ and flanked; BS3_S over WCA 3+ and flanked; mixed 4+ |
+   | ≤ 0.85 | the above, plus same-pool 3+, mixed 3, BS3_S over WCA 2 parents |
+   | ≤ 0.90 | the above, plus topfill 2 and underfill 2 parents |
+
+4. **Package dimension.** A PUD development IS a package. BS3_S over WCA with ≥ 2 parents AND ≥ 2 co-developed BS3_S siblings had **9** drilled examples (the 2026-10-20 probe), below the floor. Should the precedent test require the package configuration? If so, it culls full-DSU BS3_S topfill over developed WCA on precedent alone.
+5. **Shielding** (open since gate 2). Shielded or permit-only children still lose 8 %.
+6. **Next = step 4.** For every run-10 PUD: count its parents today with the same metric, look up the haircut, and apply X. Read-only, with cull counts per bench and a Tier-4 crosstab.

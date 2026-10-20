@@ -20,6 +20,7 @@ Class by bench POOL (D42: WCA_1 / WCA_2 / WCXY are one pool for infill purposes)
   same      same pool (the horizontal-spacing case)
   topfill   other pool, parent deeper
   underfill other pool, parent shallower
+Side: each link also stores the median SIGNED offset (dxy_ft, + = left of the child's heading) for flanking.
 Shielding (sql/50's rule, vertical classes only): a co-developed other-pool well with dh <= 660 ft sits between
 the child and that parent (same side, strictly closer vertically).
 """
@@ -57,20 +58,35 @@ def _coords(g: BaseGeometry) -> list[tuple[float, float]]:
     return [c for part in getattr(g, "geoms", [g]) for c in part.coords]
 
 
-def pair(child: BaseGeometry, parent: BaseGeometry) -> tuple[float, float | None]:
-    """(overlap share of the child, median gap ft over the shared span). Geometries in projected FEET."""
+def pair_signed(child: BaseGeometry, parent: BaseGeometry) -> tuple[float, float | None, float | None]:
+    """(overlap share of the child, median gap ft, median SIGNED offset ft) over the shared span. Sign = side of the
+    child's local heading (first -> last vertex): + = parent to the LEFT, - = to the RIGHT. Geometries in projected FEET."""
     if child.length <= 0 or parent.length <= 0:
-        return 0.0, None
+        return 0.0, None, None
     ts = [child.project(Point(c), normalized=True) for c in _coords(parent)]
     lo, hi = min(ts), max(ts)
     if hi <= lo:
-        return 0.0, None
-    ds = []
+        return 0.0, None, None
+    ds, sg = [], []
     for i in range(N_SAMPLES):
         t = i / (N_SAMPLES - 1)
         if lo - 1e-9 <= t <= hi + 1e-9:
-            ds.append(child.interpolate(t, normalized=True).distance(parent))
-    return hi - lo, (statistics.median(ds) if ds else None)
+            p = child.interpolate(t, normalized=True)
+            q = parent.interpolate(parent.project(p))
+            p1, p2 = child.interpolate(max(0.0, t - 1e-3), normalized=True), child.interpolate(min(1.0, t + 1e-3), normalized=True)
+            cross = (p2.x - p1.x) * (q.y - p.y) - (p2.y - p1.y) * (q.x - p.x)
+            d = p.distance(parent)
+            ds.append(d)
+            sg.append(d if cross >= 0 else -d)
+    if not ds:
+        return hi - lo, None, None
+    return hi - lo, statistics.median(ds), statistics.median(sg)
+
+
+def pair(child: BaseGeometry, parent: BaseGeometry) -> tuple[float, float | None]:
+    """(overlap share of the child, median gap ft over the shared span). Geometries in projected FEET."""
+    ov, dh, _ = pair_signed(child, parent)
+    return ov, dh
 
 
 def relation(age_days: int) -> str:
@@ -102,6 +118,7 @@ class Link:
     overlap: float
     permit: bool       # either TVD is a round 100 (permit depth, rule 10)
     shielded: bool = False
+    dxy_ft: float = 0.0  # median SIGNED offset (+ = parent left of the child's heading); |dxy_ft| ~ dh_ft
 
 
 def links_for_child(child: dict, cands: Iterable[dict], min_overlap: float = MIN_OVERLAP, store_dv: float = STORE_DV_FT) -> list[Link]:
@@ -118,12 +135,12 @@ def links_for_child(child: dict, cands: Iterable[dict], min_overlap: float = MIN
         dz = float(w["tvd_ft"]) - float(child["tvd_ft"])
         if abs(dz) > store_dv:
             continue
-        ov, dh = pair(child["geom"], w["geom"])
-        if ov < min_overlap or dh is None:
+        ov, dh, dxy = pair_signed(child["geom"], w["geom"])
+        if ov < min_overlap or dh is None or dxy is None:
             continue
         cb, pb = child["bench"] or "(unmapped)", w["bench"] or "(unmapped)"
         out.append(Link(child["api10"], w["api10"], cb, pb, pair_class(cb, pb, dz), rel, int(age), dz, abs(dz), float(dh), float(ov),
-                        float(w["tvd_ft"]) % 100 == 0 or float(child["tvd_ft"]) % 100 == 0))
+                        float(w["tvd_ft"]) % 100 == 0 or float(child["tvd_ft"]) % 100 == 0, dxy_ft=float(dxy)))
     return stamp_shielding(out)
 
 

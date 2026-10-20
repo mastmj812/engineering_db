@@ -142,3 +142,13 @@ def test_matches_dealintake_rule_on_chevron_fixture() -> None:
                     n_checked += 1
                     n_hits += len(mine)
     assert n_checked > 50 and n_hits > 0
+
+
+def test_signed_offset_gives_the_side() -> None:
+    _, dh, s = ps.pair_signed(CHILD, LineString([(-600, 0), (-600, 10000)]))   # child heads north: west = left = +
+    assert dh == pytest.approx(600) and s == pytest.approx(600)
+    _, _, s = ps.pair_signed(CHILD, LineString([(450, 0), (450, 10000)]))
+    assert s == pytest.approx(-450)
+    child = {"api10": "C", "bench": "BS3_S", "fp": D0, "tvd_ft": 9850.0, "geom": CHILD}
+    (k,) = ps.links_for_child(child, [_w("P", 400, 0, 10000, 10120)])
+    assert k.dxy_ft == pytest.approx(-400) and k.dh_ft == pytest.approx(400)

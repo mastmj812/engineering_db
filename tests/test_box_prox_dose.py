@@ -69,3 +69,41 @@ def test_log_ratios_clip_and_missing() -> None:
     v.loc[2, "pred_box_v2_oil12"] = 1.0                                       # 5,000x -> clipped to ln 10
     lr = pd_.log_ratios(v)
     assert lr.at[0, "l_oil12"] == 0.0 and np.isnan(lr.at[1, "l_oil12"]) and lr.at[2, "l_oil12"] == pytest.approx(np.log(10))
+
+
+def _clinks(rows):
+    cols = [*COLS, "dxy_ft"]
+    return pd.DataFrame([dict(zip(cols, r, strict=True)) for r in rows])
+
+
+def test_configuration_counts_parents_bands_and_flanking() -> None:
+    P = ("parent", 900)
+    L = _clinks([
+        # child a: BS3_S topfill over a WCA winerack, parents left and right
+        ("a", "w1", "BS3_S", "WCA_1", "topfill", *P, 350, 350, 450, 0.9, False, False, 40e3, 450),
+        ("a", "w2", "BS3_S", "WCA_1", "topfill", *P, 360, 360, 500, 0.9, False, False, 40e3, -500),
+        ("a", "w3", "BS3_S", "WCA_1", "topfill", *P, 340, 340, 1300, 0.9, False, False, 40e3, 1300),
+        # child b: one same-pool parent on one side + one beneath-ish topfill (mixed)
+        ("b", "s1", "WCA_1", "WCA_2", "same", *P, 120, 120, 700, 0.9, False, False, 40e3, 700),
+        ("b", "t1", "WCA_1", "WCB_1", "topfill", *P, 400, 400, 50, 0.9, False, False, 40e3, 50),
+        # child c: two same-pool parents, both on the right -> not flanked
+        ("c", "s2", "WCA_1", "WCA_1", "same", *P, 10, 10, 600, 0.9, False, False, 40e3, -600),
+        ("c", "s3", "WCA_1", "WCA_1", "same", *P, 10, 10, 1200, 0.9, False, False, 40e3, -1200),
+        # child d: topfill 900 ft above -> outside the 800-ft topfill envelope; underfill 600 ft -> outside 500
+        ("d", "x1", "BS3_S", "WCA_1", "topfill", *P, 900, 900, 300, 0.9, False, False, 40e3, 300),
+        ("d", "x2", "WCA_1", "BS3_S", "underfill", *P, -600, 600, 300, 0.9, False, False, 40e3, 300),
+    ])
+    c = pd_.configuration(["a", "b", "c", "d"], L).set_index("api10")
+    assert (c.at["a", "n_topfill"], c.at["a", "config"], bool(c.at["a", "flanked_topfill"])) == (3, "topfill|3+|dv300-800|dh<800", True)
+    assert c.at["b", "config_class"] == "mixed" and c.at["b", "n_parents_total"] == 2 and pd.isna(c.at["b", "config"])
+    assert (c.at["c", "config"], bool(c.at["c", "flanked_same"])) == ("same|2|dh400-800", False)
+    assert pd.isna(c.at["d", "config_class"]) and c.at["d", "n_parents_total"] == 0
+
+
+def test_reference_all_centres_the_mix_not_the_controls() -> None:
+    d = _frame()
+    W = pd_.boot_weights(d["block"].to_numpy(), n_boot=50)
+    allr = pd_.Effects(d, "oil12", W, ref="all")
+    assert allr.cell(np.ones(len(d), bool))["effect"] == pytest.approx(1.0, abs=1e-12)
+    ex, ct = allr.cell((d["group"] == "exposed").to_numpy()), allr.cell((d["group"] == "control").to_numpy())
+    assert ex["effect"] < 1.0 < ct["effect"] and ex["effect"] / ct["effect"] == pytest.approx(0.8, abs=0.04)

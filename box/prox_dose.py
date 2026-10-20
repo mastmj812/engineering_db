@@ -88,9 +88,19 @@ def log_ratios(v: pd.DataFrame) -> pd.DataFrame:
     return out.apply(lambda c: c.clip(*L_CLIP))
 
 
-def baseline_keys(d: pd.DataFrame, metric: str) -> np.ndarray:
-    """Per child the key of the control mean it is normalised by: (group, cutoff) -> group -> 'ALL' by MIN_CTRL."""
-    ctrl = d[(d["group"] == "control") & d[f"l_{metric}"].notna()]
+def ref_mask(d: pd.DataFrame, ref: str) -> np.ndarray:
+    """The reference population: 'control' (no parent — the physical haircut) or 'all' (every scored child — the mix
+    BOX's analog pools and walk-forward calibration represent, so a haircut applied to a BOX forecast isn't double-counted)."""
+    if ref == "control":
+        return (d["group"] == "control").to_numpy()
+    if ref == "all":
+        return np.ones(len(d), bool)
+    raise ValueError(ref)
+
+
+def baseline_keys(d: pd.DataFrame, metric: str, ref: str = "control") -> np.ndarray:
+    """Per child the key of the reference mean it is normalised by: (group, cutoff) -> group -> 'ALL' by MIN_CTRL."""
+    ctrl = d[ref_mask(d, ref) & d[f"l_{metric}"].notna().to_numpy()]
     n_gc = ctrl.groupby(["bench_group", "cutoff"]).size()
     n_g = ctrl.groupby("bench_group").size()
     keys = []
@@ -123,14 +133,14 @@ def boot_weights(blocks: np.ndarray, n_boot: int = N_BOOT, seed: int = SEED) -> 
 class Effects:
     """Cell effects with block-bootstrap CIs for one metric. Built once per metric; `cell(mask)` is then cheap."""
 
-    def __init__(self, d: pd.DataFrame, metric: str, W: np.ndarray) -> None:
-        self.metric = metric
+    def __init__(self, d: pd.DataFrame, metric: str, W: np.ndarray, ref: str = "control") -> None:
+        self.metric, self.ref = metric, ref
         l = d[f"l_{metric}"].to_numpy(float)
         self.ok = np.isfinite(l)
         self.l = np.where(self.ok, l, 0.0)
         self.W = W
-        ctrl = (d["group"] == "control").to_numpy() & self.ok
-        keys = baseline_keys(d, metric)
+        ctrl = ref_mask(d, ref) & self.ok
+        keys = baseline_keys(d, metric, ref)
         self.ukeys, kinv = np.unique(keys, return_inverse=True)
         # per draw, per key: control mean of l
         base = np.zeros((W.shape[0], len(self.ukeys)))
@@ -166,3 +176,64 @@ def table(d: pd.DataFrame, effects: dict[str, Effects], masks: dict[str, np.ndar
         r["below_floor"] = r["n_children"] < PRECEDENT_FLOOR
         rows.append(r)
     return pd.DataFrame(rows)
+
+
+# ============================================================================
+# Step 2b — configuration: how many depleted parents, which sides (Michael 2026-10-20: a PUD over a developed DSU is
+# flanked by several parents; the step-2 averages were diluted by lone single-parent tests)
+# ============================================================================
+
+# Per-class envelope = where step 2's marginal effect had faded (FINDINGS §9): (max dv, max dh) ft
+ENVELOPE = {"same": (EXPO_DV, 1400.0), "topfill": (800.0, 1400.0), "underfill": (500.0, 1400.0)}
+BENEATH_FT = 100.0   # a parent within this signed offset sits beneath / above the child: it counts on BOTH sides
+NPAR_BINS = ("1", "2", "3+")
+GEOM_BANDS = {  # table order; geom_band() assigns them
+    "same": ("dh<400", "dh400-800", "dh800-1400"),
+    "topfill": ("dv<=300|dh<800", "dv<=300|dh800-1400", "dv300-800|dh<800", "dv300-800|dh800-1400"),
+    "underfill": ("dv<=300|dh<800", "dv<=300|dh800-1400", "dv300-500|dh<800", "dv300-500|dh800-1400"),
+}
+
+
+def npar_bin(n: int) -> str:
+    return "3+" if n >= 3 else str(n)
+
+
+def geom_band(cls: str, dv: float, dh: float) -> str:
+    """Band of the child's NEAREST parent in the class envelope (nearest by the v14 aspect)."""
+    if cls == "same":
+        return "dh<400" if dh < 400 else "dh400-800" if dh < 800 else "dh800-1400"
+    near_v = dv <= 300
+    lo_v = "dv<=300" if near_v else ("dv300-800" if cls == "topfill" else "dv300-500")
+    return f"{lo_v}|{'dh<800' if dh < 800 else 'dh800-1400'}"
+
+
+def configuration(children: Sequence[str], links: pd.DataFrame) -> pd.DataFrame:
+    """Per child and class: n depleting parents inside the class envelope, nearest-parent geometry band, flanked (parents
+    on both sides, a beneath/above parent counting for both). config_class = the single class with parents ('mixed' when
+    more than one, None when none). Same parent filter as step 1/2 (>= 12 mo, >= 30 % alongside, no permit / shielded)."""
+    q = links[(links["rel"] == "parent") & (links["overlap"] >= ps.MIN_OVERLAP) & ~links["permit"] & ~links["shielded"]]
+    out = pd.DataFrame({"api10": list(children)}).set_index("api10")
+    present = []
+    for c, (vmax, hmax) in ENVELOPE.items():
+        e = q[(q["cls"] == c) & (q["dv_ft"] <= vmax) & (q["dh_ft"] <= hmax)].copy()
+        e["k"] = np.hypot(e["dh_ft"], e["dv_ft"] * ASPECT)
+        g = e.groupby("child")
+        n = g["parent"].nunique()
+        near = e.loc[g["k"].idxmin()].set_index("child") if len(e) else e.set_index("child")
+        left = g["dxy_ft"].max() > -BENEATH_FT     # some parent on the left (or beneath)
+        right = g["dxy_ft"].min() < BENEATH_FT     # some parent on the right (or beneath)
+        out[f"n_{c}"] = n.reindex(out.index).fillna(0).astype(int)
+        out[f"dv_{c}"] = near["dv_ft"].reindex(out.index)
+        out[f"dh_{c}"] = near["dh_ft"].reindex(out.index)
+        out[f"pb_{c}"] = near["parent_bench"].reindex(out.index)
+        out[f"flanked_{c}"] = ((left & right) & (n >= 2)).reindex(out.index).fillna(False).astype(bool)
+        out[f"band_{c}"] = [geom_band(c, v, h) if k > 0 else None for v, h, k in zip(out[f"dv_{c}"], out[f"dh_{c}"], out[f"n_{c}"], strict=True)]
+        present.append(out[f"n_{c}"] > 0)
+    cnt = sum(p.astype(int) for p in present)
+    cls = np.select([present[0], present[1], present[2]], list(ENVELOPE), default=None)
+    out["config_class"] = np.where(cnt > 1, "mixed", cls)
+    out.loc[cnt == 0, "config_class"] = None
+    out["n_parents_total"] = sum(out[f"n_{c}"] for c in ENVELOPE)
+    out["config"] = [(f"{c}|{npar_bin(int(r[f'n_{c}']))}|{r[f'band_{c}']}" if c in ENVELOPE else None)
+                     for c, (_, r) in zip(out["config_class"], out.iterrows(), strict=True)]
+    return out.reset_index()

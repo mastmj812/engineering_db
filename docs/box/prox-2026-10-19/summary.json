@@ -1,5 +1,5 @@
 {
-  "built": "2026-10-19 22:21 UTC",
+  "built": "2026-10-20 15:12 UTC",
   "n_universe": 34026,
   "n_children": 25889,
   "n_links": 214395,
@@ -15,5 +15,5 @@
     "opp_radius_ft": 10560.0,
     "opp_parent_fp_max": "2022-06-30"
   },
-  "seconds": 108
+  "seconds": 449
 }
