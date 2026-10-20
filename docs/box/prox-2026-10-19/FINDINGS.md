@@ -1,4 +1,4 @@
-# PDP-proximity study — step 1: precedent atlas (Delaware) — AT GATE 1
+# PDP-proximity study — step 1 precedent atlas + step 2 dose-response (Delaware) — AT GATE 2
 
 Built 2026-10-19 by `python -m scripts.box_prox_study` (133 s, read-only; nothing written to the warehouse).
 Code: `box/prox_study.py` (pure), `box/prox_study_report.py`, tests `tests/test_box_prox_study.py`.
@@ -83,3 +83,104 @@ Same-pool horizontal, cumulative children by gap to the nearest ≥ 12-month par
 - dz uses one landing TVD per well. Typical error is ±50–100 ft, so the 100–200 ft rows are soft.
 - Overlap and gap use the lateral line rule (LP → BHL), and laterals are assumed straight between survey nodes. U-turn laterals read as chords (the known D56 gap).
 - The uptake denominator ("child bench developed within 2 mi") is a coarse proxy for "a target there". It includes rock where operators may have rejected the bench for reasons other than proximity.
+
+## 7. Gate 1 decided (Michael, 2026-10-19)
+Accepted as written:
+- the §1 definitions;
+- the precedent floor of **≥ 30 drilled children per geometry cell per bench-pair class** (below that the cull applies regardless of performance);
+- step 2 runs on **all** ~15k children, first production 2019–2025 with ≥ 12 months produced, with the no-parent wells as the control.
+
+---
+
+# Step 2 — dose-response vs the as-of BOX forecast (AT GATE 2)
+
+Built 2026-10-20 by `python -m scripts.box_prox_study dose` (11 s, DB-free).
+- Code: `box/prox_dose.py` (pure) and `box/prox_dose_report.py`, with tests in `tests/test_box_prox_dose.py`.
+- Page: `dose.html`. Tables: `dose_*.csv`. Per-child drill-down: `dose_children.csv.gz`.
+
+## 8. Method
+- **Yardstick.** Each child's actual ÷ the `box_v2` RAW forecast made at its harness fold cutoff (Dec 1 before its first production). The analogs first produced before the cutoff, so the child is never its own analog.
+- **Source of the forecasts.** The harness's own per-well views: the step-11/12a input set, tuning plus the once-scored holdout, all 13 BOX bench groups, sha256-verified against their digests. Our ln(actual/pred) matches the harness's stored `box_v2_err` to ≤ 1.8e-15 on every row, so these are the harness forecasts.
+  - WCXY wells were scored in both the WCA guard pool and WCXY_WCA1. The WCXY_WCA1 row wins (D93/D97).
+  - AVA_0/1/2 and BS2_C have tuning folds only (D105), so their holdout-block wells are absent.
+- **Population.** 14,545 scored children with first production Dec 2019–Nov 2025 (tuning 10,638 + holdout 3,907):
+
+  | group | wells | share |
+  |---|---:|---:|
+  | exposed (a ≥ 12-mo parent within 1,000 ft vt / 2,640 ft hz) | 8,818 | 61 % |
+  | control (no parent there) | 3,971 | 27 % |
+  | young parent only (6–12 mo) | 1,148 | 8 % |
+  | permit-TVD or shielded parent only | 608 | 4 % |
+
+  Each exposed child is placed by its worst depleting parent, using the gate-1 definitions.
+- **Statistic.** Geometric-mean actual/pred, normalized by the controls of the same bench group and cutoff, so BOX's own bench and vintage bias cancels. **1.00 = produces like an unexposed well; 0.80 = a 20 % haircut BOX doesn't see.**
+  - 90 % 3-mi block-bootstrap intervals, 500 draws, with the baselines re-estimated in every draw.
+  - `*_vs_box` = the same cell against BOX as-is. Controls run 0.93 / 0.92 / 0.90 at cum-12/24/36 there, which is box_v2 raw's known high bias (D57/D58 tuning −7…−9 %; the walk-forward haircut corrects it on validated benches).
+- **Survivorship.** Every cell is an operator-selected infill, so it is an upper bound for the undrilled PUDs at that geometry.
+
+## 9. Results — oil, typical child vs an unexposed well (cum-12 / cum-24 / cum-36)
+
+**Same pool (horizontal infill).** A clean monotone curve that is gone by ~1,400 ft, which matches your southern-Delaware read:
+
+| gap to ≥ 12-mo parent | n (cum-12) | cum-12 | cum-24 | cum-36 | GOR-24 |
+|---|---:|---|---|---|---|
+| 0–400 ft | 143 | 0.77 [0.71–0.83] | 0.80 [0.74–0.86] | 0.84 | 1.08 |
+| 400–800 | 563 | 0.85 [0.82–0.88] | 0.86 [0.83–0.90] | 0.86 | 1.05 |
+| 800–1,400 | 1,602 | 0.89 [0.87–0.92] | 0.90 [0.87–0.92] | 0.89 | 1.03 |
+| 1,400–2,000 | 1,220 | 0.98 [0.95–1.00] | 0.98 | 0.97 | 1.01 |
+| 2,000–2,640 | 918 | 1.02 | 1.00 | 0.99 | 1.00 |
+
+TX is steeper close in than NM: at 0–400 ft, cum-12 is TX 0.66 vs NM 0.87. GOR rises 5–8 % inside 800 ft, a depletion signature.
+
+**Topfill (parent below).** The haircut is about 20 %, it does NOT shrink with vertical gap until ~800 ft, and it doesn't fully recover horizontally by 2,640 ft:
+
+| vertical gap (hz ≤ 800) | n | cum-12 | cum-24 | cum-36 |
+|---|---:|---|---|---|
+| 0–100 ft | 39 | 0.89 [0.75–1.04] | 0.84 | 0.87 |
+| 100–200 | 48 | 0.72 [0.62–0.82] | 0.82 | 0.83 |
+| 200–300 | 79 | 0.77 [0.67–0.89] | 0.83 | 0.85 |
+| 300–500 | 157 | 0.78 [0.73–0.86] | 0.79 | 0.81 |
+| 500–800 | 268 | 0.81 [0.75–0.88] | 0.77 | 0.79 |
+| 800–1,000 | 142 | 0.93 [0.84–1.05] | 0.96 | 1.02 |
+
+| horizontal gap (vt ≤ 300) | n | cum-12 | cum-24 | cum-36 |
+|---|---:|---|---|---|
+| 0–800 ft | 166 | 0.78 | 0.83 | 0.85 |
+| 800–1,400 | 190 | 0.88 | 0.89 | 0.92 |
+| 1,400–2,640 | 275 | 0.94 | 0.90–0.91 | 0.91 |
+
+**Underfill (parent above).** Milder: about −10 % within 1,400 ft horizontally (vt ≤ 300). The worst vertical bin is 300–500 ft (cum-24 0.85, cum-36 0.85), and from 500 ft vertical down it's ≈ 1.0.
+
+**BS3_S over WCA (inside v14).**
+
+| case | n (cum-12 / 24 / 36) | cum-12 | cum-24 | cum-36 |
+|---|---|---|---|---|
+| BS3_S over WCA_1 | 35 / 26 / 16 | 0.67 [0.55–0.84] | 0.76 [0.59–0.97] | 0.87 |
+| BS3_S over WCA_2 | 19 / 15 / 10 | 0.80 | 1.00 | 1.03 |
+| WCA *under* a BS3_S parent | 55 / 43 / 35 | 0.74 | 0.74 | 0.78 |
+
+- The WCA_2 row is thin and noisy.
+- **The penalty runs both directions between BS3_S and WCA.**
+
+**Other reads.**
+- **Young parents (6–12 months) barely matter:** 0.96 / 0.97 / 0.99. That supports the 12-month cutoff.
+- **Permit-TVD or shielded-only children still show 0.92**, so shielding by a co-developed well in between does not clear the haircut (n = 515 at cum-12).
+- **The parent-depletion dose isn't monotone** within v14. By parent cum, 0–20 kbbl/kft reads 0.76 at cum-24 and ≥ 60 kbbl/kft reads 0.91. By parent age, 2–4 yr is worst at 0.81. The geometry carries the signal; the parent's cum doesn't add to it.
+
+**The v14 rule as written (300 / 800).**
+- Inside it: same pool 0.85, topfill 0.83, underfill 0.92 (cum-24).
+- It **misses topfills 300–800 ft above a parent**, which are as bad as inside (0.77–0.79).
+- It keeps same-pool 800–1,400 ft (−10 %).
+
+## 10. Gate-2 asks (they set up the gate-3 rule)
+1. **Accept the method?** That covers the yardstick (harness views), control normalization, survivorship framing and the young-parent cutoff validated at 12 months.
+2. **Which haircut defines "undrillable"?** The precedent floor (30 per cell) doesn't bind anywhere below; every cell named has n ≥ 39. Two candidate cuts, both at cum-24 and relative to an unexposed well:
+
+   | cut | same pool | topfill | underfill |
+   |---|---|---|---|
+   | **≥ 15 % (≤ 0.85)** — recommended | gap < 800 ft (400–800 is borderline: 0.85–0.86) | vt ≤ 800 AND hz < 800 | no cull (300–500 vt flagged) |
+   | **≥ 10 % (≤ 0.90)** | gap < 1,400 ft | vt ≤ 800 AND hz < 1,400 | vt ≤ 500 AND hz < 1,400 |
+
+   I recommend ≥ 15 %. These are the infills operators *chose* to drill, so an undrilled PUD at that geometry would do worse still, and a 15 % haircut on the best case is already the "wouldn't drill it" line. The ≥ 10 % line culls a lot of same-pool 800–1,400 ft spacing that operators routinely drill.
+3. **Shielding.** Shielded and permit-only children still lose 8 %. Keep the shielding exemption, or count shielded parents for the PUD cull?
+4. **Step 4 next.** Measure every run-10 PUD against the chosen rule (cull counts per bench, the BS3_S share, a crosstab with Novi Tier-4). Read-only.
