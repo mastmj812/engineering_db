@@ -9,7 +9,7 @@ import sys, json, numpy as np, pandas as pd, shapely, matplotlib
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from shapely.geometry import shape
 from pyproj import Transformer
-SP=sys.argv[1]; G="C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware/Original/"
+SP=sys.argv[1]; G="C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Grids/Delaware/Structure/Original/"
 USFT=1200/3937
 def grid(name):
     a=np.loadtxt(G+f"HCA_{name}_STRUCTURE_MDXYZ_grid.xyz",delimiter=",")

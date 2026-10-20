@@ -76,3 +76,86 @@ is kept as `verdict_raw`.
 - Build per-bench Leaflet maps with a `grid_offset_ft` heat layer, distance-to-control and the Pecos mask.
 - Produce the GGX shapefile.
 - WCC / WCD / AVA_1 stay out until the C / D re-pick and the Middle Avalon surface exist.
+
+---
+
+# Step 2 findings (2026-10-20): where the tag or the structure is wrong
+
+Run: `python -m scripts.box_tops_qc --step 2` (READ ONLY; 10-19 grids, the geology rules above applied). Pages:
+`step2.html` (index) plus one Leaflet map per bench, `step2_<TAG>.html`. GGX: `ggx/tops_qc_wells.shp` (29.5k points)
+and `ggx/tops_qc_offset.shp` (half-mile offset cells), both NAD83 UTM 14N US-ft. Per well: `wells_step2.csv`.
+
+**Method.**
+- **Classes:** edge = a shallow / deep call within 25 ft of a surface; gross = |miss| > 300 ft.
+- **Attribution:** each shallow / deep well is compared with its same-tag band (≥ 3 clean wells within 1.5 mi).
+  - **structure_suspect:** the band sits outside the interval too, on the same side.
+  - **tag_suspect:** the band agrees with the grid.
+- **Offset cells:** the median residual of all wells bounding a surface, from both sides, on half-mile cells.
+- **Caveat:** "structure suspect" means the local cluster disagrees with the grid. That is either the surface or a
+  local naming convention; step 3 separates the two.
+
+## Edge tolerance
+
+The tolerance moves the Wolfcamp interface benches a lot, and the Bone Springs hardly at all.
+
+| Tag | Disagree @10 ft | @25 ft | @50 ft |
+|---|---|---|---|
+| WCA_1 | 37% | 30% | 18% |
+| WCXY | 24% | 18% | 10% |
+| WCB_1 | 28% | 24% | 18% |
+| WCB_2 | 43% | 40% | 35% |
+| BS3_S | 26% | 22% | 18% |
+| BS2_S | 4% | 3% | 2% |
+
+## Attribution: the Wolfcamp disagreements are spatially coherent, the Bone Spring ones mostly isolated tags
+
+| Tag | Structure-suspect | Tag-suspect | Band offset p50 | Where |
+|---|---|---|---|---|
+| WCA_1 | 912 | 472 | −50 ft (WCA top wants up) | Reeves 560, Loving 152, Lea 95 |
+| WCB_2 | 274 | 37 | −118 ft (B2 top wants up) | Reeves 243 |
+| BS3_S | 267 | 213 | +105 ft (lands below the XY top) | Reeves / Loving / Lea; +120–159 ft in Loving / Reeves |
+| WCB_1 | 216 | 97 | −58 ft (above the B1 top) | broad: Lea 81, Loving 41, Culberson 33 |
+| WCA_2 | 142 | 267 | +30 ft | mostly isolated tags |
+| WCXY | 125 | 157 | +53 ft (below the WCA top) | Loving 61 |
+| BS3_C | 70 | 56 | −72 ft | Eddy / Lea / Loving |
+| BS2_S, BS1_S, BS2_C | 10 / 8 / 15 | 78 / 25 / 30 | — | **Bone Spring grids hold; disagreements are individual tags** |
+
+## Where each surface wants to move (flagged half-mile cells)
+
+| Surface | Flagged area | Direction | \|offset\| p50 / p90 |
+|---|---|---|---|
+| WOLFCAMP_A | 492 sq mi | up (1,867 of 1,966 cells) | 44 / 91 ft |
+| WOLFCAMP-B2 | 347 sq mi | up (1,217 of 1,387) | 89 / 151 ft |
+| WOLFCAMP_XY | 273 sq mi | **down** (1,006 of 1,090) | 66 / 171 ft |
+| WOLFCAMP-B1 | 111 sq mi | mostly down (324 of 442) | 60 / 172 ft |
+| 3BSPGC / 3BSPGS | 49 / 47 sq mi | mostly up | 76 / 116 ft p50 |
+| Other Bone Spring / Avalon | ≤ 45 sq mi each | mixed | |
+
+**The XY interval is squeezed from both sides.** BS3_S wells above it land inside it, so the XY top wants to go
+down about 66 ft. WCA_1 wells below it land inside it too, so the WCA top wants to come up about 44 ft. WOLFCAMP_A
+also has the most conflict cells (254), where WCA_1 above and WCXY below pull opposite ways. The ~97 ft XY interval
+as gridded is where three tag families land. That is your BS3_S / WCXY / WCA_1 interface question, and step 3's
+landing-position histograms are aimed at it.
+
+## Control distance: two different problems
+
+Share of wells more than 1 mi from a pick of the tag-top surface:
+
+| Tag | Agree | Structure-suspect | Read |
+|---|---|---|---|
+| BS3_S | 32% | 49% | Structure-suspect clusters sit where control is sparse → **more picks would help** |
+| BS3_C | 47% | 73% | Same |
+| WCA_2 | 40% | 56% | Same |
+| WCA_1 | 35% | 27% | Clusters sit **near** existing picks → more picks will not fix it; it is definitional |
+| WCB_1 | 58% | 44% | Same |
+| WCB_2 | 50% | 42% | Same: the Reeves cluster is inside control circles |
+
+For WCA_1, WCB_1 and WCB_2, the question for the geologist is not "pick more" but "does your pick of this top match
+the horizon operators land relative to?" That fits the regional-strategy hypothesis (shallow WCB_1s, deep WCB_1s)
+and is what step 3 is for.
+
+## Next (step 3, at the gate)
+
+- Landing-position histograms: ft below each interval top, by tag, faceted by area (10-mi bins + county). First
+  for the XY squeeze (3BSPGS → WCXY → WCA → B1) and the WCB_1 / WCB_2 boundary.
+- Output: proposed edge-naming rules for Michael and the geologist to decide. Nothing is implemented.

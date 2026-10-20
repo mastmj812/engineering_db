@@ -197,3 +197,115 @@ def surface_crossings(stack: dict[str, Grid], surfaces: tuple[str, ...] = STACK)
                      "iso_p50_ft": float(np.median(iso)) if ok.any() else np.nan})
     return pd.DataFrame(rows)
 
+
+
+# ----------------------------------------------------------------------------
+# Step 2 — classification, structure-vs-tag attribution, surface offset fields
+# ----------------------------------------------------------------------------
+
+EDGE_FT = 25.0                         # default edge tolerance for maps (sensitivity: EDGE_SENSITIVITY)
+EDGE_SENSITIVITY: tuple[float, ...] = (10.0, 25.0, 50.0)
+GROSS_FT = 300.0                       # |miss| beyond this = data error / grid extrapolation until shown otherwise
+BAND_RADIUS_FT = 7_920.0               # 1.5 mi — the gunbarrel-consensus witness radius (bench_qc.ConsensusParams)
+BAND_MIN_N = 3                         # >= 3 clean same-tag witnesses (bench_qc min witnesses)
+OFFSET_CELL_FT = 2_640.0               # half-mile cells for the surface offset field
+DISAGREE: tuple[str, ...] = ("shallow", "deep")
+WITNESS_CLASSES: tuple[str, ...] = ("agree", "edge", "shallow", "deep")  # gross is excluded: likely bad data
+
+
+def classify(verdict: str, miss: float, edge_ft: float = EDGE_FT, gross_ft: float = GROSS_FT) -> str:
+    """Refine a step-1 verdict: a shallow / deep call within ``edge_ft`` of the surface is 'edge' (its own class,
+    not a disagreement); beyond ``gross_ft`` it is 'gross'. Every other verdict passes through."""
+    if verdict not in DISAGREE or not np.isfinite(miss):
+        return verdict
+    if abs(miss) > gross_ft:
+        return "gross"
+    if abs(miss) <= edge_ft:
+        return "edge"
+    return verdict
+
+
+def attribute(df: pd.DataFrame, edge_ft: float = EDGE_FT, radius_ft: float = BAND_RADIUS_FT,
+              min_n: int = BAND_MIN_N) -> pd.DataFrame:
+    """Structure-vs-tag attribution for each shallow / deep well against its local SAME-TAG band.
+
+    ``df``: api10, tag, x, y (ft, any planar frame), cls, miss, witness (bool). Witness miss = 0 when it agrees.
+    band_miss = median witness miss within ``radius_ft`` (self excluded).
+      * structure_suspect — band on the same side as the well and beyond ``edge_ft``: the local same-tag cluster
+        sits outside the grid interval (the surface, or a local naming convention, is off by ~band_miss ft);
+      * tag_suspect — the band agrees with the grid (|band_miss| <= edge_ft): the well is the outlier;
+      * unresolved_mixed — band beyond edge on the OTHER side;  unresolved_sparse — fewer than ``min_n`` witnesses.
+    grid_offset_ft = band_miss for structure_suspect (− surface should come up, + go down), else NaN."""
+    from scipy.spatial import cKDTree
+
+    out = pd.DataFrame(index=df.index, data={"band_n": 0, "band_miss": np.nan, "attribution": None,
+                                             "grid_offset_ft": np.nan})
+    wmiss = np.where(df["cls"].eq("agree"), 0.0, df["miss"].astype(float))
+    for tag, g in df.groupby("tag", sort=False):
+        wit = g[g["witness"].astype(bool)]
+        subj = g[g["cls"].isin(DISAGREE)]
+        if subj.empty:
+            continue
+        if wit.empty:
+            out.loc[subj.index, "attribution"] = "unresolved_sparse"
+            continue
+        tree = cKDTree(wit[["x", "y"]].to_numpy(float))
+        wm = wmiss[df.index.get_indexer(wit.index)]
+        hits = tree.query_ball_point(subj[["x", "y"]].to_numpy(float), r=radius_ft)
+        for idx, js, m in zip(subj.index, hits, subj["miss"].astype(float), strict=True):
+            js = [j for j in js if wit.index[j] != idx]
+            out.at[idx, "band_n"] = len(js)
+            if len(js) < min_n:
+                out.at[idx, "attribution"] = "unresolved_sparse"
+                continue
+            b = float(np.median(wm[js]))
+            out.at[idx, "band_miss"] = b
+            if abs(b) <= edge_ft:
+                out.at[idx, "attribution"] = "tag_suspect"
+            elif np.sign(b) == np.sign(m):
+                out.at[idx, "attribution"] = "structure_suspect"
+                out.at[idx, "grid_offset_ft"] = b
+            else:
+                out.at[idx, "attribution"] = "unresolved_mixed"
+    return out
+
+
+def surface_residuals(w: pd.DataFrame, surface: str) -> pd.DataFrame:
+    """Per-well evidence about ONE surface from the wells on both sides of it. ``w``: api10, tag, x, y, cls,
+    ft_below_top, ft_above_base, witness. A well whose tag TOP is the surface contributes min(0, ft_below_top)
+    (negative = it lands above the surface: the surface should come up); one whose tag BASE is the surface
+    contributes max(0, -ft_above_base) (positive = it lands below: the surface should go down). Witnesses only."""
+    top = w["tag"].map(TAG_TOP)
+    base = w["tag"].map(lambda t: tag_base(t) if t in TAG_TOP else None)
+    ok = w["witness"].astype(bool)
+    a = w[ok & top.eq(surface)].assign(r=lambda d: np.minimum(0.0, d["ft_below_top"].astype(float)), side="below")
+    b = w[ok & base.eq(surface)].assign(r=lambda d: np.maximum(0.0, -d["ft_above_base"].astype(float)), side="above")
+    return pd.concat([a, b])[["api10", "tag", "x", "y", "r", "side"]]
+
+
+def offset_field(res: pd.DataFrame, cell_ft: float = OFFSET_CELL_FT, radius_ft: float = BAND_RADIUS_FT,
+                 min_n: int = BAND_MIN_N, edge_ft: float = EDGE_FT) -> pd.DataFrame:
+    """Median surface residual on a ``cell_ft`` lattice: every cell centre with >= ``min_n`` residual wells within
+    ``radius_ft``. Columns cx, cy, n, offset_ft (median; − up, + down), n_up, n_down (wells pulling each way
+    beyond ``edge_ft``: a conflict when both are large), flagged (|median| > ``edge_ft``: the surface wants to
+    move there). Unflagged cells are kept so conflicts — tags disagreeing with each other — can be counted."""
+    from scipy.spatial import cKDTree
+
+    cols = ["cx", "cy", "n", "offset_ft", "n_up", "n_down", "flagged"]
+    if len(res) < min_n:
+        return pd.DataFrame(columns=cols)
+    xy = res[["x", "y"]].to_numpy(float)
+    r = res["r"].to_numpy(float)
+    x0, y0 = np.floor(xy.min(axis=0) / cell_ft) * cell_ft
+    x1, y1 = np.ceil(xy.max(axis=0) / cell_ft) * cell_ft
+    cx, cy = np.meshgrid(np.arange(x0, x1 + cell_ft, cell_ft) + cell_ft / 2, np.arange(y0, y1 + cell_ft, cell_ft) + cell_ft / 2)
+    centres = np.column_stack([cx.ravel(), cy.ravel()])
+    tree = cKDTree(xy)
+    rows = []
+    for c, js in zip(centres, tree.query_ball_point(centres, r=radius_ft), strict=True):
+        if len(js) < min_n:
+            continue
+        v = r[js]
+        med = float(np.median(v))
+        rows.append((c[0], c[1], len(js), med, int((v < -edge_ft).sum()), int((v > edge_ft).sum()), abs(med) > edge_ft))
+    return pd.DataFrame(rows, columns=cols)

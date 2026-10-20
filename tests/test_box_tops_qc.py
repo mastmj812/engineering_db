@@ -123,3 +123,75 @@ def test_geology_rules():
     assert r("WDFD", None, "unmeasured") == "unmeasured"
     assert all(s in tq.STACK for ss in tq.MASKED_SURFACES_BY_COUNTY.values() for s in ss)
     assert tq.SUSPECT_SURFACES <= set(tq.STACK)
+
+
+def test_classify_edge_and_gross():
+    assert tq.classify("shallow", -20.0) == "edge"
+    assert tq.classify("deep", 25.0) == "edge"          # inclusive at the tolerance
+    assert tq.classify("deep", 26.0, edge_ft=25.0) == "deep"
+    assert tq.classify("shallow", -301.0) == "gross"
+    assert tq.classify("agree", 0.0) == "agree"
+    assert tq.classify("masked", np.nan) == "masked"
+
+
+def _attr_frame() -> pd.DataFrame:
+    rows = []
+    # west cluster (x ~ 0): six WCB_1 wells all ~80 ft above the B1 top -> structure
+    for i in range(6):
+        rows.append((f"W{i}", "WCB_1", 0.0 + 500 * i, 0.0, "shallow", -80.0 - i))
+    # east (x ~ 50k): five agreeing WCB_1 wells + one lone well 90 ft high -> tag
+    for i in range(5):
+        rows.append((f"E{i}", "WCB_1", 50_000.0 + 500 * i, 0.0, "agree", 0.0))
+    rows.append(("ELONE", "WCB_1", 51_000.0, 300.0, "shallow", -90.0))
+    # far north: an isolated shallow well -> sparse
+    rows.append(("N", "WCB_1", 0.0, 90_000.0, "shallow", -70.0))
+    # mixed: neighbours sit deep, subject sits shallow
+    for i in range(4):
+        rows.append((f"M{i}", "WCA_2", 0.0 + 400 * i, 40_000.0, "deep", 60.0))
+    rows.append(("MSUB", "WCA_2", 800.0, 40_200.0, "shallow", -60.0))
+    d = pd.DataFrame(rows, columns=["api10", "tag", "x", "y", "cls", "miss"])
+    d["witness"] = True
+    return d.set_index("api10", drop=False)
+
+
+def test_attribution_cluster_vs_lone_outlier():
+    d = _attr_frame()
+    a = tq.attribute(d)
+    assert a.loc["W2", "attribution"] == "structure_suspect"
+    assert a.loc["W2", "grid_offset_ft"] == pytest.approx(np.median([-80.0, -81.0, -83.0, -84.0, -85.0]))
+    assert a.loc["ELONE", "attribution"] == "tag_suspect" and np.isnan(a.loc["ELONE", "grid_offset_ft"])
+    assert a.loc["N", "attribution"] == "unresolved_sparse" and a.loc["N", "band_n"] == 0
+    assert a.loc["MSUB", "attribution"] == "unresolved_mixed"
+    assert a.loc["E0", "attribution"] is None  # agreeing wells are not attributed
+
+
+def test_surface_residuals_and_offset_field():
+    # WCA_2 wells (base = WOLFCAMP-B1) landing 40 ft BELOW the B1 top, and WCB_1 wells (top = B1) landing 60 ft
+    # ABOVE it, in two separate places; both inform the WOLFCAMP-B1 surface.
+    rows = [(f"A{i}", "WCA_2", 500.0 * i, 0.0, "deep", 0.0, -40.0) for i in range(5)]
+    rows += [(f"B{i}", "WCB_1", 30_000.0 + 500 * i, 0.0, "shallow", -60.0, 120.0) for i in range(5)]
+    rows += [(f"C{i}", "WCB_1", 60_000.0 + 500 * i, 0.0, "agree", 50.0, 100.0) for i in range(5)]
+    w = pd.DataFrame(rows, columns=["api10", "tag", "x", "y", "cls", "ft_below_top", "ft_above_base"])
+    w["witness"] = True
+    res = tq.surface_residuals(w, "WOLFCAMP-B1")
+    assert set(res.loc[res["side"] == "above", "api10"]) == {f"A{i}" for i in range(5)}
+    assert res.loc[res["api10"] == "A0", "r"].iloc[0] == pytest.approx(40.0)   # B1 should go down 40 ft here
+    assert res.loc[res["api10"] == "B0", "r"].iloc[0] == pytest.approx(-60.0)  # B1 should come up 60 ft here
+    assert res.loc[res["api10"] == "C0", "r"].iloc[0] == 0.0
+    f = tq.offset_field(res)
+    assert not f.loc[(f["cx"] - 61_000.0).abs() < 3_000, "flagged"].any()
+    f = f[f["flagged"]]
+    near = lambda x: f.loc[(f["cx"] - x).abs() < 3_000, "offset_ft"]
+    assert (near(1_000.0) > 25).all() and len(near(1_000.0))
+    assert (near(31_000.0) < -25).all() and len(near(31_000.0))
+    assert near(61_000.0).empty  # agreeing wells: no cell beyond the edge tolerance
+
+
+def test_apply_rules_missing_verdict_is_unmeasured():
+    from box import tops_qc_report as rep
+
+    w = pd.DataFrame({"api10": ["A", "B"], "formation_blueox": ["WCB_1", "WCB_1"], "county": ["Reeves", None]})
+    p = pd.DataFrame({"verdict": [np.nan, "shallow"]}, index=["A", "B"])
+    out = rep.apply_rules(w, p)
+    assert out.loc["A", "verdict"] == "unmeasured" and pd.isna(out.loc["A", "verdict_raw"])
+    assert out.loc["B", "verdict"] == "shallow"

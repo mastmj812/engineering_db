@@ -1,4 +1,4 @@
-<title>Tops vs Tags · Step 1</title><style>
+<meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>Tops vs Tags · Step 1</title><style>
 body{font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;color:#111827;background:#fff;margin:0 24px 48px;max-width:1500px}
 h1{font-size:20px;margin:18px 0 4px} h2{font-size:16px;margin:32px 0 6px;border-top:2px solid #e5e7eb;padding-top:14px}
 h3{font-size:14px;margin:16px 0 4px} .meta{color:#6b7280;font-size:12px}
@@ -11,7 +11,7 @@ details{margin:6px 0} summary{cursor:pointer;color:#374151;font-size:12px} .toc 
 #map{height:760px;border:1px solid #d1d5db;margin:8px 0} .lg span{display:inline-block;width:22px;height:4px;margin:0 4px 2px 10px;vertical-align:middle}
 </style>
 <h1>Tops vs tags — step 1: sampling, datum, agreement</h1>
-<div class=meta>built 2026-10-20 19:49 UTC · git ca1b853 · grids: new = C:\Users\MichaelMast\Blue Ox Resources\Engineering - General\Structure Grids\Delaware\Grids_10-19-26, Sept = C:\Users\MichaelMast\Blue Ox Resources\Engineering - General\Structure Grids\Delaware\Original · READ ONLY</div>
+<div class=meta>built 2026-10-20 22:27 UTC · git 1385c50 · grids: new = C:\Users\MichaelMast\Blue Ox Resources\Engineering - General\Grids\Delaware\Structure\Grids_10-19-26, Sept = C:\Users\MichaelMast\Blue Ox Resources\Engineering - General\Grids\Delaware\Structure\Original · READ ONLY</div>
 <p>Each Delaware producing horizontal's <b>formation_blueox</b> tag is scored against the grid interval it should sit in (tag top → next surface down). Wells with a Novi survey are scored at <b>every lateral station</b> (sql/64), the rest at the midpoint <code>tvd_ft</code>. <b>agree</b> = majority of the lateral inside the tag interval. A disagreement means the tag OR the grid is wrong; step 2 attributes which. Evidence wells only: not a planned survey, ≥ 6 mo online, (survey or non-round tvd_ft), and landing depth ≥ 4,000 ft (shallower = a data error on a scored bench).</p>
 <div class=flag><b>Geology decisions applied (2026-10-20):</b> WOLFCAMP-C and WOLFCAMP_D are suspect (to be relabelled / re-picked) — WCC and WCD are <i>surface_suspect</i>, and a WCB_2 'deep' call (base = C top) is too. AVA_1 = Middle Avalon (operator tops ~110 ft above AVALON2) has no surface — <i>no_surface</i> until one is built; AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon. Pecos County: Wolfcamp A–D and AVALON2 have zero picks — <i>masked</i>; XY, Bone Springs and Bell/Cherry/Brushy stay scored there with caution. Agreement shares are over agree / shallow / deep only; the raw geometric verdict is kept as verdict_raw in the CSV.</div>
 <h2>1 · Datum check</h2>

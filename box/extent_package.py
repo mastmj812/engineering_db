@@ -33,7 +33,12 @@ from box import geology_io as gio
 
 # Holden's GGX structure grids (D25: context only). 2026-10-19 the geologist moved the September set into
 # Original/ and delivered Grids_10-19-26/ (renamed files, wider coverage, same UTM 14N US-ft lattice, no _data/_cont).
-GRID_ROOT = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware")
+# 2026-10-20 15:42 the folder moved again: Structure Grids/Delaware/ -> Grids/Delaware/Structure/ (an Isopach/
+# sibling arrived alongside). First existing root wins, newest layout first, so a move fails loudly in
+# require_grid() instead of silently.
+_ENG = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General")
+GRID_ROOTS = (_ENG / "Grids" / "Delaware" / "Structure", _ENG / "Structure Grids" / "Delaware")
+GRID_ROOT = next((p for p in GRID_ROOTS if p.exists()), GRID_ROOTS[0])
 GRID_DIR = GRID_ROOT / "Grids_10-19-26"
 ORIGINAL_GRID_DIR = GRID_ROOT / "Original"
 # file name of a surface's grid, newest scheme first: 10-19 set, then the September set's two schemes
