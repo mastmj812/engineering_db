@@ -89,6 +89,8 @@ _CONSUMERS = {
     "box.pud_forecast_month": "BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)",
     "box.location_analog": "BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)",
     "box.location_water_analog": "BOX water workup provenance (D107, sql/62): named measured-water analogs per location; Steven",
+    "box.pud_proximity": "BOX PDP-proximity configuration / haircut / precedent per PUD (D112-D116, sql/64): erebor badge + workup (pending); Steven",
+    "box.pud_proximity_parent": "BOX PDP-proximity provenance (sql/64): named depleted parents per PUD; erebor workup (pending)",
     "box_econ.box_pud_econ": "Steven's econ on BOX locations (contract, sql/61): erebor Highgrade econ screen with provenance (step 8); never read by box (D13)",
     "box_econ.box_pud_econ_tie": "tie-out of the EUR Steven priced vs the BOX EUR: QC before any screen (step 8)",
     "box_econ.pud_econ": "Steven's sandbox econ on Novi sticks (his table): the BOX-vs-Novi exhibit",
