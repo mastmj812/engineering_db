@@ -1,4 +1,4 @@
-# PDP-proximity study — steps 1, 2, 2b, 2c (Delaware) — GATE 2c DECIDED (option a); precedent unit + shielding open
+# PDP-proximity study — steps 1–4 (Delaware) — AT GATE 4
 
 Built 2026-10-19 by `python -m scripts.box_prox_study` (133 s, read-only; nothing written to the warehouse).
 Code: `box/prox_study.py` (pure), `box/prox_study_report.py`, tests `tests/test_box_prox_study.py`.
@@ -344,3 +344,79 @@ Single-parent material wells pooled: 1.10 [1.04–1.16].
 - **Not haircut:** single-parent and unexposed PUDs stay at BOX as-is (no `none` uplift). No gas haircut.
 - **Label on every PUD:** "validated with exception". It is confirmed or overturned on the 2026 prospective cohort (first cum-12 ~2027-Q2).
 - **Still open:** precedent unit and shielding (recommendations in chat 2026-10-20).
+
+## 20. Precedent unit + shielding decided (Michael, 2026-10-20)
+**Two-tier precedent.**
+- A multi-parent PUD needs ≥ 30 drilled multi-parent wells of its own bench pair. For mixed-class PUDs that means its own bench.
+- Where the haircut is severe (≤ 0.80), those 30 must also be packages: drilled with ≥ 2 co-developed same-pool siblings.
+- Short of either → no forecast.
+
+**No shielding exemption for PUDs.** Every existing producer ≥ 12 months on production counts. Permit-round producer TVDs are counted and flagged.
+
+**Step 4 (read-only PUD measurement)** follows: `python -m scripts.box_prox_study pud`.
+
+---
+
+# Step 4 — every BOX record PUD measured (AT GATE 4, read-only)
+
+Built 2026-10-20 by `python -m scripts.box_prox_study pud` (8 min, read-only).
+- Code: `box/prox_pud.py` (pure; 11 tests) and `box/prox_pud_report.py`.
+- Page: `pud.html`. Per PUD: `pud_outcomes.csv.gz`. Tables: `pud_*.csv`.
+
+## 21. What was measured
+- **Universe.** BOX record run 10 (data through 2026-07-01, Novi 2026Q3), every Delaware PUD carrying a forecast: 18,607 validated + 32,356 provisional = **50,963**.
+  - **Identity holds:** count and summed oil EUR (29,559.5 MMbbl, 50-yr raw) equal run 10 exactly.
+  - PUD stick = `box.location.geom`; landing TVD = the Novi stick's planned TVD.
+- **Producers.** The step-1 universe (34,033 laterals). A parent is ≥ 12 months on production at 2026-07-01. Metric as in step 1. No shielding exemption (§20).
+- **Flags.**
+  - 1,240 PUDs have a permit-round-TVD parent, counted and flagged.
+  - 4,421 PUDs have a producer younger than 12 months inside an envelope. Those become parents within a year, so the configuration needs a refresh cadence.
+- **Rules applied.** Option (a) haircuts (`haircut_table_candidate.csv`, cum-24 level) and the two-tier precedent from §20. Precedent counts come from the step-1 drilled universe, 113 bench-pair keys.
+
+## 22. Results
+| outcome | PUDs | share | oil EUR before (MMbbl) | after |
+|---|---:|---:|---:|---:|
+| unexposed → BOX as-is | 25,789 | 51 % | 14,506 | 14,506 |
+| single parent → BOX as-is | 6,980 | 14 % | 3,845 | 3,845 |
+| multi-parent → haircut | 9,706 | 19 % | 5,786 | 4,949 (−14.5 %) |
+| no forecast: bench pair < 30 drilled | 3,927 | 7.7 % | 2,351 | 0 |
+| no forecast: severe haircut, < 30 packages | 4,561 | 8.9 % | 3,072 | 0 |
+| **total** | **50,963** | | **29,560** | **23,300 (−21.2 %)** |
+
+**By bench (oil EUR change; share with no forecast):**
+
+| validated benches | oil EUR | no forecast | | provisional benches | oil EUR | no forecast |
+|---|---:|---:|---|---|---:|---:|
+| WCA_1 | −6.5 % | 1.7 % | | **BS3_S** | **−44.8 %** | **39.5 %** |
+| WCA_2 | −5.5 % | 1.5 % | | AVA_0 | −43.3 % | 42.2 % |
+| WCXY | −6.1 % | 1.1 % | | AVA_2 | −39.4 % | 38.2 % |
+| BS2_S | −5.9 % | 4.7 % | | AVA_1 | −30.7 % | 30.3 % |
+| WCB_1 | −10.5 % | 3.7 % | | BS2_C | −30.6 % | 28.8 % |
+| WCC | −12.9 % | 11.1 % | | WCB_2 | −14.3 % | 11.3 % |
+| | | | | BS3_C | −14.1 % | 8.2 % |
+| | | | | BS1_S | −13.5 % | 10.5 % |
+
+**BS3_S, the case that started this** (9,192 PUDs):
+- 3,346 have no forecast for lack of package precedent:
+  - 1,880 are BS3_S over 3+ flanking WCA parents (package precedent 13 drilled);
+  - 1,363 are mixed 4+ (BS3_S mixed package precedent 20).
+- 1,355 are haircut (0.84–0.92). 3,211 are unexposed and 995 single-parent, both left as-is.
+
+**Novi Tier-4 comparison:**
+- Of 10,483 Tier-4 PUDs, 4,840 (46 %) get no forecast, 4,529 are haircut and 1,114 stay as-is.
+- In the other direction, our no-forecast set also takes 2,488 Tier-3, 992 Tier-2 and 168 Tier-1 / no-depletion PUDs.
+- **Tier-4 and our geometry agree on the bulk, but Tier-4 alone misses about 40 % of what the precedent rule removes.**
+
+## 23. Gate-4 asks
+1. **AVA_0/1/2 and BS2_C (−31…−43 %).** Their no-forecasts are almost all "bench pair < 30 drilled": AVA mixed precedent is 9–27 wells, BS2_C mixed 22. These benches simply have little multi-parent drilling of any kind. The rule is behaving as written, but it partly reflects their being young plays, and they're already provisional (D105). Keep the rule uniform, or exempt provisional young benches from the precedent leg and haircut only? **I recommend uniform.** A multi-parent Avalon location has no drilled evidence behind it, which is exactly the no-forecast case.
+2. **Record-run implementation, which is the next build.**
+   - New coverage class `not_covered_no_precedent` (DDL widen, sql/63 pattern, go-apply).
+   - The haircut stored per PUD with provenance: config key, factor, precedent counts and the "validated with exception" label.
+   - Oil monthly volumes × factor; gas untouched.
+   - New record run 11 (go-store).
+   - erebor display (badge + haircut column).
+   - Ledger / Steven note.
+
+   This includes DDL and a live store, so it needs your explicit go at each write.
+3. **Refresh cadence.** 4,421 PUDs have a producer younger than 12 months nearby. I recommend re-measuring configuration with every record run (it's ~8 min), and folding it into the quarterly reload skill's BOX steps.
+4. **Deal-intake v14 (300 / 800 cull) vs this.** I recommend replacing v14's cull with the same configuration-and-precedent logic, so one definition serves both. That is a cross-repo contract entry, and a separate build after the record run.

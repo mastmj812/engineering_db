@@ -1,0 +1,24 @@
+{
+  "run_id": 10,
+  "data_through": "2026-07-01",
+  "report_version": "2026Q3",
+  "identity_n": 50963,
+  "identity_oil_eur": 29559533028.3058,
+  "built": "2026-10-20 16:57 UTC",
+  "n_puds": 50963,
+  "n_links": 330292,
+  "identity_ok": true,
+  "n_precedent_pairs": 113,
+  "severe": 0.8,
+  "floor": 30,
+  "seconds": 464,
+  "outcomes": {
+    "as_is_unexposed": 25789,
+    "haircut": 9706,
+    "as_is_single_parent": 6980,
+    "no_forecast_package": 4561,
+    "no_forecast_precedent": 3927
+  },
+  "oil_mmbbl_before": 29559.53302830577,
+  "oil_mmbbl_after": 23300.105623502044
+}
