@@ -38,6 +38,13 @@ GRID_DIR = GRID_ROOT / "Grids_10-19-26"
 ORIGINAL_GRID_DIR = GRID_ROOT / "Original"
 # file name of a surface's grid, newest scheme first: 10-19 set, then the September set's two schemes
 GRID_NAME_PATTERNS = ("HCA_{s}_STRUCTURE_MD_grid.xyz", "HCA_{s}_STRUCTURE_MDXYZ_grid.xyz", "{s}-STRUCTUREXYZ_grid.xyz")
+# 2026-10-20 the geologist added a distance-to-well-control grid per surface (10-19 set only; the September set has
+# none): ft to the nearest well pick controlling that surface, same lattice + populated mask as the structure partner
+DIST_NAME_PATTERNS = ("HCA_{s}_DIST_TO_CONTROL_ft_grid.xyz",)
+GRID_KINDS = {"structure": GRID_NAME_PATTERNS, "dist_to_control": DIST_NAME_PATTERNS}
+# trust-mask cutoff: structure within this distance of a controlling pick is "trusted". PROVISIONAL (1 mi) — owner-tunable;
+# context only (D25/D27/D55), never a performance screen
+TRUST_MAX_FT = 5280.0
 # (top surface, base surface) per pool — BS2 sand: 2BS sand top -> 3BS carbonate top; WCA: WCA top -> WCB1 top
 GRIDS = {
     "BS2_S": ("2BSPGS", "3BSPGC"),
@@ -58,19 +65,31 @@ GRIDS = {
 }
 
 
-def grid_path(surface: str, grid_dir: Path = GRID_DIR) -> Path | None:
-    """The surface's grid file in ``grid_dir`` under either naming scheme (None if absent)."""
-    for pat in GRID_NAME_PATTERNS:
+def _find_grid(surface: str, grid_dir: Path, kind: str) -> Path | None:
+    if kind not in GRID_KINDS:
+        raise ValueError(f"unknown grid kind {kind!r} (one of {', '.join(GRID_KINDS)})")
+    for pat in GRID_KINDS[kind]:
         p = Path(grid_dir) / pat.format(s=surface)
         if p.exists():
             return p
     return None
 
 
-def require_grid(surface: str, grid_dir: Path = GRID_DIR) -> Path:
-    p = grid_path(surface, grid_dir)
+def grid_path(surface: str, grid_dir: Path = GRID_DIR, kind: str = "structure") -> Path | None:
+    """The surface's grid file in ``grid_dir`` under either naming scheme (None if absent).
+
+    ``kind='structure'`` is silent when absent (its callers warn with the pool in the message); a missing
+    ``kind='dist_to_control'`` grid warns here (e.g. the September set has none) and still returns None."""
+    p = _find_grid(surface, grid_dir, kind)
+    if p is None and kind != "structure":
+        warnings.warn(f"no {surface} {kind} grid in {grid_dir} — NO trust mask for this surface", stacklevel=2)
+    return p
+
+
+def require_grid(surface: str, grid_dir: Path = GRID_DIR, kind: str = "structure") -> Path:
+    p = _find_grid(surface, grid_dir, kind)
     if p is None:
-        raise FileNotFoundError(f"no {surface} structure grid in {grid_dir} (tried {', '.join(pat.format(s=surface) for pat in GRID_NAME_PATTERNS)})")
+        raise FileNotFoundError(f"no {surface} {kind} grid in {grid_dir} (tried {', '.join(pat.format(s=surface) for pat in GRID_KINDS[kind])})")
     return p
 
 
@@ -109,6 +128,39 @@ def _grid(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     z[z > 1e9] = np.nan
     Z[np.searchsorted(ys, np.round(a[:, 1], 1)), np.searchsorted(xs, np.round(a[:, 0], 1))] = z
     return xs, ys, Z
+
+
+def check_same_lattice(a: Path, b: Path) -> None:
+    """Raise ValueError unless grids ``a`` and ``b`` share the node lattice AND the populated-node mask
+    (the DIST_TO_CONTROL grid is delivered as a node-for-node partner of its STRUCTURE grid)."""
+    ax, ay, az = _grid(a)
+    bx, by, bz = _grid(b)
+    if not (np.array_equal(ax, bx) and np.array_equal(ay, by)):
+        raise ValueError(f"lattice differs: {Path(a).name} {az.shape[1]}x{az.shape[0]} vs {Path(b).name} {bz.shape[1]}x{bz.shape[0]}")
+    n = int((np.isfinite(az) != np.isfinite(bz)).sum())
+    if n:
+        raise ValueError(f"populated-node mask differs at {n} nodes: {Path(a).name} vs {Path(b).name}")
+
+
+def dist_to_control(surface: str, points: Any, grid_dir: Path = GRID_DIR) -> np.ndarray:
+    """Distance (ft) to the nearest well pick controlling ``surface`` at ``points``: an (N, 2) array of x, y in the
+    geology frame (NAD83 UTM 14N US-ft — the grids' frame; BOX UTM 13N ft goes through ``gio.ft13_to_geology``).
+
+    Bilinear on the lattice, the same RegularGridInterpolator the structure loaders use: NaN outside the lattice
+    and in any cell touching a null node. All-NaN (after the resolver's warning) when the surface has no DIST grid."""
+    xy = np.asarray(points, dtype=float).reshape(-1, 2)
+    path = grid_path(surface, grid_dir, kind="dist_to_control")
+    if path is None:
+        return np.full(len(xy), np.nan)
+    xs, ys, D = _grid(path)
+    return RegularGridInterpolator((ys, xs), D, bounds_error=False, fill_value=np.nan)(xy[:, ::-1])
+
+
+def trust_mask(surface: str, points: Any, max_ft: float = TRUST_MAX_FT, grid_dir: Path = GRID_DIR) -> np.ndarray:
+    """True where ``surface`` is controlled by a well pick within ``max_ft`` (provisional default TRUST_MAX_FT = 1 mi).
+    NaN distance (null node, off-lattice, no DIST grid) is never trusted. Context only (D25) — not a performance screen."""
+    d = dist_to_control(surface, points, grid_dir)
+    return np.isfinite(d) & (d <= max_ft)
 
 
 def _contours(xs: np.ndarray, ys: np.ndarray, Z: np.ndarray, step: float, clip: Any) -> list[tuple[LineString, float]]:
