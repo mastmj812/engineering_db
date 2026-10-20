@@ -159,3 +159,93 @@ and is what step 3 is for.
 - Landing-position histograms: ft below each interval top, by tag, faceted by area (10-mi bins + county). First
   for the XY squeeze (3BSPGS → WCXY → WCA → B1) and the WCB_1 / WCB_2 boundary.
 - Output: proposed edge-naming rules for Michael and the geologist to decide. Nothing is implemented.
+
+---
+
+# Step 3 findings (2026-10-20): where wells actually land around each interface
+
+Run: `python -m scripts.box_tops_qc --step 3` (READ ONLY). Page: `step3.html`. Per well: `wells_step3.csv`.
+
+**Method.**
+- **Position:** each well's landing (lateral station median, else midpoint `tvd_ft`) relative to ONE reference
+  surface per interface family, so clusters show where development lands regardless of the name.
+- **Universe:** evidence wells; Pecos excluded (every reference surface is masked there).
+- **Split:** for each adjacent tag pair, the depth that best separates them. **separation** = 1 − error / the
+  error of lumping both tags together: 0 = the depth separates nothing, 1 = perfect; splits under 0.2 are blanked.
+- **Landing zones:** tag-blind peaks of a 12-ft-bandwidth KDE.
+
+**Nothing here re-tags a well. The candidate rules below are for Michael and the geologist to decide.**
+
+## 1. BS3_S / WCXY / WCA_1 / WCA_2 (relative to the WCA top)
+
+**There is one dominant landing zone, and it carries four names.** Basin-wide it sits 10 ft above the WCA top, with
+1,979 wells within ±25 ft: WCA_1 59%, WCXY 20%, WCA_2 13%, BS3_S 8%.
+
+| Area | Main zone | Tag mix |
+|---|---|---|
+| Reeves | −39 ft | WCA_1 79% |
+| Loving | −41 ft | WCXY 54% / WCA_1 41% |
+| Lea | −28 ft | WCA_1 40% / BS3_S 25% / WCXY 20% |
+| Eddy | −3 ft | WCA_1 57% / WCXY 32% |
+
+The main "upper Wolfcamp A" target sits AT or a few tens of feet ABOVE the gridded WCA top, inside the gridded XY
+interval. That is the step-2 "WCA top wants up ~44 ft" signal, and the geologist's top is at most ~40 ft from where
+operators land.
+
+**WCXY vs WCA_1 does not separate by depth anywhere except Loving** (separation 0.00–0.17 elsewhere; Loving splits at
+−35 ft, separation 0.45). Operators and Novi use WCXY and WCA_1 for the same landing.
+- **Candidate rule A:** treat WCXY + WCA_1 as one landing bench for tagging. BOX already pools them (D19 / D20 / D33).
+  This keeps the pooling and stops scoring the WCXY / WCA_1 name as a "disagreement".
+
+**BS3_S | WCXY splits near the XY surface** where it separates (sep ≥ 0.36): split − XY surface = +13 ft in Reeves,
++23 ft basin-wide, +42 ft in Eddy, −7 ft in Culberson, −20 ft in Loving. Lea and Ward don't separate at all.
+- **Candidate rule B:** the gridded XY top is the BS3_S / Wolfcamp boundary, within ±~40 ft. Lea and Ward need a
+  look; their BS3_S and WCXY labels overlap completely.
+
+**WCA_1 | WCA_2 splits ~85–135 ft below the WCA top** (Reeves +86, Culberson +83, basin +110, Loving +125, Eddy +136;
+separation 0.39–0.52). Ward (+22) and Winkler (+14) are shallower and weak. There is a second landing zone at
++67 to +173 ft (Ward +67 … Eddy +173), mostly WCA_2.
+- **Candidate rule C:** no grid splits WCA_1 / WCA_2. A positional rule "WCA_2 = more than ~100 ft below the WCA top"
+  matches operator naming in the core, or a per-county value from the table. Alternatively the geologist adds a
+  WCA_1 / WCA_2 surface.
+
+## 2. WCA_2 / WCB_1 / WCB_2 (relative to the B1 top)
+
+**WCA_2 | WCB_1 sits on the B1 surface.** The split is −5 ft in Reeves, +13 Loving, +25 Ward, +3 Winkler and +30
+basin-wide, with separation 0.5–0.7. Lea (+44) and Eddy (+71) are weaker. **The B1 top is a good boundary.**
+
+**WCB_1 | WCB_2 is a clean, consistent boundary about 215–260 ft below the B1 top** (Reeves 218, Ward 213, Lea 251,
+Loving 259, Culberson 260; separation 0.48–0.97). The geologist's B2 top sits deeper than that in the core: 371 ft
+below B1 in Reeves, 375 in Ward, 337 in Loving. So operators put the B1 / B2 boundary 80–160 ft SHALLOWER than the
+gridded B2 top there. That is the step-2 "WCB_2 cluster in Reeves, B2 wants up ~118 ft, near existing picks" finding.
+- **Question for the geologist:** is the B2 top a different (deeper) marker from the one operators target as
+  "WCB_2"?
+- **Candidate rule D:** a positional rule "WCB_2 = more than ~230 ft below the B1 top", until the B2 surface is
+  re-picked.
+
+## 3. Avalon (relative to AVALON2, the Lower Avalon top)
+
+**AVA_0 | AVA_1 splits ~60–96 ft above AVALON2** (basin −92, Lea −96, Loving −74, Eddy −60; separation 0.38–0.77).
+That agrees with the geologist's operator Middle Avalon tops (~110 ft above AVALON2, MAD 24 ft). **It supports
+building the Middle Avalon surface at roughly AVALON2 − 90 to 110 ft.**
+
+**AVA_1 | AVA_2 is regional.**
+- **Eddy and Loving:** splits ~8–10 ft below AVALON2 (separation 0.6–0.9), i.e. AVALON2 is the boundary.
+- **Lea:** AVA_1 wells land ~40 ft BELOW AVALON2 (a single tight zone, 99% AVA_1), and the split is +223 ft.
+- **Read:** Lea operators call a Lower-Avalon-top landing "Middle Avalon", or AVALON2 is ~40+ ft too shallow in
+  Lea. A question for the geologist.
+
+## Summary for the decision
+
+| Interface | Gridded surface works as the naming boundary? | Candidate |
+|---|---|---|
+| BS3_S / WCXY | Yes, the XY top ±40 ft (not Lea / Ward) | B: keep the grid |
+| WCXY / WCA_1 | No: the names don't separate | A: one bench |
+| WCA_1 / WCA_2 | No surface | C: ~WCA top + 100 ft, or a new surface |
+| WCA_2 / WCB_1 | Yes, the B1 top ±30 ft | keep the grid |
+| WCB_1 / WCB_2 | No: B2 sits 80–160 ft too deep in Reeves / Ward / Loving | D: B1 + ~230 ft, or re-pick B2 |
+| AVA_0 / AVA_1 | No surface | Middle Avalon ≈ AVALON2 − 90–110 ft (geologist building) |
+| AVA_1 / AVA_2 | Yes in Eddy / Loving; no in Lea | Lea question |
+
+**Next:** Michael + geologist decide rules A–D. Then the relanding / BOX-validated tag gets designed as a separate
+plan, using the decided rules and the revised C / D / B2 / Middle Avalon surfaces.
