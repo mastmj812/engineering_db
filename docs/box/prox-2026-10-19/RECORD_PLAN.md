@@ -88,3 +88,46 @@ Idempotent, in the sql/63 style. Container-validated first; live apply is a **GO
 | a | Water | untouched (rides raw oil, D108) |
 | b | No-precedent rows keep search provenance (n_analogs, radius) | yes |
 | c | Run 10 kept; DB +~10 GB to ~97 GB | yes — forced by the priced-run contract |
+
+## 8. Built + container-rehearsed 2026-10-20: AT THE GO-APPLY POINT
+Decisions taken with the go:
+- water untouched;
+- no-precedent rows keep their search provenance.
+
+D112–D116 are written into `docs/box_type_curves_plan.md`.
+
+**Code (commit 415ab3d):**
+- `sql/64_box_proximity.sql` and `scripts/apply_box_proximity.py` (25 checks incl. a rolled-back smoke);
+- `box/prox_record.py`: re-derives every PUD's configuration from `runs/prox/pud_links.pkl` and asserts it equals the reviewed `pud_outcomes.csv.gz` (0 mismatches on 50,963);
+- `scripts/box_prox_record.py store`: one transaction; rolls back unless `--commit`; `--record` flips the record.
+
+**Rehearsal container** (postgis 16-3.4 on :5437, throwaway):
+- The existing apply chain ran green, except the econ-schema script stopped on a `curated` grant the container lacks.
+- Live box state was copied READ-ONLY: 121,727 PUD rows, 152,889 streams, the analogs, and 2.7 M sample months (300 PUDs per outcome).
+- **sql/64:** 25/25, twice (idempotent). Log: `rehearsal/apply_box_proximity.txt`.
+- **Store:** a rollback rehearsal, then `--commit --record`. Every identity green both times (`rehearsal/store_record.txt`):
+
+  | identity | result |
+  |---|---|
+  | coverage counts | the source with 8,488 moved to `not_covered_no_precedent` (787 from covered, 7,701 from covered_provisional) |
+  | stream rows | 42,475 per stream |
+  | oil EUR | **23,300.106 MMbbl = run 10 × factor** (step 4: 23,300.1) |
+  | gas / water streams | identical |
+  | gas / water / as-is oil months | ordered md5 identical |
+  | haircut oil months | = source × factor, 0 rows off |
+  | analogs / water analogs | equal the source's survivors |
+  | proximity outcomes | equal the gate-4 counts |
+  | named parents | 73,307 |
+  | run 10 | untouched |
+
+  Then the record flip: run 10 superseded and kept.
+
+**Live run id.** The store takes the next sequence value. Live's sequence sits at 13, so the new record will be **run 14**; "run 11" in this plan is a label. Each rehearsal rollback burns an id, which is harmless.
+
+**Expected live cost:** ~77 M month rows copied in-database (rehearsal: 1.6 M rows in 16 s), so roughly 15–30 min. DB +~10 GB to ~97 GB.
+
+### The GO points (in order; each needs Michael's explicit go)
+1. `python -m scripts.apply_box_proximity` against Supabase. Expect 25/25.
+2. `python -m scripts.box_prox_record store`: a live rollback rehearsal, which writes nothing.
+3. `python -m scripts.box_prox_record store --commit --record`: the new record (~run 14); run 10 superseded and kept.
+4. `python -m scripts.gen_data_dictionary --html docs/data_dictionary.html` with `_CONSUMERS` for the two new tables. Then the erebor PR and the Steven note.
