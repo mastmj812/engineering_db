@@ -1,7 +1,7 @@
 -- =============================================================================
 -- raw_novi DDL - generated from Novi's shipped schema.postgres.sql
 -- Source file: data\us-horizontals\All basins\All subbasins\Bulk\schema.postgres.sql
--- Tables included: ForecastWellMonths, WellDetails, WellMonths, WellSpacing, Wells
+-- Tables included: DirectionalSurveys, ForecastWellMonths, WellDetails, WellMonths, WellSpacing, Wells
 -- 
 -- DO NOT EDIT BY HAND. Regenerate with scripts/generate_novi_ddl.py.
 -- =============================================================================
@@ -140,6 +140,30 @@ CREATE TABLE raw_novi."Wells" (
     "ModifiedAt" timestamp NULL,
     "DeletedAt" timestamp NULL,
     CONSTRAINT "Wells_pkey" PRIMARY KEY ("API10")
+,
+    "ingested_at" timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE raw_novi."DirectionalSurveys" (
+    "API10" varchar(32) NOT NULL,
+    "Path" int4 NOT NULL,
+    "Basin" varchar(36) NOT NULL,
+    "Subbasin" varchar(36) NOT NULL,
+    "MD" int4 NOT NULL,
+    "Inclination" float8 NOT NULL,
+    "Azimuth" float8 NOT NULL,
+    "TVD" int4 NOT NULL,
+    "SubSeaTVD" int4 NOT NULL,
+    "NS" int4 NOT NULL,
+    "EW" int4 NOT NULL,
+    "LocationType" int4 NOT NULL,
+    "Latitude" float8 NOT NULL,
+    "Longitude" float8 NOT NULL,
+    "Interpolated" bool NULL,
+    "CreatedAt" timestamp NULL,
+    "ModifiedAt" timestamp NULL,
+    "DeletedAt" timestamp NULL,
+    CONSTRAINT "DirectionalSurveys_pkey" PRIMARY KEY ("API10", "Path")
 ,
     "ingested_at" timestamptz NOT NULL DEFAULT now()
 );

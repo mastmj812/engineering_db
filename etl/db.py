@@ -415,6 +415,8 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.intel_forecast_accuracy",
     "curated.intel_forecast_accuracy_vintage",
     "curated.production_forecast",
+    # sql/64 — raw_novi.DirectionalSurveys only (no curated deps); gated below.
+    "curated.well_lateral_survey",
 )
 
 # Matviews allowed to be absent mid-quarterly-rebuild (the intel reload
@@ -436,13 +438,16 @@ _OPTIONAL_MATVIEWS: frozenset[str] = frozenset(
 # Matviews whose refresh is GATED on whether their source raw table changed
 # since the matview's last successful refresh. Value is a LIKE pattern matched
 # against meta.etl_log.table_name (covers both the "(incremental)" nightly load
-# and the "(reconcile)" run). Only curated.production_forecast (~7 GB, built
-# from raw_novi.ForecastWellMonths) is gated: it is the memory-heavy rebuild
+# and the "(reconcile)" run). curated.production_forecast (~7 GB, built
+# from raw_novi.ForecastWellMonths) is gated because it is the memory-heavy rebuild
 # that OOMs a small managed instance, and ForecastWellMonths is a faithful
 # change signal for it (a new well brings new forecast rows). The other matviews
 # are small and/or have multi-table inputs, so they refresh every run.
 _GATED_REFRESH: dict[str, str] = {
     "curated.production_forecast": "ForecastWellMonths%",
+    # sql/64: a ~14M-station aggregate; rebuild only when the survey load
+    # upserted or trimmed rows (Novi revises stations in batches).
+    "curated.well_lateral_survey": "DirectionalSurveys%",
 }
 
 

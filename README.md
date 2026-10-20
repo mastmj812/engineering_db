@@ -256,11 +256,12 @@ The run pings `<url>/start` at the top of `run_daily.py` and either
   `scripts/generate_novi_ddl.py`. Quoted, mixed-case identifiers
   (`raw_novi."WellMonths"`) preserve Novi's casing exactly.
 - **Novi MVP tables**: `Wells`, `WellMonths`, `WellDetails`,
-  `WellSpacing`. Wells is the parent (api10 PK); the other three
-  reference it. Extend `MVP_TABLES` in BOTH `etl/novi/load.py` AND
-  `scripts/generate_novi_ddl.py` to pull more (Subsurface,
-  DirectionalSurveys, ForecastWellMonths, FracFocus*, PricesWeekly,
-  etc.).
+  `WellSpacing`, `ForecastWellMonths`, `DirectionalSurveys` (survey
+  stations, key API10 + Path; feeds sql/64 `curated.well_lateral_survey`).
+  Wells is the parent (api10 PK); the others reference it. Extend
+  `MVP_TABLES` in BOTH `etl/novi/load.py` AND `scripts/generate_novi_ddl.py`
+  to pull more (Subsurface, FracFocus*, PricesWeekly, etc.); a test pins
+  the two lists equal.
 - **Novi temporal model**: every table has `CreatedAt` / `ModifiedAt` /
   `DeletedAt`. Curated views should filter `DeletedAt IS NOT NULL`. The
   SDK handles the diff/merge math on disk so we don't apply `ModifiedAt`

@@ -32,6 +32,7 @@ MVP_TABLES: set[str] = {
     "WellDetails",
     "WellSpacing",
     "ForecastWellMonths",
+    "DirectionalSurveys",
 }
 
 
