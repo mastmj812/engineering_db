@@ -2,13 +2,14 @@
 grids add edge information for BS2_S? Run from the repo root after scripts.box_edge_gap:
     python docs/box/step2-2026-10-07/structure_probe.py <out_dir>
 Reads the GGX xyz grids (UTM 14N NAD83 US-ft, Z = KB-relative MD/TVD) from the Engineering
-SharePoint sync folder and outline_BS2_S.geojson; writes structure_probe.png + prints the tables."""
+SharePoint sync folder (the September set, moved to Delaware/Original/ 2026-10-19 — the 10-19 set has
+no _data control-point files) and outline_BS2_S.geojson; writes structure_probe.png + prints the tables."""
 import shapely.ops
 import sys, json, numpy as np, pandas as pd, shapely, matplotlib
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from shapely.geometry import shape
 from pyproj import Transformer
-SP=sys.argv[1]; G="C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware/"
+SP=sys.argv[1]; G="C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware/Original/"
 USFT=1200/3937
 def grid(name):
     a=np.loadtxt(G+f"HCA_{name}_STRUCTURE_MDXYZ_grid.xyz",delimiter=",")
