@@ -1,0 +1,7 @@
+outcome,No Depletion,Tier-1,Tier-2,Tier-3,Tier-4,All
+as_is_single_parent,360,1100,2523,2167,830,6980
+as_is_unexposed,18983,2868,2558,1096,284,25789
+haircut,64,168,1518,3427,4529,9706
+no_forecast_package,7,12,261,1100,3181,4561
+no_forecast_precedent,24,125,731,1388,1659,3927
+All,19438,4273,7591,9178,10483,50963
