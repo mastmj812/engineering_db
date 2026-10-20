@@ -4,7 +4,8 @@
 
 Reads the version of record for each bench straight from box.extent (READ ONLY transaction; the warehouse is the source
 of truth) and writes it as a shapefile in the geology frame (NAD83 / UTM 14N, US-survey ft; D7), plus, per bench, the
-context layers already built for its review (laterals, structure / isopach contours, flags) and the potash polygon.
+context layers already built for its review (laterals, flags), structure / isopach contours drawn fresh from the
+geology grids (--grid-dir, default the current set) around the record extent, and the potash polygon.
 README.txt says what each file is and how edits come back (D28: import -> diff -> new version of record -> re-run).
 """
 
@@ -32,7 +33,7 @@ CONTEXT_DIR = {
     "BS2_C": "step15-BS2C-2026-10-16/extents/geology",
     "AVA_0": "step15-AVA-2026-10-16/extents/geology", "AVA_1": "step15-AVA-2026-10-16/extents/geology", "AVA_2": "step15-AVA-2026-10-16/extents/geology",
 }
-CONTEXT_LAYERS = ("laterals", "ctx_struct", "ctx_isopach", "flags")
+CONTEXT_LAYERS = ("laterals", "flags")  # copied from the review folder; ctx_* contours are re-drawn from --grid-dir
 SHP_EXT = (".shp", ".shx", ".dbf", ".prj", ".cpg")
 RECORD_FIELDS = [("BENCH", "C", 12, 0), ("BASIN", "C", 12, 0), ("EXTENT_ID", "N", 8, 0), ("VERSION", "N", 4, 0), ("SOURCE", "C", 16, 0),
                  ("AREA_SQMI", "N", 12, 2), ("RECORD_OF", "C", 10, 0), ("NOTE", "C", 254, 0)]
@@ -52,6 +53,7 @@ CONTEXT (read only — for judging the edits)
   <bench>/BOX_<bench>_laterals     every bench lateral: ROLE, TVD_FT, OIL12KFT (12-mo oil, bbl per 1,000 ft), QC_NOTE
   <bench>/BOX_<bench>_ctx_struct   your HCA structure grid of the bench top, contoured (context only, D25)
   <bench>/BOX_<bench>_ctx_isopach  bench isopach from your grids (context only)
+      grids: {grids}; within 10 mi of each record extent's bounding box
   <bench>/BOX_<bench>_flags        step-out tests left out, voids/holes filled — the questions behind the edge
   BOX_potash_SOPA                  BLM Secretary's Potash Area (surface constraint, not geology)
 
@@ -70,6 +72,7 @@ HOW TO RETURN EDITS
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=Path("docs") / "box" / f"geology-package-{dt.datetime.now(tz=dt.UTC).astimezone():%Y-%m-%d}")
+    ap.add_argument("--grid-dir", type=Path, default=pkg.GRID_DIR, help=f"structure grid folder (default {pkg.GRID_DIR.name}; September set: {pkg.ORIGINAL_GRID_DIR})")
     a = ap.parse_args(argv)
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     with get_connection() as conn, conn.cursor() as cur:
@@ -103,11 +106,17 @@ def main(argv: list[str] | None = None) -> int:
                 f = src_dir / f"BOX_{bench}_{layer}{ext}"
                 if f.exists():
                     shutil.copy2(f, sub / f.name)
-        print(f"{bench}: extent_id {eid} {src} {float(area):,.1f} sq mi (round-trip {err:.5f} sq mi)")
+        clip = gio.ft13_to_geology([shapely.box(*g13.bounds).buffer(10 * eg.FT_PER_MI)])[0]
+        cont = pkg.context_contours(bench, clip, grid_dir=a.grid_dir)
+        if not cont:
+            raise RuntimeError(f"{bench}: no structure grids in {a.grid_dir}")
+        pkg.write_contours(sub, bench, cont)
+        n = ", ".join(f"{len(v):,} {k}" for k, v in cont.items())
+        print(f"{bench}: extent_id {eid} {src} {float(area):,.1f} sq mi (round-trip {err:.5f} sq mi); contours {n}")
     from box import extent_report as er
 
     pkg.write_sopa(a.out, er.load_sopa())
-    (a.out / "README.txt").write_text(README.format(built=built, records="\n".join(lines)), encoding="utf-8")
+    (a.out / "README.txt").write_text(README.format(built=built, grids=a.grid_dir.name, records="\n".join(lines)), encoding="utf-8")
     print(f"wrote {a.out} ({len(rows)} benches)")
     return 0
 
