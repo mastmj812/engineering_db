@@ -211,6 +211,12 @@ def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any]
     if up is not None and not up.is_empty:
         files += gio.write_layer(out / f"BOX_{pool}_updip", "polygon", gio.ft13_to_geology([up]), [("BENCH", "C", 12, 0), ("LIMIT", "C", 120, 0)],
                                  [[pool, b["stats"].get("updip_text", "")]])
+    return files + write_contours(out, pool, contours)
+
+
+def write_contours(out: Path, pool: str, contours: dict[str, Any]) -> list[Path]:
+    """The pool's ctx_struct / ctx_isopach layers (from context_contours); returns the files written."""
+    files: list[Path] = []
     top, base = GRIDS[pool]
     for kind, items in contours.items():
         if items:
