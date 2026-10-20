@@ -110,7 +110,8 @@ def render(T: dict[str, pd.DataFrame], meta: dict[str, Any]) -> str:
     return "\n".join(p)
 
 
-def run(views_root: Path, runs: Path, out: Path, n_boot: int = pdz.N_BOOT) -> dict[str, Any]:
+def frame(views_root: Path, runs: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+    """(scored children with configuration, every step-1 child's configuration, meta) — shared with step 2c."""
     d, meta = assemble(views_root, runs)
     with open(runs / "links.pkl", "rb") as f:
         links = pickle.load(f)
@@ -122,6 +123,11 @@ def run(views_root: Path, runs: Path, out: Path, n_boot: int = pdz.N_BOOT) -> di
     allc = (pdz.configuration(ids, links).merge(kids[["api10", "bench"]], on="api10", how="left")
             .merge(pdz.exposure(ids, links)[["api10", "group"]], on="api10", how="left"))
     d = d.merge(allc.drop(columns=["bench", "group"]), on="api10", how="left")
+    return d, allc, meta
+
+
+def run(views_root: Path, runs: Path, out: Path, n_boot: int = pdz.N_BOOT) -> dict[str, Any]:
+    d, allc, meta = frame(views_root, runs)
     W = pdz.boot_weights(d["block"].to_numpy(), n_boot=n_boot)
     T = tables(d, allc, W)
     meta |= {"built": dt.datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M UTC"), "n_boot": n_boot, "n_all_children": len(allc),
