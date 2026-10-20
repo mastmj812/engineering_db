@@ -1,0 +1,29 @@
+[1/3] sql/64: PDP-proximity layer
+[2/3] validate
+    ok   box.pud_forecast: box_pud_forecast_coverage_tier_ck
+    ok   box.pud_forecast: box_pud_forecast_uncovered_ck
+    ok   box.pud_forecast: box_pud_forecast_no_precedent_ck
+    ok   box.pud_forecast_stream: box_pud_forecast_stream_prox_factor_ck
+    ok   box.pud_forecast_stream: box_pud_forecast_stream_eur_ck
+    ok   box.pud_proximity: box_pud_proximity_coverage_ck
+    ok   box.pud_proximity: box_pud_proximity_as_is_ck
+    ok   box.pud_proximity: box_pud_proximity_multi_ck
+    ok   box.pud_proximity: box_pud_proximity_label_ck
+    ok   box.pud_proximity: box_pud_proximity_unexposed_ck
+    ok   coverage CHECK admits not_covered_no_precedent
+    ok   eur identity includes prox_factor
+    ok   every existing stream row reads prox_factor 1
+    ok   box.pud_proximity exists and is empty
+    ok   analyst_ro can read box.pud_proximity
+    ok   box.pud_proximity_parent exists and is empty
+    ok   analyst_ro can read box.pud_proximity_parent
+    ok   pud_forecast coverage + stream counts unchanged by identity
+[3/3] smoke (rolled back)
+    ok   a haircut PUD (oil x 0.75, proximity + parent rows) and a no-precedent PUD (search kept, no stream) insert
+    ok   a stream row for a not_covered_no_precedent location is refused
+    ok   prox_factor != 1 on a gas row is refused
+    ok   an oil eur that ignores prox_factor is refused
+    ok   a no-forecast proximity outcome on a covered location is refused
+    ok   a haircut proximity row without its label is refused
+    ok   a not_covered_no_precedent row without search provenance is refused
+all checks passed

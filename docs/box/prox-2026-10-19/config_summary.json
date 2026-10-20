@@ -1,0 +1,54 @@
+{
+  "view_rows": 15581,
+  "duplicate_api10_dropped": 989,
+  "not_in_step1_children": 47,
+  "children": 14545,
+  "digests": {
+    "tuning": "6379b9dabe91",
+    "holdout": "2b9418617f35"
+  },
+  "by_group": {
+    "AVA_0": 85,
+    "AVA_1": 182,
+    "AVA_2": 160,
+    "BS1_S": 658,
+    "BS2_C": 294,
+    "BS2_S": 2043,
+    "BS3_C": 1140,
+    "BS3_S": 1497,
+    "WCA": 5406,
+    "WCB_1": 954,
+    "WCB_2": 680,
+    "WCC": 457,
+    "WCXY_WCA1": 989
+  },
+  "by_split": {
+    "holdout": 3907,
+    "tuning": 10638
+  },
+  "groups": {
+    "ambiguous": 608,
+    "control": 3971,
+    "exposed": 8818,
+    "young": 1148
+  },
+  "built": "2026-10-20 15:14 UTC",
+  "n_boot": 500,
+  "n_all_children": 25889,
+  "envelope": {
+    "same": [
+      1000.0,
+      1400.0
+    ],
+    "topfill": [
+      800.0,
+      1400.0
+    ],
+    "underfill": [
+      500.0,
+      1400.0
+    ]
+  },
+  "beneath_ft": 100.0,
+  "reference": "all scored children per (bench group, cutoff)"
+}

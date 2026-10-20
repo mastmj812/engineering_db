@@ -1,0 +1,19 @@
+{
+  "built": "2026-10-20 15:12 UTC",
+  "n_universe": 34026,
+  "n_children": 25889,
+  "n_links": 214395,
+  "n_depleting_links": 78180,
+  "v14_violators_any": 1964,
+  "params": {
+    "min_overlap": 0.3,
+    "parent_min_days": 365,
+    "codev_days": 180,
+    "pair_gate_ft": 2640.0,
+    "store_dv_ft": 1500.0,
+    "fp_min": "2016-01-01",
+    "opp_radius_ft": 10560.0,
+    "opp_parent_fp_max": "2022-06-30"
+  },
+  "seconds": 449
+}

@@ -1,0 +1,26 @@
+prepared 50,963 proximity rows, 73,307 parents (2 s); digests {'outcomes': '68e7c2cb4bf61380b067c79f5dbccfffb0f8410e37ac634d13e2c8f21c29a8fe', 'haircut_table': '0a62beb86812eaebeab7c40e7cfc23675cc8154f6503398700363b74828e3c80', 'pud_links': '875d0bc471f8abea0ee310711324ad1d49ba02d07e669d1f9807ee490d34cfce'}
+    ok   source run 10 is the record ((10, datetime.date(2026, 7, 1)))
+    ok   proximity universe = run 10 forecast PUDs by identity (50,963 / 50,963 / 50,963)
+run 13 created from run 10 (4 s)
+  pud_forecast + streams (14 s)
+  months (1437 s)
+  analogs + proximity + counts (1475 s)
+identities
+    ok   pud_forecast coverage counts = source with the no-precedent moves ({'covered': 17820, 'covered_provisional': 24655, 'not_covered_emerging': 13782, 'not_covered_no_analogs': 480, 'not_covered_no_precedent': 8488, 'not_covered_outside_extent': 56502})
+    ok   gas stream rows 42,475 = 50,963 - 8,488
+    ok   oil stream rows 42,475 = 50,963 - 8,488
+    ok   water stream rows 42,475 = 50,963 - 8,488
+    ok   oil EUR 23,300.106 MMbbl = source x factor 23,300.106
+    ok   gas stream rows identical to the source (0 differ)
+    ok   water stream rows identical to the source (0 differ)
+    ok   month rows 76,455,000 = source survivors 76,455,000
+    ok   gas / water months + as-is oil months: ordered md5 identical to the source
+    ok   haircut oil months = source x factor (0 rows off)
+    ok   location_analog 681,618 = source survivors 681,618
+    ok   location_water_analog 694,768 = source survivors 694,768
+    ok   pud_proximity outcomes = gate-4 measurement ({'as_is_single_parent': 6980, 'no_forecast_package': 4561, 'as_is_unexposed': 25789, 'haircut': 9706, 'no_forecast_precedent': 3927})
+    ok   73,307 named parents
+    ok   oil prox_factor = pud_proximity.factor on every forecast PUD
+    ok   run 10 untouched
+rehearsal OK — rolled back (pass --commit to store) (2410 s)
+[2026-10-20 18:47 UTC] done
