@@ -106,3 +106,20 @@ def test_surface_crossings():
     assert c.loc["WOLFCAMP-B1", "pct_crossing"] == pytest.approx(1 / len(YS))
     assert c.loc["WOLFCAMP_A", "pct_crossing"] == 0.0
     assert c.loc["WOLFCAMP_A", "iso_p50_ft"] == pytest.approx(100.0)
+
+
+def test_geology_rules():
+    r = tq.apply_geology_rules
+    assert r("AVA_1", "Reeves", "deep") == "no_surface"
+    assert r("WCA_1", "Pecos", "shallow") == "masked"          # WOLFCAMP_A masked in Pecos
+    assert r("WCXY", "Pecos", "deep") == "masked"              # base = WOLFCAMP_A masked
+    assert r("BS3_S", "Pecos", "agree") == "agree"             # 3BSPGS -> WOLFCAMP_XY: picks exist
+    assert r("AVA_2", "Pecos", "agree") == "masked"            # top = AVALON2
+    assert r("AVA_0", "Pecos", "agree") == "masked"            # base = AVALON2
+    assert r("WCC", "Reeves", "shallow") == "surface_suspect"  # top suspect
+    assert r("WCB_2", "Reeves", "deep") == "surface_suspect"   # base suspect, deep call untrusted
+    assert r("WCB_2", "Reeves", "shallow") == "shallow"        # top (B2) is fine
+    assert r("WCA_1", "Reeves", "shallow") == "shallow"
+    assert r("WDFD", None, "unmeasured") == "unmeasured"
+    assert all(s in tq.STACK for ss in tq.MASKED_SURFACES_BY_COUNTY.values() for s in ss)
+    assert tq.SUSPECT_SURFACES <= set(tq.STACK)

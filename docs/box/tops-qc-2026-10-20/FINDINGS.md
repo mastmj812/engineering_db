@@ -4,7 +4,7 @@ Plan: `~/.claude/plans/my-geologist-has-exported-buzzing-sketch.md` (step 1 of 3
 Run: `python -m scripts.box_tops_qc` (READ ONLY). View: `python -m http.server 8766 --directory docs/box` →
 `tops-qc-2026-10-20/step1.html`. Per-well detail: `wells_step1.csv` (UTM 14N US-ft x/y for GGX).
 
-**Universe.** 31,707 Delaware producing horizontals, of which 29,618 have a tag with a grid interval. Of those
+**Updated 2026-10-20 with the geology answers (below).** **Universe.** 31,707 Delaware producing horizontals, of which 29,618 have a tag with a grid interval. Of those
 29,618, 22,460 were scored at every lateral survey station (sql/64) and 7,113 at the single midpoint `tvd_ft`.
 The evidence set is 26,271 wells: planned surveys excluded, ≥ 6 mo online, non-round `tvd_ft` when there is no
 survey, landing ≥ 4,000 ft.
@@ -32,10 +32,10 @@ against subsea, for both grid sets.
 |---|---|---|
 | Agree ≥ 90% | AVA_0, AVA_2, BS2_S | Grid and tag consistent |
 | Agree 65–85% | BS1_S, BS2_C, BS3_C, WCXY, WCA_2, WCB_1, BS3_S | Mixed; 30–65% of misses within 50 ft of a surface (edge cases) |
-| WCA_1 55%, 41% **shallow** | WCA_1 | Median miss −39 ft, i.e. inside the ~97 ft XY interval just above the WCA top. Your BS3_S / WCXY / WCA_1 interface question, quantified |
+| WCA_1 57%, 41% **shallow** | WCA_1 | Median miss −40 ft, i.e. inside the ~97 ft XY interval just above the WCA top. Your BS3_S / WCXY / WCA_1 interface question, quantified |
 | WCB_2 54%, 46% shallow | WCB_2 | Median miss −104 ft, so WCB_2-tagged wells sit in the grid's B1 interval (the Sept audit's B2/B1 story) |
-| **Systematic** | WCC 6% (93% shallow, median −240 ft), WCD 13% (median −559 ft) | Not local structure: the whole tag class sits above the geologist's C / D tops. Nomenclature (what his WOLFCAMP-C top is vs Novi's WOLFCAMP C class) or a basin-wide surface offset. **A question for the geologist, not a map** |
-| **Systematic** | AVA_1 35% (64% **deep**, median +77 ft) | AVA_1 wells sit below the AVALON2 top. Likely nomenclature (which Avalon surface is AVA_1's top?). AVA_0 sits on the same AVALON1→AVALON2 interval and agrees 94% |
+| **Systematic** | WCC 6% (93% shallow, median −240 ft), WCD 13% (median −559 ft) | Not local structure: the whole tag class sits above the geologist's C / D tops. Nomenclature (what his WOLFCAMP-C top is vs Novi's WOLFCAMP C class) or a basin-wide surface offset. **Answered: C / D surfaces suspect → excluded** |
+| **Systematic** | AVA_1 35% (64% **deep**, median +77 ft) | AVA_1 wells sit below the AVALON2 top. Answered: AVA_1 = Middle Avalon, no surface → excluded until one is built |
 
 ## 4. Other observations
 
@@ -46,19 +46,33 @@ against subsea, for both grid sets.
   but lowers it on WCA_1 (67%→55%), WCB_1 and WCB_2. `tvd_ft` sits about 32 ft deep, which flattered wells
   riding just above a top.
 
-## Questions for the geologist (before step 2 attributes structure vs tag)
+## Geology answers (2026-10-20) and how they are applied
 
-1. **WCC / WCD:** your WOLFCAMP-C and WOLFCAMP_D tops sit a median 240 / 560 ft below where Novi-tagged WCC / WCD
-   laterals land. Is your C top the same horizon Novi/operators call Wolfcamp C?
-2. **Avalon:** which surface is the top of AVA_1 (Middle Avalon?) — AVALON1 or AVALON2? Is there a surface
-   between them?
-3. **Pecos County:** the 10-19 extent adds an area with essentially no picks. Should it be masked, or are picks coming?
+These are decisions of record, in `box/tops_qc.py`. The step-1 page and CSV apply them; the raw geometric verdict
+is kept as `verdict_raw`.
+
+1. **WOLFCAMP-C and WOLFCAMP_D are suspect** and should be relabelled or re-picked.
+   - **Applied:** WCC (965 wells) and WCD (128) are `surface_suspect` and not scored. A WCB_2 "deep" call (its base
+     is the C top) is also `surface_suspect` (3 wells).
+   - **Supporting data:** WOLFCAMP_D is a median ~108,000 ft from control even in Reeves.
+2. **Avalon nomenclature.** AVALON1 = top Upper Avalon (operator Upper Avalon / Avalon tops +46 to +77 ft).
+   AVALON2 = top Lower Avalon (+41 ft, 61 wells). Operator Middle Avalon tops sit a tight ~110 ft above AVALON2
+   (29 wells, MAD 24 ft), and no surface exists there.
+   - **Mapping:** AVA_0 → AVALON1–AVALON2 and AVA_2 → AVALON2–1BSPGS, both unchanged.
+   - **AVA_1 straddles AVALON2.** It is `no_surface` (484 wells) until a Middle Avalon surface is built, which the
+     geologist offered to do; it will be scored then.
+3. **Pecos County: masked** for Wolfcamp A–D and AVALON2 (zero picks from the geologist or RRC; entirely modelled).
+   - **Applied:** 210 WCA_1, 162 WCA_2, 35 WCB_1, 30 WCB_2 and 6 WCC wells are `masked`. AVA_0, AVA_2 and WCXY are
+     masked there too, because AVALON2 or WOLFCAMP_A is their top or base.
+   - **Still scored, with caution:** WOLFCAMP_XY, the Bone Springs and Bell/Cherry/Brushy. Their Pecos
+     dist-to-control p50 is 5–9k ft, against WCA 52k, B1 47k, B2 57k, C 77k, D 241k and AVALON2 118k ft.
+   - **Effect:** WCA_1 gross misses drop 46 → 19.
 
 ## Next (step 2, at the gate)
 
-- Classify each well as agree / edge (±10/25/50 ft sensitivity) / shallow / deep / gross / no-evidence.
+- Classify each well as agree / edge (±10/25/50 ft sensitivity) / shallow / deep / gross, plus the step-1
+  exclusions (masked / surface_suspect / no_surface / not evidence).
 - Attribute each disagreement to structure or tag using local same-tag bands.
-- Build per-bench Leaflet maps with a `grid_offset_ft` heat layer and distance-to-control.
+- Build per-bench Leaflet maps with a `grid_offset_ft` heat layer, distance-to-control and the Pecos mask.
 - Produce the GGX shapefile.
-- Exclude WCC / WCD / AVA_1 from the structure attribution until question 1/2 is answered (a systematic offset
-  would paint the whole basin "structure suspect").
+- WCC / WCD / AVA_1 stay out until the C / D re-pick and the Middle Avalon surface exist.

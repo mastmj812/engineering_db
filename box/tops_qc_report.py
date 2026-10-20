@@ -145,6 +145,16 @@ def primary(w: pd.DataFrame, res: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return pd.concat(parts).reindex(w["api10"])
 
 
+def apply_rules(w: pd.DataFrame, p: pd.DataFrame) -> pd.DataFrame:
+    """Keep the geometric verdict as verdict_raw and apply the geology decisions (tops_qc.apply_geology_rules)."""
+    info = w.set_index("api10")[["formation_blueox", "county"]].reindex(p.index)
+    out = p.copy()
+    out["verdict_raw"] = out["verdict"]
+    out["verdict"] = [tq.apply_geology_rules(str(t), c if isinstance(c, str) else None, str(v))
+                      for t, c, v in zip(info["formation_blueox"], info["county"], out["verdict"], strict=True)]
+    return out
+
+
 def agreement_table(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, mid_new: pd.DataFrame,
                     dist_top: pd.Series) -> pd.DataFrame:
     ev = w[w["evidence"]].set_index("api10")
@@ -152,29 +162,33 @@ def agreement_table(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, 
     for tag in [t for t in tq.TAG_TOP if t in set(ev["formation_blueox"])]:
         ids = ev.index[ev["formation_blueox"] == tag]
         a, o, md = p_new.loc[ids], p_orig.loc[ids], mid_new.reindex(ids)
-        meas = a["verdict"] != "unmeasured"
+        meas = a["verdict"].isin(tq.SCORED_VERDICTS)
         trusted = (dist_top.reindex(ids) <= pkg.TRUST_MAX_FT).to_numpy()
         aa = a["verdict"].eq("agree").to_numpy()
         mis = a[a["verdict"].isin(["shallow", "deep"])]
+        gross = (meas & (a["miss_p50"].abs() > GROSS_MISS_FT)).to_numpy()
+        mn = meas.to_numpy()
         rows.append({
             "tag": tag, "interval": f"{tq.TAG_TOP[tag]} → {tq.tag_base(tag)}", "n": len(ids),
             "survey %": float((ev.loc[ids, "tvd_source"] == "survey").mean()),
-            "agree new": float(a.loc[meas, "verdict"].eq("agree").mean()),
-            "agree Sept": float(o.loc[o["verdict"] != "unmeasured", "verdict"].eq("agree").mean()),
-            "agree new, tvd_ft only": float(md.loc[md["verdict"] != "unmeasured", "verdict"].eq("agree").mean()),
-            "shallow new": float(a.loc[meas, "verdict"].eq("shallow").mean()),
-            "deep new": float(a.loc[meas, "verdict"].eq("deep").mean()),
+            "agree new": float(a.loc[meas, "verdict"].eq("agree").mean()) if mn.any() else np.nan,
+            "agree Sept": float(o.loc[o["verdict"].isin(tq.SCORED_VERDICTS), "verdict"].eq("agree").mean()),
+            "agree new, tvd_ft only": float(md.loc[md["verdict"].isin(tq.SCORED_VERDICTS), "verdict"].eq("agree").mean()),
+            "shallow new": float(a.loc[meas, "verdict"].eq("shallow").mean()) if mn.any() else np.nan,
+            "deep new": float(a.loc[meas, "verdict"].eq("deep").mean()) if mn.any() else np.nan,
             "agree ≤1 mi control": float(aa[trusted & meas.to_numpy()].mean()) if (trusted & meas.to_numpy()).any() else np.nan,
             "agree >1 mi control": float(aa[~trusted & meas.to_numpy()].mean()) if (~trusted & meas.to_numpy()).any() else np.nan,
-            "≤1 mi control %": float(trusted[meas.to_numpy()].mean()),
+            "≤1 mi control %": float(trusted[mn].mean()) if mn.any() else np.nan,
             "median miss (ft)": float(mis["miss_p50"].median()) if len(mis) else np.nan,
             "misses ≤25 ft %": float((mis["miss_p50"].abs() <= 25).mean()) if len(mis) else np.nan,
             "misses ≤50 ft %": float((mis["miss_p50"].abs() <= 50).mean()) if len(mis) else np.nan,
-            f"gross >{GROSS_MISS_FT:.0f} ft": int((a["miss_p50"].abs() > GROSS_MISS_FT).sum()),
+            f"gross >{GROSS_MISS_FT:.0f} ft": int(gross.sum()),
             "dist to control p50 (ft)": float(np.nanmedian(dist_top.reindex(ids))),
-            "gross: dist to control p50 (ft)": float(np.nanmedian(dist_top.reindex(ids)[(a["miss_p50"].abs() > GROSS_MISS_FT).to_numpy()]))
-            if (a["miss_p50"].abs() > GROSS_MISS_FT).any() else np.nan,
-            "unmeasured": int((~meas).sum()),
+            "gross: dist to control p50 (ft)": float(np.nanmedian(dist_top.reindex(ids)[gross])) if gross.any() else np.nan,
+            "masked": int(a["verdict"].eq("masked").sum()),
+            "surface suspect": int(a["verdict"].eq("surface_suspect").sum()),
+            "no surface": int(a["verdict"].eq("no_surface").sum()),
+            "unmeasured": int(a["verdict"].eq("unmeasured").sum()),
         })
     return pd.DataFrame(rows)
 
@@ -265,6 +279,13 @@ def render(ctx: dict[str, Any]) -> str:
          "interval. A disagreement means the tag OR the grid is wrong; step 2 attributes which. "
          "Evidence wells only: not a planned survey, ≥ 6 mo online, (survey or non-round tvd_ft), and landing depth "
          f"≥ {MIN_EVIDENCE_TVD_FT:,.0f} ft (shallower = a data error on a scored bench).</p>"),
+        ("<div class=flag><b>Geology decisions applied (2026-10-20):</b> WOLFCAMP-C and WOLFCAMP_D are suspect "
+         "(to be relabelled / re-picked) — WCC and WCD are <i>surface_suspect</i>, and a WCB_2 'deep' call (base = C top) "
+         "is too. AVA_1 = Middle Avalon (operator tops ~110 ft above AVALON2) has no surface — <i>no_surface</i> until one "
+         "is built; AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon. Pecos County: Wolfcamp A–D and AVALON2 have "
+         "zero picks — <i>masked</i>; XY, Bone Springs and Bell/Cherry/Brushy stay scored there with caution. "
+         "Agreement shares are over agree / shallow / deep only; the raw geometric verdict is kept as verdict_raw "
+         "in the CSV.</div>"),
         "<h2>1 · Datum check</h2>",
         ("<p>If grid Z were subsea, comparing it to TVD-below-KB would put nearly every well ~KB (≈ 2,600–3,700 ft) below "
          "its tag; the right datum is the one that agrees.</p>"),
@@ -306,13 +327,15 @@ def universe_table(w: pd.DataFrame) -> pd.DataFrame:
         {"set": "  planned survey (excluded)", "wells": int((g["scored_tag"] & g["planned"]).sum())},
         {"set": "evidence wells", "wells": int(g["evidence"].sum())},
         {"set": "tags without a grid interval (not scored)", "wells": int((~g["scored_tag"]).sum())},
+        {"set": f"evidence wells in caution counties ({', '.join(sorted(tq.CAUTION_COUNTIES))})",
+         "wells": int((g["evidence"] & g["county"].isin(tq.CAUTION_COUNTIES)).sum())},
     ])
 
 
 WELL_COLS = ["api10", "well_name", "operator", "county", "state_code", "formation_blueox", "box_bench", "evidence",
              "planned", "tvd_source", "tvd_ft", "lat_tvd_p50_ft", "lat_tvd_range_ft", "toe_minus_heel_tvd_ft",
              "kb_elev_ft", "first_production_date", "mid_lon", "mid_lat"]
-SCORE_COLS = ["verdict", "pct_in_tag", "pct_above_top", "pct_below_base", "dom_interval", "miss_p50",
+SCORE_COLS = ["verdict", "verdict_raw", "pct_in_tag", "pct_above_top", "pct_below_base", "dom_interval", "miss_p50",
               "ft_below_top_p50", "ft_above_base_p50", "frac_p50", "top_p50", "base_p50"]
 
 
@@ -329,6 +352,7 @@ def wells_csv(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, mid_ne
     for c in ("verdict", "pct_in_tag", "miss_p50"):
         out[f"sept_{c}"] = p_orig[c].reindex(ids).to_numpy()
     out["new_tvdft_only_verdict"] = mid_new["verdict"].reindex(ids).to_numpy()
+    out["caution_county"] = out["county"].isin(tq.CAUTION_COUNTIES)
     out["dist_to_control_top_ft"] = dist_top.reindex(ids).to_numpy()
     out["dist_to_control_base_ft"] = dist_base.reindex(ids).to_numpy()
     return out
@@ -342,7 +366,8 @@ def run(conn: Any, out: Path) -> dict[str, Any]:
     res = {k: score_set(stk, s, m) for k, stk in stacks.items()}
     p_new, p_orig = primary(w, res["new"]), primary(w, res["orig"])
     p_new.index, p_orig.index = w["api10"].to_numpy(), w["api10"].to_numpy()
-    mid_new = res["new"]["midpoint"]
+    p_new, p_orig = apply_rules(w, p_new), apply_rules(w, p_orig)
+    mid_new = apply_rules(w, res["new"]["midpoint"])
     # distance to control at the lateral midpoint, for the tag's top and base surfaces (10-19 grids only)
     mm = m.set_index("api10")
     dist_top, dist_base = pd.Series(np.nan, index=mm.index), pd.Series(np.nan, index=mm.index)

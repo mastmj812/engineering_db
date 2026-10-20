@@ -46,6 +46,39 @@ def tag_base(tag: str) -> str:
     return STACK[STACK.index(TAG_TOP[tag]) + 1]
 
 
+# Geology answers to the step-1 questions (Michael + geologist, 2026-10-20) — decisions of record for scoring:
+# * WOLFCAMP-C and WOLFCAMP_D are suspect (to be relabelled or re-picked): a tag whose TOP is one of them is not
+#   scored; a tag whose BASE is one of them keeps its shallow/agree verdict but a "deep" call is not trusted.
+SUSPECT_SURFACES: frozenset[str] = frozenset({"WOLFCAMP-C", "WOLFCAMP_D"})
+# * AVA_1 is the Middle Avalon (operator tops ~110 ft above AVALON2, MAD 24 ft, 29 wells); no grid surface exists
+#   for it, so it straddles AVALON2 (AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon). Unscored until a
+#   Middle Avalon surface is built.
+NO_SURFACE_TAGS: frozenset[str] = frozenset({"AVA_1"})
+# * Pecos County: zero picks (geologist or RRC) for Wolfcamp A-D and AVALON2 — those surfaces are entirely modelled
+#   there and masked. WOLFCAMP_XY, the Bone Springs and Bell / Cherry / Brushy have picks (XY dist-to-control p50
+#   6.5k ft vs WCA 52k ft) and stay scored, flagged "caution".
+MASKED_SURFACES_BY_COUNTY: dict[str, frozenset[str]] = {
+    "Pecos": frozenset({"WOLFCAMP_A", "WOLFCAMP-B1", "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "AVALON2"}),
+}
+CAUTION_COUNTIES: frozenset[str] = frozenset({"Pecos"})
+SCORED_VERDICTS: tuple[str, ...] = ("agree", "shallow", "deep")
+
+
+def apply_geology_rules(tag: str, county: str | None, verdict: str) -> str:
+    """Override a raw verdict per the geology decisions above. Order: no surface > masked > suspect."""
+    if tag in NO_SURFACE_TAGS:
+        return "no_surface"
+    if tag not in TAG_TOP:
+        return verdict
+    top, base = TAG_TOP[tag], tag_base(tag)
+    masked = MASKED_SURFACES_BY_COUNTY.get(county or "", frozenset())
+    if top in masked or base in masked:
+        return "masked"
+    if top in SUSPECT_SURFACES or (base in SUSPECT_SURFACES and verdict == "deep"):
+        return "surface_suspect"
+    return verdict
+
+
 @dataclass(frozen=True)
 class Grid:
     surface: str
