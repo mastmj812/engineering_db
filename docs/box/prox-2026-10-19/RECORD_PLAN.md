@@ -10,7 +10,7 @@ any live write. **Nothing in this plan writes to Supabase until the go-points ma
 - **Storage.** `box.pud_forecast_month` is ~91.7M rows / 12 GB, and the DB is 87 GB.
   - Run 11 adds ~77M month rows, about 10 GB. The 8,488 no-forecast PUDs carry no months.
   - The DB lands around 97 GB.
-- **Free numbers on main:** `sql/64` and plan decisions D112+. Both are reserved here; the parallel-collision rule applies.
+- **Free numbers on main:** `sql/65` and plan decisions D112+. Both are reserved here; the parallel-collision rule applies.
 
 ## 1. Decisions to record (plan §2, `docs/box_type_curves_plan.md`)
 
@@ -22,7 +22,7 @@ any live write. **Nothing in this plan writes to Supabase until the go-points ma
 | D115 | No shielding exemption for PUDs; permit-round producer TVDs counted and flagged. |
 | D116 | Record implementation: run 11 derived from run 10, not refit (§3). Configuration re-measured on every record run. |
 
-## 2. Schema — `sql/64_box_proximity.sql` + `scripts/apply_box_proximity.py`
+## 2. Schema — `sql/65_box_proximity.sql` + `scripts/apply_box_proximity.py`
 Idempotent, in the sql/63 style. Container-validated first; live apply is a **GO**.
 
 1. **`box.pud_forecast` coverage list** gains `not_covered_no_precedent`. Its rows keep the search provenance (search_mode, radius, n_analogs: what BOX would have used), so `uncovered_ck` admits it alongside `not_covered_no_analogs`. It has no stream, month or analog rows: the child FKs already refuse them, because the coverage checks admit only covered / covered_provisional.
@@ -55,8 +55,8 @@ Idempotent, in the sql/63 style. Container-validated first; live apply is a **GO
 - **Tests:** transform goldens on fixtures, plus the CHECK predicates mirrored in Python.
 
 ## 4. Rehearsal → live (the GO points)
-1. **Container rehearsal** (box9 pattern: throwaway PostGIS with the live `box` state copied): apply sql/64 → `store --record` run 11 → identities green → erebor read against the container.
-2. **GO-apply** `sql/64` live (`apply_box_proximity`, checks incl. a rolled-back smoke).
+1. **Container rehearsal** (box9 pattern: throwaway PostGIS with the live `box` state copied): apply sql/65 → `store --record` run 11 → identities green → erebor read against the container.
+2. **GO-apply** `sql/65` live (`apply_box_proximity`, checks incl. a rolled-back smoke).
 3. **GO-store** run 11 `--record` (one transaction, identity before COMMIT, ~20 min). Run 10 → `superseded_by = 11`, kept because it is priced.
 4. Dictionary regen; docs PR.
 
@@ -97,14 +97,14 @@ Decisions taken with the go:
 D112–D116 are written into `docs/box_type_curves_plan.md`.
 
 **Code (commit 415ab3d):**
-- `sql/64_box_proximity.sql` and `scripts/apply_box_proximity.py` (25 checks incl. a rolled-back smoke);
+- `sql/65_box_proximity.sql` and `scripts/apply_box_proximity.py` (25 checks incl. a rolled-back smoke);
 - `box/prox_record.py`: re-derives every PUD's configuration from `runs/prox/pud_links.pkl` and asserts it equals the reviewed `pud_outcomes.csv.gz` (0 mismatches on 50,963);
 - `scripts/box_prox_record.py store`: one transaction; rolls back unless `--commit`; `--record` flips the record.
 
 **Rehearsal container** (postgis 16-3.4 on :5437, throwaway):
 - The existing apply chain ran green, except the econ-schema script stopped on a `curated` grant the container lacks.
 - Live box state was copied READ-ONLY: 121,727 PUD rows, 152,889 streams, the analogs, and 2.7 M sample months (300 PUDs per outcome).
-- **sql/64:** 25/25, twice (idempotent). Log: `rehearsal/apply_box_proximity.txt`.
+- **sql/65:** 25/25, twice (idempotent). Log: `rehearsal/apply_box_proximity.txt`.
 - **Store:** a rollback rehearsal, then `--commit --record`. Every identity green both times (`rehearsal/store_record.txt`):
 
   | identity | result |
@@ -133,10 +133,10 @@ D112–D116 are written into `docs/box_type_curves_plan.md`.
 4. `python -m scripts.gen_data_dictionary --html docs/data_dictionary.html` with `_CONSUMERS` for the two new tables. Then the erebor PR and the Steven note.
 
 ## 9. Live 2026-10-20 (Michael: "go apply … then the live store rollback rehearsal")
-- **GO 1 done: sql/64 APPLIED LIVE.** `apply_box_proximity` passed 25/25 on the Supabase session pooler (`rehearsal/apply_box_proximity_LIVE.txt`).
+- **GO 1 done: sql/65 APPLIED LIVE.** `apply_box_proximity` passed 25/25 on the Supabase session pooler (`rehearsal/apply_box_proximity_LIVE.txt`).
   - Every existing stream row reads `prox_factor` 1.
   - Run 10 coverage and stream counts are unchanged by identity.
-  - Repo == live for sql/64.
+  - Repo == live for sql/65.
 - **GO 2 done: live store rehearsal, ROLLED BACK** (`rehearsal/store_rehearsal_LIVE.txt`, 2,410 s; months 1,423 s, identities ~15 min). Every identity was green on the full data:
   - **76,455,000** month rows = run 10's survivors;
   - oil EUR **23,300.106 MMbbl** = run 10 × factor;
@@ -147,3 +147,18 @@ D112–D116 are written into `docs/box_type_curves_plan.md`.
 - **Checked after:** run 10 is still the sole record, and `box.pud_proximity` is empty.
 - **The rehearsal burned run_id 13**, so the committed store will be **run 14**.
 - **Next (GO 3):** `python -m scripts.box_prox_record store --commit --record` (~40 min; DB +~10 GB). Then the dictionary regen, the erebor PR and the Steven note.
+
+## 10. Run 14 STORED LIVE as the BOX record (2026-10-20 19:32 UTC; Michael: "go store")
+- **Store:** `box_prox_record store --commit --record`: 2,588 s, all 17 identities green before COMMIT (`rehearsal/store_record_LIVE.txt`).
+- **Result:** run 14 is the one record; run 10 has `superseded_by` 14 and is kept, with Steven's 815,408 priced rows on it intact.
+- **Run 14 counts:** covered 17,820 / covered_provisional 24,655 / not_covered_no_precedent 8,488; proximity outcomes = gate 4.
+- **DB size 108 GB** (87 before). That is ~10 GB of run-14 rows plus ~10 GB of dead tuples from the rolled-back live rehearsal, which autovacuum makes reusable but does not return to the OS.
+
+**RENUMBERED sql/64 → sql/65 (parallel-collision rule).**
+- While this branch was open, another session merged `sql/64_well_lateral_survey.sql` to main (PR #169, the directional-surveys work). This file is the later-merged one, so it is now `sql/65_box_proximity.sql`, with its content unchanged apart from the comment references.
+- **Live text still says "sql/64"** in two places until refreshed:
+  1. the table/column COMMENTs, which an idempotent re-run of `apply_box_proximity` refreshes;
+  2. run 14's `forecast_run.notes`, which needs a one-line UPDATE.
+  
+  Both are writes to the shared warehouse, so each needs a go.
+- The data dictionary was regenerated after merging main (it carries #169's objects and Steven's sandbox tables as live).

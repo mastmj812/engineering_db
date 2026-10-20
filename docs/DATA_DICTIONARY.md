@@ -2657,7 +2657,7 @@ BOX location ids (plan step 7, D67): one row per drillable location, outliving N
 
 The named analog wells behind each covered location (the workup's provenance, D54): rank in selection order, distance (ellipse distance on a strike search), lateral, first production, transfer = carried by the short-history transfer. See sql/60.
 
-~816,998 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)
+~1,498,616 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor click-through (step 8)
 
 | column | type | description |
 |---|---|---|
@@ -2690,7 +2690,7 @@ Quarterly crosswalk: the Novi stick (report_version, stick_id) a BOX location wa
 
 Named analogs behind each location's WATER (sql/62, D107): same-bench wells whose water is MEASURED (sql/41 measured; NM unless insufficient; seller VDR daily water), selected with box_v2's first-ring rules on circles over 5 / 7.5 / 10 / 15 / 20 mi then 30 / 40 / 50 mi until 10 eligible. water_label = the label used; a calculated-fallback cohort (fewer than 3 measured at 50 mi) lists its non-measured wells and the stream row's params say so. Different from box.location_analog (the oil / gas cohort).
 
-~829,345 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX water workup provenance (D107, sql/62): named measured-water analogs per location; Steven
+~1,524,113 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX water workup provenance (D107, sql/62): named measured-water analogs per location; Steven
 
 | column | type | description |
 |---|---|---|
@@ -2706,9 +2706,9 @@ Named analogs behind each location's WATER (sql/62, D107): same-bench wells whos
 
 ### `box.pud_forecast` (table)
 
-One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every box.bench_scope bench. coverage: covered (in-scope bench pool, VALIDATED, >= 50 % of the stick inside the record extent, analogs found); covered_provisional (same, on a bench_scope.validation = provisional bench - forecast with disclosed in-sample bias, never out-of-time validated, D105 / sql/63); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was not accepted on, D60); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden). Not-covered rows carry no forecast and no volumes. Filter coverage = 'covered' for validated forecasts only; IN (covered, covered_provisional) for every forecast. See sql/60, sql/63.
+One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every box.bench_scope bench. coverage: covered (in-scope bench pool, VALIDATED, >= 50 % of the stick inside the record extent, analogs found); covered_provisional (same, on a bench_scope.validation = provisional bench - forecast with disclosed in-sample bias, never out-of-time validated, D105 / sql/63); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was not accepted on, D60); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden); not_covered_no_precedent (a searched in-extent PUD whose PDP-proximity configuration has no drilled precedent, D114 / sql/64 - search provenance kept, no forecast). Not-covered rows carry no forecast and no volumes. Filter coverage = 'covered' for validated forecasts only; IN (covered, covered_provisional) for every forecast. See sql/60, sql/63, sql/64.
 
-~121,727 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven
+~243,454 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor Highgrade BOX source + not-covered counts (step 8); Steven
 
 | column | type | description |
 |---|---|---|
@@ -2739,7 +2739,7 @@ One row per (run, location) for the whole D67 universe: Novi PUD category (no RE
 
 Derived monthly volumes per covered location x stream, months 1-600: exact per-month integrals (D39) of params x lateral_mult, times the D62 haircut interpolated by month. UPTIME-FREE (D63): apply F(k) from box.forecast_run.calendar_factor OR a downtime factor, never both. Sum of months = eur within 0.1 %. Regenerated from box.pud_forecast_stream. See sql/60.
 
-~91,734,720 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)
+~167,687,152 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d)
 
 | column | type | description |
 |---|---|---|
@@ -2753,7 +2753,7 @@ Derived monthly volumes per covered location x stream, months 1-600: exact per-m
 
 Per (run, covered location, stream): the fitted P50 per-1,000-ft curve params (oil, gas) or the WOR ratio (water, D107: ln WOR = alpha + beta * cum oil per 1,000 ft, applied to the RAW box_v2 oil months, D108), lateral multiplier, haircut (water: none), EUR raw / delivered / per 1,000 ft, cum-12 / 24. tier = the stream's own acceptance tier (water; sql/62). Water entered with sql/62 (D72 retired at gate 12b). See sql/60, sql/63.
 
-~152,889 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven
+~280,478 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor Highgrade, Blue Ox drop overlay (step 8); Steven
 
 | column | type | description |
 |---|---|---|
@@ -2770,6 +2770,57 @@ Per (run, covered location, stream): the fitted P50 per-1,000-ft curve params (o
 | `cum24` | double precision |  |
 | `coverage` | text |  |
 | `tier` | text | Acceptance tier of THIS stream (sql/62). Water (D107-D110): validated where its group passed the D109 rule (WCA, BS2_S on run 10), else provisional; never above the location's coverage tier. NULL on oil / gas rows: their tier is pud_forecast.coverage (covered = validated, covered_provisional = provisional, D105). |
+| `prox_factor` | double precision | D113 PDP-proximity factor on the OIL stream (1 on gas / water and on every PUD that is not multi-parent): the configuration haircut from box.pud_proximity.factor, applied as a uniform scale to the oil monthly volumes, eur and cum12 / cum24 (Di / b unchanged, params untouched). eur = eur_raw x eur_haircut x prox_factor. See sql/64. |
+
+### `box.pud_proximity` (table)
+
+D112-D116 (study docs/box/prox-2026-10-19): one row per forecast-universe PUD of a run that measured PDP proximity. Parents = existing producing horizontals >= 12 months on production at the run's data date, >= 30 % alongside the PUD stick, inside the class envelope (same pool 1,400 ft hz; topfill 800 ft vt / 1,400 ft hz; underfill 500 ft vt / 1,400 ft hz); no shielding exemption; permit-round producer TVDs counted and flagged. outcome: as_is_unexposed / as_is_single_parent (BOX as-is, factor 1); haircut (multi-parent with drilled precedent: oil x factor, label validated_with_exception - the pre-registered walk-forward failed as written, multi-parent cells held within +-5 %, to be confirmed on the 2026 prospective cohort); no_forecast_precedent (< 30 drilled multi-parent wells of the bench pair) and no_forecast_package (factor <= 0.80 and < 30 drilled packages) -> coverage not_covered_no_precedent. factor = what the configuration's cum-24 table gives (stored on no-forecast rows too). table_ref = sha256 of the haircut table + the pre-registration commit. See sql/64.
+
+~50,963 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity configuration / haircut / precedent per PUD (D112-D116, sql/65): erebor badge + workup (pending); Steven
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `coverage` | text |  |
+| `config_class` | text |  |
+| `n_same` | smallint |  |
+| `n_topfill` | smallint |  |
+| `n_underfill` | smallint |  |
+| `n_parents_total` | smallint |  |
+| `flanked_same` | boolean |  |
+| `flanked_topfill` | boolean |  |
+| `flanked_underfill` | boolean |  |
+| `outcome` | text |  |
+| `factor` | double precision |  |
+| `haircut_key` | text |  |
+| `pair_key` | text |  |
+| `prec_multi` | integer |  |
+| `prec_package` | integer |  |
+| `label` | text |  |
+| `n_permit_parents` | smallint |  |
+| `n_recent_producers` | smallint |  |
+| `table_ref` | text |  |
+
+### `box.pud_proximity_parent` (table)
+
+The named parents behind box.pud_proximity: one row per counted parent (class, bench, vertical / horizontal gap ft, signed offset ft + = left of the PUD stick's heading, share of the PUD stick alongside, age at the data date, permit-round TVD flag). See sql/64.
+
+~73,307 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity provenance (sql/65): named depleted parents per PUD; erebor workup (pending)
+
+| column | type | description |
+|---|---|---|
+| `run_id` | bigint |  |
+| `location_id` | bigint |  |
+| `api10` | text |  |
+| `cls` | text |  |
+| `parent_bench` | text |  |
+| `dv_ft` | double precision |  |
+| `dh_ft` | double precision |  |
+| `dxy_ft` | double precision |  |
+| `overlap` | double precision |  |
+| `age_days` | integer |  |
+| `permit` | boolean |  |
 
 ### `box.risk_factor` (table)
 

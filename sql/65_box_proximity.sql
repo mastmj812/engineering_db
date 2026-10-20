@@ -1,4 +1,4 @@
--- sql/64 — BOX PDP-proximity layer (D112-D116, Michael 2026-10-20; study docs/box/prox-2026-10-19)
+-- sql/65 — BOX PDP-proximity layer (D112-D116, Michael 2026-10-20; study docs/box/prox-2026-10-19)
 --
 -- A PUD with several depleted parents around it (>= 12 months on production, >= 30 % alongside, inside the class envelope)
 -- produces less than BOX's analog forecast says: drilled multi-parent children made 0.75-0.94 of it (walk-forward validated
@@ -110,7 +110,7 @@ GRANT SELECT ON box.pud_proximity, box.pud_proximity_parent TO analyst_ro;
 COMMENT ON COLUMN box.pud_forecast_stream.prox_factor IS
     'D113 PDP-proximity factor on the OIL stream (1 on gas / water and on every PUD that is not multi-parent): the configuration haircut from '
     'box.pud_proximity.factor, applied as a uniform scale to the oil monthly volumes, eur and cum12 / cum24 (Di / b unchanged, params untouched). '
-    'eur = eur_raw x eur_haircut x prox_factor. See sql/64.';
+    'eur = eur_raw x eur_haircut x prox_factor. See sql/65.';
 COMMENT ON TABLE box.pud_proximity IS
     'D112-D116 (study docs/box/prox-2026-10-19): one row per forecast-universe PUD of a run that measured PDP proximity. Parents = existing '
     'producing horizontals >= 12 months on production at the run''s data date, >= 30 % alongside the PUD stick, inside the class envelope '
@@ -119,16 +119,16 @@ COMMENT ON TABLE box.pud_proximity IS
     'oil x factor, label validated_with_exception - the pre-registered walk-forward failed as written, multi-parent cells held within +-5 %, '
     'to be confirmed on the 2026 prospective cohort); no_forecast_precedent (< 30 drilled multi-parent wells of the bench pair) and '
     'no_forecast_package (factor <= 0.80 and < 30 drilled packages) -> coverage not_covered_no_precedent. factor = what the configuration''s '
-    'cum-24 table gives (stored on no-forecast rows too). table_ref = sha256 of the haircut table + the pre-registration commit. See sql/64.';
+    'cum-24 table gives (stored on no-forecast rows too). table_ref = sha256 of the haircut table + the pre-registration commit. See sql/65.';
 COMMENT ON TABLE box.pud_proximity_parent IS
     'The named parents behind box.pud_proximity: one row per counted parent (class, bench, vertical / horizontal gap ft, signed offset ft '
-    '+ = left of the PUD stick''s heading, share of the PUD stick alongside, age at the data date, permit-round TVD flag). See sql/64.';
+    '+ = left of the PUD stick''s heading, share of the PUD stick alongside, age at the data date, permit-round TVD flag). See sql/65.';
 COMMENT ON TABLE box.pud_forecast IS
     'One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every '
     'box.bench_scope bench. coverage: covered (in-scope bench pool, VALIDATED, >= 50 % of the stick inside the record extent, analogs found); '
     'covered_provisional (same, on a bench_scope.validation = provisional bench - forecast with disclosed in-sample bias, never out-of-time validated, '
     'D105 / sql/63); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was '
     'not accepted on, D60); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden); '
-    'not_covered_no_precedent (a searched in-extent PUD whose PDP-proximity configuration has no drilled precedent, D114 / sql/64 - search provenance '
+    'not_covered_no_precedent (a searched in-extent PUD whose PDP-proximity configuration has no drilled precedent, D114 / sql/65 - search provenance '
     'kept, no forecast). Not-covered rows carry no forecast and no volumes. Filter coverage = ''covered'' for validated forecasts only; '
-    'IN (covered, covered_provisional) for every forecast. See sql/60, sql/63, sql/64.';
+    'IN (covered, covered_provisional) for every forecast. See sql/60, sql/63, sql/65.';

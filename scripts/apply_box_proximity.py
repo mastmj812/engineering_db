@@ -1,6 +1,6 @@
-"""Apply sql/64 (D112-D116: BOX PDP-proximity layer) and verify it.
+"""Apply sql/65 (D112-D116: BOX PDP-proximity layer) and verify it.
 
-  1. sql/64: coverage value not_covered_no_precedent (+ its uncovered / no-precedent constraints), pud_forecast_stream.prox_factor
+  1. sql/65: coverage value not_covered_no_precedent (+ its uncovered / no-precedent constraints), pud_forecast_stream.prox_factor
      with the amended eur identity, box.pud_proximity, box.pud_proximity_parent.
   2. Validate by identity: the named constraints / tables / column exist; every existing stream row reads prox_factor 1 and still
      satisfies eur = eur_raw x eur_haircut x prox_factor; stream and pud_forecast counts unchanged; the new tables are empty and
@@ -31,7 +31,7 @@ from psycopg.types.json import Jsonb
 
 from etl.db import get_connection
 
-SQL = Path(__file__).resolve().parent.parent / "sql" / "64_box_proximity.sql"
+SQL = Path(__file__).resolve().parent.parent / "sql" / "65_box_proximity.sql"
 NAMED = {("box", "pud_forecast"): ("box_pud_forecast_coverage_tier_ck", "box_pud_forecast_uncovered_ck", "box_pud_forecast_no_precedent_ck"),
          ("box", "pud_forecast_stream"): ("box_pud_forecast_stream_prox_factor_ck", "box_pud_forecast_stream_eur_ck"),
          ("box", "pud_proximity"): ("box_pud_proximity_coverage_ck", "box_pud_proximity_as_is_ck", "box_pud_proximity_multi_ck",
@@ -51,7 +51,7 @@ def _check(ok: bool, msg: str) -> None:
 
 
 def apply_sql(conn) -> list[tuple]:
-    print("[1/3] sql/64: PDP-proximity layer", flush=True)
+    print("[1/3] sql/65: PDP-proximity layer", flush=True)
     with conn.cursor() as cur:
         before = cur.execute(_COUNTS).fetchall()
         cur.execute(SQL.read_text(encoding="utf-8"))

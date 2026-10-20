@@ -1,4 +1,4 @@
-"""BOX record run 11 = run 10 + the PDP-proximity layer (D112-D116, sql/64). Plan: docs/box/prox-2026-10-19/RECORD_PLAN.md.
+"""BOX record run 11 = run 10 + the PDP-proximity layer (D112-D116, sql/65). Plan: docs/box/prox-2026-10-19/RECORD_PLAN.md.
 
     python -m scripts.box_prox_record store                 # build run 11 inside ONE transaction, check identities, ROLL BACK
     python -m scripts.box_prox_record store --commit        # ... and COMMIT (run 11 stored, NOT record)
@@ -35,7 +35,7 @@ from etl.db import get_connection
 DOCS = Path("docs") / "box" / "prox-2026-10-19"
 OUTCOMES = DOCS / "pud_outcomes.csv.gz"
 HAIRCUT = DOCS / "haircut_table_candidate.csv"
-CODE = ["box/prox_record.py", "box/prox_pud.py", "box/prox_dose.py", "box/prox_study.py", "scripts/box_prox_record.py", "sql/64_box_proximity.sql"]
+CODE = ["box/prox_record.py", "box/prox_pud.py", "box/prox_dose.py", "box/prox_study.py", "scripts/box_prox_record.py", "sql/65_box_proximity.sql"]
 REL_TOL = 1e-9
 
 _failures: list[str] = []
@@ -107,7 +107,7 @@ def store(a: argparse.Namespace) -> int:
                           "WHERE s.run_id = %s AND s.stream = 'oil' AND t.keep", (S,)).fetchone()[0]
             disc = prc.disclosure(exp, table_ref, oil_before / 1e6, oil_after / 1e6)
             disc["inputs"] = {**dig, "code_sha": code_sha, "source_run": S}
-            note = (f"; run {{new}} = run {S} + PDP-proximity layer (D112-D116, sql/64): oil x configuration factor on {exp['outcomes'].get('haircut', 0):,} "
+            note = (f"; run {{new}} = run {S} + PDP-proximity layer (D112-D116, sql/65): oil x configuration factor on {exp['outcomes'].get('haircut', 0):,} "
                     f"multi-parent PUDs, {sum(exp['outcomes'].get(k, 0) for k in prc.NO_FORECAST):,} not_covered_no_precedent; gas / water / analogs "
                     f"identical; no refit")
             new = q("""INSERT INTO box.forecast_run (spec, code_sha, engine_sha, dealintake_config, report_version, data_through, volumes_basis,
