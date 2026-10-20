@@ -2,8 +2,9 @@
 
   1. sql/65: coverage value not_covered_no_precedent (+ its uncovered / no-precedent constraints), pud_forecast_stream.prox_factor
      with the amended eur identity, box.pud_proximity, box.pud_proximity_parent.
-  2. Validate by identity: the named constraints / tables / column exist; every existing stream row reads prox_factor 1 and still
-     satisfies eur = eur_raw x eur_haircut x prox_factor; stream and pud_forecast counts unchanged; the new tables are empty and
+  2. Validate by identity: the named constraints / tables / column exist; every stream row still
+     satisfies eur = eur_raw x eur_haircut x prox_factor (state-aware: off-1 rows = oil rows matching pud_proximity.factor);
+     stream and pud_forecast counts unchanged; the new tables exist, carry their sql/65 comment and
      analyst_ro can read them.
   3. Smoke inside a transaction that is ROLLED BACK, on a throwaway bench + run:
        - a haircut PUD (oil prox_factor 0.75, eur scaled) with its proximity + parent rows, and a no-precedent PUD (search provenance,
@@ -73,10 +74,18 @@ def validate(conn, before: list[tuple]) -> None:
         _check(bool(tier) and "not_covered_no_precedent" in tier[0], "coverage CHECK admits not_covered_no_precedent")
         eur = q("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'box_pud_forecast_stream_eur_ck'").fetchone()
         _check(bool(eur) and "prox_factor" in eur[0], "eur identity includes prox_factor")
-        _check(q("SELECT count(*) FROM box.pud_forecast_stream WHERE prox_factor <> 1").fetchone()[0] == 0, "every existing stream row reads prox_factor 1")
+        # state-aware (a re-run after a proximity run is stored must pass too): a stream row off factor 1 is always an oil row whose
+        # factor is its PUD's pud_proximity.factor; runs without proximity rows read 1 everywhere
+        stray = q("""SELECT count(*) FROM box.pud_forecast_stream s LEFT JOIN box.pud_proximity x ON x.run_id = s.run_id AND x.location_id = s.location_id
+                     WHERE s.prox_factor <> 1 AND (s.stream <> 'oil' OR x.factor IS NULL OR abs(x.factor - s.prox_factor) > 1e-12)""").fetchone()[0]
+        n_px = q("SELECT count(*) FROM box.pud_forecast_stream WHERE prox_factor <> 1").fetchone()[0]
+        _check(stray == 0, f"every stream row off prox_factor 1 is an oil row matching pud_proximity.factor ({n_px:,} such rows)")
         for t in ("pud_proximity", "pud_proximity_parent"):
-            _check(q(f"SELECT count(*) FROM box.{t}").fetchone()[0] == 0, f"box.{t} exists and is empty")
+            n = q(f"SELECT count(*) FROM box.{t}").fetchone()[0]
+            _check(q("SELECT to_regclass(%s) IS NOT NULL", (f"box.{t}",)).fetchone()[0], f"box.{t} exists ({n:,} rows)")
             _check(q("SELECT has_table_privilege('analyst_ro', %s, 'SELECT')", (f"box.{t}",)).fetchone()[0], f"analyst_ro can read box.{t}")
+        cm = q("SELECT obj_description('box.pud_proximity'::regclass, 'pg_class')").fetchone()[0] or ""
+        _check("sql/65" in cm and "sql/64" not in cm, "box.pud_proximity COMMENT names sql/65")
         _check(q(_COUNTS).fetchall() == before, "pud_forecast coverage + stream counts unchanged by identity")
     conn.rollback()
 

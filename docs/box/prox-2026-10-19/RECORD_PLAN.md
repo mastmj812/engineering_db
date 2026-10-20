@@ -162,3 +162,10 @@ D112–D116 are written into `docs/box_type_curves_plan.md`.
   
   Both are writes to the shared warehouse, so each needs a go.
 - The data dictionary was regenerated after merging main (it carries #169's objects and Steven's sandbox tables as live).
+
+## 11. Live text refreshed to sql/65 (2026-10-20; Michael: "go")
+- **`apply_box_proximity` re-run live: 26/26** (`rehearsal/apply_box_proximity_LIVE_sql65.txt`). The DDL is idempotent; the COMMENTs now name sql/65.
+  - The validation is now state-aware so a re-run after a stored proximity run passes: stream rows off factor 1 must be oil rows matching `pud_proximity.factor` (9,706); the new tables are checked as existing (50,963 / 73,307 rows) rather than empty; the comment must name sql/65.
+  - The first re-run under the old first-apply checks reported 3 expected "not empty / not all 1" failures. It changed nothing beyond the idempotent DDL and comment refresh.
+- **Run 14 `forecast_run.notes`:** one occurrence of "(D112-D116, sql/64)" replaced with sql/65 (length unchanged, still the record).
+- Data dictionary regenerated.
