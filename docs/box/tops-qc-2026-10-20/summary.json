@@ -1,9 +1,9 @@
 {
-  "built": "2026-10-20 19:49 UTC",
-  "git": "ca1b853",
+  "built": "2026-10-20 22:27 UTC",
+  "git": "1385c50",
   "grid_dirs": {
-    "new": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\Structure Grids\\Delaware\\Grids_10-19-26",
-    "orig": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\Structure Grids\\Delaware\\Original"
+    "new": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\Grids\\Delaware\\Structure\\Grids_10-19-26",
+    "orig": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\Grids\\Delaware\\Structure\\Original"
   },
   "datum_ok": true,
   "datum_verdict": "PASS \u2014 grid Z behaves as depth below KB: TVD agreement 70% (new) / 70% (Sept) vs subsea 0% / 0%.",

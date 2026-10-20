@@ -150,7 +150,7 @@ def apply_rules(w: pd.DataFrame, p: pd.DataFrame) -> pd.DataFrame:
     info = w.set_index("api10")[["formation_blueox", "county"]].reindex(p.index)
     out = p.copy()
     out["verdict_raw"] = out["verdict"]
-    out["verdict"] = [tq.apply_geology_rules(str(t), c if isinstance(c, str) else None, str(v))
+    out["verdict"] = [tq.apply_geology_rules(str(t), c if isinstance(c, str) else None, v if isinstance(v, str) else "unmeasured")
                       for t, c, v in zip(info["formation_blueox"], info["county"], out["verdict"], strict=True)]
     return out
 
@@ -269,7 +269,7 @@ def render(ctx: dict[str, Any]) -> str:
     pct_cols = ["survey %", "agree new", "agree Sept", "agree new, tvd_ft only", "shallow new", "deep new",
                 "agree ≤1 mi control", "agree >1 mi control", "≤1 mi control %", "misses ≤25 ft %", "misses ≤50 ft %"]
     parts = [
-        f"<title>Tops vs Tags · Step 1</title><style>{_CSS}</style>",
+        f"<meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>Tops vs Tags · Step 1</title><style>{_CSS}</style>",
         "<h1>Tops vs tags — step 1: sampling, datum, agreement</h1>",
         (f"<div class=meta>built {html.escape(ctx['built'])} · git {html.escape(ctx['sha'])} · grids: new = "
          f"{html.escape(str(pkg.GRID_DIR))}, Sept = {html.escape(str(pkg.ORIGINAL_GRID_DIR))} · READ ONLY</div>"),
