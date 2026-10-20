@@ -230,12 +230,12 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
 
 
 def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110, label: str = "one-body D27 extent as is",
-                     bodies_min: int | None = None) -> dict[str, Any]:
+                     bodies_min: int | None = None, grid_dir: Path = pkg.GRID_DIR) -> dict[str, Any]:
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
-    top_f, _ = pkg.GRIDS[pool]
-    xs, ys, Z = pkg._grid(pkg.GRID_DIR / top_f)
+    top_s, _ = pkg.GRIDS[pool]
+    xs, ys, Z = pkg._grid(pkg.require_grid(top_s, grid_dir))
     ev = wells[wells["evidence"] & wells["geom"].notna()]
     old = wells[~wells["evidence"] & wells["geom"].notna()]
     ev_g = gio.ft13_to_geology(list(ev["geom"]))
@@ -256,7 +256,7 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
         cs = ax.contour(xs[mx], ys[my], np.ma.masked_invalid(Zc), levels=lv[::2], colors="#374151", linewidths=0.35)
         ax.clabel(cs, fmt="%d", fontsize=6)
         cb = fig.colorbar(cf, ax=ax, shrink=0.55, pad=0.01)
-        cb.set_label(f"{top_f.split('_STRUCTURE')[0]} structure (grid Z, ft ~ KB TVD)")
+        cb.set_label(f"{top_s} structure (grid Z, ft ~ KB TVD)")
     for g in ex.as_multi(sopa_g).geoms:
         c = np.asarray(g.exterior.coords)
         ax.fill(c[:, 0], c[:, 1], color="#0ea5e9", alpha=0.10, lw=0.6, ec="#0ea5e9")
@@ -305,7 +305,7 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     ax.set_xticks([])
     ax.set_yticks([])
     area = extent_ft13.area / eg.FT_PER_MI**2
-    ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_f.split('_STRUCTURE')[0]} structure; "
+    ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_s} structure; "
                  f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); potash area blue; dashed = TX/NM line", fontsize=9)
     fig.tight_layout()
     fig.set_dpi(dpi)

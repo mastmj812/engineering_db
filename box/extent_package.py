@@ -13,6 +13,7 @@ Shared: BOX_potash_SOPA (the D24 ignore-gap polygon).
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -30,25 +31,49 @@ from shapely.geometry import LineString
 from box import edge_gap as eg
 from box import geology_io as gio
 
-GRID_DIR = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware")
-# (top grid, base grid) per pool — BS2 sand: 2BS sand top -> 3BS carbonate top; WCA: WCA top -> WCB1 top
+# Holden's GGX structure grids (D25: context only). 2026-10-19 the geologist moved the September set into
+# Original/ and delivered Grids_10-19-26/ (renamed files, wider coverage, same UTM 14N US-ft lattice, no _data/_cont).
+GRID_ROOT = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General/Structure Grids/Delaware")
+GRID_DIR = GRID_ROOT / "Grids_10-19-26"
+ORIGINAL_GRID_DIR = GRID_ROOT / "Original"
+# file name of a surface's grid, newest scheme first: 10-19 set, then the September set's two schemes
+GRID_NAME_PATTERNS = ("HCA_{s}_STRUCTURE_MD_grid.xyz", "HCA_{s}_STRUCTURE_MDXYZ_grid.xyz", "{s}-STRUCTUREXYZ_grid.xyz")
+# (top surface, base surface) per pool — BS2 sand: 2BS sand top -> 3BS carbonate top; WCA: WCA top -> WCB1 top
 GRIDS = {
-    "BS2_S": ("HCA_2BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_3BSPGC_STRUCTURE_MDXYZ_grid.xyz"),
-    "WCA": ("HCA_WOLFCAMP_A_STRUCTURE_MDXYZ_grid.xyz", "WOLFCAMP-B1-STRUCTUREXYZ_grid.xyz"),
+    "BS2_S": ("2BSPGS", "3BSPGC"),
+    "WCA": ("WOLFCAMP_A", "WOLFCAMP-B1"),
     # step 15a: BS3 carbonate = 3BS carbonate top -> 3BS sand top; BS3 sand = 3BS sand top -> Wolfcamp (XY) top
-    "BS3_C": ("HCA_3BSPGC_STRUCTURE_MDXYZ_grid.xyz", "HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
-    "BS3_S": ("HCA_3BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_WOLFCAMP_XY_STRUCTURE_MDXYZ_grid.xyz"),
+    "BS3_C": ("3BSPGC", "3BSPGS"),
+    "BS3_S": ("3BSPGS", "WOLFCAMP_XY"),
     # step 15 remaining benches: (bench top, next surface down). AVA_0 has no grid of its own -> Avalon 1 top (stated on its map)
-    "AVA_0": ("HCA_AVALON1_STRUCTURE_MDXYZ_grid.xyz", "HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz"),
-    "AVA_1": ("HCA_AVALON1_STRUCTURE_MDXYZ_grid.xyz", "HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz"),
-    "AVA_2": ("HCA_AVALON2_STRUCTURE_MDXYZ_grid.xyz", "HCA_1BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
-    "BS1_S": ("HCA_1BSPGS_STRUCTURE_MDXYZ_grid.xyz", "HCA_2BSPGC_STRUCTURE_MDXYZ_grid.xyz"),
-    "BS2_C": ("HCA_2BSPGC_STRUCTURE_MDXYZ_grid.xyz", "HCA_2BSPGS_STRUCTURE_MDXYZ_grid.xyz"),
-    "WCB_1": ("WOLFCAMP-B1-STRUCTUREXYZ_grid.xyz", "WOLFCAMP-B2-STRUCTUREXYZ_grid.xyz"),
-    "WCB_2": ("WOLFCAMP-B2-STRUCTUREXYZ_grid.xyz", "WOLFCAMP-C-STRUCTUREXYZ_grid.xyz"),
-    "WCC": ("WOLFCAMP-C-STRUCTUREXYZ_grid.xyz", "HCA_WOLFCAMP_D_STRUCTURE_MDXYZ_grid.xyz"),
-    "WCD": ("HCA_WOLFCAMP_D_STRUCTURE_MDXYZ_grid.xyz", "HCA_STRAWN_STRUCTURE_MDXYZ_grid.xyz"),
+    "AVA_0": ("AVALON1", "AVALON2"),
+    "AVA_1": ("AVALON1", "AVALON2"),
+    "AVA_2": ("AVALON2", "1BSPGS"),
+    "BS1_S": ("1BSPGS", "2BSPGC"),
+    "BS2_C": ("2BSPGC", "2BSPGS"),
+    "WCB_1": ("WOLFCAMP-B1", "WOLFCAMP-B2"),
+    "WCB_2": ("WOLFCAMP-B2", "WOLFCAMP-C"),
+    "WCC": ("WOLFCAMP-C", "WOLFCAMP_D"),
+    "WCD": ("WOLFCAMP_D", "STRAWN"),
 }
+
+
+def grid_path(surface: str, grid_dir: Path = GRID_DIR) -> Path | None:
+    """The surface's grid file in ``grid_dir`` under either naming scheme (None if absent)."""
+    for pat in GRID_NAME_PATTERNS:
+        p = Path(grid_dir) / pat.format(s=surface)
+        if p.exists():
+            return p
+    return None
+
+
+def require_grid(surface: str, grid_dir: Path = GRID_DIR) -> Path:
+    p = grid_path(surface, grid_dir)
+    if p is None:
+        raise FileNotFoundError(f"no {surface} structure grid in {grid_dir} (tried {', '.join(pat.format(s=surface) for pat in GRID_NAME_PATTERNS)})")
+    return p
+
+
 STRUCT_STEP_FT, ISO_STEP_FT = 250.0, 25.0
 RULE_COLOURS = {
     "pinned: floor": "#15803d",
@@ -109,12 +134,15 @@ def _contours(xs: np.ndarray, ys: np.ndarray, Z: np.ndarray, step: float, clip: 
 
 
 def context_contours(pool: str, clip_usft: Any, grid_dir: Path = GRID_DIR) -> dict[str, list[tuple[LineString, float]]]:
-    """Structure (top) and isopach (base − top) contours in the geology frame; {} if grids absent."""
-    top_f, base_f = GRIDS[pool]
-    if not (grid_dir / top_f).exists() or not (grid_dir / base_f).exists():
+    """Structure (top) and isopach (base − top) contours in the geology frame; {} (with a warning) if a grid is absent."""
+    top_s, base_s = GRIDS[pool]
+    top_f, base_f = grid_path(top_s, grid_dir), grid_path(base_s, grid_dir)
+    if top_f is None or base_f is None:
+        missing = [s for s, f in ((top_s, top_f), (base_s, base_f)) if f is None]
+        warnings.warn(f"{pool}: structure grid(s) {', '.join(missing)} not found in {grid_dir} — NO structure/isopach contours", stacklevel=2)
         return {}
-    xs, ys, top = _grid(grid_dir / top_f)
-    bx, by, base = _grid(grid_dir / base_f)
+    xs, ys, top = _grid(top_f)
+    bx, by, base = _grid(base_f)
     X, Y = np.meshgrid(xs, ys)
     b_on_top = RegularGridInterpolator((by, bx), base, bounds_error=False, fill_value=np.nan)(np.column_stack([Y.ravel(), X.ravel()])).reshape(X.shape)
     iso = b_on_top - top
