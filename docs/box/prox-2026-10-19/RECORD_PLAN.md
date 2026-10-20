@@ -131,3 +131,19 @@ D112–D116 are written into `docs/box_type_curves_plan.md`.
 2. `python -m scripts.box_prox_record store`: a live rollback rehearsal, which writes nothing.
 3. `python -m scripts.box_prox_record store --commit --record`: the new record (~run 14); run 10 superseded and kept.
 4. `python -m scripts.gen_data_dictionary --html docs/data_dictionary.html` with `_CONSUMERS` for the two new tables. Then the erebor PR and the Steven note.
+
+## 9. Live 2026-10-20 (Michael: "go apply … then the live store rollback rehearsal")
+- **GO 1 done: sql/64 APPLIED LIVE.** `apply_box_proximity` passed 25/25 on the Supabase session pooler (`rehearsal/apply_box_proximity_LIVE.txt`).
+  - Every existing stream row reads `prox_factor` 1.
+  - Run 10 coverage and stream counts are unchanged by identity.
+  - Repo == live for sql/64.
+- **GO 2 done: live store rehearsal, ROLLED BACK** (`rehearsal/store_rehearsal_LIVE.txt`, 2,410 s; months 1,423 s, identities ~15 min). Every identity was green on the full data:
+  - **76,455,000** month rows = run 10's survivors;
+  - oil EUR **23,300.106 MMbbl** = run 10 × factor;
+  - gas / water streams and months, and as-is oil months: ordered md5 identical;
+  - haircut oil months 0 rows off;
+  - analogs 681,618 / water analogs 694,768;
+  - outcomes = gate 4; 73,307 named parents.
+- **Checked after:** run 10 is still the sole record, and `box.pud_proximity` is empty.
+- **The rehearsal burned run_id 13**, so the committed store will be **run 14**.
+- **Next (GO 3):** `python -m scripts.box_prox_record store --commit --record` (~40 min; DB +~10 GB). Then the dictionary regen, the erebor PR and the Steven note.
