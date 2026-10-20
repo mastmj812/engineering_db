@@ -1,4 +1,4 @@
-# PDP-proximity study — steps 1, 2, 2b, 2c (Delaware) — AT GATE 2c
+# PDP-proximity study — steps 1, 2, 2b, 2c (Delaware) — GATE 2c DECIDED (option a); precedent unit + shielding open
 
 Built 2026-10-19 by `python -m scripts.box_prox_study` (133 s, read-only; nothing written to the warehouse).
 Code: `box/prox_study.py` (pure), `box/prox_study_report.py`, tests `tests/test_box_prox_study.py`.
@@ -338,3 +338,9 @@ Single-parent material wells pooled: 1.10 [1.04–1.16].
 3. **Precedent unit** (still open from gate 2b): parent configuration (BS3_S over flanking WCA = 75 drilled → forecast at the haircut) vs package (with ≥ 2 co-developed siblings = 9 → no forecast).
 4. **Shielding** (open since gate 2).
 5. **Next = step 4.** Each run-10 PUD gets its configuration from today's producers, its haircut and its precedent class. Read-only counts and haircut EUR totals by bench, then the record-run decision.
+
+## 19. Gate 2c decided (Michael, 2026-10-20): OPTION (a)
+- **Haircuts applied:** only multi-parent configurations, at class × count ≥ 2 × flank, plus mixed 2/3/4+. Values from `haircut_table_candidate.csv`, rungs k2/k3.
+- **Not haircut:** single-parent and unexposed PUDs stay at BOX as-is (no `none` uplift). No gas haircut.
+- **Label on every PUD:** "validated with exception". It is confirmed or overturned on the 2026 prospective cohort (first cum-12 ~2027-Q2).
+- **Still open:** precedent unit and shielding (recommendations in chat 2026-10-20).
