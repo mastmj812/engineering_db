@@ -11,7 +11,13 @@ route remains the only ingest path for the map overlays.
     python -m scripts.load_novi_intel --shapefiles   # load pads/land_grid/basin_outline
 
 CAUTION: --ddl DROP+CREATEs the overlay tables, so it wipes the currently loaded
-geometries — always follow with --shapefiles from a file drop on disk.
+geometries AND cascade-drops curated.intel_pad_member/intel_pad_geom (sql/67) —
+always follow with --shapefiles from a file drop on disk, then
+`python -m scripts.apply_intel_pad_geom`.
+
+Pad polygons load at etl.novi_intel.paths.PADS_REPORT_VERSION (2026Q3); the
+routine pad route is `python -m scripts.apply_intel_pad_geom --load-pads`, which
+checks the vintage and the row counts and rebuilds the pad matviews.
 """
 
 from __future__ import annotations
