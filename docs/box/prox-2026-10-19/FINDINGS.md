@@ -1,4 +1,4 @@
-# PDP-proximity study — step 1 precedent atlas + step 2/2b dose-response (Delaware) — AT GATE 2b
+# PDP-proximity study — steps 1, 2, 2b, 2c (Delaware) — AT GATE 2c
 
 Built 2026-10-19 by `python -m scripts.box_prox_study` (133 s, read-only; nothing written to the warehouse).
 Code: `box/prox_study.py` (pure), `box/prox_study_report.py`, tests `tests/test_box_prox_study.py`.
@@ -260,3 +260,81 @@ Built 2026-10-20 by `python -m scripts.box_prox_study config` (DB-free, seconds)
 4. **Package dimension.** A PUD development IS a package. BS3_S over WCA with ≥ 2 parents AND ≥ 2 co-developed BS3_S siblings had **9** drilled examples (the 2026-10-20 probe), below the floor. Should the precedent test require the package configuration? If so, it culls full-DSU BS3_S topfill over developed WCA on precedent alone.
 5. **Shielding** (open since gate 2). Shielded or permit-only children still lose 8 %.
 6. **Next = step 4.** For every run-10 PUD: count its parents today with the same metric, look up the haircut, and apply X. Read-only, with cull counts per bench and a Tier-4 crosstab.
+
+## 15. Gate 2b — Michael's answer (2026-10-20): DESIGN SWITCH
+**PUDs get BOX × a configuration haircut, and Steven's econ does the culling.** Configurations without drilled precedent get no forecast. A haircut that becomes a forecast term has to predict out of sample, so step 2c validates it before anything else.
+
+Defaults taken with his "yes":
+- mean haircut, survivorship disclosed;
+- cum-24 primary;
+- a `none` factor for unexposed PUDs;
+- precedent unit (parent configuration vs package) decided at this gate.
+
+---
+
+# Step 2c — walk-forward validation (AT GATE 2c)
+
+- **Rule:** `PREREG_2c.md`, committed b20603d BEFORE scoring, together with the code. Scored once by `python -m scripts.box_prox_study validate` (DB-free).
+- **Outputs:** `validate.html`, `validate_cells_*.csv`, `validate_children.csv.gz`, `validate_summary.json`, and `haircut_table_candidate.csv` (fit on all folds = what step 4 would read).
+
+## 16. Verdict as pre-registered: **FAIL** (oil cum-24)
+
+| test | result | rule | pass? |
+|---|---|---|---|
+| P1 — material-haircut wells (f ≤ 0.90, n = 668) | actual ÷ (BOX × haircut) = **1.060** [1.023–1.097]; no haircut 0.884 | 0.95–1.05 or CI contains 1 | **FAIL** — the haircut over-corrects by ~6 % |
+| P2 — skill | RMS cell bias 0.038 with the haircut vs 0.074 without | must drop | PASS — halved |
+| P3 — cell calibration | 18 of 21 cells within ±10 % (86 %) | ≥ 80 % | PASS |
+
+Reported, not gating:
+
+| metric | P1 | P2 | P3 | would-be verdict |
+|---|---|---|---|---|
+| oil cum-12 | 1.065 | pass | 70 % | FAIL |
+| oil cum-36 | 1.036 [0.98–1.09] | pass | 79 % | FAIL (P3 by one cell) |
+| gas cum-24 | 1.181 | **fail: the haircut makes gas worse** | 67 % | FAIL |
+
+## 17. What drives the miss (diagnostics: POST-LOOK, not a pass)
+
+**The configurations the haircut exists for hold out of sample.** Cell residual = actual ÷ (BOX × haircut), oil cum-24:
+
+| cell | haircut | residual |
+|---|---:|---:|
+| topfill, 3+ parents, flanked | 0.74 | **1.04** |
+| mixed, 3 parents | 0.83 | 1.01 |
+| mixed, 4+ parents | 0.77 | 0.99 |
+| same pool, 3+ parents | 0.83 | 0.96 |
+| underfill, 2 parents | 0.85 | 0.99 |
+| topfill, 2 parents, flanked | 0.87 | 0.96 |
+
+Pooled over material multi-parent wells: **1.043** [1.003–1.088] at cum-24 (n = 464) and **1.005** [0.95–1.05] at cum-36 (n = 192).
+
+**The miss is single-parent and thin bench-pair cells.** These are winner's-curse factors that sat low in training and regress toward 1 in test:
+
+| cell | haircut | residual | n |
+|---|---:|---:|---:|
+| BS2_S same-bench, 1 parent | 0.87 | 1.08 | 121 |
+| WCA under BS3_S, 1 parent | 0.87 | 1.35 | 22 |
+| underfill 2 flanked | 0.80 | 1.36 | 19 |
+| WCA same, 3+ | 0.86 | 1.19 | 24 |
+
+Single-parent material wells pooled: 1.10 [1.04–1.16].
+
+**Drift:** the material residual rises by test cutoff (2021: 1.02 → 2022: 1.08 → 2023: 1.10). Newer infills do relatively better than haircuts fit on older wells predict, consistent with operators adapting (completions, timing). Haircuts from older wells may overstate today's penalty. The prospective cohort is the check.
+
+**Gas:** a fitted gas haircut over-penalizes (1.18). Depleted children lose oil more than gas; the GOR rises.
+
+**`none` factor:** unexposed PUDs = 1.037 × BOX's mix level, residual 1.003 in test, so it is validated.
+
+## 18. Gate-2c asks
+1. **The verdict stands as FAIL as written.** Options, in the D59 manner (your call):
+   - **(a) Accept with documented exceptions.** Adopt only the multi-parent haircuts: class × count ≥ 2 × flank, plus mixed 2/3/4+. Single-parent PUDs get no proximity haircut, with BOX left as-is. Oil only, no gas haircut. Disclosed basis:
+     - multi-parent cells validated within ±5 % (cum-24 1.04, cum-36 1.01);
+     - the single-parent miss was over-penalizing;
+     - the narrowed spec is a post-look choice, so it is confirmed on the prospective 2026 cohort (first cum-12 ~2027-Q2).
+   - **(b) Re-specify and wait.** Pre-register a narrowed or shrunk ladder now and validate it on the prospective cohort before any record use.
+   
+   **I recommend (a).** The cull-relevant configurations validated, the miss sits in small single-parent haircuts (0.93–0.97 at the class level), and BOX's record goes unhaircut there either way.
+2. **`none` uplift (1.037).** Apply it to unexposed PUDs, or leave unexposed PUDs at BOX as-is? I recommend as-is under (a): one change at a time, and BOX's level is already walk-forward calibrated.
+3. **Precedent unit** (still open from gate 2b): parent configuration (BS3_S over flanking WCA = 75 drilled → forecast at the haircut) vs package (with ≥ 2 co-developed siblings = 9 → no forecast).
+4. **Shielding** (open since gate 2).
+5. **Next = step 4.** Each run-10 PUD gets its configuration from today's producers, its haircut and its precedent class. Read-only counts and haircut EUR totals by bench, then the record-run decision.
