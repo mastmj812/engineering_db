@@ -50,7 +50,7 @@ BRIDGE_SLACK_FT = 1500.0  # an extent edge this far past its segment's buffer wa
 MIN_FLOOR_FT = 880.0  # next-row rule: the next development row beyond a producer (narvi's 880-ft fallback spacing) is always inside
 UNIFORM_FT = (660.0, 1320.0, 1980.0, 2640.0, 3960.0, 5280.0)  # flat-buffer baselines
 SOPA_DIR = Path("docs") / "box" / "ref" / "potash_sopa_1986"
-# Optional updip depth limit per pool: (Holden GGX grid of the bench top, cutoff ft). Shallower than
+# Optional updip depth limit per pool: (Holden GGX grid surface of the bench top, e.g. "2BSPGS", cutoff ft). Shallower than
 # the cutoff, the extent never reaches past the last wells. Tried for BS2_S (2BS top 7,000 ft) and
 # DROPPED 2026-10-09 (Michael): it only trimmed reach (~37 sq mi) and fought the D22 W front; low
 # updip performance is the TC areas' job. Kept as machinery, empty by decision.
@@ -71,16 +71,21 @@ def load_sopa(path: Path = SOPA_DIR / "CFO_POTASH_SOPA_1986.shp") -> Any:
     return shapely.union_all(eg.to_ft(polys))
 
 
-def load_updip(pool: str, bounds_ft13: tuple[float, float, float, float], pad_ft: float = 10 * eg.FT_PER_MI, cell_ft: float = 528.0) -> Any:
+def load_updip(pool: str, bounds_ft13: tuple[float, float, float, float], pad_ft: float = 10 * eg.FT_PER_MI, cell_ft: float = 528.0,
+               grid_dir: Path | None = None) -> Any:
     """D27: the zone shallower than the pool's depth cutoff, as a UTM 13N ft polygon (None if the pool
-    has no limit or the grid is unavailable). Outside grid coverage is never updip."""
+    has no limit or the grid is unavailable — the latter with a warning). Outside grid coverage is never updip."""
     cfg = UPDIP.get(pool)
     if cfg is None:
         return None
     from box import extent_package as pkg
 
-    path = pkg.GRID_DIR / cfg[0]
-    if not path.exists():
+    gdir = pkg.GRID_DIR if grid_dir is None else grid_dir
+    path = pkg.grid_path(cfg[0], gdir)
+    if path is None:
+        import warnings
+
+        warnings.warn(f"{pool}: updip grid {cfg[0]} not found in {gdir} — NO updip depth limit applied", stacklevel=2)
         return None
     import matplotlib.pyplot as plt
     from pyproj import Transformer

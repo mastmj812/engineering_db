@@ -940,3 +940,26 @@ BEGIN
     EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dz_ft IS 'Neighbour TVD minus subject TVD, ft (negative = shallower); one TVD per well (curated.wells.tvd_ft). NULL when either TVD is missing.'$c$;
     EXECUTE $c$COMMENT ON COLUMN curated.well_neighbors.dfp_days IS 'Neighbour first production minus subject first production, days. Relation downstream (sql/47 window): < -180 parent, |.| <= 180 codev, > 180 child. Features as of first production use parents + codev only.'$c$;
 END $$;
+
+-- =============================================================================
+-- 31 (part K) -- curated.well_lateral_survey (sql/64, lateral TVD path from
+-- Novi DirectionalSurveys). GUARDED like part J: applied on demand first.
+-- =============================================================================
+DO $$
+BEGIN
+    IF to_regclass('curated.well_lateral_survey') IS NULL THEN
+        RETURN;
+    END IF;
+    EXECUTE $c$COMMENT ON MATERIALIZED VIEW curated.well_lateral_survey IS 'One row per surveyed well (api10, Permian-wide): the lateral''s TVD path from raw_novi.DirectionalSurveys — heel / mid / toe TVD, station TVD p10/p50/p90 and range, KB elevation, and the station path as a LINESTRING Z (lon, lat, TVD ft). Lateral span = perforation top -> bottom when Novi ships both (lateral_basis perfs), else landing point -> bottom hole (lp_bhl). Source-faithful: planned surveys (wells_enriched.directional_survey_is_planned) carry the PLAN and stay rule-15 suspect — join the flag downstream. Nightly, gated on DirectionalSurveys loads. sql/64.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lateral_basis IS 'perfs = perforation top (LocationType 5) -> perforation bottom (6), the completed lateral; lp_bhl = landing point (4) -> bottom hole (2) when perfs are absent; NULL = no span (lateral columns NULL).'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.kb_elev_ft IS 'KB elevation above sea level, ft = TVD - SubSeaTVD (constant per well). Converts any TVD here to subsea: subsea = TVD - kb_elev_ft.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.heel_tvd_ft IS 'TVD of the first station in the lateral span (by Path), ft below KB.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.mid_tvd_ft IS 'TVD of the station nearest the span''s MD midpoint, ft below KB.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.toe_tvd_ft IS 'TVD of the last station in the lateral span, ft below KB.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.toe_minus_heel_tvd_ft IS 'toe_tvd_ft - heel_tvd_ft: + = toe-down, - = toe-up.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lat_tvd_range_ft IS 'Max - min station TVD over the lateral span, ft (porpoising + structure). Delaware actual surveys median 80 ft, P95 252 ft (2026-10-20).'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lat_tvd_p50_ft IS 'Median station TVD over the lateral span (station-weighted; stations ~94 ft MD apart so ~MD-weighted). wells_enriched.tvd_ft sits a median ~32 ft deeper in the Delaware.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lat_interp_share IS 'Share of lateral-span stations Novi flags Interpolated (vs measured). ~3 % of all stations are interpolated; treat > 0.5 as a weak survey.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.is_uturn IS 'TRUE when Novi ships a U-turn far point (LocationType -1): the span covers both legs.'$c$;
+    EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lateral_geom IS 'LINESTRING Z, SRID 4326: X/Y = lon/lat degrees, Z = TVD in FEET below KB, stations in Path order over the lateral span. Mixed units by design — never ST_3DLength it. NULL when < 2 stations in span.'$c$;
+END $$;

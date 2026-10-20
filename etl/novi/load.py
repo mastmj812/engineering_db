@@ -6,7 +6,8 @@ Two load strategies:
   the small tables (Wells / WellDetails / WellSpacing).
 
 - **Incremental** (`load_table_incremental`): for the large time-series tables
-  (`WellMonths`, `ForecastWellMonths`). Novi ships a full snapshot every sync
+  (`WellMonths`, `ForecastWellMonths`,
+  `DirectionalSurveys`). Novi ships a full snapshot every sync
   but stamps `ModifiedAt` per change-batch, so most syncs change few/no rows.
   Rewriting all rows nightly (e.g. 22M for ForecastWellMonths) is wasteful and
   heavy enough to destabilise a managed Postgres (Supabase) instance. Instead we
@@ -40,12 +41,17 @@ logger = logging.getLogger(__name__)
 # IsForecasted boolean splits actuals from Novi's algorithmic forecast.
 # Loaded so raw_novi mirrors the source exactly; the curated layer is where
 # IsForecasted=TRUE filtering happens.
+#
+# DirectionalSurveys (sql/64): one row per survey station (API10, Path = station
+# sequence), ~14M rows Permian-wide. Feeds curated.well_lateral_survey (lateral
+# TVD path per well) — the per-station landing evidence the single tvd_ft lacks.
 MVP_TABLES: list[str] = [
     "Wells",
     "WellMonths",
     "WellDetails",
     "WellSpacing",
     "ForecastWellMonths",
+    "DirectionalSurveys",
 ]
 
 # Tables loaded incrementally (ModifiedAt watermark) instead of TRUNCATE+COPY.
@@ -53,8 +59,20 @@ MVP_TABLES: list[str] = [
 _INCREMENTAL_KEYS: dict[str, list[str]] = {
     "WellMonths": ["API10", "Year", "Month"],
     "ForecastWellMonths": ["API10", "Date"],
+    "DirectionalSurveys": ["API10", "Path"],
 }
 _MODIFIED_COL = "ModifiedAt"
+
+# Child-sequence tables whose rows per parent are a contiguous 1..n sequence
+# (DirectionalSurveys: Path = station order, contiguous on 100 % of wells,
+# 2026-10-20). Novi stamps ModifiedAt per STATION, so a re-survey with fewer
+# stations leaves the old tail behind under a pure upsert. After the upsert,
+# rows past the snapshot's max sequence for their parent, and parents absent
+# from the snapshot, are deleted: an exact nightly reconcile for these tables
+# at the cost of one (parent, max_seq) temp table. Maps table -> (parent, seq).
+_SEQ_TRIM: dict[str, tuple[str, str]] = {
+    "DirectionalSurveys": ("API10", "Path"),
+}
 
 
 def _tsv_path(bulk_dir: Path, table_name: str) -> Path:
@@ -114,6 +132,8 @@ def _upsert_newer(
     keys: list[str],
     tsv_path: Path,
     watermark: datetime,
+    seq_max: dict[str, int] | None = None,
+    seq_cols: tuple[str, str] | None = None,
 ) -> tuple[int, int]:
     """Stage TSV rows with ModifiedAt > watermark and UPSERT them onto `cur`.
 
@@ -122,8 +142,13 @@ def _upsert_newer(
     (which also makes this testable via rollback). Returns (upserted, skipped),
     where `skipped` counts rows with an unparseable/empty ModifiedAt or a column
     count that doesn't match the header.
+
+    When `seq_max` / `seq_cols` (parent, seq) are given, the same pass records
+    the snapshot's max sequence per parent into `seq_max` (for `_trim_seq`).
     """
     mod_idx = columns.index(_MODIFIED_COL)
+    par_idx = columns.index(seq_cols[0]) if seq_cols else -1
+    seq_idx = columns.index(seq_cols[1]) if seq_cols else -1
     n_cols = len(columns)
     quoted = ", ".join(f'"{c}"' for c in columns)
     conflict = ", ".join(f'"{c}"' for c in keys)
@@ -146,6 +171,10 @@ def _upsert_newer(
             if len(fields) != n_cols:
                 n_skip += 1
                 continue
+            if seq_max is not None:
+                par, seq = fields[par_idx], int(fields[seq_idx])
+                if seq > seq_max.get(par, 0):
+                    seq_max[par] = seq
             mod = fields[mod_idx]
             if not mod:
                 n_skip += 1
@@ -167,6 +196,26 @@ def _upsert_newer(
     return n_new, n_skip
 
 
+def _trim_seq(cur, table_name: str, seq_cols: tuple[str, str], seq_max: dict[str, int]) -> int:
+    """Delete rows the snapshot no longer has for a contiguous-sequence table:
+    sequence past the parent's snapshot max, or parent absent from the snapshot.
+    Does NOT commit. Returns rows deleted. Refuses an empty snapshot (a
+    truncated TSV must never wipe the table)."""
+    if not seq_max:
+        raise RuntimeError(f"{table_name}: empty snapshot sequence map; refusing to trim")
+    par, seq = seq_cols
+    cur.execute("DROP TABLE IF EXISTS _stg_seq")
+    cur.execute("CREATE TEMP TABLE _stg_seq (par text PRIMARY KEY, max_seq int NOT NULL) ON COMMIT DROP")
+    with cur.copy("COPY _stg_seq (par, max_seq) FROM STDIN") as copy:
+        for k, v in seq_max.items():
+            copy.write_row((k, v))
+    cur.execute(
+        f'DELETE FROM raw_novi."{table_name}" t '
+        f'WHERE NOT EXISTS (SELECT 1 FROM _stg_seq x WHERE x.par = t."{par}" AND t."{seq}" <= x.max_seq)'
+    )
+    return cur.rowcount
+
+
 def load_table_incremental(bulk_dir: Path, table_name: str) -> int:
     """Upsert only rows newer than the live max(ModifiedAt). First load (empty
     table) falls back to a full TRUNCATE+COPY. Returns rows upserted."""
@@ -185,11 +234,18 @@ def load_table_incremental(bulk_dir: Path, table_name: str) -> int:
         logger.info("Novi %s: empty table -> full load", table_name)
         return load_table(bulk_dir, table_name)
 
+    seq_cols = _SEQ_TRIM.get(table_name)
+    seq_max: dict[str, int] | None = {} if seq_cols else None
     with log_etl_run("novi", f"{table_name} (incremental)") as run:
         with get_connection() as conn, conn.cursor() as cur:
             n_new, n_skip = _upsert_newer(
-                cur, table_name, columns, keys, tsv_path, watermark
+                cur, table_name, columns, keys, tsv_path, watermark, seq_max, seq_cols
             )
+            if seq_cols and seq_max is not None:
+                n_del = _trim_seq(cur, table_name, seq_cols, seq_max)
+                run.rows_deleted = n_del
+                if n_del:
+                    logger.info("Novi %s incremental: trimmed %d rows absent from snapshot", table_name, n_del)
             conn.commit()
         run.rows_inserted = n_new
     if n_skip:
