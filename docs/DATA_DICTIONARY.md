@@ -1,6 +1,6 @@
 # oilgas data dictionary
 
-*Generated 2026-10-20 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-10-21 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
@@ -1261,7 +1261,7 @@ Snowflake share lateral trajectories: geometry_wkt (LINESTRING, EPSG:4326) lande
 
 Novi-supplied basin outline polygons from the file drop, tagged (basin, report_version). STILL IN USE as a map overlay: the Snowflake share has no equivalent geometry.
 
-~2 rows | static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)
+~2 rows | per Novi shapefile drop (pads 2026Q3, land grid/outline frozen at 3Q25; share has no geometry)
 
 | column | type | description |
 |---|---|---|
@@ -1276,7 +1276,7 @@ Novi-supplied basin outline polygons from the file drop, tagged (basin, report_v
 
 Novi-supplied land grid polygons (raw DBF attributes in JSONB) from the file drop, tagged (basin, report_version). STILL IN USE as a map overlay: the Snowflake share has no equivalent geometry.
 
-~42,668 rows | static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)
+~42,668 rows | per Novi shapefile drop (pads 2026Q3, land grid/outline frozen at 3Q25; share has no geometry)
 
 | column | type | description |
 |---|---|---|
@@ -1289,9 +1289,9 @@ Novi-supplied land grid polygons (raw DBF attributes in JSONB) from the file dro
 
 ### `raw_novi_intel.pads` (table)
 
-Novi DSU pad polygons + pad-level NPV rollup from the quarterly file drop, tagged (basin, report_version). STILL IN USE for display: the Snowflake share has no pad geometry as of 2025Q3.
+Novi DSU pad polygons from the quarterly shapefile drop, tagged (basin, report_version), as shipped. 3Q25 rows = the legacy drop; 2026Q3 rows = the official 2026Q3 drop (Mid-Cycle pad summary; Strip has identical polygons), ALL polygons including WellCnt = 0 (no Novi-economic well; not an empty DSU). The DSU geometry of record (planned BOX-location infill); curated.intel_pad_geom (sql/67) takes the polygon for each pad whose report_version matches curated.intel_locations. The Snowflake share ships no pad geometry. NPV columns are Novi's pad rollup — not read by apps.
 
-~9,040 rows | static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)
+~25,625 rows | per Novi shapefile drop (pads 2026Q3, land grid/outline frozen at 3Q25; share has no geometry)
 
 | column | type | description |
 |---|---|---|
@@ -1306,6 +1306,10 @@ Novi DSU pad polygons + pad-level NPV rollup from the quarterly file drop, tagge
 | `npv25` | double precision |  |
 | `geom` | geometry(Geometry,4326) |  |
 | `ingested_at` | timestamp with time zone |  |
+| `operator` | text | Most common operator among the pad's wells, per Novi (2026Q3+; often blank). |
+| `npv0` | double precision | Novi NPV0 pad sum over wells with NPV25 >= 0 (2026Q3 Delaware only). |
+| `ll_sum_ft` | double precision | Summed lateral feet of the pad's wells with Novi NPV25 >= 0 (2026Q3+ Pad Summary filter). |
+| `well_cnt` | integer | Count of the pad's wells with Novi NPV25 >= 0 (2026Q3+ Pad Summary filter). 0 = no Novi-economic well, NOT an empty DSU; the polygon is kept either way. |
 
 ## Schema `ref`
 
@@ -1755,38 +1759,40 @@ Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from t
 
 ### `curated.intel_pad_geom` (materialized view)
 
-Novi Intelligence pad/DSU polygons DERIVED from member sticks: one row per (basin, pad_key) from curated.intel_pad_member, i.e. per spatial group of a Novi pad_name, not per name. Convex hull of member sticks (PUD + RES) buffered 330 ft geodesically. The Snowflake share ships no pad polygons (raw_intel.pad lat/lon all NULL). 330 ft calibrated against 4,585 Delaware 2025Q3 legacy polygons: median area ratio 1.02 (P10-P90 0.91-1.08), median IoU 0.86. Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/46 (supersedes sql/45).
+Novi Intelligence pad/DSU polygons, one row per (basin, pad_key) from curated.intel_pad_member. In-polygon pads carry Novi's own drawn DSU polygon (raw_novi_intel.pads, same vintage; geom_source novi_polygon); stray groups and names without a polygon carry the member-stick convex hull + 330 ft geodesic (stick_hull_330ft, sql/45 calibration: median area ratio 1.02 vs legacy Novi polygons). Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Only pads with at least one stick — every Novi DSU polygon, stick or not, stays in raw_novi_intel.pads. Quarterly only; DROP-CASCADEs with intel_locations and with a sql/11 rebuild; rebuilt by scripts.apply_intel_pad_geom. sql/67 (supersedes sql/46).
 
-~16,293 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `curated.intel_pad_member` | consumers: erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)
+~17,526 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `curated.intel_pad_member`, `raw_novi_intel.pads` | consumers: erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)
 
 | column | type | description |
 |---|---|---|
 | `basin` | text |  |
-| `pad_key` | text | Spatial pad identifier (see curated.intel_pad_member.pad_key). Unique per basin. |
+| `pad_key` | text | Pad identifier (see curated.intel_pad_member.pad_key). Unique per basin. |
 | `pad_name` | text |  |
 | `pad_part` | integer |  |
 | `n_parts` | integer |  |
-| `n_sticks` | bigint | Member sticks (PUD + RES) with geometry that built the hull; n_pud + n_res. |
+| `n_sticks` | bigint | Member sticks (PUD + RES) with geometry; n_pud + n_res. |
 | `n_pud` | bigint |  |
 | `n_res` | bigint |  |
-| `acres` | double precision | Geodesic area of geom in acres. Approximation of Novi's DSU acreage (median ratio 1.02 vs legacy polygons) — erebor Highgrade per-acre $ divides by this. |
-| `geom_source` | text | Provenance of geom: stick_hull_330ft (derived, not a Novi-drawn polygon). |
+| `acres` | double precision | Geodesic area of geom in acres (Novi's polygon, or the derived hull + 330 ft) — erebor Highgrade per-acre values divide by this. |
+| `geom_source` | text | Provenance of geom: novi_polygon (Novi-drawn DSU polygon of report_version) or stick_hull_330ft (derived: member-stick hull + 330 ft). |
+| `report_version` | text | Novi vintage of the member sticks (and of the polygon when geom_source = novi_polygon). |
 | `geom` | geometry |  |
 
 ### `curated.intel_pad_member` (materialized view)
 
-Padded Novi Intelligence sticks (latest vintage, PUD + RES with geometry) mapped to a SPATIAL pad group: within each (basin, pad_name), sticks are single-linkage clustered at 1 mile (ST_ClusterDBSCAN, UTM 13N). Novi reuses pad names across unrelated groups in Delaware (2026Q3: 34% of names, mostly Woodford groups), so pad_name alone is not a pad. pad_key = pad_name when the name is one group, else pad_name || ' [k/n]' (k = 1 for the largest group). Quarterly only; DROP-CASCADEs with intel_locations; rebuilt by scripts.apply_intel_pad_geom. sql/46.
+Padded Novi Intelligence sticks (latest vintage, PUD + RES with geometry) mapped to a pad. Rule (sql/67, Michael 2026-10-20): a stick whose midpoint lies within its named Novi DSU polygon of the same vintage (raw_novi_intel.pads, +330 ft geodesic) -> pad_key = pad_name; same-name sticks outside it (Novi reuses Delaware names, mostly WDFD groups) -> 1-mile single-linkage groups keyed pad_name || ' [stray k/n]'; names with no polygon in the vintage -> sql/46 keys (pad_name, or pad_name || ' [k/n]'). Quarterly only; DROP-CASCADEs with intel_locations and with a sql/11 rebuild; rebuilt by scripts.apply_intel_pad_geom. sql/67 (supersedes sql/46).
 
-~256,245 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations` | consumers: erebor Highgrade per-pad aggregation (stick_id -> pad_key)
+~256,245 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `raw_novi_intel.pads` | consumers: erebor Highgrade per-pad aggregation (stick_id -> pad_key)
 
 | column | type | description |
 |---|---|---|
 | `stick_id` | bigint |  |
 | `basin` | text |  |
 | `pad_name` | text |  |
-| `pad_key` | text | Spatial pad identifier, unique per basin: pad_name when Novi's name forms one 1-mile group, else pad_name \|\| ' [k/n]'. Join key to curated.intel_pad_geom (basin, pad_key). |
-| `pad_part` | integer | Group number within pad_name, 1 = largest (ties -> lowest stick_id). |
-| `n_parts` | integer | Number of separate 1-mile groups Novi's pad_name spans; > 1 means Novi reused the name. |
+| `pad_key` | text | Pad identifier, unique per basin: pad_name for sticks inside Novi's polygon; pad_name \|\| ' [stray k/n]' for same-name sticks outside it; sql/46 keys when the name has no polygon. Join key to curated.intel_pad_geom (basin, pad_key). |
+| `pad_part` | integer | Group number within pad_name: 1 = the in-polygon pad when there is one, then stray groups by size (ties -> lowest stick_id). |
+| `n_parts` | integer | Number of separate groups Novi's pad_name spans (in-polygon pad + stray groups); > 1 means Novi reused the name. |
+| `member_rule` | text | in_novi_polygon \| stray_cluster (name has a polygon, stick outside it) \| no_polygon_cluster (no polygon for the name in this vintage — sql/46 fallback). |
 
 ### `curated.intel_pdp_support` (materialized view)
 
@@ -2937,7 +2943,7 @@ SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-
 
 Steven's economics on BOX forecasts (contract table, plan step 7d; D13 display-only, never flows back). One row per (box.forecast_run, box.location, deck, assumption set); only covered locations of a run can be priced; a priced run cannot be deleted. Metric names and provenance mirror his sandbox box_econ.pud_econ (schema_version 1.0.0). downtime_basis states which downtime treatment priced the uptime-free BOX volumes (D63 / D81: his own factor or BOX's published F(k), never both). oil_eur / gas_eur / ll_ft = what he priced, echoed for the tie-out view. A screen like Novi's NPV columns, not authoritative economics inside this stack. See sql/61.
 
-~823,281 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's econ on BOX locations (contract, sql/61): erebor Highgrade econ screen with provenance (step 8); never read by box (D13)
+~679,600 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's econ on BOX locations (contract, sql/61): erebor Highgrade econ screen with provenance (step 8); never read by box (D13)
 
 | column | type | description |
 |---|---|---|
@@ -3043,7 +3049,7 @@ Tie-out: the EUR Steven priced vs the BOX stream EUR of the same run + location 
 
 ### `box_econ.stick_deck_metrics` (table)
 
-~2,672,242 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches)
+~2,672,217 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches)
 
 | column | type | description |
 |---|---|---|
