@@ -55,9 +55,12 @@ SUSPECT_SURFACES: frozenset[str] = frozenset({"WOLFCAMP-C", "WOLFCAMP_D"})
 #   Middle Avalon surface is built.
 NO_SURFACE_TAGS: frozenset[str] = frozenset({"AVA_1"})
 # * Pecos County: zero picks (geologist or RRC) for Wolfcamp A-D and AVALON2 — those surfaces are entirely modelled
-#   there and masked. WOLFCAMP_XY, the Bone Springs and Bell / Cherry / Brushy have picks (XY dist-to-control p50
-#   6.5k ft vs WCA 52k ft) and stay scored, flagged "caution".
-MASKED_SURFACES_BY_COUNTY: dict[str, frozenset[str]] = {
+#   there. WOLFCAMP_XY, the Bone Springs and Bell / Cherry / Brushy have picks (XY dist-to-control p50 6.5k ft vs
+#   WCA 52k ft) and stay scored, flagged "caution".
+#   Revised 2026-10-21 (Michael): a well against a surface with no picks is NOT hidden. It is "no_control": kept
+#   out of agreement and attribution (a modelled surface cannot be wrong or right), but shown on every map and
+#   counted in picks_needed() — tagged wells with no picks nearby are exactly where tops need picking.
+NO_CONTROL_SURFACES_BY_COUNTY: dict[str, frozenset[str]] = {
     "Pecos": frozenset({"WOLFCAMP_A", "WOLFCAMP-B1", "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "AVALON2"}),
 }
 CAUTION_COUNTIES: frozenset[str] = frozenset({"Pecos"})
@@ -65,15 +68,15 @@ SCORED_VERDICTS: tuple[str, ...] = ("agree", "shallow", "deep")
 
 
 def apply_geology_rules(tag: str, county: str | None, verdict: str) -> str:
-    """Override a raw verdict per the geology decisions above. Order: no surface > masked > suspect."""
+    """Override a raw verdict per the geology decisions above. Order: no surface > no control > suspect."""
     if tag in NO_SURFACE_TAGS:
         return "no_surface"
     if tag not in TAG_TOP:
         return verdict
     top, base = TAG_TOP[tag], tag_base(tag)
-    masked = MASKED_SURFACES_BY_COUNTY.get(county or "", frozenset())
-    if top in masked or base in masked:
-        return "masked"
+    no_ctl = NO_CONTROL_SURFACES_BY_COUNTY.get(county or "", frozenset())
+    if top in no_ctl or base in no_ctl:
+        return "no_control"
     if top in SUSPECT_SURFACES or (base in SUSPECT_SURFACES and verdict == "deep"):
         return "surface_suspect"
     return verdict
@@ -369,3 +372,30 @@ def best_split(upper: np.ndarray, lower: np.ndarray) -> dict[str, float]:
     error = float(err.min() / (len(u) + len(lo)))
     trivial = min(len(u), len(lo)) / (len(u) + len(lo))  # error of lumping both tags on one side
     return {"split_ft": t, "error": error, "separation": 1.0 - error / trivial, "n_upper": len(u), "n_lower": len(lo)}
+
+
+# ----------------------------------------------------------------------------
+# Picks needed — tagged wells with no pick nearby (2026-10-21)
+# ----------------------------------------------------------------------------
+
+PICK_CELL_FT = 5_280.0    # one-mile cells: the scale at which "pick a log here" is actionable
+PICK_MIN_WELLS = 3        # a cell is listed when at least this many wells lack control within TRUST radius
+
+
+def picks_needed(w: pd.DataFrame, trust_ft: float, cell_ft: float = PICK_CELL_FT, min_wells: int = PICK_MIN_WELLS) -> pd.DataFrame:
+    """Where a surface needs picks: one-mile cells holding >= ``min_wells`` wells that land against the surface with
+    no pick within ``trust_ft`` (NaN distance = no DIST grid there = no control). ``w``: x, y, dist (ft to the
+    nearest pick of that surface), tag. Columns cx, cy, n_far, n_wells, dist_p50_ft, tags; most wells first."""
+    cols = ["cx", "cy", "n_far", "n_wells", "dist_p50_ft", "tags"]
+    if w.empty:
+        return pd.DataFrame(columns=cols)
+    d = w.assign(far=~(w["dist"].astype(float) <= trust_ft),
+                 cx=(np.floor(w["x"].astype(float) / cell_ft) + 0.5) * cell_ft,
+                 cy=(np.floor(w["y"].astype(float) / cell_ft) + 0.5) * cell_ft)
+    g = d.groupby(["cx", "cy"])
+    out = pd.DataFrame({"n_far": g["far"].sum().astype(int), "n_wells": g.size(),
+                        "dist_p50_ft": g["dist"].median(),
+                        "tags": g["tag"].agg(lambda t: ", ".join(f"{k} {v}" for k, v in t.value_counts().items()))}).reset_index()
+    out = out[out["n_far"] >= min_wells]
+    return out.sort_values(["n_far", "n_wells"], ascending=False, ignore_index=True)[cols]
+

@@ -185,7 +185,7 @@ def agreement_table(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, 
             f"gross >{GROSS_MISS_FT:.0f} ft": int(gross.sum()),
             "dist to control p50 (ft)": float(np.nanmedian(dist_top.reindex(ids))),
             "gross: dist to control p50 (ft)": float(np.nanmedian(dist_top.reindex(ids)[gross])) if gross.any() else np.nan,
-            "masked": int(a["verdict"].eq("masked").sum()),
+            "no control": int(a["verdict"].eq("no_control").sum()),
             "surface suspect": int(a["verdict"].eq("surface_suspect").sum()),
             "no surface": int(a["verdict"].eq("no_surface").sum()),
             "unmeasured": int(a["verdict"].eq("unmeasured").sum()),
@@ -283,7 +283,8 @@ def render(ctx: dict[str, Any]) -> str:
          "(to be relabelled / re-picked) — WCC and WCD are <i>surface_suspect</i>, and a WCB_2 'deep' call (base = C top) "
          "is too. AVA_1 = Middle Avalon (operator tops ~110 ft above AVALON2) has no surface — <i>no_surface</i> until one "
          "is built; AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon. Pecos County: Wolfcamp A–D and AVALON2 have "
-         "zero picks — <i>masked</i>; XY, Bone Springs and Bell/Cherry/Brushy stay scored there with caution. "
+         "zero picks — <i>no_control</i> (kept out of agreement, shown on the step-2 maps and counted in its picks-needed "
+         "table: revised 2026-10-21); XY, Bone Springs and Bell/Cherry/Brushy stay scored there with caution. "
          "Agreement shares are over agree / shallow / deep only; the raw geometric verdict is kept as verdict_raw "
          "in the CSV.</div>"),
         "<h2>1 · Datum check</h2>",
