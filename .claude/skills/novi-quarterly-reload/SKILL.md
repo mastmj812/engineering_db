@@ -90,6 +90,7 @@ python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
 python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
 python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all()
+                                                      #   + re-creates curated.box_scout_locations (sql/69 view, CASCADE victim of sql/22)
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```
 

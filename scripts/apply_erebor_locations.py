@@ -6,7 +6,9 @@ curated.refresh_all() so the nightly run keeps it current. See
 docs/erebor_locations_materialization.md for rationale + measured before/after.
 
   1. recreate curated.erebor_locations as a matview WITH DATA + indexes (sql/22).
-     The type-aware drop in sql/22 handles the one-time VIEW -> matview flip.
+     The type-aware drop in sql/22 handles the one-time VIEW -> matview flip. Its
+     CASCADE drops the land-facing view curated.box_scout_locations, so sql/69 is
+     re-run right after.
   2. CREATE OR REPLACE curated.refresh_all() extracted from the canonical sql/06
      (now ending with `REFRESH ... CONCURRENTLY curated.erebor_locations`).
   3. re-apply sql/31 data-dictionary comments: the quarterly CASCADE drops the
@@ -30,6 +32,7 @@ import time
 from pathlib import Path
 
 from etl.db import get_connection
+from scripts.apply_box_scout_locations import recreate as recreate_box_scout
 
 SQL = Path(__file__).resolve().parent.parent / "sql"
 
@@ -59,6 +62,8 @@ def main() -> None:
             t = time.monotonic()
             cur.execute(erebor)
             print(f"    built in {time.monotonic() - t:.0f}s", flush=True)
+            recreate_box_scout(cur)  # sql/22's CASCADE drops the dependent sql/69 view
+            print("    re-created curated.box_scout_locations (sql/69)", flush=True)
 
             print("[2/4] update curated.refresh_all() (sql/06)", flush=True)
             cur.execute(refresh_block)

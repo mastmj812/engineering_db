@@ -22,6 +22,7 @@ import time
 from pathlib import Path
 
 from etl.db import get_connection
+from scripts.apply_box_scout_locations import recreate as recreate_box_scout
 
 SQL = Path(__file__).resolve().parent.parent / "sql"
 
@@ -52,6 +53,7 @@ def main() -> None:
             cur.execute(we_block)
             print("[2/3] recreate curated.erebor_locations (sql/22)", flush=True)
             cur.execute(erebor)
+            recreate_box_scout(cur)  # sql/22's CASCADE drops the dependent sql/69 view
             print("[3/3] re-run sql/26 geography indexes (idempotent)", flush=True)
             cur.execute(geog)
     finally:
