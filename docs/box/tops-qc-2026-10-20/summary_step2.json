@@ -1,6 +1,6 @@
 {
-  "built": "2026-10-20 22:28 UTC",
-  "git": "1385c50",
+  "built": "2026-10-21 19:42 UTC",
+  "git": "0fedcf3",
   "grid_dir": "C:\\Users\\MichaelMast\\Blue Ox Resources\\Engineering - General\\Grids\\Delaware\\Structure\\Grids_10-19-26",
   "edge_ft": 25.0,
   "gross_ft": 300.0,
@@ -27,7 +27,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 6,
       "structure offset p50 (ft)": -96.25228693677855,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 48
@@ -47,7 +47,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 0,
       "structure offset p50 (ft)": NaN,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 658,
       "surface_suspect": 0,
       "no_evidence": 0
@@ -67,7 +67,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 9,
       "structure offset p50 (ft)": 74.04708300746643,
-      "masked": 1,
+      "no_control": 1,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 90
@@ -76,41 +76,41 @@
       "tag": "BS1_S",
       "interval": "1BSPGS \u2192 2BSPGC",
       "wells": 1176,
-      "scored": 941,
-      "agree": 0.7906482465462275,
-      "edge": 0.04250797024442083,
-      "shallow": 0.03400637619553666,
-      "deep": 0.052072263549415514,
-      "gross": 0.08076514346439957,
+      "scored": 942,
+      "agree": 0.7908704883227177,
+      "edge": 0.04246284501061571,
+      "shallow": 0.03397027600849257,
+      "deep": 0.05201698513800425,
+      "gross": 0.08067940552016985,
       "structure_suspect": 8,
       "tag_suspect": 25,
       "unresolved_mixed": 0,
       "unresolved_sparse": 48,
       "structure offset p50 (ft)": 57.6902997027305,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
-      "no_evidence": 232
+      "no_evidence": 231
     },
     {
       "tag": "BS2_C",
       "interval": "2BSPGC \u2192 2BSPGS",
       "wells": 735,
-      "scored": 601,
-      "agree": 0.7637271214642263,
-      "edge": 0.064891846921797,
-      "shallow": 0.0632279534109817,
-      "deep": 0.10316139767054909,
-      "gross": 0.004991680532445923,
+      "scored": 603,
+      "agree": 0.7645107794361525,
+      "edge": 0.06467661691542288,
+      "shallow": 0.06301824212271974,
+      "deep": 0.10281923714759536,
+      "gross": 0.004975124378109453,
       "structure_suspect": 15,
       "tag_suspect": 30,
       "unresolved_mixed": 0,
       "unresolved_sparse": 55,
       "structure offset p50 (ft)": -30.238554839227618,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
-      "no_evidence": 127
+      "no_evidence": 125
     },
     {
       "tag": "BS2_S",
@@ -127,7 +127,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 29,
       "structure offset p50 (ft)": -14.14914619621095,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 735
@@ -136,41 +136,41 @@
       "tag": "BS3_C",
       "interval": "3BSPGC \u2192 3BSPGS",
       "wells": 1890,
-      "scored": 1566,
-      "agree": 0.8192848020434227,
-      "edge": 0.02937420178799489,
-      "shallow": 0.11558109833971902,
-      "deep": 0.01277139208173691,
-      "gross": 0.022988505747126436,
+      "scored": 1567,
+      "agree": 0.8194001276324187,
+      "edge": 0.029355456285896617,
+      "shallow": 0.11550733886407147,
+      "deep": 0.012763241863433313,
+      "gross": 0.02297383535417996,
       "structure_suspect": 70,
       "tag_suspect": 56,
       "unresolved_mixed": 1,
       "unresolved_sparse": 74,
       "structure offset p50 (ft)": -72.46744246345952,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
-      "no_evidence": 280
+      "no_evidence": 279
     },
     {
       "tag": "BS3_S",
       "interval": "3BSPGS \u2192 WOLFCAMP_XY",
       "wells": 3134,
-      "scored": 2638,
-      "agree": 0.6497346474601972,
-      "edge": 0.07884761182714177,
-      "shallow": 0.0420773313115997,
-      "deep": 0.17892342683851403,
-      "gross": 0.05041698256254738,
+      "scored": 2643,
+      "agree": 0.6496405599697314,
+      "edge": 0.07907680665909951,
+      "shallow": 0.04199772985244041,
+      "deep": 0.17896329928111995,
+      "gross": 0.05032160423760878,
       "structure_suspect": 267,
-      "tag_suspect": 213,
+      "tag_suspect": 214,
       "unresolved_mixed": 6,
       "unresolved_sparse": 97,
       "structure offset p50 (ft)": 105.01096616355153,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
-      "no_evidence": 466
+      "no_evidence": 461
     },
     {
       "tag": "WCXY",
@@ -187,7 +187,7 @@
       "unresolved_mixed": 1,
       "unresolved_sparse": 50,
       "structure offset p50 (ft)": 52.5312788013166,
-      "masked": 0,
+      "no_control": 0,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 140
@@ -207,7 +207,7 @@
       "unresolved_mixed": 5,
       "unresolved_sparse": 117,
       "structure offset p50 (ft)": -49.98604497263841,
-      "masked": 210,
+      "no_control": 210,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 492
@@ -216,21 +216,21 @@
       "tag": "WCA_2",
       "interval": "WOLFCAMP_A \u2192 WOLFCAMP-B1",
       "wells": 4570,
-      "scored": 4099,
-      "agree": 0.7958038545986826,
-      "edge": 0.07562820200048792,
-      "shallow": 0.04196145401317394,
-      "deep": 0.08075140278116613,
-      "gross": 0.005855086606489388,
+      "scored": 4102,
+      "agree": 0.7959531935641151,
+      "edge": 0.07557289127254997,
+      "shallow": 0.04193076548025353,
+      "deep": 0.08069234519746465,
+      "gross": 0.005850804485616773,
       "structure_suspect": 142,
       "tag_suspect": 267,
       "unresolved_mixed": 3,
       "unresolved_sparse": 91,
       "structure offset p50 (ft)": 29.78169017685832,
-      "masked": 164,
+      "no_control": 164,
       "no_surface": 0,
       "surface_suspect": 0,
-      "no_evidence": 301
+      "no_evidence": 298
     },
     {
       "tag": "WCB_1",
@@ -247,7 +247,7 @@
       "unresolved_mixed": 2,
       "unresolved_sparse": 105,
       "structure offset p50 (ft)": -57.911129232828216,
-      "masked": 35,
+      "no_control": 35,
       "no_surface": 0,
       "surface_suspect": 0,
       "no_evidence": 104
@@ -267,7 +267,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 111,
       "structure offset p50 (ft)": -118.11317072570364,
-      "masked": 30,
+      "no_control": 30,
       "no_surface": 0,
       "surface_suspect": 8,
       "no_evidence": 103
@@ -287,7 +287,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 0,
       "structure offset p50 (ft)": NaN,
-      "masked": 6,
+      "no_control": 6,
       "no_surface": 0,
       "surface_suspect": 1127,
       "no_evidence": 0
@@ -307,7 +307,7 @@
       "unresolved_mixed": 0,
       "unresolved_sparse": 0,
       "structure offset p50 (ft)": NaN,
-      "masked": 24,
+      "no_control": 24,
       "no_surface": 0,
       "surface_suspect": 146,
       "no_evidence": 0
@@ -336,23 +336,23 @@
     },
     {
       "tag": "BS1_S",
-      "scored": 941,
-      "agree+edge @10 ft": 0.8140276301806588,
-      "disagree @10 ft": 0.10520722635494155,
-      "agree+edge @25 ft": 0.8331562167906482,
-      "disagree @25 ft": 0.08607863974495218,
-      "agree+edge @50 ft": 0.8586609989373007,
-      "disagree @50 ft": 0.06057385759829968
+      "scored": 942,
+      "agree+edge @10 ft": 0.8142250530785563,
+      "disagree @10 ft": 0.10509554140127389,
+      "agree+edge @25 ft": 0.8333333333333334,
+      "disagree @25 ft": 0.08598726114649681,
+      "agree+edge @50 ft": 0.8588110403397028,
+      "disagree @50 ft": 0.06050955414012739
     },
     {
       "tag": "BS2_C",
-      "scored": 601,
-      "agree+edge @10 ft": 0.7870216306156406,
-      "disagree @10 ft": 0.2079866888519135,
-      "agree+edge @25 ft": 0.8286189683860233,
-      "disagree @25 ft": 0.16638935108153077,
-      "agree+edge @50 ft": 0.8752079866888519,
-      "disagree @50 ft": 0.11980033277870217
+      "scored": 603,
+      "agree+edge @10 ft": 0.7877280265339967,
+      "disagree @10 ft": 0.20729684908789386,
+      "agree+edge @25 ft": 0.8291873963515755,
+      "disagree @25 ft": 0.16583747927031509,
+      "agree+edge @50 ft": 0.8756218905472637,
+      "disagree @50 ft": 0.11940298507462686
     },
     {
       "tag": "BS2_S",
@@ -366,23 +366,23 @@
     },
     {
       "tag": "BS3_C",
-      "scored": 1566,
-      "agree+edge @10 ft": 0.8301404853128991,
-      "disagree @10 ft": 0.14687100893997446,
-      "agree+edge @25 ft": 0.8486590038314177,
-      "disagree @25 ft": 0.12835249042145594,
-      "agree+edge @50 ft": 0.8793103448275862,
-      "disagree @50 ft": 0.09770114942528736
+      "scored": 1567,
+      "agree+edge @10 ft": 0.8302488832163369,
+      "disagree @10 ft": 0.1467772814294831,
+      "agree+edge @25 ft": 0.8487555839183153,
+      "disagree @25 ft": 0.12827058072750477,
+      "agree+edge @50 ft": 0.8793873643905552,
+      "disagree @50 ft": 0.09763880025526483
     },
     {
       "tag": "BS3_S",
-      "scored": 2638,
-      "agree+edge @10 ft": 0.6929492039423806,
-      "disagree @10 ft": 0.256633813495072,
-      "agree+edge @25 ft": 0.7285822592873389,
-      "disagree @25 ft": 0.22100075815011372,
-      "agree+edge @50 ft": 0.7740712661106899,
-      "disagree @50 ft": 0.1755117513267627
+      "scored": 2643,
+      "agree+edge @10 ft": 0.6931517215285661,
+      "disagree @10 ft": 0.2565266742338252,
+      "agree+edge @25 ft": 0.7287173666288309,
+      "disagree @25 ft": 0.22096102913356036,
+      "agree+edge @50 ft": 0.7741203178206584,
+      "disagree @50 ft": 0.1755580779417329
     },
     {
       "tag": "WCXY",
@@ -406,13 +406,13 @@
     },
     {
       "tag": "WCA_2",
-      "scored": 4099,
-      "agree+edge @10 ft": 0.8297145645279337,
-      "disagree @10 ft": 0.16443034886557698,
-      "agree+edge @25 ft": 0.8714320565991706,
-      "disagree @25 ft": 0.12271285679434009,
-      "agree+edge @50 ft": 0.9170529397414003,
-      "disagree @50 ft": 0.07709197365211028
+      "scored": 4102,
+      "agree+edge @10 ft": 0.8298391028766455,
+      "disagree @10 ft": 0.1643100926377377,
+      "agree+edge @25 ft": 0.871526084836665,
+      "disagree @25 ft": 0.12262311067771818,
+      "agree+edge @50 ft": 0.9171136031204291,
+      "disagree @50 ft": 0.07703559239395417
     },
     {
       "tag": "WCB_1",
@@ -462,8 +462,8 @@
     },
     {
       "surface": "1BSPGS",
-      "residual wells": 1314,
-      "cells with \u22653 wells": 4546,
+      "residual wells": 1315,
+      "cells with \u22653 wells": 4551,
       "flagged cells": 96,
       "flagged sq mi": 24.0,
       "wants up (cells)": 51,
@@ -474,8 +474,8 @@
     },
     {
       "surface": "2BSPGC",
-      "residual wells": 1463,
-      "cells with \u22653 wells": 5104,
+      "residual wells": 1466,
+      "cells with \u22653 wells": 5110,
       "flagged cells": 180,
       "flagged sq mi": 45.0,
       "wants up (cells)": 97,
@@ -486,8 +486,8 @@
     },
     {
       "surface": "2BSPGS",
-      "residual wells": 4149,
-      "cells with \u22653 wells": 10335,
+      "residual wells": 4151,
+      "cells with \u22653 wells": 10337,
       "flagged cells": 112,
       "flagged sq mi": 28.0,
       "wants up (cells)": 58,
@@ -498,8 +498,8 @@
     },
     {
       "surface": "3BSPGC",
-      "residual wells": 5081,
-      "cells with \u22653 wells": 11797,
+      "residual wells": 5082,
+      "cells with \u22653 wells": 11799,
       "flagged cells": 197,
       "flagged sq mi": 49.25,
       "wants up (cells)": 152,
@@ -510,8 +510,8 @@
     },
     {
       "surface": "3BSPGS",
-      "residual wells": 4035,
-      "cells with \u22653 wells": 13279,
+      "residual wells": 4041,
+      "cells with \u22653 wells": 13290,
       "flagged cells": 189,
       "flagged sq mi": 47.25,
       "wants up (cells)": 172,
@@ -522,7 +522,7 @@
     },
     {
       "surface": "WOLFCAMP_XY",
-      "residual wells": 4318,
+      "residual wells": 4323,
       "cells with \u22653 wells": 13136,
       "flagged cells": 1090,
       "flagged sq mi": 272.5,
@@ -534,7 +534,7 @@
     },
     {
       "surface": "WOLFCAMP_A",
-      "residual wells": 10856,
+      "residual wells": 10859,
       "cells with \u22653 wells": 19387,
       "flagged cells": 1966,
       "flagged sq mi": 491.5,
@@ -546,7 +546,7 @@
     },
     {
       "surface": "WOLFCAMP-B1",
-      "residual wells": 10796,
+      "residual wells": 10799,
       "cells with \u22653 wells": 19637,
       "flagged cells": 442,
       "flagged sq mi": 110.5,
@@ -579,6 +579,120 @@
       "|offset| p50 (ft)": NaN,
       "|offset| p90 (ft)": NaN,
       "conflict cells (\u22652 each way)": 0
+    }
+  ],
+  "picks_needed": [
+    {
+      "surface": "AVALON1",
+      "wells landing against it": 1141,
+      "wells > 1 mi from a pick": 103,
+      "1-mi cells needing picks": 18,
+      "wells in those cells": 80,
+      "suspect surface": ""
+    },
+    {
+      "surface": "AVALON2",
+      "wells landing against it": 1689,
+      "wells > 1 mi from a pick": 175,
+      "1-mi cells needing picks": 23,
+      "wells in those cells": 97,
+      "suspect surface": ""
+    },
+    {
+      "surface": "1BSPGS",
+      "wells landing against it": 1721,
+      "wells > 1 mi from a pick": 567,
+      "1-mi cells needing picks": 62,
+      "wells in those cells": 224,
+      "suspect surface": ""
+    },
+    {
+      "surface": "2BSPGC",
+      "wells landing against it": 1901,
+      "wells > 1 mi from a pick": 787,
+      "1-mi cells needing picks": 93,
+      "wells in those cells": 350,
+      "suspect surface": ""
+    },
+    {
+      "surface": "2BSPGS",
+      "wells landing against it": 5050,
+      "wells > 1 mi from a pick": 2426,
+      "1-mi cells needing picks": 382,
+      "wells in those cells": 1518,
+      "suspect surface": ""
+    },
+    {
+      "surface": "3BSPGC",
+      "wells landing against it": 6168,
+      "wells > 1 mi from a pick": 3087,
+      "1-mi cells needing picks": 484,
+      "wells in those cells": 2102,
+      "suspect surface": ""
+    },
+    {
+      "surface": "3BSPGS",
+      "wells landing against it": 4950,
+      "wells > 1 mi from a pick": 2097,
+      "1-mi cells needing picks": 283,
+      "wells in those cells": 1186,
+      "suspect surface": ""
+    },
+    {
+      "surface": "WOLFCAMP_XY",
+      "wells landing against it": 5066,
+      "wells > 1 mi from a pick": 440,
+      "1-mi cells needing picks": 49,
+      "wells in those cells": 201,
+      "suspect surface": ""
+    },
+    {
+      "surface": "WOLFCAMP_A",
+      "wells landing against it": 12215,
+      "wells > 1 mi from a pick": 4501,
+      "1-mi cells needing picks": 659,
+      "wells in those cells": 3051,
+      "suspect surface": ""
+    },
+    {
+      "surface": "WOLFCAMP-B1",
+      "wells landing against it": 12173,
+      "wells > 1 mi from a pick": 5690,
+      "1-mi cells needing picks": 850,
+      "wells in those cells": 4179,
+      "suspect surface": ""
+    },
+    {
+      "surface": "WOLFCAMP-B2",
+      "wells landing against it": 3113,
+      "wells > 1 mi from a pick": 1815,
+      "1-mi cells needing picks": 221,
+      "wells in those cells": 883,
+      "suspect surface": ""
+    },
+    {
+      "surface": "WOLFCAMP-C",
+      "wells landing against it": 2326,
+      "wells > 1 mi from a pick": 1355,
+      "1-mi cells needing picks": 146,
+      "wells in those cells": 576,
+      "suspect surface": "yes"
+    },
+    {
+      "surface": "WOLFCAMP_D",
+      "wells landing against it": 1303,
+      "wells > 1 mi from a pick": 827,
+      "1-mi cells needing picks": 84,
+      "wells in those cells": 364,
+      "suspect surface": "yes"
+    },
+    {
+      "surface": "STRAWN",
+      "wells landing against it": 170,
+      "wells > 1 mi from a pick": 152,
+      "1-mi cells needing picks": 8,
+      "wells in those cells": 33,
+      "suspect surface": ""
     }
   ]
 }

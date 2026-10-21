@@ -249,3 +249,31 @@ building the Middle Avalon surface at roughly AVALON2 − 90 to 110 ft.**
 
 **Next:** Michael + geologist decide rules A–D. Then the relanding / BOX-validated tag gets designed as a separate
 plan, using the decided rules and the revised C / D / B2 / Middle Avalon surfaces.
+
+---
+
+# Revision 2026-10-21: no-control wells are shown, and a picks-needed list is added
+
+Michael: hiding wells against a surface with zero picks pointed the geologist away from exactly where picks are
+needed. Those wells are now **no_control**: still kept out of agreement and attribution (a modelled surface can be
+neither right nor wrong), but shown on every map in magenta. Step 3 shows Pecos as its own panel, labelled NO PICKS.
+Agreement numbers are unchanged.
+
+**New: picks needed** (`step2.html` §4, `picks_needed.csv`, `ggx/tops_qc_picks_needed.shp`, magenta dashed squares on
+each bench map). One-mile cells holding at least 3 wells that land against a surface with no pick within 1 mi. Every
+positioned well counts, no_control and no_evidence included.
+
+| Surface | Wells landing against it | > 1 mi from a pick | 1-mi cells needing picks |
+|---|---|---|---|
+| WOLFCAMP-B1 | 12,173 | 5,690 (47%) | 850 |
+| WOLFCAMP_A | 12,215 | 4,501 (37%) | 659 |
+| 3BSPGC | 6,168 | 3,087 (50%) | 484 |
+| 2BSPGS | 5,050 | 2,426 (48%) | 382 |
+| 3BSPGS | 4,950 | 2,097 (42%) | 283 |
+| WOLFCAMP-B2 | 3,113 | 1,815 (58%) | 221 |
+| WOLFCAMP-C / D (suspect) | 2,326 / 1,303 | 1,355 / 827 | 146 / 84 |
+| AVALON1 / AVALON2 / 1BSPGS / 2BSPGC / XY | — | 103–787 | 18–93 |
+
+**The demand is in the core, not just Pecos.** Counting well × surface, Reeves has 3,782, Eddy 3,511, Lea 3,120,
+Loving 1,760, Culberson 1,353, Ward 700, Pecos 481 and Winkler 137. The busiest single cells hold 13–16 wells with the
+nearest pick 1.2–2.9 mi away (WOLFCAMP-B1 in Reeves and Lea; 3BSPGC in Lea).
