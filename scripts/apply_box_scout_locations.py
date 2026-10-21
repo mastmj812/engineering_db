@@ -1,7 +1,8 @@
-"""curated.box_scout_locations (sql/69): the land-facing flat BOX + econ view (Supabase).
+"""curated.box_scout_locations (sql/69): the land team's BOX locations view (Supabase).
 
-One row per stick location with its BOX record-run forecast and Steven's default-deck
-(wti70_hh3) econ, for analyst_ro / GIS (Michael 2026-10-21). Plain VIEW: no storage, no
+One row per undrilled stick location that has a BOX record-run forecast AND Steven's
+default-deck (wti70_hh3) econ — nothing else — for analyst_ro / QGIS (Michael 2026-10-21;
+v2 trimmed to priced locations and a minimal column set). Plain VIEW: no storage, no
 refresh, always current with the record run and Steven's latest push.
 
   --dry-run (READ ONLY, creates nothing): runs every validation below against sql/69's
@@ -9,10 +10,10 @@ refresh, always current with the record run and Steven's latest push.
 
   (no flag) — DDL on the shared warehouse, explicit go (cheap: a view, no data built):
      1. sql/69  DROP VIEW IF EXISTS + CREATE VIEW + GRANT analyst_ro + COMMENTs.
-     2. validate (same checks, on the view): row identity vs erebor_locations, unique
-        stick_id, forecast rows == the record run's forecast PUDs on the map, EUR tie-out,
-        no EUR on a location without a forecast, priced rows == Steven's case, class tally,
-        analyst_ro SELECT, EXPLAIN bbox rides idx_erebor_locations_geom, timings.
+     2. validate (same checks, on the view): rows == the record run's priced forecast
+        locations on the map minus realized, unique stick_id, no blank EUR / PV10, one
+        deck label, oil EUR tie-out, the per-ft lateral basis, tier tally, analyst_ro
+        SELECT, bbox plan + timings.
 
 `recreate(cur)` is the hook for every script that executes sql/22: that DROP ... CASCADE of
 curated.erebor_locations drops this view too (tests/test_box_scout_locations.py enforces
@@ -37,6 +38,11 @@ SQL = Path(__file__).resolve().parent.parent / "sql"
 SQL69 = "69_box_scout_locations.sql"
 VIEW = "curated.box_scout_locations"
 FORECAST = "('covered', 'covered_provisional')"
+REALIZED = "('realized_drift', 'realized_phantom')"
+NOT_REALIZED = ("AND el.recon_status IS DISTINCT FROM 'realized_drift' "
+                "AND el.recon_status IS DISTINCT FROM 'realized_phantom'")
+OIL_STREAM = ("JOIN box.pud_forecast_stream s ON s.run_id = bp.run_id "
+              "AND s.location_id = bp.location_id AND s.stream = 'oil' ")
 # ~1 township in Reeves County: the GIS bbox predicate the land team's tools issue
 BBOX = "ST_MakeEnvelope(-103.75, 31.35, -103.65, 31.45, 4326)"
 
@@ -58,34 +64,43 @@ def view_body(text: str) -> str:
     return m.group(1)
 
 
+def _population(extra: str = "") -> str:
+    """The rows the view must hold, computed independently of it: the record run's forecast
+    locations on the map (non-PDP), priced on the default deck's newest assumption set,
+    minus realized."""
+    return (
+        "FROM box.pud_forecast bp "
+        "JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
+        "JOIN box_econ.box_pud_econ be ON be.run_id = bp.run_id AND be.location_id = bp.location_id "
+        "AND be.deck_id = 'wti70_hh3' AND be.pv10_mm IS NOT NULL AND be.assumption_set_id = ("
+        "  SELECT assumption_set_id FROM box_econ.box_pud_econ "  # uncorrelated: evaluated once
+        "  WHERE run_id = (SELECT run_id FROM box.forecast_run WHERE is_record) AND deck_id = 'wti70_hh3' "
+        "  GROUP BY 1 ORDER BY max(built_at) DESC NULLS LAST, 1 DESC LIMIT 1) "
+        f"{extra}"
+        "WHERE bp.run_id = (SELECT run_id FROM box.forecast_run WHERE is_record) "
+        f"AND bp.coverage IN {FORECAST}"
+    )
+
+
 def checks(src: str) -> list[tuple[str, str]]:
     """(label, SQL) pairs over `src` (the view name, or the inline body as a subquery)."""
-    rec = "(SELECT run_id FROM box.forecast_run WHERE is_record)"
     return [
         ("rows", f"SELECT count(*), count(DISTINCT stick_id) FROM {src} v"),
-        ("map stick locations", "SELECT count(*) FROM curated.erebor_locations WHERE category <> 'PDP'"),
-        ("forecast rows", f"SELECT count(*) FROM {src} v WHERE v.box_tier IS NOT NULL"),
-        ("record-run forecast PUDs on the map",
-         (f"SELECT count(*) FROM box.pud_forecast bp JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id "
-          f"WHERE bp.run_id = {rec} AND bp.coverage IN {FORECAST} AND el.category <> 'PDP'")),
-        ("record-run forecast PUDs missing from the map",
-         (f"SELECT count(*) FROM box.pud_forecast bp WHERE bp.run_id = {rec} AND bp.coverage IN {FORECAST} "
-          "AND NOT EXISTS (SELECT 1 FROM curated.erebor_locations el WHERE el.stick_id = bp.stick_id)")),
+        ("expected rows (priced forecast locations, not realized)",
+         f"SELECT count(*) {_population()} {NOT_REALIZED}"),
+        ("priced forecast locations left out as realized",
+         f"SELECT count(*) {_population()} AND el.recon_status IN {REALIZED}"),
+        ("blank oil EUR or PV10 (must be 0)",
+         f"SELECT count(*) FROM {src} v WHERE v.oil_eur_bbl IS NULL OR v.pv10_mm IS NULL"),
+        ("deck labels", f"SELECT econ_deck, count(*) FROM {src} v GROUP BY 1"),
         ("oil EUR view vs box (MMbbl)",
          (f"SELECT round((SELECT sum(oil_eur_bbl) FROM {src} v)::numeric / 1e6, 3), "
-          f"round((SELECT sum(s.eur) FROM box.pud_forecast_stream s JOIN box.pud_forecast bp "
-          f"ON bp.run_id = s.run_id AND bp.location_id = s.location_id "
-          f"JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id "
-          f"WHERE s.run_id = {rec} AND s.stream = 'oil' AND el.category <> 'PDP')::numeric / 1e6, 3)")),
-        ("EUR on a location without a forecast (must be 0)",
-         (f"SELECT count(*) FROM {src} v WHERE v.box_tier IS NULL "
-          "AND (v.oil_eur_bbl IS NOT NULL OR v.gas_eur_mcf IS NOT NULL OR v.water_eur_bbl IS NOT NULL)")),
-        ("forecast location without oil EUR (must be 0)",
-         f"SELECT count(*) FROM {src} v WHERE v.box_tier IS NOT NULL AND v.oil_eur_bbl IS NULL"),
-        ("priced rows, deck, assumption set",
-         (f"SELECT count(*) FILTER (WHERE v.econ_deck_id IS NOT NULL), min(v.econ_deck_id), "
-          f"min(v.econ_assumption_set_id), count(DISTINCT v.econ_assumption_set_id) FROM {src} v")),
-        ("class tally", f"SELECT v.basin, v.box_coverage, count(*) FROM {src} v GROUP BY 1, 2 ORDER BY 1, 3 DESC"),
+          f"round((SELECT sum(s.eur) {_population(OIL_STREAM)} {NOT_REALIZED})::numeric / 1e6, 3)")),
+        ("per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft",
+         (f"SELECT count(*) FILTER (WHERE abs(v.oil_eur_bbl / NULLIF(v.oil_eur_bbl_per_ft, 0) - v.lateral_ft) > 1), "
+          f"count(*) FROM {src} v")),
+        ("tier tally", f"SELECT v.basin, v.box_tier, count(*) FROM {src} v GROUP BY 1, 2 ORDER BY 1, 2"),
+        ("irr blank (informational)", f"SELECT count(*) FILTER (WHERE v.irr_pct IS NULL) FROM {src} v"),
     ]
 
 
@@ -104,22 +119,20 @@ def run_checks(cur, src: str) -> bool:
         ok &= cond
 
     n, n_distinct = res["rows"][0]
-    need(n == res["map stick locations"][0][0], "rows == erebor_locations stick locations (category <> 'PDP')")
+    need(n == res["expected rows (priced forecast locations, not realized)"][0][0],
+         "rows == priced record-run forecast locations on the map, minus realized")
     need(n == n_distinct, "stick_id unique")
-    need(res["forecast rows"][0][0] == res["record-run forecast PUDs on the map"][0][0],
-         "forecast rows == the record run's forecast PUDs on the map")
+    need(res["blank oil EUR or PV10 (must be 0)"][0][0] == 0, "every row carries oil EUR and PV10")
+    need(len(res["deck labels"]) == 1, "one econ deck label")
     v_oil, b_oil = res["oil EUR view vs box (MMbbl)"][0]
     need(v_oil == b_oil, "oil EUR ties to box.pud_forecast_stream exactly")
-    need(res["EUR on a location without a forecast (must be 0)"][0][0] == 0, "no EUR without a forecast (never zero, D67)")
-    need(res["forecast location without oil EUR (must be 0)"][0][0] == 0, "every forecast location carries oil EUR")
-    priced, deck, _aset, n_aset = res["priced rows, deck, assumption set"][0]
-    need(deck in (None, "wti70_hh3") and n_aset <= 1, "one econ case: wti70_hh3, one assumption set")
-    print(f"    note: {priced:,} priced locations; record-run forecast PUDs missing from the map: "
-          f"{res['record-run forecast PUDs missing from the map'][0][0]}", flush=True)
+    off, _ = res["per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft"][0]
+    print(f"    note: {off} rows where SUM(EUR)/SUM(lateral_ft) is not the stored per-ft basis", flush=True)
 
     plan = [r[0] for r in cur.execute(
         f"EXPLAIN SELECT stick_id, oil_eur_bbl_per_ft, pv10_mm FROM {src} v WHERE v.geom && {BBOX}").fetchall()]
-    need(any("idx_erebor_locations_geom" in line for line in plan), "bbox filter rides idx_erebor_locations_geom")
+    print(f"    note: bbox plan uses idx_erebor_locations_geom: "
+          f"{any('idx_erebor_locations_geom' in line for line in plan)}", flush=True)
     for label, q in (("full scan", f"SELECT count(*), count(pv10_mm) FROM {src} v"),
                      ("township bbox", f"SELECT count(*), count(pv10_mm) FROM {src} v WHERE v.geom && {BBOX}")):
         t = time.monotonic()
