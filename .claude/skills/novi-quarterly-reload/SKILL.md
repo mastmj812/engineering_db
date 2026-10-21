@@ -85,7 +85,7 @@ wells_enriched + codev_context + dev_scenario in order (keep that if it's ever r
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast
 python -m scripts.apply_intel_pad_geom                 # sql/67: pads = Novi DSU polygons of this vintage (+stray hulls); erebor Highgrade
 python -m scripts.apply_intel_formation_blueox         # sql/19
-python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/47 -> sql/21
+python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/47 -> sql/50 -> sql/68 (every Novi stick, D117; sql/21 retired)
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
 python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
@@ -138,9 +138,9 @@ Otherwise the 3Q25 land grid + outline stay.
 
 - `python -m etl.refresh --force` green (includes `erebor_locations`).
 - Row-count sanity: `intel_locations` ~252k (grows with vintage),
-  `reconciled_inventory` = the mapped-PUD universe exactly (~131k as of
-  2026-07; one row per PUD with non-null formation_blueox — verify the
-  identity, not the constant), `erebor_locations` ~262k, `intel_pdp_support`
+  `reconciled_inventory` = the mapped Novi STICK universe exactly — PUD + RES
+  since D117 / sql/68 (2026-10-21), one row per stick with geometry and a
+  non-null formation_blueox; verify the identity, not a constant, `erebor_locations` ~262k, `intel_pdp_support`
   ~204k (= PUD+RES universe).
 - EXPLAIN the erebor tile query (pattern in `apply_erebor_locations.py`) —
   must show the GiST/geography index, not a seq scan.

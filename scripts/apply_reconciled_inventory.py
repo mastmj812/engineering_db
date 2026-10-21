@@ -1,7 +1,8 @@
 """Build curated.producing_reference + curated.reconciled_inventory (Supabase).
 
   1. producing_reference (sql/20) — producing wells, pre-buffered + GiST-indexed.
-  2. reconciled_inventory (sql/21) — overlap-based PUD reconciliation (heavy).
+  2. reconciled_inventory (sql/68; supersedes sql/21) — overlap-based reconciliation of
+     EVERY Novi stick, PUD and RES (D117) (heavy).
   3. Validate: status distribution + realized count vs the new-well anchor.
 
 Run from repo root in the venv:
@@ -46,7 +47,7 @@ def main() -> None:
 
     # sql/20's DROP ... CASCADE takes curated.formation_blueox_tvd (sql/23,
     # depends on producing_reference) and curated.wells_enriched (sql/06 view,
-    # joins formation_blueox_tvd) down with it — and sql/21 below NEEDS
+    # joins formation_blueox_tvd) down with it — and sql/68 below NEEDS
     # formation_blueox_tvd. Rebuild both before the reconciliation pass.
     print("[1b/3] rebuild formation_blueox_tvd (sql/23; cascade victim of sql/20)", flush=True)
     _exec("formation_blueox_tvd", "23_formation_blueox_tvd.sql")
@@ -82,20 +83,21 @@ def main() -> None:
     _exec("dev_scenario", "50_dev_scenario.sql")
 
     print("[2/3] build curated.reconciled_inventory (overlap matching — heavy)", flush=True)
-    _exec("reconciled_inventory", "21_reconciled_inventory.sql")
+    _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")
 
     print("[3/3] validation", flush=True)
     conn = get_connection()
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            print("  status x basin:", flush=True)
-            for b, s, n in cur.execute(
-                "SELECT basin_blueox, status, COUNT(*) "
-                "FROM curated.reconciled_inventory GROUP BY 1,2 ORDER BY 1,2"
+            # D117: every Novi stick is reconciled; split by Novi's tag for audit only.
+            print("  status x basin x category:", flush=True)
+            for b, c, s, n in cur.execute(
+                "SELECT basin_blueox, category, status, COUNT(*) "
+                "FROM curated.reconciled_inventory GROUP BY 1,2,3 ORDER BY 1,2,3"
             ).fetchall():
-                print(f"    {b:9} {s:22} {n}", flush=True)
-            # NOTE: sql/21 split the old 'realized_pud_to_pdp' status into
+                print(f"    {b:9} {c:4} {s:22} {n}", flush=True)
+            # NOTE: sql/21 (now sql/68) split the old 'realized_pud_to_pdp' status into
             # realized_drift (online after the vintage) / realized_phantom
             # (online before it); querying the retired name silently returns 0.
             print("  realized matches by matched_survey_planned (provisional TVD):", flush=True)
@@ -116,12 +118,16 @@ def main() -> None:
                 "SELECT COUNT(DISTINCT matched_api10) FROM curated.reconciled_inventory "
                 "WHERE basin_blueox='delaware' AND status='realized_drift'"
             ).fetchone()[0]
+            res_drift = cur.execute(
+                "SELECT COUNT(*) FROM curated.reconciled_inventory "
+                "WHERE basin_blueox='delaware' AND status='realized_drift' AND category='RES'"
+            ).fetchone()[0]
             new_del = cur.execute(
                 "SELECT COUNT(*) FROM curated.wells w JOIN curated.formation_blueox fb ON fb.api10=w.api10 "
                 "WHERE fb.basin_blueox='delaware' AND w.first_production_date > DATE '2025-09-30'"
             ).fetchone()[0]
-            print(f"  anchor: Delaware realized PUDs={realized_del} "
-                  f"(distinct wells={distinct_wells}) vs wells online since 3Q25={new_del}", flush=True)
+            print(f"  anchor: Delaware realized_drift sticks={realized_del} (of which RES={res_drift}; "
+                  f"distinct wells={distinct_wells}) vs wells online since 3Q25={new_del}", flush=True)
     finally:
         conn.close()
     print(f"=== DONE in {time.monotonic() - t:.0f}s ===", flush=True)

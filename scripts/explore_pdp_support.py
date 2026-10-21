@@ -51,7 +51,7 @@ CSV_OUT = Path(__file__).resolve().parent.parent / "data" / "pdp_support_loving_
 #   is_horizontal      -> COALESCE(novi_slant_calculated, enverus_trajectory) ILIKE '%horizontal%'
 #                         (the sql/40 semantics — substring, so U-turn horizontals count)
 #   same formation     -> COALESCE(t.corrected_code, fb2.formation_blueox) = pud.code
-#                         (TVD-corrected blueox convention, sql/21_reconciled_inventory.sql:121)
+#                         (TVD-corrected blueox convention, sql/68_reconcile_all_sticks.sql (the sql/21 rule))
 #   ST_DWithin text    -> w.wellstick_geom::geography, to match sql/26's expression
 #                         GiST index idx_curated_wells_wellstick_geog (no seq scan)
 # Radii: 1609 / 4827 / 8045 m ~= 1 / 3 / 5 mi (5 mi is the outer gate).
