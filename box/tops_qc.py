@@ -309,3 +309,63 @@ def offset_field(res: pd.DataFrame, cell_ft: float = OFFSET_CELL_FT, radius_ft: 
         med = float(np.median(v))
         rows.append((c[0], c[1], len(js), med, int((v < -edge_ft).sum()), int((v > edge_ft).sum()), abs(med) > edge_ft))
     return pd.DataFrame(rows, columns=cols)
+
+
+# ----------------------------------------------------------------------------
+# Step 3 — landing position relative to a reference surface (tag-blind), landing zones, tag splits
+# ----------------------------------------------------------------------------
+
+MIN_SEPARATION = 0.2      # below this a split depth is reported as "no separation" (degenerate optimum)
+KDE_BW_FT = 12.0          # Gaussian KDE bandwidth for landing-zone peaks (~ half the 25 ft edge tolerance)
+MODE_WINDOW_FT = 25.0     # a landing zone's members: within this of the peak
+MODE_MIN_PROM = 0.10      # a peak must stand >= 10 % of the tallest peak above its surroundings
+
+
+def relative_positions(st: pd.DataFrame, stack: dict[str, Grid], surfaces: tuple[str, ...], tvd_col: str = "tvd") -> pd.DataFrame:
+    """Per well: median over its stations of (tvd − surface depth at the station) for each surface, ft
+    (negative = above the surface). ``st``: api10, x, y, <tvd_col>. Columns rel_<surface>."""
+    xy = st[["x", "y"]].to_numpy(float)
+    tvd = st[tvd_col].to_numpy(float)
+    d = pd.DataFrame({"api10": st["api10"].to_numpy()})
+    for s in surfaces:
+        d[f"rel_{s}"] = tvd - stack[s].sample(xy)
+    return d.groupby("api10", sort=False).median()
+
+
+def kde_modes(v: np.ndarray, bw_ft: float = KDE_BW_FT, window_ft: float = MODE_WINDOW_FT,
+              min_prom: float = MODE_MIN_PROM, step_ft: float = 1.0) -> list[dict[str, float]]:
+    """Landing zones: peaks of a fixed-bandwidth Gaussian KDE of positions (ft). Each: position, density, n within
+    ±window_ft, prominence relative to the tallest peak. Sorted shallow -> deep."""
+    from scipy.signal import find_peaks
+
+    v = np.asarray(v, dtype=float)
+    v = v[np.isfinite(v)]
+    if len(v) < 5:
+        return []
+    grid = np.arange(np.floor(v.min()) - 3 * bw_ft, np.ceil(v.max()) + 3 * bw_ft + step_ft, step_ft)
+    dens = np.exp(-0.5 * ((grid[:, None] - v[None, :]) / bw_ft) ** 2).sum(axis=1)
+    dens /= dens.max()
+    idx, props = find_peaks(dens, prominence=min_prom)
+    return [{"pos_ft": float(grid[i]), "density": float(dens[i]), "prominence": float(p),
+             "n": int((np.abs(v - grid[i]) <= window_ft).sum())} for i, p in zip(idx, props["prominences"], strict=True)]
+
+
+def best_split(upper: np.ndarray, lower: np.ndarray) -> dict[str, float]:
+    """The depth t that best separates two tags where ``upper`` should sit above (< t) and ``lower`` below (>= t):
+    minimises misclassified wells over both. Ties take the midpoint of the tied run. Returns t, error share,
+    separation (1 − error / the error of lumping both tags together: 0 = the depth separates nothing, 1 = perfect)
+    and n."""
+    u = np.asarray(upper, dtype=float)
+    lo = np.asarray(lower, dtype=float)
+    u, lo = u[np.isfinite(u)], lo[np.isfinite(lo)]
+    if len(u) < 3 or len(lo) < 3:
+        return {"split_ft": np.nan, "error": np.nan, "separation": np.nan, "n_upper": len(u), "n_lower": len(lo)}
+    cand = np.unique(np.concatenate([u, lo]))
+    cand = np.concatenate([[cand[0] - 1.0], (cand[:-1] + cand[1:]) / 2.0, [cand[-1] + 1.0]])
+    us, ls = np.sort(u), np.sort(lo)
+    err = (len(us) - np.searchsorted(us, cand, side="left")) + np.searchsorted(ls, cand, side="left")
+    best = np.flatnonzero(err == err.min())
+    t = float(np.median(cand[best]))
+    error = float(err.min() / (len(u) + len(lo)))
+    trivial = min(len(u), len(lo)) / (len(u) + len(lo))  # error of lumping both tags on one side
+    return {"split_ft": t, "error": error, "separation": 1.0 - error / trivial, "n_upper": len(u), "n_lower": len(lo)}

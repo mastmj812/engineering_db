@@ -195,3 +195,35 @@ def test_apply_rules_missing_verdict_is_unmeasured():
     out = rep.apply_rules(w, p)
     assert out.loc["A", "verdict"] == "unmeasured" and pd.isna(out.loc["A", "verdict_raw"])
     assert out.loc["B", "verdict"] == "shallow"
+
+
+def test_relative_positions_station_median():
+    stack = _stack(gap=100.0)
+    a = tq.STACK.index("WOLFCAMP_A")
+    top_wca = 8_000.0 + a * 100.0
+    xs = np.linspace(10_000.0, 19_000.0, 5)
+    st = pd.DataFrame({"api10": "A", "x": xs, "y": 20_000.0, "tvd": top_wca + 0.01 * xs + np.array([-40, -30, -20, -10, 0.0])})
+    r = tq.relative_positions(st, stack, ("WOLFCAMP_A", "WOLFCAMP_XY"))
+    assert r.loc["A", "rel_WOLFCAMP_A"] == pytest.approx(-20.0)
+    assert r.loc["A", "rel_WOLFCAMP_XY"] == pytest.approx(80.0)
+
+
+def test_kde_modes_finds_two_landing_zones():
+    rng = np.random.default_rng(3)
+    v = np.concatenate([rng.normal(-40, 6, 300), rng.normal(110, 8, 200)])
+    m = tq.kde_modes(v)
+    assert len(m) == 2
+    assert m[0]["pos_ft"] == pytest.approx(-40, abs=4) and m[1]["pos_ft"] == pytest.approx(110, abs=4)
+    assert m[0]["n"] > m[1]["n"]
+    assert tq.kde_modes(np.array([1.0, 2.0])) == []
+
+
+def test_best_split():
+    s = tq.best_split(np.array([-90.0, -80, -70, -60]), np.array([-20.0, -10, 0, 10]))
+    assert -60 < s["split_ft"] < -20 and s["error"] == 0.0 and s["separation"] == 1.0
+    s = tq.best_split(np.array([-50.0, -40, -30, 5]), np.array([-35.0, 0, 10, 20]))  # one each misplaced
+    assert s["error"] == pytest.approx(2 / 8) or s["error"] == pytest.approx(1 / 8)
+    assert np.isnan(tq.best_split(np.array([1.0]), np.array([2.0, 3, 4]))["split_ft"])
+    # complete overlap: no depth beats lumping -> separation 0
+    s = tq.best_split(np.array([0.0, 10, 20, 30]), np.array([0.0, 10, 20, 30]))
+    assert s["separation"] <= 0.0 + 1e-9
