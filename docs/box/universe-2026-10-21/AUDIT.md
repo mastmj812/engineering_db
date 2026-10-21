@@ -136,3 +136,29 @@ Gate-1 decisions accepted by Michael: (1) sql/25 counts RES; (2) sql/43 matches 
   - The live table differs on 262 PUD rows because it is quarterly-owned while its inputs refresh nightly (D87): 183 keep their status with a moved matched well, and 79 change status.
   - Net effect: 59 PUDs leave the remaining pool (53 remaining → realized_phantom, 11 remaining → conflict, 6 conflict → realized_phantom, 1 realized → conflict) and 8 return (4 realized → remaining, 4 conflict → remaining).
   - The live apply absorbs this drift. **Step 3's identity check must expect it:** run-14 PUDs whose reconciliation moved leave or rejoin the BOX universe.
+
+### Step 2 applied live, 2026-10-21 16:25 UTC (Michael's go, after the nightly)
+`python -m scripts.apply_reconcile_all_sticks` ran in **103 s**, all checks green:
+
+| Stage | Time / result |
+|---|---|
+| sql/68 | 27 s |
+| sql/25 | 1 s |
+| sql/38 + sql/43 | 24 s |
+| sql/22 | 6 s (the erebor map was dark for about 50 s in total) |
+| sql/26 | 5 s |
+| Rows | 257,397 = the mapped PUD + RES universe; 0 duplicate keys |
+| PUD sticks | the same set; 262 drift rows absorbed, exactly as the dry run predicted |
+| `erebor_locations` | 317,913 → 317,913; all 74,702 RES rows carry a `recon_status` |
+| `net_new_pdp` | 0 → 0 |
+| sql/43 (2025Q3 vintage, direct tier, now incl. EMERGING) | Delaware 1,092, Midland 932 |
+| GiST tile index | in use |
+| CONCURRENTLY smoke | ok |
+
+Post-apply tail:
+- this data dictionary;
+- narvi PR (realized RES hidden);
+- an erebor comment PR;
+- the workspace CLAUDE.md identity + narvi rule 11.
+
+Next = **step 3** (BOX rehearsal) on Michael's go.
