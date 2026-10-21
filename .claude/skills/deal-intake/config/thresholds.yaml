@@ -48,8 +48,8 @@ alignment:                        # gate 2 — location source (v2 rule, 2026-09
   # in UTM 13N, so the runner hands it a GRID bearing (true - convergence,
   # ~0.9 deg across the Delaware); without that the rows drift ~0.9 deg.
   grid_vs_long_axis_flag_deg: 5
-  # ADVISORY only: IoU vs curated.intel_pad_geom (derived hulls; 2026Q3 covers
-  # Midland only). Reported, never decides.
+  # ADVISORY only: IoU vs curated.intel_pad_geom (sql/67: Novi DSU polygons,
+  # derived hulls for strays; both basins). Reported, never decides.
   iou_advisory_min: 0.80
 
 depth:                            # gate 1 — bench PROPOSAL from a depth window

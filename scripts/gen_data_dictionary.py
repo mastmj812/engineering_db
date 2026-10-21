@@ -50,8 +50,8 @@ _QUARTERLY = {
     "curated.intel_forecast",
     "curated.bench_reference",  # sql/18, rebuilt by apply_intel_formation_blueox
     "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
-    "curated.intel_pad_member",  # sql/46, rebuilt by apply_intel_pad_geom
-    "curated.intel_pad_geom",  # sql/46, rebuilt by apply_intel_pad_geom
+    "curated.intel_pad_member",  # sql/67, rebuilt by apply_intel_pad_geom
+    "curated.intel_pad_geom",  # sql/67, rebuilt by apply_intel_pad_geom
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -107,7 +107,7 @@ def _cadence(rel: str, kind: str) -> str:
     if schema == "raw_intel":
         return "quarterly (scripts.load_intel_sf, Novi Snowflake share)"
     if schema == "raw_novi_intel":
-        return "static (frozen overlay geometries from the 3Q25 file drop; share has no geometry)"
+        return "per Novi shapefile drop (pads 2026Q3, land grid/outline frozen at 3Q25; share has no geometry)"
     if schema == "meta":
         return "continuous (ETL bookkeeping)"
     if schema == "vdr":
