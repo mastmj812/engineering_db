@@ -86,9 +86,9 @@ SELECT
     fb.formation_blueox,
     fb.basin_blueox,
     fb.formation_blueox_source,
-    -- §6 reconciliation tag (curated.reconciled_inventory, sql/21): PUDs carry
-    -- realized_drift / realized_phantom / remaining_pud / conflict; RES has no
-    -- row -> NULL.
+    -- §6 reconciliation tag (curated.reconciled_inventory, sql/68): every Novi
+    -- stick, PUD and RES (D117), carries realized_drift / realized_phantom /
+    -- remaining_pud / conflict; NULL only for a stick with no bench or geometry.
     ri.status                          AS recon_status,
     -- Novi PUD-quality depletion tier (Tier-1..4; Tier-4 = offset-depleted /
     -- drained). Drives the map's depletion filter + color mode. RES/PUD only;

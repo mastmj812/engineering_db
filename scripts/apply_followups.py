@@ -1,8 +1,11 @@
 """Apply the §6 reconciliation follow-ups on Supabase:
 
-  1. reconciled_inventory (sql/21) — rebuilt to match producers on the TVD-CORRECTED
-     bench (sql/23), so recolored producers realize their true-bench PUDs.
-  2. net_new_pdp (sql/25) — reverse pass: post-vintage producers that realized no PUD.
+  1. reconciled_inventory (sql/68; supersedes sql/21) — every Novi stick (PUD + RES, D117)
+     matched to producers on the TVD-CORRECTED bench (sql/23).
+  2. net_new_pdp (sql/25) — reverse pass: post-vintage producers that realized no Novi stick.
+  3. intel_forecast_accuracy (sql/38 + sql/43) — the reconciliation CASCADE drops sql/38;
+     rebuilt here (it used to stay dropped after a standalone run).
+  4. erebor_locations (sql/22) — CASCADE victim, rebuilt last.
 
 Validation: status distribution, the new-well anchor (new wells ≈ realized + net_new),
 and the 3002550278 realization spot-check (was unmatched as BS2_S; should now match a
@@ -38,12 +41,12 @@ def _exec(label: str, fname: str) -> None:
 def main() -> None:
     t = time.monotonic()
     print("[1/4] rebuild curated.reconciled_inventory (corrected-bench match — heavy)", flush=True)
-    _exec("reconciled_inventory", "21_reconciled_inventory.sql")
+    _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")
     print("[2/4] build curated.net_new_pdp", flush=True)
     _exec("net_new_pdp", "25_net_new_pdp.sql")
-    # The sql/21 rebuild DROP ... CASCADE drops curated.erebor_locations (it joins
+    # The sql/68 rebuild DROP ... CASCADE drops curated.erebor_locations (it joins
     # reconciled_inventory for recon_status), so recreate it.
-    # sql/22 now also joins curated.intel_pdp_support (sql/30). The sql/21 rebuild
+    # sql/22 now also joins curated.intel_pdp_support (sql/30). The sql/68 rebuild
     # does NOT drop it (it depends on intel_locations, not reconciled_inventory),
     # but a full quarterly reload WOULD — fail clearly here rather than let the
     # sql/22 CREATE error deep inside on a missing relation.
@@ -64,6 +67,11 @@ def main() -> None:
             "`python -m scripts.apply_intel_pdp_support` first (it is dropped by a "
             "quarterly intel_locations CASCADE)."
         )
+    # The same CASCADE drops curated.intel_forecast_accuracy (sql/38); restore it
+    # (and sql/43, which matches every Novi stick too since D117) before sql/22.
+    print("[3a/4] rebuild intel_forecast_accuracy (sql/38 + sql/43; CASCADE victim)", flush=True)
+    from scripts import apply_intel_forecast_accuracy
+    apply_intel_forecast_accuracy.main()
     print("[3/4] recreate curated.erebor_locations (CASCADE-dropped by the rebuild)", flush=True)
     _exec("erebor_locations", "22_erebor_locations.sql")
 
@@ -72,12 +80,12 @@ def main() -> None:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            print("  reconciled_inventory status x basin:", flush=True)
-            for b, s, n in cur.execute(
-                "SELECT basin_blueox, status, COUNT(*) FROM curated.reconciled_inventory "
-                "GROUP BY 1,2 ORDER BY 1,2"
+            print("  reconciled_inventory status x basin x category (D117: audit split only):", flush=True)
+            for b, c, s, n in cur.execute(
+                "SELECT basin_blueox, category, status, COUNT(*) FROM curated.reconciled_inventory "
+                "GROUP BY 1,2,3 ORDER BY 1,2,3"
             ).fetchall():
-                print(f"    {b:9} {s:22} {n}", flush=True)
+                print(f"    {b:9} {c:4} {s:22} {n}", flush=True)
 
             print("  net_new_pdp by basin:", flush=True)
             for b, n in cur.execute(

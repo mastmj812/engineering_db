@@ -1,7 +1,7 @@
 -- =============================================================================
 -- 25 — curated.net_new_pdp  (§6 reverse pass: producers Novi never inventoried)
 --
--- The forward pass (curated.reconciled_inventory, sql/21) tags each Novi PUD as
+-- The forward pass (curated.reconciled_inventory, sql/68) tags each Novi stick as
 -- realized / remaining / conflict. This is the REVERSE: producing curated wells
 -- that drilled where Novi had NO PUD — incremental locations the static (biannual)
 -- vintage didn't anticipate. Together they close the §6 arithmetic:
@@ -22,8 +22,10 @@
 --     clause keeps ~96 Delaware same-depth label disagreements (mostly sand/carb,
 --     where the producing and PUD pipelines tag the same bench differently) OUT of
 --     net_new — they are realized, not incremental.
---   * Overlap vs PUD only (not RES): matches the forward pass and the new-well
---     anchor. Excluding wells that sit on a Novi RES stick is a future refinement.
+--   * Overlap vs EVERY Novi stick, PUD and RES (D117, 2026-10-21): matches the
+--     forward pass (sql/68), so a producer that realized a RES stick is counted
+--     once — as that stick's realized_drift — never also as net-new. Keeps the
+--     anchor "new wells ~= realized_drift + net_new" honest.
 --
 -- DEPENDS ON: curated.producing_reference (sql/20), curated.formation_blueox_tvd
 --   (sql/23), curated.intel_locations (sql/12), curated.intel_formation_blueox
@@ -56,7 +58,7 @@ LEFT JOIN LATERAL (
            ) AS best_pud_overlap
     FROM curated.intel_locations il
     JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
-    WHERE il.category = 'PUD'
+    WHERE il.category IN ('PUD', 'RES')   -- D117: every Novi stick (sql/68)
       AND il.wellstick_geom IS NOT NULL
       AND il.tvd IS NOT NULL
       AND il.basin = pr.basin
