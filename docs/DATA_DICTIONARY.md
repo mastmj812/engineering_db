@@ -1357,6 +1357,55 @@ Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitt
 | `bench` | text | Blue Ox sub-bench code: one of WCA_1, WCA_2, WCB_1, WCB_2, AVA_0, AVA_1, AVA_2 (only the parents that split). |
 | `parent` | text | 3-char parent group = left(bench, 3): WCA, WCB or AVA; the KNN recheck filter alongside basin. |
 
+### `curated.box_scout_locations` (view)
+
+Land-facing flat view (sql/69): one row per stick location (curated.erebor_locations minus PDP; stick_id unique; geom = Novi stick, EPSG 4326) with its BOX RECORD-run forecast and Steven's default-deck econ. box_coverage says why a location has no forecast (never zero); box_tier keeps validated and PROVISIONAL apart (D105). EUR = raw 50-yr technical integral incl. the bench haircut and D113 proximity factor. Econ = box_econ.box_pud_econ, deck wti70_hh3, newest assumption set, display only (D13); other decks: query box_econ directly. Novi tags / NPV are not carried. Plain view: always current, no refresh.
+
+~0 rows | n/a (plain view, always current) | reads: `box.bench_scope`, `box.forecast_run`, `box.pud_forecast`, `box.pud_forecast_stream`, `box.pud_proximity`, `box_econ.box_pud_econ`, `curated.erebor_locations` | consumers: land team / analyst_ro GIS: flat BOX record-run forecast + Steven's default-deck econ per stick location (sql/69)
+
+| column | type | description |
+|---|---|---|
+| `stick_id` | bigint | Stable stick key (positive Novi stick_id); unique in this view. Joins curated.erebor_locations / intel_locations / box.pud_forecast.stick_id. |
+| `location_name` | text | Novi stick name (erebor_locations.unique_id). |
+| `basin` | text |  |
+| `bench` | text | Blue Ox bench (formation_blueox) — always group by this, never raw formation. |
+| `pad_name` | text |  |
+| `recon_status` | text | Our reconciliation (sql/20, sql/68: every Novi stick): remaining_pud / conflict / realized_drift / realized_phantom; realized = already drilled. |
+| `stick_lateral_ft` | double precision | Lateral length of the Novi stick geometry, ft. |
+| `geom` | geometry | Novi stick linestring, EPSG 4326 (rides the curated.erebor_locations GiST index for bbox filters). |
+| `box_run_id` | bigint | BOX record run (box.forecast_run.is_record) every BOX value in the row comes from. |
+| `box_data_through` | date | Last production month the record run saw. |
+| `box_coverage` | text | covered / covered_provisional = BOX forecast; not_covered_* = classed by BOX without a forecast (reason in the name); realized = matched to production; not_screened = on a BOX bench but not in the record run; bench_not_in_box = bench outside every BOX pool. Mirrors erebor box_locations.map_coverage_sql. |
+| `box_tier` | text | validated (covered) or provisional (covered_provisional, D105); NULL = no forecast. Report the two apart, never silently summed. |
+| `box_lateral_ft` | double precision | Lateral BOX forecast on (box.pud_forecast.lateral_ft); the basis of the per-ft values. |
+| `oil_eur_bbl` | double precision | BOX oil EUR, bbl: raw 50-yr technical integral incl. bench haircut and D113 proximity factor; NULL = no forecast (never zero). |
+| `oil_eur_bbl_per_ft` | double precision | BOX oil EUR per lateral foot, bbl/ft (stored eur_per_kft / 1000). Aggregate as SUM(eur) / SUM(eur / per_ft), not an average of ratios. |
+| `gas_eur_mcf` | double precision | BOX gas EUR, mcf; NULL = no forecast. |
+| `gas_eur_mcf_per_ft` | double precision | BOX gas EUR per lateral foot, mcf/ft. |
+| `water_eur_bbl` | double precision | BOX water EUR, bbl (WOR vs cum oil on measured-water analogs, sql/62); NULL = no forecast. |
+| `water_eur_bbl_per_ft` | double precision | BOX water EUR per lateral foot, bbl/ft. |
+| `water_tier` | text | Water stream tier (validated / provisional, D110), never above the location's own tier. |
+| `prox_outcome` | text | PDP-proximity outcome (box.pud_proximity, D112-D116): as_is_unexposed / as_is_single_parent / haircut / no_forecast_*; NULL = not measured. |
+| `prox_oil_factor` | double precision | D113 oil factor already applied inside oil_eur_bbl (1 = as-is; 0.75-0.94 = multi-parent haircut). Informational — do not re-apply. |
+| `econ_deck_id` | text | Steven's price deck of the econ columns (wti70_hh3 = WTI $70 / HH $3); NULL = location not priced / no forecast. |
+| `econ_assumption_set_id` | text | Steven's assumption set (the most recently built one for the deck on the record run). |
+| `econ_wti` | double precision |  |
+| `econ_hh` | double precision |  |
+| `econ_downtime_basis` | text | How Steven applied downtime to BOX's uptime-free volumes (required provenance, D13). |
+| `pv0_mm` | double precision |  |
+| `pv10_mm` | double precision | Steven's PV10, $MM, display only (D13). pv0/15/20/25/30_mm likewise. |
+| `pv15_mm` | double precision |  |
+| `pv20_mm` | double precision |  |
+| `pv25_mm` | double precision |  |
+| `pv30_mm` | double precision |  |
+| `irr_pct` | double precision | Steven's IRR, %; NULL where he reports none. Use a median, never a sum or mean, across locations. |
+| `breakeven_wti_pv20` | double precision | Steven's breakeven WTI at PV20, $/bbl (lower = better). |
+| `capex_mm` | double precision | Steven's capex, $MM. |
+| `econ_unpriced_reason` | text |  |
+| `econ_built_at` | timestamp with time zone |  |
+| `econ_pushed_at` | timestamp with time zone | When Steven pushed this econ case (provenance). |
+| `econ_pushed_by` | text |  |
+
 ### `curated.codev_context` (materialized view)
 
 Per producing horizontal (api10): adjacent-bench development context at first production, for deal-intake v2 co-development-aware type-curve selection. Neighbor = any producing horizontal (any TVD-corrected formation_blueox bench, NULL -> '(unmapped)') whose stick is within 1,320 ft (geography) AND whose lateral covers >= 30% of the subject lateral when projected onto it (co-extent, not min-distance). Per neighbor bench (bench_context jsonb): counts of codev (|dfp| <= 180 d), parent (neighbor online > 180 d earlier) and child (> 180 d later) neighbors, min |dfp| days, median stick distance ft, median TVD delta ft (neighbor minus subject). Arrays codev_/parent_/child_benches list benches per relation; helper counts split same vs other bench. Constants (1,320 ft, 180 d, 30%) are baked; the runner asserts its config matches. Empty arrays on a scorable well = genuinely no neighbors (stack standalone); scorable=FALSE (no stick geometry) -> NULL context. Tiering into codev / stack_standalone / topfill_underfill is deal-specific and done by dealintake, not here. Nightly refresh. sql/47.
