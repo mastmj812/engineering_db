@@ -21,7 +21,7 @@
 -- whole blind window, and recomputes itself on the next vintage.
 --
 -- TWO COMPARISON TIERS (column: tier)
---   'direct' — the well co-extent-realized a PUD stick (reconciled_inventory
+--   'direct' — the well co-extent-realized a Novi stick, PUD or RES (D117; reconciled_inventory
 --       matched_api10, status realized_drift OR realized_phantom; phantoms in
 --       the blind window are genuinely blind forecasts — Novi carried the slot
 --       as undrilled inventory while the well was already producing). Forecast

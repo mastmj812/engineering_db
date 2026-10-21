@@ -15,7 +15,7 @@
 -- vintage-over-vintage record Michael's standing question needs.
 --
 -- DIRECT TIER ONLY — a deliberate scope cut vs sql/38:
---   * 'direct'    — the blind well co-extent-realized a BASE_CASE stick of that
+--   * 'direct'    — the blind well co-extent-realized a Novi stick (BASE_CASE or EMERGING, D117) of that
 --                   vintage. Match re-derived inline per vintage with sql/21's
 --                   predicates (corridor overlap >= 0.5 + same-bench hybrid:
 --                   code within 500 ft TVD, or <= 150 ft depth arbiter). Stick
@@ -145,7 +145,7 @@ blind AS (
           )
 ),
 cand AS (
-    -- Co-extent candidates: that vintage's BASE_CASE sticks intersecting the
+    -- Co-extent candidates: that vintage's BASE_CASE + EMERGING sticks (D117) intersecting the
     -- well's ±150 ft corridor (GiST both sides). Overlap = stick length inside
     -- the corridor / stick length (sql/21's definition).
     SELECT b.report_version, b.api10, b.basin, b.well_tvd,
@@ -158,7 +158,7 @@ cand AS (
     JOIN raw_intel.well_master wm
       ON wm.report_version  = b.report_version
      AND wm.basin_slug      = b.basin
-     AND wm.inventory_class = 'BASE_CASE'
+     AND wm.inventory_class IN ('BASE_CASE', 'EMERGING')   -- D117: every Novi stick (sql/68)
      AND wm.tvd_td IS NOT NULL
      AND wm.geom IS NOT NULL
      AND ST_Intersects(wm.geom, b.corridor)
@@ -326,12 +326,12 @@ CREATE INDEX idx_intel_forecast_accuracy_vintage_grp
 
 
 COMMENT ON MATERIALIZED VIEW curated.intel_forecast_accuracy_vintage IS
-'Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage''s own blind-producer population (first prod >= that vintage''s per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload''s sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.';
+'Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage''s own blind-producer population (first prod >= that vintage''s per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE or EMERGING stick (D117), sql/68 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload''s sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.';
 
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.report_version IS
 'Novi report vintage this row scores, e.g. 2025Q3. The same well may be blind under several vintages and is scored against each.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.tier IS
-'direct = co-extent-realized BASE_CASE stick of this vintage (raw + per-ft errors). unmatched = no qualifying stick; forecast columns NULL. No proxy tier (sql/38 only).';
+'direct = co-extent-realized Novi stick (BASE_CASE or EMERGING, D117) of this vintage (raw + per-ft errors). unmatched = no qualifying stick; forecast columns NULL. No proxy tier (sql/38 only).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.cliff_date IS
 'This (vintage, basin)''s empirical PDP recognition cliff (curated.intel_pdp_cliff_date(report_version, basin)); lower bound of the blind population.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy_vintage.novi_well_ref IS

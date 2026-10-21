@@ -87,10 +87,11 @@ ANALYZE curated.wells;
 \ir 14_formation_crosswalk.sql
 \ir 18_bench_reference.sql
 \ir 19_intel_formation_blueox.sql
-\ir 21_reconciled_inventory.sql
+\ir 68_reconcile_all_sticks.sql
 \ir 25_net_new_pdp.sql
 \ir 30_intel_pdp_support.sql
 \ir 22_erebor_locations.sql
+\ir 69_box_scout_locations.sql
 \ir 31_comments.sql
 
 -- =============================================================================

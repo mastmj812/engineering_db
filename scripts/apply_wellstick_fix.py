@@ -14,7 +14,7 @@ rebuilds the whole graph in dependency order:
    3. sql/16  formation_blueox          10. apply_intel_formation_blueox
    4. sql/20  producing_reference           (sql/14 crosswalk + sql/18
    5. sql/23  formation_blueox_tvd           bench_reference + sql/19)
-   6. sql/06  wells_enriched +          11. sql/21  reconciled_inventory
+   6. sql/06  wells_enriched +          11. sql/68  reconciled_inventory
       production_normalized +           12. sql/25  net_new_pdp
       type_curve_cohorts                13. apply_intel_pdp_support (sql/30)
    7. sql/10  production_forecast +     14. apply_erebor_locations (sql/22,
@@ -22,7 +22,7 @@ rebuilds the whole graph in dependency order:
                                             re-applies sql/31 comments)
 
 Steps 4-6 make apply_reconciled_inventory's own 20→23→wells_enriched preamble
-unnecessary, so step 11 runs sql/21 directly (same topological order as that
+unnecessary, so step 11 runs sql/68 directly (same topological order as that
 script — keep the two in sync if either changes).
 
 INDEX ORDERING IS LOAD-BEARING (learned on the 2026-07-14 first run): the
@@ -131,18 +131,19 @@ def validate() -> None:
     if norm < prod * 0.9:
         raise SystemExit(f"FAILED: production_normalized {norm} lost >10% of "
                          f"curated.production {prod}")
-    puds = _scalar(
+    # D117 (sql/68): one row per mapped Novi stick, PUD AND RES.
+    sticks = _scalar(
         "SELECT COUNT(*) FROM curated.intel_locations il "
         "JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id "
-        "WHERE il.category = 'PUD' AND il.wellstick_geom IS NOT NULL "
+        "WHERE il.category IN ('PUD', 'RES') AND il.wellstick_geom IS NOT NULL "
         "  AND fb.formation_blueox IS NOT NULL"
     )
     recon = _scalar("SELECT COUNT(*) FROM curated.reconciled_inventory")
-    print(f"    reconciled_inventory {recon} vs mapped PUD universe {puds} "
-          f"(grain: one row per mapped PUD — must be EQUAL)", flush=True)
-    if recon != puds:
-        raise SystemExit(f"FAILED: reconciled_inventory {recon} != mapped PUD "
-                         f"universe {puds}")
+    print(f"    reconciled_inventory {recon} vs mapped Novi stick universe {sticks} "
+          f"(grain: one row per mapped PUD or RES stick — must be EQUAL)", flush=True)
+    if recon != sticks:
+        raise SystemExit(f"FAILED: reconciled_inventory {recon} != mapped Novi stick "
+                         f"universe {sticks}")
     print(f"    erebor_locations: {_scalar('SELECT COUNT(*) FROM curated.erebor_locations')} "
           f"rows (~262k as of 2026-07)", flush=True)
 
@@ -183,9 +184,9 @@ def main() -> None:
     print(f"[10/{n}] intel_formation_blueox chain (sql/14 + sql/18 + sql/19)", flush=True)
     apply_intel_formation_blueox.main()
 
-    print(f"[11/{n}] reconciled_inventory (sql/21 — producing_reference/tvd/"
+    print(f"[11/{n}] reconciled_inventory (sql/68 — producing_reference/tvd/"
           "wells_enriched already rebuilt in steps 4-6)", flush=True)
-    _exec("reconciled_inventory", "21_reconciled_inventory.sql")
+    _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")
 
     print(f"[12/{n}] net_new_pdp (sql/25)", flush=True)
     _exec("net_new_pdp", "25_net_new_pdp.sql")

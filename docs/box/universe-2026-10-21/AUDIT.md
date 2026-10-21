@@ -113,3 +113,52 @@ Joins cannot multiply rows, because `stick_id` stays UNIQUE (sql/21:130).
 | 3 | BOX universe drops `category = 'PUD'` (`box/production._UNIVERSE_SQL`); container rehearsal at run 14's cutoff. Run-14 rows must reproduce exactly; additions only. Proximity is re-measured on every record run (D116). Coverage per bench for the added locations. | none |
 | 4 | Store run 15 as the record. Run 14 is kept because it is priced. Verify erebor (`not_screened` collapses). | **Supabase (explicit go)** |
 | 5 | Steven re-prices run 15. erebor shows econ only once run 15 is priced (record-run rule). | Steven |
+
+## Step 2 (built 2026-10-21, NOT applied)
+Gate-1 decisions accepted by Michael: (1) sql/25 counts RES; (2) sql/43 matches EMERGING; (3) narvi hides realized RES (narvi PR after the live apply); (4) ship as sql/68, sql/21 a pointer.
+
+- **New `sql/68_reconcile_all_sticks.sql`.** sql/21's body byte for byte, with the stick filter widened to `category IN ('PUD','RES')` and a `category` column (+ index) for audit splits only.
+- **sql/21 is a tombstone** that keeps the rule's rationale. sql/32 `\ir`, `apply_reconciled_inventory`, `apply_followups` and `apply_wellstick_fix` now run sql/68.
+- **sql/25** overlaps every Novi stick. **sql/43** matches BASE_CASE + EMERGING. Stale comments updated in sql/22, sql/31 and sql/38.
+- **Must-fix list done:**
+  - the `apply_wellstick_fix` identity is now PUD + RES;
+  - the drift anchors are split by category;
+  - `apply_followups` now rebuilds sql/38 + sql/43 (the existing gap);
+  - SKILL §5 / §7 updated.
+- **New `scripts/apply_reconcile_all_sticks.py`.** The live run is 68 → 25 → 38 + 43 → 22 → 26, then validation. `--dry-run` is read-only.
+- **Dry run on live data (read-only, 42 s):**
+  - Rows: 257,397 = the mapped PUD + RES universe exactly.
+  - PUD sticks: the same set (0 missing / 0 extra).
+  - PUD status x category: 176,014 remaining / 2,333 conflict / 4,348 realized_phantom. RES: 74,240 / 139 / 323.
+  - `net_new_pdp`: 0 → 0 (the 2026Q3 vintage is too recent for post-vintage producers).
+- **Reconciliation drift (not a rule change).**
+  - sql/68's PUD rows are identical to sql/21's rule recomputed on the same data: 182,695 / 182,695.
+  - The live table differs on 262 PUD rows because it is quarterly-owned while its inputs refresh nightly (D87): 183 keep their status with a moved matched well, and 79 change status.
+  - Net effect: 59 PUDs leave the remaining pool (53 remaining → realized_phantom, 11 remaining → conflict, 6 conflict → realized_phantom, 1 realized → conflict) and 8 return (4 realized → remaining, 4 conflict → remaining).
+  - The live apply absorbs this drift. **Step 3's identity check must expect it:** run-14 PUDs whose reconciliation moved leave or rejoin the BOX universe.
+
+### Step 2 applied live, 2026-10-21 16:25 UTC (Michael's go, after the nightly)
+`python -m scripts.apply_reconcile_all_sticks` ran in **103 s**, all checks green:
+
+| Stage | Time / result |
+|---|---|
+| sql/68 | 27 s |
+| sql/25 | 1 s |
+| sql/38 + sql/43 | 24 s |
+| sql/22 | 6 s (the erebor map was dark for about 50 s in total) |
+| sql/26 | 5 s |
+| Rows | 257,397 = the mapped PUD + RES universe; 0 duplicate keys |
+| PUD sticks | the same set; 262 drift rows absorbed, exactly as the dry run predicted |
+| `erebor_locations` | 317,913 → 317,913; all 74,702 RES rows carry a `recon_status` |
+| `net_new_pdp` | 0 → 0 |
+| sql/43 (2025Q3 vintage, direct tier, now incl. EMERGING) | Delaware 1,092, Midland 932 |
+| GiST tile index | in use |
+| CONCURRENTLY smoke | ok |
+
+Post-apply tail:
+- this data dictionary;
+- narvi PR (realized RES hidden);
+- an erebor comment PR;
+- the workspace CLAUDE.md identity + narvi rule 11.
+
+Next = **step 3** (BOX rehearsal) on Michael's go.

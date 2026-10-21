@@ -647,15 +647,16 @@ COMMENT ON COLUMN curated.intel_formation_blueox.formation_blueox_source IS 'Ass
 COMMENT ON COLUMN curated.intel_formation_blueox.formation_blueox_confidence IS 'NULL today; reserved for the planned k>1 weighted-vote confidence pass to route ambiguous inferred picks to review.';
 
 -- curated.reconciled_inventory (matview, sql/21)
-COMMENT ON COLUMN curated.reconciled_inventory.stick_id IS 'Novi PUD stick id (curated.intel_locations.stick_id, category PUD only); unique key.';
+COMMENT ON COLUMN curated.reconciled_inventory.stick_id IS 'Novi stick id (curated.intel_locations.stick_id, PUD and RES — D117, sql/68); unique key.';
 COMMENT ON COLUMN curated.reconciled_inventory.basin_blueox IS 'Basin slug: delaware or midland.';
 COMMENT ON COLUMN curated.reconciled_inventory.formation_blueox IS 'Blue Ox bench code of the PUD (from curated.intel_formation_blueox); the same-bench test of the match.';
-COMMENT ON COLUMN curated.reconciled_inventory.matched_api10 IS 'api10 of the best-overlap producing well realizing this PUD; NULL when no producing lateral covers > 5%.';
+COMMENT ON COLUMN curated.reconciled_inventory.matched_api10 IS 'api10 of the best-overlap producing well realizing this stick; NULL when no producing lateral covers > 5%.';
 COMMENT ON COLUMN curated.reconciled_inventory.matched_survey_planned IS 'TRUE = the realizing well is still on a pre-drill (permit) directional survey, so the TVD confirmation is provisional (mostly NM); recheck when the actual survey files.';
 COMMENT ON COLUMN curated.reconciled_inventory.match_overlap IS 'Fraction (0-1) of the PUD lateral lying inside the best producing well''s +/-150 ft corridor -- co-extent overlap, NOT min-distance. >= 0.5 realizes the PUD.';
 COMMENT ON COLUMN curated.reconciled_inventory.n_overlapping IS 'Count of producing wells each covering >= 50% of the PUD; >= 2 forces status = conflict (re-frac / ambiguous).';
 COMMENT ON COLUMN curated.reconciled_inventory.matched_first_prod IS 'First production date of the realizing well; splits realized into drift (after the Novi vintage) vs phantom (before it).';
-COMMENT ON COLUMN curated.reconciled_inventory.status IS 'Reconciliation status: remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift (drilled since the Novi vintage) and realized_phantom (already drilled before it) are NOT drillable. Producers Novi missed are the reverse pass, curated.net_new_pdp.';
+COMMENT ON COLUMN curated.reconciled_inventory.category IS 'Novi''s tag of the stick (PUD = BASE_CASE, RES = EMERGING), for audit splits only. D117: BOX and the apps do not key on it.';
+COMMENT ON COLUMN curated.reconciled_inventory.status IS 'Reconciliation status (any Novi stick, D117; remaining_pud is the legacy label for unrealized): remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift (drilled since the Novi vintage) and realized_phantom (already drilled before it) are NOT drillable. Producers Novi missed are the reverse pass, curated.net_new_pdp.';
 
 -- curated.net_new_pdp (matview, sql/25)
 COMMENT ON COLUMN curated.net_new_pdp.api10 IS '10-digit API of the post-vintage producing horizontal that no Novi PUD anticipated; unique key.';
@@ -678,7 +679,7 @@ COMMENT ON COLUMN curated.erebor_locations.formation IS 'Raw vendor formation na
 COMMENT ON COLUMN curated.erebor_locations.formation_blueox IS 'Standardized Blue Ox bench code (e.g. WCA_1, WCB_2, BS2) -- the formation field of record for grouping/filtering. NULL = unmapped.';
 COMMENT ON COLUMN curated.erebor_locations.basin_blueox IS 'Blue Ox basin slug (delaware/midland), aligned with formation_blueox.';
 COMMENT ON COLUMN curated.erebor_locations.formation_blueox_source IS 'How the bench code was assigned: pdp_join / inferred / crosswalk (Novi sticks, sql/19) or the wells crosswalk chain (PDP rows).';
-COMMENT ON COLUMN curated.erebor_locations.recon_status IS 'Reconciliation tag: remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift / realized_phantom = PUD slots already drilled (not inventory); net_new_pdp = a producing well Novi never inventoried; NULL = RES stick or ordinary PDP.';
+COMMENT ON COLUMN curated.erebor_locations.recon_status IS 'Reconciliation tag: remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift / realized_phantom = stick slots already drilled (not inventory; PUD or RES, D117); net_new_pdp = a producing well Novi never inventoried; NULL = RES stick or ordinary PDP.';
 COMMENT ON COLUMN curated.erebor_locations.deplet_t IS 'Novi depletion tier for PUD/RES: Tier-1..Tier-4, where Tier-4 = most depleted (drained by offset production). NULL on PDP rows (producing wells are not depletion-scored).';
 COMMENT ON COLUMN curated.erebor_locations.rqs IS 'Novi ML rock-quality score (signed, unitless; higher = better rock), oil stream. PUD rows from the Novi stick; PDP rows from the Novi PDP class joined by api10 (NULL if Novi does not carry/score the well). RES rows are NULL (Novi does not score EMERGING). Vendor screen.';
 COMMENT ON COLUMN curated.erebor_locations.rqt IS 'Novi ML rock-quality tier, Tier-1 (best) .. Tier-4: quartiles of rqs cut per basin over Novi''s whole scored population (PDP + BASE_CASE), so PUD and PDP tiers share one scale. This is the "rock quality quartile" in Novi''s corporate research notes. NULL on RES and on unscored PDP. Vendor screen.';
@@ -776,7 +777,7 @@ COMMENT ON MATERIALIZED VIEW curated.intel_forecast_accuracy IS
 
 COMMENT ON COLUMN curated.intel_forecast_accuracy.api10 IS 'Well key (universal 10-digit API). One blind producer per api10.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.mop IS 'Aligned month index, 1-based: production.months_on_production = intel_forecast.mop (forecast months are 30-day; ~1.6%/yr drift vs calendar, accepted).';
-COMMENT ON COLUMN curated.intel_forecast_accuracy.tier IS 'direct = well co-extent-realized a PUD stick (its own forecast; raw + per-ft errors). proxy = no co-extent stick; forecast is the per-ft median of the representative infill set (per-ft errors only).';
+COMMENT ON COLUMN curated.intel_forecast_accuracy.tier IS 'direct = well co-extent-realized a Novi stick, PUD or RES (D117) (its own forecast; raw + per-ft errors). proxy = no co-extent stick; forecast is the per-ft median of the representative infill set (per-ft errors only).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.stick_id IS 'Direct tier: the matched Novi stick (best match_overlap when the well realizes several). NULL on proxy rows.';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.match_overlap IS 'Direct tier: co-extent overlap fraction of the matched stick (reconciled_inventory).';
 COMMENT ON COLUMN curated.intel_forecast_accuracy.n_sticks_for_well IS 'Direct tier: number of realized sticks matching this well; >1 = Novi planned more sticks than were drilled (kept on the best match, flagged not summed).';
