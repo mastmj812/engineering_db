@@ -63,26 +63,34 @@ FAMILY_SURFACES = tuple(sorted({s for f in FAMILIES for s in (f.ref, *f.marks)},
 
 def positions(conn: Any) -> pd.DataFrame:
     """Per evidence well in any family tag: rel_<surface> for every family surface (survey station median, else
-    midpoint tvd_ft), plus county / tag / source. Pecos is dropped: every family's reference surface is masked there."""
+    midpoint tvd_ft), plus county / tag / source. Pecos is kept (revised 2026-10-21) but only as its own facet: its
+    reference surfaces have zero picks there, so it never enters the basin facet."""
     w, st = rep.pull(conn)
     s, m = rep.station_inputs(w, st)
     stack = tq.load_stack(pkg.GRID_DIR, FAMILY_SURFACES)
     sv = tq.relative_positions(s, stack, FAMILY_SURFACES)
     md = tq.relative_positions(m, stack, FAMILY_SURFACES)
     tags = {t for f in FAMILIES for t in f.tags}
-    W = w[w["evidence"] & w["formation_blueox"].isin(tags) & ~w["county"].isin(tq.CAUTION_COUNTIES)].set_index("api10")
+    W = w[w["evidence"] & w["formation_blueox"].isin(tags)].set_index("api10")
     has = W["tvd_source"].eq("survey")
     P = pd.concat([sv.reindex(W.index[has]), md.reindex(W.index[~has])]).reindex(W.index)
     return W[["formation_blueox", "county", "operator", "tvd_source", "first_production_date"]].rename(
         columns={"formation_blueox": "tag"}).join(P)
 
 
+NO_CONTROL_LABEL = " — NO PICKS (modelled surfaces)"
+
+
 def facets(d: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
-    out = [("All Delaware (ex Pecos)", d)]
+    """Basin facet (counties with picks only), then each county with enough wells; a no-control county (Pecos) is
+    shown last and labelled: its surface lines are modelled, so its splits say where wells land, not where tops are."""
+    nc = d["county"].isin(tq.CAUTION_COUNTIES)
+    out = [("All Delaware (ex Pecos)", d[~nc])]
+    tail = []
     for c, g in sorted(d.groupby("county"), key=lambda kv: -len(kv[1])):
         if len(g) >= MIN_FACET_N:
-            out.append((str(c), g))
-    return out
+            (tail if c in tq.CAUTION_COUNTIES else out).append((str(c) + (NO_CONTROL_LABEL if c in tq.CAUTION_COUNTIES else ""), g))
+    return out + tail
 
 
 def mark_positions(g: pd.DataFrame, f: Family) -> dict[str, float]:
@@ -172,8 +180,9 @@ def render(parts: list[str], meta: str) -> str:
         ("<p>Tag-blind landing position (lateral station median, else midpoint tvd_ft) relative to ONE reference "
          "surface per interface family, so the clusters show where development actually lands regardless of what "
          "the wells are called. Grey lines = neighbouring surfaces at the median of these wells; red dotted = the "
-         "depth that best separates each adjacent tag pair. Evidence wells only, Pecos excluded (reference surfaces "
-         "masked there). <b>Nothing here re-tags a well</b>: the split depths are candidate naming rules for Michael "
+         "depth that best separates each adjacent tag pair. Evidence wells only. Pecos has zero picks on every "
+         "reference surface: it is kept out of the basin panel and shown last, labelled NO PICKS; its lines are "
+         "modelled, so read it as where wells land, a first hint for picking. <b>Nothing here re-tags a well</b>: the split depths are candidate naming rules for Michael "
          "and the geologist to decide.</p>"),
     ]
     return "\n".join(head + parts)

@@ -111,17 +111,17 @@ def test_surface_crossings():
 def test_geology_rules():
     r = tq.apply_geology_rules
     assert r("AVA_1", "Reeves", "deep") == "no_surface"
-    assert r("WCA_1", "Pecos", "shallow") == "masked"          # WOLFCAMP_A masked in Pecos
-    assert r("WCXY", "Pecos", "deep") == "masked"              # base = WOLFCAMP_A masked
+    assert r("WCA_1", "Pecos", "shallow") == "no_control"      # WOLFCAMP_A has zero picks in Pecos
+    assert r("WCXY", "Pecos", "deep") == "no_control"          # base = WOLFCAMP_A
     assert r("BS3_S", "Pecos", "agree") == "agree"             # 3BSPGS -> WOLFCAMP_XY: picks exist
-    assert r("AVA_2", "Pecos", "agree") == "masked"            # top = AVALON2
-    assert r("AVA_0", "Pecos", "agree") == "masked"            # base = AVALON2
+    assert r("AVA_2", "Pecos", "agree") == "no_control"        # top = AVALON2
+    assert r("AVA_0", "Pecos", "agree") == "no_control"        # base = AVALON2
     assert r("WCC", "Reeves", "shallow") == "surface_suspect"  # top suspect
     assert r("WCB_2", "Reeves", "deep") == "surface_suspect"   # base suspect, deep call untrusted
     assert r("WCB_2", "Reeves", "shallow") == "shallow"        # top (B2) is fine
     assert r("WCA_1", "Reeves", "shallow") == "shallow"
     assert r("WDFD", None, "unmeasured") == "unmeasured"
-    assert all(s in tq.STACK for ss in tq.MASKED_SURFACES_BY_COUNTY.values() for s in ss)
+    assert all(s in tq.STACK for ss in tq.NO_CONTROL_SURFACES_BY_COUNTY.values() for s in ss)
     assert tq.SUSPECT_SURFACES <= set(tq.STACK)
 
 
@@ -131,7 +131,7 @@ def test_classify_edge_and_gross():
     assert tq.classify("deep", 26.0, edge_ft=25.0) == "deep"
     assert tq.classify("shallow", -301.0) == "gross"
     assert tq.classify("agree", 0.0) == "agree"
-    assert tq.classify("masked", np.nan) == "masked"
+    assert tq.classify("no_control", np.nan) == "no_control"
 
 
 def _attr_frame() -> pd.DataFrame:
@@ -227,3 +227,18 @@ def test_best_split():
     # complete overlap: no depth beats lumping -> separation 0
     s = tq.best_split(np.array([0.0, 10, 20, 30]), np.array([0.0, 10, 20, 30]))
     assert s["separation"] <= 0.0 + 1e-9
+
+
+def test_picks_needed():
+    rows = [(1_000.0 + 100 * i, 1_000.0, 20_000.0, "WCA_1") for i in range(4)]       # 4 far wells in one mile cell
+    rows += [(7_000.0 + 100 * i, 1_000.0, 1_000.0, "WCA_1") for i in range(5)]      # 5 controlled wells
+    rows += [(13_000.0, 1_000.0, np.nan, "WCA_2"), (13_100.0, 1_000.0, np.nan, "WCA_1"),
+             (13_200.0, 1_000.0, 9_000.0, "WCA_1")]                                  # NaN distance = no control
+    rows += [(20_000.0, 1_000.0, 30_000.0, "WCA_1")] * 2                             # far but only 2 wells
+    w = pd.DataFrame(rows, columns=["x", "y", "dist", "tag"])
+    p = tq.picks_needed(w, trust_ft=5_280.0)
+    assert list(p["n_far"]) == [4, 3]
+    assert p.loc[0, "cx"] == pytest.approx(2_640.0) and p.loc[0, "n_wells"] == 4
+    assert "WCA_2 1" in p.loc[1, "tags"]
+    assert tq.picks_needed(w.iloc[0:0], trust_ft=5_280.0).empty
+
