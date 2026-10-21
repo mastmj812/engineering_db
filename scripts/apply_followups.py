@@ -74,6 +74,7 @@ def main() -> None:
     apply_intel_forecast_accuracy.main()
     print("[3/4] recreate curated.erebor_locations (CASCADE-dropped by the rebuild)", flush=True)
     _exec("erebor_locations", "22_erebor_locations.sql")
+    _exec("box_scout_locations", "69_box_scout_locations.sql")  # sql/22's CASCADE drops the dependent sql/69 view
 
     print("[4/4] validation", flush=True)
     conn = get_connection()

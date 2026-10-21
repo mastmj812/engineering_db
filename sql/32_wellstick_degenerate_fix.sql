@@ -91,6 +91,7 @@ ANALYZE curated.wells;
 \ir 25_net_new_pdp.sql
 \ir 30_intel_pdp_support.sql
 \ir 22_erebor_locations.sql
+\ir 69_box_scout_locations.sql
 \ir 31_comments.sql
 
 -- =============================================================================

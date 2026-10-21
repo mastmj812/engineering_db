@@ -96,6 +96,7 @@ _CONSUMERS = {
     "box_econ.box_pud_econ_tie": "tie-out of the EUR Steven priced vs the BOX EUR: QC before any screen (step 8)",
     "box_econ.pud_econ": "Steven's sandbox econ on Novi sticks (his table): the BOX-vs-Novi exhibit",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
+    "curated.box_scout_locations": "land team / analyst_ro GIS: flat BOX record-run forecast + Steven's default-deck econ per stick location (sql/69)",
 }
 
 
