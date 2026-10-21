@@ -14,8 +14,13 @@
 --   land_grid     — Novi-supplied land grid polygons (raw DBF attrs in JSONB)
 --   basin_outline — basin outline polygons
 -- Novi is expected to keep shipping these as shapefiles outside the share;
--- etl/novi_intel/load_shapefiles.py is their only ingest route. Currently
--- frozen at the 3Q25 drop.
+-- etl/novi_intel/load_shapefiles.py is their only ingest route. Pads: 3Q25 +
+-- 2026Q3 rows side by side (sql/66); land grid / outline frozen at 3Q25.
+--
+-- DEPENDENTS (2026-10-20): curated.intel_pad_member + intel_pad_geom (sql/67)
+-- read raw_novi_intel.pads, so the DROP ... CASCADE below drops them too —
+-- after an --ddl rebuild, reload (--shapefiles) and re-run
+-- scripts.apply_intel_pad_geom.
 --
 -- Geometry: all Novi layers are EPSG:4326, stored as generic
 -- geometry(Geometry,4326) polygons.
@@ -36,11 +41,15 @@ CREATE TABLE raw_novi_intel.pads (
     basin           TEXT NOT NULL,          -- 'delaware' | 'midland'
     report_version  TEXT NOT NULL,          -- e.g. '3Q25'
     pad_name        TEXT,
+    operator        TEXT,                    -- 2026Q3+ (sql/66)
+    npv0            DOUBLE PRECISION,        -- 2026Q3 Delaware (sql/66)
     npv5            DOUBLE PRECISION,
     npv10           DOUBLE PRECISION,
     npv15           DOUBLE PRECISION,
     npv20           DOUBLE PRECISION,
     npv25           DOUBLE PRECISION,        -- Delaware: SUM_NPV25
+    ll_sum_ft       DOUBLE PRECISION,        -- 2026Q3+ (sql/66)
+    well_cnt        INTEGER,                 -- 2026Q3+ (sql/66)
     geom            geometry(Geometry, 4326),
     ingested_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -69,3 +78,4 @@ CREATE TABLE raw_novi_intel.basin_outline (
 );
 
 CREATE INDEX IF NOT EXISTS idx_rni_pads_geom ON raw_novi_intel.pads USING GIST (geom);
+CREATE INDEX IF NOT EXISTS idx_rni_pads_name ON raw_novi_intel.pads (basin, report_version, pad_name);

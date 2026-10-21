@@ -83,7 +83,7 @@ wells_enriched + codev_context + dev_scenario in order (keep that if it's ever r
 
 ```powershell
 python -m scripts.load_intel_sf --curated              # sql/29: intel_locations/arps/forecast
-python -m scripts.apply_intel_pad_geom                 # sql/46: pad groups + polygons from stick hulls (erebor Highgrade)
+python -m scripts.apply_intel_pad_geom                 # sql/67: pads = Novi DSU polygons of this vintage (+stray hulls); erebor Highgrade
 python -m scripts.apply_intel_formation_blueox         # sql/19
 python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wells_enriched -> sql/47 -> sql/21
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
@@ -103,15 +103,36 @@ recreated before sql/23 / sql/30 run, or those builds seq-scan for hours
 
 ## 6. Overlay geometries (only if Novi shipped new shapefiles)
 
-The share carries no DSU pad / land grid / basin outline geometry. If Novi
-delivered updated shapefiles (outside the share): update `REPORT_VERSION` +
-`BASIN_DIRS` in `etl/novi_intel/paths.py`, then
+The share carries no DSU pad / land grid / basin outline geometry; Novi ships
+them as shapefiles outside it.
+
+**DSU pad polygons — every vintage.** sql/67 takes a pad's polygon only from
+`raw_novi_intel.pads` rows whose `report_version` equals the share's
+(`curated.intel_locations.report_version`, e.g. '2026Q3'). Until the new
+vintage's pads are loaded, every pad falls back to derived stick hulls
+(`member_rule = no_polygon_cluster`) — Highgrade still works, on hulls. Once the
+drop is on SharePoint (`Novi Intelligence\<Basin>\<NQYY>`, outer
+`shapefile*` zip holding a `*Pad*Summary*Mid_Cycle*.zip`):
+
+1. Point `PADS_REPORT_VERSION` + `PADS_BASIN_DIRS` in `etl/novi_intel/paths.py`
+   at it (commit on a branch).
+2. Run (DB write — explicit go):
 
 ```powershell
-python -m scripts.load_novi_intel --shapefiles
+python -m scripts.apply_intel_pad_geom --load-pads   # sql/66 + load ALL polygons + sql/67 rebuild + validate
 ```
 
-Otherwise the frozen 3Q25 trio in `raw_novi_intel` stays.
+It refuses when the pad label != the share's vintage, and checks loaded rows ==
+shapefile records. All polygons load (WellCnt = 0 included — Novi's Pad Summary
+counts only NPV25 >= 0 wells): `raw_novi_intel.pads` is the DSU geometry of
+record. Expect strays to be off-scope benches (2026Q3: Delaware WDFD name
+reuse; Midland BRNT names without a polygon) — new benches in that list are a
+finding to raise with Novi.
+
+**Land grid / basin outline** (only if Novi re-ships them): update
+`REPORT_VERSION` + `BASIN_DIRS`, then `python -m scripts.load_novi_intel
+--shapefiles` (also reloads pads; re-run `apply_intel_pad_geom` after).
+Otherwise the 3Q25 land grid + outline stay.
 
 ## 7. Verify
 

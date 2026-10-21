@@ -214,8 +214,9 @@ def pdp_laterals_near(conn, unit: BaseGeometry, radius_mi: float = 1.5) -> list[
 
 
 def pad_iou(conn, unit: BaseGeometry) -> dict[str, Any] | None:
-    """ADVISORY Gate 2 signal: best IoU of the unit vs a derived Novi pad hull
-    (curated.intel_pad_geom; 2026Q3 covers Midland only). None = no pad."""
+    """ADVISORY Gate 2 signal: best IoU of the unit vs a Novi pad
+    (curated.intel_pad_geom, sql/67: Novi's own DSU polygon where the sticks
+    sit inside it, else a derived stick hull; both basins). None = no pad."""
     rows = _rows(conn, """
         WITH u AS (SELECT extensions.ST_GeomFromText(%(u)s, 4326) AS g)
         SELECT p.basin, p.pad_name,
