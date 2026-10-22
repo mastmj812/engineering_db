@@ -203,3 +203,15 @@ def test_handoff_page_draws_a_uturn_row():
     assert "<svg" in handoff_html._unit_map(u, colors)
     assert "<svg" in handoff_html._gunbarrel(u, colors)
     assert handoff_html._plus_side(u) == "E"
+
+
+def test_narvi_azimuth_is_sent_at_narvis_persisted_precision():
+    """RIP Harambe blob 2026-10-22: a 2-decimal grid azimuth (43.47) generated the rows
+    but narvi stored 43.5 -> a row 2.8 ft off its section-6 reproduction (Blue Ox refused)."""
+    from dealintake.geo import narvi_azimuth, true_to_grid
+
+    lon, lat = -103.30, 31.15
+    for az in (44.4, 179.7, 11.9, 0.3, 90.0):
+        got = narvi_azimuth(az, lon, lat)
+        assert got == round(got, 1) and 0.0 <= got < 180.0
+        assert abs(((got - true_to_grid(az, lon, lat)) + 90.0) % 180.0 - 90.0) <= 0.05

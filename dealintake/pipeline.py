@@ -61,11 +61,11 @@ from dealintake.geo import (
     gunbarrel_frame,
     long_axis_azimuth,
     mean_axial_azimuth,
+    narvi_azimuth,
     planned_lateral,
     stick_azimuth,
     stick_length_ft,
     stick_relation,
-    true_to_grid,
 )
 from dealintake.proximity import ProximityRule
 from dealintake.render.tables import p_value
@@ -220,7 +220,7 @@ def winerack_legs(
     gave the shallow WCB_1 the full lattice and shifted WCB_2 off a row; the
     bench keeping its rows anchors instead, the other shifts between them."""
     order = sorted(zones, key=lambda b: zones[b][0])
-    grid = true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)
+    grid = narvi_azimuth(azimuth_deg, unit.centroid.x, unit.centroid.y)
 
     def gen(b: str, pin: float | None = None) -> list[dict[str, Any]]:
         z: dict[str, Any] = {"formation": b, "target_tvd_ft": zones[b][0], "spacing_ft": zones[b][1]}
@@ -346,7 +346,7 @@ def gunbarrel_preview(
             else:
                 lg = wells(narvi.generate(unit, [zone(b, tvd, sp, opts)],
                                           setback_ft=setback_ft, spacing_ft=sp, anchor=anchor,
-                                          azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
+                                          azimuth_deg=narvi_azimuth(azimuth_deg, unit.centroid.x, unit.centroid.y)))
             rows = leg_rows(lg, project, prox, tvd, opts.get("pdp_proximity_ignore") or ())
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             planned[b] = {"error": str(e)[:160]}
@@ -540,7 +540,7 @@ def propose(
             # automatic override. Bearing conventions (verified in narvi's code,
             # 2026-09-26): /api/warehouse/azimuth is PostGIS ST_Azimuth on geography
             # = TRUE bearing; /api/generate lays rows in UTM 13N = GRID bearing
-            # (~0.9 deg apart across the Delaware) — see true_to_grid at the
+            # (~0.9 deg apart across the Delaware) — see narvi_azimuth at the
             # generate call.
             c0 = u.centroid
             az_deg, az_src = long_axis_azimuth(u), "unit long axis"
@@ -1306,7 +1306,7 @@ def evaluate(
                     gen = narvi.generate(
                         geom, [zone(bench, tvd_u, sp_u, opts)],
                         setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp_u,
-                        azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
+                        azimuth_deg=narvi_azimuth(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
                         anchor=plan[label].get("anchor"),
                     )
                     lg = wells(gen)

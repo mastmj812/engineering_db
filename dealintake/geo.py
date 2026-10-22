@@ -230,6 +230,19 @@ def true_to_grid(az_true: float, lon: float, lat: float) -> float:
     return fold_azimuth(az_true - grid_convergence_deg(lon, lat))
 
 
+def narvi_azimuth(az_true: float, lon: float, lat: float) -> float:
+    """The GRID bearing the runner hands narvi /api/generate: true_to_grid at
+    narvi's persisted precision, 0.1 deg. narvi lays the rows and stamps every
+    leg's gunbarrel offset with the azimuth it is GIVEN, but stores the scenario
+    header (= the Blue Ox dsu_meta.azimuth_deg) rounded to 0.1 deg. A two-decimal
+    input left the header up to 0.05 deg off the frame the offsets were cut in,
+    which reads as feet far from the centroid. RIP Harambe blob 2026-10-22:
+    43.47 deg used vs 43.5 stored -> a row 2.8 ft off its section-6
+    reproduction, and the Blue Ox build refused it (1 ft tolerance).
+    narvi's own azimuth paths are already 0.1 deg."""
+    return round(true_to_grid(az_true, lon, lat), 1) % 180.0
+
+
 def grid_to_true(az_grid: float, lon: float, lat: float) -> float:
     return fold_azimuth(az_grid + grid_convergence_deg(lon, lat))
 
