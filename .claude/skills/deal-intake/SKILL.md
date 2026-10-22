@@ -220,8 +220,7 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   operator writes these from Michael's calls; `propose` previews and
   `evaluate` honour them: per bench `tvd_ft` (his landing TVD for a bench
   with thin/no local control — a geology call), `spacing_ft` (the pattern —
-  Novi's de-facto spacing is only a SUGGESTION shown on the page; 880 ft is
-  the fallback), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
+  overrides the nearby-Novi spacing below), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
   west|east|north|south`, `drop_east_rows: n` (and west/north/south — the n
   rows nearest that side, for PDP there or basin-edge conservatism), `role:
   upside`, `winerack: false` (opt OUT of the default stagger — a unit's
@@ -260,13 +259,30 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   S2: 5k E-W in the west, 5k/10k N-S in the east; most VaULt BASE_CASE
   sticks are 5,080-ft N-S sticks under 2-mile E-W plans) — the PRESENCE of
   BASE_CASE sticks is the signal that the bench gets infilled, not a
-  location to copy. The review page shows each bench's Novi azimuth,
-  lateral and de-facto spacing with the reason. Pad IoU vs
+  location to copy. The review page shows each bench's Novi azimuth and
+  lateral with the reason. Pad IoU vs
   `intel_pad_geom` is advisory only (2026Q3 covers Midland only).
-- **Spacing for generated benches:** reviewer `--spacing` → else the Novi
-  BASE_CASE bench's **de-facto spacing** (median perpendicular gap between
-  the sticks, gaps < 300 ft = same slot; median over the class's units) →
-  else the 880-ft narvi fallback. The dossier prints which.
+- **Spacing for generated benches** (config v15, Michael 2026-10-22, RIP
+  Harambe — "generate the spacing from the spacing of Novi locations in the
+  respective bench near the parcel"; `dealintake/spacing.py`, config
+  `planned_spacing:`): reviewer `spacing_ft` / `--spacing` → else the SAME
+  bench's **Novi PUD sticks near the unit**: each stick's gap to its nearest
+  PARALLEL neighbour (±15°, alongside ≥ 30 %, median gap over the shared
+  length, < 300 ft = same slot), median within 1 → 2 → 3 mi until ≥ 6 gaps →
+  else the same test on Novi **RES** sticks → else the bench's **offset PDP
+  `lateral_closer_xy_ft`** within 3 mi (first prod ≥ 2016, NULL / 2,800
+  sentinel out, ≥ 6 wells) → else **no number**: the bench is not previewed,
+  goes to "Needs a look", and `evaluate` refuses until the reviewer sets
+  `spacing_ft`. The 880-ft fallback is retired. Measured per UNIT (each unit
+  generates at its own nearby pattern; the pool's tight-spacing class uses
+  the median over the bench's units; a unit with no pattern of its own
+  borrows that median, labelled). The review page shows the source, radius
+  and IQR per bench; an IQR wider than 15 % of the median (two patterns side
+  by side — RIP Harambe WCB_1 at 1,058 / 1,320) is flagged "mixed". Known
+  read: where Novi does not split the Wolfcamp A (only WCXY RES around RIP
+  Harambe 15-22 / the blob / Boondoggle), WCA_1 / WCA_2 fall to the PDP
+  closer-XY. The old in-unit midpoint projection is gone (it read 749 ft
+  on a 1,320-ft pattern when rows of differently oriented sticks mixed).
 - PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
 **Reviewer gate — do not run `evaluate` until Michael confirms:** the
@@ -281,7 +297,7 @@ bench he wants included despite thin control. Walk him through the
 ```
 python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
        [--benches WCA_1 WCA_2 ...]       ONE deal-wide list (simple deals); omit to use benches.yaml
-       [--spacing BENCH=FT ...]          per-bench planned spacing (default 880 ft narvi fallback)
+       [--spacing BENCH=FT ...]          per-bench planned spacing (default: nearby-Novi pattern, config v15)
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
        [--tc-single BENCH ...]           reviewer: ONE TC for the bench (escalate resolved / pooled, no multiplier)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)

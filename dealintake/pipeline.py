@@ -38,7 +38,16 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 from dealintake import benches as benchmod
-from dealintake import cohort_qc, proximity, split_test, strat, swd, unit_benches, water
+from dealintake import (
+    cohort_qc,
+    proximity,
+    spacing,
+    split_test,
+    strat,
+    swd,
+    unit_benches,
+    water,
+)
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
 from dealintake.clients.narvi import Narvi, legs
@@ -56,7 +65,6 @@ from dealintake.geo import (
     stick_azimuth,
     stick_length_ft,
     stick_relation,
-    stick_spacing_ft,
     true_to_grid,
 )
 from dealintake.proximity import ProximityRule
@@ -76,7 +84,6 @@ from dealintake.select_wells import (
 # test-pinned copy — import it, never restate it (cross-repo contract).
 from scripts.find_analogs import OFFSET_GATE_FT as PARENT_GATE_FT
 
-DEFAULT_SPACING_FT = 880.0  # narvi's fallback when no in-unit de-facto gap exists
 RADIUS_STEPS_MI = (5.0, 7.5, 10.0)
 
 
@@ -214,12 +221,13 @@ def gunbarrel_preview(
     gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
     bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
-    prox: ProximityRule | None = None,
+    prox: ProximityRule | None = None, spacing_by: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Cross-section data for the review page: existing producers and Novi
     BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
-    bench (spacing = the bench's Novi de-facto spacing, else 880 ft; TVD = the
-    unit's local median). Offsets in the rule-16 frame (ft), TVD in ft. With
+    bench (spacing = the reviewer's spacing_ft, else `spacing_by` — the bench's
+    nearby-Novi spacing, config v15; a bench with neither is not previewed and
+    says so; TVD = the unit's local median). Offsets in the rule-16 frame (ft), TVD in ft. With
     `prox`, rows inside a producer's depletion envelope are culled (row rule)
     and each bench carries the proximity summary."""
     project, (c_lo, c_hi), (a_lo, a_hi) = gunbarrel_frame(unit, azimuth_deg)
@@ -263,9 +271,17 @@ def gunbarrel_preview(
     # Winerack benches are placed together (one narvi call, staggered); the rest one by one.
     def _o(b: str) -> dict[str, Any]:
         return opts_all.get(b) or {}
-    wr_zones = {b: (float(_o(b).get("tvd_ft", tvd_by.get(b))), float(_o(b).get("spacing_ft") or DEFAULT_SPACING_FT))
-                for b, row in bench_seed.items()
-                if row["evaluate"] and staggered(_o(b)) and _o(b).get("tvd_ft", tvd_by.get(b)) is not None}
+
+    def _sp(b: str) -> tuple[float | None, str]:
+        if _o(b).get("spacing_ft"):
+            return float(_o(b)["spacing_ft"]), "reviewer"
+        s = (spacing_by or {}).get(b) or {}
+        return (float(s["spacing_ft"]), s["text"]) if s.get("spacing_ft") else (None, s.get("text") or "no spacing")
+    wr_zones: dict[str, tuple[float, float]] = {}
+    for b, row in bench_seed.items():
+        t, s = _o(b).get("tvd_ft", tvd_by.get(b)), _sp(b)[0]
+        if row["evaluate"] and staggered(_o(b)) and t is not None and s is not None:
+            wr_zones[b] = (float(t), s)
     wr: dict[str, list[dict[str, Any]]] | Exception = {}
     if wr_zones:
         try:
@@ -280,11 +296,13 @@ def gunbarrel_preview(
         tvd = opts.get("tvd_ft", tvd_by.get(b))
         if tvd is None:
             continue
-        g2 = gate2.get(b) or {}
-        # The reviewer sets the pattern; Novi's de-facto spacing is a SUGGESTION
-        # (36-37-38: Novi drew BS3_C at ~650 ft), 880 ft is the fallback.
-        sp = float(opts.get("spacing_ft") or DEFAULT_SPACING_FT)
-        sp_src = "reviewer" if opts.get("spacing_ft") else "880-ft fallback"
+        # The reviewer's spacing_ft wins; otherwise the nearby-Novi spacing (v15).
+        # No number = no preview: the reviewer sets one (the 880 fallback is retired).
+        sp_or_none, sp_src = _sp(b)
+        if sp_or_none is None:
+            planned[b] = {"error": f"not previewed — {sp_src}", "spacing_needed": True}
+            continue
+        sp = sp_or_none
         try:
             if b in wr_zones:
                 if isinstance(wr, Exception):
@@ -304,7 +322,6 @@ def gunbarrel_preview(
             min_leg_ft=min_leg_ft, cull_pdp=prox_enabled(opts))
         planned[b] = {"tvd_ft": tvd, "tvd_source": "reviewer" if "tvd_ft" in opts else "local median",
                       "spacing_ft": sp, "spacing_source": sp_src,
-                      "novi_spacing_ft": g2.get("novi_spacing_ft"),
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
                       "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
                       "winerack": b in wr_zones,
@@ -556,8 +573,6 @@ def propose(
                     "res_inside": c[("RES", "inside")], "res_crossing": c[("RES", "crossing")],
                     "novi_azimuth_deg": None if az_n is None else round(az_n, 1),
                     "novi_ll_ft": None if ll_n is None else round(ll_n, 0),
-                    # de-facto spacing of the BASE_CASE bench: what our generated sticks inherit
-                    "novi_spacing_ft": stick_spacing_ft([s["geom"] for s in puds], az_n) if az_n is not None else None,
                 }
                 gate2[b].update(gate2_decision(
                     gate2[b], planned_azimuth_deg=pl.azimuth_deg, planned_lateral_ft=pl.median_ft,
@@ -568,15 +583,21 @@ def propose(
             # landing zone the seed implies, and where they sit against the
             # existing wells — so topfill/underfill calls are made on the review
             # page, never automatically. Sticks are narvi PREVIEWS at the seed's
-            # benches; evaluate regenerates them with the class-level spacing.
+            # benches; evaluate regenerates them at the same per-unit spacing.
             rv = reviewed.get(pc["label"]) if reviewed else None
+            # Row spacing of a generated bench (config v15, Michael 2026-10-22): the
+            # bench's Novi sticks NEAR the unit, then RES, then offset-PDP closer-XY.
+            unit_spacing = spacing.resolve_unit(
+                conn, u, [r["bench"] for r in proposal if r["median_tvd_ft"] is not None]
+                + (list(rv["benches"]) if rv is not None else []), cfg.raw)
             gun = preview_and_seed(
-                lambda seed, _u=u, _pl=pl, _p=proposal, _g2=gate2, _s=sticks, _pn=pdp_near, _rv=rv, _px=prox: gunbarrel_preview(
+                lambda seed, _u=u, _pl=pl, _p=proposal, _g2=gate2, _s=sticks, _pn=pdp_near, _rv=rv, _px=prox,
+                _sb=unit_spacing: gunbarrel_preview(
                     _u, _pl.azimuth_deg, _p,
                     {b: {"evaluate": True} for b in _rv["benches"]} if _rv is not None else seed,
                     _g2, _s, _pn, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                     bench_opts=_rv["bench_opts"] if _rv is not None else None,
-                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px),
+                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px, spacing_by=_sb),
                 bench_seed, apply_to_seed=rv is None)
             gun["benches_source"] = unit_benches.FILENAME if rv is not None else "seed"
             out["units"].append({
@@ -602,6 +623,7 @@ def propose(
                                     "grid_convergence_deg": round(grid_convergence_deg(c0.x, c0.y), 2)},
                 "bench_proposal": proposal,
                 "gate2": gate2,
+                "spacing": unit_spacing,
                 "pad_iou_advisory": wh.pad_iou(conn, u),
                 "pdp_in_unit": wh.pdp_in_unit(conn, u),
             })
@@ -878,6 +900,54 @@ def lateral_classes(ll_by_unit: dict[str, float], ratio: float) -> list[list[str
     return out
 
 
+def row_spacing(
+    jobs: list[tuple[str, list[str], str]], prop: dict[str, Any], plan: dict[str, dict[str, Any]],
+    spacing_ft: dict[str, float], config_version: int,
+) -> tuple[dict[str, tuple[float, str]], dict[tuple[str, str], tuple[float, str]]]:
+    """Row spacing per job (the pool's planned spacing, for the tight-spacing
+    class) and per (unit, bench) (the generated rows), config v15 — Michael
+    2026-10-22. Order: reviewer --spacing (deal-wide) > benches.yaml spacing_ft
+    (per unit; the job takes their median) > the unit's nearby-Novi / PDP
+    spacing from propose (the job takes the median over its units) > a unit
+    with no pattern of its own BORROWS the job's value, labelled. A bench with
+    none of these raises: the reviewer sets spacing_ft (no silent 880)."""
+    by_label = {u["label"]: u for u in prop["units"]}
+    sp_class: dict[str, tuple[float, str]] = {}
+    sp_unit: dict[tuple[str, str], tuple[float, str]] = {}
+    missing: list[str] = []
+    for bench, class_units, key in jobs:
+        found = {lb: ((by_label[lb].get("spacing") or {}).get(bench) or {}) for lb in class_units}
+        rev = {lb: (plan[lb]["bench_opts"].get(bench) or {}).get("spacing_ft") for lb in class_units}
+        cls: tuple[float, str] | None = None
+        if bench in spacing_ft:
+            cls = (float(spacing_ft[bench]), "reviewer (--spacing)")
+        elif any(rev.values()):
+            cls = (float(_median([float(v) for v in rev.values() if v]) or 0.0),
+                   "reviewer (benches.yaml, median over the class units)")
+        elif (m := _median([float(f["spacing_ft"]) for f in found.values() if f.get("spacing_ft")])) is not None:
+            cls = (float(m), "nearby pattern (median over the class units)")
+        for lb in class_units:
+            if bench in spacing_ft:
+                sp_unit[(lb, bench)] = (float(spacing_ft[bench]), "reviewer (--spacing)")
+            elif rev[lb]:
+                sp_unit[(lb, bench)] = (float(rev[lb]), "reviewer (benches.yaml)")
+            elif found[lb].get("spacing_ft"):
+                sp_unit[(lb, bench)] = (float(found[lb]["spacing_ft"]), found[lb]["text"])
+            elif cls is not None:
+                sp_unit[(lb, bench)] = (cls[0], (f"borrowed {cls[0]:,.0f} ft ({cls[1]}) — this unit: "
+                                                 f"{found[lb].get('text') or 'not resolved'}"))
+            else:
+                missing.append(f"{by_label[lb].get('dsu_name') or lb} {bench}")
+        if cls is not None:
+            sp_class[key] = cls
+    if missing:
+        raise ValueError(
+            "no row spacing for " + ", ".join(missing) + f" — no Novi PUD/RES or offset-PDP pattern nearby (config "
+            f"v{config_version} planned_spacing); set spacing_ft on the bench in benches.yaml (or --spacing BENCH=FT), "
+            "or re-run propose if this run predates config v15")
+    return sp_class, sp_unit
+
+
 def evaluate(
     run_dir: Path,
     cfg: Config,
@@ -1029,6 +1099,7 @@ def evaluate(
             ll_c = _median([ll_b[u] for u in cl])
             jobs.append((bench, cl, bench if len(classes) == 1 else f"{bench} @ {ll_c:,.0f} ft"))
     known_units = set(all_units)
+    sp_class, sp_unit = row_spacing(jobs, prop, plan, spacing_ft, cfg.version)
 
     winerack_memo: dict[str, tuple[dict[str, list[dict[str, Any]]], dict[str, float]]] = {}  # unit -> (legs, pins)
     # PDP-proximity cull (config v14): one rule per unit, producers read live once.
@@ -1061,22 +1132,8 @@ def evaluate(
                                  "planned_lateral_ft": planned_ll,
                                  "tvd_ft": _median(local_tvds) or bench_tvd[bench]}
             res["benches"][key] = B
-            novi_sp = _median([
-                g.get("novi_spacing_ft")
-                for u in prop["units"] if u["label"] in units
-                for b, g in (u.get("gate2") or {}).items() if bench_code(b) == bench
-            ])
-            unit_sp = {lb: (plan[lb]["bench_opts"].get(bench) or {}).get("spacing_ft") for lb in class_units}
-            rev_sp = _median([v for v in unit_sp.values() if v])
-            if bench in spacing_ft:
-                sp, sp_src = float(spacing_ft[bench]), "reviewer (--spacing)"
-            elif rev_sp:
-                sp, sp_src = float(rev_sp), "reviewer (benches.yaml, median over the class units)"
-            else:
-                sp, sp_src = DEFAULT_SPACING_FT, f"default {DEFAULT_SPACING_FT:.0f} ft (narvi fallback)"
+            sp, B["spacing_source"] = sp_class[key]
             B["spacing_ft"] = sp
-            B["spacing_source"] = sp_src + (f"; Novi de-facto pattern {novi_sp:,.0f} ft (suggestion only)" if novi_sp else "")
-            B["novi_spacing_ft"] = novi_sp
             support_all: list[dict[str, Any]] = []
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
@@ -1107,12 +1164,13 @@ def evaluate(
                 else:
                     tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
                     tvd_src = "unit local median" if local_tvd is not None else "cross-unit median (no local control)"
-                sp_u = float(opts.get("spacing_ft") or sp)
+                sp_u, sp_u_src = sp_unit[(label, bench)]
                 g2 = location_source(u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
                                                                 "pud_inside": 0, "pud_crossing": 0}, opts)
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
-                                      "spacing_ft": sp_u, "role": opts.get("role", "base"), "row_rules": []}
+                                      "spacing_ft": sp_u, "spacing_source": sp_u_src,
+                                      "role": opts.get("role", "base"), "row_rules": []}
                 az_u = u["planned_lateral"]["azimuth_deg"]
                 if prox_cfg and label not in prox_memo:
                     prox_memo[label] = ProximityRule(
@@ -1147,7 +1205,7 @@ def evaluate(
                             if t2 is None:
                                 t2 = bench_tvd.get(b2)
                             if t2 is not None:
-                                zones[b2] = (float(t2), float(o2.get("spacing_ft") or DEFAULT_SPACING_FT))
+                                zones[b2] = (float(t2), sp_unit[(label, b2)][0])
                         zones[bench] = (tvd_u, sp_u)
                         winerack_memo[label] = winerack_legs(
                             narvi, geom, u["planned_lateral"]["azimuth_deg"], zones,

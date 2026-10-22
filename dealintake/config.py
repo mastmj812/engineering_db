@@ -30,6 +30,8 @@ _REQUIRED = {
     "codev": ("xy_ft", "window_days", "overlap_min_frac", "tier_order_default",
               "tier_order_when_pdp_adjacent", "min_tier1_frac_warn", "scenario_band_ft"),
     "spacing": ("tight_below_frac", "sentinel_ft"),
+    "planned_spacing": ("radius_steps_mi", "min_gaps", "parallel_tol_deg", "overlap_min_frac", "same_slot_ft",
+                        "neighbour_search_ft", "pdp_radius_mi", "spread_flag_frac"),
     "qc_flags": ("peak_month_tolerance", "eur_ft_mad_z", "di_dispersion"),
     "split": ("min_wells_per_group", "median_ratio", "alpha"),
     "pdp_proximity": ("enabled", "vertical_ft", "horizontal_ft", "overlap_min_frac", "near_miss_ratio",

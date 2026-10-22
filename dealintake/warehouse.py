@@ -18,6 +18,7 @@ from typing import Any
 from shapely import wkt as shp_wkt
 from shapely.geometry.base import BaseGeometry
 
+from dealintake.select_wells import bench_code
 from etl.db import get_connection
 
 STATEMENT_TIMEOUT = "300s"
@@ -182,6 +183,28 @@ def local_benches(conn, unit: BaseGeometry, radius_mi: float = 3.0) -> list[dict
           AND we.formation_blueox IS NOT NULL
         GROUP BY 1 ORDER BY 2 DESC
     """, {"u": unit.wkt, "r": radius_mi * M_PER_MI})
+
+
+def pdp_closer_xy(conn, unit: BaseGeometry, radius_mi: float, first_prod_after: str) -> dict[str, list[float | None]]:
+    """{bench: [lateral_closer_xy_ft, ...]} of producing horizontals within
+    `radius_mi` that came online on/after `first_prod_after` — the last-resort
+    spacing source for a generated bench (config v15). Raw values: NULL and the
+    2,800-ft no-neighbour sentinel are filtered by the caller (spacing.resolve)."""
+    rows = _rows(conn, f"""
+        SELECT we.formation_blueox AS bench, we.lateral_closer_xy_ft AS xy
+        FROM curated.wells w
+        CROSS JOIN (SELECT extensions.ST_GeomFromText(%(u)s, 4326) AS g) u
+        JOIN curated.wells_enriched we ON we.api10 = w.api10
+        WHERE extensions.ST_DWithin(w.wellstick_geom::extensions.geography,
+                                    u.g::extensions.geography, %(r)s)
+          AND {_HZ}
+          AND w.first_production_date >= %(fp)s
+          AND we.formation_blueox IS NOT NULL
+    """, {"u": unit.wkt, "r": radius_mi * M_PER_MI, "fp": first_prod_after})
+    out: dict[str, list[float | None]] = {}
+    for r in rows:
+        out.setdefault(bench_code(r["bench"]), []).append(None if r["xy"] is None else float(r["xy"]))
+    return out
 
 
 def wellsticks(conn, api10s: list[str]) -> dict[str, str]:

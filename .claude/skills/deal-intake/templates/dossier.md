@@ -49,7 +49,7 @@ lateral is outside the cohort's lateral range.
 
 | Column | Read it as |
 |---|---|
-| Locations (src) | count + `novi` (all PUD sticks inside, oriented and sized like the plan) or `generate` (a stick crossed the line, or Novi's orientation/length differs → narvi preview for the whole bench at the BASE_CASE de-facto spacing) |
+| Locations (src) | count + `novi` (all PUD sticks inside, oriented and sized like the plan) or `generate` (a stick crossed the line, or Novi's orientation/length differs → narvi preview for the whole bench at the nearby-Novi spacing, config v15 — "Spacing from" says which source) |
 | pdp_count_3mi med / Gate 3 | raw-producer support; `escalate (marginal…)` = live re-count before excluding, never auto-exclude |
 | TVD excess max ft | location TVD vs 3-mi offsets (deep-TVD screening context) |
 | PDP in adjacent bench | feeds the tier-order flip (strict majority of units) |
