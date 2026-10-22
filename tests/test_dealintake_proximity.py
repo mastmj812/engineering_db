@@ -54,7 +54,7 @@ def test_a_producer_past_the_end_of_our_stick_never_culls():
     """15-22 WCA_2 row -107: a WCA_2 producer ~100 ft away horizontally and 99 ft
     vertically, but barely touching the unit (1 % in it) — Michael kept the row."""
     r = _check(_w("B", 100, 4500, 9000, 10450))                   # shares 100 ft of our 9,200
-    assert r == {"rule": r["rule"], "cull": [], "near": [], "permit": []}
+    assert r == {"rule": r["rule"], "cull": [], "near": [], "permit": [], "ignored": []}
 
 
 def test_overlap_is_a_share_of_OUR_stick():

@@ -227,8 +227,26 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   generated benches are placed together, adjacent benches half a spacing
   apart, Michael 2026-10-08; on a narrow unit the stagger can cost a row:
   Rally Caps 1-12 WCB_2 4 -> 3), `pdp_proximity: false` (keep the rows the
-  PDP-proximity rule would cull — a reviewer call, decision-logged); per
-  unit `min_leg_ft` (drop stair-step stubs). Sides are compass
+  PDP-proximity rule would cull — a reviewer call, decision-logged),
+  `pdp_proximity_ignore: [api10, ...]` (exempt named producers from the cull;
+  the rest still cull; their would-be culls are listed), `well_type: uturn`
+  (narvi U-turns — spacing_ft is LEG-TO-LEG; ONE location per well carrying
+  its total completed lateral, as narvi persists it and the Blue Ox drop
+  reads it; a U-turn bench is placed on its own, never staggered; its analog
+  POOL is drawn on the COMPLETED lateral — sum of the two legs, curve
+  excluded — not the unit's planned chord: Michael 2026-10-22; no production
+  penalty for being a U-turn, drilled vs completed is Steven's economics),
+  `pin_offset_ft` (put a row at that gunbarrel offset, the lattice runs
+  through it at spacing_ft — hand-drawn layouts: the RIP Harambe blob mockup
+  = WCA_2 `pin_offset_ft: 0` @ 1,320 -> -1,320 / 0 / +1,320; a pinned bench
+  is not staggered), `stagger_lead: true` (on ONE staggered bench: it keeps
+  its layout whatever the row counts say — RIP Harambe 15-22 forced to
+  WCA_2 2 + WCB_1 2 instead of the count rule's 3 + 1); per
+  unit `min_leg_ft` (drop stair-step stubs) and `anchor: east|west|center`
+  (where narvi hangs the rows — a LEASE-LINE anchor also runs the laterals
+  parallel to that line, not the long axis; Michael 2026-10-22, RIP Harambe
+  Boondoggle U-turns "anchor to east line", blob "centered" 3 wells =
+  `anchor: center` + `n_wells: 3`). Sides are compass
   words; the runner maps them onto the rule-16 frame (on a 162° plan the
   +offset side is WSW, so "east" is the negative side). Every key lands in
   the decision log.

@@ -98,7 +98,7 @@ def test_benches_yaml_round_trip_and_reviewer_edit(tmp_path):
     (tmp_path / unit_benches.FILENAME).write_text(unit_benches.render(prop), encoding="utf-8")
     plan = unit_benches.read(tmp_path, prop)
     assert plan["u1"] == {"benches": ["WCB_1"], "planned_lateral_ft": 9912.0, "seed_benches": ["WCB_1"], "edited": False,
-                          "bench_opts": {"WCB_1": {}}, "min_leg_ft": None}
+                          "bench_opts": {"WCB_1": {}}, "min_leg_ft": None, "anchor": None}
 
     text = (tmp_path / unit_benches.FILENAME).read_text(encoding="utf-8")
     text = text.replace("WCA_1:  {evaluate: false", "WCA_1:  {evaluate: true ").replace(
@@ -201,7 +201,8 @@ def test_reviewed_benches_reads_the_reviewer_file(tmp_path):
     assert unit_benches.reviewed_benches(tmp_path) == {}
     prop = _prop()
     (tmp_path / unit_benches.FILENAME).write_text(unit_benches.render(prop), encoding="utf-8")
-    assert unit_benches.reviewed_benches(tmp_path) == {"u1": {"benches": ["WCB_1"], "bench_opts": {"WCB_1": {}}, "min_leg_ft": None}}
+    assert unit_benches.reviewed_benches(tmp_path) == {"u1": {"benches": ["WCB_1"], "bench_opts": {"WCB_1": {}}, "min_leg_ft": None,
+                                                              "anchor": None}}
 
 
 def test_reviewer_bench_options_round_trip(tmp_path):

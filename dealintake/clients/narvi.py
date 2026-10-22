@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-from shapely.geometry import mapping, shape
+from shapely.geometry import MultiLineString, mapping, shape
 from shapely.geometry.base import BaseGeometry
 
 DEFAULT_URL = os.environ.get("NARVI_URL", "http://127.0.0.1:8078")
@@ -83,10 +83,15 @@ class Narvi:
         well_type: str = "single",
         setback_ns_ft: float | None = None,
         setback_ew_ft: float | None = None,
+        anchor: str | None = None,
     ) -> dict[str, Any]:
         """POST /api/generate (winerack). PREVIEW only — nothing persists; the
         reviewer saves the scenario in narvi. Returns the raw response; legs are
-        geojson features with kind='leg' (heel->toe, completed_lateral_ft)."""
+        geojson features with kind='leg' (heel->toe, completed_lateral_ft).
+        `anchor` = where the rows hang (narvi: auto | west | east | center); a
+        west/east LEASE-LINE anchor also sets the bearing — laterals parallel to
+        that line, whatever `azimuth_deg` says (narvi engine._resolve_azimuth).
+        Per-bench `well_type` ("uturn") rides on the zone dicts."""
         params: dict[str, Any] = {
             "spacing_ft": spacing_ft, "setback_ft": setback_ft,
             "azimuth_deg": azimuth_deg, "well_type": well_type,
@@ -95,6 +100,8 @@ class Narvi:
             params["setback_ns_ft"] = setback_ns_ft
         if setback_ew_ft is not None:
             params["setback_ew_ft"] = setback_ew_ft
+        if anchor is not None:
+            params["anchor"] = anchor
         return self._post("/api/generate", json={
             "parcel": mapping(parcel), "params": params, "mode": "winerack", "zones": zones,
         })
@@ -114,4 +121,32 @@ def legs(generate_response: dict[str, Any]) -> list[dict[str, Any]]:
         props = f.get("properties") or {}
         if props.get("kind") == "leg":
             out.append({**props, "geom": shape(f["geometry"])})
+    return out
+
+
+def wells(generate_response: dict[str, Any]) -> list[dict[str, Any]]:
+    """Generated WELLS — legs grouped by (formation, well_name). A single lateral
+    passes through as its one leg. A U-turn (narvi: two legs sharing a well_name,
+    each carrying the WELL's total completed_lateral_ft) becomes ONE well: geom =
+    MultiLineString of its legs, gunbarrel_x_ft = the legs' mean, gunbarrel_xs =
+    each leg's — the way narvi persists it (one inventory_well, n_legs 2) and
+    anduin's Blue Ox drop reads it. Counting legs would double a U-turn.
+    `turn_wkt` = the U-turn's arc (narvi kind='turn'), display only."""
+    turns = {(f["properties"].get("formation"), f["properties"].get("well_name")): shape(f["geometry"]).wkt
+             for f in generate_response.get("geojson", {}).get("features", [])
+             if (f.get("properties") or {}).get("kind") == "turn"}
+    groups: dict[Any, list[dict[str, Any]]] = {}
+    for lg in legs(generate_response):
+        key = (lg.get("formation"), lg["well_name"]) if lg.get("well_name") else id(lg)
+        groups.setdefault(key, []).append(lg)
+    out = []
+    for g in groups.values():
+        g.sort(key=lambda x: x.get("leg_index") or 0)
+        xs = [float(x["gunbarrel_x_ft"]) for x in g if x.get("gunbarrel_x_ft") is not None]
+        if len(g) == 1:
+            out.append({**g[0], "n_legs": 1, "gunbarrel_xs": xs})
+            continue
+        out.append({**g[0], "geom": MultiLineString([x["geom"] for x in g]), "n_legs": len(g),
+                    "gunbarrel_x_ft": sum(xs) / len(xs) if xs else None, "gunbarrel_xs": xs,
+                    "turn_wkt": turns.get((g[0].get("formation"), g[0].get("well_name")))})
     return out

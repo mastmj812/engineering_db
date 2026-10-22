@@ -87,9 +87,12 @@ def unit_benches(sig: dict[str, Any]) -> dict[str, dict[str, dict[str, Any]]]:
 # ---------------------------------------------------------------------------
 
 def _mid(wkt_or_geom: Any) -> Any:
+    """Mid-lateral point; a U-turn's (two legs) is the centroid between them."""
     from shapely import wkt as shp_wkt
+
+    from dealintake.geo import stick_midpoint
     g = shp_wkt.loads(wkt_or_geom) if isinstance(wkt_or_geom, str) else wkt_or_geom
-    return g.interpolate(0.5, normalized=True)
+    return stick_midpoint(g)
 
 
 def match_legs(
@@ -124,7 +127,8 @@ def plan_unit(
     """The composed-save body for one unit + its row match against the dossier.
     `upload` = narvi's own parcel record for this label (attributes + tracts in
     the shape its parcel card reads); None -> proposal attributes, no tracts."""
-    from dealintake.clients.narvi import legs as narvi_legs
+    # U-turn legs grouped: one well, one location
+    from dealintake.clients.narvi import wells as narvi_legs
 
     label, geom = unit["label"], shape(unit["geometry"])
     frame = LocalFrame.around(geom)
@@ -133,7 +137,11 @@ def plan_unit(
     gen = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] != "novi"}
     novi = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] == "novi"}
     order = sorted(gen, key=lambda b: gen[b]["tvd_ft"])
-    zones = [{"formation": b, "target_tvd_ft": gen[b]["tvd_ft"], "spacing_ft": gen[b]["spacing_ft"]} for b in order]
+    zones = [{"formation": b, "target_tvd_ft": gen[b]["tvd_ft"], "spacing_ft": gen[b]["spacing_ft"],
+              **({"well_type": gen[b]["well_type"]} if gen[b].get("well_type", "single") != "single" else {})}
+             for b in order]
+    # the reviewer's unit anchor (east / west lease line, center) — evaluate records it on every bench
+    anchor = next((UB.get("anchor") for UB in ubs.values() if UB.get("anchor")), None)
     base_sp = zones[0]["spacing_ft"] if zones else 0.0
     issues: list[str] = []
 
@@ -146,7 +154,8 @@ def plan_unit(
         for call in calls:
             zs = [z for z in zones if z["formation"] in call]
             got = _by_bench(narvi_legs(narvi.generate(geom, zs, setback_ft=setback_ft,
-                                                      spacing_ft=zs[0]["spacing_ft"], azimuth_deg=az_grid)))
+                                                      spacing_ft=zs[0]["spacing_ft"], azimuth_deg=az_grid,
+                                                      anchor=anchor)))
             for b in call:
                 hit, _, miss = match_legs(gen[b]["locations"], got.get(b, []), frame)
                 if miss or not hit:
@@ -158,11 +167,13 @@ def plan_unit(
         if z["formation"] in pins:
             z["offset_ft"] = pins[z["formation"]]
 
-    params = {"spacing_ft": base_sp, "setback_ft": setback_ft, "azimuth_deg": az_grid, "well_type": "single"}
+    params = {"spacing_ft": base_sp, "setback_ft": setback_ft, "azimuth_deg": az_grid, "well_type": "single",
+              **({"anchor": anchor} if anchor else {})}
     rows: list[dict[str, Any]] = []
     culled: list[str] = []
     if zones and not issues:
         save_legs = _by_bench(narvi_legs(narvi.generate(geom, zones, setback_ft=setback_ft, spacing_ft=base_sp,
+                                                        anchor=anchor,
                                                         azimuth_deg=az_grid)))
         for b in order:
             targets = gen[b]["locations"]
