@@ -105,10 +105,66 @@ def test_measured_pool_and_local_evidence():
 
 
 def test_variants_are_preregistered_on_the_measured_pool():
-    assert set(s16.VARIANTS) == {"box_v2s", "box_v2s_lat", "box_v2s_lo", "box_v2s_r1", "box_v2s_r1lo"}
+    assert set(s16.VARIANTS) == {"box_v2s", "box_v2s_tr", "box_v2s_lo", "box_v2s_r1", "box_v2s_r2", "box_v2s_r2lo"}
     assert all(k == s16.MEASURED for k, _ in s16.VARIANTS.values())
     assert s16.VARIANTS[s16.BASE][1] == an.RECORD_RULES
-    assert set(s16.CANDIDATES) | set(s16.ATTRIBUTION) | {s16.BASE} == set(s16.VARIANTS)
+    assert set(s16.CANDIDATES) | set(s16.COMPARISON) | set(s16.ATTRIBUTION) | {s16.BASE} == set(s16.VARIANTS)
+    assert s16.CANDIDATES == ("box_v2s_r2", "box_v2s_r2lo") and s16.COMPARISON == ("box_v2s_r1",)
+    r2 = s16.VARIANTS["box_v2s_r2"][1]
+    assert r2.lateral == "translate" and r2.relax == ("count", "spacing") and r2.translate_range == (5_000.0, 15_000.0)
+    assert set(s16.SCORED) == set(s16.VARIANTS) | {"box_v2s_tr_lin", "box_v2s_r2_lin"}
+
+
+def test_translate_mode_admits_the_range_and_always_translates():
+    with pytest.raises(ValueError):
+        an.Rules(lateral="translate", relax=("lateral",))
+    with pytest.raises(ValueError):
+        an.Rules(lateral="nearest")
+    # 4,500 (below range), 5,500, 10,000, 14,500 (inside), 16,000 (above): all near, all measured spacing
+    rows = [(1.0 + 0.1 * i, lat, 30.0, 1_000.0) for i, lat in enumerate([4_500.0, 5_500.0, 10_000.0, 14_500.0, 16_000.0] * 2)]
+    pool = _pool(rows)
+    idx, r, flags, _ = _sel(pool, an.Rules(lateral="translate", relax=("count",)))
+    assert r == 5.0 and sorted(pool["lateral"][i] for i in idx) == [5_500.0] * 2 + [10_000.0] * 2 + [14_500.0] * 2
+    assert an.LATERAL_TRANSLATED in flags
+    assert an.lateral_multiplier(10_360.0, [10_000.0], flags) != pytest.approx(10.36)  # Cui even at a 2-mi stick
+
+
+def test_r2_closes_pad1925_on_the_near_wells_without_a_lateral_step():
+    idx, r, flags, _ = _sel(_pad1925(), s16.VARIANTS["box_v2s_r2"][1])
+    # translate admits the five 10,000-ft wells; count (the lowest priority) is given up first, so the ring closes at 5 wells
+    # and spacing is never relaxed: the two standalone wells stay out
+    assert r == 5.0 and sorted(idx) == list(range(5))
+    assert "relaxed: count (5 < 10)" in flags and not any(f.startswith("relaxed: spacing") for f in flags)
+    assert an.LATERAL_TRANSLATED in flags
+
+
+def _cui_view() -> pd.DataFrame:
+    # 10 wells per class; Cui exact everywhere; linear under-predicts the shorter class and over-predicts the longer one
+    # (opposite signs: pooled they nearly cancel, which is why the decision reads the classes separately)
+    n = 10
+    ratio = [0.7] * n + [1.0] * n + [1.5] * n
+    pred_cui = [100.0] * (3 * n)
+    pred_lin = [100.0 / 1.2] * n + [100.0] * n + [120.0] * n
+    return pd.DataFrame({"box_v2s_r2_lat_ratio": ratio, "actual_oil12": [100.0] * (3 * n), "actual_oil24": [200.0] * (3 * n),
+                         "pred_box_v2s_r2_oil12": pred_cui, "pred_box_v2s_r2_lin_oil12": pred_lin,
+                         "pred_box_v2s_r2_oil24": [2 * x for x in pred_cui], "pred_box_v2s_r2_lin_oil24": [2 * x for x in pred_lin]})
+
+
+def test_cui_vs_linear_by_mismatch_class():
+    v = _cui_view()
+    c = pd.concat([s16.cui_vs_linear(v, "box_v2s_r2", "oil", k) for k in (12, 24)], ignore_index=True)
+    mis = c[(c.mismatch == "mismatched") & (c.horizon == 12)].iloc[0]
+    assert mis.n_wells == 20 and mis.bias_cui == pytest.approx(0.0)
+    assert abs(mis.bias_linear) < 0.02  # pooled, linear's two errors cancel ...
+    sh = c[(c.mismatch == "shorter") & (c.horizon == 12)].iloc[0]
+    lg = c[(c.mismatch == "longer") & (c.horizon == 12)].iloc[0]
+    assert sh.bias_linear == pytest.approx(0.2) and lg.bias_linear == pytest.approx(100.0 / 120.0 - 1.0)  # ... per class they don't
+    assert c[(c.mismatch == "near") & (c.horizon == 12)].iloc[0].bias_linear == pytest.approx(0.0)
+    assert s16.cui_holds(c)
+    swapped = c.rename(columns={"bias_cui": "bias_linear", "bias_linear": "bias_cui"})
+    assert not s16.cui_holds(swapped)
+    assert s16.cui_flags(swapped.assign(group="BS1_S")) == ["BS1_S"] and s16.cui_flags(c.assign(group="WCA")) == []
+    assert not s16.cui_holds(c.assign(n_wells=5))  # classes too thin: cannot judge = fails
 
 
 def _cells(fails: dict[str, int], bias: dict[str, float]) -> pd.DataFrame:
@@ -120,14 +176,16 @@ def _cells(fails: dict[str, int], bias: dict[str, float]) -> pd.DataFrame:
 
 
 def test_adopt_picks_the_passing_candidate_and_needs_the_hindcast_for_level_only():
-    cells = _cells({"box_v2s": 2, "box_v2s_r1": 1, "box_v2s_r1lo": 1}, {"box_v2s": 0.08, "box_v2s_r1": 0.06, "box_v2s_r1lo": 0.05})
-    strat = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r1", "box_v2s_r1lo"], "bias": [-0.20, -0.08, -0.07]})
-    off = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r1", "box_v2s_r1lo"], "share_off": [0.30, 0.15, 0.14]})
-    assert s16.adopt(cells, strat, off, hindcast_bias=0.10)["adopted"] == "box_v2s_r1lo"
-    r = s16.adopt(cells, strat, off, hindcast_bias=None)  # level-only never adopted without its hindcast
-    assert r["adopted"] == "box_v2s_r1" and not r["checks"]["box_v2s_r1lo"]["hindcast"]
-    worse = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r1", "box_v2s_r1lo"], "bias": [-0.05, -0.08, -0.07]})
-    assert s16.adopt(cells, worse, off, hindcast_bias=0.10)["adopted"] == s16.BASE  # far-with-local stratum got worse
+    cells = _cells({"box_v2s": 2, "box_v2s_r2": 1, "box_v2s_r2lo": 1}, {"box_v2s": 0.08, "box_v2s_r2": 0.06, "box_v2s_r2lo": 0.05})
+    strat = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r2", "box_v2s_r2lo"], "bias": [-0.20, -0.08, -0.07]})
+    off = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r2", "box_v2s_r2lo"], "share_off": [0.30, 0.15, 0.14]})
+    assert s16.adopt(cells, strat, off, hindcast_bias=0.10, cui_ok=True)["adopted"] == "box_v2s_r2lo"
+    r = s16.adopt(cells, strat, off, hindcast_bias=None, cui_ok=True)  # level-only never adopted without its hindcast
+    assert r["adopted"] == "box_v2s_r2" and not r["checks"]["box_v2s_r2lo"]["hindcast"]
+    assert s16.adopt(cells, strat, off, hindcast_bias=0.10, cui_ok=False)["adopted"] == s16.BASE  # translation must hold
+    assert s16.adopt(cells, strat, off, hindcast_bias=0.10)["adopted"] == s16.BASE  # check not run = not adopted
+    worse = pd.DataFrame({"variant": ["box_v2s", "box_v2s_r2", "box_v2s_r2lo"], "bias": [-0.05, -0.08, -0.07]})
+    assert s16.adopt(cells, worse, off, hindcast_bias=0.10, cui_ok=True)["adopted"] == s16.BASE  # stratum got worse
 
 
 def test_stratum_is_fixed_by_the_base_selection():
@@ -150,9 +208,13 @@ def test_prediction_path_carries_the_variants_and_leaves_box_v2_unchanged():
     k = 24
     base = an.predict_many_v2([loc], pool, pool, dt.date(2024, 12, 1), k, workers=1, bench="BS1_S")
     with16 = an.predict_many_v2([loc], pool, pool, dt.date(2024, 12, 1), k, workers=1, bench="BS1_S",
-                                extra_pools={s16.MEASURED: pm}, variants16=s16.VARIANTS)
+                                extra_pools={s16.MEASURED: pm}, variants16=s16.VARIANTS, linear_twins=s16.LINEAR_TWINS)
     assert "box_v2" not in base[0]  # every record-pool well is standalone: no cohort
     assert with16[0]["box_v2s_n"] == 12 and with16[0]["box_v2s_radius_mi"] == 5.0
-    arr = an.monthly_arrays_v2(with16, k, (*an.VARIANTS_V2, *s16.VARIANTS))
+    arr = an.monthly_arrays_v2(with16, k, (*an.VARIANTS_V2, *s16.SCORED))
     assert np.isfinite(arr["box_v2s"]["oil"]).all() and np.isnan(arr["box_v2"]["oil"]).all()
+    # the twin is the same cohort scaled linearly: it differs from the translated prediction by the Cui factor alone
+    ratio = arr["box_v2s_r2"]["oil"][0] / arr["box_v2s_r2_lin"]["oil"][0]
+    assert np.allclose(ratio, an.lateral_multiplier(10_360.0, [10_000.0] * 12, [an.LATERAL_TRANSLATED]) / 10.36)
+    assert with16[0]["box_v2s_r2_lat_ratio"] == pytest.approx(1.036)
     assert with16[0].get("box_v2") == base[0].get("box_v2")
