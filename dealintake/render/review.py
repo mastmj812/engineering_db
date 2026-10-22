@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
 
+from dealintake import spacing
 from dealintake.geo import positive_offset_bearing
 from dealintake.select_wells import bench_code
 
@@ -242,6 +243,36 @@ def cross_section_ends(azimuth_deg: float) -> tuple[bool, str, str]:
     return north < 0, "S", "N"
 
 
+def spacing_cell(b: str, u: dict[str, Any], on: bool) -> Any:
+    """Bench-table cell: the row spacing a generated bench uses and where it came from."""
+    s = (u.get("spacing") or {}).get(b)
+    pl = ((u.get("gunbarrel") or {}).get("planned") or {}).get(b) or {}
+    if pl.get("spacing_source") == "reviewer":
+        return _Raw(f"<b>{pl['spacing_ft']:,.0f} ft</b> (reviewer)"
+                    + (f'<br><span class="meta">nearby: {_esc(spacing.short_text(s))}'
+                       + (f" → {s['spacing_ft']:,.0f} ft" if s and s.get("spacing_ft") else "") + "</span>" if s else ""))
+    if not s:
+        return "—"
+    if s.get("needs_reviewer"):
+        return _Raw(f'<span class="{"flagtxt" if on else "meta"}">none nearby — set spacing_ft</span>'
+                    f'<br><span class="meta">{_esc("; ".join(s.get("tried") or []))}</span>')
+    return _Raw(f'<b>{s["spacing_ft"]:,.0f} ft</b>' + (' <span class="flagtxt">mixed</span>' if s.get("mixed") else "")
+                + f'<br><span class="meta">{_esc(s["text"])}</span>')
+
+
+def spacing_look(u: dict[str, Any]) -> list[str]:
+    """'Needs a look' entries: seeded-ON benches without a reviewer spacing whose
+    nearby pattern is missing or mixed."""
+    out = []
+    planned = (u.get("gunbarrel") or {}).get("planned") or {}
+    for b, row in (u.get("bench_seed") or {}).items():
+        if row.get("evaluate") and (planned.get(b) or {}).get("spacing_source") != "reviewer":
+            t = spacing.flag_text(b, (u.get("spacing") or {}).get(b))
+            if t:
+                out.append(t)
+    return out
+
+
 def gunbarrel(u: dict[str, Any]) -> str:
     """Cross-section perpendicular to the planned azimuth: the PROPOSED rows
     (narvi preview at the reviewed benches — hollow squares on each bench's
@@ -297,8 +328,8 @@ def gunbarrel(u: dict[str, Any]) -> str:
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
                           + (" [UPSIDE]" if pl.get("role") == "upside" else "")
                           + (" [winerack]" if pl.get("winerack") else "")
-                          + (" [880-ft fallback]" if pl.get("spacing_source") != "reviewer" else "")
-                          + (f" (Novi's pattern {pl['novi_spacing_ft']:,.0f} ft — not used)" if pl.get("novi_spacing_ft") and pl.get("spacing_source") != "reviewer" else "")
+                          + (" [reviewer spacing]" if pl.get("spacing_source") == "reviewer"
+                             else f" [{spacing.short_text((u.get('spacing') or {}).get(b))}]")
                           + (f" — {n_cull} culled by PDP proximity" if n_cull else "")
                           + (f" — {'; '.join(rules)}" if rules else ""))
     for b, tv, offs, whole in ghosts:
@@ -399,7 +430,7 @@ h1{font-size:20px;margin:18px 0 4px} h2{font-size:16px;margin:36px 0 6px;border-
 table{border-collapse:collapse;font-size:12px;margin:8px 0} th,td{border:1px solid #e5e7eb;padding:3px 7px;text-align:left;vertical-align:top}
 th{background:#f9fafb} .chip{display:inline-block;color:#fff;border-radius:3px;padding:0 6px;font-weight:600;font-size:11px}
 .rights{font-weight:600} .why{display:inline-block;max-width:520px} .toc a{margin-right:12px;font-size:12px}
-details{margin:6px 0} summary{cursor:pointer;color:#374151;font-size:12px} li.disagree{color:#b45309}
+details{margin:6px 0} summary{cursor:pointer;color:#374151;font-size:12px} li.disagree{color:#b45309} .flagtxt{color:#b45309;font-weight:600}
 """
 
 
@@ -436,6 +467,10 @@ def render(run_dir: Path) -> Path:
                  "existing producer (any bench; share of OUR stick alongside it) is culled — drawn as × on the gunbarrel; "
                  "a bench with every row culled seeds off. Amber squares are near-misses (kept, flagged). "
                  "<code>pdp_proximity: false</code> on a bench keeps its rows.</p>")
+    p.append("<p><b>Row spacing (config v15):</b> a generated bench takes the spacing of the SAME bench's Novi sticks "
+             "near the unit — each stick's gap to its nearest parallel neighbour, median within 1 → 2 → 3 mi (Novi PUD, "
+             "then RES), else the offset PDP's closer-XY. The IQR is beside it; a wide IQR (mixed pattern) or no "
+             "number at all goes to Needs a look. A reviewer <code>spacing_ft</code> overrides it.</p>")
     p.append(overview_map(prop, classes))
     p.append('<div class="toc">' + " ".join(f'<a href="#{_esc(u["label"])}">{_esc(name[u["label"]])}</a>' for u in units) + "</div>")
     summary = []
@@ -444,6 +479,7 @@ def render(run_dir: Path) -> Path:
         on = [b for b, r in seed.items() if r["evaluate"]]
         look = [b for b, r in seed.items() if r["why"].startswith(("edge", "thin", "PDP proximity"))]
         look += [f"{b} (PDP proximity)" for b in proximity_look(u.get("gunbarrel") or {}) if b not in look]
+        look += spacing_look(u)
         summary.append([_Raw(f'<a href="#{_esc(u["label"])}">{_esc(name[u["label"]])}</a>'), f"{u['area_ac']:,.0f}",
                         u.get("rights"), f"{ll[u['label']]:,.0f}", f"{cls_ft[u['label']]:,.0f}",
                         ", ".join(on) or "— (not evaluated)", ", ".join(look) or "—"])
@@ -479,9 +515,10 @@ def render(run_dir: Path) -> Path:
         gbs = gunbarrel(u)
         if gbs:
             p.append('<div class="row">' + gbs + "</div>")
-            errs = {b: v["error"] for b, v in (u.get("gunbarrel") or {}).get("planned", {}).items() if v.get("error")}
-            for b, e in errs.items():
-                p.append(f'<div class="warn">{_esc(b)}: preview failed — {_esc(e)}</div>')
+            for b, v in (u.get("gunbarrel") or {}).get("planned", {}).items():
+                if v.get("error"):
+                    p.append(f'<div class="warn">{_esc(b)}: '
+                             f'{"" if v.get("spacing_needed") else "preview failed — "}{_esc(v["error"])}</div>')
         byb = {bench_code(r["bench"]): r for r in u["bench_proposal"]}
         order = list(byb) + [b for b in seed if b not in byb]
         rows = []
@@ -500,18 +537,17 @@ def render(run_dir: Path) -> Path:
                 if gg.get("novi_azimuth_deg") is not None:
                     novi += (f" · az {gg['novi_azimuth_deg']:.0f}°"
                              + (f" ({gg['azimuth_diff_deg']:.0f}° off)" if gg.get("azimuth_diff_deg") else "")
-                             + (f" · {gg['novi_ll_ft']:,.0f} ft" if gg.get("novi_ll_ft") else "")
-                             + (f" · {gg['novi_spacing_ft']:,.0f}-ft spacing" if gg.get("novi_spacing_ft") else ""))
+                             + (f" · {gg['novi_ll_ft']:,.0f} ft" if gg.get("novi_ll_ft") else ""))
             loc = "—"
             if on:
                 loc = _Raw(str(_chip("Novi", "#7c3aed") if gg.get("source") == "novi" else _chip("generate", "#db2777"))
                            + (f'<br><span class="meta">{_esc(gg.get("reason"))}</span>' if gg.get("reason") else ""))
             rows.append([_chip(b, _color(b)), tvd, r.get("status", "—"), pdp3.get(b, 0), in_unit.get(b, 0), novi, loc,
-                         proximity_cell(b, u.get("gunbarrel") or {}),
+                         spacing_cell(b, u, on), proximity_cell(b, u.get("gunbarrel") or {}),
                          _chip("ON", "#059669") if on else _chip("off", "#9ca3af"),
                          _Raw(f'<span class="why">{_esc(st["why"] if st else "not a target bench")}</span>')])
         p.append(_table(["Bench", "Local TVD", "vs window", "Offset PDP ≤3 mi", "PDP in unit", "Novi BASE_CASE",
-                         "Locations", "PDP proximity", "Scope", "Why"], rows))
+                         "Locations", "Row spacing", "PDP proximity", "Scope", "Why"], rows))
     p.append("</body></html>")
     out = run_dir / "review.html"
     out.write_text("\n".join(p), encoding="utf-8")

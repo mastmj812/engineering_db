@@ -127,18 +127,14 @@ def test_parse_depth_and_proposal():
     assert all(r["status"] == "no_window" for r in propose(stats, None, 200))
 
 
-def test_stick_azimuth_and_spacing():
-    from dealintake.geo import mean_axial_azimuth, stick_azimuth, stick_spacing_ft
+def test_stick_azimuth():
+    from dealintake.geo import mean_axial_azimuth, stick_azimuth
 
     ns = [line_ft((x, 0), (x, 9900)) for x in (1000, 1660, 2320, 2980)]   # N-S sticks, 660 ft apart
     assert stick_azimuth(ns[0]) == pytest.approx(0.0, abs=0.5)
     assert stick_azimuth(line_ft((0, 0), (9900, 0))) == pytest.approx(90.0, abs=0.5)
     assert stick_azimuth(line_ft((0, 9900), (0, 0))) == pytest.approx(0.0, abs=0.5)      # axial: S->N == N->S
     assert mean_axial_azimuth([178.0, 2.0]) == pytest.approx(0.0, abs=0.5)               # wraps, not 90
-    assert stick_spacing_ft(ns, 0.0) == pytest.approx(660.0, abs=2)
-    assert stick_spacing_ft(ns[:1], 0.0) is None
-    stacked = ns + [line_ft((1133, 0), (1133, 9900))]                 # 133 ft off a slot: same slot, ignored
-    assert stick_spacing_ft(stacked, 0.0) == pytest.approx(660.0, abs=2)
 
 
 def test_gate2_orientation_and_length_rule():

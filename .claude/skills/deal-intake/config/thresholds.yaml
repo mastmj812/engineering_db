@@ -1,7 +1,10 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 14                # v14 2026-10-19: PDP-proximity cull (pdp_proximity:) — planned rows within 300 ft vt /
+config_version: 15                # v15 2026-10-22: generated-bench spacing from NEARBY Novi sticks of the same bench
+                                  #    (planned_spacing:) — PUD 1/2/3 mi -> RES -> offset PDP closer-XY -> reviewer flag;
+                                  #    the 880-ft fallback is retired (Michael, RIP Harambe)
+                                  # v14 2026-10-19: PDP-proximity cull (pdp_proximity:) — planned rows within 300 ft vt /
                                   #    800 ft hz of a producer running >= 30 % alongside are culled; ALL PROVISIONAL
                                   # v13 2026-10-19: water.save_ratio ON — handoff saves screen water as WOR-on-measured-analogs
                                   #    (anduin ratio_cohorts); the Blue Ox drop carries it (ledger §14)
@@ -38,8 +41,8 @@ alignment:                        # gate 2 — location source (v2 rule, 2026-09
   # BASE_CASE sticks are inside AND within this axial angle of our planned
   # azimuth AND their lateral is within the basin tolerance of our planned
   # lateral; otherwise GENERATE — the presence of BASE_CASE sticks is the
-  # infill signal, and generated sticks inherit the BASE_CASE bench's
-  # de-facto spacing (median perpendicular gap) instead of the 880-ft fallback.
+  # infill signal; generated sticks take the spacing of the bench's Novi
+  # sticks NEAR the unit (planned_spacing:, v15).
   azimuth_tolerance_deg: 20
   # Michael 2026-09-26: planned sticks run PARALLEL TO THE UNIT LONG AXIS. narvi's
   # neighborhood-grid azimuth (a TRUE bearing: ST_Azimuth on geography) is
@@ -219,6 +222,25 @@ spacing:                          # gate 5.2 — classified at RUNTIME vs the
   # lateral_closer_xy_ft is AS-OF-FIRST-PRODUCTION (Novi-confirmed
   # 2026-07-14): spacing when the offset came online, not current infill.
   # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
+
+planned_spacing:                  # v15 (Michael 2026-10-22, RIP Harambe) — row spacing of a GENERATED bench.
+  # "Generate the spacing from the spacing of Novi locations in the respective
+  # bench near the parcel." dealintake/spacing.py. Each Novi stick's gap = median
+  # perpendicular distance to its nearest PARALLEL neighbour of the same bench,
+  # over the shared length (own frame — pattern orientation does not matter).
+  # Chain: Novi PUD at each radius step -> Novi RES at each step -> offset PDP
+  # lateral_closer_xy_ft (same bench, first prod >= type_curve.first_prod_after,
+  # NULL / spacing.sentinel_ft excluded) -> NO number: the bench is flagged and
+  # the reviewer sets spacing_ft (no silent 880). Reviewer spacing_ft wins over all.
+  radius_steps_mi: [1, 2, 3]      # nearest first; widen until min_gaps
+  min_gaps: 6                     # gaps (or bounded PDP wells) a source needs to count
+  parallel_tol_deg: 15            # neighbour must run within this axial angle
+  overlap_min_frac: 0.30          # ... alongside >= this share of the stick (rule-9 co-extent)
+  same_slot_ft: 300               # closer = same slot (stacked / staggered / digitizing), not a spacing
+  neighbour_search_ft: 3000       # neighbour search reach around each stick
+  pdp_radius_mi: 3                # offset-PDP fallback radius
+  spread_flag_frac: 0.15          # (p75 - p25) / median above this = MIXED pattern -> "Needs a look"
+                                  #    (RIP Harambe WCB_1: 5- and 4-per-section rows, 1,058 / 1,320 ft)
 
 qc_flags:                         # gate 6 — flags only, never auto-drop
   peak_month_tolerance: 2

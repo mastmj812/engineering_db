@@ -8,7 +8,6 @@ bearings folded to [0, 180) — workspace rule 16.
 
 from __future__ import annotations
 
-import itertools
 import math
 import statistics
 from collections.abc import Callable
@@ -213,25 +212,6 @@ def mean_axial_azimuth(azimuths: list[float]) -> float | None:
 
 def stick_length_ft(stick: BaseGeometry) -> float:
     return LocalFrame.around(stick).to_local(stick).length * FT_PER_M
-
-
-def stick_spacing_ft(sticks: list[BaseGeometry], azimuth_deg: float) -> float | None:
-    """Median gap between ADJACENT sticks measured perpendicular to
-    `azimuth_deg` (midpoints projected on the normal). The de-facto spacing
-    of a Novi BASE_CASE bench — orientation of the individual sticks does not
-    matter, only how far apart they sit. None below two sticks."""
-    if len(sticks) < 2:
-        return None
-    frame = LocalFrame.around(sticks[0])
-    az = math.radians(azimuth_deg)
-    nx, ny = math.cos(az), -math.sin(az)          # unit normal to the bearing (dx=sin az, dy=cos az)
-    offs = sorted(
-        (m.x * nx + m.y * ny) * FT_PER_M
-        for m in (frame.to_local(stick_midpoint(st)) for st in sticks)
-    )
-    # < 300 ft apart = the same slot (stacked/staggered or digitizing), not a spacing
-    gaps = [b - a for a, b in itertools.pairwise(offs) if b - a >= 300.0]
-    return round(statistics.median(gaps), 0) if gaps else None
 
 
 NARVI_WORK_EPSG = 32613   # narvi's work CRS (UTM 13N): its azimuth_deg values are GRID bearings
