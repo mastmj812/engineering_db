@@ -25,6 +25,7 @@ import math
 import os
 from collections.abc import Sequence
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -287,31 +288,109 @@ def with_completed_laterals(pool: dict[str, Any], uturn: dict[str, float], tvd: 
     return p
 
 
+RELAX_STEPS: tuple[str, ...] = ("count", "spacing", "lateral")
+
+
+@dataclass(frozen=True)
+class Rules:
+    """Step-16 selection rules (D118 / D119). `Rules()` IS the frozen record (D58): select_cohort_v2 with it is the record
+    selection, unchanged (tests pin it).
+
+    relax       steps tried IN ORDER, cumulatively, at the SAME ring while it holds fewer than min_wells eligible wells,
+                before the radius grows (lowest-priority rule first):
+                  count    accept the ring once it holds >= count_floor eligible wells
+                  spacing  admit standalone wells (no same-zone neighbour at first production / the 2,800-ft sentinel);
+                           tight wells stay out
+                  lateral  widen the band to +/- wide_tol (completed lateral >= SHORT_LAT_FT; a short lateral already draws
+                           SHORT_BAND_FT) and translate the cohort to the location's lateral by Cui & Cross (D50)
+    level_only  admit wells under the months floor whose oil peak is >= level_only_post_peak months behind them: own qi, the
+                cohort's long-well Di / b (the short-history transfer, members_with_transfer); counted in n and flagged."""
+
+    relax: tuple[str, ...] = ()
+    count_floor: int = 5
+    wide_tol: float = 0.40
+    level_only: bool = False
+    level_only_post_peak: float = 3.0
+
+    def __post_init__(self) -> None:
+        if any(r not in RELAX_STEPS for r in self.relax) or len(set(self.relax)) != len(self.relax):
+            raise ValueError(f"relax steps must be distinct members of {RELAX_STEPS}: {self.relax}")
+
+
+RECORD_RULES = Rules()
+LATERAL_RELAXED = "lateral relaxed (Cui translation)"
+
+
+def _level_only(pool: dict[str, Any], cands: list[dict[str, Any]], min_months: int, post_peak: float) -> int:
+    """Candidates under the months floor whose oil peak is >= post_peak months behind them pass the floor (tagged level_only)."""
+    n = 0
+    for c in cands:
+        if c["months_produced"] < min_months:
+            p = (pool["params"].get(c["api10"]) or {}).get("oil")
+            if p and _post_peak(p, c["months_produced"]) >= post_peak:
+                c["months_produced"], c["level_only"] = float(min_months), True
+                n += 1
+    return n
+
+
 def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any], *, bench: str = BENCH,
-                     diag: dict[str, Any] | None = None) -> tuple[list[int], float, list[str], str]:
+                     diag: dict[str, Any] | None = None, rules: Rules = RECORD_RULES) -> tuple[list[int], float, list[str], str]:
     """box_v2 selection: first ring circular; past it, a strike-aligned ellipse when local strike is trusted (D55);
     short completed laterals draw the SHORT_BAND_FT analogs (translated later by Cui). Returns (idx, radius, flags, mode).
-    `diag`, when given, receives the local-strike diagnostics (azimuth, R², n) — read-only provenance, no effect on selection."""
+    `diag`, when given, receives the local-strike diagnostics (azimuth, R², n) — read-only provenance, no effect on selection.
+    `rules` (step 16): see Rules; the default is the record."""
     from box import strike as stk
 
     sp = loc.get("spacing_ft")
     planned_sp = float(sp) if sp is not None and np.isfinite(sp) and 0 < sp < 2800 else DEFAULT_SPACING_FT
     lat = float(loc["lateral_ft"])
-    band = SHORT_BAND_FT if lat < SHORT_LAT_FT else None
+    short = lat < SHORT_LAT_FT
+    band = SHORT_BAND_FT if short else None
+    wide = band if short else (lat * (1.0 - rules.wide_tol), lat * (1.0 + rules.wide_tol))
     min_w = int(cfg["type_curve"]["min_wells"])
+    min_months = int(cfg["type_curve"]["min_months_data"])
+    sentinel = float(cfg["spacing"]["sentinel_ft"])
 
-    def attempt(idx: Sequence[int], dist: dict[int, float] | None) -> tuple[list[int], list[str], int]:
+    def attempt(idx: Sequence[int], dist: dict[int, float] | None, relaxed: frozenset[str] = frozenset()) -> tuple[list[int], list[str], int]:
         cands = _candidates(pool, idx, loc)
         if dist is not None:
             for c in cands:
                 c["dist_ft"] = dist[c["_i"]]
+        if rules.level_only:
+            _level_only(pool, cands, min_months, rules.level_only_post_peak)
+        if "spacing" in relaxed:
+            for c in cands:
+                v = c.get("lateral_closer_xy_ft")
+                if v is None or v >= sentinel:
+                    c["lateral_closer_xy_ft"] = planned_sp
         eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin="delaware",
-                                     planned_spacing_ft=planned_sp, lateral_band_ft=band)
+                                     planned_spacing_ft=planned_sp, lateral_band_ft=wide if "lateral" in relaxed else band)
         sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
-        return [c["_i"] for c in sel.selected], sel.flags, len(eligible)
+        flags = list(sel.flags)
+        k_lo = sum(1 for c in sel.selected if c.get("level_only"))
+        if k_lo:
+            flags.append(f"level_only: {k_lo}")
+        return [c["_i"] for c in sel.selected], flags, len(eligible)
 
-    idx, flags, n = attempt(tree.query_ball_point([loc["x"], loc["y"]], r=RADII_MI[0] * MI), None)
-    if n >= min_w:
+    def ring(idx: Sequence[int], dist: dict[int, float] | None) -> tuple[list[int], list[str], int, bool]:
+        """One ring: the record rules, then each relax step in order until the ring holds enough eligible wells."""
+        got, flags, n = attempt(idx, dist)
+        need, relaxed = min_w, frozenset[str]()
+        for step in rules.relax:
+            if n >= need:
+                break
+            if step == "count":
+                need = min(need, rules.count_floor)
+                continue
+            relaxed = relaxed | {step}
+            got, flags, n = attempt(idx, dist, relaxed)
+            flags = [*flags, f"relaxed: {'+'.join(sorted(relaxed))}", *([LATERAL_RELAXED] if "lateral" in relaxed and not short else [])]
+        if need <= n < min_w:
+            flags = [*flags, f"relaxed: count ({n} < {min_w})"]
+        return got, flags, n, n >= need
+
+    idx, flags, _, ok = ring(tree.query_ball_point([loc["x"], loc["y"]], r=RADII_MI[0] * MI), None)
+    if ok:
         return idx, RADII_MI[0], flags, "circle"
     near = tree.query_ball_point([loc["x"], loc["y"]], r=stk.RADIUS_FT)
     s = stk.local_strike(pool["x"][near], pool["y"][near], pool["tvd"][near], loc["x"], loc["y"]) if len(near) else None
@@ -323,10 +402,10 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
         if s:
             d = stk.ellipse_distance(pool["x"][cand] - loc["x"], pool["y"][cand] - loc["y"], s.azimuth_deg)
             keep = [int(i) for i, dd in zip(cand, d, strict=True) if dd <= r * MI]
-            idx, flags, n = attempt(keep, {int(i): float(dd) for i, dd in zip(cand, d, strict=True)})
+            idx, flags, _, ok = ring(keep, {int(i): float(dd) for i, dd in zip(cand, d, strict=True)})
         else:
-            idx, flags, n = attempt(cand, None)
-        if n >= min_w or r == RADII_MI[-1]:
+            idx, flags, _, ok = ring(cand, None)
+        if ok or r == RADII_MI[-1]:
             return idx, r, flags, ("strike" if s else "circle")
     return idx, RADII_MI[-1], flags, "circle"
 
@@ -360,15 +439,35 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
     if len(idx2) >= 3:
         m2 = _p50_months(idx2, pool2, k)
         if m2:
-            L = float(loc2["lateral_ft"])
-            mult = L / 1000.0 * (lat_eff.relative(L, [pool2["lateral"][i] for i in idx2]) if L < SHORT_LAT_FT else 1.0)
+            mult = lateral_multiplier(float(loc2["lateral_ft"]), [pool2["lateral"][i] for i in idx2], ())
             out["box_v2"] = {s: m2[s] * mult for s in STREAMS}
+    for name, (pool_key, rules) in (_STATE.get("variants16") or {}).items():  # step 16, pre-registered in box/step16.py
+        p16 = _STATE[pool_key]
+        i16, r16, f16, mode16 = select_cohort_v2(p16, tree, cfg, loc2, bench=bench, rules=rules)
+        out.update({f"{name}_radius_mi": r16, f"{name}_n": len(i16), f"{name}_mode": mode16, f"{name}_flags": ";".join(f16)})
+        if len(i16) >= 3:
+            m16 = _p50_months(i16, p16, k)
+            if m16:
+                mult16 = lateral_multiplier(float(loc2["lateral_ft"]), [p16["lateral"][i] for i in i16], f16)
+                out[name] = {s: m16[s] * mult16 for s in STREAMS}
     return out
 
 
+def lateral_multiplier(lateral_ft: float, member_laterals: Sequence[float], flags: Sequence[str]) -> float:
+    """box_v2's lateral scaling: the per-1,000-ft curve x L / 1,000, with the Cui & Cross translation (D50) when the location's
+    completed lateral is short or (step 16) its cohort came from the relaxed, wide lateral band."""
+    L = float(lateral_ft)
+    translate = L < SHORT_LAT_FT or LATERAL_RELAXED in flags
+    return L / 1000.0 * (lat_eff.relative(L, member_laterals) if translate else 1.0)
+
+
 def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,
-                    workers: int | None = None, bench: str = BENCH) -> list[dict[str, Any]]:
-    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench}
+                    workers: int | None = None, bench: str = BENCH, extra_pools: dict[str, dict[str, Any]] | None = None,
+                    variants16: dict[str, tuple[str, Rules]] | None = None) -> list[dict[str, Any]]:
+    """`extra_pools` / `variants16` (step 16): more pools on pool2's wells and xy (e.g. measured spacing), and the pre-registered
+    variants as name -> (pool key, Rules); each adds a prediction `name` beside di_p50 / box_v2."""
+    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench,
+             **(extra_pools or {}), "variants16": variants16 or {}}
     workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
     if workers == 1:
         _init(state)
@@ -377,10 +476,10 @@ def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dic
         return list(ex.map(predict_location_v2, locs, chunksize=16))
 
 
-def monthly_arrays_v2(preds: list[dict[str, Any]], k: int) -> dict[str, dict[str, np.ndarray]]:
-    out = {v: {s: np.full((len(preds), k), np.nan) for s in STREAMS} for v in VARIANTS_V2}
+def monthly_arrays_v2(preds: list[dict[str, Any]], k: int, variants: Sequence[str] = VARIANTS_V2) -> dict[str, dict[str, np.ndarray]]:
+    out = {v: {s: np.full((len(preds), k), np.nan) for s in STREAMS} for v in variants}
     for i, p in enumerate(preds):
-        for v in VARIANTS_V2:
+        for v in variants:
             if v in p:
                 for s in STREAMS:
                     out[v][s][i] = p[v][s]
