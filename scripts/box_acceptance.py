@@ -3,7 +3,7 @@
     python -m scripts.box_acceptance [--wells docs/box/step1-2026-10-06] [--out docs/box/acceptance] [--workers N]
                                      [--cutoffs 2019-12-01,...,2024-12-01] [--score-holdout]
                                      [--bench WCA|BS2_S|WCXY|WCXY_on_WCA] [--fold full|analog] [--actuals-through YYYY-MM-01]
-                                     [--history cells_tuning_v2.csv] [--wca-history cells_tuning_v2.csv] [--tag NAME]
+                                     [--history cells_tuning_v2.csv] [--wca-history cells_tuning_v2.csv] [--tag NAME] [--step16]
 
 --score-holdout is the ONE-TIME final scoring of the frozen D52 holdout, after the model spec and code SHA are frozen. For a
 bench other than WCA it also needs --holdout-once (step 9b; plan Phase 2) — step 9a scores tuning blocks only. Re-running
@@ -41,13 +41,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--history", type=Path, default=None, help="tuning cells the holdout's walk-forward haircuts come from")
     ap.add_argument("--wca-history", type=Path, default=None, help="WCA tuning cells -> extra <base>_wf_wca variants (non-WCA benches)")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--step16", action="store_true", help="step 16c: also score the pre-registered box/step16 variants (tuning only)")
     a = ap.parse_args(argv)
     if a.score_holdout and a.bench != "WCA" and not a.holdout_once:
         ap.error(f"--score-holdout on {a.bench} is the one-time D52 score (step 9b): pass --holdout-once deliberately")
     t0 = time.time()
     with get_connection() as conn:
         res = ac.run(conn, a.wells, a.out, boxfit_sha(), a.workers, tuple(dt.date.fromisoformat(c) for c in a.cutoffs.split(",")), a.score_holdout, a.mode,
-                     bench=a.bench, fold=a.fold, actuals_through=a.actuals_through, history_path=a.history, wca_history_path=a.wca_history, tag=a.tag)
+                     bench=a.bench, fold=a.fold, actuals_through=a.actuals_through, history_path=a.history, wca_history_path=a.wca_history, tag=a.tag, step16=a.step16)
     c = res["cells"]
     rec = c[c.variant == res["summary"]["record_variant"]][["stream", "horizon", "cutoff", "n_packages", "pkg_bias", "pkg_band", "bench_bias", "bench_band", "verdict"]]
     print(rec.round(3).to_string())

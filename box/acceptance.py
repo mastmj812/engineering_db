@@ -45,6 +45,7 @@ from box import exclusions
 from box import hindcast as hc
 from box import spacing3d as s3
 from box import spacing3d_report as s3r
+from box import step16 as s16
 from box import tc_area_report as tar
 from box import tc_curve_report as rep
 from box.edge_gap_report import _CSS, _table
@@ -241,16 +242,25 @@ WF_LOG: list[dict[str, Any]] = []
 
 
 def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], cutoff: dt.date, workers: int | None,
-                              bench: str = an.BENCH, keep: dict[str, Any] | None = None) -> pd.DataFrame:
+                              bench: str = an.BENCH, keep: dict[str, Any] | None = None, step16: bool = False) -> pd.DataFrame:
     """D57 run: di_p50 (raw laterals) and box_v2 (D56 completed laterals, D55 strike edges, short-lateral Cui translation),
     each calibrated by its own F(k) on a seeded training sample with as-of, leave-self-out cohorts. `bench` = the deal-intake
-    bench label; `keep`, when given, receives the uptime-free box_v2 months per location and its F(k) per stream (step 9a)."""
+    bench label; `keep`, when given, receives the uptime-free box_v2 months per location and its F(k) per stream (step 9a).
+    `step16` adds the pre-registered box/step16.VARIANTS (measured spacing for every pool well, D119) and each scored well's
+    local evidence (n_local, local_y1_kft); di_p50 / box_v2 are computed exactly as without it."""
     cb, trn, t_act = f["cb"], f["trn"], f["t_act"]
     f_oil = dict(zip(trn["api10"], trn["f_oil"], strict=True))
     pool = an.build_pool(cb["frame"], cb["fits"], f["sp"], f_oil)
     ut = an.uturn_leg_spacing(conn, sorted(set(pool["api10"]) | set(view["api10"]) | set(trn["api10"])))
     tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
     pool2 = an.with_completed_laterals(pool, ut, tvd)
+    extra: dict[str, dict[str, Any]] = {}
+    v16: dict[str, tuple[str, an.Rules]] = {}
+    variants: tuple[str, ...] = an.VARIANTS_V2
+    if step16:
+        sp_all = br.spacing(conn, sorted({str(a) for a in pool["api10"]}))
+        extra = {s16.MEASURED: s16.measured_pool(pool2, {str(k_): v_ for k_, v_ in sp_all.items()})}
+        v16, variants = s16.VARIANTS, (*an.VARIANTS_V2, *s16.VARIANTS)
     xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
     xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
 
@@ -261,12 +271,13 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
 
     rng = np.random.default_rng(SEED)
     ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
-    pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench)
-    pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers, bench=bench)
-    mv, mt = an.monthly_arrays_v2(pv, K_MONTHS), an.monthly_arrays_v2(pt, K_MONTHS)
+    pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench, extra_pools=extra, variants16=v16)
+    pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers, bench=bench,
+                            extra_pools=extra, variants16=v16)
+    mv, mt = an.monthly_arrays_v2(pv, K_MONTHS, variants), an.monthly_arrays_v2(pt, K_MONTHS, variants)
     if keep is not None:
         keep.update({"api10": view["api10"].to_numpy(), "months": {s: mv["box_v2"][s] for s in STREAMS}, "F": {}})
-    for v in an.VARIANTS_V2:
+    for v in variants:
         for s in STREAMS:
             F, _ = hc.calendar_factor_curve(t_act[s][ti], mt[v][s])
             if keep is not None and v == "box_v2":
@@ -279,21 +290,31 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
                 view[f"{v}_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred[:, k - 1])
     keys = ("api10", "radius_mi", "n_analogs", "flags", "v2_radius_mi", "v2_n", "v2_mode", "v2_short", "v2_uturn",
             "v2_strike_az_deg", "v2_strike_r2", "v2_strike_n", "v2_strike_dip_ft_mi")
-    return pd.DataFrame([{k_: p.get(k_) for k_ in keys} for p in pv])
+    keys += tuple(f"{v}_{x}" for v in v16 for x in ("radius_mi", "n", "mode", "flags"))
+    prov = pd.DataFrame([{k_: p.get(k_) for k_ in keys} for p in pv])
+    if step16:
+        from scipy.spatial import cKDTree
+
+        tree = cKDTree(np.column_stack([pool2["x"], pool2["y"]]))
+        ev = [s16.local_evidence(pool2, tree, float(xy_v[i, 0]), float(xy_v[i, 1])) for i in range(len(view))]
+        prov["n_local"], prov["local_y1_kft"] = [e[0] for e in ev], [e[1] for e in ev]
+    return prov
 
 
 def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame], history: pd.DataFrame | None = None,
-                       suffix: str = "_wf", log: list[dict[str, Any]] | None = None) -> list[pd.DataFrame]:
+                       suffix: str = "_wf", log: list[dict[str, Any]] | None = None,
+                       bases: tuple[str, ...] = ("di_p50", "box_v2")) -> list[pd.DataFrame]:
     """D57: <variant>_wf = prediction x (1 + mean package bias at the same horizon over >= 2 EARLIER cutoffs); cells for a
     cutoff without two earlier judged cutoffs are left unjudged (no prediction). `history` = the cells the haircuts come from
     (default: `cells` themselves); `suffix` names the corrected variants (step 9a: '_wf_wca' = WCA's haircuts on another
-    bench); `log` = where the haircuts are logged (default: WF_LOG, cleared first)."""
+    bench); `log` = where the haircuts are logged (default: WF_LOG, cleared first); `bases` = the variants corrected
+    (step 16 adds box_v2s)."""
     if log is None:
         WF_LOG.clear()
         log = WF_LOG
     out = []
     for c, view in sorted(views.items()):
-        for base in ("di_p50", "box_v2"):
+        for base in bases:
             for s in STREAMS:
                 for k in HORIZONS:
                     col = f"pred_{base}_{s}{k}"
@@ -306,7 +327,7 @@ def apply_walk_forward(cells: pd.DataFrame, views: dict[str, pd.DataFrame], hist
                     pred = view[col].to_numpy(float) * (1.0 + h) if h is not None else np.full(len(view), np.nan)
                     view[f"pred_{base}{suffix}_{s}{k}"] = pred
                     view[f"{base}{suffix}_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred)
-        out.append(score_fold(view, c, (f"di_p50{suffix}", f"box_v2{suffix}")))
+        out.append(score_fold(view, c, tuple(f"{b}{suffix}" for b in bases)))
     return out
 
 
@@ -338,10 +359,13 @@ WCA_WF = "_wf_wca"  # step 9a: box_v2 / di_p50 corrected by WCA's walk-forward h
 
 def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | None = None, cutoffs: tuple[dt.date, ...] = CUTOFFS,
         score_holdout: bool = False, mode: str = "v2", *, bench: str = "WCA", fold: str = "full", actuals_through: dt.date | None = None,
-        history_path: Path | None = None, wca_history_path: Path | None = None, tag: str | None = None) -> dict[str, Any]:
+        history_path: Path | None = None, wca_history_path: Path | None = None, tag: str | None = None, step16: bool = False) -> dict[str, Any]:
     """`bench` / `fold`: see the module doc. `actuals_through` caps the live last full month (reproduce a scored record on later
     data). `history_path` = the tuning cells the holdout's walk-forward haircuts come from (default out / cells_tuning_v2.csv).
-    `wca_history_path` (non-WCA benches): WCA's tuning cells, scored as the extra <base>_wf_wca variants (gate-9a decision 1)."""
+    `wca_history_path` (non-WCA benches): WCA's tuning cells, scored as the extra <base>_wf_wca variants (gate-9a decision 1).
+    `step16` (tuning view only, step 16c): also score box/step16.VARIANTS + box_v2s_wf; the record variants are unchanged."""
+    if step16 and score_holdout:
+        raise ValueError("step 16 scores TUNING packages only: the D52 holdouts are spent (validated) or failed (provisional), D118")
     if fold not in ("full", "analog"):
         raise ValueError(fold)
     if fold == "full" and bench != "WCA":
@@ -373,8 +397,9 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         view = hs[hs["package_held_out"] == score_holdout].copy().reset_index(drop=True)  # tuning view excludes held-out packages entirely
         if mode == "v2":
             kept[str(c)] = {}
-            aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)])
-            cells.append(score_fold(view, str(c), NON_WF_V2 if fold == "full" else VARIANTS_ANALOG_BASE))
+            aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)], step16=step16)
+            base_vs = NON_WF_V2 if fold == "full" else VARIANTS_ANALOG_BASE
+            cells.append(score_fold(view, str(c), (*base_vs, *s16.VARIANTS) if step16 else base_vs))
             views[str(c)] = view
         else:
             aprov = add_analog_predictions(view, f, c, workers)
@@ -396,6 +421,9 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
             history = pd.read_csv(history_path or out / "cells_tuning_v2.csv")
             history = history[history.variant.isin(NON_WF_V2)]
         cells = pd.concat([cells, *apply_walk_forward(cells, views, history)], ignore_index=True)
+        if step16:
+            cells = pd.concat([cells, *apply_walk_forward(cells, views, None, log=[], bases=(s16.BASE,))], ignore_index=True)
+            variants = (*variants, *s16.VARIANTS, f"{s16.BASE}_wf")
         if wca_history_path is not None:
             wh = pd.read_csv(wca_history_path)
             cells = pd.concat([cells, *apply_walk_forward(cells, views, wh[wh.variant.isin(NON_WF_V2)], suffix=WCA_WF, log=wf_wca_log)], ignore_index=True)
