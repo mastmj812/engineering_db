@@ -30,7 +30,7 @@ def _uturn_response(pairs: list[tuple[float, float]], formation: str = "WCB_2") 
     for i, (a, b) in enumerate(pairs, 1):
         feats += [_feat(a, f"U{i}", 0, formation, 18400.0), _feat(b, f"U{i}", 1, formation, 18400.0)]
     feats.append({"type": "Feature", "geometry": mapping(line_ft((0, 4700), (1320, 4700))),
-                  "properties": {"kind": "turn", "well_name": "U1"}})
+                  "properties": {"kind": "turn", "well_name": "U1", "formation": formation}})
     return {"geojson": {"features": feats}}
 
 
@@ -41,6 +41,7 @@ def test_wells_groups_a_uturn_into_one_well():
     assert w["n_legs"] == 2 and isinstance(w["geom"], MultiLineString)
     assert w["gunbarrel_xs"] == [-660.0, 660.0] and w["gunbarrel_x_ft"] == 0.0
     assert w["completed_lateral_ft"] == 18400.0                # the WELL's total, counted once
+    assert w["turn_wkt"].startswith("LINESTRING") and ws[1]["turn_wkt"] is None   # arc kept for the map
     single = wells({"geojson": {"features": [_feat(100, "S1")]}})
     assert single[0]["n_legs"] == 1 and single[0]["gunbarrel_x_ft"] == 100
 

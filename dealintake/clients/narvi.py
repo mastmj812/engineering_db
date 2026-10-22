@@ -130,7 +130,11 @@ def wells(generate_response: dict[str, Any]) -> list[dict[str, Any]]:
     each carrying the WELL's total completed_lateral_ft) becomes ONE well: geom =
     MultiLineString of its legs, gunbarrel_x_ft = the legs' mean, gunbarrel_xs =
     each leg's — the way narvi persists it (one inventory_well, n_legs 2) and
-    anduin's Blue Ox drop reads it. Counting legs would double a U-turn."""
+    anduin's Blue Ox drop reads it. Counting legs would double a U-turn.
+    `turn_wkt` = the U-turn's arc (narvi kind='turn'), display only."""
+    turns = {(f["properties"].get("formation"), f["properties"].get("well_name")): shape(f["geometry"]).wkt
+             for f in generate_response.get("geojson", {}).get("features", [])
+             if (f.get("properties") or {}).get("kind") == "turn"}
     groups: dict[Any, list[dict[str, Any]]] = {}
     for lg in legs(generate_response):
         key = (lg.get("formation"), lg["well_name"]) if lg.get("well_name") else id(lg)
@@ -143,5 +147,6 @@ def wells(generate_response: dict[str, Any]) -> list[dict[str, Any]]:
             out.append({**g[0], "n_legs": 1, "gunbarrel_xs": xs})
             continue
         out.append({**g[0], "geom": MultiLineString([x["geom"] for x in g]), "n_legs": len(g),
-                    "gunbarrel_x_ft": sum(xs) / len(xs) if xs else None, "gunbarrel_xs": xs})
+                    "gunbarrel_x_ft": sum(xs) / len(xs) if xs else None, "gunbarrel_xs": xs,
+                    "turn_wkt": turns.get((g[0].get("formation"), g[0].get("well_name")))})
     return out

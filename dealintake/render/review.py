@@ -19,6 +19,7 @@ from typing import Any
 import matplotlib
 
 matplotlib.use("Agg")
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
@@ -115,7 +116,16 @@ def _lines(ax, geom, **kw) -> None:
 
 
 def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, Any]) -> str:
+    """Plan view: the unit, the offset PDP of its local benches, Novi sticks and
+    OUR PROPOSED sticks (the narvi preview at the reviewed benches — bold, by
+    bench; a U-turn draws both legs; rows the row rules / PDP proximity removed
+    are faint dotted). Novi sticks are drawn only for the benches proposed on
+    this unit (all benches when none is) — ten stacked benches drawn on top of
+    each other hid the plan (RIP Harambe, 2026-10-22). The dashed long-axis
+    chord shows only when nothing is proposed."""
     g = shape(u["geometry"])
+    planned = {b: pl for b, pl in ((u.get("gunbarrel") or {}).get("planned") or {}).items()
+               if not pl.get("error") and pl.get("sticks_wkt")}
     lat0 = g.centroid.y
     fig, ax = plt.subplots(figsize=(6.4, 6.4), dpi=100)
     for o in others:
@@ -131,18 +141,31 @@ def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, 
         _lines(ax, line, color=_color(w["bench"]), linewidth=0.9, alpha=0.6, zorder=3)
         seen.add(w["bench"])
     for s in layers.get("novi", []):
+        if planned and bench_code(s["bench"]) not in planned:
+            continue
         base = s["category"] == "PUD"
         _lines(ax, shp_wkt.loads(s["wkt"]), color=_color(s["bench"]), linewidth=2.6 if base else 1.2,
                linestyle="-" if s["relation"] == "inside" else ("--" if base else ":"),
-               alpha=1.0 if base else 0.7, zorder=5 if base else 4)
+               alpha=(0.55 if planned else 1.0) if base else 0.5, zorder=5 if base else 4)
         seen.add(s["bench"])
-    # planned azimuth: the median chord drawn through the centroid
     pl = u["planned_lateral"]
-    az = math.radians(pl["azimuth_deg"])
-    half = (pl["median_ft"] / 2) / FT_PER_DEG_LAT
-    dx, dy = math.sin(az) * half / math.cos(math.radians(lat0)), math.cos(az) * half
-    ax.plot([g.centroid.x - dx, g.centroid.x + dx], [g.centroid.y - dy, g.centroid.y + dy],
-            color=INK, linewidth=1.4, linestyle=(0, (6, 3)), zorder=6)
+    for b, p in planned.items():
+        for w in p.get("culled_wkt") or []:
+            _lines(ax, shp_wkt.loads(w), color=_color(b), linewidth=1.2, linestyle=":", alpha=0.8, zorder=6)
+        for w in p["sticks_wkt"]:
+            _lines(ax, shp_wkt.loads(w), color=_color(b), linewidth=3.4, solid_capstyle="round", zorder=8,
+                   path_effects=[pe.withStroke(linewidth=5.6, foreground="white")])
+        for w in p.get("turns_wkt") or []:            # a U-turn's arc ties its two legs into one well
+            _lines(ax, shp_wkt.loads(w), color=_color(b), linewidth=2.0, zorder=8,
+                   path_effects=[pe.withStroke(linewidth=4.0, foreground="white")])
+        seen.add(b)
+    if not planned:
+        # nothing proposed yet: the long-axis median chord drawn through the centroid
+        az = math.radians(pl["azimuth_deg"])
+        half = (pl["median_ft"] / 2) / FT_PER_DEG_LAT
+        dx, dy = math.sin(az) * half / math.cos(math.radians(lat0)), math.cos(az) * half
+        ax.plot([g.centroid.x - dx, g.centroid.x + dx], [g.centroid.y - dy, g.centroid.y + dy],
+                color=INK, linewidth=1.4, linestyle=(0, (6, 3)), zorder=6)
     minx, miny, maxx, maxy = g.bounds
     pad_y = 0.35 / 69.0                                 # ~0.35 mi beyond the unit
     pad_x = pad_y / math.cos(math.radians(lat0))
@@ -150,12 +173,16 @@ def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, 
     ax.set_ylim(miny - pad_y, maxy + pad_y)
     ax.set_aspect(1 / math.cos(math.radians(lat0)))
     handles = [plt.Line2D([], [], color=_color(b), linewidth=2, label=b) for b in sorted(seen)]
+    if planned:
+        n = sum(len(p["sticks_wkt"]) for p in planned.values())
+        handles += [plt.Line2D([], [], color=INK, linewidth=3.4, label=f"PROPOSED ({n} well{'s' * (n != 1)}, narvi preview)"),
+                    plt.Line2D([], [], color=INK, linewidth=1.2, linestyle=":", label="removed by row rules / PDP proximity")]
     handles += [plt.Line2D([], [], color=INK, linewidth=2.6, label="Novi BASE_CASE inside"),
                 plt.Line2D([], [], color=INK, linewidth=2.6, linestyle="--", label="BASE_CASE crossing"),
                 plt.Line2D([], [], color=INK, linewidth=1.2, linestyle=":", label="Novi RES"),
                 plt.Line2D([], [], color=INK, linewidth=0.9, alpha=0.6, label="offset PDP (≤0.45 mi, target benches)"),
-                plt.Line2D([], [], color=INK, linewidth=1.4, linestyle=(0, (6, 3)),
-                           label=f"planned chord {pl['median_ft']:,.0f} ft @ {pl['azimuth_deg']:.0f}°")]
+                ] + ([] if planned else [plt.Line2D([], [], color=INK, linewidth=1.4, linestyle=(0, (6, 3)),
+                                                    label=f"planned chord {pl['median_ft']:,.0f} ft @ {pl['azimuth_deg']:.0f}°")])
     ax.legend(handles=handles, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     ax.tick_params(labelsize=6)
     ax.set_title(u["label"], fontsize=9)

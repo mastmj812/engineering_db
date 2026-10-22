@@ -359,6 +359,10 @@ def gunbarrel_preview(
                       "spacing_ft": sp, "spacing_source": sp_src,
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
                       "leg_offsets_ft": [o for r in kept for o in r["leg_offsets_ft"]],
+                      # plan-view geometry for the review map (a U-turn = its two legs)
+                      "sticks_wkt": [r["leg"]["geom"].wkt for r in kept],
+                      "culled_wkt": [r["leg"]["geom"].wkt for r in rows if not any(r is k for k in kept)],
+                      "turns_wkt": [r["leg"]["turn_wkt"] for r in kept if r["leg"].get("turn_wkt")],
                       "well_type": opts.get("well_type", "single"), "pin_offset_ft": opts.get("pin_offset_ft"),
                       "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
                       "winerack": b in wr_zones,
