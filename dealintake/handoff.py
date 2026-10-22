@@ -183,12 +183,13 @@ def plan_unit(
                 rows.append({"bench": b, "well_name": lg and lg["well_name"], "status": "kept" if lg else "MISSING",
                              "lateral_ft": lg and lg.get("completed_lateral_ft"), "match_ft": lg and lg["match_ft"],
                              "offset_ft": lg and lg.get("gunbarrel_x_ft"), "tvd_ft": gen[b]["tvd_ft"],
-                             "wkt": t["wkt"]})
+                             "leg_offsets_ft": lg and lg.get("gunbarrel_xs"), "wkt": t["wkt"]})
             for lg in extra:
                 culled.append(lg["well_name"])
                 rows.append({"bench": b, "well_name": lg["well_name"], "status": "culled",
                              "lateral_ft": lg.get("completed_lateral_ft"), "match_ft": None, "wkt": lg["geom"].wkt,
                              "offset_ft": lg.get("gunbarrel_x_ft"), "tvd_ft": gen[b]["tvd_ft"],
+                             "leg_offsets_ft": lg.get("gunbarrel_xs"),
                              "why": "; ".join(gen[b].get("row_rules") or []) or "not a dossier location"})
             if miss:
                 issues.append(f"{b}: {len(miss)} of {len(targets)} dossier location(s) not in the save recipe's sticks")

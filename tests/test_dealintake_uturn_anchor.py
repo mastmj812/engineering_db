@@ -187,3 +187,19 @@ def test_pinned_bench_sends_its_offset_and_is_not_staggered():
     zones, _ = nv.calls[0]
     assert len(nv.calls) == 1 and zones[0]["offset_ft"] == 0.0
     assert gb["planned"]["WCA_2"]["winerack"] is False and gb["planned"]["WCA_2"]["pin_offset_ft"] == 0.0
+
+
+def test_handoff_page_draws_a_uturn_row():
+    """Regression (RIP Harambe handoff dry run 2026-10-22): the page called .xy on a
+    U-turn's MultiLineString. Plan view, + side and cross-section take both legs."""
+    from dealintake.render import handoff_html
+
+    ws = wells(_uturn_response([(-1980, -660), (660, 1980)]))
+    rows = [{"bench": "WCB_2", "status": "kept" if i == 0 else "culled", "tvd_ft": 10744.0,
+             "offset_ft": w["gunbarrel_x_ft"], "leg_offsets_ft": w["gunbarrel_xs"], "wkt": w["geom"].wkt}
+            for i, w in enumerate(ws)]
+    u = {"label": "bw", "dsu": "Boondoggle (WCB)", "body": {"parcel": mapping(UNIT)}, "rows": rows}
+    colors = {("bw", "WCB_2"): "#db2777"}
+    assert "<svg" in handoff_html._unit_map(u, colors)
+    assert "<svg" in handoff_html._gunbarrel(u, colors)
+    assert handoff_html._plus_side(u) == "E"

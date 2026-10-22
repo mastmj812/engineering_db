@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
 
+from dealintake.geo import stick_midpoint
 from dealintake.render.dossier_html import _CSS, _chip, _esc, _Raw, _svg, _table
 from dealintake.render.maps import CURVE_COLOR
 from dealintake.render.tables import di_pair, num
@@ -41,13 +42,14 @@ def _unit_map(u: dict[str, Any], colors: dict[tuple[str, str], str]) -> str:
         x, y = part.exterior.xy
         ax.fill(x, y, color="#f3f4f6", ec="#374151", lw=0.8)
     for r in u["rows"]:
-        line = shp_wkt.loads(r["wkt"])
-        x, y = line.xy
-        if r["status"] == "culled":
-            ax.plot(x, y, color=CULL, lw=1.2, ls="--")
-        else:
-            ax.plot(x, y, color=colors.get((u["label"], r["bench"]), "#111827"), lw=2.0,
-                    alpha=1.0 if r["status"] == "kept" else 0.4)
+        g_r = shp_wkt.loads(r["wkt"])
+        for line in getattr(g_r, "geoms", [g_r]):          # a U-turn draws both legs
+            x, y = line.xy
+            if r["status"] == "culled":
+                ax.plot(x, y, color=CULL, lw=1.2, ls="--")
+            else:
+                ax.plot(x, y, color=colors.get((u["label"], r["bench"]), "#111827"), lw=2.0,
+                        alpha=1.0 if r["status"] == "kept" else 0.4)
     ax.set_aspect(1 / math.cos(math.radians(g.centroid.y)))
     ax.set_xticks([])
     ax.set_yticks([])
@@ -60,7 +62,7 @@ def _plus_side(u: dict[str, Any]) -> str:
     empirical check on narvi's frame. Under sign rule v2 (2026-10-08) it reads
     E for N-S-ish units and N for E-W-ish (before v2 a ~0-deg-true plan folded
     to ~179.4 grid and + read WEST — 1-12 on Rally Caps)."""
-    pts = [(r["offset_ft"], shp_wkt.loads(r["wkt"]).interpolate(0.5, normalized=True))
+    pts = [(r["offset_ft"], stick_midpoint(shp_wkt.loads(r["wkt"])))
            for r in u["rows"] if r.get("offset_ft") is not None]
     if len(pts) < 2:
         return "?"
@@ -76,10 +78,11 @@ def _gunbarrel(u: dict[str, Any], colors: dict[tuple[str, str], str]) -> str:
     for r in u["rows"]:
         if r.get("offset_ft") is None:
             continue
+        xs = r.get("leg_offsets_ft") or [r["offset_ft"]]          # a U-turn: one dot per leg
         if r["status"] == "culled":
-            ax.scatter(r["offset_ft"], r["tvd_ft"], marker="x", color=CULL, s=40, zorder=3)
+            ax.scatter(xs, [r["tvd_ft"]] * len(xs), marker="x", color=CULL, s=40, zorder=3)
         else:
-            ax.scatter(r["offset_ft"], r["tvd_ft"], color=colors.get((u["label"], r["bench"]), "#111827"),
+            ax.scatter(xs, [r["tvd_ft"]] * len(xs), color=colors.get((u["label"], r["bench"]), "#111827"),
                        s=40, edgecolors="#111827", linewidths=0.5, zorder=3)
     for b in sorted({r["bench"] for r in u["rows"]}):
         t = next(r["tvd_ft"] for r in u["rows"] if r["bench"] == b)
