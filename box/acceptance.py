@@ -260,7 +260,7 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
     if step16:
         sp_all = br.spacing(conn, sorted({str(a) for a in pool["api10"]}))
         extra = {s16.MEASURED: s16.measured_pool(pool2, {str(k_): v_ for k_, v_ in sp_all.items()})}
-        v16, variants = s16.VARIANTS, (*an.VARIANTS_V2, *s16.VARIANTS)
+        v16, variants = s16.VARIANTS, (*an.VARIANTS_V2, *s16.SCORED)
     xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
     xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
 
@@ -271,9 +271,11 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
 
     rng = np.random.default_rng(SEED)
     ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
-    pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench, extra_pools=extra, variants16=v16)
+    twins = s16.LINEAR_TWINS if step16 else ()
+    pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench, extra_pools=extra, variants16=v16,
+                            linear_twins=twins)
     pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers, bench=bench,
-                            extra_pools=extra, variants16=v16)
+                            extra_pools=extra, variants16=v16, linear_twins=twins)
     mv, mt = an.monthly_arrays_v2(pv, K_MONTHS, variants), an.monthly_arrays_v2(pt, K_MONTHS, variants)
     if keep is not None:
         keep.update({"api10": view["api10"].to_numpy(), "months": {s: mv["box_v2"][s] for s in STREAMS}, "F": {}})
@@ -290,7 +292,7 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
                 view[f"{v}_err_{s}{k}"] = hc.pct_error(view[f"actual_{s}{k}"].to_numpy(float), pred[:, k - 1])
     keys = ("api10", "radius_mi", "n_analogs", "flags", "v2_radius_mi", "v2_n", "v2_mode", "v2_short", "v2_uturn",
             "v2_strike_az_deg", "v2_strike_r2", "v2_strike_n", "v2_strike_dip_ft_mi")
-    keys += tuple(f"{v}_{x}" for v in v16 for x in ("radius_mi", "n", "mode", "flags"))
+    keys += tuple(f"{v}_{x}" for v in v16 for x in ("radius_mi", "n", "mode", "flags", "lat_ratio"))
     prov = pd.DataFrame([{k_: p.get(k_) for k_ in keys} for p in pv])
     if step16:
         from scipy.spatial import cKDTree
@@ -399,7 +401,7 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
             kept[str(c)] = {}
             aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)], step16=step16)
             base_vs = NON_WF_V2 if fold == "full" else VARIANTS_ANALOG_BASE
-            cells.append(score_fold(view, str(c), (*base_vs, *s16.VARIANTS) if step16 else base_vs))
+            cells.append(score_fold(view, str(c), (*base_vs, *s16.SCORED) if step16 else base_vs))
             views[str(c)] = view
         else:
             aprov = add_analog_predictions(view, f, c, workers)
@@ -423,7 +425,7 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         cells = pd.concat([cells, *apply_walk_forward(cells, views, history)], ignore_index=True)
         if step16:
             cells = pd.concat([cells, *apply_walk_forward(cells, views, None, log=[], bases=(s16.BASE,))], ignore_index=True)
-            variants = (*variants, *s16.VARIANTS, f"{s16.BASE}_wf")
+            variants = (*variants, *s16.SCORED, f"{s16.BASE}_wf")
         if wca_history_path is not None:
             wh = pd.read_csv(wca_history_path)
             cells = pd.concat([cells, *apply_walk_forward(cells, views, wh[wh.variant.isin(NON_WF_V2)], suffix=WCA_WF, log=wf_wca_log)], ignore_index=True)

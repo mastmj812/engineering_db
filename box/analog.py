@@ -303,22 +303,33 @@ class Rules:
                            tight wells stay out
                   lateral  widen the band to +/- wide_tol (completed lateral >= SHORT_LAT_FT; a short lateral already draws
                            SHORT_BAND_FT) and translate the cohort to the location's lateral by Cui & Cross (D50)
+    lateral     "band" (the record): the band around the location's lateral, linear per-ft scaling at >= SHORT_LAT_FT;
+                "translate" (Michael 2026-10-22, before the freeze): lateral is not a filter — every location draws analogs
+                whose completed lateral lies in translate_range and its cohort is ALWAYS translated by Cui & Cross; the
+                "lateral" relax step is then meaningless and refused
     level_only  admit wells under the months floor whose oil peak is >= level_only_post_peak months behind them: own qi, the
                 cohort's long-well Di / b (the short-history transfer, members_with_transfer); counted in n and flagged."""
 
     relax: tuple[str, ...] = ()
     count_floor: int = 5
     wide_tol: float = 0.40
+    lateral: str = "band"
+    translate_range: tuple[float, float] = (5_000.0, 15_000.0)
     level_only: bool = False
     level_only_post_peak: float = 3.0
 
     def __post_init__(self) -> None:
         if any(r not in RELAX_STEPS for r in self.relax) or len(set(self.relax)) != len(self.relax):
             raise ValueError(f"relax steps must be distinct members of {RELAX_STEPS}: {self.relax}")
+        if self.lateral not in ("band", "translate"):
+            raise ValueError(f"lateral must be 'band' or 'translate': {self.lateral}")
+        if self.lateral == "translate" and "lateral" in self.relax:
+            raise ValueError("lateral='translate' has no lateral band to relax")
 
 
 RECORD_RULES = Rules()
 LATERAL_RELAXED = "lateral relaxed (Cui translation)"
+LATERAL_TRANSLATED = "lateral translated (Cui, range)"
 
 
 def _level_only(pool: dict[str, Any], cands: list[dict[str, Any]], min_months: int, post_peak: float) -> int:
@@ -345,8 +356,9 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
     planned_sp = float(sp) if sp is not None and np.isfinite(sp) and 0 < sp < 2800 else DEFAULT_SPACING_FT
     lat = float(loc["lateral_ft"])
     short = lat < SHORT_LAT_FT
-    band = SHORT_BAND_FT if short else None
-    wide = band if short else (lat * (1.0 - rules.wide_tol), lat * (1.0 + rules.wide_tol))
+    translate = rules.lateral == "translate"
+    band = rules.translate_range if translate else (SHORT_BAND_FT if short else None)
+    wide = band if short or translate else (lat * (1.0 - rules.wide_tol), lat * (1.0 + rules.wide_tol))
     min_w = int(cfg["type_curve"]["min_wells"])
     min_months = int(cfg["type_curve"]["min_months_data"])
     sentinel = float(cfg["spacing"]["sentinel_ft"])
@@ -370,6 +382,8 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
         k_lo = sum(1 for c in sel.selected if c.get("level_only"))
         if k_lo:
             flags.append(f"level_only: {k_lo}")
+        if translate:
+            flags.append(LATERAL_TRANSLATED)
         return [c["_i"] for c in sel.selected], flags, len(eligible)
 
     def ring(idx: Sequence[int], dist: dict[int, float] | None) -> tuple[list[int], list[str], int, bool]:
@@ -448,26 +462,31 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
         if len(i16) >= 3:
             m16 = _p50_months(i16, p16, k)
             if m16:
-                mult16 = lateral_multiplier(float(loc2["lateral_ft"]), [p16["lateral"][i] for i in i16], f16)
+                L16, lats16 = float(loc2["lateral_ft"]), [p16["lateral"][i] for i in i16]
+                mult16 = lateral_multiplier(L16, lats16, f16)
                 out[name] = {s: m16[s] * mult16 for s in STREAMS}
+                out[f"{name}_lat_ratio"] = L16 / float(np.mean(lats16))
+                if name in (_STATE.get("linear_twins") or ()):  # step 16 Cui-vs-linear check: same cohort, linear per-ft
+                    out[f"{name}_lin"] = {s: m16[s] * L16 / 1000.0 for s in STREAMS}
     return out
 
 
 def lateral_multiplier(lateral_ft: float, member_laterals: Sequence[float], flags: Sequence[str]) -> float:
     """box_v2's lateral scaling: the per-1,000-ft curve x L / 1,000, with the Cui & Cross translation (D50) when the location's
-    completed lateral is short or (step 16) its cohort came from the relaxed, wide lateral band."""
+    completed lateral is short or (step 16) its cohort came from the relaxed band or the translate rule."""
     L = float(lateral_ft)
-    translate = L < SHORT_LAT_FT or LATERAL_RELAXED in flags
+    translate = L < SHORT_LAT_FT or LATERAL_RELAXED in flags or LATERAL_TRANSLATED in flags
     return L / 1000.0 * (lat_eff.relative(L, member_laterals) if translate else 1.0)
 
 
 def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,
                     workers: int | None = None, bench: str = BENCH, extra_pools: dict[str, dict[str, Any]] | None = None,
-                    variants16: dict[str, tuple[str, Rules]] | None = None) -> list[dict[str, Any]]:
+                    variants16: dict[str, tuple[str, Rules]] | None = None, linear_twins: Sequence[str] = ()) -> list[dict[str, Any]]:
     """`extra_pools` / `variants16` (step 16): more pools on pool2's wells and xy (e.g. measured spacing), and the pre-registered
-    variants as name -> (pool key, Rules); each adds a prediction `name` beside di_p50 / box_v2."""
+    variants as name -> (pool key, Rules); each adds a prediction `name` beside di_p50 / box_v2. `linear_twins`: variants that
+    also predict `<name>_lin` — the same cohort scaled linearly per ft (the Cui-vs-linear check)."""
     state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench,
-             **(extra_pools or {}), "variants16": variants16 or {}}
+             **(extra_pools or {}), "variants16": variants16 or {}, "linear_twins": tuple(linear_twins)}
     workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
     if workers == 1:
         _init(state)
