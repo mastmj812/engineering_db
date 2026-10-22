@@ -71,6 +71,10 @@ def head_sha() -> str:
 def one(group: str, fold: str, out: Path, workers: int) -> dict[str, object]:
     name = group if fold == "analog" else f"{group}_{fold}"
     d = out / name
+    done = d / "run.json"
+    if done.exists() and json.loads(done.read_text(encoding="utf-8")).get("returncode") == 0:
+        print(f"{name}: already complete, skipped", flush=True)  # resume after an interruption: finished runs are kept
+        return json.loads(done.read_text(encoding="utf-8"))
     d.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, "-W", "ignore", "-m", "scripts.box_acceptance", "--bench", group, "--fold", fold, "--step16",
            "--actuals-through", str(ACTUALS_THROUGH), "--wells", str(p9r.wells_dir(group, RUN10_WELLS)), "--out", str(d),
