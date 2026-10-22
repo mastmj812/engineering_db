@@ -407,9 +407,10 @@ def render(run_dir: Path) -> Path:
             sticks = {u: (B["units"].get(u) or {}) for u in G["units"]}
             p.append(f"<div><b>Applies to</b> — {sum(len(v.get('locations', [])) for v in sticks.values())} planned sticks in "
                      f"{len(sticks)} unit(s)</div>")
-            p.append(_table(["DSU", "Planned sticks", "Landing TVD ft", "Spacing ft", "Location source", "Role"],
+            p.append(_table(["DSU", "Planned sticks", "Landing TVD ft", "Spacing ft", "Spacing from", "Location source", "Role"],
                             [[name.get(u, u), len(v.get("locations", [])), num(v.get("tvd_ft"), ",.0f"),
-                              num(v.get("spacing_ft"), ",.0f"), (v.get("gate2") or {}).get("source"), v.get("role", "base")]
+                              num(v.get("spacing_ft"), ",.0f"), v.get("spacing_source", "—"),
+                              (v.get("gate2") or {}).get("source"), v.get("role", "base")]
                              for u, v in sticks.items()]))
             p.append(f'<div class="row"><img src="{maps.curve_png(Path(f"map_{_slug(key)}.png"), gi).name}" '
                      'alt="curve map" style="max-width:100%"></div>')
