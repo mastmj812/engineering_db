@@ -131,3 +131,58 @@ def test_stagger_sends_the_units_row_anchor_never_the_anchor_bench(row_anchor):
     winerack_legs(nv, UNIT, 0.0, {"WCA_2": (10444.0, 1320.0), "WCB_1": (10691.0, 1320.0)}, setback_ft=330,
                   row_anchor=row_anchor)
     assert len(nv.calls) == 3 and {kw.get("anchor") for _, kw in nv.calls} == {row_anchor}
+
+
+def test_uturn_bench_pools_on_its_completed_lateral():
+    """Michael 2026-10-22: a U-turn's pool is drawn on its COMPLETED lateral (sum of
+    legs, curve excluded) — not the unit's planned chord. Straight benches unchanged."""
+    from dealintake.pipeline import bench_laterals
+
+    plan = {"bw": {"benches": ["WCA_1"], "planned_lateral_ft": 7234.0,
+                   "bench_opts": {"WCA_1": {"well_type": "uturn"}}},
+            "s": {"benches": ["WCA_1"], "planned_lateral_ft": 9900.0, "bench_opts": {"WCA_1": {}}}}
+    prop = {"units": [
+        {"label": "bw", "gunbarrel": {"planned": {"WCA_1": {"well_type": "uturn", "lateral_ft": [13104, 13160]}}}},
+        {"label": "s", "gunbarrel": {"planned": {}}}]}
+    got = bench_laterals(plan, prop)
+    assert got[("bw", "WCA_1")][0] == 13132.0 and "curve excluded" in got[("bw", "WCA_1")][1]
+    assert got[("s", "WCA_1")] == (9900.0, "planned lateral")
+    prop["units"][0]["gunbarrel"]["planned"]["WCA_1"]["well_type"] = "single"      # preview predates the call
+    with pytest.raises(ValueError, match="re-run propose"):
+        bench_laterals(plan, prop)
+
+
+def test_stagger_lead_keeps_its_layout_against_the_count_rule():
+    """RIP Harambe 15-22: WCB_1 leads (keeps its lattice) although WCA_2 keeps more rows alone."""
+    from dealintake.pipeline import winerack_legs
+
+    zones = {"WCA_2": (10444.0, 1320.0), "WCB_1": (10691.0, 1320.0)}
+    counts = {"WCA_2": 3, "WCB_1": 2}
+    _, pins = winerack_legs(_UNarvi(), UNIT, 0.0, zones, setback_ft=330, kept=lambda b, lg: counts[b])
+    assert pins["WCA_2"] == -1320.0 and pins["WCB_1"] != -1320.0          # count rule: WCA_2 leads
+    _, pins = winerack_legs(_UNarvi(), UNIT, 0.0, zones, setback_ft=330, kept=lambda b, lg: counts[b], lead="WCB_1")
+    assert pins["WCB_1"] == -1320.0 and pins["WCA_2"] == -660.0           # WCB_1 leads, WCA_2 shifted half a spacing
+
+
+def test_only_one_stagger_lead_per_unit(tmp_path):
+    prop = {"units": [{"label": "u1", "planned_lateral": {"median_ft": 7358.0}, "bench_seed": {}}]}
+    (tmp_path / unit_benches.FILENAME).write_text(
+        "units:\n  u1:\n    benches:\n      WCA_2: {evaluate: true, stagger_lead: true}\n"
+        "      WCB_1: {evaluate: true, stagger_lead: true}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="stagger_lead"):
+        unit_benches.read(tmp_path, prop)
+
+
+def test_pinned_bench_sends_its_offset_and_is_not_staggered():
+    """RIP Harambe blob (Michael's mockup): WCA_2 at -1,320 / 0 / +1,320 = pin 0 @ 1,320."""
+    o = unit_benches.bench_options({"evaluate": True, "pin_offset_ft": 0, "spacing_ft": 1320}, "u.b")
+    assert o == {"pin_offset_ft": 0.0, "spacing_ft": 1320.0}
+    with pytest.raises(ValueError, match="pin_offset_ft"):
+        unit_benches.bench_options({"evaluate": True, "pin_offset_ft": "center"}, "u.b")
+    nv = _UNarvi()
+    prop = [{"bench": "WCA_2", "median_tvd_ft": 10478.0}]
+    gb = gunbarrel_preview(UNIT, 0.0, prop, {"WCA_2": {"evaluate": True, "why": "x"}}, {}, [], [], nv, setback_ft=330,
+                           bench_opts={"WCA_2": {"pin_offset_ft": 0.0, "spacing_ft": 1320.0}})
+    zones, _ = nv.calls[0]
+    assert len(nv.calls) == 1 and zones[0]["offset_ft"] == 0.0
+    assert gb["planned"]["WCA_2"]["winerack"] is False and gb["planned"]["WCA_2"]["pin_offset_ft"] == 0.0

@@ -331,6 +331,7 @@ def gunbarrel(u: dict[str, Any]) -> str:
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
                           + (" [UPSIDE]" if pl.get("role") == "upside" else "")
                           + (" [winerack]" if pl.get("winerack") else "")
+                          + (f" [pinned at {pl['pin_offset_ft']:+,.0f} ft]" if pl.get("pin_offset_ft") is not None else "")
                           + (" [reviewer spacing]" if pl.get("spacing_source") == "reviewer"
                              else f" [{spacing.short_text((u.get('spacing') or {}).get(b))}]")
                           + (f" — {n_cull} culled by PDP proximity" if n_cull else "")

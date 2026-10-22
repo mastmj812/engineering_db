@@ -135,6 +135,9 @@ def read(run_dir: Path, prop: dict[str, Any]) -> dict[str, dict[str, Any]]:
         if min_leg is not None and (not isinstance(min_leg, (int, float)) or min_leg <= 0):
             raise ValueError(f"{FILENAME}: {label}.min_leg_ft must be a positive number, got {min_leg!r}")
         anchor = unit_anchor(row, label)
+        leads = [b for b, o in opts.items() if o.get("stagger_lead")]
+        if len(leads) > 1:
+            raise ValueError(f"{FILENAME}: {label} names {len(leads)} stagger_lead benches {leads} — at most one")
         seed = [b for b, v in (u.get("bench_seed") or {}).items() if v["evaluate"]]
         out[label] = {
             "benches": benches, "planned_lateral_ft": float(ll), "seed_benches": seed,
@@ -186,8 +189,20 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
       well_type       single (default) | uturn — narvi U-turns: two legs per well,
                       spacing_ft is LEG-TO-LEG; one location per well with its total
                       completed lateral. A U-turn bench is placed on its own (no stagger).
-      anchor          (unit level) east | west | center — where the rows hang"""
+      anchor          (unit level) east | west | center — where the rows hang
+      pin_offset_ft   put a row at this gunbarrel offset (ft; origin = unit centroid,
+                      + = sign rule v2: E for N-S plans, N for E-W, SE on a 44° plan);
+                      the bench's lattice runs through it at spacing_ft. A pinned bench
+                      is placed on its own (no stagger). For hand-drawn layouts
+                      (RIP Harambe blob: WCA_2 at -1,320 / 0 / +1,320 = pin 0 @ 1,320)
+      stagger_lead    true on ONE staggered bench: it keeps its own layout and the
+                      others shift half a spacing off it (default: the bench keeping
+                      the most rows after its row rules leads)"""
     out: dict[str, Any] = {}
+    if v.get("pin_offset_ft") is not None:
+        if isinstance(v["pin_offset_ft"], bool) or not isinstance(v["pin_offset_ft"], (int, float)):
+            raise ValueError(f"{FILENAME}: {where}.pin_offset_ft must be a number (ft), got {v['pin_offset_ft']!r}")
+        out["pin_offset_ft"] = float(v["pin_offset_ft"])
     for k in ("tvd_ft", "spacing_ft"):
         if v.get(k) is not None:
             if not isinstance(v[k], (int, float)) or v[k] <= 0:
@@ -211,7 +226,7 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
         if v["role"] not in ROLES:
             raise ValueError(f"{FILENAME}: {where}.role must be one of {ROLES}, got {v['role']!r}")
         out["role"] = v["role"]
-    for k in ("winerack", "pdp_proximity"):
+    for k in ("winerack", "pdp_proximity", "stagger_lead"):
         if v.get(k) is not None:
             if not isinstance(v[k], bool):
                 raise ValueError(f"{FILENAME}: {where}.{k} must be true or false, got {v[k]!r}")
