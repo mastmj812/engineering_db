@@ -30,26 +30,48 @@ STACK: tuple[str, ...] = (
 )
 INTERVALS: tuple[str, ...] = (f"ABOVE_{STACK[0]}", *STACK)  # interval k labelled by its top surface
 
-# formation_blueox tag -> top surface of the grid interval it should sit in (base = next surface in STACK).
-# From extent_package.GRIDS (same top/base pairs) + the codes GRIDS pools or omits: WCXY (XY top -> WCA top) and
-# WCA_1 / WCA_2 (both WCA top -> WCB1 top: no grid splits them; they are told apart by position only, step 3).
-# AVA_0 has no grid of its own -> Avalon 1 top, as on its BOX map.
-TAG_TOP: dict[str, str] = {
-    "AVA_0": "AVALON1", "AVA_1": "AVALON1", "AVA_2": "AVALON2",
-    "BS1_S": "1BSPGS", "BS2_C": "2BSPGC", "BS2_S": "2BSPGS", "BS3_C": "3BSPGC", "BS3_S": "3BSPGS",
-    "WCXY": "WOLFCAMP_XY", "WCA_1": "WOLFCAMP_A", "WCA_2": "WOLFCAMP_A",
-    "WCB_1": "WOLFCAMP-B1", "WCB_2": "WOLFCAMP-B2", "WCC": "WOLFCAMP-C", "WCD": "WOLFCAMP_D",
+# formation_blueox tag -> (top surface, base surface) of the bench it should sit in. A bench may span more than
+# one gridded interval (top and base need not be adjacent in STACK).
+# * Bone Spring / Avalon pairs = extent_package.GRIDS; AVA_0 has no grid of its own -> Avalon 1 top, as on its map.
+# * Geology decisions 2026-10-22 (geologist + Michael; scored on his V5 grids = our Grids_10-19-26):
+#   - WCA bench = WCXY + WCA_1 + WCA_2, WOLFCAMP_XY top -> WOLFCAMP-B1 top (RRC "Wolfcamp A" tops sit on his XY
+#     top, +2 ft over 102 wells; 92 % agreement). Rule A. No WCA_1 / WCA_2 sub-split (rule C: secondary, later).
+#     Deliberately differs from extent_package.GRIDS["WCA"] (WCA top -> B1), which is BOX map context only.
+#   - WCC: his WOLFCAMP-B2 -> WOLFCAMP-C interval IS the industry Wolfcamp C bench (relabel, not re-pick; 89 %).
+#     That interval also holds most WCB_2 landings (straddling his B2 top) and much of WCD: operators split
+#     WCB_2 / WCC ~180 ft below his B2 top, so it cannot separate WCB_2 from WCC (flagged, step 3 'wbc' family).
+#   - WCD: his WOLFCAMP-C -> WOLFCAMP_D under the same relabel, but HELD (unscored) for his log review.
+TAG_INTERVAL: dict[str, tuple[str, str]] = {
+    "AVA_0": ("AVALON1", "AVALON2"), "AVA_1": ("AVALON1", "AVALON2"), "AVA_2": ("AVALON2", "1BSPGS"),
+    "BS1_S": ("1BSPGS", "2BSPGC"), "BS2_C": ("2BSPGC", "2BSPGS"), "BS2_S": ("2BSPGS", "3BSPGC"),
+    "BS3_C": ("3BSPGC", "3BSPGS"), "BS3_S": ("3BSPGS", "WOLFCAMP_XY"),
+    "WCXY": ("WOLFCAMP_XY", "WOLFCAMP-B1"), "WCA_1": ("WOLFCAMP_XY", "WOLFCAMP-B1"), "WCA_2": ("WOLFCAMP_XY", "WOLFCAMP-B1"),
+    "WCB_1": ("WOLFCAMP-B1", "WOLFCAMP-B2"), "WCB_2": ("WOLFCAMP-B2", "WOLFCAMP-C"),
+    "WCC": ("WOLFCAMP-B2", "WOLFCAMP-C"), "WCD": ("WOLFCAMP-C", "WOLFCAMP_D"),
 }
+TAG_TOP: dict[str, str] = {t: tb[0] for t, tb in TAG_INTERVAL.items()}
 
 
 def tag_base(tag: str) -> str:
-    return STACK[STACK.index(TAG_TOP[tag]) + 1]
+    return TAG_INTERVAL[tag][1]
 
 
-# Geology answers to the step-1 questions (Michael + geologist, 2026-10-20) — decisions of record for scoring:
-# * WOLFCAMP-C and WOLFCAMP_D are suspect (to be relabelled or re-picked): a tag whose TOP is one of them is not
-#   scored; a tag whose BASE is one of them keeps its shallow/agree verdict but a "deep" call is not trusted.
-SUSPECT_SURFACES: frozenset[str] = frozenset({"WOLFCAMP-C", "WOLFCAMP_D"})
+# Geology answers to the step-1 questions (Michael + geologist, 2026-10-20, revised 2026-10-22) — decisions of
+# record for scoring:
+# * WOLFCAMP_D is suspect: a tag whose TOP is one is not scored; a tag whose BASE is one keeps its shallow/agree
+#   verdict but a "deep" call is not trusted. WOLFCAMP-C left this set 2026-10-22: relabelled as the WCC base.
+SUSPECT_SURFACES: frozenset[str] = frozenset({"WOLFCAMP_D"})
+# * WCD is HELD (unscored) for the geologist's log review: its wells straddle his C top (median ~50 ft above).
+HELD_TAGS: frozenset[str] = frozenset({"WCD"})
+# * Rule B (2026-10-22): his XY top is the Bone Spring 3 / Wolfcamp boundary, EXCEPT Lea and Ward pending his
+#   review (the BS3_S / WCXY names overlap completely there). Wells on that boundary in those counties stay scored
+#   but carry a rule_b_pending flag.
+RULE_B_PENDING_COUNTIES: frozenset[str] = frozenset({"Lea", "Ward"})
+
+
+def rule_b_pending(tag: str, county: str | None) -> bool:
+    """True for a well whose bench is bounded by the XY top, in a county where rule B awaits review."""
+    return tag in TAG_INTERVAL and "WOLFCAMP_XY" in TAG_INTERVAL[tag] and (county or "") in RULE_B_PENDING_COUNTIES
 # * AVA_1 is the Middle Avalon (operator tops ~110 ft above AVALON2, MAD 24 ft, 29 wells); no grid surface exists
 #   for it, so it straddles AVALON2 (AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon). Unscored until a
 #   Middle Avalon surface is built.
@@ -68,9 +90,11 @@ SCORED_VERDICTS: tuple[str, ...] = ("agree", "shallow", "deep")
 
 
 def apply_geology_rules(tag: str, county: str | None, verdict: str) -> str:
-    """Override a raw verdict per the geology decisions above. Order: no surface > no control > suspect."""
+    """Override a raw verdict per the geology decisions above. Order: no surface > held > no control > suspect."""
     if tag in NO_SURFACE_TAGS:
         return "no_surface"
+    if tag in HELD_TAGS:
+        return "held"
     if tag not in TAG_TOP:
         return verdict
     top, base = TAG_TOP[tag], tag_base(tag)
@@ -135,14 +159,14 @@ def station_frame(st: pd.DataFrame, stack: dict[str, Grid], tvd_col: str = "tvd"
     out["n_nan_surf"] = (~np.isfinite(D)).sum(axis=1)
     out["interval"] = np.array(INTERVALS, dtype=object)[interval_index(D, tvd)]
     col = {s: i for i, s in enumerate(STACK)}
-    tops = st["tag"].map(TAG_TOP)
-    ti = tops.map(col).to_numpy(float)
-    known = np.isfinite(ti)
+    ti = st["tag"].map(TAG_TOP).map(col).to_numpy(float)
+    bi = st["tag"].map(lambda t: TAG_INTERVAL[t][1] if t in TAG_INTERVAL else None).map(col).to_numpy(float)
+    known = np.isfinite(ti) & np.isfinite(bi)
     top = np.full(len(st), np.nan)
     base = np.full(len(st), np.nan)
     rows = np.where(known)[0]
     top[rows] = D[rows, ti[known].astype(int)]
-    base[rows] = D[rows, ti[known].astype(int) + 1]
+    base[rows] = D[rows, bi[known].astype(int)]
     out["top"], out["base"] = top, base
     out["ft_below_top"] = tvd - top
     out["ft_above_base"] = base - tvd

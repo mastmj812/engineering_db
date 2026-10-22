@@ -33,7 +33,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MIN_FACET_N = 60
 BIN_FT = 10.0
 TAG_COLOURS = {"BS3_S": "#a16207", "WCXY": "#f59e0b", "WCA_1": "#2563eb", "WCA_2": "#7c3aed", "WCB_1": "#16a34a",
-               "WCB_2": "#0f766e", "AVA_0": "#db2777", "AVA_1": "#f97316", "AVA_2": "#4b5563"}
+               "WCB_2": "#0f766e", "WCC": "#dc2626", "WCD": "#111827",
+               "AVA_0": "#db2777", "AVA_1": "#f97316", "AVA_2": "#4b5563"}
 
 
 @dataclass(frozen=True)
@@ -49,10 +50,16 @@ class Family:
 
 FAMILIES = (
     Family("xy", "Bone Spring 3 / XY / Wolfcamp A — the XY squeeze", "WOLFCAMP_A", ("BS3_S", "WCXY", "WCA_1", "WCA_2"),
-           ("3BSPGS", "WOLFCAMP_XY", "WOLFCAMP-B1"), (-450.0, 300.0)),
+           ("3BSPGS", "WOLFCAMP_XY", "WOLFCAMP-B1"), (-450.0, 300.0),
+           "Since 2026-10-22 WCXY + WCA_1 + WCA_2 are scored as ONE WCA bench, XY → B1 (rule A); this panel is kept as the "
+           "naming evidence for that decision and for a possible WCA_1 / WCA_2 surface (rule C, later)."),
     Family("wcb", "Wolfcamp A2 / B1 / B2", "WOLFCAMP-B1", ("WCA_2", "WCB_1", "WCB_2"),
-           ("WOLFCAMP_A", "WOLFCAMP-B2", "WOLFCAMP-C"), (-300.0, 500.0),
-           "WOLFCAMP-C is suspect (to be relabelled / re-picked) — its line is dashed."),
+           ("WOLFCAMP_A", "WOLFCAMP-B2", "WOLFCAMP-C"), (-300.0, 500.0)),
+    Family("wbc", "Wolfcamp B2 / C / D — what the B2 → C interval holds", "WOLFCAMP-B2", ("WCB_1", "WCB_2", "WCC", "WCD"),
+           ("WOLFCAMP-B1", "WOLFCAMP-C", "WOLFCAMP_D"), (-450.0, 900.0),
+           "WCC is scored against B2 → C (relabel, 2026-10-22). This panel shows the same interval also holds WCB_2 "
+           "(straddling the B2 top) and much of WCD (near the C top): the WCB_2 | WCC split is the operator boundary a "
+           "surface inside B2 → C would need to carry for re-landing. WOLFCAMP_D is suspect — its line is dashed."),
     Family("ava", "Avalon — Upper / Middle / Lower", "AVALON2", ("AVA_0", "AVA_1", "AVA_2"),
            ("AVALON1", "1BSPGS"), (-650.0, 400.0),
            "No Middle Avalon surface exists; operator Middle Avalon tops sit ~110 ft above AVALON2 (geologist, 29 wells, "
