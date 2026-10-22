@@ -38,6 +38,10 @@ def test_next_k_oil_is_the_model_cum_difference_from_onset():
         model_cum_at_t(qo=0.0, peak_index_months=1, qi=500.0, Di=2.0, b=1.0, Df=0.08, t_years=(10 - 2) / 12)
     assert c16.next_k_oil(p, 10.0) == pytest.approx(want)
     assert c16.next_k_oil(P, 10.0) > c16.next_k_oil(P, 20.0) > 0  # declining
+    no_ramp = {k: v for k, v in P.items() if k not in ("peak_index_months", "onset_index_months")}  # boxfit omits the keys
+    want = model_cum_at_t(qo=0.0, peak_index_months=None, qi=500.0, Di=2.0, b=1.0, Df=0.08, t_years=22 / 12) - \
+        model_cum_at_t(qo=0.0, peak_index_months=None, qi=500.0, Di=2.0, b=1.0, Df=0.08, t_years=10 / 12)
+    assert c16.next_k_oil(no_ramp, 10.0) == pytest.approx(want)
 
 
 def test_subjects_are_3_to_5_months_after_peak():

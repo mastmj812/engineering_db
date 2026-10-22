@@ -58,9 +58,11 @@ def next_k_oil(p: Mapping[str, Any], months: float, k: int = HINDCAST_MONTHS) ->
     onset = float(p.get("onset_index_months") or 0)
     t0, t1 = (float(months) - onset) / 12.0, (float(months) + k - onset) / 12.0
 
+    qo, pim = p.get("qo"), p.get("peak_index_months")  # absent = a fit with no ramp (boxfit.tc.align.forecast_rates passes None)
+
     def cum(t: float) -> float:
-        return float(model_cum_at_t(qo=float(p["qo"]), peak_index_months=int(p["peak_index_months"]), qi=float(p["qi"]), Di=float(p["Di"]),
-                                    b=float(p["b"]), Df=float(p["Df"]), t_years=max(t, 0.0)))
+        return float(model_cum_at_t(qo=None if qo is None else float(qo), peak_index_months=None if pim is None else int(pim),
+                                    qi=float(p["qi"]), Di=float(p["Di"]), b=float(p["b"]), Df=float(p["Df"]), t_years=max(t, 0.0)))
 
     return cum(t1) - cum(t0)
 
