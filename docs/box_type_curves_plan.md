@@ -1,5 +1,7 @@
 # BOX type curves — build plan
 
+**Step 16 opened 2026-10-22 — cohort-selection review (D118); 16a done, AT GATE 16a** (branch `claude/box-cohort-review`, `docs/box/cohort-review-2026-10-22/FINDINGS.md`, read-only): the pool's spacing is fetched only for the F(k) training cohort, so 12,174 of 34,705 pool wells (35 %) with a measured spacing are excluded as standalone (every well < 13 months, every lateral > 13,000 ft; all benches, scored spec included); the 1.5-mi stick class's ±25 % band closes in 5 mi far less often on every bench; 5,175 PUDs reach ≥ 15 mi with ≥ 3 modern local wells inside 3 mi. Gate 16a = where the spacing fix applies.
+
 **Status (2026-10-16):** **Phase 1 COMPLETE** (steps 0–8; the full step-by-step record is in §12). **BOX record = run 7** **Step 11 (water) done; GATE 11 CLOSED 2026-10-19** (eng_db #159, `docs/box/step11-2026-10-19/`): D107 (WOR-vs-cum-oil ratio on measured-water analogs; NM measured unless insufficient), D108 (water rides on raw box_v2 oil), D109 (12a rule frozen as pre-registered). Next = step 12a on go. **Step 12a done; GATE 12a CLOSED 2026-10-19 (D110)** (branch `claude/box-step12a-water`, `docs/box/step12a-2026-10-19/`): spec frozen 546c51a, tuning identity 39/39 (≤ 4.4e-16), water holdout scored ONCE — 26/26 judged cells inside the frozen intervals; D109 tiers: WCA + BS2_S water validated, the other 11 provisional; WCA TX holdout water 15–17 % high (NM ~0) = workup caveat (D110). Next = 12b (sql/62 container-validated first, live apply on go). **Step 12b DONE 2026-10-19 — sql/62 APPLIED LIVE + water STORED on record run 10 (D111, D72 retired)** (branch `claude/box-step12b-water`, `docs/box/step12b-2026-10-19/`): sql/62 (water stream + per-stream tier + box.location_water_analog) 16/16 in a container; water built for all 50,963 run-10 locations (0 fit failures) and stored into the container's run 10 with every identity green (oil/gas md5 = live). Live: 16/16, store 806 s with every identity green. Next: Steven note (Michael sends), erebor water display, Blue Ox drop water.
 (stored 2026-10-16, D92): 1,907 covered Delaware WCA_1 / WCA_2 PUDs inside extent 6, oil + gas, uptime-free, D62 haircut factors
 applied by the D92 rate shape. Live in erebor (Highgrade Novi | BOX toggle + per-pad workup; Map-tab well overlay). Steven has
@@ -152,6 +154,7 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D116 | **Record implementation.** The next record run is DERIVED from run 10 (no refit) by `scripts.box_prox_record store`. Haircut PUDs get oil × factor (stream `prox_factor`). No-precedent PUDs are re-classed. Every other row is identical. Provenance lives in `box.pud_proximity` and `box.pud_proximity_parent` (sql/65). Run 10 is kept because it is priced (D82 / D104). Configuration is re-measured on every record run. Michael 2026-10-20, gate 4 plan. | `RECORD_PLAN.md`; container rehearsal 2026-10-20: sql/65 25/25 ×2, store identities all green (oil 23,300.106 MMbbl = source × factor). Live apply / store each on an explicit go. |
 | D117 | **Run 10 pruned; run 14 is the only BOX run.** Steven priced run 14 (679,600 `box_econ.box_pud_econ` rows, 2026-10-20 22:57 UTC) and removed his run-10 rows, which made run 10 prune-eligible under D104 (not the record, never priced). `scripts.box_prune_runs --apply` 2026-10-21 (758 s, one transaction): run 10 deleted (121,727 pud_forecast / 91.7 M month / 817k analog / 829k water-analog rows by cascade); run 14 unchanged (121,727 / 76,455,000 / 681,618 / 694,768); no orphans. Michael 2026-10-21 ("we don't need run 10 at all"). | `scripts.box_prune_runs` output; live counts checked after. |
 | D117 | **Universe = every reconciled Novi stick inside the BOX extent for its bench, whatever Novi's BASE_CASE / UPSIDE (PUD / RES) tag.** Amends D1 and D67. BOX's own gates screen the UPSIDE cases: the extent (D5 / D27) for far-from-PDP "geologic" sticks, the PDP-proximity layer (D113 / D114) for aggressively spaced children. Reconciliation (sql/21) must cover every Novi stick first, so drilled RES slots stay out. WCXY RES ride the WCA extent (D95); planned-sibling co-development (WCXY under planned WCA) is not haircut, and the disclosure says so. Delivered in 5 gated steps (`docs/box/universe-2026-10-21/AUDIT.md`). Michael 2026-10-21. | "If a Novi location is inside the BOX extent for the respective bench, we take it." Novi's tags are unreliable; UPSIDE marks Novi's own extent / spacing doubts, which BOX measures itself. Read-only 2026-10-21: 6,380 Delaware RES sticks ≥ 50 % inside a record extent → 6,225 unrealized (WCXY 5,057, WCC 567, BS3_S 497, others 104), 0 duplicating a PUD slot. |
+| D118 | **Cohort-selection review scope.** Diagnose every bench read-only (step 16a); selection-rule changes apply to the provisional groups first, validated groups only on evidence and with their own re-acceptance; short-history wells: TEST the level-only middle path (detected peak + ≥ 3 producing months after it, borrowed cohort Di / b, own qi, counted and reported separately from full-history analogs), not adopted. Provisional holdouts are spent (BS3_S, BS3_C, WCB_2, BS1_S) or never existed (AVA_0 / 1 / 2, BS2_C), so any new rule there is tuned on tuning folds and confirmed only prospectively, and says so. Michael 2026-10-22. | Pad 1925 BS1_S: 6 analogs at 14–19 mi while five 2025 same-bench producers sit 1.7–2.6 mi away, excluded by the lateral band; off-trend reads against local wells (`docs/box/cohort-review-2026-10-22/`). |
 
 ## 3. Scope guard (what this plan does NOT do)
 
@@ -396,6 +399,23 @@ Per family: step-1 bench QC (consensus flags, class rule of record, gate) → po
 B** (WCB_1 + WCB_2; WCB_2 carries the known deep-TVD tagging problem — use the gunbarrel-consensus detector + the 98 overrides,
 memory `wcb2-deep-tvd-screening`) → **15c BS1_S** → **15d WCC** → any step-14 "build" benches. Each family is its own gate chain.
 
+### Step 16 — cohort-selection review (opened 2026-10-22, D118)
+Trigger: off-trend BS1_S EUR/ft in erebor (Pad 1925). Each sub-step ends at its gate.
+- **16a — diagnosis, all benches (read-only). DONE 2026-10-22, AT GATE 16a** (`box/cohort_review.py`,
+  `scripts.box_cohort_review pools | review`, `docs/box/cohort-review-2026-10-22/`): record selection reproduced 95.9–100 %;
+  spacing artifact (35 % of pool wells wrongly standalone), 1.5-mi band gap, 5,175 far-with-local PUDs, Pad 1925 = lateral band.
+  **Gate 16a:** Michael decides where the spacing fix applies (it is a defect touching validated groups, not a rule choice).
+- **16b — rule menu + pre-registration.** Michael ranks the selection priorities (same bench → distance → lateral similarity →
+  spacing representativeness → count is the candidate order). Pre-register the variants before any scoring: measured spacing;
+  lateral translate-not-exclude (Cui, as the short-lateral path); relax-before-reach; first-ring minimum below 10; level-only
+  short-history analogs (D118); plus the new metrics: local consistency (forecast vs modern local wells), a spread / spatial-
+  residual metric next to Σ / Σ bias. **Gate 16b** = frozen variants + metrics.
+- **16c — score on tuning folds** (provisional groups; validated per gate 16a), EUR effect per PUD, the short-history hindcast at 3–5
+  producing months after peak, and the +13–16 % year-1 curve-construction offset (BS1_S). **Gate 16c** = adopt / not, per group.
+- **16d — production.** A new record run for the adopted groups (build → water → proximity layer → store on go); Steven re-prices;
+  run 14 pruned only per D104. **Gate 16d.**
+- **16e — validated groups**, from the 16a / 16c evidence, with their own re-acceptance path.
+
 ### Standing items (not steps; on the calendar)
 - **Prospective 2026 confirmation** (D85, digest a72c797d): first cum-6 read on the frozen cohort; cum-12 ~2027-Q2. Read-only
   scoring session when data allow; report, don't re-tune.
@@ -510,6 +530,7 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | 13 | 1 | time-bound interrupt before the next Novi vintage |
 | 14 | 1 short | decision only |
 | 15 | ≈ 4–5 per family | 15a BS3 → 15b WCB → 15c BS1_S → 15d WCC |
+| 16 | ≈ 4–6 | 16a diagnosis (done) → 16b rule menu + pre-registration → 16c tuning-fold scoring → 16d production → 16e validated |
 
 **Phase 2 order:** 9a → 9b → 9c → 11 → 12a → 12b → 14 → 15a → 15b → 15c → 15d. **Step 10 runs alongside 9** (swap it ahead if a
 live deal needs BOX in a drop). **Step 13 interrupts** whenever the next vintage is near.
