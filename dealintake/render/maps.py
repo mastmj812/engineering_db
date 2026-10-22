@@ -140,12 +140,16 @@ def _draw_planned(ax, B: dict[str, Any], col_of: dict[str, str], stick_labels: b
         if lb not in col_of:
             continue
         for loc in ub.get("locations", []):
-            g = shp_wkt.loads(loc["wkt"])
-            x, y = g.xy
-            ax.plot(x, y, color=col_of[lb], linewidth=2.6, linestyle="-" if loc["src"] == "novi" else (0, (4, 2)),
-                    zorder=4, path_effects=[pe.withStroke(linewidth=4.2, foreground="white")])
+            parts = list(getattr(shp_wkt.loads(loc["wkt"]), "geoms", None) or [shp_wkt.loads(loc["wkt"])])
+            for g in parts:                       # a U-turn draws both legs
+                x, y = g.xy
+                ax.plot(x, y, color=col_of[lb], linewidth=2.6, linestyle="-" if loc["src"] == "novi" else (0, (4, 2)),
+                        zorder=4, path_effects=[pe.withStroke(linewidth=4.2, foreground="white")])
             if stick_labels:      # along the stick at its midpoint — toes line up across a unit and collide
+                g = parts[0]
+                x, y = g.xy
                 ll = f" · {loc['ll_ft']:,.0f} ft" if loc.get("ll_ft") else ""
+                ll += " U-turn" if (loc.get("n_legs") or 1) > 1 else ""
                 m = g.interpolate(0.5, normalized=True)
                 ang = math.degrees(math.atan2(y[-1] - y[0], x[-1] - x[0]))
                 ang = ang - 180 if ang > 90 else ang + 180 if ang < -90 else ang
