@@ -35,7 +35,7 @@ from typing import Any
 
 from shapely.geometry import shape
 
-from dealintake.geo import LocalFrame, true_to_grid
+from dealintake.geo import LocalFrame, narvi_azimuth
 from dealintake.select_wells import bench_code
 
 MATCH_TOL_FT = 50.0
@@ -133,7 +133,7 @@ def plan_unit(
     label, geom = unit["label"], shape(unit["geometry"])
     frame = LocalFrame.around(geom)
     az_true = float(unit["planned_lateral"]["azimuth_deg"])
-    az_grid = true_to_grid(az_true, geom.centroid.x, geom.centroid.y)
+    az_grid = narvi_azimuth(az_true, geom.centroid.x, geom.centroid.y)
     gen = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] != "novi"}
     novi = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] == "novi"}
     order = sorted(gen, key=lambda b: gen[b]["tvd_ft"])
