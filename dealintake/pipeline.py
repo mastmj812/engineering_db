@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 import statistics
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from decimal import Decimal
@@ -50,7 +50,7 @@ from dealintake import (
 )
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
-from dealintake.clients.narvi import Narvi, legs
+from dealintake.clients.narvi import Narvi, wells
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
@@ -109,7 +109,7 @@ def write_json(path: Path, obj: Any) -> None:
 
 # Reviewer keys that describe a PATTERN to place — any of them means "generate".
 PATTERN_KEYS = ("tvd_ft", "spacing_ft", "n_wells", "keep_side",
-                "drop_west_rows", "drop_east_rows", "drop_north_rows", "drop_south_rows", "winerack")
+                "drop_west_rows", "drop_east_rows", "drop_north_rows", "drop_south_rows", "winerack", "well_type")
 
 
 def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
@@ -130,8 +130,18 @@ def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
 
 def staggered(opts: dict[str, Any]) -> bool:
     """Benches are placed together, staggered, unless the reviewer set
-    `winerack: false` (default flipped to stagger — Michael 2026-10-08)."""
-    return opts.get("winerack", True) is not False
+    `winerack: false` (default flipped to stagger — Michael 2026-10-08). A
+    U-turn bench is always placed on its own: the stagger pins one leg
+    position, a U-turn has two."""
+    return opts.get("winerack", True) is not False and opts.get("well_type") != "uturn"
+
+
+def zone(bench: str, tvd_ft: float, spacing_ft: float, opts: dict[str, Any]) -> dict[str, Any]:
+    """One narvi /api/generate zone for a bench (well_type only when the reviewer set it)."""
+    z: dict[str, Any] = {"formation": bench, "target_tvd_ft": tvd_ft, "spacing_ft": spacing_ft}
+    if opts.get("well_type"):
+        z["well_type"] = opts["well_type"]
+    return z
 
 
 def prox_enabled(opts: dict[str, Any]) -> bool:
@@ -140,15 +150,19 @@ def prox_enabled(opts: dict[str, Any]) -> bool:
 
 
 def leg_rows(lg: list[dict[str, Any]], project: Callable[[Any], tuple[float, float]],
-             prox: ProximityRule | None, tvd_ft: float | None) -> list[dict[str, Any]]:
-    """Generated legs -> row-rule rows (offset in the rule-16 frame, lateral,
-    the leg, and the PDP-proximity test at the bench's landing TVD)."""
+             prox: ProximityRule | None, tvd_ft: float | None, ignore: Sequence[str] = ()) -> list[dict[str, Any]]:
+    """Generated WELLS (clients.narvi.wells) -> row-rule rows: offset in the
+    rule-16 frame (a U-turn's = its legs' mean; `leg_offsets_ft` each leg's),
+    the well's completed lateral, the well, and the PDP-proximity test at the
+    bench's landing TVD (`ignore` = reviewer-exempted producer api10s)."""
     rows = []
     for leg in lg:
+        parts = list(getattr(leg["geom"], "geoms", [leg["geom"]]))
         r: dict[str, Any] = {"offset_ft": round(project(leg["geom"])[0]),
+                             "leg_offsets_ft": [round(project(g)[0]) for g in parts],
                              "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0)), "leg": leg}
         if prox is not None and tvd_ft is not None:
-            r["proximity"] = prox.check(leg["geom"], float(tvd_ft))
+            r["proximity"] = prox.check(leg["geom"], float(tvd_ft), ignore)
         rows.append(r)
     return rows
 
@@ -163,7 +177,8 @@ def rule_counter(
 
     def kept(bench: str, lg: list[dict[str, Any]]) -> int:
         o = bench_opts.get(bench) or {}
-        rows = leg_rows(lg, project, prox, (zones or {}).get(bench, (None, None))[0])
+        rows = leg_rows(lg, project, prox, (zones or {}).get(bench, (None, None))[0],
+                        o.get("pdp_proximity_ignore") or ())
         k, _ = apply_row_rules(rows, azimuth_deg, n_wells=o.get("n_wells"), keep_side=o.get("keep_side"),
                                drop_rows={sd: o[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south")
                                           if o.get(f"drop_{sd}_rows")},
@@ -174,11 +189,12 @@ def rule_counter(
 
 def winerack_legs(
     narvi: Narvi, unit: Any, azimuth_deg: float, zones: dict[str, tuple[float, float]], *, setback_ft: float,
-    kept: Callable[[str, list[dict[str, Any]]], int] | None = None,
+    kept: Callable[[str, list[dict[str, Any]]], int] | None = None, row_anchor: str | None = None,
 ) -> tuple[dict[str, list[dict[str, Any]]], dict[str, float]]:
     """Place a unit's staggered benches. zones = {bench: (tvd_ft, spacing_ft)}.
     Returns ({bench: legs}, {bench: narvi gunbarrel pin}) — pins are empty for a
-    single bench.
+    single bench. `row_anchor` = the reviewer's unit `anchor` (where narvi
+    hangs the rows: east / west lease line, center) — not the anchor BENCH below.
 
     The ANCHOR is the bench that keeps the most rows after the reviewer's row
     rules when placed alone (tie -> the deeper bench); it keeps that layout.
@@ -194,7 +210,8 @@ def winerack_legs(
         z: dict[str, Any] = {"formation": b, "target_tvd_ft": zones[b][0], "spacing_ft": zones[b][1]}
         if pin is not None:
             z["offset_ft"] = pin
-        out = legs(narvi.generate(unit, [z], setback_ft=setback_ft, spacing_ft=zones[b][1], azimuth_deg=grid))
+        out = wells(narvi.generate(unit, [z], setback_ft=setback_ft, spacing_ft=zones[b][1], azimuth_deg=grid,
+                                   anchor=row_anchor))
         return [x for x in out if bench_code(str(x.get("formation") or "")) == b]
 
     alone = {b: gen(b) for b in order}
@@ -222,6 +239,7 @@ def gunbarrel_preview(
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
     bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
     prox: ProximityRule | None = None, spacing_by: dict[str, dict[str, Any]] | None = None,
+    anchor: str | None = None,
 ) -> dict[str, Any]:
     """Cross-section data for the review page: existing producers and Novi
     BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
@@ -286,7 +304,8 @@ def gunbarrel_preview(
     if wr_zones:
         try:
             wr, _ = winerack_legs(narvi, unit, azimuth_deg, wr_zones, setback_ft=setback_ft,
-                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft, prox, wr_zones))
+                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft, prox, wr_zones),
+                                  row_anchor=anchor)
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             wr = e
     for b, row in bench_seed.items():
@@ -309,10 +328,10 @@ def gunbarrel_preview(
                     raise wr
                 lg = wr[b]
             else:
-                lg = legs(narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
-                                         setback_ft=setback_ft, spacing_ft=sp,
-                                         azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
-            rows = leg_rows(lg, project, prox, tvd)
+                lg = wells(narvi.generate(unit, [zone(b, tvd, sp, opts)],
+                                          setback_ft=setback_ft, spacing_ft=sp, anchor=anchor,
+                                          azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
+            rows = leg_rows(lg, project, prox, tvd, opts.get("pdp_proximity_ignore") or ())
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             planned[b] = {"error": str(e)[:160]}
             continue
@@ -323,6 +342,8 @@ def gunbarrel_preview(
         planned[b] = {"tvd_ft": tvd, "tvd_source": "reviewer" if "tvd_ft" in opts else "local median",
                       "spacing_ft": sp, "spacing_source": sp_src,
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
+                      "leg_offsets_ft": [o for r in kept for o in r["leg_offsets_ft"]],
+                      "well_type": opts.get("well_type", "single"),
                       "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
                       "winerack": b in wr_zones,
                       "proximity": proximity.summarize(rows, kept, enabled=prox_enabled(opts))}
@@ -597,7 +618,8 @@ def propose(
                     {b: {"evaluate": True} for b in _rv["benches"]} if _rv is not None else seed,
                     _g2, _s, _pn, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                     bench_opts=_rv["bench_opts"] if _rv is not None else None,
-                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px, spacing_by=_sb),
+                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px, spacing_by=_sb,
+                    anchor=_rv.get("anchor") if _rv is not None else None),
                 bench_seed, apply_to_seed=rv is None)
             gun["benches_source"] = unit_benches.FILENAME if rv is not None else "seed"
             out["units"].append({
@@ -1170,6 +1192,7 @@ def evaluate(
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
                                       "spacing_ft": sp_u, "spacing_source": sp_u_src,
+                                      "anchor": plan[label].get("anchor"),
                                       "role": opts.get("role", "base"), "row_rules": []}
                 az_u = u["planned_lateral"]["azimuth_deg"]
                 if prox_cfg and label not in prox_memo:
@@ -1211,7 +1234,8 @@ def evaluate(
                             narvi, geom, u["planned_lateral"]["azimuth_deg"], zones,
                             setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                             kept=rule_counter(geom, u["planned_lateral"]["azimuth_deg"],
-                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"], prox, zones))
+                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"], prox, zones),
+                            row_anchor=plan[label].get("anchor"))
                     lg = winerack_memo[label][0].get(bench, [])
                     UB["winerack"] = True
                     if bench in winerack_memo[label][1]:
@@ -1219,15 +1243,16 @@ def evaluate(
                 else:
                     # narvi takes a UTM-13N GRID bearing; the plan is a TRUE bearing.
                     gen = narvi.generate(
-                        geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp_u}],
+                        geom, [zone(bench, tvd_u, sp_u, opts)],
                         setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp_u,
                         azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
+                        anchor=plan[label].get("anchor"),
                     )
-                    lg = legs(gen)
+                    lg = wells(gen)
                 if g2["source"] != "novi":
                     # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
                     project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
-                    rows = leg_rows(lg, project, prox, tvd_u)
+                    rows = leg_rows(lg, project, prox, tvd_u, opts.get("pdp_proximity_ignore") or ())
                     kept, notes = apply_row_rules(
                         rows, u["planned_lateral"]["azimuth_deg"], n_wells=opts.get("n_wells"),
                         keep_side=opts.get("keep_side"),
@@ -1238,8 +1263,10 @@ def evaluate(
                     UB["row_rules"] = notes
                     UB["n_generated"] = len(rows)
                     UB["pdp_proximity"] = proximity.summarize(rows, kept, enabled=prox_enabled(opts))
+                    UB["well_type"] = opts.get("well_type", "single")
                     UB["locations"] = [{"id": f"gen-{i}", "src": "narvi_preview",
                                         "ll_ft": leg.get("completed_lateral_ft"), "tvd": tvd_u,
+                                        "n_legs": leg.get("n_legs", 1),
                                         "wkt": leg["geom"].wkt} for i, leg in enumerate(lg)]
                     sup = [wh.pdp_support(conn, leg["geom"], bench, tvd_u) for leg in lg]
                     for leg in lg:

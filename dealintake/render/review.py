@@ -315,7 +315,8 @@ def gunbarrel(u: dict[str, Any]) -> str:
     n_near = 0
     for b, pl in rows.items():
         ax.axhline(pl["tvd_ft"], color=_color(b), linewidth=0.7, alpha=0.6)
-        ax.scatter(pl["offsets_ft"], [pl["tvd_ft"]] * len(pl["offsets_ft"]), s=110, marker="s", facecolors="white",
+        legs_x = pl.get("leg_offsets_ft") or pl["offsets_ft"]          # a U-turn plots both legs
+        ax.scatter(legs_x, [pl["tvd_ft"]] * len(legs_x), s=110, marker="s", facecolors="white",
                    edgecolors=_color(b), linewidths=2.0, zorder=5)
         near = [n["offset_ft"] for n in ((pl.get("proximity") or {}).get("near") or [])]
         if near:
@@ -324,7 +325,9 @@ def gunbarrel(u: dict[str, Any]) -> str:
                        edgecolors=NEAR_MISS, linewidths=1.8, zorder=6)
         rules = [r for r in pl.get("rules") or [] if "culled by PDP proximity" not in r]
         n_cull = (pl.get("proximity") or {}).get("n_culled") or 0
-        row_labels.append(f"{b}: {len(pl['offsets_ft'])} sticks @ {pl['spacing_ft']:,.0f} ft, TVD {pl['tvd_ft']:,.0f}"
+        uturn = pl.get("well_type") == "uturn"
+        row_labels.append(f"{b}: {len(pl['offsets_ft'])} {'U-turn wells (' + str(len(legs_x)) + ' legs)' if uturn else 'sticks'}"
+                          f" @ {pl['spacing_ft']:,.0f} ft{' leg-to-leg' if uturn else ''}, TVD {pl['tvd_ft']:,.0f}"
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
                           + (" [UPSIDE]" if pl.get("role") == "upside" else "")
                           + (" [winerack]" if pl.get("winerack") else "")

@@ -134,18 +134,32 @@ def read(run_dir: Path, prop: dict[str, Any]) -> dict[str, dict[str, Any]]:
         min_leg = row.get("min_leg_ft")
         if min_leg is not None and (not isinstance(min_leg, (int, float)) or min_leg <= 0):
             raise ValueError(f"{FILENAME}: {label}.min_leg_ft must be a positive number, got {min_leg!r}")
+        anchor = unit_anchor(row, label)
         seed = [b for b, v in (u.get("bench_seed") or {}).items() if v["evaluate"]]
         out[label] = {
             "benches": benches, "planned_lateral_ft": float(ll), "seed_benches": seed,
-            "bench_opts": opts, "min_leg_ft": None if min_leg is None else float(min_leg),
+            "bench_opts": opts, "min_leg_ft": None if min_leg is None else float(min_leg), "anchor": anchor,
             "edited": (sorted(benches) != sorted(seed) or round(float(ll)) != round(u["planned_lateral"]["median_ft"])
-                       or any(opts[b] for b in opts) or min_leg is not None),
+                       or any(opts[b] for b in opts) or min_leg is not None or anchor is not None),
         }
     return out
 
 
 SIDES = ("west", "east", "north", "south")
 ROLES = ("base", "upside")
+WELL_TYPES = ("single", "uturn")
+ANCHORS = ("west", "east", "center")
+
+
+def unit_anchor(row: dict[str, Any], label: str) -> str | None:
+    """Unit-level `anchor` (Michael 2026-10-22, RIP Harambe): where narvi hangs
+    the unit's rows — `east` / `west` = flush to that LEASE LINE (narvi then
+    runs the laterals parallel to it, not to the long axis), `center` = centred
+    in the unit. Absent = narvi's auto (most footage)."""
+    a = row.get("anchor")
+    if a is not None and a not in ANCHORS:
+        raise ValueError(f"{FILENAME}: {label}.anchor must be one of {ANCHORS}, got {a!r}")
+    return a
 
 
 def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
@@ -166,7 +180,13 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
                       Give each bench its own spacing_ft.
       pdp_proximity   DEFAULT true (config v14): generated rows inside an existing
                       producer's depletion envelope (pdp_proximity: in thresholds.yaml)
-                      are culled. false = keep them — a reviewer call, decision-logged."""
+                      are culled. false = keep them — a reviewer call, decision-logged.
+      pdp_proximity_ignore  [api10, ...] — producers the reviewer exempts from the
+                      cull (the rest still cull); their would-be culls are listed
+      well_type       single (default) | uturn — narvi U-turns: two legs per well,
+                      spacing_ft is LEG-TO-LEG; one location per well with its total
+                      completed lateral. A U-turn bench is placed on its own (no stagger).
+      anchor          (unit level) east | west | center — where the rows hang"""
     out: dict[str, Any] = {}
     for k in ("tvd_ft", "spacing_ft"):
         if v.get(k) is not None:
@@ -196,6 +216,16 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
             if not isinstance(v[k], bool):
                 raise ValueError(f"{FILENAME}: {where}.{k} must be true or false, got {v[k]!r}")
             out[k] = v[k]
+    if v.get("well_type") is not None:
+        if v["well_type"] not in WELL_TYPES:
+            raise ValueError(f"{FILENAME}: {where}.well_type must be one of {WELL_TYPES}, got {v['well_type']!r}")
+        out["well_type"] = v["well_type"]
+    if v.get("pdp_proximity_ignore") is not None:
+        ig = v["pdp_proximity_ignore"]
+        if not isinstance(ig, list) or not all(isinstance(a, (int, str)) and str(a).isdigit() and len(str(a)) == 10
+                                               for a in ig):
+            raise ValueError(f"{FILENAME}: {where}.pdp_proximity_ignore must be a list of api10s, got {ig!r}")
+        out["pdp_proximity_ignore"] = [str(a) for a in ig]
     return out
 
 
@@ -213,5 +243,6 @@ def reviewed_benches(run_dir: Path) -> dict[str, dict[str, Any]]:
         on = {bench_code(b): bench_options(v, f"{label}.{b}") for b, v in (row.get("benches") or {}).items()
               if isinstance(v, dict) and v.get("evaluate") is True}
         out[label] = {"benches": list(on), "bench_opts": on,
-                      "min_leg_ft": None if row.get("min_leg_ft") is None else float(row["min_leg_ft"])}
+                      "min_leg_ft": None if row.get("min_leg_ft") is None else float(row["min_leg_ft"]),
+                      "anchor": unit_anchor(row, label)}
     return out
