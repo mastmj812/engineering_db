@@ -34,10 +34,10 @@ from box.edge_gap_report import _CSS, _table
 
 ROOT = Path(__file__).resolve().parent.parent
 CLASS_COLOURS = {"agree": "#16a34a", "edge": "#eab308", "shallow": "#2563eb", "deep": "#dc2626", "gross": "#111827",
-                 "no_evidence": "#9ca3af", "no_control": "#c026d3", "unmeasured": "#d1d5db"}
+                 "no_evidence": "#9ca3af", "no_control": "#c026d3", "held": "#a8a29e", "unmeasured": "#d1d5db"}
 ATTR_COLOURS = {"structure_suspect": "#7c3aed", "tag_suspect": "#f97316"}
 STRUCT_STEP_FT = 500.0
-EXCLUDED_TAGS = tuple(sorted(tq.NO_SURFACE_TAGS | {t for t, s in tq.TAG_TOP.items() if s in tq.SUSPECT_SURFACES}))
+EXCLUDED_TAGS = tuple(sorted(tq.NO_SURFACE_TAGS | tq.HELD_TAGS | {t for t, s in tq.TAG_TOP.items() if s in tq.SUSPECT_SURFACES}))
 
 
 # ----------------------------------------------------------------------------
@@ -65,6 +65,8 @@ def build(conn: Any) -> tuple[pd.DataFrame, dict[str, tq.Grid]]:
     W["cls"] = [tq.classify(v, mi) if ev else ("no_evidence" if v in tq.SCORED_VERDICTS else v)
                 for v, mi, ev in zip(W["verdict"], W["miss"], W["evidence"], strict=True)]
     W["witness"] = W["evidence"] & W["cls"].isin(tq.WITNESS_CLASSES)
+    W["rule_b_pending"] = [tq.rule_b_pending(t, c if isinstance(c, str) else None)
+                           for t, c in zip(W["tag"], W["county"], strict=True)]
     W["api10"] = W.index
     W = W.join(tq.attribute(W[["api10", "tag", "x", "y", "cls", "miss", "witness"]]))
     tops = W["tag"].map(tq.TAG_TOP)
@@ -171,7 +173,8 @@ def class_table(W: pd.DataFrame) -> pd.DataFrame:
             r[a] = int((dis["attribution"] == a).sum())
         st = dis[dis["attribution"] == "structure_suspect"]
         r["structure offset p50 (ft)"] = float(st["grid_offset_ft"].median()) if len(st) else np.nan
-        for c in ("no_control", "no_surface", "surface_suspect", "no_evidence"):
+        r["rule B pending (Lea/Ward)"] = int(g["rule_b_pending"].sum())
+        for c in ("no_control", "no_surface", "held", "surface_suspect", "no_evidence"):
             r[c] = int((g["cls"] == c).sum())
         rows.append(r)
     return pd.DataFrame(rows)
@@ -397,7 +400,9 @@ def index_page(W: pd.DataFrame, cls_t: pd.DataFrame, sens: pd.DataFrame, off: pd
         ("<p>10-19 grids, step-1 geology rules applied. Shares are over scored evidence wells; edge = a shallow / deep "
         f"call within {tq.EDGE_FT:.0f} ft of a surface (not a disagreement). Attribution counts are wells; "
         "structure offset p50 = median band miss of structure-suspect wells (− the surface should come up, + go down). "
-        f"Excluded (no page): {', '.join(EXCLUDED_TAGS)} — suspect C / D surfaces and the missing Middle Avalon surface.</p>"),
+        f"Excluded (no page): {', '.join(EXCLUDED_TAGS)} — WCD held for log review, no Middle Avalon surface yet. "
+        "WCXY / WCA_1 / WCA_2 are scored as ONE WCA bench (XY → B1); WCC against B2 → C. Rule B pending in Lea / "
+        "Ward = flagged, still scored.</p>"),
         "<h2>1 · Class and attribution by bench (links = maps)</h2>", table,
         "<h2>2 · Edge tolerance sensitivity</h2>",
         ("<p>How much of the disagreement is within a few feet of a surface — the BS3_S/WCA_1-at-the-interface and "
@@ -423,7 +428,7 @@ def index_page(W: pd.DataFrame, cls_t: pd.DataFrame, sens: pd.DataFrame, off: pd
 GGX_WELL_FIELDS = [("API10", "C", 10, 0), ("TAG", "C", 8, 0), ("BOXBENCH", "C", 8, 0), ("CLASS", "C", 16, 0),
                    ("ATTRIB", "C", 20, 0), ("MISS_FT", "N", 8, 0), ("BANDMISS", "N", 8, 0), ("BAND_N", "N", 4, 0),
                    ("TVD_FT", "N", 8, 0), ("TVD_SRC", "C", 8, 0), ("PCT_IN", "N", 6, 2), ("FT_BLWTOP", "N", 8, 0),
-                   ("DIST_CTL", "N", 9, 0), ("WELLNAME", "C", 40, 0), ("OPERATOR", "C", 30, 0)]
+                   ("DIST_CTL", "N", 9, 0), ("WELLNAME", "C", 40, 0), ("OPERATOR", "C", 30, 0), ("RULEB_PND", "L", 1, 0)]
 GGX_CELL_FIELDS = [("SURFACE", "C", 16, 0), ("OFFSET_FT", "N", 8, 0), ("N", "N", 5, 0), ("N_UP", "N", 5, 0), ("N_DOWN", "N", 5, 0)]
 GGX_PICK_FIELDS = [("SURFACE", "C", 16, 0), ("COUNTY", "C", 16, 0), ("N_NOPICK", "N", 5, 0), ("N_WELLS", "N", 5, 0),
                    ("DIST_P50", "N", 9, 0), ("TAGS", "C", 120, 0)]
@@ -439,7 +444,7 @@ def write_ggx(out: Path, W: pd.DataFrame, fields: dict[str, pd.DataFrame], picks
              int(r["band_n"]) if pd.notna(r["band_n"]) else 0,
              _f(r["lat_tvd_p50_ft"] if r["tvd_source"] == "survey" else r["tvd_ft"]), r["tvd_source"],
              _f(r["pct_in_tag"], 2), _f(r["ft_below_top_p50"]), _f(r["dist_to_control_top_ft"]),
-             str(r["well_name"]), str(r["operator"])] for api, r in g.iterrows()]
+             str(r["well_name"]), str(r["operator"]), bool(r["rule_b_pending"])] for api, r in g.iterrows()]
     paths = gio.write_layer(d / "tops_qc_wells", "point", [Point(x, y) for x, y in zip(g["x"], g["y"], strict=True)],
                             GGX_WELL_FIELDS, recs)
     h = tq.OFFSET_CELL_FT / 2
@@ -463,7 +468,7 @@ CSV_COLS = ["well_name", "operator", "county", "state_code", "tag", "box_bench",
             "lat_tvd_p50_ft", "lat_tvd_range_ft", "first_production_date", "verdict_raw", "verdict", "cls",
             "attribution", "band_n", "band_miss", "grid_offset_ft", "miss", "pct_in_tag", "ft_below_top_p50",
             "ft_above_base_p50", "frac_p50", "top_p50", "base_p50", "dom_interval", "dist_to_control_top_ft",
-            "mid_lon", "mid_lat", "x", "y"]
+            "rule_b_pending", "mid_lon", "mid_lat", "x", "y"]
 
 
 def run(conn: Any, out: Path) -> dict[str, Any]:

@@ -3,7 +3,7 @@
     python -m scripts.box_tops_qc                 # step 1: sample both grid sets, datum check, agreement table
     python -m scripts.box_tops_qc --step 2        # step 2: classify, attribute, per-bench maps, GGX package
     python -m scripts.box_tops_qc --step 3        # step 3: landing position around each interface, candidate splits
-    python -m scripts.box_tops_qc --out docs/box/tops-qc-2026-10-20
+    python -m scripts.box_tops_qc --out docs/box/tops-qc-2026-10-22   # V5 baseline (10-20 = the "before")
 
 Step 1 writes step1.html, wells_step1.csv, summary.json; step 2 writes step2*.html, wells_step2.csv, ggx/, summary_step2.json. Grid folders come from box.extent_package
 (GRID_DIR = Grids_10-19-26, ORIGINAL_GRID_DIR = Original).
@@ -23,7 +23,7 @@ from etl.db import get_connection
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", type=Path, default=Path("docs/box/tops-qc-2026-10-20"))
+    ap.add_argument("--out", type=Path, default=Path("docs/box/tops-qc-2026-10-22"))
     ap.add_argument("--step", type=int, choices=(1, 2, 3), default=1)
     a = ap.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
