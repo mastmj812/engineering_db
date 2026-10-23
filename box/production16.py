@@ -15,6 +15,7 @@ Error convention everywhere: actual / forecast - 1 (negative = the forecast is H
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -25,6 +26,7 @@ from box import prox_pud as pp
 from box import step16 as s16
 from box import step16c as c16
 
+EVIDENCE = Path("docs") / "box" / "step16d-2026-10-23" / "r2_evidence.json"
 SELECTION = "box_v2s_r2"
 RULES = s16.VARIANTS[SELECTION][1]
 HAIRCUT_GROUPS: tuple[str, ...] = ("WCA", "BS2_S")
@@ -42,6 +44,19 @@ def spec_label(group: str) -> str:
 
 def tier(group: str) -> str:
     return "validated" if group in VALIDATED else "provisional"
+
+
+def haircut_from_pack(ev: Mapping[str, Any]) -> dict[str, dict[int, dict[str, Any]]] | None:
+    """The pack's haircut table with integer horizons (JSON keys are strings), as box.production.haircut_table returns it."""
+    h = ev.get("haircut")
+    if not h:
+        return None
+    return {s: {int(k): dict(v) for k, v in t.items()} for s, t in h.items()}
+
+
+def haircut_method_none(group: str) -> str:
+    """forecast_run.haircut.method of a group without a haircut; erebor reads the 'none' prefix as 'no haircut'."""
+    return f"none (D121 r2 selection, {tier(group)}: no walk-forward haircut; months = the uptime-free analog P50 x lateral)"
 
 
 # ----------------------------------------------------------------------------

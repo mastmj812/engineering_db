@@ -50,7 +50,7 @@ def cmd_evidence(a: argparse.Namespace) -> int:
               + (f", haircut oil 12/24/36/48 = {[round(h['oil'][k]['factor'], 3) for k in (12, 24, 36, 48)]}" if h else ""), flush=True)
     a.out.mkdir(parents=True, exist_ok=True)
     text = json.dumps(pack, indent=1, default=_json)
-    (a.out / "r2_evidence.json").write_text(text, encoding="utf-8")
+    (a.out / "r2_evidence.json").write_bytes(text.encode("utf-8"))  # LF; the digest is of the LF-normalised bytes
     (a.out / "r2_evidence.sha256").write_text(hashlib.sha256(text.encode("utf-8")).hexdigest() + "\n", encoding="utf-8")
     print(f"wrote {a.out / 'r2_evidence.json'}")
     return 0
