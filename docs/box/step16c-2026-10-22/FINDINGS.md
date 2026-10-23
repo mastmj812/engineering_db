@@ -103,7 +103,15 @@ written relative to the variant's own level. Read that way:
 What the relative reading does NOT change: r2 still forecasts ~3 points higher overall, and that is real money on unhaircut
 benches. The level-only path still fails on its own test.
 
-## 4. For gate 16c (Michael)
+## 4a. Gate 16c — CLOSED 2026-10-23 (Michael, D121)
+
+**`box_v2s_r2` is the cohort selection of record on all 13 benches, by owner's judgment.** The v2s behaviour this step was
+opened over — a thin-bench PUD forecast from 15–19-mi analogs while same-bench producers sit 2 mi away — is wrong for the
+purpose, and Blue Ox's opportunity set is mostly edge / thin-PDP positions, so no further v2s-vs-r2 comparison is run. The
+as-written result (§1) and r2's ~3-pt higher raw level are disclosed with it. The level work targets r2. The validated benches
+re-earn their tier under r2 from the r2 tuning cells already scored here. The recommendations of §4 below are superseded.
+
+## 4. For gate 16c (Michael) — superseded by §4a
 
 1. **Provisional groups.** The rule as written adopts `box_v2s` (spacing fix only). The alternative is an owner's-judgment
    exception (the D59 / D113 pattern) adopting `box_v2s_r2` on the §3 reading. Recommendation: **accept `box_v2s` now.**
