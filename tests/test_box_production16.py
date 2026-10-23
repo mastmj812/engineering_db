@@ -129,3 +129,8 @@ def test_d122_wca_gas_carries_no_haircut():
     rec = bpr.haircut_record(h, res)
     assert all(rec["gas"][k]["factor"] == 1.0 for k in pr.HORIZONS) and rec["gas"]["method"] == p16.STREAM_NONE
     assert rec["oil"][12]["factor"] == h["oil"][12]["factor"]
+
+
+def test_code_key_tracks_build_code_only():
+    k = bpr.code_key()
+    assert len(k.split("-")[0]) == 16 and "scripts/box_pud_run.py" in bpr.BUILD_CODE and "docs" not in bpr.BUILD_CODE

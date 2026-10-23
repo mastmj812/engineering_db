@@ -386,10 +386,22 @@ def load_evidence(path: Path) -> tuple[dict[str, Any], str]:
     return json.loads(raw.decode("utf-8")), sha
 
 
-def resume_meta(code_sha: str, a: argparse.Namespace, u: pd.DataFrame) -> dict[str, Any]:
-    """What a cached group must have been built on to be reused: code, selection + evidence, well set, the exact universe."""
+# the code a build runs (its imports), by git tree / blob id: a commit elsewhere (docs, another script) does not break a resume
+BUILD_CODE: tuple[str, ...] = ("box", "dealintake", ".claude/skills/deal-intake/config", "scripts/box_pud_run.py", "scripts/box_tc_curves.py")
+
+
+def code_key() -> str:
+    """Git ids of BUILD_CODE at HEAD, '-dirty' when any of it is modified or untracked."""
+    ids = [subprocess.run(["git", "rev-parse", f"HEAD:{q}"], capture_output=True, text=True, check=True).stdout.strip() for q in BUILD_CODE]
+    dirty = subprocess.run(["git", "status", "--porcelain", "--", *BUILD_CODE], capture_output=True, text=True, check=True).stdout.strip()
+    return hashlib.sha256(" ".join(ids).encode("utf-8")).hexdigest()[:16] + ("-dirty" if dirty else "")
+
+
+def resume_meta(code: str, a: argparse.Namespace, u: pd.DataFrame) -> dict[str, Any]:
+    """What a cached group must have been built on to be reused: the build's code (code_key), selection + evidence, well set, the
+    exact universe."""
     key = u.sort_values("stick_id")[["stick_id", "coverage", "prod_bench"]].astype(str).to_csv(index=False).encode("utf-8")
-    return {"code_sha": code_sha, "selection": a.selection, "evidence_sha256": a.pack_sha256, "wells": str(a.wells), "limit": int(a.limit),
+    return {"code_key": code, "selection": a.selection, "evidence_sha256": a.pack_sha256, "wells": str(a.wells), "limit": int(a.limit),
             "universe_sha256": hashlib.sha256(key).hexdigest()}
 
 
@@ -428,7 +440,7 @@ def cmd_build(a: argparse.Namespace) -> int:
         u = pr.universe(conn, a.benches)
         n_in = {b: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == b)).sum()) for b in a.benches}
         print(f"universe {len(u)}; in-extent candidates per group {n_in} ({time.time() - t0:.0f} s)", flush=True)
-        meta = resume_meta(code_sha, a, u)
+        meta = resume_meta(code_key(), a, u)
         for b in a.benches:
             cached = load_bench_cache(a.out, b, meta)
             if cached is not None:
