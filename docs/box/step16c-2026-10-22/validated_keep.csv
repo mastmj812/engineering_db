@@ -1,0 +1,6 @@
+group,fold,form,new_base,record,judged_new,judged_record,max_abs_bias_new,fails_new,fails_record,keeps_validated
+WCA,full,per_cutoff,box_v2s_wf,box_v2_wf,18,18,0.080651986962976,3,2,False
+BS2_S,analog,pooled,box_v2s_wf,box_v2_wf,6,6,0.05599207726163576,1,2,True
+WCXY_WCA1,analog,pooled,box_v2s,box_v2,6,6,0.08750335559649401,0,0,True
+WCB_1,analog,pooled,box_v2s,box_v2,6,6,0.3476473751157256,3,4,False
+WCC,analog,pooled,box_v2s,box_v2,6,6,0.16057883186997485,3,4,False
