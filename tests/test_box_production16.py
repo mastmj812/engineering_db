@@ -80,10 +80,8 @@ def test_committed_evidence_pack_matches_its_digest_and_passes_the_guard():
     for g, ev in pack["groups"].items():
         h = p16.haircut_from_pack(ev)
         assert (h is not None) == (g in p16.HAIRCUT_GROUPS)
-        if h:  # the 9c table guard the build applies before any fit: BS2_S passes; WCA's gas table (1.001 / 1.017 / 1.001 /
-            # 0.995, unbiased within ~2 %) is refused on monotonicity (0.015 > 0.01) — open for Michael, the build stops at WCA
-            assert p9r.guard_table(h) == ([] if g == "BS2_S" else [m for m in p9r.guard_table(h) if m.startswith("gas ")])
-            assert not [m for m in p9r.guard_table(h) if m.startswith("oil ")]
+        if h:  # the 9c table guard the build applies before any fit, on the streams that carry a haircut (D122: WCA gas none)
+            assert p9r.guard_table({s: t for s, t in h.items() if t is not None}) == []
         d = ev["disclosure"]
         assert set(d["hindcast_bias"]) == {"oil", "gas"} and {"12", "24", "36", "48"} <= set(d["hindcast_bias"]["oil"])
         assert d["radius_ranges"] and d["tier"] == p16.tier(g) and "thin_control" in d
@@ -113,3 +111,21 @@ def test_bench_cache_resumes_only_on_identical_inputs(tmp_path):
                     bpr.resume_meta("sha1", argparse.Namespace(**{**vars(a), "pack_sha256": "xyz"}), u)):
         with pytest.raises(SystemExit):
             bpr.load_bench_cache(tmp_path, "WCA", changed)
+
+
+def test_d122_wca_gas_carries_no_haircut():
+    pack, _ = bpr.load_evidence(p16.EVIDENCE)
+    wca = pack["groups"]["WCA"]
+    h = p16.haircut_from_pack(wca)
+    assert h["gas"] is None and h["oil"] is not None and wca["haircut_dropped"]["gas"]["decision"] == "D122"
+    assert p16.haircut_from_pack(pack["groups"]["BS2_S"])["gas"] is not None
+    hb = wca["disclosure"]["hindcast_bias"]["gas"]["12"]
+    assert hb["haircut_factor"] == 1.0 and "D122" in hb["disclosed_basis"]
+    raw = np.linspace(100.0, 1.0, pr.N_MONTHS)
+    res = [{"streams": {"oil": {"months_raw": raw.copy(), "params": {}}, "gas": {"months_raw": raw.copy(), "params": {}}}}]
+    bpr.apply_haircut_all(res, h)
+    assert np.array_equal(res[0]["streams"]["gas"]["months"], raw)  # exactly raw, not a C1 fit to 1.0
+    assert res[0]["streams"]["oil"]["eur"] < res[0]["streams"]["oil"]["eur_raw"]  # oil keeps its haircut
+    rec = bpr.haircut_record(h, res)
+    assert all(rec["gas"][k]["factor"] == 1.0 for k in pr.HORIZONS) and rec["gas"]["method"] == p16.STREAM_NONE
+    assert rec["oil"][12]["factor"] == h["oil"][12]["factor"]

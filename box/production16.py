@@ -30,6 +30,10 @@ EVIDENCE = Path("docs") / "box" / "step16d-2026-10-23" / "r2_evidence.json"
 SELECTION = "box_v2s_r2"
 RULES = s16.VARIANTS[SELECTION][1]
 HAIRCUT_GROUPS: tuple[str, ...] = ("WCA", "BS2_S")
+# streams that carry the walk-forward haircut per group; D122 (Michael 2026-10-23): WCA gas carries none — under r2 + proximity it is
+# unbiased within ~2 % at every horizon, and its table (1.001 / 1.017 / 1.001 / 0.995) is a cutoff-mix wobble the 9c guard refuses
+HAIRCUT_STREAMS: dict[str, tuple[str, ...]] = {"WCA": ("oil",), "BS2_S": ("oil", "gas")}
+STREAM_NONE = "none (D122: no walk-forward haircut on this stream; months = the uptime-free analog P50 x lateral)"
 VALIDATED: tuple[str, ...] = c16.VALIDATED
 PROVISIONAL: tuple[str, ...] = c16.PROVISIONAL
 RING_MI = 5.0
@@ -51,7 +55,7 @@ def haircut_from_pack(ev: Mapping[str, Any]) -> dict[str, dict[int, dict[str, An
     h = ev.get("haircut")
     if not h:
         return None
-    return {s: {int(k): dict(v) for k, v in t.items()} for s, t in h.items()}
+    return {s: (None if t is None else {int(k): dict(v) for k, v in t.items()}) for s, t in h.items()}  # None = that stream not haircut
 
 
 def haircut_method_none(group: str) -> str:
@@ -179,13 +183,20 @@ def group_evidence(group: str, v: pd.DataFrame, factors: pd.Series) -> dict[str,
 
     v = with_prox(v, factors)
     cells = cutoff_cells(v, ("r2p",))
-    hcut = None
+    hcut: dict[str, Any] | None = None
+    dropped: dict[str, Any] = {}
     rec = "r2p"
     if group in HAIRCUT_GROUPS:
-        hcut = pr.haircut_table(cells, variant="r2p")
+        full = pr.haircut_table(cells, variant="r2p")
+        hcut = {s: (full[s] if s in HAIRCUT_STREAMS[group] else None) for s in ac.STREAMS}
+        dropped = {s: {"table": full[s], "decision": "D122"} for s in ac.STREAMS if hcut[s] is None}
         v = walk_forward(v, cells, "r2p", "r2p_wf")
         cells = pd.concat([cells, cutoff_cells(v, ("r2p_wf",))], ignore_index=True)
         rec = "r2p_wf"
+
+    def rec_for(s: str) -> str:  # the record form per stream: haircut where the stream carries one
+        return rec if hcut and hcut.get(s) else "r2p"
+
     thin = pd.to_numeric(v["n_local"], errors="coerce") < s16.LOCAL_MIN_WELLS
     # D99 form (as D100's disclosed bias): every tuning package pooled across the cutoffs; the haircut table keeps D62's
     # per-cutoff >= 30 floor, but a thin group's disclosure must not drop to the one cutoff that clears it
@@ -204,18 +215,20 @@ def group_evidence(group: str, v: pd.DataFrame, factors: pd.Series) -> dict[str,
         hb[s] = {}
         for k in (12, 24, 36, 48):
             raw_b, raw_n = pooled_bias("r2p", s, k)
-            dis_b, dis_n = pooled_bias(rec, s, k)
+            dis_b, dis_n = pooled_bias(rec_for(s), s, k)
+            hs = hcut.get(s) if hcut else None
             hb[s][str(k)] = {"record_variant": spec_label(group), "box_v2_pooled_bias": raw_b, "box_v2_pooled_packages": raw_n,
-                             "haircut_factor": hcut[s][k]["factor"] if hcut else 1.0, "disclosed_bias": dis_b, "disclosed_packages": dis_n,
-                             "disclosed_basis": "r2 selection x proximity factor" + (" x walk-forward haircut" if hcut else "")
+                             "haircut_factor": hs[k]["factor"] if hs else 1.0, "disclosed_bias": dis_b, "disclosed_packages": dis_n,
+                             "disclosed_basis": "r2 selection x proximity factor" + (" x walk-forward haircut" if hs else
+                                                                                     (" (D122: no haircut on this stream)" if hcut else ""))
                                                 + ", tuning packages pooled over cutoffs 2019-2024 (step 16c)",
                              "holdout_bias": None, "holdout_packages": None, "d99_judged": dis_n >= ac.MIN_PACKAGES}
         for k in (12, 24, 36):
             for scope, m in (("all tuning wells", None), ("thin control (< 3 local wells within 3 mi)", thin)):
-                b, n = _well_bias(v, rec, s, k, m)
+                b, n = _well_bias(v, rec_for(s), s, k, m)
                 if b is not None:
-                    lines.append({"label": "tuning (r2 + proximity" + (" + haircut" if hcut else "") + ")", "scope": scope, "stream": s,
-                                  "horizon": f"cum-{k}", "packages": n, "bias": b, "range_95": _boot_range(v, rec, s, k, m)})
+                    lines.append({"label": "tuning (r2 + proximity" + (" + haircut" if rec_for(s) != "r2p" else "") + ")", "scope": scope,
+                                  "stream": s, "horizon": f"cum-{k}", "packages": n, "bias": b, "range_95": _boot_range(v, rec_for(s), s, k, m)})
     latest = cells[(cells.variant == rec) & (cells.stream == "oil") & (cells.horizon == 12)].sort_values("cutoff")
     lv = latest.iloc[-1] if len(latest) else None
     lv_text = (f"latest vintage ({str(lv['cutoff'])[:4]} cutoff cohort, {int(lv['n_packages'])} packages): oil cum-12 "
@@ -231,7 +244,8 @@ def group_evidence(group: str, v: pd.DataFrame, factors: pd.Series) -> dict[str,
             "selection": {"rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count "
                                    "(>= 5), then admit standalone wells; measured spacing (D119)", "decision": "D121"},
             "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"}
-    return {"group": group, "spec": spec_label(group), "tier": tier(group), "haircut": hcut, "disclosure": disc}
+    return {"group": group, "spec": spec_label(group), "tier": tier(group), "haircut": hcut, "haircut_dropped": dropped or None,
+            "disclosure": disc}
 
 
 def flags(group: str, disc: Mapping[str, Any]) -> list[str]:

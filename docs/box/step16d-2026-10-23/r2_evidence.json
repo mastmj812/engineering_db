@@ -63,56 +63,62 @@
       ]
      }
     },
+    "gas": null
+   },
+   "haircut_dropped": {
     "gas": {
-     "12": {
-      "factor": 1.0012226982989543,
-      "bias": 0.0012226982989543174,
-      "n_packages": 1283,
-      "n_cells": 6,
-      "cutoffs": [
-       "2019-12-01",
-       "2020-12-01",
-       "2021-12-01",
-       "2022-12-01",
-       "2023-12-01",
-       "2024-12-01"
-      ]
+     "table": {
+      "12": {
+       "factor": 1.0012226982989543,
+       "bias": 0.0012226982989543174,
+       "n_packages": 1283,
+       "n_cells": 6,
+       "cutoffs": [
+        "2019-12-01",
+        "2020-12-01",
+        "2021-12-01",
+        "2022-12-01",
+        "2023-12-01",
+        "2024-12-01"
+       ]
+      },
+      "24": {
+       "factor": 1.0166941263938762,
+       "bias": 0.016694126393876324,
+       "n_packages": 1117,
+       "n_cells": 5,
+       "cutoffs": [
+        "2019-12-01",
+        "2020-12-01",
+        "2021-12-01",
+        "2022-12-01",
+        "2023-12-01"
+       ]
+      },
+      "36": {
+       "factor": 1.001034353780518,
+       "bias": 0.0010343537805179164,
+       "n_packages": 902,
+       "n_cells": 4,
+       "cutoffs": [
+        "2019-12-01",
+        "2020-12-01",
+        "2021-12-01",
+        "2022-12-01"
+       ]
+      },
+      "48": {
+       "factor": 0.9949117147804636,
+       "bias": -0.005088285219536427,
+       "n_packages": 389,
+       "n_cells": 2,
+       "cutoffs": [
+        "2020-12-01",
+        "2021-12-01"
+       ]
+      }
      },
-     "24": {
-      "factor": 1.0166941263938762,
-      "bias": 0.016694126393876324,
-      "n_packages": 1117,
-      "n_cells": 5,
-      "cutoffs": [
-       "2019-12-01",
-       "2020-12-01",
-       "2021-12-01",
-       "2022-12-01",
-       "2023-12-01"
-      ]
-     },
-     "36": {
-      "factor": 1.001034353780518,
-      "bias": 0.0010343537805179164,
-      "n_packages": 902,
-      "n_cells": 4,
-      "cutoffs": [
-       "2019-12-01",
-       "2020-12-01",
-       "2021-12-01",
-       "2022-12-01"
-      ]
-     },
-     "48": {
-      "factor": 0.9949117147804636,
-      "bias": -0.005088285219536427,
-      "n_packages": 389,
-      "n_cells": 2,
-      "cutoffs": [
-       "2020-12-01",
-       "2021-12-01"
-      ]
-     }
+     "decision": "D122"
     }
    },
    "disclosure": {
@@ -172,10 +178,10 @@
        "record_variant": "box_v2s_r2_wf",
        "box_v2_pooled_bias": 0.0012226982989543202,
        "box_v2_pooled_packages": 1283,
-       "haircut_factor": 1.0012226982989543,
-       "disclosed_bias": -0.03374505720917927,
-       "disclosed_packages": 776,
-       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.0012226982989543202,
+       "disclosed_packages": 1283,
+       "disclosed_basis": "r2 selection x proximity factor (D122: no haircut on this stream), tuning packages pooled over cutoffs 2019-2024 (step 16c)",
        "holdout_bias": null,
        "holdout_packages": null,
        "d99_judged": true
@@ -184,10 +190,10 @@
        "record_variant": "box_v2s_r2_wf",
        "box_v2_pooled_bias": 0.01669412639387632,
        "box_v2_pooled_packages": 1117,
-       "haircut_factor": 1.0166941263938762,
-       "disclosed_bias": -0.04808329986478786,
-       "disclosed_packages": 611,
-       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.01669412639387632,
+       "disclosed_packages": 1117,
+       "disclosed_basis": "r2 selection x proximity factor (D122: no haircut on this stream), tuning packages pooled over cutoffs 2019-2024 (step 16c)",
        "holdout_bias": null,
        "holdout_packages": null,
        "d99_judged": true
@@ -196,10 +202,10 @@
        "record_variant": "box_v2s_r2_wf",
        "box_v2_pooled_bias": 0.0010343537805179192,
        "box_v2_pooled_packages": 902,
-       "haircut_factor": 1.001034353780518,
-       "disclosed_bias": -0.043614074552806775,
-       "disclosed_packages": 396,
-       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.0010343537805179192,
+       "disclosed_packages": 902,
+       "disclosed_basis": "r2 selection x proximity factor (D122: no haircut on this stream), tuning packages pooled over cutoffs 2019-2024 (step 16c)",
        "holdout_bias": null,
        "holdout_packages": null,
        "d99_judged": true
@@ -208,10 +214,10 @@
        "record_variant": "box_v2s_r2_wf",
        "box_v2_pooled_bias": null,
        "box_v2_pooled_packages": 0,
-       "haircut_factor": 0.9949117147804636,
+       "haircut_factor": 1.0,
        "disclosed_bias": null,
        "disclosed_packages": 0,
-       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "disclosed_basis": "r2 selection x proximity factor (D122: no haircut on this stream), tuning packages pooled over cutoffs 2019-2024 (step 16c)",
        "holdout_bias": null,
        "holdout_packages": null,
        "d99_judged": false
@@ -326,75 +332,75 @@
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "all tuning wells",
       "stream": "gas",
       "horizon": "cum-12",
-      "packages": 2775,
-      "bias": -0.04169108458097859,
+      "packages": 4333,
+      "bias": -0.01602945545388723,
       "range_95": [
-       -0.06618941643051221,
-       -0.017855144744551403
+       -0.03679700328665597,
+       0.004588714822873831
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "thin control (< 3 local wells within 3 mi)",
       "stream": "gas",
       "horizon": "cum-12",
-      "packages": 89,
-      "bias": -0.034978948940132204,
+      "packages": 183,
+      "bias": -0.037761870741824244,
       "range_95": [
-       -0.18348007786576714,
-       0.1773132559090154
+       -0.1472087288677973,
+       0.07768766134830257
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "all tuning wells",
       "stream": "gas",
       "horizon": "cum-24",
-      "packages": 2171,
-      "bias": -0.06152354350245148,
+      "packages": 3727,
+      "bias": -0.012524190813351876,
       "range_95": [
-       -0.08880485353132697,
-       -0.03462683894925605
+       -0.03300448360373102,
+       0.009252731349655222
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "thin control (< 3 local wells within 3 mi)",
       "stream": "gas",
       "horizon": "cum-24",
-      "packages": 80,
-      "bias": -0.04441545611666542,
+      "packages": 174,
+      "bias": -0.005706441928848394,
       "range_95": [
-       -0.20800528752803005,
-       0.18771498267531003
+       -0.09385643858278372,
+       0.11243133751262566
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "all tuning wells",
       "stream": "gas",
       "horizon": "cum-36",
-      "packages": 1318,
-      "bias": -0.06206684960850617,
+      "packages": 2874,
+      "bias": -0.02981057186707181,
       "range_95": [
-       -0.09587704523560148,
-       -0.028042137764147105
+       -0.05238882666805887,
+       -0.003831115598553231
       ]
      },
      {
-      "label": "tuning (r2 + proximity + haircut)",
+      "label": "tuning (r2 + proximity)",
       "scope": "thin control (< 3 local wells within 3 mi)",
       "stream": "gas",
       "horizon": "cum-36",
-      "packages": 45,
-      "bias": -0.10278163865203294,
+      "packages": 139,
+      "bias": -0.03480687184377684,
       "range_95": [
-       -0.26645740374875787,
-       0.09764352088753049
+       -0.11781178326780302,
+       0.06821830780027385
       ]
      }
     ],
@@ -527,6 +533,7 @@
      }
     }
    },
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -836,6 +843,7 @@
    "spec": "box_v2s_r2",
    "tier": "validated",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -1145,6 +1153,7 @@
    "spec": "box_v2s_r2",
    "tier": "validated",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -1454,6 +1463,7 @@
    "spec": "box_v2s_r2",
    "tier": "validated",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -1763,6 +1773,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -2054,6 +2065,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -2345,6 +2357,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -2654,6 +2667,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -2963,6 +2977,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -3272,6 +3287,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -3581,6 +3597,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {
@@ -3890,6 +3907,7 @@
    "spec": "box_v2s_r2",
    "tier": "provisional",
    "haircut": null,
+   "haircut_dropped": null,
    "disclosure": {
     "hindcast_bias": {
      "oil": {

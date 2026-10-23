@@ -305,8 +305,8 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
     r2 = getattr(a, "selection", "v2") == "r2"
     ev = a.pack["groups"][bench] if r2 else None
     hcut = (p16.haircut_from_pack(ev) if r2 else p9.haircut_for(bench))
-    if hcut is not None:  # 9c haircut guard, table half: refuse before any fit
-        bad = p9r.guard_table(hcut)
+    if hcut is not None:  # 9c haircut guard, table half: refuse before any fit (a stream without a haircut has no table)
+        bad = p9r.guard_table({s: t for s, t in hcut.items() if t is not None})
         if bad:
             raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the D62 table: {bad}")
     wells_dir = p9r.wells_dir(bench, a.wells)
@@ -344,7 +344,7 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
     guard: dict[str, Any] = {"applies": hcut is not None, **p9r.GUARD}
     if hcut is not None:  # 9c haircut guard, tail half: the applied D92 g(48)
         bad, guard["g48"] = p9r.guard_tail({s: np.array([r["streams"][s]["params"]["haircut"]["g_tail"] for r in res if s in r.get("streams", {})])
-                                            for s in pr.STREAMS})
+                                            for s in pr.STREAMS if hcut.get(s) is not None})
         print(f"[{bench}] haircut guard g(48): {guard['g48']}", flush=True)
         if bad:
             raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the applied haircut: {bad}")
@@ -471,6 +471,8 @@ def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any] | None,
         for s, st in r.get("streams", {}).items():
             if hcut is None:
                 st["months"], info = np.array(st["months_raw"], float), {"method": method_none, "eur_factor": 1.0}
+            elif hcut.get(s) is None:  # D122: this stream carries no haircut (WCA gas); months exactly raw
+                st["months"], info = np.array(st["months_raw"], float), {"method": p16.STREAM_NONE, "eur_factor": 1.0}
             else:
                 st["months"], info = pr.apply_haircut_c1(st["months_raw"], {k: hcut[s][k] for k in pr.HORIZONS})
             st["params"] = {**st["params"], "haircut": info}
@@ -488,6 +490,11 @@ def haircut_record(hcut: dict[str, Any] | None, res: list[dict[str, Any]],
                    for s in pr.STREAMS}}
     out: dict[str, Any] = {"method": pr.HAIRCUT_METHOD}
     for s in pr.STREAMS:
+        if hcut.get(s) is None:  # D122: no haircut on this stream — factors 1.0, as a no-haircut group records them
+            out[s] = {k: {"factor": 1.0, "bias": None, "n_packages": 0, "n_cells": 0, "cutoffs": [], "realised_median": 1.0,
+                          "realised_p10_p90": [1.0, 1.0]} for k in pr.HORIZONS} | {"tail_factor_median": 1.0, "eur_factor_median": 1.0,
+                                                                                   "method": p16.STREAM_NONE}
+            continue
         infos = [r["streams"][s]["params"]["haircut"] for r in res if s in r.get("streams", {})]
         out[s] = {k: dict(hcut[s][k]) for k in pr.HORIZONS}
         for k in pr.HORIZONS:
