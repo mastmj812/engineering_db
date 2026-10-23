@@ -56,15 +56,50 @@ def cmd_evidence(a: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prox_measure(a: argparse.Namespace) -> int:
+    """D116 on a new base run: the step-4 proximity measurement of run `--run-id`, its box rows read from `--box-db` (the rehearsal
+    container or live), curated read from live; outcomes to --out, PUD links to --links-out (the run-10 reviewed files untouched)."""
+    import psycopg
+
+    from etl.db import get_connection
+    from scripts import box_rehearsal as reh
+    from scripts import box_step16d_prox as sdp
+
+    live = get_connection()
+    try:
+        if a.box_db == "rehearsal":
+            e = reh._box_env()
+            box = psycopg.connect(host=e["PGHOST"], port=int(e["PGPORT"]), dbname=e["PGDATABASE"], user=e["PGUSER"], password=e["PGPASSWORD"])
+        else:
+            box = live
+        try:
+            r = sdp.run(box, live, a.run_id, a.prec_runs, a.out, a.links_out)
+        finally:
+            if box is not live:
+                box.close()
+    finally:
+        live.close()
+    m = r["meta"]
+    print(f"run {m['run_id']}: {m['n_puds']:,} PUDs, {m['n_links']:,} links, identity {m['identity_ok']}, outcomes {m['outcomes']}; oil "
+          f"{m['oil_mmbbl_before']:,.1f} -> {m['oil_mmbbl_after']:,.1f} MMbbl")
+    return 0 if m["identity_ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     e = sub.add_parser("evidence")
     e.add_argument("--runs", type=Path, default=Path("runs") / "step16c")
     e.add_argument("--out", type=Path, default=Path("docs") / "box" / "step16d-2026-10-23")
+    m = sub.add_parser("prox-measure")
+    m.add_argument("--run-id", type=int, required=True)
+    m.add_argument("--box-db", choices=("rehearsal", "live"), default="rehearsal")
+    m.add_argument("--prec-runs", type=Path, default=Path("runs") / "prox", help="the study's drilled-children inputs (precedent)")
+    m.add_argument("--out", type=Path, default=Path("docs") / "box" / "step16d-2026-10-23" / "prox")
+    m.add_argument("--links-out", type=Path, default=Path("runs") / "box16d_prox")
     a = ap.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
-    return cmd_evidence(a)
+    return cmd_prox_measure(a) if a.cmd == "prox-measure" else cmd_evidence(a)
 
 
 if __name__ == "__main__":
