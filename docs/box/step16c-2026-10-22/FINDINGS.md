@@ -70,8 +70,13 @@ AVA_2 +0.1 / +2.6 / +3.0; BS1_S −10.1 / −7.7 / −10.0; BS2_C −7.5 / −3.
    high (their own fits 21.4 % high). It is worst on the thin benches (AVA_0 −36 %, AVA_1 −33 %, BS1_S −23 %). Not adopted.
 5. **The provisional groups' dominant error is LEVEL, not selection.** Every variant over-forecasts oil cum-12 by 8–11 %
    (raw box_v2, no haircut, D105). The selection rules move individual PUDs a lot (16a: P10 −19 % / P90 +27 %) but the level by
-   a few points. The +13–16 % curve-construction offset found on BS1_S (the P50's month 1–12 against its own cohort's actual
-   cum-12) is the first suspect. It is not yet diagnosed per group (§7 item, not done in 16c).
+   a few points. The level is measured AFTER the calendar factor F(k), so it is out-of-sample drift: the next year's wells come
+   in below what the analogs before them made. The candidate causes are child wells beside depleting parents (the PDP-proximity
+   haircut is applied in production run 14 but not to these tuning variants) and vintage / step-out drift. The walk-forward
+   haircut corrects exactly this on WCA and BS2_S; the provisional groups carry none (D105).
+   - **Correction (2026-10-23):** the "+13–16 % curve-construction offset" from the first BS1_S pass is NOT a curve defect. It
+     is the uptime-free convention (D63). Production months exclude downtime, and run 14's published F(12) is 0.879 (BS1_S),
+     0.885 (BS3_S), 0.842 (BS3_C) and 0.894 (WCA): 1 / F(12) = 1.12–1.19, which is the whole offset. Retracted as a suspect.
 
 ## 3. A flaw in two pre-registered conditions (POST-LOOK — disclosed, the rules were not changed)
 
@@ -104,8 +109,10 @@ benches. The level-only path still fails on its own test.
    exception (the D59 / D113 pattern) adopting `box_v2s_r2` on the §3 reading. Recommendation: **accept `box_v2s` now.**
    - r2's case rests on post-look relative readings.
    - Its absolute level is worse on benches with no haircut.
-   - Revisit r2 after the level problem is addressed (the construction offset), with level-relative conditions pre-registered
-     and the 2026 cohort as the confirmation.
+   - Revisit r2 after the level problem is addressed (§2.5: the out-of-sample drift), with level-relative conditions
+     pre-registered and the 2026 cohort as the confirmation.
+   - **Superseded 2026-10-23 (Michael): there is no delivery clock.** No adoption is needed now. The next step is the level
+     work, then v2s vs r2 compared again with level-relative conditions, then one production build.
 2. **Validated groups referred.** Recommendation: **keep WCA, WCB_1 and WCC validated with the fix.**
    - WCA: no cell's bias exceeds ±8.1 %, and its extra fail is a spread test on gas.
    - WCB_1 and WCC: their failing cells pre-date the fix, and the fix reduces failing cells 4 → 3.
