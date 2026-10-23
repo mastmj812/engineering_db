@@ -1,0 +1,4198 @@
+{
+ "selection": "box_v2s_r2",
+ "decision": "D121",
+ "source_runs": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c",
+ "prox_tables": [
+  "docs\\box\\prox-2026-10-19\\config_children.csv.gz",
+  "docs\\box\\prox-2026-10-19\\haircut_table_candidate.csv"
+ ],
+ "groups": {
+  "WCA": {
+   "group": "WCA",
+   "spec": "box_v2s_r2_wf",
+   "tier": "validated",
+   "haircut": {
+    "oil": {
+     "12": {
+      "factor": 0.9505120810066308,
+      "bias": -0.04948791899336926,
+      "n_packages": 1283,
+      "n_cells": 6,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01",
+       "2024-12-01"
+      ]
+     },
+     "24": {
+      "factor": 0.9284920818465585,
+      "bias": -0.07150791815344147,
+      "n_packages": 1117,
+      "n_cells": 5,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01"
+      ]
+     },
+     "36": {
+      "factor": 0.8967510770272014,
+      "bias": -0.10324892297279865,
+      "n_packages": 902,
+      "n_cells": 4,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01"
+      ]
+     },
+     "48": {
+      "factor": 0.851379884410759,
+      "bias": -0.14862011558924104,
+      "n_packages": 389,
+      "n_cells": 2,
+      "cutoffs": [
+       "2020-12-01",
+       "2021-12-01"
+      ]
+     }
+    },
+    "gas": {
+     "12": {
+      "factor": 1.0012226982989543,
+      "bias": 0.0012226982989543174,
+      "n_packages": 1283,
+      "n_cells": 6,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01",
+       "2024-12-01"
+      ]
+     },
+     "24": {
+      "factor": 1.0166941263938762,
+      "bias": 0.016694126393876324,
+      "n_packages": 1117,
+      "n_cells": 5,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01"
+      ]
+     },
+     "36": {
+      "factor": 1.001034353780518,
+      "bias": 0.0010343537805179164,
+      "n_packages": 902,
+      "n_cells": 4,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01"
+      ]
+     },
+     "48": {
+      "factor": 0.9949117147804636,
+      "bias": -0.005088285219536427,
+      "n_packages": 389,
+      "n_cells": 2,
+      "cutoffs": [
+       "2020-12-01",
+       "2021-12-01"
+      ]
+     }
+    }
+   },
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.04948791899336926,
+       "box_v2_pooled_packages": 1283,
+       "haircut_factor": 0.9505120810066308,
+       "disclosed_bias": -0.027947010296484893,
+       "disclosed_packages": 776,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.07150791815344146,
+       "box_v2_pooled_packages": 1117,
+       "haircut_factor": 0.9284920818465585,
+       "disclosed_bias": -0.015159976695509716,
+       "disclosed_packages": 611,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.10324892297279865,
+       "box_v2_pooled_packages": 902,
+       "haircut_factor": 0.8967510770272014,
+       "disclosed_bias": -0.00830530766010533,
+       "disclosed_packages": 396,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 0.851379884410759,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": 0.0012226982989543202,
+       "box_v2_pooled_packages": 1283,
+       "haircut_factor": 1.0012226982989543,
+       "disclosed_bias": -0.03374505720917927,
+       "disclosed_packages": 776,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": 0.01669412639387632,
+       "box_v2_pooled_packages": 1117,
+       "haircut_factor": 1.0166941263938762,
+       "disclosed_bias": -0.04808329986478786,
+       "disclosed_packages": 611,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": 0.0010343537805179192,
+       "box_v2_pooled_packages": 902,
+       "haircut_factor": 1.001034353780518,
+       "disclosed_bias": -0.043614074552806775,
+       "disclosed_packages": 396,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 0.9949117147804636,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.34414100015051663,
+      "p10_high": 0.32082955551499315,
+      "packages": 751,
+      "bias": -0.023710621937241383
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.6222005341475504,
+      "p10_high": 0.4255515855891289,
+      "packages": 25,
+      "bias": -0.15520811660815995
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.32910833176481386,
+      "p10_high": 0.34867218571275993,
+      "packages": 587,
+      "bias": -0.01039265166776687
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.6301663507247033,
+      "p10_high": 0.40130321162748117,
+      "packages": 24,
+      "bias": -0.13176080133238674
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity + haircut (step 16c)",
+    "tier": "validated",
+    "label": "D121 r2 selection, validated",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 2775,
+      "bias": -0.009691212208814859,
+      "range_95": [
+       -0.03396102378866303,
+       0.014519157969296826
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 89,
+      "bias": -0.050608568082268546,
+      "range_95": [
+       -0.19142609053351342,
+       0.11286362136910479
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 2171,
+      "bias": -0.0029074172069860627,
+      "range_95": [
+       -0.029170830318470977,
+       0.023170993796232685
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 80,
+      "bias": -0.02188101194193548,
+      "range_95": [
+       -0.17771500865337808,
+       0.15043686455931354
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 1318,
+      "bias": 0.009341070032172105,
+      "range_95": [
+       -0.01971627898146062,
+       0.04311709444850978
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 45,
+      "bias": -0.07389239957053784,
+      "range_95": [
+       -0.2688974080136149,
+       0.13073346295495764
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 2775,
+      "bias": -0.04169108458097859,
+      "range_95": [
+       -0.06618941643051221,
+       -0.017855144744551403
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 89,
+      "bias": -0.034978948940132204,
+      "range_95": [
+       -0.18348007786576714,
+       0.1773132559090154
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 2171,
+      "bias": -0.06152354350245148,
+      "range_95": [
+       -0.08880485353132697,
+       -0.03462683894925605
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 80,
+      "bias": -0.04441545611666542,
+      "range_95": [
+       -0.20800528752803005,
+       0.18771498267531003
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 1318,
+      "bias": -0.06206684960850617,
+      "range_95": [
+       -0.09587704523560148,
+       -0.028042137764147105
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 45,
+      "bias": -0.10278163865203294,
+      "range_95": [
+       -0.26645740374875787,
+       0.09764352088753049
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 111 packages): oil cum-12 -3.6% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.050608568082268546,
+     "oil_cum12_wells": 89,
+     "oil_cum24_bias": -0.02188101194193548,
+     "oil_cum24_wells": 80
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\WCA_full",
+    "fold": "full",
+    "head": "afb35d63e5457887b28633709e664918939b3993",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 4494
+   }
+  },
+  "BS2_S": {
+   "group": "BS2_S",
+   "spec": "box_v2s_r2_wf",
+   "tier": "validated",
+   "haircut": {
+    "oil": {
+     "12": {
+      "factor": 0.9330085681994691,
+      "bias": -0.06699143180053091,
+      "n_packages": 502,
+      "n_cells": 6,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01",
+       "2024-12-01"
+      ]
+     },
+     "24": {
+      "factor": 0.9207588907767313,
+      "bias": -0.07924110922326866,
+      "n_packages": 381,
+      "n_cells": 5,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01"
+      ]
+     },
+     "36": {
+      "factor": 0.8694094555684375,
+      "bias": -0.13059054443156243,
+      "n_packages": 278,
+      "n_cells": 4,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01"
+      ]
+     },
+     "48": {
+      "factor": 0.8493389906493046,
+      "bias": -0.15066100935069535,
+      "n_packages": 120,
+      "n_cells": 2,
+      "cutoffs": [
+       "2020-12-01",
+       "2021-12-01"
+      ]
+     }
+    },
+    "gas": {
+     "12": {
+      "factor": 0.9869783148985999,
+      "bias": -0.013021685101400084,
+      "n_packages": 502,
+      "n_cells": 6,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01",
+       "2024-12-01"
+      ]
+     },
+     "24": {
+      "factor": 0.981713413845692,
+      "bias": -0.018286586154308004,
+      "n_packages": 381,
+      "n_cells": 5,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01",
+       "2023-12-01"
+      ]
+     },
+     "36": {
+      "factor": 0.9972691929159261,
+      "bias": -0.0027308070840738907,
+      "n_packages": 278,
+      "n_cells": 4,
+      "cutoffs": [
+       "2019-12-01",
+       "2020-12-01",
+       "2021-12-01",
+       "2022-12-01"
+      ]
+     },
+     "48": {
+      "factor": 1.0745360739671255,
+      "bias": 0.0745360739671255,
+      "n_packages": 120,
+      "n_cells": 2,
+      "cutoffs": [
+       "2020-12-01",
+       "2021-12-01"
+      ]
+     }
+    }
+   },
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.0669914318005309,
+       "box_v2_pooled_packages": 502,
+       "haircut_factor": 0.9330085681994691,
+       "disclosed_bias": -0.05347782501911514,
+       "disclosed_packages": 398,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.07924110922326866,
+       "box_v2_pooled_packages": 381,
+       "haircut_factor": 0.9207588907767313,
+       "disclosed_bias": -0.0699212972427499,
+       "disclosed_packages": 277,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.13059054443156243,
+       "box_v2_pooled_packages": 278,
+       "haircut_factor": 0.8694094555684375,
+       "disclosed_bias": -0.026681359229583455,
+       "disclosed_packages": 174,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 0.8493389906493046,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.013021685101400083,
+       "box_v2_pooled_packages": 502,
+       "haircut_factor": 0.9869783148985999,
+       "disclosed_bias": -0.08170108449880187,
+       "disclosed_packages": 398,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.018286586154308,
+       "box_v2_pooled_packages": 381,
+       "haircut_factor": 0.981713413845692,
+       "disclosed_bias": -0.10096839623304572,
+       "disclosed_packages": 277,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": -0.0027308070840739037,
+       "box_v2_pooled_packages": 278,
+       "haircut_factor": 0.9972691929159261,
+       "disclosed_bias": -0.11787244416798721,
+       "disclosed_packages": 174,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2_wf",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0745360739671255,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor x walk-forward haircut, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.432843920024754,
+      "p10_high": 0.32940407922690174,
+      "packages": 346,
+      "bias": -0.06887837368020445
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.4876388059175626,
+      "p10_high": 0.9639923008140976,
+      "packages": 52,
+      "bias": 0.048995056456594584
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.4051677129140189,
+      "p10_high": 0.2885494898832601,
+      "packages": 231,
+      "bias": -0.08268455174068311
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.46989087509862626,
+      "p10_high": 0.6776217317508703,
+      "packages": 46,
+      "bias": -0.005827562698780699
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity + haircut (step 16c)",
+    "tier": "validated",
+    "label": "D121 r2 selection, validated",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 1107,
+      "bias": -0.07203006771874321,
+      "range_95": [
+       -0.11304289473161416,
+       -0.0289036906343172
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 146,
+      "bias": -0.1824825116729052,
+      "range_95": [
+       -0.30097633926374906,
+       -0.038033575055366205
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 752,
+      "bias": -0.0991835852306715,
+      "range_95": [
+       -0.14780874346433573,
+       -0.0471014684397024
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 118,
+      "bias": -0.20443634786790765,
+      "range_95": [
+       -0.3478184913701989,
+       -0.031032216310605144
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 478,
+      "bias": -0.06625432314150659,
+      "range_95": [
+       -0.1395767259337443,
+       0.007004699249260951
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 94,
+      "bias": -0.17154148652733225,
+      "range_95": [
+       -0.36645443507303155,
+       0.0645210581977408
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 1107,
+      "bias": -0.12821524792399142,
+      "range_95": [
+       -0.1813784121853662,
+       -0.07346634399646182
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 146,
+      "bias": -0.2439363615165241,
+      "range_95": [
+       -0.3709614519303025,
+       -0.07872630151179474
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 752,
+      "bias": -0.13468941450918137,
+      "range_95": [
+       -0.20697584872636476,
+       -0.06821553241623274
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 118,
+      "bias": -0.28805828471668504,
+      "range_95": [
+       -0.44866440622242953,
+       -0.11433210263140743
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 478,
+      "bias": -0.16551365952073505,
+      "range_95": [
+       -0.26869991486394523,
+       -0.0702759567399381
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity + haircut)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 94,
+      "bias": -0.31268719161579506,
+      "range_95": [
+       -0.5119776978052369,
+       -0.09135044681690178
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 82 packages): oil cum-12 +1.9% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.1824825116729052,
+     "oil_cum12_wells": 146,
+     "oil_cum24_bias": -0.20443634786790765,
+     "oil_cum24_wells": 118
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\BS2_S",
+    "fold": "analog",
+    "head": "afb35d63e5457887b28633709e664918939b3993",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 1493
+   }
+  },
+  "WCXY_WCA1": {
+   "group": "WCXY_WCA1",
+   "spec": "box_v2s_r2",
+   "tier": "validated",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.004498375170921875,
+       "box_v2_pooled_packages": 329,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.004498375170921875,
+       "disclosed_packages": 329,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.04493720856368663,
+       "box_v2_pooled_packages": 288,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.04493720856368663,
+       "disclosed_packages": 288,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.09882299159878928,
+       "box_v2_pooled_packages": 233,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.09882299159878928,
+       "disclosed_packages": 233,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.005419142456163546,
+       "box_v2_pooled_packages": 329,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.005419142456163546,
+       "disclosed_packages": 329,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.021077114481015197,
+       "box_v2_pooled_packages": 288,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.021077114481015197,
+       "disclosed_packages": 288,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.06422728064803576,
+       "box_v2_pooled_packages": 233,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.06422728064803576,
+       "disclosed_packages": 233,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.3678163758567378,
+      "p10_high": 0.44787615903635236,
+      "packages": 309,
+      "bias": 0.009869455639716722
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.6204723281854065,
+      "p10_high": 0.5356541664636266,
+      "packages": 20,
+      "bias": -0.07848481807195853
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.40346832274016925,
+      "p10_high": 0.38360362951214844,
+      "packages": 268,
+      "bias": -0.045267512373704584
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.5241505462540558,
+      "p10_high": 0.5002893771998205,
+      "packages": 20,
+      "bias": -0.04051113750944613
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "validated",
+    "label": "D121 r2 selection, validated",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 670,
+      "bias": 0.010177693501910445,
+      "range_95": [
+       -0.0383696590411997,
+       0.053197646643871
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 42,
+      "bias": -0.16355325046864955,
+      "range_95": [
+       -0.2913587464338265,
+       -0.04413066976813528
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 580,
+      "bias": -0.03836576407168568,
+      "range_95": [
+       -0.0795247775700435,
+       0.0042690597332897436
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 40,
+      "bias": -0.1881408115091694,
+      "range_95": [
+       -0.29623761836827206,
+       -0.07525858554029517
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 460,
+      "bias": -0.080005479104716,
+      "range_95": [
+       -0.12974229686095204,
+       -0.03579175557430066
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 37,
+      "bias": -0.21430439433858506,
+      "range_95": [
+       -0.3215851930203715,
+       -0.09970175277565235
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 670,
+      "bias": -0.020302914963731933,
+      "range_95": [
+       -0.06451813237816388,
+       0.01856007139516723
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 42,
+      "bias": -0.18491734251742997,
+      "range_95": [
+       -0.2916447478937713,
+       -0.08606249892395407
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 580,
+      "bias": -0.04147413975093983,
+      "range_95": [
+       -0.08324413226699158,
+       0.0016738484055924799
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 40,
+      "bias": -0.18105603835821882,
+      "range_95": [
+       -0.2790303489121121,
+       -0.08595703315542334
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 460,
+      "bias": -0.07979862207890565,
+      "range_95": [
+       -0.12692778218831471,
+       -0.03156555213679153
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 37,
+      "bias": -0.17576930578468297,
+      "range_95": [
+       -0.28240810784164566,
+       -0.0608567266362986
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 23 packages): oil cum-12 -0.8% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.16355325046864955,
+     "oil_cum12_wells": 42,
+     "oil_cum24_bias": -0.1881408115091694,
+     "oil_cum24_wells": 40
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\WCXY_WCA1",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 692
+   }
+  },
+  "WCB_1": {
+   "group": "WCB_1",
+   "spec": "box_v2s_r2",
+   "tier": "validated",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.008714924472935549,
+       "box_v2_pooled_packages": 338,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.008714924472935549,
+       "disclosed_packages": 338,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.007416066706404943,
+       "box_v2_pooled_packages": 275,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.007416066706404943,
+       "disclosed_packages": 275,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.05273884601257736,
+       "box_v2_pooled_packages": 203,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.05273884601257736,
+       "disclosed_packages": 203,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.07954746541280758,
+       "box_v2_pooled_packages": 338,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.07954746541280758,
+       "disclosed_packages": 338,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.14008305179024147,
+       "box_v2_pooled_packages": 275,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.14008305179024147,
+       "disclosed_packages": 275,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.1353765824162593,
+       "box_v2_pooled_packages": 203,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.1353765824162593,
+       "disclosed_packages": 203,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.3576491144552535,
+      "p10_high": 0.515484567799779,
+      "packages": 250,
+      "bias": 0.03624020207665075
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.5190805070142417,
+      "p10_high": 0.3546464016927134,
+      "packages": 88,
+      "bias": -0.06948188690125535
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.3886507567502387,
+      "p10_high": 0.5521045911067742,
+      "packages": 197,
+      "bias": 0.029697726191313636
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.4693919599266136,
+      "p10_high": 0.4207147988031789,
+      "packages": 78,
+      "bias": -0.048859406608043915
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "validated",
+    "label": "D121 r2 selection, validated",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 630,
+      "bias": -0.004276374719937692,
+      "range_95": [
+       -0.04840255437801742,
+       0.040497994386996715
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 197,
+      "bias": -0.03379825729890551,
+      "range_95": [
+       -0.09869066167007587,
+       0.03584391772059359
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 504,
+      "bias": -0.01236483657304488,
+      "range_95": [
+       -0.061765846916130435,
+       0.040777806039070295
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 169,
+      "bias": -0.05299181155410759,
+      "range_95": [
+       -0.11918958450431381,
+       0.02610016675809366
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 365,
+      "bias": -0.104548067900045,
+      "range_95": [
+       -0.14986418175833713,
+       -0.05616501769832158
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 130,
+      "bias": -0.12372025536285458,
+      "range_95": [
+       -0.19060709133336146,
+       -0.04313653974631422
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 630,
+      "bias": 0.0312180326610747,
+      "range_95": [
+       -0.01464577426175554,
+       0.07554594074371666
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 197,
+      "bias": 0.0784298797574261,
+      "range_95": [
+       -0.018892276718408586,
+       0.18273601681438637
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 504,
+      "bias": 0.08434066920843031,
+      "range_95": [
+       0.02412167530229879,
+       0.1441796197126833
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 169,
+      "bias": 0.12582662060580851,
+      "range_95": [
+       0.010765888974176649,
+       0.24515383942432395
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 365,
+      "bias": 0.08273170950376563,
+      "range_95": [
+       0.021913732891685488,
+       0.15134055719639983
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 130,
+      "bias": 0.15943901530572413,
+      "range_95": [
+       0.023482634736845347,
+       0.29623722741489544
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 42 packages): oil cum-12 -7.7% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.03379825729890551,
+     "oil_cum12_wells": 197,
+     "oil_cum24_bias": -0.05299181155410759,
+     "oil_cum24_wells": 169
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\WCB_1",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 675
+   }
+  },
+  "WCC": {
+   "group": "WCC",
+   "spec": "box_v2s_r2",
+   "tier": "validated",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.03981628285546492,
+       "box_v2_pooled_packages": 138,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.03981628285546492,
+       "disclosed_packages": 138,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1250489242527887,
+       "box_v2_pooled_packages": 105,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1250489242527887,
+       "disclosed_packages": 105,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.0017490135012883964,
+       "box_v2_pooled_packages": 81,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.0017490135012883964,
+       "disclosed_packages": 81,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.028506901644155126,
+       "box_v2_pooled_packages": 138,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.028506901644155126,
+       "disclosed_packages": 138,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.11085619457898883,
+       "box_v2_pooled_packages": 105,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.11085619457898883,
+       "disclosed_packages": 105,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.022058191328544335,
+       "box_v2_pooled_packages": 81,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.022058191328544335,
+       "disclosed_packages": 81,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.5525673788468546,
+      "p10_high": 0.742730053671146,
+      "packages": 95,
+      "bias": 0.015845689917768992
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.5408425532723554,
+      "p10_high": 0.28156388988289105,
+      "packages": 43,
+      "bias": -0.16279040874981893
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.5571317970648527,
+      "p10_high": 0.6597349140143332,
+      "packages": 69,
+      "bias": -0.04880068326846998
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.595345027707918,
+      "p10_high": 0.11249352204786567,
+      "packages": 36,
+      "bias": -0.2711913861393995
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "validated",
+    "label": "D121 r2 selection, validated",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 286,
+      "bias": -0.06952122214742384,
+      "range_95": [
+       -0.1466654464279298,
+       0.014252947382389808
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 104,
+      "bias": -0.10801231763689811,
+      "range_95": [
+       -0.251287289305012,
+       0.026794338283530304
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 219,
+      "bias": -0.16807105598921956,
+      "range_95": [
+       -0.23642977104183757,
+       -0.08758006038883691
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 75,
+      "bias": -0.25258678741173224,
+      "range_95": [
+       -0.3949692605788885,
+       -0.10996780781311094
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 179,
+      "bias": -0.0970355223114312,
+      "range_95": [
+       -0.18236897447859327,
+       0.0011433354275794951
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 66,
+      "bias": -0.14225254841812596,
+      "range_95": [
+       -0.31794581621845636,
+       0.06543612450712966
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 286,
+      "bias": -0.05750015078466497,
+      "range_95": [
+       -0.12552840572775004,
+       0.02211695193368834
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 104,
+      "bias": -0.07926438923755685,
+      "range_95": [
+       -0.19904013346031574,
+       0.028631731732697008
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 219,
+      "bias": -0.1185694003255302,
+      "range_95": [
+       -0.18793481552108735,
+       -0.04545550854822335
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 75,
+      "bias": -0.173805533393668,
+      "range_95": [
+       -0.25462436346283635,
+       -0.078623648593585
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 179,
+      "bias": -0.06420183812918723,
+      "range_95": [
+       -0.16206686869806988,
+       0.042860848968711056
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 66,
+      "bias": -0.07856186016856681,
+      "range_95": [
+       -0.2329786280665508,
+       0.18999799904021342
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 20 packages): oil cum-12 +0.3% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.10801231763689811,
+     "oil_cum12_wells": 104,
+     "oil_cum24_bias": -0.25258678741173224,
+     "oil_cum24_wells": 75
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\WCC",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 304
+   }
+  },
+  "AVA_0": {
+   "group": "AVA_0",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.23145135032495448,
+       "box_v2_pooled_packages": 37,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.23145135032495448,
+       "disclosed_packages": 37,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.23707416243103077,
+       "box_v2_pooled_packages": 29,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.23707416243103077,
+       "disclosed_packages": 29,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.11002084283944895,
+       "box_v2_pooled_packages": 20,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.11002084283944895,
+       "disclosed_packages": 20,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.24627539823587954,
+       "box_v2_pooled_packages": 37,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.24627539823587954,
+       "disclosed_packages": 37,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.2509372510830879,
+       "box_v2_pooled_packages": 29,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.2509372510830879,
+       "disclosed_packages": 29,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.07335343762630661,
+       "box_v2_pooled_packages": 20,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.07335343762630661,
+       "disclosed_packages": 20,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.4302588153255242,
+      "p10_high": 0.2854031362074882,
+      "packages": 20,
+      "bias": -0.16228341242604094
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.6837345561831356,
+      "p10_high": 0.08413815834681967,
+      "packages": 17,
+      "bias": -0.31282539491191175
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.44175640914641817,
+      "p10_high": 0.0858276067945325,
+      "packages": 16,
+      "bias": -0.22599152703668218
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.4605780678759006,
+      "p10_high": 0.05422507361656455,
+      "packages": 13,
+      "bias": -0.250714329070229
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 82,
+      "bias": -0.22286456777042696,
+      "range_95": [
+       -0.3284834116815372,
+       -0.11338098112869563
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 17,
+      "bias": -0.38918410196779185,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 67,
+      "bias": -0.1987120941608015,
+      "range_95": [
+       -0.29941559838030035,
+       -0.08762599645853096
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 11,
+      "bias": -0.4113460329248686,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 50,
+      "bias": -0.08252531106757732,
+      "range_95": [
+       -0.2246596291554781,
+       0.08454446481714364
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 5,
+      "bias": -0.25913949071815456,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 82,
+      "bias": -0.294083349109202,
+      "range_95": [
+       -0.47977936671115456,
+       -0.1143215203481782
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 17,
+      "bias": -0.5588832945743119,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 67,
+      "bias": -0.2752762298774668,
+      "range_95": [
+       -0.37719635261845835,
+       -0.18907501906300928
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 11,
+      "bias": -0.5794722490556243,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 50,
+      "bias": -0.150097099934007,
+      "range_95": [
+       -0.2673642961191171,
+       0.005919914094058051
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 5,
+      "bias": -0.5910838328165047,
+      "range_95": null
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 4 packages): oil cum-12 -0.9% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.38918410196779185,
+     "oil_cum12_wells": 17,
+     "oil_cum24_bias": -0.4113460329248686,
+     "oil_cum24_wells": 11
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\AVA_0",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 85
+   }
+  },
+  "AVA_1": {
+   "group": "AVA_1",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.020681841449453685,
+       "box_v2_pooled_packages": 58,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.020681841449453685,
+       "disclosed_packages": 58,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.019005999749695066,
+       "box_v2_pooled_packages": 42,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.019005999749695066,
+       "disclosed_packages": 42,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.05678524558197683,
+       "box_v2_pooled_packages": 35,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.05678524558197683,
+       "disclosed_packages": 35,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.07847364418947667,
+       "box_v2_pooled_packages": 58,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.07847364418947667,
+       "disclosed_packages": 58,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.17989677933454487,
+       "box_v2_pooled_packages": 42,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.17989677933454487,
+       "disclosed_packages": 42,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.0355448512935782,
+       "box_v2_pooled_packages": 35,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.0355448512935782,
+       "disclosed_packages": 35,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.4809843751437093,
+      "p10_high": 0.6586862071130408,
+      "packages": 41,
+      "bias": -0.01081429461000895
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.320746263456838,
+      "p10_high": 0.48546840851365686,
+      "packages": 17,
+      "bias": 0.09664311076933413
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.466882266777324,
+      "p10_high": 0.5814836066656283,
+      "packages": 29,
+      "bias": -0.00981484994421686
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.3912974636042338,
+      "p10_high": 0.44717173540480437,
+      "packages": 13,
+      "bias": 0.08329866445149853
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 169,
+      "bias": -0.04389387975129244,
+      "range_95": [
+       -0.1518924734788852,
+       0.0834226262208172
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 21,
+      "bias": 0.01874401716122609,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 126,
+      "bias": -0.014734460450111508,
+      "range_95": [
+       -0.1298351376360535,
+       0.15183483251491278
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 15,
+      "bias": -0.038729328284378584,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 110,
+      "bias": 0.012744743717130635,
+      "range_95": [
+       -0.09306541587831534,
+       0.1651782175065585
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 15,
+      "bias": -0.1294259160656731,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 169,
+      "bias": -0.1479989573021837,
+      "range_95": [
+       -0.297889401144594,
+       -0.01329896814348079
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 21,
+      "bias": -0.03574183803925779,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 126,
+      "bias": -0.23159057094107316,
+      "range_95": [
+       -0.3707470909992196,
+       -0.11265404749406632
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 15,
+      "bias": -0.3359021857462088,
+      "range_95": null
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 110,
+      "bias": -0.1777810542877224,
+      "range_95": [
+       -0.30845653077612123,
+       -0.006680710148882641
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 15,
+      "bias": -0.22183787212005923,
+      "range_95": null
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 13 packages): oil cum-12 +7.3% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": 0.01874401716122609,
+     "oil_cum12_wells": 21,
+     "oil_cum24_bias": -0.038729328284378584,
+     "oil_cum24_wells": 15
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\AVA_1",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 182
+   }
+  },
+  "AVA_2": {
+   "group": "AVA_2",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.048906800126784555,
+       "box_v2_pooled_packages": 71,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.048906800126784555,
+       "disclosed_packages": 71,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.12411920975225105,
+       "box_v2_pooled_packages": 54,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.12411920975225105,
+       "disclosed_packages": 54,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.20738125687176379,
+       "box_v2_pooled_packages": 33,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.20738125687176379,
+       "disclosed_packages": 33,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.0012360385101905943,
+       "box_v2_pooled_packages": 71,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.0012360385101905943,
+       "disclosed_packages": 71,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.007302929413155019,
+       "box_v2_pooled_packages": 54,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.007302929413155019,
+       "disclosed_packages": 54,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.12561758523707456,
+       "box_v2_pooled_packages": 33,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.12561758523707456,
+       "disclosed_packages": 33,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.46098816012749466,
+      "p10_high": 0.6843254223833607,
+      "packages": 38,
+      "bias": 0.006378347970340113
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.45506611574055117,
+      "p10_high": 0.8531595904386838,
+      "packages": 33,
+      "bias": 0.09787895715541756
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.5581703490820265,
+      "p10_high": 0.7979237308723305,
+      "packages": 24,
+      "bias": 0.08011567088839351
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.4003336488073977,
+      "p10_high": 0.6821075916256445,
+      "packages": 30,
+      "bias": 0.159322040843337
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 144,
+      "bias": -0.05962402902938624,
+      "range_95": [
+       -0.17318419234981747,
+       0.05515034529852236
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 55,
+      "bias": -0.00799389085294,
+      "range_95": [
+       -0.15656792702651048,
+       0.13643966617869493
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 113,
+      "bias": -0.02791406099890026,
+      "range_95": [
+       -0.1550130346694884,
+       0.1341874810889794
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 48,
+      "bias": 0.08223027199934041,
+      "range_95": [
+       -0.05462980621512157,
+       0.24351569935501366
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 65,
+      "bias": 0.09320947509437283,
+      "range_95": [
+       -0.04898526744371635,
+       0.27767328772524086
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 30,
+      "bias": 0.03469778087444819,
+      "range_95": [
+       -0.09834955064260824,
+       0.21444371314385727
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 144,
+      "bias": -0.04798142311400977,
+      "range_95": [
+       -0.1652824744832335,
+       0.05144729498864058
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 55,
+      "bias": -0.09907677784776103,
+      "range_95": [
+       -0.28888536452984254,
+       0.07357090563952824
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 113,
+      "bias": -0.07565685846028258,
+      "range_95": [
+       -0.1646080405468485,
+       0.0325754870776695
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 48,
+      "bias": -0.0121783023712283,
+      "range_95": [
+       -0.19278886358074832,
+       0.19129776815491867
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 65,
+      "bias": 0.007893851156273834,
+      "range_95": [
+       -0.1448192022148356,
+       0.19599816422038918
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 30,
+      "bias": 0.030223385297369454,
+      "range_95": [
+       -0.16472645838643044,
+       0.2955028523797534
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 10 packages): oil cum-12 -17.6% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.00799389085294,
+     "oil_cum12_wells": 55,
+     "oil_cum24_bias": 0.08223027199934041,
+     "oil_cum24_wells": 48
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\AVA_2",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 161
+   }
+  },
+  "BS2_C": {
+   "group": "BS2_C",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.013185617979549072,
+       "box_v2_pooled_packages": 162,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.013185617979549072,
+       "disclosed_packages": 162,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.07333433241295674,
+       "box_v2_pooled_packages": 96,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.07333433241295674,
+       "disclosed_packages": 96,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1497905102515231,
+       "box_v2_pooled_packages": 56,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1497905102515231,
+       "disclosed_packages": 56,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.0231259017125933,
+       "box_v2_pooled_packages": 162,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.0231259017125933,
+       "disclosed_packages": 162,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1500897473933482,
+       "box_v2_pooled_packages": 96,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1500897473933482,
+       "disclosed_packages": 96,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1997484904298684,
+       "box_v2_pooled_packages": 56,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1997484904298684,
+       "disclosed_packages": 56,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.4398885740628434,
+      "p10_high": 0.4404689621223165,
+      "packages": 83,
+      "bias": 0.022382437423554842
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.5371288172848384,
+      "p10_high": 0.5507751074850538,
+      "packages": 79,
+      "bias": -0.0505545875802785
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.3840873699974487,
+      "p10_high": 0.2551650244980639,
+      "packages": 49,
+      "bias": -0.06979501638993063
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.4808895049436732,
+      "p10_high": 0.30986835218641073,
+      "packages": 47,
+      "bias": -0.07702425762845205
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 275,
+      "bias": -0.03915374045123399,
+      "range_95": [
+       -0.11108098805055967,
+       0.039609947916585404
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 127,
+      "bias": 0.05146778937607399,
+      "range_95": [
+       -0.06234711620066578,
+       0.16862358697198512
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 158,
+      "bias": -0.10344192632177351,
+      "range_95": [
+       -0.1670338462680322,
+       -0.03463791955607938
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 58,
+      "bias": -0.058486478377621776,
+      "range_95": [
+       -0.18310924209645857,
+       0.08622674366362257
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 99,
+      "bias": -0.15454915179417905,
+      "range_95": [
+       -0.21440704357747398,
+       -0.08175599925455757
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 35,
+      "bias": -0.1745947837633205,
+      "range_95": [
+       -0.29785529747198664,
+       -0.024805677371157832
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 275,
+      "bias": -0.06121907057022569,
+      "range_95": [
+       -0.16718262113766263,
+       0.05981139482890597
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 127,
+      "bias": -0.03240950485443639,
+      "range_95": [
+       -0.15732775579892164,
+       0.1228680559202125
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 158,
+      "bias": -0.1643580683458652,
+      "range_95": [
+       -0.27485436485026415,
+       -0.03585990086799731
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 58,
+      "bias": -0.14838281844323586,
+      "range_95": [
+       -0.3119290762783351,
+       0.07056389156977244
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 99,
+      "bias": -0.2005311232901572,
+      "range_95": [
+       -0.31285975753700956,
+       -0.06597619869284287
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 35,
+      "bias": -0.2089789404568031,
+      "range_95": [
+       -0.3808872991416091,
+       0.04146175634092358
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 33 packages): oil cum-12 +13.1% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": 0.05146778937607399,
+     "oil_cum12_wells": 127,
+     "oil_cum24_bias": -0.058486478377621776,
+     "oil_cum24_wells": 58
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\BS2_C",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 294
+   }
+  },
+  "BS3_S": {
+   "group": "BS3_S",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.00031086479468254535,
+       "box_v2_pooled_packages": 482,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.00031086479468254535,
+       "disclosed_packages": 482,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.014159633006357425,
+       "box_v2_pooled_packages": 394,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.014159633006357425,
+       "disclosed_packages": 394,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.08905680218982065,
+       "box_v2_pooled_packages": 287,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.08905680218982065,
+       "disclosed_packages": 287,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.05761293976991188,
+       "box_v2_pooled_packages": 482,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.05761293976991188,
+       "disclosed_packages": 482,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.0888687807315192,
+       "box_v2_pooled_packages": 394,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.0888687807315192,
+       "disclosed_packages": 394,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.06664515484204031,
+       "box_v2_pooled_packages": 287,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.06664515484204031,
+       "disclosed_packages": 287,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.427352459490833,
+      "p10_high": 0.4948225904923976,
+      "packages": 335,
+      "bias": 0.0013898825050620424
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.5025923905818276,
+      "p10_high": 0.6224281977336807,
+      "packages": 147,
+      "bias": -0.002148121143937386
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.39707471019706125,
+      "p10_high": 0.5694086291070614,
+      "packages": 263,
+      "bias": 0.028600748349893245
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.49579011367631143,
+      "p10_high": 0.5659748906065101,
+      "packages": 131,
+      "bias": -0.014832835202420586
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 1036,
+      "bias": -0.03272507850717932,
+      "range_95": [
+       -0.07237822592482572,
+       0.010320851988386136
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 265,
+      "bias": -0.035781831085204274,
+      "range_95": [
+       -0.10746809512374321,
+       0.0397359820130822
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 841,
+      "bias": -0.029092176672851466,
+      "range_95": [
+       -0.07055768320154077,
+       0.0151500397134412
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 215,
+      "bias": -0.05149219996754384,
+      "range_95": [
+       -0.12133032835351533,
+       0.017601240406631583
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 596,
+      "bias": -0.14431354018044973,
+      "range_95": [
+       -0.19069473160189726,
+       -0.09217117988718254
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 162,
+      "bias": -0.2252973227938041,
+      "range_95": [
+       -0.29585097684768763,
+       -0.14686830922244432
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 1036,
+      "bias": -0.0028449353217099294,
+      "range_95": [
+       -0.05298446312485071,
+       0.048681112559021786
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 265,
+      "bias": 0.006967202509215342,
+      "range_95": [
+       -0.08167024225692936,
+       0.10719304487702869
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 841,
+      "bias": 0.03506162863907902,
+      "range_95": [
+       -0.02688128134598396,
+       0.096819830250108
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 215,
+      "bias": 0.021878708777942846,
+      "range_95": [
+       -0.08362860879732624,
+       0.1324085399854951
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 596,
+      "bias": -0.11226432796067343,
+      "range_95": [
+       -0.18599622646297928,
+       -0.037766358939073603
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 162,
+      "bias": -0.20962561321498085,
+      "range_95": [
+       -0.32308471286738877,
+       -0.08672429217660821
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 63 packages): oil cum-12 -8.5% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.035781831085204274,
+     "oil_cum12_wells": 265,
+     "oil_cum24_bias": -0.05149219996754384,
+     "oil_cum24_wells": 215
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\BS3_S",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 1075
+   }
+  },
+  "BS3_C": {
+   "group": "BS3_C",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.07100864040459093,
+       "box_v2_pooled_packages": 393,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.07100864040459093,
+       "disclosed_packages": 393,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.10124185586845515,
+       "box_v2_pooled_packages": 285,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.10124185586845515,
+       "disclosed_packages": 285,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.12411576729888738,
+       "box_v2_pooled_packages": 164,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.12411576729888738,
+       "disclosed_packages": 164,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.05107280932780884,
+       "box_v2_pooled_packages": 393,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.05107280932780884,
+       "disclosed_packages": 393,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.038440737178917064,
+       "box_v2_pooled_packages": 285,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.038440737178917064,
+       "disclosed_packages": 285,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.01328012228740546,
+       "box_v2_pooled_packages": 164,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.01328012228740546,
+       "disclosed_packages": 164,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.4779568871412486,
+      "p10_high": 0.38108187672284066,
+      "packages": 210,
+      "bias": -0.07569875302137508
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.533115743501935,
+      "p10_high": 0.574304591196278,
+      "packages": 183,
+      "bias": -0.06562654395910095
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.477830404757678,
+      "p10_high": 0.2002046786211575,
+      "packages": 130,
+      "bias": -0.14936705006824663
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.5058488084098255,
+      "p10_high": 0.5970562208450856,
+      "packages": 155,
+      "bias": -0.0608787897654042
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 803,
+      "bias": -0.13701834873982077,
+      "range_95": [
+       -0.1846957085083165,
+       -0.08523964070279055
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 393,
+      "bias": -0.14217764710458092,
+      "range_95": [
+       -0.20878203559290973,
+       -0.07302861844378822
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 572,
+      "bias": -0.1775217156617146,
+      "range_95": [
+       -0.2161383602527962,
+       -0.13419307771951186
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 306,
+      "bias": -0.1766257990476564,
+      "range_95": [
+       -0.23728680967938867,
+       -0.10840372762181166
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 324,
+      "bias": -0.20942446735648268,
+      "range_95": [
+       -0.2641885256817992,
+       -0.1475512131718234
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 181,
+      "bias": -0.2194916199812682,
+      "range_95": [
+       -0.2937575558420976,
+       -0.13349345090837716
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 803,
+      "bias": -0.09471786113737868,
+      "range_95": [
+       -0.1706598330643456,
+       -0.012472106981233131
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 393,
+      "bias": -0.06465804935965258,
+      "range_95": [
+       -0.1638303878055374,
+       0.03782546564201284
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 572,
+      "bias": -0.11895803608462174,
+      "range_95": [
+       -0.18457631747932593,
+       -0.04555149764678978
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 306,
+      "bias": -0.09475021051854604,
+      "range_95": [
+       -0.20079651154130942,
+       0.02785663906472617
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 324,
+      "bias": -0.12966755898951354,
+      "range_95": [
+       -0.2077696589085998,
+       -0.044054952957063104
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 181,
+      "bias": -0.12175007498559898,
+      "range_95": [
+       -0.22162686805220902,
+       0.005182706001491808
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 81 packages): oil cum-12 -2.2% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.14217764710458092,
+     "oil_cum12_wells": 393,
+     "oil_cum24_bias": -0.1766257990476564,
+     "oil_cum24_wells": 306
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\BS3_C",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 864
+   }
+  },
+  "WCB_2": {
+   "group": "WCB_2",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.027365601533674778,
+       "box_v2_pooled_packages": 247,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.027365601533674778,
+       "disclosed_packages": 247,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.06988376565691938,
+       "box_v2_pooled_packages": 192,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.06988376565691938,
+       "disclosed_packages": 192,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1256631871555151,
+       "box_v2_pooled_packages": 123,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1256631871555151,
+       "disclosed_packages": 123,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.023453898980176056,
+       "box_v2_pooled_packages": 247,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.023453898980176056,
+       "disclosed_packages": 247,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.09902189378712006,
+       "box_v2_pooled_packages": 192,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.09902189378712006,
+       "disclosed_packages": 192,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.013750600298233433,
+       "box_v2_pooled_packages": 123,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.013750600298233433,
+       "disclosed_packages": 123,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.437018176399884,
+      "p10_high": 0.34692985632527057,
+      "packages": 120,
+      "bias": -0.023746233005672135
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.42870922445164344,
+      "p10_high": 0.31527329245752267,
+      "packages": 127,
+      "bias": -0.030785477308165443
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.4535079371366483,
+      "p10_high": 0.30613489793590154,
+      "packages": 91,
+      "bias": -0.08843132073073323
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.41826600867532393,
+      "p10_high": 0.28698094121000506,
+      "packages": 101,
+      "bias": -0.05317260217457227
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 482,
+      "bias": -0.06484396097485134,
+      "range_95": [
+       -0.11541755021220636,
+       -0.01474448269579464
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 239,
+      "bias": -0.05623947475665714,
+      "range_95": [
+       -0.12062431791050031,
+       0.02239490299677831
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 365,
+      "bias": -0.10705906346517868,
+      "range_95": [
+       -0.15911790424589742,
+       -0.05447879033173488
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 187,
+      "bias": -0.1114811443857785,
+      "range_95": [
+       -0.17019251698440047,
+       -0.0379697979064061
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 209,
+      "bias": -0.17508091408747284,
+      "range_95": [
+       -0.2299165165398536,
+       -0.1189945403937161
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 113,
+      "bias": -0.1370527520175816,
+      "range_95": [
+       -0.20124340528861706,
+       -0.058686277632978456
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 482,
+      "bias": -0.0038855196454938845,
+      "range_95": [
+       -0.06194023257337835,
+       0.05718059361032928
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 239,
+      "bias": 0.05316608750373675,
+      "range_95": [
+       -0.035209514392048696,
+       0.1367798388715992
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 365,
+      "bias": 0.0586999655674425,
+      "range_95": [
+       -0.013588443935868387,
+       0.13975498881208664
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 187,
+      "bias": 0.10236246667761129,
+      "range_95": [
+       -0.0028990852694377933,
+       0.20835453792231526
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 209,
+      "bias": 0.048684284467118255,
+      "range_95": [
+       -0.0465424940781943,
+       0.14796161387512405
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 113,
+      "bias": 0.11446901336559301,
+      "range_95": [
+       -0.020910119336432092,
+       0.2474735722690827
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 39 packages): oil cum-12 +2.1% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.05623947475665714,
+     "oil_cum12_wells": 239,
+     "oil_cum24_bias": -0.1114811443857785,
+     "oil_cum24_wells": 187
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\WCB_2",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 508
+   }
+  },
+  "BS1_S": {
+   "group": "BS1_S",
+   "spec": "box_v2s_r2",
+   "tier": "provisional",
+   "haircut": null,
+   "disclosure": {
+    "hindcast_bias": {
+     "oil": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.07942811076740018,
+       "box_v2_pooled_packages": 223,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.07942811076740018,
+       "disclosed_packages": 223,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.12615187200639155,
+       "box_v2_pooled_packages": 143,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.12615187200639155,
+       "disclosed_packages": 143,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.15315602541977477,
+       "box_v2_pooled_packages": 65,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.15315602541977477,
+       "disclosed_packages": 65,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     },
+     "gas": {
+      "12": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": 0.003584584914097985,
+       "box_v2_pooled_packages": 223,
+       "haircut_factor": 1.0,
+       "disclosed_bias": 0.003584584914097985,
+       "disclosed_packages": 223,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "24": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.05275540253953453,
+       "box_v2_pooled_packages": 143,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.05275540253953453,
+       "disclosed_packages": 143,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "36": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": -0.1919808176187236,
+       "box_v2_pooled_packages": 65,
+       "haircut_factor": 1.0,
+       "disclosed_bias": -0.1919808176187236,
+       "disclosed_packages": 65,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": true
+      },
+      "48": {
+       "record_variant": "box_v2s_r2",
+       "box_v2_pooled_bias": null,
+       "box_v2_pooled_packages": 0,
+       "haircut_factor": 1.0,
+       "disclosed_bias": null,
+       "disclosed_packages": 0,
+       "disclosed_basis": "r2 selection x proximity factor, tuning packages pooled over cutoffs 2019-2024 (step 16c)",
+       "holdout_bias": null,
+       "holdout_packages": null,
+       "d99_judged": false
+      }
+     }
+    },
+    "radius_ranges": {
+     "5 mi ring|cum-12": {
+      "p90_low": -0.4673625997039863,
+      "p10_high": 0.3119996782525991,
+      "packages": 111,
+      "bias": -0.09690618934290876
+     },
+     "past 5 mi|cum-12": {
+      "p90_low": -0.7184479345337078,
+      "p10_high": 0.555161970159594,
+      "packages": 112,
+      "bias": -0.062106086464887224
+     },
+     "5 mi ring|cum-24": {
+      "p90_low": -0.5014754168757889,
+      "p10_high": 0.24826534201404754,
+      "packages": 59,
+      "bias": -0.101920200157837
+     },
+     "past 5 mi|cum-24": {
+      "p90_low": -0.644886491586896,
+      "p10_high": 0.2909814376004946,
+      "packages": 84,
+      "bias": -0.14317173675716205
+     }
+    },
+    "radius_ranges_basis": "tuning packages, r2 + proximity (step 16c)",
+    "tier": "provisional",
+    "label": "D121 r2 selection, provisional",
+    "holdout": "none under r2 (D121: owner's-judgment selection; tuning-only evidence, the 2026 cohort is the confirmation)",
+    "lead": {
+     "label": "tuning (r2 + proximity)",
+     "scope": "all tuning wells"
+    },
+    "lines": [
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 466,
+      "bias": -0.1207991067405314,
+      "range_95": [
+       -0.1821914201642163,
+       -0.06225533553498633
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-12",
+      "packages": 190,
+      "bias": -0.13106334995159785,
+      "range_95": [
+       -0.2307603779600723,
+       -0.02890793838111422
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 283,
+      "bias": -0.13491960737769348,
+      "range_95": [
+       -0.2053686370897626,
+       -0.057959049881085134
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-24",
+      "packages": 129,
+      "bias": -0.14535609034649088,
+      "range_95": [
+       -0.23981980438469847,
+       -0.0365459562247647
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 132,
+      "bias": -0.22157401881052974,
+      "range_95": [
+       -0.32242766518299526,
+       -0.12600744007321565
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "oil",
+      "horizon": "cum-36",
+      "packages": 57,
+      "bias": -0.2747907888795379,
+      "range_95": [
+       -0.40286747171445364,
+       -0.1620754428925668
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 466,
+      "bias": -0.024613651290778304,
+      "range_95": [
+       -0.09013530762333048,
+       0.05158232462248733
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-12",
+      "packages": 190,
+      "bias": -0.04803234967799841,
+      "range_95": [
+       -0.19712792429567094,
+       0.1020027483256016
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 283,
+      "bias": -0.09205494424000205,
+      "range_95": [
+       -0.1915769041649954,
+       0.0013314348668120653
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-24",
+      "packages": 129,
+      "bias": -0.190740116661408,
+      "range_95": [
+       -0.3287258185678474,
+       -0.06015647614093521
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "all tuning wells",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 132,
+      "bias": -0.39229368455061253,
+      "range_95": [
+       -0.49839292143051867,
+       -0.2705336235069847
+      ]
+     },
+     {
+      "label": "tuning (r2 + proximity)",
+      "scope": "thin control (< 3 local wells within 3 mi)",
+      "stream": "gas",
+      "horizon": "cum-36",
+      "packages": 57,
+      "bias": -0.45789687246899424,
+      "range_95": [
+       -0.5563493000274123,
+       -0.3571246644454478
+      ]
+     }
+    ],
+    "latest_vintage_text": "latest vintage (2024 cutoff cohort, 48 packages): oil cum-12 -6.4% vs forecast",
+    "thin_control": {
+     "oil_cum12_bias": -0.13106334995159785,
+     "oil_cum12_wells": 190,
+     "oil_cum24_bias": -0.14535609034649088,
+     "oil_cum24_wells": 129
+    },
+    "selection": {
+     "rules": "same bench > distance; lateral = Cui translation, analogs 5,000-15,000 ft; per ring give up the count (>= 5), then admit standalone wells; measured spacing (D119)",
+     "decision": "D121"
+    },
+    "error_convention": "actual / forecast - 1 (negative = forecast HIGH)"
+   },
+   "source": {
+    "run_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\step16c\\BS1_S",
+    "fold": "analog",
+    "head": "be5880a220ee96af46a0570ecdb77d7441276707",
+    "frozen_sha": "109f80540284426fde3c5fa0f44c2788d18e605c",
+    "n_view_rows": 509
+   }
+  }
+ }
+}
