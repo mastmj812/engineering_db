@@ -39,7 +39,6 @@ from boxfit.tc.fit_p50 import fit_p50_series
 from box import acceptance as ac
 from box import analog as an
 from box import edge_gap as eg
-from box import lateral as lat_eff
 from box import strike as stk
 from box import tc_curve as tc
 
@@ -270,9 +269,12 @@ _STATE: dict[str, Any] = {}
 
 def fit_location(loc: dict[str, Any]) -> dict[str, Any]:
     """box_v2 at one location (box.analog.predict_location_v2's box_v2 branch, unchanged): returns provenance, per-stream fits,
-    lateral multiplier and 600 uptime-free months (x multiplier, before the haircut)."""
+    lateral multiplier and 600 uptime-free months (x multiplier, before the haircut). `_STATE["rules"]` (step 16d) = the
+    selection rules (default the record; D121 builds pass box.production16.RULES with a measured-spacing pool), and the
+    lateral multiplier is box.analog.lateral_multiplier (Cui when short or when the rules translate / relax the lateral)."""
     pool2, tree, cfg = _STATE["pool2"], _STATE["tree"], _STATE["cfg"]
-    idx, r, flags, mode = an.select_cohort_v2(pool2, tree, cfg, loc, bench=_STATE.get("bench", an.BENCH))
+    idx, r, flags, mode = an.select_cohort_v2(pool2, tree, cfg, loc, bench=_STATE.get("bench", an.BENCH),
+                                              rules=_STATE.get("rules") or an.RECORD_RULES)
     out: dict[str, Any] = {"key": loc["api10"], "radius_mi": float(r), "n_analogs": len(idx), "search_mode": mode, "flags": list(flags),
                            "short_lateral": float(loc["lateral_ft"]) < an.SHORT_LAT_FT}
     if len(idx) < 3:
@@ -282,8 +284,7 @@ def fit_location(loc: dict[str, Any]) -> dict[str, Any]:
     if not fits["oil"]:
         out["flags"].append("oil P50 fit failed")
         return out
-    L = float(loc["lateral_ft"])
-    mult = L / 1000.0 * (lat_eff.relative(L, [pool2["lateral"][i] for i in idx]) if L < an.SHORT_LAT_FT else 1.0)
+    mult = an.lateral_multiplier(float(loc["lateral_ft"]), [pool2["lateral"][i] for i in idx], flags)
     out.update({"lateral_mult": mult, "analogs": _analog_rows(pool2, idx, loc, mode), "streams": {}})
     for s in STREAMS:
         if fits[s]:
@@ -299,11 +300,12 @@ def init_state(state: dict[str, Any]) -> None:
 
 
 def fit_many(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cfg: Any, workers: int,
-             bench: str = an.BENCH) -> list[dict[str, Any]]:
-    """`bench` = the deal-intake bench label passed to selection (the harness's BENCH_SPECS[...]["label"])."""
+             bench: str = an.BENCH, rules: an.Rules | None = None) -> list[dict[str, Any]]:
+    """`bench` = the deal-intake bench label passed to selection (the harness's BENCH_SPECS[...]["label"]); `rules` = the
+    selection rules (None = the record)."""
     from concurrent.futures import ProcessPoolExecutor
 
-    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None, "bench": bench}
+    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None, "bench": bench, "rules": rules}
     if workers == 1:
         init_state(state)
         return [fit_location(x) for x in locs]

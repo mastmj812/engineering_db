@@ -1,0 +1,24 @@
+{
+  "run_id": 17,
+  "data_through": "2026-07-01",
+  "report_version": "2026Q3",
+  "identity_n": 51419,
+  "identity_oil_eur": 28510180469.727646,
+  "built": "2026-10-24 01:27 UTC",
+  "n_puds": 51419,
+  "n_links": 331392,
+  "identity_ok": true,
+  "n_precedent_pairs": 113,
+  "seconds": 594,
+  "outcomes": {
+    "as_is_unexposed": 26189,
+    "haircut": 9779,
+    "as_is_single_parent": 7002,
+    "no_forecast_package": 4580,
+    "no_forecast_precedent": 3869
+  },
+  "oil_mmbbl_before": 28510.180469727467,
+  "oil_mmbbl_after": 22623.314714986805,
+  "precedent_source": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\runs\\prox",
+  "measurement": "box/prox_pud_report step 4 on a named run (scripts/box_step16d_prox.py)"
+}

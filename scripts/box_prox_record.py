@@ -68,16 +68,17 @@ def _copy(cur: Any, table: str, cols: list[str], df: pd.DataFrame) -> None:
 
 def store(a: argparse.Namespace) -> int:
     t0 = time.time()
-    dirty = _git("status", "--porcelain", "--", *CODE, str(OUTCOMES), str(HAIRCUT))
+    outcomes = a.outcomes
+    dirty = _git("status", "--porcelain", "--", *CODE, str(outcomes), str(HAIRCUT))
     if dirty and not a.allow_dirty:
         sys.exit(f"code / inputs not committed:\n{dirty}")
     code_sha = _git("rev-parse", "HEAD")
     links_pkl = a.runs / "pud_links.pkl"
-    dig = {"outcomes": prc.sha256(OUTCOMES), "haircut_table": prc.sha256(HAIRCUT), "pud_links": prc.sha256(links_pkl)}
+    dig = {"outcomes": prc.sha256(outcomes), "haircut_table": prc.sha256(HAIRCUT), "pud_links": prc.sha256(links_pkl)}
     table_ref = f"haircut_table sha256:{dig['haircut_table'][:16]} prereg:{prc.PREREG_COMMIT} outcomes sha256:{dig['outcomes'][:16]}"
     with open(links_pkl, "rb") as f:
         links = pickle.load(f)
-    P = prc.prepare(pd.read_csv(OUTCOMES), links, table_ref)
+    P = prc.prepare(pd.read_csv(outcomes), links, table_ref)
     prox, parents, exp = P["prox"], P["parents"], P["expected"]
     print(f"prepared {len(prox):,} proximity rows, {len(parents):,} parents ({time.time() - t0:.0f} s); digests {dig}", flush=True)
 
@@ -231,6 +232,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("store")
     s.add_argument("--src-run", type=int, default=10)
+    s.add_argument("--outcomes", type=Path, default=OUTCOMES, help="the measured PUD outcomes (step 16d: re-measured for the new base run)")
     s.add_argument("--runs", type=Path, default=Path("runs") / "prox")
     s.add_argument("--commit", action="store_true")
     s.add_argument("--record", action="store_true")

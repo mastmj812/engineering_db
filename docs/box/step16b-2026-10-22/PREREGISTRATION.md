@@ -147,12 +147,12 @@ per-cutoff cells; per group; radius-class distribution per variant; the Cui tran
 PUD-level EUR change per variant on run 10's production universe; the BS1_S curve-construction offset (the record P50's month
 1–12 vs its own cohort's actual cum-12, +13 to +16 % on BS1_S), diagnosed on every group.
 
-## 8. Open for gate 16b (Michael)
+## 8. Gate 16b — CLOSED 2026-10-22 (Michael, D120)
 
 Settled in the revision: the priority order (§1), the translate rule and its 5,000–15,000 ft range (§2), the Cui-vs-linear check
-as condition 6 (§6b). Still open:
-1. `count_floor` 5.
-2. The WCA / BS2_S haircut source (§4: `box_v2s` tuning cells only).
-3. The validated keep-rule of §4 and the one-variant-for-all-provisional rule of §5.
+as condition 6 (§6b). Confirmed at the gate: `count_floor` 5; the WCA / BS2_S walk-forward haircut from the `box_v2s` TUNING cells
+only (§4); the validated keep-rule (§4) and one variant for all eight provisional groups (§5).
 
-Frozen SHA (stamped at gate 16b): _pending_.
+**Frozen SHA: `109f80540284426fde3c5fa0f44c2788d18e605c`** (main, merge of eng_db #188). Every 16c run records its own SHA; a run
+whose `box/`, `scripts/` or `dealintake/` differ from this SHA is not a 16c score. The §6 hindcast and the §5 off-local inputs are
+code written in 16c after the freeze, checked against §5 / §6 as written here, before they run.
