@@ -58,7 +58,14 @@ def cmd_up(_: argparse.Namespace) -> int:
     exists = subprocess.run(["docker", "inspect", NAME], capture_output=True, text=True, check=False).returncode == 0
     if not exists:
         _run(["docker", "run", "-d", "--name", NAME, "-e", f"POSTGRES_PASSWORD={PASSWORD}", "-p", f"{PORT}:5432", IMAGE])
-    sql = ("CREATE EXTENSION IF NOT EXISTS postgis;\n"
+    # PostGIS in `extensions`, as on live: the store SQL qualifies extensions.ST_* and the dumped DDL uses extensions.geometry
+    # (the image installs PostGIS + topology / tiger into public at init; on a fresh, empty container move it: drop and re-create)
+    sql = ("CREATE SCHEMA IF NOT EXISTS extensions;\n"
+           "DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace "
+           "WHERE e.extname = 'postgis' AND n.nspname = 'extensions') THEN "
+           "DROP EXTENSION IF EXISTS postgis_tiger_geocoder CASCADE; DROP EXTENSION IF EXISTS postgis_topology CASCADE; "
+           "DROP EXTENSION IF EXISTS postgis CASCADE; CREATE EXTENSION postgis SCHEMA extensions; END IF; END$$;\n"
+           "ALTER DATABASE postgres SET search_path = \"$user\", public, extensions;\n"
            + "".join(f"DO $$BEGIN CREATE ROLE {r} NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END$$;\n" for r in ROLES))
     # the image's entrypoint runs a temporary server for initdb, then restarts it: retry until a real session succeeds
     for _i in range(60):
@@ -80,12 +87,11 @@ def cmd_seed(_: argparse.Namespace) -> int:
              env=_live_env())
         ddl = PG17_ONLY.sub("", schema.read_text(encoding="utf-8"))
         ddl = re.sub(r"^CREATE SCHEMA (box|box_econ);$", r"CREATE SCHEMA IF NOT EXISTS \1;", ddl, flags=re.MULTILINE)
-        ddl = ddl.replace("extensions.", "public.")  # live keeps PostGIS in `extensions`; the container has it in public
         _run([str(PG_BIN / "psql.exe"), "-v", "ON_ERROR_STOP=1", "-q"], env=_box_env(), stdin=ddl)
         data = Path(td) / "data.sql"
         tabs = [a for t in SEED_TABLES for a in ("-t", f"box.{t}")]
         _run([str(PG_BIN / "pg_dump.exe"), "--data-only", "--no-owner", "--no-privileges", *tabs, "-f", str(data)], env=_live_env())
-        dat = PG17_ONLY.sub("", data.read_text(encoding="utf-8")).replace("extensions.", "public.")
+        dat = PG17_ONLY.sub("", data.read_text(encoding="utf-8"))
         _run([str(PG_BIN / "psql.exe"), "-v", "ON_ERROR_STOP=1", "-q", "-c", "SET session_replication_role = replica", "-f", "-"],
              env=_box_env(), stdin=dat)
     print("seeded: box + box_econ schema; data for " + ", ".join(SEED_TABLES))
