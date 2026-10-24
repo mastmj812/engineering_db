@@ -686,11 +686,23 @@ def cmd_store(a: argparse.Namespace) -> int:
     return 0
 
 
+def _haircut_clause(b: str, x: dict[str, Any]) -> str:
+    if x["spec"].startswith(p16.SELECTION):  # D121 r2: read the stored haircut, not the spec name (r2 specs never equal box_v2_wf)
+        h = x.get("haircut") or {}
+        if str(h.get("method", "none")).startswith("none"):
+            return " raw, no haircut (D97)" if b == "WCXY_WCA1" else " raw, no haircut"
+        on = [s for s in pr.STREAMS if (h.get(s) or {}).get("method") != p16.STREAM_NONE]
+        off = [s for s in pr.STREAMS if s not in on]
+        return (f" x walk-forward haircut on {' + '.join(on)} (r2 + proximity tuning cells, D120 §4"
+                + (f"; {' + '.join(off)} none, D122" if off else "") + ")")
+    return (" on its own D102 haircut" if b == "BS2_S" else " x D62 haircut" if x["spec"] == "box_v2_wf" else
+            " raw, no haircut (D97)" if b == "WCXY_WCA1" else " raw, no haircut")
+
+
 def run_notes(run: dict[str, Any]) -> str:
     bb = run.get("by_bench")
     if bb:  # step 9c: one clause per group (D103: run-level spec box_v2_wf; WCXY raw box_v2 per D97); run 9 adds the tier
-        per = "; ".join(f"{b}: {x['spec']}" + (" on its own D102 haircut" if b == "BS2_S" else " x D62 haircut" if x["spec"] == "box_v2_wf" else
-                                                " raw, no haircut (D97)" if b == "WCXY_WCA1" else " raw, no haircut")
+        per = "; ".join(f"{b}: {x['spec']}" + _haircut_clause(b, x)
                         + (" - PROVISIONAL (D105, covered_provisional)" if x.get("tier") == "provisional" else "") for b, x in bb.items())
         return (f"covers {', '.join(bb)} ({per}); haircuts applied by the D92 C1 rate shape; uptime-free volumes; F(k) per group published "
                 "not applied (D63); no water (D72); no economics; per-group haircut / F(k) / disclosure under by_bench")

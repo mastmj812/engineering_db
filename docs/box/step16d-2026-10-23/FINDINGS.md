@@ -89,3 +89,8 @@ priced or not. Run 14 pruned 2026-10-24 with `--apply --include-priced` (798 s, 
 deleted first, then the run. Checked live after: `box.forecast_run` = run 19 only (record), 121,696 PUDs, 42,970 oil / gas / water
 streams, oil 22,623.3 MMbbl, `box_econ.box_pud_econ` empty. Steven re-prices run 19.
 
+
+**Run 19 notes corrected 2026-10-24** (Michael-authorized one-row UPDATE of `box.forecast_run.notes`, guarded on the old text). The
+free-text clause called WCA "raw, no haircut" and BS2_S "on its own D102 haircut": `run_notes` keyed the wording on the spec name, and
+r2 specs never equal `box_v2_wf`. The volumes and the per-bench `haircut` record were always right (WCA oil haircut, gas none per D122;
+BS2_S oil + gas). The text now reads both clauses from the stored haircut, and a test pins it.

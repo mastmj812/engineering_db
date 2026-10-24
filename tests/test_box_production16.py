@@ -134,3 +134,21 @@ def test_d122_wca_gas_carries_no_haircut():
 def test_code_key_tracks_build_code_only():
     k = bpr.code_key()
     assert len(k.split("-")[0]) == 16 and "scripts/box_pud_run.py" in bpr.BUILD_CODE and "docs" not in bpr.BUILD_CODE
+
+
+def test_run_notes_reads_the_r2_haircut_not_the_spec_name():
+    """r2 specs (box_v2s_r2_wf) never equal box_v2_wf: the clause comes from the stored haircut (run 19 called WCA 'raw' before this)."""
+    hc = {"method": pr.HAIRCUT_METHOD, "oil": {}, "gas": {"method": p16.STREAM_NONE}}
+    both = {"method": pr.HAIRCUT_METHOD, "oil": {}, "gas": {}}
+    none = {"method": p16.haircut_method_none("WCB_1")}
+    run = {"by_bench": {"WCA": {"spec": p16.spec_label("WCA"), "haircut": hc, "tier": "validated"},
+                        "BS2_S": {"spec": p16.spec_label("BS2_S"), "haircut": both, "tier": "validated"},
+                        "WCB_1": {"spec": p16.spec_label("WCB_1"), "haircut": none, "tier": "validated"},
+                        "BS1_S": {"spec": p16.spec_label("BS1_S"), "haircut": {"method": p16.haircut_method_none("BS1_S")}, "tier": "provisional"}}}
+    n = bpr.run_notes(run)
+    assert "WCA: box_v2s_r2_wf x walk-forward haircut on oil (r2 + proximity tuning cells, D120 §4; gas none, D122)" in n
+    assert "BS2_S: box_v2s_r2_wf x walk-forward haircut on oil + gas (r2 + proximity tuning cells, D120 §4)" in n
+    assert "WCB_1: box_v2s_r2 raw, no haircut;" in n and "BS1_S: box_v2s_r2 raw, no haircut - PROVISIONAL" in n
+    assert "D102" not in n and "D62 haircut" not in n
+    legacy = bpr.run_notes({"by_bench": {"WCA": {"spec": "box_v2_wf"}, "BS2_S": {"spec": "box_v2_wf"}, "WCXY_WCA1": {"spec": "box_v2"}}})
+    assert "WCA: box_v2_wf x D62 haircut" in legacy and "BS2_S: box_v2_wf on its own D102 haircut" in legacy and "(D97)" in legacy
