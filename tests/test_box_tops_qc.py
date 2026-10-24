@@ -23,13 +23,16 @@ def _stack(gap: float = 100.0) -> dict[str, tq.Grid]:
     return {s: tq.Grid(s, XS, YS, _plane(8_000.0 + i * gap)) for i, s in enumerate(tq.STACK)}
 
 
-def test_tag_tops_are_adjacent_stack_pairs_matching_extent_grids():
-    for tag, top in tq.TAG_TOP.items():
-        assert top in tq.STACK and tq.tag_base(tag) == tq.STACK[tq.STACK.index(top) + 1]
-    for pool, (top, base) in pkg.GRIDS.items():
-        if pool in tq.TAG_TOP:
-            assert (tq.TAG_TOP[pool], tq.tag_base(pool)) == (top, base), pool
-    assert tq.TAG_TOP["WCA_1"] == tq.TAG_TOP["WCA_2"] == pkg.GRIDS["WCA"][0]
+def test_tag_intervals_run_top_down_and_follow_the_geology_decisions():
+    for tag, (top, base) in tq.TAG_INTERVAL.items():
+        assert tq.STACK.index(top) < tq.STACK.index(base), tag
+        assert tq.TAG_TOP[tag] == top and tq.tag_base(tag) == base
+    for pool, (top, base) in pkg.GRIDS.items():   # Bone Spring / Avalon / WCB_1 still match the BOX map context
+        if pool in tq.TAG_INTERVAL and pool not in ("WCB_2", "WCC", "WCD"):
+            assert tq.TAG_INTERVAL[pool] == (top, base), pool
+    # 2026-10-22: one WCA bench XY -> B1 (rule A); WCC = his B2 -> C (relabel); WCD = his C -> D (held)
+    assert tq.TAG_INTERVAL["WCXY"] == tq.TAG_INTERVAL["WCA_1"] == tq.TAG_INTERVAL["WCA_2"] == ("WOLFCAMP_XY", "WOLFCAMP-B1")
+    assert tq.TAG_INTERVAL["WCC"] == ("WOLFCAMP-B2", "WOLFCAMP-C") and tq.TAG_INTERVAL["WCD"] == ("WOLFCAMP-C", "WOLFCAMP_D")
 
 
 def test_bilinear_sampling_is_exact_on_a_plane():
@@ -116,8 +119,12 @@ def test_geology_rules():
     assert r("BS3_S", "Pecos", "agree") == "agree"             # 3BSPGS -> WOLFCAMP_XY: picks exist
     assert r("AVA_2", "Pecos", "agree") == "no_control"        # top = AVALON2
     assert r("AVA_0", "Pecos", "agree") == "no_control"        # base = AVALON2
-    assert r("WCC", "Reeves", "shallow") == "surface_suspect"  # top suspect
-    assert r("WCB_2", "Reeves", "deep") == "surface_suspect"   # base suspect, deep call untrusted
+    assert r("WCC", "Reeves", "shallow") == "shallow"          # relabelled to B2 -> C, scored (2026-10-22)
+    assert r("WCB_2", "Reeves", "deep") == "deep"              # C is no longer suspect
+    assert r("WCD", "Reeves", "agree") == "held"               # log review
+    assert r("WCD", "Pecos", "agree") == "held"                # held wins over no control
+    assert tq.rule_b_pending("BS3_S", "Lea") and tq.rule_b_pending("WCA_1", "Ward")
+    assert not tq.rule_b_pending("BS3_S", "Reeves") and not tq.rule_b_pending("WCB_1", "Lea")
     assert r("WCB_2", "Reeves", "shallow") == "shallow"        # top (B2) is fine
     assert r("WCA_1", "Reeves", "shallow") == "shallow"
     assert r("WDFD", None, "unmeasured") == "unmeasured"

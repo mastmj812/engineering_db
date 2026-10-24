@@ -32,7 +32,7 @@ class FakeNarvi:
     def __init__(self, xs: dict[str, list[float]], save_xs: dict[str, list[float]] | None = None) -> None:
         self.xs, self.save_xs, self.calls = xs, save_xs, []
 
-    def generate(self, parcel, zones, *, setback_ft, spacing_ft, azimuth_deg):
+    def generate(self, parcel, zones, *, setback_ft, spacing_ft, azimuth_deg, anchor=None):
         self.calls.append(zones)
         src = self.save_xs if (self.save_xs and len(self.calls) > 1 and len(zones) > 1) else self.xs
         feats = []
@@ -160,7 +160,7 @@ class LatticeNarvi:
     def __init__(self) -> None:
         self.calls: list[list[dict[str, Any]]] = []
 
-    def generate(self, parcel, zones, *, setback_ft, spacing_ft, azimuth_deg):
+    def generate(self, parcel, zones, *, setback_ft, spacing_ft, azimuth_deg, anchor=None):
         self.calls.append(zones)
         feats = []
         for z in zones:

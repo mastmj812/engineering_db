@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 import statistics
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from decimal import Decimal
@@ -50,7 +50,7 @@ from dealintake import (
 )
 from dealintake import warehouse as wh
 from dealintake.clients.anduin import Anduin, AnduinError
-from dealintake.clients.narvi import Narvi, legs
+from dealintake.clients.narvi import Narvi, wells
 from dealintake.config import Config
 from dealintake.decline import effective_from_nominal
 from dealintake.geo import (
@@ -61,11 +61,11 @@ from dealintake.geo import (
     gunbarrel_frame,
     long_axis_azimuth,
     mean_axial_azimuth,
+    narvi_azimuth,
     planned_lateral,
     stick_azimuth,
     stick_length_ft,
     stick_relation,
-    true_to_grid,
 )
 from dealintake.proximity import ProximityRule
 from dealintake.render.tables import p_value
@@ -109,7 +109,8 @@ def write_json(path: Path, obj: Any) -> None:
 
 # Reviewer keys that describe a PATTERN to place — any of them means "generate".
 PATTERN_KEYS = ("tvd_ft", "spacing_ft", "n_wells", "keep_side",
-                "drop_west_rows", "drop_east_rows", "drop_north_rows", "drop_south_rows", "winerack")
+                "drop_west_rows", "drop_east_rows", "drop_north_rows", "drop_south_rows", "winerack", "well_type",
+                "pin_offset_ft")
 
 
 def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
@@ -130,8 +131,29 @@ def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
 
 def staggered(opts: dict[str, Any]) -> bool:
     """Benches are placed together, staggered, unless the reviewer set
-    `winerack: false` (default flipped to stagger — Michael 2026-10-08)."""
-    return opts.get("winerack", True) is not False
+    `winerack: false` (default flipped to stagger — Michael 2026-10-08). A
+    U-turn bench is always placed on its own: the stagger pins one leg
+    position, a U-turn has two. So is a bench the reviewer pinned
+    (`pin_offset_ft`): his row position wins over the stagger's."""
+    return (opts.get("winerack", True) is not False and opts.get("well_type") != "uturn"
+            and opts.get("pin_offset_ft") is None)
+
+
+def stagger_lead(bench_opts: dict[str, dict[str, Any]]) -> str | None:
+    """The bench the reviewer named `stagger_lead: true` (it keeps its own layout), or None."""
+    return next((b for b, o in bench_opts.items() if (o or {}).get("stagger_lead")), None)
+
+
+def zone(bench: str, tvd_ft: float, spacing_ft: float, opts: dict[str, Any]) -> dict[str, Any]:
+    """One narvi /api/generate zone for a bench: well_type and the reviewer's row
+    pin (`pin_offset_ft` -> narvi offset_ft: the lattice runs through that
+    gunbarrel offset, rule-16 frame, origin = unit centroid) only when set."""
+    z: dict[str, Any] = {"formation": bench, "target_tvd_ft": tvd_ft, "spacing_ft": spacing_ft}
+    if opts.get("well_type"):
+        z["well_type"] = opts["well_type"]
+    if opts.get("pin_offset_ft") is not None:
+        z["offset_ft"] = float(opts["pin_offset_ft"])
+    return z
 
 
 def prox_enabled(opts: dict[str, Any]) -> bool:
@@ -140,15 +162,19 @@ def prox_enabled(opts: dict[str, Any]) -> bool:
 
 
 def leg_rows(lg: list[dict[str, Any]], project: Callable[[Any], tuple[float, float]],
-             prox: ProximityRule | None, tvd_ft: float | None) -> list[dict[str, Any]]:
-    """Generated legs -> row-rule rows (offset in the rule-16 frame, lateral,
-    the leg, and the PDP-proximity test at the bench's landing TVD)."""
+             prox: ProximityRule | None, tvd_ft: float | None, ignore: Sequence[str] = ()) -> list[dict[str, Any]]:
+    """Generated WELLS (clients.narvi.wells) -> row-rule rows: offset in the
+    rule-16 frame (a U-turn's = its legs' mean; `leg_offsets_ft` each leg's),
+    the well's completed lateral, the well, and the PDP-proximity test at the
+    bench's landing TVD (`ignore` = reviewer-exempted producer api10s)."""
     rows = []
     for leg in lg:
+        parts = list(getattr(leg["geom"], "geoms", [leg["geom"]]))
         r: dict[str, Any] = {"offset_ft": round(project(leg["geom"])[0]),
+                             "leg_offsets_ft": [round(project(g)[0]) for g in parts],
                              "lateral_ft": round(float(leg.get("completed_lateral_ft") or 0)), "leg": leg}
         if prox is not None and tvd_ft is not None:
-            r["proximity"] = prox.check(leg["geom"], float(tvd_ft))
+            r["proximity"] = prox.check(leg["geom"], float(tvd_ft), ignore)
         rows.append(r)
     return rows
 
@@ -163,7 +189,8 @@ def rule_counter(
 
     def kept(bench: str, lg: list[dict[str, Any]]) -> int:
         o = bench_opts.get(bench) or {}
-        rows = leg_rows(lg, project, prox, (zones or {}).get(bench, (None, None))[0])
+        rows = leg_rows(lg, project, prox, (zones or {}).get(bench, (None, None))[0],
+                        o.get("pdp_proximity_ignore") or ())
         k, _ = apply_row_rules(rows, azimuth_deg, n_wells=o.get("n_wells"), keep_side=o.get("keep_side"),
                                drop_rows={sd: o[f"drop_{sd}_rows"] for sd in ("west", "east", "north", "south")
                                           if o.get(f"drop_{sd}_rows")},
@@ -174,11 +201,16 @@ def rule_counter(
 
 def winerack_legs(
     narvi: Narvi, unit: Any, azimuth_deg: float, zones: dict[str, tuple[float, float]], *, setback_ft: float,
-    kept: Callable[[str, list[dict[str, Any]]], int] | None = None,
+    kept: Callable[[str, list[dict[str, Any]]], int] | None = None, row_anchor: str | None = None,
+    lead: str | None = None,
 ) -> tuple[dict[str, list[dict[str, Any]]], dict[str, float]]:
     """Place a unit's staggered benches. zones = {bench: (tvd_ft, spacing_ft)}.
     Returns ({bench: legs}, {bench: narvi gunbarrel pin}) — pins are empty for a
-    single bench.
+    single bench. `row_anchor` = the reviewer's unit `anchor` (where narvi
+    hangs the rows: east / west lease line, center) — not the anchor BENCH below.
+    `lead` = the reviewer's `stagger_lead` bench: it anchors whatever the row
+    counts say (RIP Harambe 15-22, Michael 2026-10-22: WCB_1 keeps its lattice
+    and drops its east row, WCA_2 shifts — 2 + 2, not the count rule's 3 + 1).
 
     The ANCHOR is the bench that keeps the most rows after the reviewer's row
     rules when placed alone (tie -> the deeper bench); it keeps that layout.
@@ -188,20 +220,21 @@ def winerack_legs(
     gave the shallow WCB_1 the full lattice and shifted WCB_2 off a row; the
     bench keeping its rows anchors instead, the other shifts between them."""
     order = sorted(zones, key=lambda b: zones[b][0])
-    grid = true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)
+    grid = narvi_azimuth(azimuth_deg, unit.centroid.x, unit.centroid.y)
 
     def gen(b: str, pin: float | None = None) -> list[dict[str, Any]]:
         z: dict[str, Any] = {"formation": b, "target_tvd_ft": zones[b][0], "spacing_ft": zones[b][1]}
         if pin is not None:
             z["offset_ft"] = pin
-        out = legs(narvi.generate(unit, [z], setback_ft=setback_ft, spacing_ft=zones[b][1], azimuth_deg=grid))
+        out = wells(narvi.generate(unit, [z], setback_ft=setback_ft, spacing_ft=zones[b][1], azimuth_deg=grid,
+                                   anchor=row_anchor))
         return [x for x in out if bench_code(str(x.get("formation") or "")) == b]
 
     alone = {b: gen(b) for b in order}
     if len(order) == 1:
         return alone, {}
     count = kept or (lambda b, lg: len(lg))
-    anchor = max(order, key=lambda b: (count(b, alone[b]), zones[b][0]))
+    anchor = lead if lead in order else max(order, key=lambda b: (count(b, alone[b]), zones[b][0]))
     if not alone[anchor]:
         return alone, {}
     x0 = float(alone[anchor][0]["gunbarrel_x_ft"])
@@ -222,6 +255,7 @@ def gunbarrel_preview(
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
     bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
     prox: ProximityRule | None = None, spacing_by: dict[str, dict[str, Any]] | None = None,
+    anchor: str | None = None,
 ) -> dict[str, Any]:
     """Cross-section data for the review page: existing producers and Novi
     BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
@@ -286,7 +320,8 @@ def gunbarrel_preview(
     if wr_zones:
         try:
             wr, _ = winerack_legs(narvi, unit, azimuth_deg, wr_zones, setback_ft=setback_ft,
-                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft, prox, wr_zones))
+                                  kept=rule_counter(unit, azimuth_deg, opts_all, min_leg_ft, prox, wr_zones),
+                                  row_anchor=anchor, lead=stagger_lead(opts_all))
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             wr = e
     for b, row in bench_seed.items():
@@ -309,10 +344,10 @@ def gunbarrel_preview(
                     raise wr
                 lg = wr[b]
             else:
-                lg = legs(narvi.generate(unit, [{"formation": b, "target_tvd_ft": tvd, "spacing_ft": sp}],
-                                         setback_ft=setback_ft, spacing_ft=sp,
-                                         azimuth_deg=true_to_grid(azimuth_deg, unit.centroid.x, unit.centroid.y)))
-            rows = leg_rows(lg, project, prox, tvd)
+                lg = wells(narvi.generate(unit, [zone(b, tvd, sp, opts)],
+                                          setback_ft=setback_ft, spacing_ft=sp, anchor=anchor,
+                                          azimuth_deg=narvi_azimuth(azimuth_deg, unit.centroid.x, unit.centroid.y)))
+            rows = leg_rows(lg, project, prox, tvd, opts.get("pdp_proximity_ignore") or ())
         except Exception as e:  # noqa: BLE001 — a preview failure must not kill propose
             planned[b] = {"error": str(e)[:160]}
             continue
@@ -323,6 +358,12 @@ def gunbarrel_preview(
         planned[b] = {"tvd_ft": tvd, "tvd_source": "reviewer" if "tvd_ft" in opts else "local median",
                       "spacing_ft": sp, "spacing_source": sp_src,
                       "offsets_ft": [r["offset_ft"] for r in kept], "lateral_ft": [r["lateral_ft"] for r in kept],
+                      "leg_offsets_ft": [o for r in kept for o in r["leg_offsets_ft"]],
+                      # plan-view geometry for the review map (a U-turn = its two legs)
+                      "sticks_wkt": [r["leg"]["geom"].wkt for r in kept],
+                      "culled_wkt": [r["leg"]["geom"].wkt for r in rows if not any(r is k for k in kept)],
+                      "turns_wkt": [r["leg"]["turn_wkt"] for r in kept if r["leg"].get("turn_wkt")],
+                      "well_type": opts.get("well_type", "single"), "pin_offset_ft": opts.get("pin_offset_ft"),
                       "n_generated": len(rows), "rules": notes, "role": opts.get("role", "base"),
                       "winerack": b in wr_zones,
                       "proximity": proximity.summarize(rows, kept, enabled=prox_enabled(opts))}
@@ -499,7 +540,7 @@ def propose(
             # automatic override. Bearing conventions (verified in narvi's code,
             # 2026-09-26): /api/warehouse/azimuth is PostGIS ST_Azimuth on geography
             # = TRUE bearing; /api/generate lays rows in UTM 13N = GRID bearing
-            # (~0.9 deg apart across the Delaware) — see true_to_grid at the
+            # (~0.9 deg apart across the Delaware) — see narvi_azimuth at the
             # generate call.
             c0 = u.centroid
             az_deg, az_src = long_axis_azimuth(u), "unit long axis"
@@ -597,7 +638,8 @@ def propose(
                     {b: {"evaluate": True} for b in _rv["benches"]} if _rv is not None else seed,
                     _g2, _s, _pn, narvi, setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                     bench_opts=_rv["bench_opts"] if _rv is not None else None,
-                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px, spacing_by=_sb),
+                    min_leg_ft=_rv["min_leg_ft"] if _rv is not None else None, prox=_px, spacing_by=_sb,
+                    anchor=_rv.get("anchor") if _rv is not None else None),
                 bench_seed, apply_to_seed=rv is None)
             gun["benches_source"] = unit_benches.FILENAME if rv is not None else "seed"
             out["units"].append({
@@ -900,6 +942,39 @@ def lateral_classes(ll_by_unit: dict[str, float], ratio: float) -> list[list[str
     return out
 
 
+def bench_laterals(
+    plan: dict[str, dict[str, Any]], prop: dict[str, Any],
+) -> dict[tuple[str, str], tuple[float, str]]:
+    """Pool lateral per (unit, bench). A straight lateral pools on the unit's
+    planned lateral (the chord estimate, reviewer-editable). A U-turn pools on
+    its COMPLETED lateral — the sum of its two legs, curve excluded (narvi
+    completed_lateral_ft; drilled_lateral_ft adds the arc), the length its
+    production scales to (Michael 2026-10-22: "the analog pool should be
+    determined by the producing or completed lateral length for u turns"). Read
+    from propose's preview of the reviewed benches; none = re-run propose.
+    No production penalty for being a U-turn: drilled vs completed is an
+    economics matter, on Steven's side."""
+    by_label = {u["label"]: u for u in prop["units"]}
+    out: dict[tuple[str, str], tuple[float, str]] = {}
+    stale: list[str] = []
+    for lb, pu in plan.items():
+        for b in pu["benches"]:
+            if (pu["bench_opts"].get(b) or {}).get("well_type") != "uturn":
+                out[(lb, b)] = (float(pu["planned_lateral_ft"]), "planned lateral")
+                continue
+            pl = ((by_label[lb].get("gunbarrel") or {}).get("planned") or {}).get(b) or {}
+            lls = [float(x) for x in pl.get("lateral_ft") or []] if pl.get("well_type") == "uturn" else []
+            if not lls:
+                stale.append(f"{by_label[lb].get('dsu_name') or lb} {b}")
+                continue
+            out[(lb, b)] = (float(statistics.median(lls)),
+                            f"U-turn completed lateral (sum of legs, curve excluded), median of {len(lls)} preview well(s)")
+    if stale:
+        raise ValueError(f"no U-turn preview for {', '.join(stale)} — re-run propose after setting well_type: uturn "
+                         "(the pool lateral of a U-turn bench is its previewed completed lateral)")
+    return out
+
+
 def row_spacing(
     jobs: list[tuple[str, list[str], str]], prop: dict[str, Any], plan: dict[str, dict[str, Any]],
     spacing_ft: dict[str, float], config_version: int,
@@ -1091,9 +1166,17 @@ def evaluate(
                             "split test uses the Novi EUR screen")
 
     # One job per (bench x lateral class of the units that plan that bench).
+    # The pool lateral is per (unit, bench): a U-turn bench pools on its completed lateral.
+    pool_ll = bench_laterals(plan, prop)
+    for (lb, b), (ll, src) in pool_ll.items():
+        if src != "planned lateral":
+            res["decision_log"].append({"gate": "1 unit benches + lateral", "bench": b,
+                                        "signal": f"{lb}: U-turn",
+                                        "decision": f"pool lateral {ll:,.0f} ft = {src}",
+                                        "by": "rule (Michael 2026-10-22)"})
     jobs: list[tuple[str, list[str], str]] = []
     for bench in stack:
-        ll_b = {lb: ll_by_unit[lb] for lb, p in plan.items() if bench in p["benches"]}
+        ll_b = {lb: pool_ll[(lb, bench)][0] for lb, p in plan.items() if bench in p["benches"]}
         classes = lateral_classes(ll_b, class_ratio) if pooling == "class" else [sorted(ll_b, key=lambda u: (ll_b[u], u))]
         for cl in classes:
             ll_c = _median([ll_b[u] for u in cl])
@@ -1124,7 +1207,7 @@ def evaluate(
         for bench, class_units, key in jobs:
             units = {lb: all_units[lb] for lb in class_units}
             union = unary_union(list(units.values()))
-            planned_ll = _median([ll_by_unit[lb] for lb in class_units]) or 0.0
+            planned_ll = _median([pool_ll[(lb, bench)][0] for lb in class_units]) or 0.0
             local_tvds = [r["median_tvd_ft"] for u in prop["units"] if u["label"] in units
                           for r in u["bench_proposal"]
                           if bench_code(r["bench"]) == bench and r["median_tvd_ft"] is not None]
@@ -1143,7 +1226,7 @@ def evaluate(
             basin = bc[0][0] if bc else None
             B["basin"] = basin
             tol = cfg.lateral_tolerance(basin)
-            band_ll = (pool_lateral_band([ll_by_unit[lb] for lb in class_units], cfg, basin)
+            band_ll = (pool_lateral_band([pool_ll[(lb, bench)][0] for lb in class_units], cfg, basin)
                        if pooling == "bench" else None)
             B["lateral_band_ft"] = list(band_ll) if band_ll else [
                 planned_ll * (1 - cfg.lateral_tolerance(basin, planned_ll)),
@@ -1170,6 +1253,7 @@ def evaluate(
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
                                       "spacing_ft": sp_u, "spacing_source": sp_u_src,
+                                      "anchor": plan[label].get("anchor"),
                                       "role": opts.get("role", "base"), "row_rules": []}
                 az_u = u["planned_lateral"]["azimuth_deg"]
                 if prox_cfg and label not in prox_memo:
@@ -1211,7 +1295,8 @@ def evaluate(
                             narvi, geom, u["planned_lateral"]["azimuth_deg"], zones,
                             setback_ft=float(cfg["planned_lateral"]["setback_ft"]),
                             kept=rule_counter(geom, u["planned_lateral"]["azimuth_deg"],
-                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"], prox, zones))
+                                              plan[label]["bench_opts"], plan[label]["min_leg_ft"], prox, zones),
+                            row_anchor=plan[label].get("anchor"), lead=stagger_lead(plan[label]["bench_opts"]))
                     lg = winerack_memo[label][0].get(bench, [])
                     UB["winerack"] = True
                     if bench in winerack_memo[label][1]:
@@ -1219,15 +1304,18 @@ def evaluate(
                 else:
                     # narvi takes a UTM-13N GRID bearing; the plan is a TRUE bearing.
                     gen = narvi.generate(
-                        geom, [{"formation": bench, "target_tvd_ft": tvd_u, "spacing_ft": sp_u}],
+                        geom, [zone(bench, tvd_u, sp_u, opts)],
                         setback_ft=float(cfg["planned_lateral"]["setback_ft"]), spacing_ft=sp_u,
-                        azimuth_deg=true_to_grid(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
+                        azimuth_deg=narvi_azimuth(u["planned_lateral"]["azimuth_deg"], geom.centroid.x, geom.centroid.y),
+                        anchor=plan[label].get("anchor"),
                     )
-                    lg = legs(gen)
+                    lg = wells(gen)
+                    if opts.get("pin_offset_ft") is not None:
+                        UB["pin_offset_ft"] = float(opts["pin_offset_ft"])   # the handoff's save recipe pins it too
                 if g2["source"] != "novi":
                     # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
                     project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
-                    rows = leg_rows(lg, project, prox, tvd_u)
+                    rows = leg_rows(lg, project, prox, tvd_u, opts.get("pdp_proximity_ignore") or ())
                     kept, notes = apply_row_rules(
                         rows, u["planned_lateral"]["azimuth_deg"], n_wells=opts.get("n_wells"),
                         keep_side=opts.get("keep_side"),
@@ -1238,8 +1326,10 @@ def evaluate(
                     UB["row_rules"] = notes
                     UB["n_generated"] = len(rows)
                     UB["pdp_proximity"] = proximity.summarize(rows, kept, enabled=prox_enabled(opts))
+                    UB["well_type"] = opts.get("well_type", "single")
                     UB["locations"] = [{"id": f"gen-{i}", "src": "narvi_preview",
                                         "ll_ft": leg.get("completed_lateral_ft"), "tvd": tvd_u,
+                                        "n_legs": leg.get("n_legs", 1),
                                         "wkt": leg["geom"].wkt} for i, leg in enumerate(lg)]
                     sup = [wh.pdp_support(conn, leg["geom"], bench, tvd_u) for leg in lg]
                     for leg in lg:
@@ -1499,7 +1589,7 @@ def evaluate(
                     "flags": sel.flags, "tc_wells": sel.selected,
                 }
                 G["lateral_support"], ls_flags = lateral_support(
-                    sel.selected, {u: ll_by_unit[u] for u in g["units"]}, cfg, basin)
+                    sel.selected, {u: pool_ll[(u, bench)][0] for u in g["units"]}, cfg, basin)
                 G["flags"] = list(G["flags"]) + ls_flags
                 G["standoff"] = {"cohort": cohort_standoff(sel.selected),
                                  "units": {u: B["units"][u].get("standoff") for u in g["units"]}}
@@ -1537,7 +1627,7 @@ def evaluate(
                     wcfg = cfg.raw.get("water") or {}
                     if wcfg.get("method") == "ratio_measured":
                         g_area = unary_union([units[u] for u in g["units"]])
-                        g_ll = float(statistics.median([ll_by_unit[u] for u in g["units"]]))
+                        g_ll = float(statistics.median([pool_ll[(u, bench)][0] for u in g["units"]]))
                         wc = water.measured_cohort(conn, cfg, g_area, bench, basin, g_ll, sp,
                                                    wcfg.get("validated_benches") or [])
                         G["flags"] += water.flags(wc)

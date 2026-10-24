@@ -188,6 +188,8 @@ def agreement_table(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, 
             "no control": int(a["verdict"].eq("no_control").sum()),
             "surface suspect": int(a["verdict"].eq("surface_suspect").sum()),
             "no surface": int(a["verdict"].eq("no_surface").sum()),
+            "held": int(a["verdict"].eq("held").sum()),
+            "rule B pending (Lea/Ward)": int(sum(tq.rule_b_pending(tag, c) for c in ev.loc[ids, "county"])),
             "unmeasured": int(a["verdict"].eq("unmeasured").sum()),
         })
     return pd.DataFrame(rows)
@@ -279,9 +281,12 @@ def render(ctx: dict[str, Any]) -> str:
          "interval. A disagreement means the tag OR the grid is wrong; step 2 attributes which. "
          "Evidence wells only: not a planned survey, ≥ 6 mo online, (survey or non-round tvd_ft), and landing depth "
          f"≥ {MIN_EVIDENCE_TVD_FT:,.0f} ft (shallower = a data error on a scored bench).</p>"),
-        ("<div class=flag><b>Geology decisions applied (2026-10-20):</b> WOLFCAMP-C and WOLFCAMP_D are suspect "
-         "(to be relabelled / re-picked) — WCC and WCD are <i>surface_suspect</i>, and a WCB_2 'deep' call (base = C top) "
-         "is too. AVA_1 = Middle Avalon (operator tops ~110 ft above AVALON2) has no surface — <i>no_surface</i> until one "
+        ("<div class=flag><b>Geology decisions applied (2026-10-20, revised 2026-10-22; grids = the geologist's V5):</b> "
+         "<b>one WCA bench</b> = WCXY + WCA_1 + WCA_2, XY top → B1 top (rule A; no WCA_1/WCA_2 sub-split, rule C). "
+         "<b>WCC</b> = his B2 → C interval (relabel) — that interval also holds most WCB_2 landings, see step 3. "
+         "<b>WCD</b> = his C → D, <i>held</i> (unscored) for log review; WOLFCAMP_D stays suspect. "
+         "<b>Rule B</b>: the XY top is the BS3_S / Wolfcamp boundary, Lea and Ward pending his review (flagged, still "
+         "scored). AVA_1 = Middle Avalon (operator tops ~110 ft above AVALON2) has no surface — <i>no_surface</i> until one "
          "is built; AVALON1 = top Upper Avalon, AVALON2 = top Lower Avalon. Pecos County: Wolfcamp A–D and AVALON2 have "
          "zero picks — <i>no_control</i> (kept out of agreement, shown on the step-2 maps and counted in its picks-needed "
          "table: revised 2026-10-21); XY, Bone Springs and Bell/Cherry/Brushy stay scored there with caution. "
@@ -354,6 +359,8 @@ def wells_csv(w: pd.DataFrame, p_new: pd.DataFrame, p_orig: pd.DataFrame, mid_ne
         out[f"sept_{c}"] = p_orig[c].reindex(ids).to_numpy()
     out["new_tvdft_only_verdict"] = mid_new["verdict"].reindex(ids).to_numpy()
     out["caution_county"] = out["county"].isin(tq.CAUTION_COUNTIES)
+    out["rule_b_pending"] = [tq.rule_b_pending(t, c if isinstance(c, str) else None)
+                             for t, c in zip(out["formation_blueox"], out["county"], strict=True)]
     out["dist_to_control_top_ft"] = dist_top.reindex(ids).to_numpy()
     out["dist_to_control_base_ft"] = dist_base.reindex(ids).to_numpy()
     return out

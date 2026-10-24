@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import math
 import statistics
+from collections.abc import Collection
 from typing import Any
 
 from shapely import wkt as shp_wkt
@@ -104,11 +105,23 @@ class ProximityRule:
         ds = [p.distance(w_local) * FT_PER_M for p in pts if lo - 1e-6 <= self._along(p.x, p.y) <= hi + 1e-6]
         return (hi - lo) / length, (statistics.median(ds) if ds else None)
 
-    def check(self, stick: BaseGeometry, tvd_ft: float) -> dict[str, Any]:
-        """{rule, cull: [hit], near: [hit], permit: [hit]} — each list nearest first."""
-        out: dict[str, Any] = {"rule": self.rule, "cull": [], "near": [], "permit": []}
-        p = self._loc(stick)
+    def check(self, stick: BaseGeometry, tvd_ft: float, ignore: Collection[str] = ()) -> dict[str, Any]:
+        """{rule, cull: [hit], near: [hit], permit: [hit], ignored: [hit]} — each
+        list nearest first. A multi-leg well (U-turn) is checked leg by leg and
+        the hits pooled: a cull on either leg culls the well. `ignore` = api10s
+        the reviewer exempted (benches.yaml pdp_proximity_ignore) — their would-be
+        culls are listed under `ignored`, never acted on."""
+        parts = list(getattr(stick, "geoms", []))
+        if len(parts) > 1:
+            outs = [self.check(p, tvd_ft, ignore) for p in parts]
+            out: dict[str, Any] = {"rule": self.rule}
+            for k in ("cull", "near", "permit", "ignored"):
+                out[k] = sorted((h for o in outs for h in o[k]), key=lambda h: (h["dh_ft"], h["dv_ft"]))
+            return out
+        out = {"rule": self.rule, "cull": [], "near": [], "permit": [], "ignored": []}
+        p = self._loc(parts[0] if parts else stick)
         span = self._span(p)
+        skip = {str(a) for a in ignore}
         for w, g, w_span in self.producers:
             dv = abs(float(w["tvd_ft"]) - float(tvd_ft))
             if dv > self.v_ft * self.ratio:
@@ -122,11 +135,15 @@ class ProximityRule:
                  "dh_ft": round(dh), "overlap": round(frac, 2), "permit": permit,
                  "first_prod_year": int(str(fp)[:4]) if fp else None}
             h["text"] = hit_text(h)
+            if h["api10"] in skip:
+                if dv <= self.v_ft and dh <= self.h_ft:
+                    out["ignored"].append(h)
+                continue
             if dv <= self.v_ft and dh <= self.h_ft:
                 out["permit" if permit and not self.permit_culls else "cull"].append(h)
             else:
                 out["near"].append(h)
-        for k in ("cull", "near", "permit"):
+        for k in ("cull", "near", "permit", "ignored"):
             out[k].sort(key=lambda h: (h["dh_ft"], h["dv_ft"]))
         return out
 
@@ -152,6 +169,7 @@ def summarize(rows: list[dict[str, Any]], kept: list[dict[str, Any]], *, enabled
         "would_cull": [] if enabled else [one(r, "cull") for r in hit],
         "near": [one(r, "near") for r in checked if id(r) in kept_ids and r["proximity"]["near"] and not r["proximity"]["cull"]],
         "permit": [one(r, "permit") for r in checked if id(r) in kept_ids and r["proximity"]["permit"]],
+        "ignored": [one(r, "ignored") for r in checked if r["proximity"].get("ignored")],
     }
 
 
