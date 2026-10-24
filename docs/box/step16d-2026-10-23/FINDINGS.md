@@ -65,7 +65,7 @@ EUR = the raw 50-yr technical integral × haircut × proximity factor, uptime-fr
    first as the default rollback rehearsal, then `--commit --record` (~20 min each).
 5. Then:
    - prune the base run (D123, which supersedes D104: keep only the record);
-   - prune run 14 too (D123), once its 679,600 `box_econ.box_pud_econ` rows are dealt with (`--include-priced`);
+   - prune run 14 too (D123), with its 679,600 `box_econ.box_pud_econ` rows (`--include-priced`);
    - Steven re-prices the new record;
    - an erebor PR for its hard-coded group labels ("box_v2_wf, D62 walk-forward haircut" → D121);
    - the step-13 refresh rescope (queued).
@@ -85,5 +85,7 @@ run). Pruning the base run returns ~half to Postgres for reuse, not to the disk.
 Run 19 = the container's run 18 exactly. The §4 bench table is the live run 19 vs run 14 comparison. `analyst_ro` grants hold.
 Base run 17 pruned 2026-10-24 (`box_prune_runs --apply`, 1,178 s, one transaction; runs 14 and 19 unchanged, no orphans).
 D123 (Michael 2026-10-24): an evergreen record of the best quality we can manage is what has value. Superseded runs are pruned,
-priced or not. Base run 17 has been pruned; run 14 is pruned once Steven's econ rows for it are dealt with. Steven re-prices run 19.
+priced or not. Run 14 pruned 2026-10-24 with `--apply --include-priced` (798 s, one transaction): Steven's 679,600 run-14 econ rows
+deleted first, then the run. Checked live after: `box.forecast_run` = run 19 only (record), 121,696 PUDs, 42,970 oil / gas / water
+streams, oil 22,623.3 MMbbl, `box_econ.box_pud_econ` empty. Steven re-prices run 19.
 
