@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import pickle
 import subprocess
@@ -64,7 +65,9 @@ from box import hindcast_production as hp
 from box import hindcast_report as hr
 from box import production as pr
 from box import production9c as p9
+from box import production16 as p16
 from box import production_run9 as p9r
+from box import step16 as s16
 from box import tc_area_report as tar
 from box import tc_curve_report as rep
 from box import tc_record_report as trr
@@ -96,11 +99,19 @@ def _git_sha() -> str:
 # ----------------------------------------------------------------------------
 
 
-def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "WCA") -> dict[str, Any]:
+def pool_spacing(conn: Any, cb: dict[str, Any], sp: pd.Series, measured: bool) -> pd.Series:
+    """The spacing the analog pool carries. measured (D119, step 16d) = every pool well's curated.wells_enriched
+    lateral_closer_xy_ft (the source the 16c harness scored box_v2s_r2 with); else the record's (the F(k) training cohort's only,
+    every other pool well NaN = standalone)."""
+    return br.spacing(conn, sorted({str(a) for a in cb["frame"]["api10"]})) if measured else sp
+
+
+def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "WCA", measured: bool = False) -> dict[str, Any]:
     """The harness's pool at a production cutoff (run_fold lines: areas -> curves -> factors -> trn / sp / t_act; then
-    add_analog_predictions_v2: f_oil, build_pool, U-turn legs, completed laterals). Non-WCA benches: build_pool_analog."""
+    add_analog_predictions_v2: f_oil, build_pool, U-turn legs, completed laterals). Non-WCA benches: build_pool_analog.
+    `measured` = the D119 spacing (pool_spacing)."""
     if bench != "WCA":
-        return build_pool_analog(conn, workers, wells_dir, bench)
+        return build_pool_analog(conn, workers, wells_dir, bench, measured)
     wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, ("WCA",)))
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
     cutoff = br._add_months(last, 1)
@@ -119,7 +130,7 @@ def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "W
     t_ids = list(trn["api10"])
     t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof, k=K_F)
     f_oil = dict(zip(trn["api10"], trn["f_oil"], strict=True))
-    pool = an.build_pool(cb["frame"], cb["fits"], sp, f_oil)
+    pool = an.build_pool(cb["frame"], cb["fits"], pool_spacing(conn, cb, sp, measured), f_oil)
     ut = an.uturn_leg_spacing(conn, sorted(set(pool["api10"]) | set(trn["api10"])))
     tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
     pool2 = an.with_completed_laterals(pool, ut, tvd)
@@ -127,7 +138,7 @@ def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "W
             "ut": ut, "pool": pool, "pool2": pool2, "k_areas": len(ar["geoms"]), "label": "WCA", "extent_id": None}
 
 
-def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str) -> dict[str, Any]:
+def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, measured: bool = False) -> dict[str, Any]:
     """Step 9c: the pool the 9a / 9b harness scored `bench` with (box.backtest_report.run_fold_analog's lines up to its scored
     wells, then add_analog_predictions_v2's pool lines), at the production cutoff: BENCH_SPECS well set + tags, per-well fits of
     every pre-cutoff well inside the bench's extent of record, the D9 12-mo training cohort (F(k) sample), f_oil = 1."""
@@ -148,7 +159,7 @@ def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str) -> d
     trn["spacing_ft"] = trn["api10"].map(sp)
     t_ids = list(trn["api10"])
     t_act = hp.monthly_matrix(cb["prod"][cb["prod"]["api10"].isin(set(t_ids))], t_ids, asof=asof, k=K_F)
-    pool = an.build_pool(cb["frame"], cb["fits"], sp, dict(zip(trn["api10"], trn["f_oil"], strict=True)))
+    pool = an.build_pool(cb["frame"], cb["fits"], pool_spacing(conn, cb, sp, measured), dict(zip(trn["api10"], trn["f_oil"], strict=True)))
     ut = an.uturn_leg_spacing(conn, sorted(set(pool["api10"]) | set(trn["api10"])))
     tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
     pool2 = an.with_completed_laterals(pool, ut, tvd)
@@ -156,7 +167,7 @@ def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str) -> d
             "ut": ut, "pool": pool, "pool2": pool2, "k_areas": 0, "label": spec["label"], "extent_id": ext["extent_id"], "extent_ft": ext["geom_ft"]}
 
 
-def calendar_factor(P: dict[str, Any], workers: int) -> dict[str, Any]:
+def calendar_factor(P: dict[str, Any], workers: int, r2: bool = False) -> dict[str, Any]:
     """F(k) exactly as box.acceptance.add_analog_predictions_v2 calibrates box_v2 (seeded sample, as-of cohorts, leave-self-out)."""
     trn, t_act, ut = P["trn"], P["t_act"], P["ut"]
     xy = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
@@ -166,11 +177,17 @@ def calendar_factor(P: dict[str, Any], workers: int) -> dict[str, Any]:
     locs = [{"api10": r.api10, "x": xy[ti][i, 0], "y": xy[ti][i, 1], "lateral_ft": float(r.lateral_ft),
              "lateral_eff": an.completed_lateral(r.api10, float(r.lateral_ft), ut), "spacing_ft": r.spacing_ft,
              "fp_max": pd.Timestamp(r.first_production_date).date()} for i, r in enumerate(sub.itertuples())]
-    pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"])
-    mt = an.monthly_arrays_v2(pt, K_F)
+    if r2:  # D121: the harness's box_v2s_r2 (box/step16.VARIANTS) on the build's measured-spacing pool, as 16c calibrated it
+        v16 = {p16.SELECTION: (s16.MEASURED, p16.RULES)}
+        pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"],
+                                extra_pools={s16.MEASURED: P["pool2"]}, variants16=v16)
+        mt, key = an.monthly_arrays_v2(pt, K_F, (*an.VARIANTS_V2, p16.SELECTION)), p16.SELECTION
+    else:
+        pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"])
+        mt, key = an.monthly_arrays_v2(pt, K_F), "box_v2"
     out = {}
     for s in pr.STREAMS:
-        F, n = hc.calendar_factor_curve(t_act[s][ti], mt["box_v2"][s])
+        F, n = hc.calendar_factor_curve(t_act[s][ti], mt[key][s])
         out[s] = {"F": [float(x) for x in F], "n_wells": [int(x) for x in n]}
     return out
 
@@ -256,18 +273,24 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
     return out
 
 
-def equivalence(P: dict[str, Any], locs: list[dict[str, Any]], res: list[dict[str, Any]]) -> dict[str, Any]:
-    """Re-run the HARNESS's predict_location_v2 (k = 600) on a seeded sample and compare its box_v2 months to ours, exactly."""
+def equivalence(P: dict[str, Any], locs: list[dict[str, Any]], res: list[dict[str, Any]], r2: bool = False) -> dict[str, Any]:
+    """Re-run the HARNESS's predict_location_v2 (k = 600) on a seeded sample and compare its box_v2 months to ours, exactly.
+    r2 (D121): its box_v2s_r2 variant on the same measured-spacing pool."""
     rng = np.random.default_rng(20261015)
     ok_i = [i for i, r in enumerate(res) if "oil" in r.get("streams", {})]
     pick = sorted(rng.choice(ok_i, size=min(N_EQUIV, len(ok_i)), replace=False).tolist())
-    an._init({"pool": P["pool"], "pool2": P["pool2"], "cfg": di_config.load(), "k": pr.N_MONTHS, "cutoff": P["cutoff"], "bench": P["label"]})
+    state: dict[str, Any] = {"pool": P["pool"], "pool2": P["pool2"], "cfg": di_config.load(), "k": pr.N_MONTHS, "cutoff": P["cutoff"],
+                             "bench": P["label"]}
+    if r2:
+        state.update({s16.MEASURED: P["pool2"], "variants16": {p16.SELECTION: (s16.MEASURED, p16.RULES)}})
+    an._init(state)
+    key = p16.SELECTION if r2 else "box_v2"
     worst = 0.0
     for i in pick:
         h = an.predict_location_v2(locs[i])
         for s in pr.STREAMS:
             ours = res[i]["streams"].get(s, {}).get("months_raw")
-            theirs = h.get("box_v2", {}).get(s)
+            theirs = h.get(key, {}).get(s)
             if ours is None or theirs is None:
                 worst = max(worst, 0.0 if ours is None and (theirs is None or not np.isfinite(theirs).any()) else np.inf)
                 continue
@@ -276,14 +299,18 @@ def equivalence(P: dict[str, Any], locs: list[dict[str, Any]], res: list[dict[st
 
 
 def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, cfg: Any, t0: float) -> dict[str, Any]:
-    """One PRODUCTION_BENCHES group: pool, locations, fits, harness equivalence, F(k), haircut (applied), disclosure."""
-    hcut = p9.haircut_for(bench)
-    if hcut is not None:  # 9c haircut guard, table half: refuse before any fit
-        bad = p9r.guard_table(hcut)
+    """One PRODUCTION_BENCHES group: pool, locations, fits, harness equivalence, F(k), haircut (applied), disclosure.
+    `a.selection == "r2"` (D121, step 16d): measured-spacing pool, the r2 rules, the haircut / disclosure / flags of the frozen
+    evidence pack (a.pack, box/production16) instead of the pre-D121 tables and texts."""
+    r2 = getattr(a, "selection", "v2") == "r2"
+    ev = a.pack["groups"][bench] if r2 else None
+    hcut = (p16.haircut_from_pack(ev) if r2 else p9.haircut_for(bench))
+    if hcut is not None:  # 9c haircut guard, table half: refuse before any fit (a stream without a haircut has no table)
+        bad = p9r.guard_table({s: t for s, t in hcut.items() if t is not None})
         if bad:
             raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the D62 table: {bad}")
     wells_dir = p9r.wells_dir(bench, a.wells)
-    P = build_pool(conn, a.workers, wells_dir, bench)
+    P = build_pool(conn, a.workers, wells_dir, bench, measured=r2)
     print(f"[{bench}] wells {wells_dir}; pool {len(P['pool']['api10'])} wells at cutoff {P['cutoff']} (production through {P['asof']}) ({time.time() - t0:.0f} s)", flush=True)
     locs = locations(u, conn, bench)
     if a.limit:  # smoke only: the identity check refuses to store a limited build
@@ -296,31 +323,36 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
         reg = t15.side_classes(np.array([x["x"] for x in locs]), np.array([x["y"] for x in locs]), P["extent_ft"])
         for x, r, d in zip(locs, reg["region"], reg["edge_dist_mi"], strict=True):
             x["edge_region"], x["edge_dist_mi"] = str(r), float(d)
-    res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers, bench=P["label"])
+    res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers, bench=P["label"], rules=p16.RULES if r2 else None)
     print(f"[{bench}] fitted {len(res)} locations ({time.time() - t0:.0f} s)", flush=True)
-    eq = equivalence(P, locs, res)
+    eq = equivalence(P, locs, res, r2=r2)
     print(f"[{bench}] equivalence vs predict_location_v2: {eq}", flush=True)
     if not eq["max_rel_diff"] <= 1e-12:
         raise SystemExit(f"[{bench}] box_v2 path is NOT the harness's: {eq}")
-    F = calendar_factor(P, a.workers)
-    if bench == "WCA":
+    F = calendar_factor(P, a.workers, r2=r2)
+    if r2:
+        disc = ev["disclosure"]
+    elif bench == "WCA":
         cells = pd.concat([pd.read_csv(ACC / "cells_tuning_v2.csv"), pd.read_csv(ACC / "cells_holdout_v2.csv")], ignore_index=True)
         disc = disclosure(cells, hcut)
     elif bench in ("BS2_S", "WCXY_WCA1"):
         disc = p9.bench_disclosure(bench, hcut)
     else:
         disc = p9r.disclosure_for(bench)
-    method_none = p9r.haircut_method_none(bench)
+    method_none = p16.haircut_method_none(bench) if r2 else p9r.haircut_method_none(bench)
     apply_haircut_all(res, hcut, method_none)
     guard: dict[str, Any] = {"applies": hcut is not None, **p9r.GUARD}
     if hcut is not None:  # 9c haircut guard, tail half: the applied D92 g(48)
         bad, guard["g48"] = p9r.guard_tail({s: np.array([r["streams"][s]["params"]["haircut"]["g_tail"] for r in res if s in r.get("streams", {})])
-                                            for s in pr.STREAMS})
+                                            for s in pr.STREAMS if hcut.get(s) is not None})
         print(f"[{bench}] haircut guard g(48): {guard['g48']}", flush=True)
         if bad:
             raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the applied haircut: {bad}")
     guard["verdict"] = "pass" if hcut is not None else "not applicable (no haircut)"
     for x, r in zip(locs, res, strict=True):  # caveat text travels with the row (pud_forecast.flags -> erebor's workup table)
+        if r2:  # D121: the tier / disclosed-bias / thin-control lines (the pre-D121 edge and tier texts quote box_v2 numbers)
+            r["flags"] = list(r["flags"]) + p16.flags(bench, disc)
+            continue
         if x.get("edge_region") in ("south_edge", "other_edge"):
             r["flags"] = list(r["flags"]) + p9.edge_flags([x["edge_region"]])[0]
         if bench == "WCXY_WCA1":
@@ -328,7 +360,8 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
         if bench in p9r.GROUPS[3:]:
             side = x.get("edge_region", "interior").split(" ")[0] if x.get("edge_region", "interior") != "interior" else None
             r["flags"] = list(r["flags"]) + p9r.group_flags(bench, disc, side)
-    rec = {"spec": p9.record_variant(bench), "tier": p9r.tier(bench), "coverage_class": pr.covered_class(bench), "guard": guard,
+    rec = {"spec": p16.spec_label(bench) if r2 else p9.record_variant(bench), "tier": p9r.tier(bench),
+           "selection": ({"decision": "D121", "rules": disc["selection"]["rules"], "evidence_sha256": a.pack_sha256} if r2 else None), "coverage_class": pr.covered_class(bench), "guard": guard,
            "wells_dir": str(wells_dir), "label": P["label"], "extent_id": P["extent_id"], "n_pool": len(P["pool"]["api10"]),
            "n_excluded": P["n_excluded"], "k_areas": P["k_areas"], "haircut": haircut_record(hcut, res, method_none), "calendar_factor": F,
            "disclosure": disc, "equivalence": eq, "n_locations": len(locs), "n_forecast": sum("oil" in r.get("streams", {}) for r in res)}
@@ -342,6 +375,56 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
     return {"P": {k: P[k] for k in ("last", "cutoff", "asof")}, "record": rec, "locs": locs, "results": res, "meta": meta, "cum": actual_kft}
 
 
+def load_evidence(path: Path) -> tuple[dict[str, Any], str]:
+    """The frozen r2 evidence pack (scripts.box_step16d evidence) and its sha256 (of the LF-normalised bytes) — refused when the
+    file does not match the committed digest beside it."""
+    raw = path.read_bytes().replace(b"\r\n", b"\n")  # line endings normalised: git may check the file out with CRLF
+    sha = hashlib.sha256(raw).hexdigest()
+    want = (path.parent / "r2_evidence.sha256").read_text(encoding="utf-8").strip()
+    if sha != want:
+        raise SystemExit(f"{path}: sha256 {sha} != committed {want}: the evidence pack changed")
+    return json.loads(raw.decode("utf-8")), sha
+
+
+# the code a build runs (its imports), by git tree / blob id: a commit elsewhere (docs, another script) does not break a resume
+BUILD_CODE: tuple[str, ...] = ("box", "dealintake", ".claude/skills/deal-intake/config", "scripts/box_pud_run.py", "scripts/box_tc_curves.py")
+
+
+def code_key() -> str:
+    """Git ids of BUILD_CODE at HEAD, '-dirty' when any of it is modified or untracked."""
+    ids = [subprocess.run(["git", "rev-parse", f"HEAD:{q}"], capture_output=True, text=True, check=True).stdout.strip() for q in BUILD_CODE]
+    dirty = subprocess.run(["git", "status", "--porcelain", "--", *BUILD_CODE], capture_output=True, text=True, check=True).stdout.strip()
+    return hashlib.sha256(" ".join(ids).encode("utf-8")).hexdigest()[:16] + ("-dirty" if dirty else "")
+
+
+def resume_meta(code: str, a: argparse.Namespace, u: pd.DataFrame) -> dict[str, Any]:
+    """What a cached group must have been built on to be reused: the build's code (code_key), selection + evidence, well set, the
+    exact universe."""
+    key = u.sort_values("stick_id")[["stick_id", "coverage", "prod_bench"]].astype(str).to_csv(index=False).encode("utf-8")
+    return {"code_key": code, "selection": a.selection, "evidence_sha256": a.pack_sha256, "wells": str(a.wells), "limit": int(a.limit),
+            "universe_sha256": hashlib.sha256(key).hexdigest()}
+
+
+def load_bench_cache(out: Path, bench: str, meta: dict[str, Any]) -> dict[str, Any] | None:
+    """A finished group from an interrupted build (None = build it). A cache built on anything else is refused, never mixed."""
+    f = out / f"bench_{bench}.pkl"
+    if not f.exists():
+        return None
+    with open(f, "rb") as fh:
+        c = pickle.load(fh)
+    if c.get("meta") != meta:
+        diff = sorted(k for k in meta if c.get("meta", {}).get(k) != meta[k])
+        raise SystemExit(f"{f}: built on a different {diff}; delete the bench_*.pkl files in {out} to rebuild from scratch")
+    return c["bench"]
+
+
+def save_bench_cache(out: Path, bench: str, meta: dict[str, Any], built: dict[str, Any]) -> None:
+    tmp = out / f"bench_{bench}.pkl.tmp"
+    with open(tmp, "wb") as fh:
+        pickle.dump({"meta": meta, "bench": built}, fh)
+    tmp.replace(out / f"bench_{bench}.pkl")  # atomic: an interrupted write never leaves a half cache
+
+
 def cmd_build(a: argparse.Namespace) -> int:
     t0 = time.time()
     code_sha = _git_sha()  # at START: the code that runs, not whatever is checked out when the run ends
@@ -351,13 +434,21 @@ def cmd_build(a: argparse.Namespace) -> int:
         raise SystemExit(f"unknown --benches {unknown}; known {sorted(pr.PRODUCTION_BENCHES)}")
     a.out.mkdir(parents=True, exist_ok=True)
     cfg = di_config.load()
+    a.pack, a.pack_sha256 = (load_evidence(a.evidence) if a.selection == "r2" else (None, None))
     B: dict[str, dict[str, Any]] = {}
     with get_connection() as conn:
         u = pr.universe(conn, a.benches)
         n_in = {b: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == b)).sum()) for b in a.benches}
         print(f"universe {len(u)}; in-extent candidates per group {n_in} ({time.time() - t0:.0f} s)", flush=True)
+        meta = resume_meta(code_key(), a, u)
         for b in a.benches:
+            cached = load_bench_cache(a.out, b, meta)
+            if cached is not None:
+                B[b] = cached
+                print(f"[{b}] resumed from {a.out / f'bench_{b}.pkl'} (built earlier on the same code, evidence, wells and universe)", flush=True)
+                continue
             B[b] = build_bench(conn, a, u, b, cfg, t0)
+            save_bench_cache(a.out, b, meta, B[b])
     cut = {b: (x["P"]["cutoff"], x["P"]["asof"]) for b, x in B.items()}
     if len(set(cut.values())) != 1:
         raise SystemExit(f"groups built at different cutoffs: {cut}")
@@ -369,7 +460,8 @@ def cmd_build(a: argparse.Namespace) -> int:
            "data_through": first["P"]["asof"], "cutoff": first["P"]["cutoff"], "k_areas": r0["k_areas"], "n_pool": r0["n_pool"], "n_excluded": r0["n_excluded"],
            # top level = the first group's (WCA) keys, what erebor reads; every group under by_bench (D103)
            "haircut": r0["haircut"], "calendar_factor": r0["calendar_factor"], "disclosure": r0["disclosure"], "equivalence": r0["equivalence"],
-           "benches": list(a.benches), "by_bench": by_bench}
+           "benches": list(a.benches), "by_bench": by_bench,
+           "selection": {"name": a.selection, "decision": "D121", "evidence": str(a.evidence), "evidence_sha256": a.pack_sha256} if a.selection == "r2" else None}
     locs = [x for b in a.benches for x in B[b]["locs"]]
     res = [r for b in a.benches for r in B[b]["results"]]
     meta = pd.concat([B[b]["meta"] for b in a.benches], ignore_index=True).drop_duplicates("api10").reset_index(drop=True)
@@ -391,6 +483,8 @@ def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any] | None,
         for s, st in r.get("streams", {}).items():
             if hcut is None:
                 st["months"], info = np.array(st["months_raw"], float), {"method": method_none, "eur_factor": 1.0}
+            elif hcut.get(s) is None:  # D122: this stream carries no haircut (WCA gas); months exactly raw
+                st["months"], info = np.array(st["months_raw"], float), {"method": p16.STREAM_NONE, "eur_factor": 1.0}
             else:
                 st["months"], info = pr.apply_haircut_c1(st["months_raw"], {k: hcut[s][k] for k in pr.HORIZONS})
             st["params"] = {**st["params"], "haircut": info}
@@ -408,6 +502,11 @@ def haircut_record(hcut: dict[str, Any] | None, res: list[dict[str, Any]],
                    for s in pr.STREAMS}}
     out: dict[str, Any] = {"method": pr.HAIRCUT_METHOD}
     for s in pr.STREAMS:
+        if hcut.get(s) is None:  # D122: no haircut on this stream — factors 1.0, as a no-haircut group records them
+            out[s] = {k: {"factor": 1.0, "bias": None, "n_packages": 0, "n_cells": 0, "cutoffs": [], "realised_median": 1.0,
+                          "realised_p10_p90": [1.0, 1.0]} for k in pr.HORIZONS} | {"tail_factor_median": 1.0, "eur_factor_median": 1.0,
+                                                                                   "method": p16.STREAM_NONE}
+            continue
         infos = [r["streams"][s]["params"]["haircut"] for r in res if s in r.get("streams", {})]
         out[s] = {k: dict(hcut[s][k]) for k in pr.HORIZONS}
         for k in pr.HORIZONS:
@@ -666,6 +765,9 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--limit", type=int, default=0, help="build: cap locations per group (smoke test only; never store)")
         p.add_argument("--benches", type=lambda v: [x.strip() for x in v.split(",") if x.strip()], default=["WCA"],
                        help="PRODUCTION_BENCHES groups, comma-separated, WCA first (step 9c: WCA,BS2_S,WCXY_WCA1); default WCA = runs 4-7")
+        p.add_argument("--selection", choices=("r2", "v2"), default="r2",
+                       help="r2 = the D121 selection of record (measured spacing, r2 rules, the evidence pack); v2 = the pre-D121 build")
+        p.add_argument("--evidence", type=Path, default=p16.EVIDENCE, help="r2: the frozen evidence pack (scripts.box_step16d evidence)")
         if name == "rehaircut":
             p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
         if name == "radius":
