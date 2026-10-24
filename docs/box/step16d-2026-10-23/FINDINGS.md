@@ -1,4 +1,4 @@
-# Step 16d — r2 production build + container rehearsal (2026-10-23 / 24). NOTHING stored live.
+# Step 16d — r2 production build, container rehearsal, live store (2026-10-23 / 24). LIVE RECORD = run 19 (§6).
 
 Stack approved by Michael 2026-10-23 (D121 / D122):
 - r2 selection on all 13 benches;
@@ -64,11 +64,26 @@ EUR = the raw 50-yr technical integral × haircut × proximity factor, uptime-fr
 4. `box_prox_record store --src-run <new> --outcomes docs/box/step16d-2026-10-23/prox/pud_outcomes.csv.gz --runs runs/box16d_prox`,
    first as the default rollback rehearsal, then `--commit --record` (~20 min each).
 5. Then:
-   - prune the base run (D104: never record-for-good, never priced);
-   - run 14 stays, because Steven priced it;
+   - prune the base run (D123, which supersedes D104: keep only the record);
+   - prune run 14 too (D123), once its 679,600 `box_econ.box_pud_econ` rows are dealt with (`--include-priced`);
    - Steven re-prices the new record;
    - an erebor PR for its hard-coded group labels ("box_v2_wf, D62 walk-forward haircut" → D121);
    - the step-13 refresh rescope (queued).
 
 **Disk:** live is 111 GB (`pud_forecast_month` 30 GB). Steps 1–4 add roughly 20–25 GB (~170 M month rows: base + proximity
 run). Pruning the base run returns ~half to Postgres for reuse, not to the disk.
+
+## 6. Live (Michael's go, 2026-10-24 UTC; each step its own log in `runs/`)
+
+| step | result |
+|---|---|
+| `box_pud_run store --out runs/box16d --record` → **run 17** | 121,696 PUDs; covered 18,630 + provisional 32,789 = 51,419 in-extent; emerging 13,782; outside 56,495; every identity ok. 1,281 s |
+| `box_water_run store --run-id 17` | 51,419 water streams (validated 9,310, provisional 42,109; 49 calculated-fallback). 1,058 s |
+| `box_step16d prox-measure --run-id 17 --box-db live` | live location ids = the container's; outcomes equal the committed file column for column (floats within 1e-9), so the committed `prox/` set stands. 422 s |
+| `box_prox_record store --src-run 17 …` rollback, then `--commit --record` → **run 19** (record) | the same identities as rehearsal run 18: 42,970 streams per stream; oil 22,623.3 MMbbl; outcomes digest c35549d9… = the committed file. 4,275 s + 4,549 s |
+
+Run 19 = the container's run 18 exactly. The §4 bench table is the live run 19 vs run 14 comparison. `analyst_ro` grants hold.
+Base run 17 pruned 2026-10-24 (`box_prune_runs --apply`, 1,178 s, one transaction; runs 14 and 19 unchanged, no orphans).
+D123 (Michael 2026-10-24): an evergreen record of the best quality we can manage is what has value. Superseded runs are pruned,
+priced or not. Base run 17 has been pruned; run 14 is pruned once Steven's econ rows for it are dealt with. Steven re-prices run 19.
+
