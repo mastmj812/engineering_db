@@ -1,6 +1,6 @@
 # BOX type curves — build plan
 
-**Step 13 RESCOPED 2026-10-24 (PROPOSED, at gate 13a; order 13d → 13a → 13b → 13c) + Step 17 proposed (thin-control
+**Step 13 RESCOPED 2026-10-24 (PROPOSED, at gate 13a; order 13d → 13a → 13b → 13c; 13e per formation_blueox tag release) + Step 17 proposed (thin-control
 correction; BS3_C / BS1_S level).** **Step 16d LIVE 2026-10-24: LIVE RECORD = run 19** (r2 base run 17 + water + the re-measured proximity layer; 42,970 forecast PUDs, oil 22,623.3 MMbbl, −2.9 % vs run 14; every identity green; base run 17 and run 14 pruned under D123, run 14's 679,600 econ rows with it, so run 19 is the only BOX run; Steven re-prices run 19). (`docs/box/step16d-2026-10-23/FINDINGS.md` §6): r2 build of all 13 benches (51,419 in-extent PUDs, 0 no-analogs, harness equivalence 0.0 everywhere), water, proximity re-measured; rehearsal record run 18 = 42,970 forecast PUDs, oil 22,623 MMbbl (−2.9 % vs run 14), every identity green. Live store = four GOs. **GATE 16c CLOSED 2026-10-23 (D121: r2 selection of record, all 13 benches, owner's judgment). Next = level work on r2, then 16d.** **Step 16c scored 2026-10-23** (branch `claude/box-step16c`, `docs/box/step16c-2026-10-22/FINDINGS.md`; 14 tuning runs under the frozen SHA 109f805, tuning packages only, read-only): as written, the provisional groups adopt `box_v2s` (spacing fix only; r2 fails the stratum and Cui conditions, r2lo also cells + hindcast); BS2_S and WCXY stay validated, WCA / WCB_1 / WCC referred; level-only hindcast −15.3 % (fails ±15 %). Post-look, disclosed: the stratum and Cui conditions compare absolute bias on benches ~10 % over-forecast; read relative to the variant's own level, Cui beats linear in 13 / 13 groups at cum-12 and r2 is the more consistent — but r2 runs ~3 pts higher overall. Recommendation: accept `box_v2s`; keep the three referred groups validated. **Gate 16b CLOSED 2026-10-22 (D120: pre-registration frozen at 109f805).** **Step 16b built 2026-10-22** (eng_db #187 + #188 merged; revision: lateral is a TRANSLATION, not a filter — analogs 5,000–15,000 ft completed lateral, every cohort Cui-translated, ladder count → spacing; candidates `box_v2s_r2` / `_r2lo`, `box_v2s_r1` kept as the comparison; per-bench Cui-vs-linear check = adoption condition 6; `docs/box/step16b-2026-10-22/PREREGISTRATION.md`): selection knobs `box/analog.Rules` (defaults = the record selection, 0 differences on all 50,963 run-10 PUDs), pre-registered variants + adoption rule `box/step16.py`, harness `--step16` (tuning only); nothing scored. Gate 16b = Michael's priority order + the four open items of PREREGISTRATION §8, then the SHA is frozen. **Gate 16a CLOSED 2026-10-22 (D119: spacing fix on all benches, validated tuning cells re-scored).** **Step 16 opened 2026-10-22 — cohort-selection review (D118); 16a done** (eng_db #186 merged; branch `claude/box-cohort-review`, `docs/box/cohort-review-2026-10-22/FINDINGS.md`, read-only): the pool's spacing is fetched only for the F(k) training cohort, so 12,174 of 34,705 pool wells (35 %) with a measured spacing are excluded as standalone (every well < 13 months, every lateral > 13,000 ft; all benches, scored spec included); the 1.5-mi stick class's ±25 % band closes in 5 mi far less often on every bench; 5,175 PUDs reach ≥ 15 mi with ≥ 3 modern local wells inside 3 mi. Gate 16a = where the spacing fix applies.
 
 **Status (2026-10-16):** **Phase 1 COMPLETE** (steps 0–8; the full step-by-step record is in §12). **BOX record = run 7** **Step 11 (water) done; GATE 11 CLOSED 2026-10-19** (eng_db #159, `docs/box/step11-2026-10-19/`): D107 (WOR-vs-cum-oil ratio on measured-water analogs; NM measured unless insufficient), D108 (water rides on raw box_v2 oil), D109 (12a rule frozen as pre-registered). Next = step 12a on go. **Step 12a done; GATE 12a CLOSED 2026-10-19 (D110)** (branch `claude/box-step12a-water`, `docs/box/step12a-2026-10-19/`): spec frozen 546c51a, tuning identity 39/39 (≤ 4.4e-16), water holdout scored ONCE — 26/26 judged cells inside the frozen intervals; D109 tiers: WCA + BS2_S water validated, the other 11 provisional; WCA TX holdout water 15–17 % high (NM ~0) = workup caveat (D110). Next = 12b (sql/62 container-validated first, live apply on go). **Step 12b DONE 2026-10-19 — sql/62 APPLIED LIVE + water STORED on record run 10 (D111, D72 retired)** (branch `claude/box-step12b-water`, `docs/box/step12b-2026-10-19/`): sql/62 (water stream + per-stream tier + box.location_water_analog) 16/16 in a container; water built for all 50,963 run-10 locations (0 fit failures) and stored into the container's run 10 with every identity green (oil/gas md5 = live). Live: 16/16, store 806 s with every identity green. Next: Steven note (Michael sends), erebor water display, Blue Ox drop water.
@@ -400,6 +400,7 @@ superseded: that chain predates 13 groups, water, the proximity layer and r2.
 | Novi PUD universe + sticks | new vintage → D73 / D83 crosswalk at store | none (rehearsed 7d, never live) |
 | production data | each build reads the last full month from the warehouse | none |
 | analog well sets (bench QC tags) | `box_pool_refresh` adds new wells to WCA only; BS2_S copied; 11 groups frozen at the 2026-10-16 step-15 sets | **no new producer enters 11 groups' cohorts** |
+| a PDP well's bench (`formation_blueox`) | each `wells_final_*.csv` carries the tag as of its judging (2026-10-06 WCA, 2026-10-16 step 15); D84 never re-decides an existing well. The proximity layer alone reads the live tag (`curated.wells_enriched`) | **a reclass never reaches the analog pools, the evidence or the extents** (13e) |
 | selection rules (D121) | frozen method of record | none |
 | per-well fits, F(k) | recomputed at build | none |
 | walk-forward haircut (WCA oil, BS2_S oil + gas) + every disclosure line | frozen evidence pack `r2_evidence.json` (tuning cutoffs 2019–2024) | no rule for when it is re-scored |
@@ -434,10 +435,42 @@ superseded: that chain predates 13 groups, water, the proximity layer and r2.
   - D85 froze a WCA-only cohort on the run-4 method (box_v2 × D62).
   - Freeze a new definition before any 2026 outcome is read: groups, cutoff 2025-12-01, first production in 2026, the r2 +
     proximity (+ haircut) method as of run 19, horizons, and the verdict rule.
+  - **Which tags govern bench membership (proposed).** The verdict is scored on the tags current at SCORING time: the latest
+    tag release (13e), with its release ID recorded in the score. This applies to the 2026 wells (which group they test) and to
+    the analog pools the hindcast forecasts them from. The freeze-time tags are scored alongside as a sensitivity, never as the
+    verdict. Why: the test asks whether BOX forecasts each bench correctly, and the tags of record are the best available
+    statement of the bench. A release that MERGES or SPLITS groups (e.g. rule A) changes the test's units: the affected groups
+    are re-defined by an amendment written and committed before any score is read, never after.
   - This is the only path that moves a bench between tiers, in either direction. The first judged cum-12 is ≈ 2027-Q2.
   - Time-sensitive: the 2026 wells accrue production every month. Freezing late is still valid; freezing after a look is not.
 
-Order: 13d → 13a → 13b → 13c (13c waits for the vintage). Step 17 runs alongside (read-only).
+- **13e — tag release (event-driven, per release). Gate 13e per release.** The tops-vs-tag work with the geologist
+  (`docs/box/tops-qc-*`) will reclass PDP wells from one `formation_blueox` to another. That is a different event from a
+  refresh: an existing well's bench changes.
+  - **Warehouse first** (warehouse-change skill). Reclasses land in batches ("releases"), never as a drip: a reviewable,
+    versioned change to `formation_blueox` (the override pattern of the 98 WCB_2 overrides) with a diff list (api10, old tag,
+    new tag, reason, release ID). Applied and verified live before BOX reads it. Downstream outside BOX (reconciliation, sql/30
+    support, dev_scenario bench pairs, anduin cohorts, narvi offsets, deal-intake) follows the skill's propagation list.
+  - **BOX applies the diff to every frozen pool** (`wells_final_*.csv`), not by re-running the class rule over old wells (D84
+    still holds for judging NEW wells). A moved well leaves one group's pool and enters another's; the release ID is
+    stamped on the pool directory and the run notes.
+  - **Triage per group, by what moved:** the moved wells counted as tuning wells, as named analogs of record-run PUDs, and as
+    extent-edge wells.
+    - Small: the next refresh (13c cycle) picks it up; the evidence pack stands, with the release disclosed.
+    - Large: that group's evidence is re-scored on the new tags (tuning cells under the frozen D120 §4 source rule). The tier
+      does not move (holdouts are spent); only the prospective test moves it (13d).
+    - Group-changing (a merge or split, e.g. rule A = WCXY + WCA_1 + WCA_2 as one bench): a re-acceptance of that family on the
+      step-15 pattern, its own gate. Never folded into a refresh.
+    - Extent-edge moves: the extent is re-reviewed for that bench (ties to 13a's trigger rule).
+  - The "small" / "large" thresholds are set at gate 13a, before the first release is triaged.
+  - Proximity reads live tags, so it picks up a release at its next re-measure. Its precedent study and factor table
+    (`prox-2026-10-19`) were calibrated on the old tags and are refreshed in the annual cycle (13a), or sooner if a release is
+    large on the parent benches.
+  - Sequencing: a large or group-changing release that is near makes step 17's corrections (and any re-score) wait for it, so
+    they are not fitted to tags about to change.
+
+Order: 13d → 13a → 13b → 13c (13c waits for the vintage); 13e whenever a release is ready. Step 17 runs alongside (read-only),
+unless a large release is near (13e).
 
 ### Step 14 — thin benches: D2 decision (1 short session, decision only)
 Evidence table (above) for BS2_C, AVA_0 / AVA_1 / AVA_2, WCD (and the `OTHER` / unmapped tag): producers, vintage, spread of
@@ -597,7 +630,7 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | 10 | 1–2 | anduin repo |
 | 11 | 1–2 | read-only research |
 | 12 | 2 | 12a scoring; 12b schema (sql/62) + production |
-| 13 | 4–5 | rescoped 2026-10-24: 13d prospective pre-registration → 13a contract + cadence → 13b tooling + rehearsal → 13c live on the next vintage |
+| 13 | 4–5 + 1 per tag release | rescoped 2026-10-24: 13d prospective pre-registration → 13a contract + cadence → 13b tooling + rehearsal → 13c live on the next vintage; 13e per tag release (warehouse first) |
 | 14 | 1 short | decision only |
 | 15 | ≈ 4–5 per family | 15a BS3 → 15b WCB → 15c BS1_S → 15d WCC |
 | 16 | ≈ 4–6 | 16a diagnosis (done) → 16b rule menu + pre-registration → 16c tuning-fold scoring → 16d production → 16e validated |
