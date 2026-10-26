@@ -187,3 +187,62 @@ def test_hashes_do_not_depend_on_the_checkout_line_endings() -> None:
     a = pr.verify_identity(lf, pr.append_rows(lf, rows), ["4238900101"])
     b = pr.verify_identity(crlf, pr.append_rows(crlf, rows), ["4238900101"])
     assert (a["base_sha256"], a["new_sha256"], a["base_prefix_bytes"]) == (b["base_sha256"], b["new_sha256"], b["base_prefix_bytes"])
+
+
+# ----------------------------------------------------------------------------
+# all pools (step 13b, D126)
+# ----------------------------------------------------------------------------
+
+STEP15_HEADER = HEADER.rstrip("\n") + ",family_role\n"
+
+
+def _pools(base_dir: Path, tmp_path: Path) -> dict[str, Path]:
+    s15 = tmp_path / "step15-WCB-2026-10-16"
+    s15.mkdir()
+    (s15 / "wells_final_WCB_2.csv").write_bytes((STEP15_HEADER + "4238900201,OLD W2,WCB_2,WCB_2,keep,,False,False,True,2021-01-01,-103.6,31.6,member\n").encode())
+    return {"WCA": base_dir / "wells_final_WCA.csv", "BS2_S": base_dir / "wells_final_BS2_S.csv", "WCB_2": s15 / "wells_final_WCB_2.csv"}
+
+
+def test_all_pools_each_new_well_joins_the_pool_its_bench_names(base_dir: Path, tmp_path: Path) -> None:
+    files = _pools(base_dir, tmp_path)
+    live = pd.concat([_live(), apply_rule(pd.DataFrame([_well("4238900201", "WCB_2", "2021-01-01"), _well("4238900301", "WCD", "2026-09-09")]),
+                                          verdicts=None)], ignore_index=True)
+    bases = {p: pd.read_csv(f, dtype={"api10": str}) for p, f in files.items()}
+    seen, _ = pr.reconstruct_seen(base_dir, live)
+    seen_ids = set(seen["api10"]) | {"4238900201"}  # the step-15 base well counts as judged
+    parts = pr.classify_pools(live, bases, seen_ids, {"4238900108"})
+    added = {p: set(x["added"]["api10"]) for p, x in parts["pools"].items()}
+    assert "4238900103" in added["WCB_2"] and "4238900103" not in added["WCA"]  # ruled out of WCA, INTO WCB_2
+    assert "4238900106" in added["BS2_S"] and "4238900101" in added["WCA"]
+    assert not set.intersection(*added.values())  # one pool each
+    assert parts["new_unpooled"] == {"WCD": 1}  # WCD is no pool: counted only
+
+
+def test_all_pools_write_one_directory_byte_prefix_per_file(base_dir: Path, tmp_path: Path) -> None:
+    files = _pools(base_dir, tmp_path)
+    live = _live()
+    bases = {p: pd.read_csv(f, dtype={"api10": str}) for p, f in files.items()}
+    seen, seen_meta = pr.reconstruct_seen(base_dir, live)
+    parts = pr.classify_pools(live, bases, set(seen["api10"]) | {"4238900201"}, {"4238900108"})
+    out = tmp_path / "pool-2026-10-26"
+    man = pr.write_refresh_pools(out, files, parts, pr.next_universe(seen, live, out.name), {"label": out.name, "seen": seen_meta})
+    for p, f in files.items():
+        assert (out / pr.final_name(p)).read_bytes().startswith(f.read_bytes()), p
+        assert man["identity"][p]["n_appended"] == len(parts["pools"][p]["added"])
+    tail = (out / "wells_final_WCB_2.csv").read_text().splitlines()[2:]
+    assert tail and all(line.endswith(",member") for line in tail)  # step-15 files get family_role for new rows
+    assert set(pd.read_csv(out / pr.NEW_WELLS, dtype={"api10": str})["pool"]) <= set(files)
+    with pytest.raises(FileExistsError):
+        pr.write_refresh_pools(out, files, parts, seen, {})
+
+
+def test_wells_dir_prefers_an_all_pool_directory(tmp_path: Path) -> None:
+    from box import production_run9 as p9r
+
+    wca_only = tmp_path / "pool-2026-10-15"
+    wca_only.mkdir()
+    (wca_only / "wells_final_WCA.csv").write_text("x\n")
+    assert p9r.wells_dir("WCA", wca_only) == wca_only
+    assert p9r.wells_dir("WCB_1", wca_only) == p9r._WELLS["WCB_1"]  # run 19's form: step-15 sets stay
+    (wca_only / "wells_final_WCB_1.csv").write_text("x\n")
+    assert p9r.wells_dir("WCB_1", wca_only) == wca_only  # a D126 refresh directory feeds every group

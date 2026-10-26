@@ -705,7 +705,20 @@ def run_notes(run: dict[str, Any]) -> str:
         per = "; ".join(f"{b}: {x['spec']}" + _haircut_clause(b, x)
                         + (" - PROVISIONAL (D105, covered_provisional)" if x.get("tier") == "provisional" else "") for b, x in bb.items())
         return (f"covers {', '.join(bb)} ({per}); haircuts applied by the D92 C1 rate shape; uptime-free volumes; F(k) per group published "
-                "not applied (D63); no water (D72); no economics; per-group haircut / F(k) / disclosure under by_bench")
+                "not applied (D63); no water (D72); no economics; per-group haircut / F(k) / disclosure under by_bench" + provenance_clause(run))
+
+
+def provenance_clause(run: dict[str, Any]) -> str:
+    """D126 run-notes stamp: the analog-pool set each group read, and the evidence pack's digest (r2 runs). Empty for older runs."""
+    bb = run.get("by_bench") or {}
+    dirs = sorted({str(x["wells_dir"]).replace("\\", "/") for x in bb.values() if x.get("wells_dir")})
+    shas = sorted({x["selection"]["evidence_sha256"][:12] for x in bb.values() if (x.get("selection") or {}).get("evidence_sha256")})
+    out = ""
+    if dirs:
+        out += f"; analog pools {', '.join(dirs)} (D84 / D126)"
+    if shas:
+        out += f"; evidence pack {', '.join(shas)} (D120 / D126)"
+    return out
     return (("uptime-free volumes x D62 haircut factors applied by the D92 C1 rate shape" if "method" in run["haircut"]
              else "uptime-free volumes x D62 haircut")
             + "; F(k) published not applied (D63); no water (D72); no economics"

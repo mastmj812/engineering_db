@@ -1,0 +1,488 @@
+{
+ "label": "pool-2026-10-26",
+ "base_dir": "docs\\box\\pool-2026-10-15",
+ "base_note": "docs\\box\\pool-2026-10-15 (+ step-15 sets for pools it lacks)",
+ "base_files": {
+  "WCA": "docs\\box\\pool-2026-10-15\\wells_final_WCA.csv",
+  "BS2_S": "docs\\box\\pool-2026-10-15\\wells_final_BS2_S.csv",
+  "WCB_1": "docs\\box\\step15-WCB-2026-10-16\\wells_final_WCB_1.csv",
+  "WCB_2": "docs\\box\\step15-WCB-2026-10-16\\wells_final_WCB_2.csv",
+  "WCC": "docs\\box\\step15-WCC-2026-10-16\\wells_final_WCC.csv",
+  "BS1_S": "docs\\box\\step15-BS1-2026-10-16\\wells_final_BS1_S.csv",
+  "BS2_C": "docs\\box\\step15-BS2C-2026-10-16\\wells_final_BS2_C.csv",
+  "BS3_S": "docs\\box\\step15a-2026-10-16\\wells_final_BS3_S.csv",
+  "BS3_C": "docs\\box\\step15a-2026-10-16\\wells_final_BS3_C.csv",
+  "AVA_0": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_0.csv",
+  "AVA_1": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_1.csv",
+  "AVA_2": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_2.csv"
+ },
+ "out_dir": "docs\\box\\pool-2026-10-26",
+ "built_at": "2026-10-26T09:13:40-05:00",
+ "git_sha": "aac1170b6428ef77974efcb690eb1b5b9468c29d",
+ "asof": "2026-08-01",
+ "n_live": 31776,
+ "decision": "D84 / D126",
+ "card_verdicts": "none (D84)",
+ "consensus_params": {
+  "radius_ft": 7920.0,
+  "min_witness": 3,
+  "iqr_max_ft": 150.0,
+  "sits_in_ft": 120.0,
+  "own_ratio": 2.0,
+  "runner_ratio": 1.5,
+  "merge_ft": 100.0
+ },
+ "extent_ids": {
+  "WCA": 6,
+  "BS2_S": 7,
+  "WCB_1": 22,
+  "WCB_2": 24,
+  "WCC": 27,
+  "BS1_S": 26,
+  "BS2_C": 20,
+  "BS3_S": 16,
+  "BS3_C": 18,
+  "AVA_0": 28,
+  "AVA_1": 29,
+  "AVA_2": 30
+ },
+ "seen": {
+  "method": "recorded",
+  "path": "docs\\box\\pool-2026-10-15\\universe.csv",
+  "n": 31645,
+  "n_step15_only": 13
+ },
+ "n_universe": 31786,
+ "summary": {
+  "n_new_any_bench": 141,
+  "new_unpooled": {
+   "OTHER": 5,
+   "WCD": 2
+  },
+  "added_total": 134,
+  "pools": {
+   "WCA": {
+    "n_new_any_bench": 141,
+    "added": 33,
+    "added_by_tag": {
+     "WCA_2": 16,
+     "WCA_1": 16,
+     "OTHER": 1
+    },
+    "added_by_action": {
+     "keep": 32,
+     "reassign": 1
+    },
+    "added_by_class_status": {
+     "no_evidence": 9,
+     "off_band": 8,
+     "in-pool swap (moot, D19)": 6,
+     "agree": 6,
+     "ambiguous": 2,
+     "accepted (1.00)": 1,
+     "rejected (0.40)": 1
+    },
+    "added_in_extent": 27,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 138,
+    "drift": {
+     "rule_now_out": 164,
+     "retagged": 131,
+     "gone": 2
+    },
+    "uncalibrated_classes_new": []
+   },
+   "BS2_S": {
+    "n_new_any_bench": 141,
+    "added": 29,
+    "added_by_tag": {
+     "BS2_S": 29
+    },
+    "added_by_action": {
+     "keep": 29
+    },
+    "added_by_class_status": {
+     "off_band": 18,
+     "agree": 8,
+     "no_evidence": 3
+    },
+    "added_in_extent": 26,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 297,
+    "drift": {
+     "retagged": 139,
+     "rule_now_out": 122,
+     "gone": 5
+    },
+    "uncalibrated_classes_new": []
+   },
+   "WCB_1": {
+    "n_new_any_bench": 141,
+    "added": 9,
+    "added_by_tag": {
+     "WCB_1": 9
+    },
+    "added_by_action": {
+     "keep": 9
+    },
+    "added_by_class_status": {
+     "off_band": 6,
+     "agree": 2,
+     "uncalibrated (tag kept)": 1
+    },
+    "added_in_extent": 4,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 29,
+    "drift": {
+     "rule_now_out": 22,
+     "retagged": 3
+    },
+    "uncalibrated_classes_new": [
+     "WCB_1->WCB_2"
+    ]
+   },
+   "WCB_2": {
+    "n_new_any_bench": 141,
+    "added": 12,
+    "added_by_tag": {
+     "WCB_2": 12
+    },
+    "added_by_action": {
+     "keep": 12
+    },
+    "added_by_class_status": {
+     "off_band": 11,
+     "ambiguous": 1
+    },
+    "added_in_extent": 12,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 7,
+    "drift": {
+     "rule_now_out": 3,
+     "retagged": 1
+    },
+    "uncalibrated_classes_new": []
+   },
+   "WCC": {
+    "n_new_any_bench": 141,
+    "added": 0,
+    "added_by_tag": {},
+    "added_by_action": {},
+    "added_by_class_status": {},
+    "added_in_extent": 0,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 21,
+    "drift": {
+     "retagged": 10,
+     "rule_now_out": 10
+    },
+    "uncalibrated_classes_new": []
+   },
+   "BS1_S": {
+    "n_new_any_bench": 141,
+    "added": 12,
+    "added_by_tag": {
+     "BS1_S": 12
+    },
+    "added_by_action": {
+     "keep": 11,
+     "tvd_suspect": 1
+    },
+    "added_by_class_status": {
+     "off_band": 9,
+     "uncalibrated (tag kept)": 1,
+     "agree": 1,
+     "no_evidence": 1
+    },
+    "added_in_extent": 11,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 86,
+    "drift": {
+     "rule_now_out": 30,
+     "retagged": 28
+    },
+    "uncalibrated_classes_new": [
+     "BS1_S->AVA_1"
+    ]
+   },
+   "BS2_C": {
+    "n_new_any_bench": 141,
+    "added": 9,
+    "added_by_tag": {
+     "BS2_C": 9
+    },
+    "added_by_action": {
+     "keep": 8,
+     "tvd_suspect": 1
+    },
+    "added_by_class_status": {
+     "off_band": 4,
+     "agree": 4,
+     "uncalibrated (tag kept)": 1
+    },
+    "added_in_extent": 6,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 34,
+    "drift": {
+     "retagged": 61,
+     "rule_now_out": 61
+    },
+    "uncalibrated_classes_new": [
+     "BS2_C->AVA_1"
+    ]
+   },
+   "BS3_S": {
+    "n_new_any_bench": 141,
+    "added": 12,
+    "added_by_tag": {
+     "BS3_S": 12
+    },
+    "added_by_action": {
+     "keep": 11,
+     "tvd_suspect": 1
+    },
+    "added_by_class_status": {
+     "no_evidence": 5,
+     "agree": 4,
+     "off_band": 2,
+     "rejected (0.40)": 1
+    },
+    "added_in_extent": 12,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 154,
+    "drift": {
+     "rule_now_out": 41,
+     "retagged": 40
+    },
+    "uncalibrated_classes_new": []
+   },
+   "BS3_C": {
+    "n_new_any_bench": 141,
+    "added": 10,
+    "added_by_tag": {
+     "BS3_C": 10
+    },
+    "added_by_action": {
+     "keep": 10
+    },
+    "added_by_class_status": {
+     "off_band": 9,
+     "agree": 1
+    },
+    "added_in_extent": 10,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 46,
+    "drift": {
+     "rule_now_out": 127,
+     "retagged": 120,
+     "gone": 1
+    },
+    "uncalibrated_classes_new": []
+   },
+   "AVA_0": {
+    "n_new_any_bench": 141,
+    "added": 0,
+    "added_by_tag": {},
+    "added_by_action": {},
+    "added_by_class_status": {},
+    "added_in_extent": 0,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 46,
+    "drift": {
+     "retagged": 6,
+     "rule_now_out": 6
+    },
+    "uncalibrated_classes_new": []
+   },
+   "AVA_1": {
+    "n_new_any_bench": 141,
+    "added": 1,
+    "added_by_tag": {
+     "AVA_1": 1
+    },
+    "added_by_action": {
+     "keep": 1
+    },
+    "added_by_class_status": {
+     "off_band": 1
+    },
+    "added_in_extent": 0,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 13,
+    "drift": {
+     "retagged": 21,
+     "rule_now_out": 21
+    },
+    "uncalibrated_classes_new": []
+   },
+   "AVA_2": {
+    "n_new_any_bench": 141,
+    "added": 7,
+    "added_by_tag": {
+     "AVA_2": 7
+    },
+    "added_by_action": {
+     "keep": 7
+    },
+    "added_by_class_status": {
+     "off_band": 4,
+     "agree": 3
+    },
+    "added_in_extent": 6,
+    "added_excluded": 0,
+    "rule_out": 0,
+    "rule_out_to": {},
+    "not_rejudged": 23,
+    "drift": {
+     "retagged": 46,
+     "rule_now_out": 46
+    },
+    "uncalibrated_classes_new": []
+   }
+  }
+ },
+ "identity": {
+  "WCA": {
+   "base_sha256": "2b5b71056fac57bc90f26c19b2f94c113478ae60ae8e81027ab18e44e608dd10",
+   "new_sha256": "d51335c486799c51021e25ac8b062d4a846bf660d8b17d172fc86c1d2e90ae8f",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 2746103,
+   "n_base_rows": 12307,
+   "n_appended": 33,
+   "n_rows": 12340,
+   "base_file": "docs\\box\\pool-2026-10-15\\wells_final_WCA.csv"
+  },
+  "BS2_S": {
+   "base_sha256": "fb3daa38244294556660974e785bc6b73bf9dd0d6662dc2af73599c0f484c46e",
+   "new_sha256": "d399639c3fc5f2c632584c5643a50a4dae67134559be07091be99b9a5766da71",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 956835,
+   "n_base_rows": 4359,
+   "n_appended": 29,
+   "n_rows": 4388,
+   "base_file": "docs\\box\\pool-2026-10-15\\wells_final_BS2_S.csv"
+  },
+  "WCB_1": {
+   "base_sha256": "e3c0bbb203d1108e52c4e09ea5318295cbaaa7030f880666ff3882848e303d3b",
+   "new_sha256": "442fbe80cf60ccc438321307caa737db1c8facef7f5c4a12b579c19057f07185",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 417693,
+   "n_base_rows": 1820,
+   "n_appended": 9,
+   "n_rows": 1829,
+   "base_file": "docs\\box\\step15-WCB-2026-10-16\\wells_final_WCB_1.csv"
+  },
+  "WCB_2": {
+   "base_sha256": "fce809984706a01ae7ddd5609148f8014e802ad0f758f547132ec017568b52ee",
+   "new_sha256": "0db1873d1c3289911adffc78b8df726112a5fc90f33a1a61048d551f6d522417",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 268582,
+   "n_base_rows": 1181,
+   "n_appended": 12,
+   "n_rows": 1193,
+   "base_file": "docs\\box\\step15-WCB-2026-10-16\\wells_final_WCB_2.csv"
+  },
+  "WCC": {
+   "base_sha256": "4ba2132b4ca867fa1e390716399e41b727c7e5a632d6e7ca94ff863a051161f5",
+   "new_sha256": "4ba2132b4ca867fa1e390716399e41b727c7e5a632d6e7ca94ff863a051161f5",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 247682,
+   "n_base_rows": 1118,
+   "n_appended": 0,
+   "n_rows": 1118,
+   "base_file": "docs\\box\\step15-WCC-2026-10-16\\wells_final_WCC.csv"
+  },
+  "BS1_S": {
+   "base_sha256": "f1fe24076144b4dada47a47c3b9e52a09c46dc16c51500240d24371703bafae2",
+   "new_sha256": "a3f551c2d5b8e4a742079f50b4406dd4ec749c29aa2ed783a79c55bd705341af",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 258176,
+   "n_base_rows": 1158,
+   "n_appended": 12,
+   "n_rows": 1170,
+   "base_file": "docs\\box\\step15-BS1-2026-10-16\\wells_final_BS1_S.csv"
+  },
+  "BS2_C": {
+   "base_sha256": "8c0b62ae5d741ec1d71c1193af658294aafef01b71c6a5ada3befe8338b5beb6",
+   "new_sha256": "761fa47df04739eb6c1e5eb47605eda29e87a33c1c2660846665e7a94d56ec19",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 157793,
+   "n_base_rows": 708,
+   "n_appended": 9,
+   "n_rows": 717,
+   "base_file": "docs\\box\\step15-BS2C-2026-10-16\\wells_final_BS2_C.csv"
+  },
+  "BS3_S": {
+   "base_sha256": "363f8b29a4042109b3c8df7d6a15882803d78ffc53190aeab6684e6c9c98ecd7",
+   "new_sha256": "eb083916f3fd2743be5aa6382a31ac9a6c8b161212737c57c7f0e697d99b0367",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 704278,
+   "n_base_rows": 3041,
+   "n_appended": 12,
+   "n_rows": 3053,
+   "base_file": "docs\\box\\step15a-2026-10-16\\wells_final_BS3_S.csv"
+  },
+  "BS3_C": {
+   "base_sha256": "bcaa42b24bdf0f6357aea31fb8de9d6471877b6d5a1c26e0395d641ff2b89287",
+   "new_sha256": "a637fb590808dbdc3b0bace074ca12e01f876c68bcd772ac1d67e9583f93e152",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 404934,
+   "n_base_rows": 1818,
+   "n_appended": 10,
+   "n_rows": 1828,
+   "base_file": "docs\\box\\step15a-2026-10-16\\wells_final_BS3_C.csv"
+  },
+  "AVA_0": {
+   "base_sha256": "f09fb335239eaddd61a76a970c5a24030e3e10583f495e855d18aa2bac977cc5",
+   "new_sha256": "f09fb335239eaddd61a76a970c5a24030e3e10583f495e855d18aa2bac977cc5",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 106893,
+   "n_base_rows": 480,
+   "n_appended": 0,
+   "n_rows": 480,
+   "base_file": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_0.csv"
+  },
+  "AVA_1": {
+   "base_sha256": "3b876847741fa3943d6005c14e2f900c1010334722b32d1fb5a5459ec5274919",
+   "new_sha256": "71478434b529be16592f52d81e0385951d8af6d295b0a098ff30ca0f70f24fdd",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 148018,
+   "n_base_rows": 652,
+   "n_appended": 1,
+   "n_rows": 653,
+   "base_file": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_1.csv"
+  },
+  "AVA_2": {
+   "base_sha256": "125cf24001cbe9dd880c3a4f4e3caec245bf643f18dc79b7b3b803eb616778fa",
+   "new_sha256": "e30606db4dadc42562537dd5d57155e91db20289d4ccd183185e89dd6ec1da3e",
+   "sha256_of": "LF-normalized bytes",
+   "base_prefix_bytes": 120482,
+   "n_base_rows": 538,
+   "n_appended": 7,
+   "n_rows": 545,
+   "base_file": "docs\\box\\step15-AVA-2026-10-16\\wells_final_AVA_2.csv"
+  }
+ }
+}

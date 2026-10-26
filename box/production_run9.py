@@ -5,8 +5,8 @@ Run 9 = every in-scope Delaware bench in one record run (not appended to run 8):
   provisional (coverage `covered_provisional`, D105 / sql/63): AVA_0, AVA_1, AVA_2, BS2_C (D105, never out-of-time tested);
                                                BS3_S, BS3_C, WCB_2, BS1_S (holdout FAIL 2026-10-18 -> provisional, raw box_v2)
 
-  wells_dir(group, default)    the analog-pool well set each group was tuned / holdout-scored on (step-15 QC sets; WCA / BS2_S / WCXY
-                               keep the D84 pool refresh passed as --wells).
+  wells_dir(group, default)    the analog-pool well set: --wells when it holds the group's file (a D126 all-pool refresh), else
+                               the step-15 QC set the group was tuned / holdout-scored on (WCA / BS2_S / WCXY: the D84 refresh).
   tier(group)                  'validated' or 'provisional' (BENCH_SPECS["provisional"]; the coverage class is box.production.covered_class).
   guard_table / guard_tail     the 9c haircut guard (Michael, step-15 tuning gate 2026-10-17): refuse a haircut whose D62 cum-k factors
                                are not monotone in k, or whose D92 g(48) leaves [0.6, 1.2]. Tolerances are module constants (stated
@@ -69,6 +69,10 @@ def haircut_method_none(group: str) -> str:
 
 
 def wells_dir(group: str, default: Path) -> Path:
+    """`default` (the build's --wells) when it holds the group's wells_final file (a D126 all-pool refresh directory),
+    else the step-15 set the group was tuned on. A WCA-only directory (pool-2026-10-15, run 19) keeps the step-15 sets."""
+    if (default / f"wells_final_{ac.BENCH_SPECS[group]['wells']}.csv").exists():
+        return default
     return _WELLS.get(group, default)
 
 

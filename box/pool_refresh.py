@@ -17,9 +17,15 @@ refresh's "new" is an exact set difference. The gate-1 run did not record its un
 first producing on or before the newest first-production date in those CSVs (``reconstruct_seen``). Wells reported
 late with an older first-production date are therefore counted as judged at gate 1; the count is stated.
 
-BS2_S is not refreshed (v1 production is WCA only, D60): its set is copied byte-identical because the build's factor
-step reads it from the same directory. ``docs/box/exclusions.csv`` stays a load-time filter (box/exclusions.py): new
-rows in it are written and marked, and ``box_pud_run build`` drops them exactly as it drops the frozen ones.
+Step 13b (D126) extends the refresh to EVERY group's well set: one refreshed directory holds all twelve
+``wells_final_<pool>.csv`` files (``POOLS``; WCXY rides the WCA file), each the base file + its appended new wells under
+the same byte-prefix identity, and ``box_pud_run build --wells <dir>`` reads every group from it
+(``production_run9.wells_dir`` prefers the ``--wells`` directory whenever it holds the group's file). A new well joins the
+pool its rule-decided ``box_bench`` names; a new well whose bench is in no pool (WCD, WDFD, unmapped) is counted only.
+``classify`` / ``write_refresh`` / ``summarize`` / ``render_page`` keep the single-pool (WCA, 2026-10-15) form;
+``classify_pools`` / ``write_refresh_pools`` / ``summarize_pools`` / ``render_pools_page`` are the all-pool driver.
+``docs/box/exclusions.csv`` stays a load-time filter (box/exclusions.py): new rows in it are written and marked, and
+``box_pud_run build`` drops them exactly as it drops the frozen ones.
 """
 
 from __future__ import annotations
@@ -41,6 +47,8 @@ from box.flag_cards import NEVER_INTO, pool
 
 POOL = "WCA"
 WCA_TAGS: tuple[str, ...] = ("WCA_1", "WCA_2", "WCXY")
+# every analog-pool well set of the record run (D126): the file name is wells_final_<pool>.csv; WCXY rides WCA (D95)
+POOLS: tuple[str, ...] = ("WCA", "BS2_S", "WCB_1", "WCB_2", "WCC", "BS1_S", "BS2_C", "BS3_S", "BS3_C", "AVA_0", "AVA_1", "AVA_2")
 COPY_POOLS: tuple[str, ...] = ("BS2_S",)  # not refreshed (D60); copied so `build --wells <dir>` finds it
 UNIVERSE = "universe.csv"
 MANIFEST = "refresh.json"
@@ -122,12 +130,12 @@ def flag_class(row: pd.Series) -> tuple[str, str]:
     return cls, "uncalibrated (tag kept)"
 
 
-def classify(scored: pd.DataFrame, base: pd.DataFrame, seen_ids: set[str], excluded_ids: set[str]) -> dict[str, pd.DataFrame]:
-    """Split a rule-applied live frame (box.qc_rule.apply_rule output) against the base set + the judged universe.
+def classify(scored: pd.DataFrame, base: pd.DataFrame, seen_ids: set[str], excluded_ids: set[str], pool_name: str = POOL) -> dict[str, pd.DataFrame]:
+    """Split a rule-applied live frame (box.qc_rule.apply_rule output) against one pool's base set + the judged universe.
 
-    added       new (never judged) and box_bench == WCA after the rule -> appended to the pool
-    rule_out    new, tagged into the WCA pool, but the rule moves it out (accepted class + sql/23 concurs)
-    not_rejudged  box_bench == WCA now, not in the base file, but judged before (gate-1 decision stands, D84)
+    added       new (never judged) and box_bench == pool_name after the rule -> appended to the pool
+    rule_out    new, tagged into the pool, but the rule moves it out (accepted class + sql/23 concurs)
+    not_rejudged  box_bench == pool_name now, not in the base file, but judged before (that decision stands, D84)
     drift       base rows whose live record now differs (gone / re-tagged / the rule would now decide otherwise);
                 reported only — base rows are never changed
     """
@@ -140,8 +148,8 @@ def classify(scored: pd.DataFrame, base: pd.DataFrame, seen_ids: set[str], exclu
     d["class_status"] = [s for _, s in fc]
     d["excluded"] = d["api10"].isin(excluded_ids)
     is_new = ~d["api10"].isin(seen_ids)
-    in_pool_now = d["box_bench"] == POOL
-    tagged_pool = d["formation_blueox"].isin(WCA_TAGS)
+    in_pool_now = d["box_bench"] == pool_name
+    tagged_pool = d["formation_blueox"].map(pool) == pool_name
     added = d[is_new & in_pool_now].sort_values("api10").reset_index(drop=True)
     rule_out = d[is_new & tagged_pool & ~in_pool_now].sort_values("api10").reset_index(drop=True)
     not_rejudged = d[~is_new & in_pool_now & ~d["api10"].isin(base_ids)].sort_values("api10").reset_index(drop=True)
@@ -150,7 +158,7 @@ def classify(scored: pd.DataFrame, base: pd.DataFrame, seen_ids: set[str], exclu
     gone = sorted(base_ids - set(live.index))
     common = sorted(base_ids & set(live.index))
     retag = [a for a in common if live.at[a, "formation_blueox"] != b.at[a, "formation_blueox"]]
-    rule_now_out = [a for a in common if live.at[a, "box_bench"] != POOL]
+    rule_now_out = [a for a in common if live.at[a, "box_bench"] != pool_name]
     drift = pd.DataFrame(
         [{"api10": a, "kind": "gone"} for a in gone]
         + [{"api10": a, "kind": "retagged", "base_tag": b.at[a, "formation_blueox"], "live_tag": live.at[a, "formation_blueox"]} for a in retag]
@@ -381,3 +389,136 @@ def render_page(out: Path, base: pd.DataFrame, parts: dict[str, pd.DataFrame], m
 
 def load_exclusions() -> set[str]:
     return set(exclusions.load()["api10"])
+
+
+# ----------------------------------------------------------------------------
+# All pools (step 13b, D126)
+# ----------------------------------------------------------------------------
+
+
+def classify_pools(scored: pd.DataFrame, bases: dict[str, pd.DataFrame], seen_ids: set[str], excluded_ids: set[str],
+                   in_extent: dict[str, np.ndarray] | None = None) -> dict[str, Any]:
+    """`classify` per pool, plus the new wells no pool takes (counted only). A new well joins at most one pool: the one its
+    box_bench names. `in_extent` = per pool, whether each scored row lies inside that pool's extent of record."""
+    by_pool = {p: classify(scored.assign(in_extent=in_extent[p]) if in_extent else scored, b, seen_ids, excluded_ids, p)
+               for p, b in bases.items()}
+    is_new = ~scored["api10"].isin(seen_ids)
+    unpooled = scored[is_new & ~scored["box_bench"].isin(list(bases))]
+    return {"pools": by_pool, "n_new_any_bench": int(is_new.sum()),
+            "new_unpooled": unpooled["box_bench"].fillna("(none)").value_counts().to_dict()}
+
+
+def summarize_pools(parts: dict[str, Any]) -> dict[str, Any]:
+    pools = {p: summarize(x) for p, x in parts["pools"].items()}
+    return {"n_new_any_bench": parts["n_new_any_bench"], "new_unpooled": parts["new_unpooled"],
+            "added_total": sum(v["added"] for v in pools.values()), "pools": pools}
+
+
+def _with_role(rows: pd.DataFrame, header: list[str]) -> pd.DataFrame:
+    """A step-15 file carries family_role (box/family_qc): a new row is a 'member', or 'excluded' if exclusions.csv names it."""
+    if "family_role" in header and "family_role" not in rows.columns:
+        ex = rows["excluded"] if "excluded" in rows.columns else pd.Series(False, index=rows.index)
+        rows = rows.assign(family_role=["excluded" if x else "member" for x in ex])
+    return rows
+
+
+def write_refresh_pools(out: Path, base_files: dict[str, Path], parts: dict[str, Any], universe: pd.DataFrame, meta: dict[str, Any]) -> dict[str, Any]:
+    """Write ONE refreshed directory holding every pool's wells_final_<pool>.csv (base bytes + appended new wells,
+    identity-checked per file), new_wells.csv (with the pool each joined), universe.csv and refresh.json. Refuses an existing
+    non-empty directory."""
+    if out.exists() and any(out.iterdir()):
+        raise FileExistsError(f"{out} exists and is not empty; a refresh never overwrites")
+    out.mkdir(parents=True, exist_ok=True)
+    ident: dict[str, Any] = {}
+    reps = []
+    for p, src in base_files.items():
+        old = src.read_bytes()
+        header = old.split(_terminator(old), 1)[0].decode("utf-8").split(",")
+        x = parts["pools"][p]
+        added = _with_role(x["added"], header)
+        new = append_rows(old, added)
+        ident[p] = verify_identity(old, new, list(added["api10"])) | {"base_file": str(src)}
+        (out / final_name(p)).write_bytes(new)
+        assert (out / final_name(p)).read_bytes() == new
+        reps += [x["added"].assign(refresh_class="added", pool=p), x["rule_out"].assign(refresh_class="rule_out", pool=p)]
+    rep = pd.concat(reps, ignore_index=True)
+    rep[["pool", "refresh_class"] + [c for c in REPORT_COLS if c in rep.columns]].to_csv(out / NEW_WELLS, index=False)
+    universe.to_csv(out / UNIVERSE, index=False)
+    man = dict(meta)
+    man["identity"] = ident
+    (out / MANIFEST).write_text(json.dumps(man, indent=1, default=str), encoding="utf-8")
+    return man
+
+
+_POOLS_MAP_JS = """
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const D = __DATA__;
+const map = L.map('map', {preferCanvas: true});
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {maxZoom: 16, attribution: 'Tiles &copy; Esri'}).addTo(map);
+const ll = c => c.map(p => [p[1], p[0]]);
+const esc = s => String(s ?? '').replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
+const pop = w => `<b>${esc(w.name)}</b><br>api10 ${w.api10} · ${esc(w.op)}<br>first prod ${w.fp} · tag ${w.tag} → ${w.bb} (${w.act})<br>pool ${w.pool} · ${esc(w.cls)} ${esc(w.st)}<br><span style="color:#6b7280">${esc(w.why)}</span>`;
+const layers = {};
+for (const [p, rings] of Object.entries(D.extents)) {
+  layers['extent ' + p] = L.layerGroup(rings.map(r => L.polygon(r.map(ll), {color: D.color[p] || '#6b7280', weight: 0.8, fillOpacity: 0.04, interactive: false})));
+}
+const pts = [];
+for (const [p, ws] of Object.entries(D.added)) {
+  if (!ws.length) continue;
+  layers['added ' + p + ' (' + ws.length + ')'] = L.layerGroup(ws.map(w => L.circleMarker([w.lat, w.lon], {radius: 5, color: '#111827', weight: 1, fillColor: w.ex ? '#e5e7eb' : (D.color[p] || '#2563eb'), fillOpacity: 0.95}).bindPopup(pop(w) + (w.ex ? '<br><b>in exclusions.csv - dropped at load</b>' : '')))).addTo(map);
+  ws.forEach(w => pts.push([w.lat, w.lon]));
+}
+const out = D.rule_out.map(w => L.circleMarker([w.lat, w.lon], {radius: 6, color: '#dc2626', weight: 2, fill: false}).bindPopup(pop(w) + '<br><b>new; the rule moves it out of its tagged pool</b>'));
+if (out.length) layers['new, ruled out of the tagged pool (' + out.length + ')'] = L.layerGroup(out).addTo(map);
+L.control.layers(null, layers, {collapsed: false}).addTo(map);
+const bounds = pts.length ? L.latLngBounds(pts).pad(0.2) : L.latLngBounds([[31.2, -104.6], [32.6, -103.0]]);
+map.fitBounds(bounds, {maxZoom: 10});
+window.addEventListener('load', () => { map.invalidateSize(); map.fitBounds(bounds, {maxZoom: 10}); });
+</script>
+"""
+
+
+def render_pools_page(out: Path, parts: dict[str, Any], man: dict[str, Any], extents: dict[str, list[Any]], colors: dict[str, str]) -> Path:
+    """The review surface of an all-pool refresh: per-pool counts + identity, a map of every added well by pool, the tables."""
+    s, ident = man["summary"], man["identity"]
+    rows = [{"pool": p, "base rows": f"{ident[p]['n_base_rows']:,}", "added": v["added"], "added in extent": v["added_in_extent"],
+             "added excluded": v["added_excluded"], "added by tag": v["added_by_tag"], "ruled out": v["rule_out"],
+             "not re-decided": v["not_rejudged"], "base drift": v["drift"], "refreshed rows": f"{ident[p]['n_rows']:,}"}
+            for p, v in s["pools"].items()]
+    added: dict[str, list[dict[str, Any]]] = {}
+    ro: list[dict[str, Any]] = []
+    for p, x in parts["pools"].items():
+        added[p] = [w | {"pool": p} for w in _pts(x["added"])]
+        ro += [w | {"pool": p} for w in _pts(x["rule_out"])]
+    data = {"extents": extents, "color": colors, "added": added, "rule_out": ro}
+    cols = ["api10", "well_name", "operator", "first_production_date", "formation_blueox", "box_bench", "box_action", "flag_class", "class_status",
+            "box_reason", "planned", "tvd_ft", "lateral_length_ft", "in_extent", "excluded"]
+    tabs = "".join(
+        f"<details><summary>{_esc(p)}: {len(x['added'])} added, {len(x['rule_out'])} ruled out</summary>"
+        + _table(pd.concat([x["added"].assign(refresh_class="added"), x["rule_out"].assign(refresh_class="rule_out")]), ["refresh_class", *cols])
+        + "</details>" for p, x in parts["pools"].items() if len(x["added"]) + len(x["rule_out"]))
+    page = [
+        f"<!doctype html><html><head><meta charset=\"utf-8\"><title>BOX pool refresh {_esc(man['label'])}</title><style>{_CSS}</style></head><body>",
+        f"<h1>BOX analog-pool refresh, all pools — {_esc(man['label'])} (D84 / D126)</h1>",
+        (f"<div class=meta>Bases: {_esc(man['base_note'])} → {_esc(man['out_dir'])}. Live warehouse read-only, Delaware producing horizontals "
+         f"{man['n_live']:,}, data through {_esc(man['asof'])}. Consensus detector + class rule of record, <b>no card verdicts</b>, on wells never "
+         f"judged before. Built {_esc(man['built_at'])} at {_esc(man['git_sha'])}. Nothing written to the warehouse.</div>"),
+        "<h2>1. What changed, per pool</h2>",
+        _table(pd.DataFrame(rows), list(rows[0]) if rows else []),
+        (f"<div class=ok>Identity: in every pool file the base rows are an exact byte prefix of the refreshed file, and the appended rows are "
+         f"exactly that pool's added wells. {s['added_total']:,} wells added in all; {s['n_new_any_bench']:,} new wells on any bench; new wells "
+         f"no pool takes: {_esc(s['new_unpooled'])}.</div>"),
+        "<h2>2. Where the new wells are</h2><div id=map></div>",
+        "<h2>3. New wells per pool</h2>", tabs or "<p>None.</p>",
+        (f"<h2>4. The judged universe</h2><p>{_esc(man['seen'])}. This refresh records {man['n_universe']:,} judged api10s in "
+         "<code>universe.csv</code>; the next refresh's new wells are exactly those not in it.</p>"),
+        "<p class=meta>Use: <code>python -m scripts.box_pud_run build --wells " + _esc(man["out_dir"]) + "</code> (every group reads its set from "
+        "this directory). Gate: Michael confirms the added wells.</p>",
+        _POOLS_MAP_JS.replace("__DATA__", json.dumps(data, default=str)),
+        "</body></html>",
+    ]
+    path = out / "index.html"
+    path.write_text("".join(page), encoding="utf-8")
+    return path

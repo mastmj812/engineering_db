@@ -14,6 +14,9 @@ identical + data drift explained). **Next = step 9b: score BS2_S (box_v2_wf) and
 cell at holdout size (per-cutoff cells hold 5–25 packages vs the 30 floor) and so fails both benches by construction; proposed **D99** = pooled
 across cutoffs + "consistent with tuning" intervals (passes a good forecast 85–87 %, catches a 15 % miss 86–97 %). **D99 adopted 2026-10-17 (Michael): 9b = pooled + consistency intervals.** **Step 9b built 2026-10-17, AT GATE 9b** (branch `claude/box-step9b-holdout`; deliverable `docs/box/step9b-2026-10-17/` — `FINDINGS.md`, `index.html`; `box/holdout9b.py`, `scripts/box_holdout9b.py`): holdouts scored ONCE, **BS2_S PASS, WCXY PASS** under D99 (10 / 10 cells inside the frozen intervals; BS2_S oil +1.0 / +4.5 %, WCXY oil −5.8 / −8.7 / −7.8 %); intervals byte-identical to 22650ce, BS2_S holdout haircuts = tuning (|diff| 0), no ETL during the runs; D96 south edge confirmed in the holdout (oil cum-12 −30.5 %, 9 packages). **GATE 9b CLOSED 2026-10-17** (Michael; eng_db #148 merged): D100 (both benches accepted), D101 (D96 caveat with measured numbers; other-edge under-forecast = text watch item). **Step 9c built 2026-10-17, AT GATE 9c** (branch `claude/box-step9c-production`; deliverable `docs/box/step9c-2026-10-17/`): kickoff D102 (BS2_S haircut = own tuning + holdout cells merged per cutoff) + D103 (spec label stays box_v2_wf, per-group spec under by_bench, no DDL); `box_pud_run build --benches WCA,BS2_S,WCXY_WCA1` at production through 2026-07-01, harness equivalence 0.0 all three, WCA analog sets = run 7 on all 1,907; **rehearsed in a container as record run 8**, identity green per group (WCA 1,907 + 5 = 1,912; BS2_S 7,394 + 15 = 7,409; WCXY 3,183 + 5 = 3,188; universe 121,727). **STORED LIVE 2026-10-17 as record run 8** (Michael's go; run 7 superseded, kept; identity green; FINDINGS §7). Asks 2 (storage), 4 (BS2_S D92 tail) and 5 (Steven note) still open; ask 3 = erebor #14 (open). Gate-9c asks in FINDINGS §6 (live go; +1.9 GB months; erebor disclosure is run-level = WCA; BS2_S EUR haircut −23 % oil via the D92 tail). **Run 9 built 2026-10-18, AT THE RUN-9 GATE** (`docs/box/run9-2026-10-18/`): the first complete record run - WCA, BS2_S, WCXY, WCB_1, WCC validated (`covered`) + AVA_0/1/2, BS2_C, BS3_S, BS3_C, WCB_2, BS1_S provisional (`covered_provisional`, D105), 9c guard per D106; rehearsed in a container as record, identity green (51,443 in-extent = 18,607 + 32,356 + 480 no_analogs); **STORED LIVE 2026-10-18 as record run_id 10** (Michael's go; identity green, = container; run 8 pruned per D104; FINDINGS §8). erebor provisional display = next.
 
+**Phase 3 (Midland basin) drafted 2026-10-26 (§5 steps 18–23, §10 order). Next Phase-3 step = step 18 (scope decisions, decision
+only).** Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
+
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
 it, then stop. Do not roll into the next step on a phase-level "yes".
@@ -536,8 +539,114 @@ before it touches a record run.
   3-mile share of new PUDs makes it matter.
 
 ### Later phases (not this plan)
-Midland basin; own location placement (narvi engine likely; `box.location` columns mirror `narvi.inventory_well`); Novi
+Own location placement (narvi engine likely; `box.location` columns mirror `narvi.inventory_well`); Novi
 subscription decision; the erebor Accuracy surface if revived (needs a BOX source decision first).
+
+## PHASE 3 — Midland basin (drafted 2026-10-26)
+
+Same rules as Phases 1–2: one gated step per session (split where noted), the §11 kickoff prompt, decisions continue the D
+series, order and parallel rules in §10. **Phase 3 transfers the run-19 method of record; it does not re-derive the Delaware
+pilot** — r2 analog selection (D121), D53 / D99 acceptance, the D105 provisional tier, the proximity layer (D112–D116), D107
+water, no TC areas or factor chain (D54). Nothing Midland reaches a record run before step 23.
+
+Evidence, live warehouse 2026-10-26 (read-only). *Modern* = horizontal, first production ≥ 2016, completed lateral 5,000–15,000
+ft (the r2 analog band). *Oil* = median 12-month calendar-day oil per 1,000 ft, wells first-producing 2016-01 … 2025-07. *Undrilled*
+= reconciled Novi sticks with status NULL / `remaining_pud` / `conflict` (PUD + RES, D117), PUD-only in brackets.
+
+| Bench | Modern producers | Oil, bbl / 1,000 ft | GOR12, scf/bbl | Undrilled sticks (PUD) |
+|---|---|---|---|---|
+| WCA_1 | 6,202 | 15,365 | 1,377 | 12,281 (10,738) |
+| LSSH | 4,915 | 14,714 | 1,312 | 11,707 (8,103) |
+| WCB_1 | 4,114 | 14,383 | 2,101 | 9,522 (7,748) |
+| WCB_2 | 1,711 | 13,932 | 2,008 | 2,096 (2,010) |
+| JM | 1,392 | 15,989 | 1,474 | 8,029 (5,801) |
+| MS | 1,371 | 13,023 | 1,266 | 8,562 (5,709) |
+| DEAN | 780 | 16,710 | 1,393 | 1,882 (1,789) |
+| WCD | 669 | 13,156 | 2,299 | 8,452 (6,769) |
+| WCC | 460 | 10,423 | 2,090 | 8,542 (6,998) |
+| US | 70 | 11,247 | 1,730 | 3,751 (986) |
+
+For scale: Delaware WCA_1 ≈ 22,000 bbl / 1,000 ft on the same basis; Midland 85,876 undrilled sticks vs Delaware 166,850.
+Already out of scope (`box.bench_scope`, D2): BRNT (11,052 undrilled sticks), MISS, MRMC, WDFD.
+
+**What differs from the Delaware** (each owned by the step named):
+1. **Value case (step 18).** Novi 2025Q3 cum-6 oil bias is −5 % Midland vs −24 % Delaware (§1). Midland BOX is about one
+   method across the asset base, the defensible-workup goal (D54) and the subscription decision — not a large-bias fix.
+2. **One record run (steps 18, 23).** sql/60 `box_forecast_run_record_uq` allows exactly one `is_record` run, and D123 keeps only
+   it. Midland lands either in a new record run that rebuilds the Delaware 13 groups identically (harness equivalence 0.0), or
+   via a DDL change allowing one record per basin.
+3. **Long laterals (steps 18, 21).** 36 % of Midland horizontals first-producing 2023+ are ≥ 12,500 ft (3,545 / 9,978) vs 14 %
+   in the Delaware (1,493 / 11,031). `box/lateral.py` carries only the Cui & Cross Delaware WCA curve, extrapolated past 12,500
+   ft. D77's long-lateral translation becomes a Midland item.
+4. **Water (step 22).** Horizontals first-producing ≥ 2019 by `curated.water_data_quality.water_source`: Midland 13,291
+   calculated / 4,835 measured / 166 indeterminate / 966 insufficient (69 % calculated) vs Delaware 3,339 / 14,503 / 1,568 /
+   1,329 (16 %). D107's measured-water cohort will be thin and operator-clustered (TX measured = operator share). sql/41: the
+   calculated Midland WOR runs 15–47 % above measured mid-life.
+5. **Terminal decline (steps 18, 19).** `box/analog.py` hard-codes `DF_DELAWARE = 0.08`; the in-house Midland value is 0.06 / yr.
+6. **Allocation wells (step 20).** 36 % of Midland 2023+ horizontals carry `has_production_sharing` (3,567 / 9,978) vs 27 %
+   Delaware. Bench QC screens for split-booked laterals (the El Campeon / Los Vaqueros class, `docs/box/exclusions.csv`).
+7. **Basin hard-wiring (step 19).** 53 BOX modules / scripts name the Delaware. Load-bearing: the `basin="delaware"` spacing /
+   classify calls (`box/analog.py`, `box/water11.py`, `box/cohort_review.py`), `box/extent_store.BASIN`, the `box/bench_qc` /
+   `box/family_qc` pulls (+ `STATE_LINE_LAT`), the hindcast Novi report name, `box/extent_package.GRID_ROOTS`. The schema is
+   already basin-aware (sql/54, sql/58, sql/60).
+8. **Geology and frame.** No Midland structure grids under `Grids/` and no Midland tops-vs-tag QC: Midland tags rest on Novi +
+   the sql/23 audit, and D28 (geology non-blocking, context only) applies. Edges are the Central Basin Platform (W) and the
+   Eastern Shelf (E); no potash, no state line, no NM planned-survey overprint. Planar UTM 13N area error on the Midland (mostly
+   in zone 14) is ~0.1–0.2 % — accepted and stated.
+
+### Step 18 — Midland scope + value case (1 short session, decision only)
+Evidence pack (the table above + a per-bench card: TVD, spacing, operator mix, vintage, analog-distance spread). Michael decides:
+(a) build Midland, and the tier target (validated where data allow vs provisional first);
+(b) bench list and pooling families — Spraberry US / MS / JM / LSSH / DEAN, Wolfcamp WCA_1 / WCB_1 / WCB_2 / WCC / WCD; which pool
+for extents (JM + LSSH? WCB_1 + WCB_2 — the Delaware kept those apart), curve split from evidence (D19 / D33 pattern);
+(c) thin benches (step-14 pattern): US (70 producers / 3,751 sticks) emerging vs provisional; WCC (460 / 8,542); WCD (669 / 8,452);
+DEAN (780 / 1,882);
+(d) Midland terminal Df (0.06 / yr proposed);
+(e) record-run strategy (difference 2);
+(f) long laterals: D77's translation into step 21 (pre-registered, own acceptance), or ≥ 12,500-ft Midland PUDs outside the
+analog band stay `not_covered_no_analogs` (D74);
+(g) water route going into step 22.
+Nothing is written: Midland `box.bench_scope` rows land in step 20 with each family's extent, on go. **Gate 18** = the decision list.
+
+### Step 19 — basin parameterization (1–2 sessions; code only)
+Every Delaware literal on the production path becomes a basin parameter (difference 7; Df per step 18). Bar: the Delaware
+reproduces BIT-IDENTICALLY — run-19 smoke equivalence on WCA / BS2_S / AVA_0 (the 16d smoke set, max_rel_diff 0.0), 13b pool
+refresh byte-identity, a Delaware extent rebuild = stored record within 0.005 sq mi, eng_db suite green. A read-only Midland dry
+pull per module proves the paths open (no Midland output reviewed here). Sequence after the step-13b tooling (eng_db #197) merges.
+**Gate 19** = the equivalence report.
+
+### Step 20 — bench QC + extents, by family (≈ 2–3 sessions per family)
+One session builds both the tags and the extent for a family; Michael reviews them together at ONE gate per family. If card
+verdicts move membership, the extent regenerates from the ratified set before anything is stored (deterministic, cheap).
+- **20a Wolfcamp** (WCA_1, WCB_1, WCB_2, + WCC / WCD per step 18). Bench QC (`box/family_qc` pattern: consensus flags, sql/23
+  second vote, GOR tiebreak, class rule of record ratified by swap class from cards, never per well; allocation-well screen into
+  `docs/box/exclusions.csv`). **Midland edge-metric calibration** on WCA_1 (step-2 repeat: D23's one-value-per-basin pin radius r
+  and closing c, the smallest c making WCA_1 one body; the step-out table; whether D27's 8-mi bridge / ≥ 3-lateral cluster
+  constants hold on blanket development). Then D27 envelopes per pool.
+- **20b Spraberry** (US / MS / JM / LSSH / DEAN per step 18), reusing 20a's edge calibration.
+- Deliverable per family: FINDINGS, QC pages + cards, interactive extent maps, undrilled sticks inside vs outside per bench
+  (expected to cut WCC / WCD hardest — rule 11), the geology shapefile package (context, D28).
+- Store on go: Midland `box.bench_scope` rows + `box.extent` records (`basin = 'midland'`). **Gate 20a / Gate 20b.**
+
+### Step 21 — tuning + holdout (≈ 3–4 sessions)
+- **21a pre-registration** (D53 / D120 pattern): Midland groups, cutoffs, horizons, the D99 holdout rule, D105 tier criteria, the
+  haircut source per group (D94 / D102), the proximity layer measured on Midland producers (D112–D116 pattern; stacked multi-
+  parent development is the Midland norm — expect it to matter), the long-lateral translation if step 18 brought it in.
+  **Gate 21a** = SHA frozen.
+- **21b** tuning-fold scoring. **21c** one-time holdout per group. **Gate 21c** = validated / provisional per group + haircut
+  tables (9c guard, D106).
+
+### Step 22 — Midland water (1–2 sessions)
+D107 on the Midland: size the measured cohort per group (the radius it needs, operator concentration), score it the D109 way,
+and compare against the step-18 route (measured-only at a wider radius; provisional with disclosure; other). **Gate 22.**
+
+### Step 23 — production: one record run, both basins (≈ 2 sessions)
+Build Midland (oil / gas / water / proximity) + rebuild the Delaware identically (or the per-basin route from step 18) →
+container rehearsal (`scripts.box_rehearsal`) with every identity green per basin → live store on go → prune per D123 → Steven
+re-prices → erebor check (Map / Highgrade show Midland; coverage classes stated, never zero) → `curated.box_scout_locations`
+re-created (sql/69). Prefer landing at a step-13c refresh boundary so the warehouse sees one new record run, not two. After
+this, Midland joins step 13 (pool refresh, 13e tag releases) and gets its own 13d-style prospective pre-registration.
+**Gate 23.**
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
@@ -643,9 +752,21 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | 15 | ≈ 4–5 per family | 15a BS3 → 15b WCB → 15c BS1_S → 15d WCC |
 | 16 | ≈ 4–6 | 16a diagnosis (done) → 16b rule menu + pre-registration → 16c tuning-fold scoring → 16d production → 16e validated |
 | 17 | ≈ 2–4 per sub-step | 17a thin-control correction, 17b BS3_C / BS1_S level; each pre-registered, scored, then a production gate |
+| **Phase 3** | | |
+| 18 | 1 short | decision only (Midland scope, families, thin benches, Df, record-run strategy, long laterals, water route) |
+| 19 | 1–2 | basin parameterization; Delaware bit-identical |
+| 20 | ≈ 2–3 per family | 20a Wolfcamp (+ Midland edge calibration) → 20b Spraberry; tags + extent at one gate per family |
+| 21 | ≈ 3–4 | 21a pre-registration → 21b tuning → 21c holdout once |
+| 22 | 1–2 | Midland water |
+| 23 | ≈ 2 | build + container rehearsal + live store as the one record run |
 
 **Phase 2 order:** 9a → 9b → 9c → 11 → 12a → 12b → 14 → 15a → 15b → 15c → 15d. **Step 10 runs alongside 9** (swap it ahead if a
 live deal needs BOX in a drop). **Step 13 interrupts** whenever the next vintage is near.
+
+**Phase 3 order:** 18 → 19 → 20a → 20b → 21a → 21b → 21c → 22 → 23. Step 22's measured-cohort sizing is read-only and may run
+alongside 20 / 21. Step 23 waits for a step-13c refresh boundary unless Michael says otherwise. Phase 3 shares this checkout and
+the warehouse with steps 13 / 17: worktree per writing session, and any `sql/NN` reserved here first (none planned; a per-basin
+record index from step 18 (e) would be the only DDL).
 
 **Parallel sessions (Phase 2):**
 - Safe: a different repo (step 10 in anduin), or read-only work (step 11, 9a's scoring runs).

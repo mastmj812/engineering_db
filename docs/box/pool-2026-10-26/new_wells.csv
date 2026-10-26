@@ -1,0 +1,135 @@
+pool,refresh_class,api10,well_name,operator,state_code,county,first_production_date,formation_blueox,box_bench,box_action,flag_class,class_status,box_reason,cons_status,cons_suggest,sql23_nearest,cons_gor_vote,planned,tvd_ft,tvd_round,lateral_length_ft,in_extent,excluded,mid_lon,mid_lat
+WCA,added,3001557512,DICK & DONNA 2729 FEDERAL COM #201H,Matador,30,Eddy,2026-08-01,WCA_2,WCA,keep,,off_band,,off_band,,WCA_1,none,True,9670.0,False,15097.0,True,False,-104.09220276,32.36828094
+WCA,added,3001557516,RIVERBEND 14 FEDERAL COM #004H,Devon,30,Eddy,2026-08-01,OTHER,WCA,reassign,OTHER->WCA,accepted (1.00),class OTHER->WCA (precision 1.00) + sql/23 concurs + GOR none,flag,WCA_2,WCA_2,none,False,9888.0,False,2517.0,True,False,-104.0566535,32.1376555
+WCA,added,3001557583,DICK & DONNA 2729 FEDERAL COM #202H,Matador,30,Eddy,2026-08-01,WCA_2,WCA,keep,,off_band,,off_band,,WCA_1,none,False,9724.0,False,14747.0,True,False,-104.09292212,32.36487885
+WCA,added,3001557605,RIVERBEND 14 FEDERAL COM #007H,Devon,30,Eddy,2026-08-01,WCA_1,WCA,keep,,off_band,,off_band,,WCA_1,none,False,9673.0,False,3145.0,True,False,-104.055563,32.137664
+WCA,added,3001557657,WARRIOR 2729 FEDERAL COM #204H,Matador,30,Eddy,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_1,none,False,9676.0,False,14317.0,True,False,-104.09342642,32.35770577
+WCA,added,3001557674,WARRIOR 2729 FEDERAL COM #203H,Matador,30,Eddy,2026-08-01,WCA_1,WCA,keep,,off_band,,off_band,,WCA_1,none,False,9689.0,False,14456.0,True,False,-104.09327732,32.36109689
+WCA,added,3001557735,BEER CAVE FEDERAL COM #202H,Tap Rock Resources,30,Eddy,2026-08-29,WCA_1,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_2,WCA_1,none,False,8393.0,False,9804.0,True,False,-104.37581267,32.08892119
+WCA,added,3001557736,BEER CAVE FEDERAL COM #204H,Tap Rock Resources,30,Eddy,2026-08-29,WCA_1,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_2,WCA_2,none,False,8449.0,False,9681.0,True,False,-104.37497654,32.08163414
+WCA,added,3001557737,BEER CAVE FEDERAL COM #211H,Tap Rock Resources,30,Eddy,2026-08-29,WCA_1,WCA,keep,,no_evidence,,no_evidence,,WCA_1,none,False,8336.0,False,9859.0,True,False,-104.3756485,32.09242589
+WCA,added,3001557738,BEER CAVE FEDERAL COM #213H,Tap Rock Resources,30,Eddy,2026-08-29,WCA_1,WCA,keep,,off_band,,off_band,,BS3_S,none,False,8254.0,False,9845.0,True,False,-104.37565936,32.08556644
+WCA,added,3002554508,DATE 14 STATE COM #604H,EOG,30,Lea,2026-08-01,WCA_1,WCA,keep,,off_band,,off_band,,BS3_S,none,True,11870.0,False,9956.0,True,False,-103.54621017,32.48666862
+WCA,added,3002554513,DATE 14 STATE COM #605H,EOG,30,Lea,2026-08-01,WCA_1,WCA,keep,,off_band,,off_band,,BS3_S,none,True,11870.0,False,9939.0,True,False,-103.5503912,32.48665488
+WCA,added,3002554552,DATE 14 STATE COM #801H,EOG,30,Lea,2026-08-01,WCA_2,WCA,keep,,off_band,,off_band,,BS3_S,none,True,12175.0,False,9965.0,True,False,-103.54383331,32.48658653
+WCA,added,3002554903,LION OIL 28 33 FEDERAL COM #038H,Occidental,30,Lea,2026-08-24,WCA_1,WCA,keep,,agree,,agree,,BS3_S,none,True,11994.0,False,9943.0,True,False,-103.67216869,32.35451767
+WCA,added,3002554905,LION OIL 28 33 FEDERAL COM #037H,Occidental,30,Lea,2026-08-24,WCA_2,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_1,WCA_1,none,True,12196.0,False,9918.0,True,False,-103.67447603,32.35463121
+WCA,added,3002554912,LION OIL 28 33 FEDERAL COM #034H,Occidental,30,Lea,2026-08-11,WCA_1,WCA,keep,,agree,,agree,,BS3_S,none,True,11950.0,False,9919.0,True,False,-103.68071786,32.35460823
+WCA,added,3002554913,LION OIL 28 33 FEDERAL COM #035H,Occidental,30,Lea,2026-08-20,WCA_2,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_1,WCA_1,none,True,12056.0,False,9918.0,True,False,-103.6782881,32.35443046
+WCA,added,3002554946,LION OIL 28 33 FEDERAL COM #032H,Occidental,30,Lea,2026-08-11,WCA_1,WCA,keep,,agree,,agree,,BS3_S,none,True,11943.0,False,9965.0,True,False,-103.6850018,32.35454196
+WCA,added,3002554947,LION OIL 28 33 FEDERAL COM #033H,Occidental,30,Lea,2026-08-11,WCA_2,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_1,WCA_1,none,True,12095.0,False,9920.0,True,False,-103.68301723,32.35462415
+WCA,added,3002555736,TWINKLE 26 FEDERAL COM #201H,Matador,30,Lea,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11416.0,False,14862.0,False,False,-103.74071205,32.5241611
+WCA,added,3002555737,TWINKLE 26 FEDERAL COM #202H,Matador,30,Lea,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11429.0,False,15137.0,False,False,-103.73851675,32.5241588
+WCA,added,3002555738,TWINKLE 26 FEDERAL COM #203H,Matador,30,Lea,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11462.0,False,15128.0,False,False,-103.73358949,32.52142153
+WCA,added,3002555739,TWINKLE 26 FEDERAL COM #204H,Matador,30,Lea,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11472.0,False,14941.0,False,False,-103.72933616,32.52118641
+WCA,added,3002555740,TWINKLE 26 FEDERAL COM #131H,Matador,30,Lea,2026-08-01,WCA_1,WCA,keep,,no_evidence,,no_evidence,,BS3_S,none,False,11207.0,False,17130.0,False,False,-103.7417001,32.52412645
+WCA,added,3002555895,SUPREME FEDERAL COM #603H,ConocoPhillips,30,Lea,2026-08-25,WCA_1,WCA,keep,,agree,,agree,,WCA_1,none,False,12542.0,False,9657.0,True,False,-103.57479536,32.31291764
+WCA,added,3002555914,SUPREME FEDERAL COM #602H,ConocoPhillips,30,Lea,2026-08-25,WCA_1,WCA,keep,,ambiguous,,ambiguous,,WCA_1,none,False,12568.0,False,9965.0,True,False,-103.57247702,32.3126708
+WCA,added,3002555915,SUPREME FEDERAL COM #601H,ConocoPhillips,30,Lea,2026-08-25,WCA_1,WCA,keep,,ambiguous,,ambiguous,,WCA_1,none,False,12571.0,False,9927.0,True,False,-103.5698623,32.31271902
+WCA,added,3002555931,SUSAN LANCASTER FEDERAL COM #201H,Matador,30,Lea,2026-08-01,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11540.0,False,9868.0,False,False,-103.72404831,32.51572355
+WCA,added,4230137626,RAINBOW STATE 53-54-70 D 601H,TRP Energy,42,Loving,2026-08-01,WCA_2,WCA,keep,WCA->WCB_1,rejected (0.40),class WCA->WCB_1 rejected (precision 0.40),flag,WCB_1,WCB_1,none,False,11240.0,False,14298.0,True,False,-103.52928925,31.65772438
+WCA,added,4237139285,MDJ CALDWELL F 24SH,"Thompson, J. Cleo",42,Pecos,2015-05-15,WCA_2,WCA,keep,,no_evidence,,no_evidence,,WCA_1,none,False,1682.0,False,7830.0,True,False,-103.28946686,31.00764275
+WCA,added,4238940466,STEWART 2-11 E 5WA,Diamondback,42,Reeves,2026-08-01,WCA_1,WCA,keep,,agree,,agree,,WCA_1,none,False,10578.0,False,10234.0,True,False,-103.19776917,31.1717701
+WCA,added,4238941507,WOODS 3A,Crescent Energy,42,Reeves,2026-03-15,WCA_2,WCA,keep,,agree,,agree,,WCA_2,none,False,10606.0,False,7296.0,True,False,-103.38199615,31.16962242
+WCA,added,4238941508,WOODS 4A,Crescent Energy,42,Reeves,2026-03-15,WCA_2,WCA,keep,WCA->WCA,"in-pool swap (moot, D19)","in-pool swap, moot for extents (D19)",flag,WCA_1,WCA_1,none,False,10419.0,False,6362.0,True,False,-103.38201904,31.16966438
+BS2_S,added,3001557270,POKER LAKE UNIT 18 30 BD #200H,Exxon Mobil,30,Eddy,2026-08-10,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,9340.0,False,8383.0,True,False,-103.92830521,32.11984654
+BS2_S,added,3001557272,POKER LAKE UNIT 18 30 BD #201H,Exxon Mobil,30,Eddy,2026-08-08,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,9352.0,False,8191.0,True,False,-103.92486067,32.11980287
+BS2_S,added,3001557273,POKER LAKE UNIT 18 30 BD #202H,Exxon Mobil,30,Eddy,2026-08-11,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,9377.0,False,7422.0,True,False,-103.92154273,32.11879075
+BS2_S,added,3001557274,POKER LAKE UNIT 18 30 BD #203H,Exxon Mobil,30,Eddy,2026-08-16,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,9363.0,False,12505.0,True,False,-103.91805476,32.1183804
+BS2_S,added,3002554514,DATE 14 STATE COM #504H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,True,10600.0,True,9973.0,True,False,-103.53942367,32.48661412
+BS2_S,added,3002554515,DATE 14 STATE COM #505H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,True,10600.0,True,9946.0,True,False,-103.54639716,32.48663092
+BS2_S,added,3002555024,ZN 34 27 FEDERAL STATE COM #407H,Chevron,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,10430.0,False,7507.0,True,False,-103.4625815,32.2726455
+BS2_S,added,3002555025,ZN 34 27 FEDERAL STATE COM #408H,Chevron,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,10430.0,False,7407.0,True,False,-103.4610935,32.272645
+BS2_S,added,3002555026,ZN 34 27 FEDERAL STATE COM #409H,Chevron,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,10430.0,False,7402.0,True,False,-103.4596045,32.2726445
+BS2_S,added,3002555084,VACA 24 FEDERAL COM #526H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,True,11148.0,False,9942.0,True,False,-103.51858286,32.12390962
+BS2_S,added,3002555364,PEREGRINE 27 FEDERAL COM #508H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS3_S,none,False,11371.0,False,9615.0,True,False,-103.4556324,32.17305431
+BS2_S,added,3002555387,PEREGRINE 27 FEDERAL COM #592H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_C,none,False,10962.0,False,9764.0,True,False,-103.46333982,32.17297098
+BS2_S,added,3002555399,PEREGRINE 27 FEDERAL COM #504H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_C,none,False,10972.0,False,9620.0,True,False,-103.46357445,32.1728841
+BS2_S,added,3002555401,PEREGRINE 27 FEDERAL COM #505H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,11366.0,False,9629.0,True,False,-103.4577823,32.17308138
+BS2_S,added,3002555405,PEREGRINE 27 FEDERAL COM #506H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,10993.0,False,9862.0,True,False,-103.45682841,32.17347576
+BS2_S,added,3002555409,PEREGRINE 27 FEDERAL COM #502H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_C,none,False,10982.0,False,9567.0,True,False,-103.46464374,32.17252911
+BS2_S,added,3002555427,MARGIE 24 FEDERAL COM #202H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,9572.0,False,9772.0,True,False,-103.72449346,32.58157245
+BS2_S,added,3002555429,MARGIE 24 FEDERAL COM #304H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,no_evidence,,no_evidence,,BS2_S,none,False,9880.0,False,9764.0,True,False,-103.71785164,32.58176857
+BS2_S,added,3002555430,MARGIE 24 FEDERAL COM #501H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,agree,,agree,,BS2_S,none,False,9889.0,False,9868.0,True,False,-103.72673178,32.58147569
+BS2_S,added,3002555534,STREETCAR 15 FEDERAL #511H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,OTHER,none,False,8895.0,False,8475.0,True,False,-103.56529924,32.12475205
+BS2_S,added,3002555542,STREETCAR 15 FEDERAL #741H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,11089.0,False,8548.0,True,False,-103.56383225,32.12455559
+BS2_S,added,3002555543,STREETCAR 15 FEDERAL #743H,EOG,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,11112.0,False,8407.0,True,False,-103.55032423,32.12455316
+BS2_S,added,3002555759,MYSTERIO 19 30 FEDERAL #521H,Mewbourne,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,no_evidence,,no_evidence,,BS2_S,none,False,9565.0,False,10474.0,True,False,-103.70968792,32.72572699
+BS2_S,added,3002555782,MYSTERIO 19 30 FEDERAL #523H,Mewbourne,30,Lea,2026-08-01,BS2_S,BS2_S,keep,,no_evidence,,no_evidence,,BS2_S,none,False,9557.0,False,10947.0,True,False,-103.7055555,32.7264199
+BS2_S,added,3002555846,QUAIL 16 STATE COM #502H,Avant Operating II,30,Lea,2026-08-10,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,10106.0,False,4723.0,True,False,-103.56980515,32.57395924
+BS2_S,added,4230137318,HAMBURGLAR 202BS,Admiral Permian Resources,42,Loving,2025-10-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS3_S,none,False,10132.0,False,8497.0,True,False,-103.69994354,31.89958191
+BS2_S,added,4230137497,DOLLY VARDEN 33-69 201H,TRP Energy,42,Loving,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS1_S,none,False,9774.0,False,9728.0,False,False,-103.52377319,31.6526413
+BS2_S,added,4230137498,DOLLY VARDEN 33-69 202H,TRP Energy,42,Loving,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS2_S,none,False,9778.0,False,9330.0,False,False,-103.51987457,31.65072441
+BS2_S,added,4230137628,RAINBOW STATE 53-54-70 C 201H,TRP Energy,42,Loving,2026-08-01,BS2_S,BS2_S,keep,,off_band,,off_band,,BS1_S,none,False,9807.0,False,14388.0,False,False,-103.52960968,31.65813828
+WCB_1,added,3001556108,UTAH 17 18 FEDERAL COM #821H,Mewbourne,30,Eddy,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCB_1,none,True,9345.0,False,9803.0,False,False,-104.2210955,32.48629825
+WCB_1,added,3001556109,UTAH 17 18 FEDERAL COM #823H,Mewbourne,30,Eddy,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCB_1,none,False,9354.0,False,9810.0,False,False,-104.2214365,32.48264377
+WCB_1,added,3001556110,UTAH 17 18 FEDERAL COM #825H,Mewbourne,30,Eddy,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCB_1,none,False,9353.0,False,9777.0,False,False,-104.22136504,32.47888383
+WCB_1,added,3001556396,UTAH 17 18 FEDERAL COM #827H,Mewbourne,30,Eddy,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCB_1,none,False,9365.0,False,9747.0,False,False,-104.22150818,32.47525365
+WCB_1,added,3002550109,PEREGRINE 27 FEDERAL COM #741H,EOG,30,Lea,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCA_2,none,True,12880.0,False,9941.0,False,False,-103.46491584,32.17360226
+WCB_1,added,3002555535,STREETCAR 15 FEDERAL #512H,EOG,30,Lea,2026-08-01,WCB_1,WCB_1,keep,WCB_1->WCB_2,uncalibrated (tag kept),class WCB_1->WCB_2 not calibrated; tag kept,flag,WCB_2,WCB_1,none,False,13105.0,False,8636.0,True,False,-103.56183861,32.12433447
+WCB_1,added,4230137503,DOLLY VARDEN 33-69 701H,TRP Energy,42,Loving,2026-08-01,WCB_1,WCB_1,keep,,off_band,,off_band,,WCA_2,none,False,11285.0,False,9273.0,True,False,-103.51972961,31.6508007
+WCB_1,added,4230137625,RAINBOW STATE 53-54-70 B 701H,TRP Energy,42,Loving,2026-08-01,WCB_1,WCB_1,keep,,agree,,agree,,WCA_2,none,False,11337.0,False,14482.0,True,False,-103.5306015,31.65901184
+WCB_1,added,4230137627,RAINBOW STATE 53-54-70 F 702H,TRP Energy,42,Loving,2026-08-01,WCB_1,WCB_1,keep,,agree,,agree,,WCA_2,none,False,11351.0,False,13453.0,True,False,-103.52558136,31.65653038
+WCB_2,added,3001556647,TODD 36 25 STATE FEDERAL COM #826H,Devon,30,Eddy,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_1,none,False,12505.0,False,9845.0,True,False,-103.73032656,32.26917991
+WCB_2,added,3002554858,VACA 24 FEDERAL COM #753H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13110.0,False,9958.0,True,False,-103.52757668,32.12389852
+WCB_2,added,3002554859,VACA 24 FEDERAL COM #754H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13110.0,False,9947.0,True,False,-103.52455918,32.12392086
+WCB_2,added,3002554860,VACA 24 FEDERAL COM #755H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,False,13110.0,False,10005.0,True,False,-103.52172765,32.1237935
+WCB_2,added,3002554861,VACA 24 FEDERAL COM #756H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13110.0,False,9959.0,True,False,-103.51858024,32.12372639
+WCB_2,added,3002554863,VACA 24 FEDERAL COM #742H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13060.0,False,9963.0,True,False,-103.52906876,32.12388526
+WCB_2,added,3002554864,VACA 24 FEDERAL COM #743H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,False,13060.0,False,9947.0,True,False,-103.52587945,32.1238855
+WCB_2,added,3002554865,VACA 24 FEDERAL COM #744H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13060.0,False,9957.0,True,False,-103.52306626,32.12381979
+WCB_2,added,3002554866,VACA 24 FEDERAL COM #745H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,off_band,,off_band,,WCB_2,none,True,13060.0,False,9952.0,True,False,-103.52008181,32.12375396
+WCB_2,added,3002555544,STREETCAR 15 FEDERAL #751H,EOG,30,Lea,2026-08-01,WCB_2,WCB_2,keep,,ambiguous,,ambiguous,,WCB_1,none,False,12960.0,False,8595.0,True,False,-103.56373049,32.12572454
+WCB_2,added,4230137780,HALEY 31 31HU,Circle-S Energy,42,Loving,2026-08-20,WCB_2,WCB_2,keep,,off_band,,off_band,,WCA_2,none,False,12810.0,False,8012.0,True,False,-103.39813232,31.77710342
+WCB_2,added,4230137781,HALEY 31 32HU,Circle-S Energy,42,Loving,2026-08-21,WCB_2,WCB_2,keep,,off_band,,off_band,,WCA_2,none,False,12873.0,False,8611.0,True,False,-103.38879395,31.78052902
+BS1_S,added,3001555197,POLO AOP FEDERAL COM #011H,Spur Energy,30,Eddy,2026-08-01,BS1_S,BS1_S,tvd_suspect,BS1_S->AVA_1,uncalibrated (tag kept),"A-prime: planned survey flagged -> AVA_1; tag kept, TVD not evidence",flag,AVA_1,AVA_1,none,True,2885.0,False,5117.0,False,False,-104.47252016,32.66918811
+BS1_S,added,3001557514,RIVERBEND 14 FEDERAL COM #001H,Devon,30,Eddy,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS1_S,none,False,7500.0,True,3087.0,True,False,-104.05546605,32.1376645
+BS1_S,added,3002554814,PEGASUS 3 FEDERAL COM #316H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,OTHER,none,False,8481.0,False,9438.0,True,False,-103.66512539,32.25183724
+BS1_S,added,3002554854,VACA 24 FEDERAL COM #303H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,agree,,agree,,BS2_C,none,True,10300.0,True,9964.0,True,False,-103.5275783,32.12381133
+BS1_S,added,3002554868,VACA 24 FEDERAL COM #305H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,AVA_2,none,True,10300.0,True,9952.0,True,False,-103.5215743,32.12396683
+BS1_S,added,3002554869,VACA 24 FEDERAL COM #306H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS2_C,none,True,10300.0,True,9959.0,True,False,-103.51858946,32.12387172
+BS1_S,added,3002555426,MARGIE 24 FEDERAL COM #201H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS1_S,none,False,8989.0,False,9771.0,True,False,-103.72711742,32.58144203
+BS1_S,added,3002555428,MARGIE 24 FEDERAL COM #301H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS1_S,none,False,8941.0,False,9931.0,True,False,-103.72730808,32.58138717
+BS1_S,added,3002555431,MARGIE 24 FEDERAL COM #504H,EOG,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,no_evidence,,no_evidence,,BS1_S,none,False,9000.0,True,9748.0,True,False,-103.71754106,32.58164156
+BS1_S,added,3002556118,CHOCTAW BINGO 30 29 FEDERAL COM #467H,Mewbourne,30,Lea,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS2_C,none,False,8507.0,False,10105.0,True,False,-103.79667275,32.7140084
+BS1_S,added,4230137495,DOLLY VARDEN 33-69 101H,TRP Energy,42,Loving,2026-08-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS2_S,none,False,9127.0,False,10096.0,True,False,-103.52576447,31.65350914
+BS1_S,added,4247539015,DIRE WOLF F 9FB,Crescent Energy,42,Ward,2026-07-01,BS1_S,BS1_S,keep,,off_band,,off_band,,BS3_C,none,False,9881.0,False,14672.0,True,False,-103.3941803,31.6125679
+BS2_C,added,3001555170,POLO AOP FEDERAL COM #010H,Spur Energy,30,Eddy,2026-08-01,BS2_C,BS2_C,tvd_suspect,BS2_C->AVA_1,uncalibrated (tag kept),"A-prime: planned survey flagged -> AVA_1; tag kept, TVD not evidence",flag,AVA_1,AVA_1,none,True,2840.0,False,5194.0,False,False,-104.4726802,32.67459055
+BS2_C,added,3001555195,POLO AOP FEDERAL COM #001H,Spur Energy,30,Eddy,2026-08-01,BS2_C,BS2_C,keep,,off_band,,off_band,,BS2_S,none,True,3591.0,False,5183.0,False,False,-104.47246842,32.67130292
+BS2_C,added,3001555199,POLO AOP FEDERAL COM #070H,Spur Energy,30,Eddy,2026-08-01,BS2_C,BS2_C,keep,,off_band,,off_band,,BS2_S,none,True,3650.0,False,5206.0,False,False,-104.47269197,32.67054865
+BS2_C,added,3002550084,PEREGRINE 27 FEDERAL COM #731H,EOG,30,Lea,2026-08-01,BS2_C,BS2_C,keep,,off_band,,off_band,,BS2_S,none,False,10920.0,False,9959.0,True,False,-103.46521509,32.1734964
+BS2_C,added,3002550110,PEREGRINE 27 FEDERAL COM #742H,EOG,30,Lea,2026-08-01,BS2_C,BS2_C,keep,,off_band,,off_band,,BS2_S,none,False,10927.0,False,9574.0,True,False,-103.46246352,32.17281981
+BS2_C,added,3002554165,VACA 24 FEDERAL COM #403H,EOG,30,Lea,2026-08-01,BS2_C,BS2_C,keep,,agree,,agree,,BS3_S,none,True,10590.0,False,9946.0,True,False,-103.52306783,32.12391893
+BS2_C,added,3002555083,VACA 24 FEDERAL COM #416H,EOG,30,Lea,2026-08-01,BS2_C,BS2_C,keep,,agree,,agree,,BS2_S,none,True,10723.0,False,9949.0,True,False,-103.51858295,32.12368395
+BS2_C,added,4230137450,UL 19 MUDDLER J 1452H,ConocoPhillips,42,Loving,2026-08-01,BS2_C,BS2_C,keep,,agree,,agree,,BS2_C,none,False,9976.0,False,12769.0,True,False,-103.41893005,31.69973183
+BS2_C,added,4230137452,UL 19 MUDDLER L 1454H,ConocoPhillips,42,Loving,2026-08-01,BS2_C,BS2_C,keep,,agree,,agree,,BS2_C,none,False,9975.0,False,12798.0,True,False,-103.41387177,31.70108795
+BS3_S,added,3001557432,ALPINE 7 11 STATE #134H,Permian Resources,30,Eddy,2026-08-02,BS3_S,BS3_S,keep,,no_evidence,,no_evidence,,BS3_S,none,False,8371.0,False,15315.0,True,False,-104.23302763,32.67053
+BS3_S,added,3002554503,DATE 14 STATE COM #603H,EOG,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,agree,,agree,,BS3_S,none,True,11869.0,False,9958.0,True,False,-103.54207041,32.48665762
+BS3_S,added,3002555027,ZN 34 27 FEDERAL STATE COM #607H,Chevron,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,agree,,agree,,BS3_S,none,False,11370.0,False,7510.0,True,False,-103.4625495,32.2726455
+BS3_S,added,3002555028,ZN 34 27 FEDERAL STATE COM #608H,Chevron,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,agree,,agree,,BS3_S,none,False,11370.0,False,7408.0,True,False,-103.461061,32.272645
+BS3_S,added,3002555029,ZN 34 27 FEDERAL STATE COM #609H,Chevron,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,agree,,agree,,BS3_S,none,False,11370.0,False,7401.0,True,False,-103.4595725,32.2726445
+BS3_S,added,3002555537,STREETCAR 15 FEDERAL #583H,EOG,30,Lea,2026-08-01,BS3_S,BS3_S,tvd_suspect,BS3_S->WCA,rejected (0.40),Bone Spring -> Wolfcamp flag (BS3_S->WCA) never applied; TVD not evidence,flag,WCA_2,WCB_1,none,False,12663.0,False,4644.0,True,False,-103.56384029,32.13126625
+BS3_S,added,3002555741,TWINKLE 26 FEDERAL COM #132H,Matador,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,no_evidence,,no_evidence,,BS3_S,none,False,11227.0,False,15040.0,True,False,-103.73880459,32.52141544
+BS3_S,added,3002555743,TWINKLE 26 FEDERAL COM #134H,Matador,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11277.0,False,14935.0,True,False,-103.73015552,32.52124408
+BS3_S,added,3002555927,SUSAN LANCASTER FEDERAL COM #132H,Matador,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11344.0,False,9770.0,True,False,-103.72169534,32.51570586
+BS3_S,added,3002555929,SUSAN LANCASTER FEDERAL COM #131H,Matador,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,no_evidence,,no_evidence,,WCA_2,none,False,11337.0,False,9756.0,True,False,-103.72591661,32.51573189
+BS3_S,added,3002556053,CHOCTAW BINGO 30 29 FEDERAL COM #625H,Mewbourne,30,Lea,2026-08-01,BS3_S,BS3_S,keep,,off_band,,off_band,,BS3_S,none,False,10093.0,False,10381.0,True,False,-103.7972008,32.71674714
+BS3_S,added,4238941509,WOODS 5TB,Crescent Energy,42,Reeves,2026-03-15,BS3_S,BS3_S,keep,,off_band,,off_band,,BS3_S,none,False,10134.0,False,10488.0,True,False,-103.37825775,31.17024231
+BS3_C,added,3001555479,SWEET TEA FEDERAL COM #553H,ConocoPhillips,30,Eddy,2026-08-12,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,False,8892.0,False,7335.0,True,False,-104.02506764,32.16216387
+BS3_C,added,3001555630,SWEET TEA STATE COM #552H,ConocoPhillips,30,Eddy,2026-08-12,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,False,8878.0,False,7134.0,True,False,-104.02934196,32.16180944
+BS3_C,added,3002549840,PEREGRINE 27 FEDERAL COM #402H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,False,11771.0,False,9728.0,True,False,-103.46244338,32.17313067
+BS3_C,added,3002550106,PEREGRINE 27 FEDERAL COM #732H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,False,11751.0,False,9850.0,True,False,-103.46231774,32.17333887
+BS3_C,added,3002555089,VACA 24 FEDERAL COM #594H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,True,11637.0,False,9949.0,True,False,-103.5185829,32.12368392
+BS3_C,added,3002555355,PEREGRINE 27 FEDERAL COM #507H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS2_S,none,False,11848.0,False,9621.0,True,False,-103.45683007,32.17306297
+BS3_C,added,3002555386,PEREGRINE 27 FEDERAL COM #591H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,True,11799.0,False,9945.0,True,False,-103.46527198,32.17341038
+BS3_C,added,3002555398,PEREGRINE 27 FEDERAL COM #503H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS3_C,none,False,11782.0,False,9755.0,True,False,-103.46242139,32.17277455
+BS3_C,added,3002555536,STREETCAR 15 FEDERAL #582H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,agree,,agree,,BS2_S,none,False,11556.0,False,8837.0,True,False,-103.56479322,32.12447979
+BS3_C,added,3002555541,STREETCAR 15 FEDERAL #722H,EOG,30,Lea,2026-08-01,BS3_C,BS3_C,keep,,off_band,,off_band,,BS2_S,none,False,11543.0,False,4564.0,True,False,-103.55836225,32.13180917
+AVA_1,added,3002555849,QUAIL 16 STATE COM #205H,Avant Operating II,30,Lea,2026-08-10,AVA_1,AVA_1,keep,,off_band,,off_band,,AVA_1,none,False,9057.0,False,4908.0,False,False,-103.560092,32.573289
+AVA_2,added,3001556049,NUGGET 6 31 FEDERAL COM #025H,Occidental,30,Eddy,2026-08-01,AVA_2,AVA_2,keep,,off_band,,off_band,,BS1_S,none,False,8822.0,False,10089.0,True,False,-103.81248628,32.2539435
+AVA_2,added,3001556050,NUGGET 6 31 FEDERAL COM #026H,Occidental,30,Eddy,2026-08-01,AVA_2,AVA_2,keep,,off_band,,off_band,,BS2_C,none,False,8697.0,False,10309.0,True,False,-103.80955506,32.25374299
+AVA_2,added,3002554504,DATE 14 STATE COM #204H,EOG,30,Lea,2026-08-01,AVA_2,AVA_2,keep,,off_band,,off_band,,AVA_2,none,True,9760.0,False,9968.0,True,False,-103.53913172,32.48669666
+AVA_2,added,3002554507,DATE 14 STATE COM #205H,EOG,30,Lea,2026-08-01,AVA_2,AVA_2,keep,,off_band,,off_band,,AVA_2,none,True,9760.0,False,9963.0,False,False,-103.53669967,32.48670565
+AVA_2,added,3002554840,VACA 24 FEDERAL COM #203H,EOG,30,Lea,2026-08-01,AVA_2,AVA_2,keep,,agree,,agree,,BS2_C,none,True,10170.0,False,9957.0,True,False,-103.52590425,32.12376049
+AVA_2,added,3002554842,VACA 24 FEDERAL COM #205H,EOG,30,Lea,2026-08-01,AVA_2,AVA_2,keep,,agree,,agree,,BS2_C,none,True,10170.0,False,9943.0,True,False,-103.52008135,32.12378211
+AVA_2,added,3002555079,VACA 24 FEDERAL COM #225H,EOG,30,Lea,2026-08-01,AVA_2,AVA_2,keep,,agree,,agree,,BS2_C,none,True,10144.0,False,9953.0,True,False,-103.51858284,32.12388106
