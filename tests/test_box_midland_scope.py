@@ -99,6 +99,6 @@ def test_plan_table_matches_plan_doc() -> None:
     from scripts.box_midland_scope import PLAN_TABLE
 
     text = Path("docs/box_type_curves_plan.md").read_text(encoding="utf-8")
-    rows = re.findall(r"^\| (\w+) \| ([\d,]+) \| ([\d,]+) \| ([\d,]+) \| ([\d,]+) \(([\d,]+)\) \|$", text, flags=re.M)
+    rows = re.findall(r"^\| (\w+) \| ([\d,]+) \| ([\d,]+) \| ([\d,]+) \| ([\d,]+) \(([\d,]+)\) \|$", text, flags=re.MULTILINE)
     parsed = {r[0]: tuple(int(x.replace(",", "")) for x in r[1:]) for r in rows}
     assert parsed == PLAN_TABLE

@@ -190,7 +190,7 @@ def bench_card(p: pd.DataFrame, s: pd.DataFrame, b: str) -> dict[str, Any]:
         "sharing_recent": float(recent["has_production_sharing"].fillna(False).astype(bool).mean()) if len(recent) else math.nan,
         "uturn_modern": int((m["novi_slant_calculated"] == "U-Turn (Horizontal)").sum()),
         "water_2019": ms.water_split(water["water_source"]),
-        "undrilled": int(len(st)), "undrilled_pud": int((st["category"] == "PUD").sum()),
+        "undrilled": len(st), "undrilled_pud": int((st["category"] == "PUD").sum()),
         "undrilled_reconciled_null": int((st["recon_status"] == "not_reconciled").sum()),
         "stick_length": ms.length_shares(st["ll_ft"].where(st["ll_ft"] > 0, st["stick_ft"])),
         "reach": reach,
@@ -321,8 +321,8 @@ def render(out: Path, sm: dict[str, Any], imgs: dict[str, str]) -> Path:
          f"calendar-day cum per 1,000 ft / scf per bbl, modern wells first-producing 2016-01 … 2025-07. <b>Undrilled</b> = PUD + RES sticks with "
          f"reconciliation status NULL / remaining_pud / conflict (D117). Warehouse as-of {e(sm['asof'])}; built {e(sm['built_at'])} at {e(sm['git_sha'])}. "
          f"BOX exclusions applied ({sm['n_excluded']} Midland rows hit). READ ONLY — nothing written. Plan: docs/box_type_curves_plan.md PHASE 3, step 18.</div>"),
-        "<div class=toc><a href=#t1>1 headline</a><a href=#t2>2 cards</a><a href=#t3>3 laterals</a><a href=#t4>4 analog reach</a>"
-        "<a href=#t5>5 pooling</a><a href=#t6>6 Novi accuracy</a><a href=#t7>7 water</a><a href=#t8>8 Df</a><a href=#t9>9 record run</a><a href=#t10>10 maps</a></div>",
+        ("<div class=toc><a href=#t1>1 headline</a><a href=#t2>2 cards</a><a href=#t3>3 laterals</a><a href=#t4>4 analog reach</a>"
+         "<a href=#t5>5 pooling</a><a href=#t6>6 Novi accuracy</a><a href=#t7>7 water</a><a href=#t8>8 Df</a><a href=#t9>9 record run</a><a href=#t10>10 maps</a></div>"),
     ]
     # 1 headline + identity
     P.append("<h2 id=t1>1. Headline table (the plan's Phase-3 table, re-derived live)</h2>")
@@ -457,7 +457,7 @@ def main() -> None:
     und = s[s["undrilled"]]
     other_st = und[~und["formation_blueox"].isin([*ms.BENCHES, *ms.EMERGING_D2])].groupby(und["formation_blueox"].fillna("(null)")).size().to_dict()
     sm: dict[str, Any] = {
-        "asof": d["asof"], "built_at": dt.datetime.now().isoformat(timespec="seconds"), "git_sha": _sha(), "novi_vintage": "2026Q3 (live)",
+        "asof": d["asof"], "built_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"), "git_sha": _sha(), "novi_vintage": "2026Q3 (live)",
         "n_excluded": len(d["excluded"]), "n_boot": a.n_boot, "cards": cards, "pairs": pairs, "water_reach": water,
         "plan_identity": plan_identity(cards), "novi": novi_table(d["novi"]),
         "other_tags": ", ".join(f"{k} {v:,} producers / {other_st.get(k, 0):,} undrilled sticks" for k, v in other.items()),

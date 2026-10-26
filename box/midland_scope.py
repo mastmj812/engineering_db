@@ -15,6 +15,7 @@ not the selection itself: it ignores the spacing rule and the strike ellipse, so
 from __future__ import annotations
 
 import datetime as dt
+import itertools
 import math
 from collections.abc import Sequence
 from typing import Any
@@ -28,7 +29,7 @@ BASIN = "midland"
 SPRABERRY: tuple[str, ...] = ("US", "MS", "JM", "LSSH", "DEAN")
 WOLFCAMP: tuple[str, ...] = ("WCA_1", "WCB_1", "WCB_2", "WCC", "WCD")
 BENCHES: tuple[str, ...] = (*SPRABERRY, *WOLFCAMP)
-ADJACENT: tuple[tuple[str, str], ...] = tuple(zip(BENCHES[:-1], BENCHES[1:], strict=True))
+ADJACENT: tuple[tuple[str, str], ...] = tuple(itertools.pairwise(BENCHES))
 EMERGING_D2: tuple[str, ...] = ("MISS", "BRNT", "MRMC", "WDFD")
 
 MODERN_FROM = dt.date(2016, 1, 1)
@@ -111,7 +112,7 @@ def analog_reach(stick_xy: np.ndarray, prod_xy: np.ndarray, ks: Sequence[int] = 
     k-th candidate is beyond 20 mi would be `not_covered_no_analogs` at that k (D74)."""
     from scipy.spatial import cKDTree
 
-    out: dict[str, Any] = {"n_sticks": int(len(stick_xy)), "n_candidates": int(len(prod_xy))}
+    out: dict[str, Any] = {"n_sticks": len(stick_xy), "n_candidates": len(prod_xy)}
     if not len(stick_xy):
         return out
     kmax = max(ks)
@@ -152,7 +153,7 @@ def local_separation(xy_a: np.ndarray, tvd_a: np.ndarray, xy_b: np.ndarray, tvd_
         return {"n_hoods": 0}
     s = np.asarray(seps)
     p10, p50, p90 = quantiles(s)
-    return {"n_hoods": int(len(s)), "p10_ft": p10, "median_ft": p50, "p90_ft": p90,
+    return {"n_hoods": len(s), "p10_ft": p10, "median_ft": p50, "p90_ft": p90,
             "share_merged": float((np.abs(s) < MERGED_FT).mean()), "share_inverted": float((s < 0).mean())}
 
 
@@ -180,13 +181,13 @@ def spacing_stats(spacing_ft: Sequence[Any]) -> dict[str, Any]:
 def length_shares(lateral_ft: Sequence[Any], cuts: Sequence[float] = (LONG_FT, LAT_BAND[1], 20_000.0)) -> dict[str, float]:
     v = pd.to_numeric(pd.Series(list(lateral_ft)), errors="coerce").to_numpy(float)
     v = v[np.isfinite(v) & (v > 0)]
-    return {f"ge_{int(c)}": (float((v >= c).mean()) if len(v) else math.nan) for c in cuts} | {"n": int(len(v))}
+    return {f"ge_{int(c)}": (float((v >= c).mean()) if len(v) else math.nan) for c in cuts} | {"n": len(v)}
 
 
 def water_split(sources: Sequence[Any]) -> dict[str, Any]:
     s = pd.Series([x if isinstance(x, str) else "(no row)" for x in sources])
     vc = s.value_counts()
-    n = int(len(s))
+    n = len(s)
     return {"n": n, "counts": {k: int(v) for k, v in vc.items()},
             "share_calculated": float((s == "calculated").mean()) if n else math.nan,
             "share_measured": float((s == "measured").mean()) if n else math.nan}
