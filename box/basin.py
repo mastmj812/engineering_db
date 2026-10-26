@@ -8,8 +8,8 @@ measure is None, and the code that needs it refuses rather than borrowing the De
     df_terminal       terminal decline, nominal /yr, of every cohort P50 fit (boxfit fit_p50_series): Delaware 0.08,
                       Midland 0.06 (D132)
     state_line_lat    bench QC's TX / NM split (Delaware 32.0 N); None = the basin has no state line (Midland is all Texas)
-    pin_radius_ft,    the D23 edge metric, one value per basin: Delaware r = 2,640 ft / c = 3,960 ft (gate 2); Midland is
-    closing_ft        calibrated on WCA_1 in step 20a (None until then)
+    pin_radius_ft,    the D23 edge metric, one value per basin: Delaware r = 2,640 ft / c = 3,960 ft (gate 2); the Midland
+    closing_ft        adopts the same values (D134 A, gate 19); None = not set, and extent generation refuses
     grid_dirs         structure-grid folders under 'Engineering - General' (geology package context layers, D25 / D28);
                       () = none (no Midland grids exist)
     novi_basin        the Novi Snowflake report's basin token (basin_research__<token>__<vintage>)
@@ -40,7 +40,8 @@ MIDLAND = "midland"
 BASINS: dict[str, Basin] = {
     DELAWARE: Basin(name=DELAWARE, label="Delaware", df_terminal=0.08, state_line_lat=32.0, pin_radius_ft=2640.0, closing_ft=3960.0,
                     grid_dirs=(("Grids", "Delaware", "Structure"), ("Structure Grids", "Delaware")), novi_basin="Delaware_Basin"),
-    MIDLAND: Basin(name=MIDLAND, label="Midland", df_terminal=0.06, state_line_lat=None, pin_radius_ft=None, closing_ft=None,
+    # D134 A (gate 19): the Midland adopts the Delaware D23 edge metric; reopened only if a Midland extent visibly fails
+    MIDLAND: Basin(name=MIDLAND, label="Midland", df_terminal=0.06, state_line_lat=None, pin_radius_ft=2640.0, closing_ft=3960.0,
                    grid_dirs=(), novi_basin="Midland_Basin"),
 }
 

@@ -36,8 +36,10 @@ def test_midland_is_the_gate18_decisions_and_refuses_the_unmeasured():
     assert m.df_terminal == 0.06  # D132
     assert m.state_line_lat is None and pkg.grid_roots("midland") == () and pkg.grid_root("midland") is None
     assert bsn.novi_report("midland", "2025Q3") == "basin_research__Midland_Basin__2025Q3"
+    me = er.edge_params("midland")  # D134 A: the Midland adopts the Delaware D23 r / c
+    assert (me.pin_radius_ft, me.close_ft) == (er.EDGE.pin_radius_ft, er.EDGE.close_ft)
     with pytest.raises(ValueError, match="step 20a"):
-        er.edge_params("midland")  # the D23 r / c is calibrated on Midland WCA_1 in step 20a
+        bsn.require(None, "midland", "a parameter", "step 20a")  # an unset parameter still refuses by name
     with pytest.raises(ValueError, match="unknown basin"):
         bsn.get("permian")
 
