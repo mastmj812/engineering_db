@@ -65,7 +65,8 @@ K = 48
 HORIZONS: tuple[int, ...] = (12, 24, 36)
 BENCH_K = 15
 NM, TX = "30", "42"
-LAST = dt.date(2026, 7, 1)  # production through, = every tuning / holdout run and record run 10
+LAST = dt.date(2026, 7, 1)  # the water spec's SCORED data-through (steps 11 / 12a, record run 10); a production build runs on its own
+                            # run's data-through and refuses only an older one (D126)
 MI = 5280.0
 DOCS = Path("docs") / "box"
 POOL_REFRESH = DOCS / "pool-2026-10-15"

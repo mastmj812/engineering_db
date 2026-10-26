@@ -85,9 +85,10 @@ def pull_span(conn: Any, ids: list[str]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["api10", "first_month", "last_month"]).set_index("api10")
 
 
-def group_frame(conn: Any, group: str) -> pd.DataFrame:
-    """The group's pool well set (BENCH_SPECS tags, exclusions.csv) with xy, completed lateral, spacing, first / last month."""
-    wells, _, _ = ac.bench_wells(w.GROUP_WELLS[group], group)
+def group_frame(conn: Any, group: str, wells_dir: Path | None = None) -> pd.DataFrame:
+    """The group's pool well set (BENCH_SPECS tags, exclusions.csv) with xy, completed lateral, spacing, first / last month.
+    `wells_dir` = the oil run's set for the group (D126: water follows the run); None = the step-11 / 12a set (GROUP_WELLS)."""
+    wells, _, _ = ac.bench_wells(wells_dir or w.GROUP_WELLS[group], group)
     wells = wells.drop_duplicates("api10").reset_index(drop=True)
     x, y = _xy(wells["mid_lon"], wells["mid_lat"])
     wells["x"], wells["y"] = x, y

@@ -166,67 +166,52 @@ vintage keeps scoring in `intel_forecast_accuracy_vintage`. Known effect: the
 anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
 forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).
 
-## 9. BOX refresh (after step 7 verifies; plan step 7, D58 / D67 / D73 / D76)
+## 9. BOX refresh (after step 7 verifies; plan step 13, D123 / D124 / D125 / D126)
 
-BOX (schema `box`, app-owned; the ETL never touches it) forecasts every in-extent WCA PUD with the frozen analog
-workup `box_v2_wf`. A new Novi vintage means new stick ids and new PUDs, so BOX re-runs on top of the reloaded
-`intel_locations` / `reconciled_inventory`. Every write below needs its own explicit go, separate from the reload's.
+BOX (schemas `box` / `box_econ`, app-owned; the ETL never touches them) forecasts every in-extent Delaware PUD of the 13
+record groups (WCA, BS2_S, WCXY_WCA1, WCB_1, WCC, AVA_0/1/2, BS1_S, BS2_C, BS3_C, BS3_S, WCB_2) with the r2 analog workup
+(D121), the proximity layer (D113 / D116) and water (D107-D110). A new Novi vintage changes the PUD universe and the stick ids,
+so BOX produces ONE new record run on top of the reloaded `intel_locations` / `reconciled_inventory`. The refresh contract is
+D126 (`docs/box/step13a-2026-10-26/CONTRACT.md`). **Every write below needs its own explicit go, separate from the reload's.**
 
-1. **Analog pool well set — D84 refresh (read-only, ~1 min).** `build` reads a `wells_final_WCA.csv` directory. New
-   producers enter the pool only through a refreshed set: bench QC + the class rule of record
-   (`box/bench_qc.py` consensus detector, `box/qc_rule.py`) **on wells never judged before, no calibration cards**:
+0. **Is it due? (read-only)** `python -m scripts.box_refresh check`: a new vintage, or the record's production-through lagging the
+   warehouse by more than 4 months (D126 safety net), plus the extent re-review trigger per group (>= 10 producers first
+   producing after the extent was stored, outside it within 2 mi). A due extent re-review is its own step (step-3 method +
+   geology, D28), before the build. `python -m scripts.box_refresh plan --pool <dir> --out runs/<label>` prints the chain below
+   with the exact commands.
+1. **Analog pools, all 13 groups (read-only, ~1 min; D84 / D126):**
    ```powershell
-   python -m scripts.box_pool_refresh --dry-run      # classify + print, write nothing
+   python -m scripts.box_pool_refresh --dry-run      # classify + print per pool, write nothing
    python -m scripts.box_pool_refresh                # writes docs/box/pool-YYYY-MM-DD/
    ```
-   - Base defaults to the newest `docs/box/pool-*` refresh, else the gate-1 set (`docs/box/step1-2026-10-06`).
-     "New" = not in the base's `universe.csv` (the gate-1 universe was not recorded, so the first refresh reconstructs
-     it once; see `box/pool_refresh.py`). Never re-run `box_apply_rule` over the whole set: re-deciding old wells
-     churns ~1 % each way and re-litigates gate 1.
-   - The log must say `identity OK` (the base file is a byte-identical prefix of the new one; BS2_S copied unchanged).
-   - Review `docs/box/pool-YYYY-MM-DD/index.html` (map of the added wells + flag classes; ruled-out and not-re-decided
-     wells listed) and get Michael's confirmation of the added wells before the build. Watch for new
-     `uncalibrated` classes (tag kept, no cards) and new rows already in `docs/box/exclusions.csv` (dropped at load).
-   - Commit the directory, then build with `--wells docs/box/pool-YYYY-MM-DD`. The run stamps `wells_dir`.
-2. **Build (read-only, ~40 min):** from a clean, committed checkout (the run stamps the HEAD SHA; `--record` refuses a
-   dirty build):
+   - ONE directory holds all twelve `wells_final_<pool>.csv` (WCXY rides WCA): each = its base file byte-for-byte + the wells
+     never judged before that the class rule puts in that pool. Old wells are never re-decided: a tag change on an existing
+     well reaches BOX only through a 13e tag release (warehouse first, then a diff applied to every pool).
+   - Base = the newest `docs/box/pool-*` refresh; a pool it lacks (the first all-pool refresh) starts from its step-15 set.
+   - The log must say `identity OK` for every pool. Review `index.html` (per-pool table, map of the added wells, the
+     not-re-decided and drift counts) and get Michael's confirmation of the added wells. Then commit the directory.
+2. **Builds (read-only, ~8 h, resumes per group):** from a clean, committed checkout,
    ```powershell
-   python -m scripts.box_pud_run build [--wells <dir>]
+   python -m scripts.box_refresh build --pool docs/box/pool-YYYY-MM-DD --out runs/<label> [--workers 14]
    ```
-   Check the log:
-   - `universe` = the D67 count for the new vintage;
-   - the harness equivalence `max_rel_diff` is 0.0 (the build refuses otherwise);
-   - `covered with forecast` vs candidates — any shortfall is `not_covered_no_analogs` (D74), and it gets reported.
-3. **Store (WRITE to Supabase, explicit go):**
-   ```powershell
-   python -m scripts.box_pud_run store --record
-   ```
-   - The D73 crosswalk carries locations forward from the most recent earlier vintage: same basin + formation_blueox,
-     ≥ 50 % of the shorter stick within 250 ft, 1:1, greedy by share. The log prints `carried` / `new`.
-   - Storing an older vintage than one already stored is refused.
-   - Identity checks run before COMMIT: rows = universe; covered + no_analogs = the in-extent WCA_1 + WCA_2 universe;
-     600 months per stream summing to EUR.
-3b. **Water on the new record run (D107 / D108 / D110; sql/62).** `box_pud_run store` writes oil + gas only. Add the water
-   stream, built from the same run artifact (read-only build, then a WRITE on the explicit go):
-   ```powershell
-   python -m scripts.box_water_run build --run-pkl runs/<run>/run.pkl --out runs/<run>_water
-   python -m scripts.box_water_run store --out runs/<run>_water
-   ```
-   - The build refuses a run whose data-through differs from the water spec's `water11.LAST`. On a new vintage that pin
-     moves with the run: bump it in a reviewed commit, never silently.
-   - The store's identity checks run before COMMIT:
-     - oil / gas rows unchanged (ordered md5);
-     - one water row per covered + covered_provisional location;
-     - 600 months summing to EUR;
-     - validated water = the WCA + BS2_S `covered` rows;
-     - ≥ 3 named water analogs per location.
-4. **Verify live, read-only:**
-   - one `is_record` run;
-   - coverage counts match the log;
-   - `analyst_ro` reads `box.pud_forecast_month`.
-5. **Render** the review pages (`python -m scripts.box_pud_run render`). The DB is the record; pages are renders (D80).
-6. **Steven:** the record `run_id` changed, so his `box_econ.box_pud_econ` rows for the old run stay attached to it. That
-   run can't be deleted while priced. Tell him the new run_id, and before first pricing confirm `downtime_basis` (D63 / D81).
-   Check `box_econ.box_pud_econ_tie` after he loads.
-7. **Prospective confirmation (D59 condition 1 / D70):** when the frozen cohort's horizons have data, score it with
-   `python -m scripts.box_prospective score` (definition frozen in `box/prospective.py`). Rules unchanged.
+   It runs `box_pud_run build --selection r2 --wells <pool> --benches <13 groups>` (every group reads its set from the pool
+   directory) and then `box_water_run build` (water follows the run's data-through and well sets; no pin to bump). Check:
+   universe = the vintage's PUD count; harness equivalence 0.0 on every group; any `not_covered_no_analogs` reported.
+   The evidence pack (haircut, disclosure) is the frozen `r2_evidence.json` between annual re-scores (D126: each Q1).
+3. **Store the base run as record (WRITE, go):** `python -m scripts.box_pud_run store --out runs/<label> --record`. The D73 /
+   D83 crosswalk carries locations forward (the log prints carried / new / stopped). Identity checks run before COMMIT.
+4. **Water on it (WRITE, go):** `python -m scripts.box_water_run store --out runs/<label>_water --run-id <base>`.
+5. **Proximity re-measure (read-only, D116):**
+   `python -m scripts.box_step16d prox-measure --run-id <base> --box-db live --out runs/<label>_prox --links-out runs/<label>_prox_links`.
+6. **Proximity record (WRITE, go):** `python -m scripts.box_prox_record store --src-run <base> --outcomes
+   runs/<label>_prox/pud_outcomes.csv.gz --runs runs/<label>_prox_links` (rollback rehearsal), then the same with
+   `--commit --record`. The derived run becomes the record.
+7. **Verify live, read-only:** one `is_record` run; per-stream counts and oil MMbbl as the log; `analyst_ro` reads; erebor
+   shows the new run.
+8. **Prune (WRITE, go; D123):** `python -m scripts.box_prune_runs --apply --include-priced` keeps ONLY the record run and
+   deletes a priced run's `box_econ.box_pud_econ` rows first, in one transaction.
+9. **Steven:** post the new record run_id to #eng-updates (its own go; no email) so he re-prices; check
+   `box_econ.box_pud_econ_tie` and `downtime_basis` (D63 / D81) after he loads.
+10. **Prospective tests (never re-tuned):** D125 (`box/prospective16.py`, 13 groups) is judged ONCE when production runs
+    through >= 2028-01-01 (cum-12) / 2029-01-01 (cum-24); early reads are reported only. D85 (`box/prospective.py`, WCA) is
+    informational. `python -m scripts.box_prospective16 status`.
