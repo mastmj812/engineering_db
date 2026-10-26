@@ -205,7 +205,7 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
     front_txt = "; ".join(f"<b>{s}</b>: {v['ok']} performing / {v['rolled']} rolled / {v['no12']} too new step-outs within {bp.stepout_reach_mi:g} mi (performing median {v['perf_median']:.2f}× interior)" for s, v in fr.items()) or "none"
     parts = [
         f"<!doctype html><html><head><meta charset=utf-8><title>BOX step 3 — extent {pool}</title><style>{_CSS}</style></head><body>",
-        f"<h1>BOX step 3 — extent: Delaware {pool} (v{ctx['version']}, generated)</h1>",
+        f"<h1>BOX step {ctx.get('step', '3')} — extent: {ctx.get('basin_label', 'Delaware')} {pool} (v{ctx['version']}, generated)</h1>",
         (f"<div class=meta>Grain: one lateral per api10; gate-1 final set <code>wells_final_{pool}.csv</code>. Evidence = first prod ≥ 2016 (n = {st['n_evidence']:,}); pre-2016 n = {st['n_pre2016']:,} "
         f"(negative evidence only). Extent = drilled core (step-2 outline eroded by r = ½ mi back onto the laterals, D21) + per-segment buffer: k = {bp.k:g}, cap = {bp.cap_ft:,.0f} ft, "
         f"floor {bp.floor_ft:,.0f} / {1.5 * bp.floor_ft:,.0f} / {2 * bp.floor_ft:,.0f} ft (pinned rolled / unknown / strong), perf reference = {bp.perf_ref} interior median "
@@ -243,9 +243,10 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         "<b>D27 (2026-10-09):</b> every other void inside the development envelope is filled too; geology cuts one only for a structural or reservoir reason. "
         "Backtest note: holes open at T were later infilled with wells that performed like the interior.</div>"
         + _table(holes, {"area_sqmi": ",.1f", "sopa_share": ".0%", "legacy_cover": ".0%", "lon": ".4f", "lat": ".4f"}, max_rows=40),
-        "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
-        "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "
-        "Columns compare the generated extent with the drilled core and the step-2 measuring outline. WCXY PUDs are listed apart (D20: WCXY is WCA evidence one-way; PUD membership is a step-7 call).</div>"
+        (ctx.get("pud_section") or (
+            "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
+            "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "
+            "Columns compare the generated extent with the drilled core and the step-2 measuring outline. WCXY PUDs are listed apart (D20: WCXY is WCA evidence one-way; PUD membership is a step-7 call).</div>"))
         + (_table(puds, {}) if len(puds) else "<div class=meta>not pulled</div>"),
         _MAP_JS.replace("__DATA__", data),
         "</body></html>",

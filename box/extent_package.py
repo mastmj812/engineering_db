@@ -293,6 +293,8 @@ def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any]
 def write_contours(out: Path, pool: str, contours: dict[str, Any]) -> list[Path]:
     """The pool's ctx_struct / ctx_isopach layers (from context_contours); returns the files written."""
     files: list[Path] = []
+    if not any(contours.values()):  # no structure grid for the pool's basin (the Midland): no context layers
+        return files
     top, base = GRIDS[pool]
     for kind, items in contours.items():
         if items:

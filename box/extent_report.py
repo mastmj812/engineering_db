@@ -473,6 +473,51 @@ def pull_puds(conn: Any, benches: list[str], bounds_ll: tuple[float, float, floa
     return pd.DataFrame(rows, columns=["stick_id", "formation_blueox", "status", "wkt"])
 
 
+_STICK_SQL = """
+SELECT il.stick_id, il.category, fb.formation_blueox, ri.status, ST_AsText(il.wellstick_geom)
+FROM curated.intel_locations il
+JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
+LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
+WHERE il.category IN ('PUD', 'RES')
+  AND il.basin = %(basin)s
+  AND fb.formation_blueox = ANY(%(benches)s)
+  AND il.wellstick_geom IS NOT NULL
+  AND il.wellstick_geom && ST_MakeEnvelope(%(x0)s, %(y0)s, %(x1)s, %(y1)s, 4326)
+"""
+
+
+def pull_sticks(conn: Any, benches: list[str], bounds_ll: tuple[float, float, float, float], basin: str) -> pd.DataFrame:
+    """Novi PUD + RES sticks of the benches in the box, with category + reconciliation status (D117 universe; READ ONLY)."""
+    with conn.cursor() as cur:
+        cur.execute("SET TRANSACTION READ ONLY")
+        cur.execute(_STICK_SQL, {"benches": benches, "x0": bounds_ll[0], "y0": bounds_ll[1], "x1": bounds_ll[2], "y1": bounds_ll[3], "basin": basin})
+        rows = cur.fetchall()
+    conn.rollback()
+    return pd.DataFrame(rows, columns=["stick_id", "category", "formation_blueox", "status", "wkt"])
+
+
+def undrilled_counts(sticks: pd.DataFrame, polys: dict[str, Any]) -> pd.DataFrame:
+    """D117 undrilled universe (remaining_pud ∪ conflict ∪ not yet reconciled, any Novi category) with >= 50 % of the stick
+    inside each polygon (rule 9). Rows: bench × category × status, then 'undrilled (D117)' totals per bench (PUD + RES) and
+    per bench × category. Columns: one per polygon + 'n' (every stick pulled, inside or not)."""
+    if sticks.empty:
+        return pd.DataFrame()
+    g = eg.to_ft(list(shapely.from_wkt(sticks["wkt"])))
+    d = sticks.assign(status=sticks["status"].fillna("NULL (not yet reconciled)"), n=1)
+    d["undrilled"] = d["status"].isin(["remaining_pud", "conflict", "NULL (not yet reconciled)"])
+    L = np.asarray([x.length for x in g])
+    for name, poly in polys.items():
+        shapely.prepare(poly)
+        inter = shapely.length(shapely.intersection(np.asarray(g, dtype=object), poly))
+        d[name] = np.divide(inter, L, out=np.zeros(len(L)), where=L > 0) >= 0.5
+    cols = ["n", *polys]
+    out = d.groupby(["formation_blueox", "category", "status"])[cols].sum().reset_index()
+    u = d[d["undrilled"]]
+    by_cat = u.groupby(["formation_blueox", "category"])[cols].sum().reset_index().assign(status="undrilled by category")
+    tot = u.groupby("formation_blueox")[cols].sum().reset_index().assign(category="PUD + RES", status="undrilled (D117)")
+    return pd.concat([out, by_cat, tot], ignore_index=True).sort_values(["formation_blueox", "status", "category"]).reset_index(drop=True)
+
+
 def pud_counts(puds: pd.DataFrame, polys: dict[str, Any]) -> pd.DataFrame:
     """D1 universe (remaining_pud ∪ NULL ∪ conflict; Novi PUD category only, no RES) with >= 50 % of
     the stick inside each polygon (co-extent overlap, rule 9). Rows: bench × status class."""

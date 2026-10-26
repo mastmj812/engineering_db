@@ -94,7 +94,9 @@ def overlap_table(builds: dict[str, dict[str, Any]], rec: dict[str, Any]) -> pd.
 
 
 def overview_png(builds: dict[str, dict[str, Any]], rec: dict[str, Any], sopa: Any) -> str:
-    cols = {"BS3_S": "#0891b2", "BS3_C": "#c2410c", "WCA": "#1e3a8a", "BS2_S": "#16a34a"}
+    """One panel per pool; ``sopa`` None = no potash area drawn (a basin without it: drawing it would stretch the axes)."""
+    cols = {"BS3_S": "#0891b2", "BS3_C": "#c2410c", "WCA": "#1e3a8a", "BS2_S": "#16a34a", "WCA_1": "#2563eb", "WCB_1": "#dc2626",
+            "WCB_2": "#7f1d1d", "WCC": "#f97316", "WCD": "#a16207"}
     fig, axes = plt.subplots(1, len(builds), figsize=(8 * len(builds), 8.5))
     for ax, (pool, b) in zip(np.atleast_1d(axes), builds.items()):
         for p, g in rec.items():
@@ -107,7 +109,7 @@ def overview_png(builds: dict[str, dict[str, Any]], rec: dict[str, Any], sopa: A
             for part in ob["extent"].geoms:
                 c = np.asarray(part.exterior.coords)
                 ax.plot(c[:, 0], c[:, 1], color=cols.get(other, "#6b7280"), lw=1.0, ls="--", label=f"{other} proposed" if part is ob["extent"].geoms[0] else None)
-        for part in ex.as_multi(sopa).geoms:
+        for part in (ex.as_multi(sopa).geoms if sopa is not None else []):
             c = np.asarray(part.exterior.coords)
             ax.fill(c[:, 0], c[:, 1], color="#0ea5e9", alpha=0.08, lw=0)
         pr = b["prep"]
@@ -141,17 +143,19 @@ def index_html(builds: dict[str, dict[str, Any]], ctx: dict[str, Any]) -> str:
                      "bridged sq mi": st["bridged_sqmi"], "pinned+strong flag mi": st["flagged_pinned_strong_mi"]})
     tab = pd.DataFrame(rows)
     reg = pd.DataFrame([{"pool": k, **v} for k, v in ctx["regression"].items()]) if ctx.get("regression") else pd.DataFrame()
+    title = ctx.get("title", "BOX step 15a — proposed D27 extents: BS3_S and BS3_C (v1, generated, NOT stored)")
+    sets = ctx.get("sets_note", "Well sets = the gate-15a QC sets (<code>../wells_final_BS3_*.csv</code>; not pooled, gate 15a 2026-10-16).")
     parts = [
-        f"<!doctype html><html><head><meta charset=utf-8><title>BOX 15a — BS3 extents</title><style>{egr._CSS}</style></head><body>",
-        "<h1>BOX step 15a — proposed D27 extents: BS3_S and BS3_C (v1, generated, NOT stored)</h1>",
-        (f"<div class=meta>Built {ctx['built']} at {ctx['git_sha']}. Read-only. Well sets = the gate-15a QC sets (<code>../wells_final_BS3_*.csv</code>; not pooled, gate 15a 2026-10-16). "
-         f"Method of record unchanged: edge metric D23 (r = 2,640 ft, c = 3,960 ft), buffer k = {bp.k:g}, cap = {bp.cap_ft:,.0f} ft, floor = {bp.floor_ft:,.0f} ft, {bp.perf_ref} reference "
+        f"<!doctype html><html><head><meta charset=utf-8><title>{title.split(' — ')[0]} — extents</title><style>{egr._CSS}</style></head><body>",
+        f"<h1>{title}</h1>",
+        (f"<div class=meta>Built {ctx['built']} at {ctx['git_sha']}. Read-only. {sets} "
+         f"Method of record unchanged: edge metric D23 (r = {ctx['edge'].pin_radius_ft:,.0f} ft, c = {ctx['edge'].close_ft:,.0f} ft), buffer k = {bp.k:g}, cap = {bp.cap_ft:,.0f} ft, floor = {bp.floor_ft:,.0f} ft, {bp.perf_ref} reference "
          f"(step-3 calibration of record, not re-picked), D27 envelope ({bp.min_cluster}-lateral development clusters within {bp.bridge_mi:g} mi in, gaps < {bp.bridge_mi:g} mi bridged, no voids), "
-         "D24 potash, D26 legacy fill, no updip limit. Gate summary: <code>FINDINGS.md</code>. Geology package: <code>geology/</code>.</div>"),
+         f"{ctx.get('rules_note', 'D24 potash, D26 legacy fill, no updip limit.')} Gate summary: <code>FINDINGS.md</code>. Geology package: <code>geology/</code>.</div>"),
         "<h2>Extents</h2>" + egr._table(tab, {"extent sq mi": ",.0f", "drilled core sq mi": ",.0f", "interior median oil12 / kft": ",.0f", "bridged sq mi": ",.0f", "pinned+strong flag mi": ",.1f"}).replace("&lt;a href", "<a href").replace("&gt;", ">").replace("&lt;/a", "</a"),
         f"<img src='{ctx['overview_png']}' style='max-width:100%'>",
         "<h2>Overlap with each other and with the record extents</h2>" + egr._table(ctx["overlap"], {"shared_sqmi": ",.0f", "share_of_extent": ".0%"}),
-        "<h2>D1 PUD universe inside (read-only count; ≥ 50 % of the stick inside)</h2>" + egr._table(ctx["pud_summary"], {}),
+        f"<h2>{ctx.get('pud_heading', 'D1 PUD universe inside (read-only count; ≥ 50 % of the stick inside)')}</h2>" + egr._table(ctx["pud_summary"], {}),
         "<h2>Envelope backtest on these benches (check, not a re-calibration)</h2><div class=meta>Same test as step 3: the extent rebuilt from laterals online before each cutoff; later wells ≥ 50 % outside the cutoff core and within 3 mi of it, 12-mo known: share of performing (≥ 0.70× interior) vs rolled ones it contains.</div>"
         + egr._table(ctx["env_bt"], {"area_sqmi": ",.0f", "tpr": ".2f", "fpr": ".2f", "j": ".2f", "precision": ".2f"}),
         "<h2>Regression guard: record extents rebuilt with this code</h2>" + (egr._table(reg, {"record_sqmi": ",.2f", "rebuilt_sqmi": ",.2f", "rel_diff": ".2e"}) if len(reg) else "<div class=meta>skipped</div>"),
@@ -161,9 +165,12 @@ def index_html(builds: dict[str, dict[str, Any]], ctx: dict[str, Any]) -> str:
 
 
 def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: int = 1, gate1_dir: Path | None = None, git_sha: str = "",
-        bodies_min: int | None = None, basin: str = "delaware") -> dict[str, Any]:
-    """`basin` (step 19): its D23 edge metric (er.edge_params - refused until calibrated), PUD pull and labels."""
+        bodies_min: int | None = None, basin: str = "delaware", page: dict[str, str] | None = None) -> dict[str, Any]:
+    """`basin` (step 19): its D23 edge metric (er.edge_params - refused until set), PUD pull and labels. Outside the Delaware
+    (step 20a) the potash area is neither drawn nor packaged (it lies in the Delaware), the Delaware record extents are not
+    overlaid, and the undrilled count is D117's (Novi PUD + RES, by category). `page` = index-page text overrides."""
     edge = er.edge_params(basin)
+    delaware = basin == bsn.DELAWARE
     out.mkdir(parents=True, exist_ok=True)
     geo_dir = out / "geology"
     bp = record_params()
@@ -174,16 +181,20 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     sopa = er.load_sopa()
     builds = {pool: er.build_pool(df[df.pool == pool], pool, bp, sopa, None, edge) for pool in pools}
     env_bt = pd.DataFrame([r for pool in pools for r in er.envelope_backtest(df[df.pool == pool], pool, bp, sopa, None, edge)])
-    rec = record_extents()
-    # D1 PUD universe (read-only)
+    rec = record_extents() if delaware else {}
+    # D1 PUD universe (read-only); outside the Delaware the D117 undrilled universe (PUD + RES) by category
     pud_tabs: dict[str, pd.DataFrame] = {}
     for pool, b in builds.items():
         env = eg.to_lonlat([shapely.box(*b["extent"].bounds).buffer(eg.FT_PER_MI)])[0].bounds
-        pu = er.pull_puds(conn, [pool], env, basin)
-        pud_tabs[pool] = er.pud_counts(pu, {"in extent": b["extent"], "in drilled core": b["prep"].core, "in step-2 outline": Polygon(b["prep"].r["body"].exterior)})
-    pud_summary = pd.concat([t[t.status == "D1 universe"].assign(pool=p) for p, t in pud_tabs.items()], ignore_index=True)
-    # geology package
-    files: list[Path] = pkg.write_sopa(geo_dir, sopa)
+        polys = {"in extent": b["extent"], "in drilled core": b["prep"].core, "in step-2 outline": Polygon(b["prep"].r["body"].exterior)}
+        if delaware:
+            pud_tabs[pool] = er.pud_counts(er.pull_puds(conn, [pool], env, basin), polys)
+        else:
+            pud_tabs[pool] = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys)
+    total = "D1 universe" if delaware else "undrilled (D117)"
+    pud_summary = pd.concat([t[t.status == total].assign(pool=p) for p, t in pud_tabs.items()], ignore_index=True)
+    # geology package (the potash polygon only where it is: the Delaware)
+    files: list[Path] = pkg.write_sopa(geo_dir, sopa) if delaware else []
     for pool, b in builds.items():
         clip = gio.ft13_to_geology([shapely.box(*b["extent"].bounds).buffer(10 * eg.FT_PER_MI)])[0]
         # structure grids are Delaware-only (GRIDS is keyed by bench name, and WCB_1 / WCB_2 / WCC exist in both basins)
@@ -200,8 +211,9 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     )
     (geo_dir / "README.txt").write_text(pkg.README.format(built=built, pools=", ".join(pools), version=version, rule=rule_txt), encoding="utf-8")
     regression = reproduce(conn, bp, gate1_dir) if gate1_dir is not None else {}
-    ctx = {"env_bt": env_bt, "built": built, "bp": bp, "version": version, "puds": pud_tabs, "sopa_ll": eg.to_lonlat([sopa.simplify(200.0)])[0], "git_sha": git_sha,
-           "overlap": overlap_table(builds, rec), "overview_png": overview_png(builds, rec, sopa), "pud_summary": pud_summary, "regression": regression}
+    ctx = {"env_bt": env_bt, "built": built, "bp": bp, "version": version, "puds": pud_tabs, "sopa_ll": eg.to_lonlat([sopa.simplify(200.0)])[0] if delaware else None,
+           "git_sha": git_sha, "overlap": overlap_table(builds, rec), "overview_png": overview_png(builds, rec, sopa if delaware else None), "pud_summary": pud_summary,
+           "regression": regression, "edge": edge, "basin_label": bsn.get(basin).label, **(page or {})}
     for pool, b in builds.items():
         (out / f"extent_{pool}.html").write_text(pages.pool_page(pool, b, ctx), encoding="utf-8")
         (out / f"extent_{pool}_v{version}.geojson").write_text(json.dumps(er._geojson(b, pool, version, bp, built, basin, edge)), encoding="utf-8")
@@ -238,10 +250,11 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
-    if pkg.grid_root(basin) is None:  # the map is drawn over a structure grid; a basin without grids needs its own variant
-        raise ValueError(f"{basin}: no structure grids for the visual check (a grid-free variant is step 20's)")
-    top_s, _ = pkg.GRIDS[pool]
-    xs, ys, Z = pkg._grid(pkg.require_grid(top_s, grid_dir))
+    # a basin without structure grids (the Midland, D25 / D28) gets the same map without the structure underlay (step 20a)
+    gridded = pkg.grid_root(basin) is not None
+    if gridded:
+        top_s, _ = pkg.GRIDS[pool]
+        xs, ys, Z = pkg._grid(pkg.require_grid(top_s, grid_dir))
     ev = wells[wells["evidence"] & wells["geom"].notna()]
     old = wells[~wells["evidence"] & wells["geom"].notna()]
     ev_g = gio.ft13_to_geology(list(ev["geom"]))
@@ -252,10 +265,12 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     pad = 5 * 5280.0
     x0, y0, x1, y1 = allb[0] - pad, allb[1] - pad, allb[2] + pad, allb[3] + pad
     fig, ax = plt.subplots(figsize=(13, 13))
-    mx = (xs >= x0) & (xs <= x1)
-    my = (ys >= y0) & (ys <= y1)
-    Zc = Z[np.ix_(my, mx)]
-    finite = Zc[np.isfinite(Zc)]
+    finite = np.array([])
+    if gridded:
+        mx = (xs >= x0) & (xs <= x1)
+        my = (ys >= y0) & (ys <= y1)
+        Zc = Z[np.ix_(my, mx)]
+        finite = Zc[np.isfinite(Zc)]
     if finite.size:
         lv = np.arange(np.floor(finite.min() / 250) * 250, np.ceil(finite.max() / 250) * 250 + 250, 250)
         cf = ax.contourf(xs[mx], ys[my], np.ma.masked_invalid(Zc), levels=lv, cmap="terrain_r", alpha=0.55)
@@ -263,7 +278,7 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
         ax.clabel(cs, fmt="%d", fontsize=6)
         cb = fig.colorbar(cf, ax=ax, shrink=0.55, pad=0.01)
         cb.set_label(f"{top_s} structure (grid Z, ft ~ KB TVD)")
-    for g in ex.as_multi(sopa_g).geoms:
+    for g in (ex.as_multi(sopa_g).geoms if gridded else []):  # potash area: the Delaware's only
         c = np.asarray(g.exterior.coords)
         ax.fill(c[:, 0], c[:, 1], color="#0ea5e9", alpha=0.10, lw=0.6, ec="#0ea5e9")
     for g in old_g:
@@ -312,8 +327,12 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     ax.set_xticks([])
     ax.set_yticks([])
     area = extent_ft13.area / eg.FT_PER_MI**2
-    ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_s} structure; "
-                 f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); potash area blue; dashed = TX/NM line", fontsize=9)
+    if gridded:
+        ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_s} structure; "
+                     f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); potash area blue; dashed = TX/NM line", fontsize=9)
+    else:
+        ax.set_title(f"{bsn.get(basin).label} {pool}: {label} ({area:,.0f} sq mi, black; no structure grid exists for this basin); "
+                     f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); dashed = step-2 outline bodies", fontsize=9)
     fig.tight_layout()
     fig.set_dpi(dpi)
     fig.canvas.draw()
