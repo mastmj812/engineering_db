@@ -78,10 +78,11 @@ def _read(conn: Any, sql: str, params: dict[str, Any]) -> list[tuple[Any, ...]]:
     return rows
 
 
-def pull_extent(conn: Any, bench: str = POOL) -> dict[str, Any]:
-    rows = _read(conn, _EXTENT_SQL, {"basin": BASIN, "bench": bench})
+def pull_extent(conn: Any, bench: str = POOL, basin: str = BASIN) -> dict[str, Any]:
+    """The bench's extent of record in `basin` (bench names repeat across basins: WCB_1 / WCB_2 / WCC are Delaware AND Midland)."""
+    rows = _read(conn, _EXTENT_SQL, {"basin": basin, "bench": bench})
     if len(rows) != 1:
-        raise RuntimeError(f"expected exactly one extent of record for {BASIN}/{bench}, found {len(rows)}")
+        raise RuntimeError(f"expected exactly one extent of record for {basin}/{bench}, found {len(rows)}")
     eid, ver, src, a, wkt = rows[0]
     return {"extent_id": int(eid), "version": int(ver), "source": src, "area_sqmi": float(a), "geom_ft": eg.to_ft([shapely.from_wkt(wkt)])[0]}
 

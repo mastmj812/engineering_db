@@ -86,8 +86,9 @@ def store(a: argparse.Namespace) -> int:
     try:
         with conn.cursor() as cur:
             q = cur.execute
-            src = q("SELECT run_id, data_through FROM box.forecast_run WHERE is_record").fetchone()
-            _check(src is not None and src[0] == a.src_run, f"source run {a.src_run} is the record ({src})")
+            # D130: one record per basin - the source must be the record of ITS basin, and the new run inherits that basin
+            src = q("SELECT run_id, data_through, basin FROM box.forecast_run WHERE run_id = %s AND is_record", (a.src_run,)).fetchone()
+            _check(src is not None, f"source run {a.src_run} is its basin's record ({src})")
             if _failures:
                 raise RuntimeError("source run check failed")
             S = a.src_run
@@ -111,9 +112,9 @@ def store(a: argparse.Namespace) -> int:
             note = (f"; run {{new}} = run {S} + PDP-proximity layer (D112-D116, sql/65): oil x configuration factor on {exp['outcomes'].get('haircut', 0):,} "
                     f"multi-parent PUDs, {sum(exp['outcomes'].get(k, 0) for k in prc.NO_FORECAST):,} not_covered_no_precedent; gas / water / analogs "
                     f"identical; no refit")
-            new = q("""INSERT INTO box.forecast_run (spec, code_sha, engine_sha, dealintake_config, report_version, data_through, volumes_basis,
+            new = q("""INSERT INTO box.forecast_run (basin, spec, code_sha, engine_sha, dealintake_config, report_version, data_through, volumes_basis,
                            horizon_months, haircut, calendar_factor, disclosure, extents, counts, notes, is_record)
-                       SELECT spec, %s, engine_sha, dealintake_config, report_version, data_through, volumes_basis, horizon_months, haircut,
+                       SELECT basin, spec, %s, engine_sha, dealintake_config, report_version, data_through, volumes_basis, horizon_months, haircut,
                               calendar_factor, disclosure || jsonb_build_object('proximity', %s::jsonb), extents, counts, notes, false
                        FROM box.forecast_run WHERE run_id = %s RETURNING run_id""", (code_sha, Jsonb(disc), S)).fetchone()[0]
             q("UPDATE box.forecast_run SET notes = notes || %s WHERE run_id = %s", (note.format(new=new), new))
@@ -157,7 +158,8 @@ def store(a: argparse.Namespace) -> int:
             if not _failures and a.record:
                 q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE run_id = %s", (new, S))
                 q("UPDATE box.forecast_run SET is_record = true WHERE run_id = %s", (new,))
-                _check(q("SELECT run_id FROM box.forecast_run WHERE is_record").fetchall() == [(new,)], f"run {new} is the one record")
+                _check(q("SELECT run_id FROM box.forecast_run WHERE is_record AND basin = %s", (src[2],)).fetchall() == [(new,)],
+                       f"run {new} is the one {src[2]} record")
         if _failures:
             conn.rollback()
             print(f"ROLLED BACK: {len(_failures)} identity check(s) failed", flush=True)

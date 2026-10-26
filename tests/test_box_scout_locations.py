@@ -71,7 +71,10 @@ def test_rows_are_priced_forecast_locations_only():
     # econ is an INNER join on the default deck's newest assumption set, priced rows only
     assert "JOIN box_econ.box_pud_econ be" in code and "LEFT JOIN box_econ" not in code
     assert "e.deck_id = 'wti70_hh3'" in code and "AND be.pv10_mm IS NOT NULL" in code
-    assert "ORDER BY max(e.built_at) DESC NULLS LAST, e.assumption_set_id DESC" in code
+    # D130 (sql/70): one record run per basin, so the econ case is picked PER record run and joined on its run_id
+    assert "SELECT DISTINCT ON (g.run_id)" in code
+    assert "ORDER BY g.run_id, g.built_at DESC NULLS LAST, g.assumption_set_id DESC" in code
+    assert "JOIN econ_case ON econ_case.run_id = bp.run_id" in code and "JOIN econ_case ON true" not in code
     # undrilled only (our reconciliation), no PDP — the filter is applied, the column is not shown
     assert "el.recon_status IS DISTINCT FROM 'realized_drift'" in code
     assert "el.category <> 'PDP'" in code

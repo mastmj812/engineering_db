@@ -46,9 +46,9 @@ JOIN box.location l USING (location_id)
 CROSS JOIN LATERAL (SELECT CASE WHEN extensions.GeometryType(l.geom) = 'LINESTRING'
                                 THEN extensions.ST_LineInterpolatePoint(l.geom, 0.5)
                                 ELSE extensions.ST_Centroid(l.geom) END AS pt) p
-WHERE r.is_record AND f.coverage IN ('covered', 'covered_provisional')
+WHERE r.is_record AND r.basin = 'delaware' AND f.coverage IN ('covered', 'covered_provisional')
 """
-_RUN_SQL = "SELECT run_id FROM box.forecast_run WHERE is_record"
+_RUN_SQL = "SELECT run_id FROM box.forecast_run WHERE is_record AND basin = 'delaware'"
 _CLS_SQL = """
 SELECT api10, prod_date, oil_per_month_bbl, water_per_month_bbl, COALESCE(is_water_proprietary, FALSE)
 FROM curated.production
@@ -179,13 +179,14 @@ def _tinit(state: dict[str, Any]) -> None:
 def _cohort_job(job: tuple[str, list[str]]) -> tuple[str, dict[str, Any]]:
     key, ids = job
     m = _members(_T["pool_f"], _T["fits"], ids)
-    return key, (w.cohort_water(m) if len(m) >= w.MIN_USE else {"ratio": None, "arps": None, "arps_months": None})
+    return key, (w.cohort_water(m, _T.get("basin", an.BASIN)) if len(m) >= w.MIN_USE else {"ratio": None, "arps": None, "arps_months": None})
 
 
-def cohort_curves(jobs: list[tuple[str, list[str]]], pool_f: pd.DataFrame, fits: dict[str, Any], workers: int | None) -> dict[str, dict[str, Any]]:
+def cohort_curves(jobs: list[tuple[str, list[str]]], pool_f: pd.DataFrame, fits: dict[str, Any], workers: int | None,
+                  basin: str = an.BASIN) -> dict[str, dict[str, Any]]:
     from concurrent.futures import ProcessPoolExecutor
 
-    state = {"pool_f": pool_f, "fits": fits}
+    state = {"pool_f": pool_f, "fits": fits, "basin": basin}
     workers = workers or 8
     if workers == 1:
         _tinit(state)

@@ -64,21 +64,26 @@ def view_body(text: str) -> str:
     return m.group(1)
 
 
+# per record run (one per basin since D130 / sql/70): the default deck's newest assumption set, computed once per run
+_CASE = ("SELECT run_id, assumption_set_id FROM ("
+         "  SELECT run_id, assumption_set_id, row_number() OVER (PARTITION BY run_id ORDER BY max(built_at) DESC NULLS LAST, "
+         "         assumption_set_id DESC) AS k "
+         "  FROM box_econ.box_pud_econ WHERE deck_id = 'wti70_hh3' "
+         "  AND run_id IN (SELECT run_id FROM box.forecast_run WHERE is_record) GROUP BY 1, 2) x WHERE k = 1")
+
+
 def _population(extra: str = "") -> str:
-    """The rows the view must hold, computed independently of it: the record run's forecast
-    locations on the map (non-PDP), priced on the default deck's newest assumption set,
-    minus realized."""
+    """The rows the view must hold, computed independently of it: each record run's (one per basin, D130) forecast
+    locations on the map (non-PDP), priced on that run's default-deck newest assumption set, minus realized."""
     return (
         "FROM box.pud_forecast bp "
+        "JOIN box.forecast_run fr ON fr.run_id = bp.run_id AND fr.is_record "
+        f"JOIN ({_CASE}) ec ON ec.run_id = bp.run_id "
         "JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
         "JOIN box_econ.box_pud_econ be ON be.run_id = bp.run_id AND be.location_id = bp.location_id "
-        "AND be.deck_id = 'wti70_hh3' AND be.pv10_mm IS NOT NULL AND be.assumption_set_id = ("
-        "  SELECT assumption_set_id FROM box_econ.box_pud_econ "  # uncorrelated: evaluated once
-        "  WHERE run_id = (SELECT run_id FROM box.forecast_run WHERE is_record) AND deck_id = 'wti70_hh3' "
-        "  GROUP BY 1 ORDER BY max(built_at) DESC NULLS LAST, 1 DESC LIMIT 1) "
+        "AND be.deck_id = 'wti70_hh3' AND be.pv10_mm IS NOT NULL AND be.assumption_set_id = ec.assumption_set_id "
         f"{extra}"
-        "WHERE bp.run_id = (SELECT run_id FROM box.forecast_run WHERE is_record) "
-        f"AND bp.coverage IN {FORECAST}"
+        f"WHERE bp.coverage IN {FORECAST}"
     )
 
 

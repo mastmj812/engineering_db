@@ -1,0 +1,52 @@
+# step-19 smoke: old code 07d2ca2 vs new code ca2be90, run concurrently after the 2026-10-26 nightly (18:16 UTC)
+## ../box-step19-base/runs_step19_smoke_base.log
+code 07d2ca2baf3e6884976ad0fd4c652f436b5cb091; benches ['WCA', 'BS2_S', 'AVA_0']; wells docs\box\pool-2026-10-15
+universe 121696; in-extent candidates per group {'WCA': 1907, 'BS2_S': 7403, 'AVA_0': 607} (42 s)
+[WCA] wells docs\box\pool-2026-10-15; pool 12222 wells at cutoff 2026-09-01 (production through 2026-08-01) (853 s)
+[WCA] fitted 30 locations (902 s)
+[WCA] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] haircut guard g(48): {'oil': {'median': 0.6736821568486756, 'min': 0.6408107053591394, 'max': 0.7234281660803836, 'share_outside': 0.0, 'n': 30}}
+[BS2_S] wells docs\box\pool-2026-10-15; pool 4239 wells at cutoff 2026-09-01 (production through 2026-08-01) (2272 s)
+[BS2_S] fitted 30 locations (2327 s)
+[BS2_S] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS2_S] haircut guard g(48): {'oil': {'median': 0.6728570412639445, 'min': 0.6620578557126364, 'max': 0.7157991813598399, 'share_outside': 0.0, 'n': 30}, 'gas': {'median': 1.1504698159718538, 'min': 1.1253102892857012, 'max': 1.1797924446304418, 'share_outside': 0.0, 'n': 30}}
+[AVA_0] wells docs\box\step15-AVA-2026-10-16; pool 253 wells at cutoff 2026-09-01 (production through 2026-08-01) (3402 s)
+[AVA_0] fitted 30 locations (3443 s)
+[AVA_0] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] covered with forecast 30 / 30 (in-extent 1907)
+[BS2_S] covered with forecast 30 / 30 (in-extent 7403)
+[AVA_0] covered with forecast 30 / 30 (in-extent 607)
+wrote runs\step19_smoke_base\run.pkl (3884 s)
+rc=0
+## runs_step19_smoke_new.log
+code ca2be9000345afe0cce4f249b92437a17334fa44; benches ['WCA', 'BS2_S', 'AVA_0']; wells docs\box\pool-2026-10-15
+universe 117542; in-extent candidates per group {'WCA': 1907, 'BS2_S': 7403, 'AVA_0': 607} (41 s)
+[WCA] wells docs\box\pool-2026-10-15; pool 12222 wells at cutoff 2026-09-01 (production through 2026-08-01) (853 s)
+[WCA] fitted 30 locations (903 s)
+[WCA] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] haircut guard g(48): {'oil': {'median': 0.6736821568486756, 'min': 0.6408107053591394, 'max': 0.7234281660803836, 'share_outside': 0.0, 'n': 30}}
+[BS2_S] wells docs\box\pool-2026-10-15; pool 4239 wells at cutoff 2026-09-01 (production through 2026-08-01) (2273 s)
+[BS2_S] fitted 30 locations (2327 s)
+[BS2_S] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS2_S] haircut guard g(48): {'oil': {'median': 0.6728570412639445, 'min': 0.6620578557126364, 'max': 0.7157991813598399, 'share_outside': 0.0, 'n': 30}, 'gas': {'median': 1.1504698159718538, 'min': 1.1253102892857012, 'max': 1.1797924446304418, 'share_outside': 0.0, 'n': 30}}
+[AVA_0] wells docs\box\step15-AVA-2026-10-16; pool 253 wells at cutoff 2026-09-01 (production through 2026-08-01) (3400 s)
+[AVA_0] fitted 30 locations (3441 s)
+[AVA_0] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] covered with forecast 30 / 30 (in-extent 1907)
+[BS2_S] covered with forecast 30 / 30 (in-extent 7403)
+[AVA_0] covered with forecast 30 / 30 (in-extent 607)
+wrote runs\step19_smoke_new\run.pkl (3882 s)
+rc=0
+## exact comparison of the two run.pkl artifacts
+run header diffs: ['run.basin only in new']
+results: 90 vs 90
+results diffs (streams/params/months_raw/months/analogs/flags): none
+locs diffs: none
+universe rows old 121696 new 117542
+  rows only in old: 4154 basins {'midland': 4154} coverage {'not_covered_emerging': 4154} benches {'BRNT': 4154}
+  rows only in new: 0
+  shared rows identical: True
+analog_meta equal: True
+analog_cum_kft diffs: none
+stream month vectors compared: 180 | per group equivalence old {'WCA': {'n': 24, 'max_rel_diff': 0.0}, 'BS2_S': {'n': 24, 'max_rel_diff': 0.0}, 'AVA_0': {'n': 24, 'max_rel_diff': 0.0}} new {'WCA': {'n': 24, 'max_rel_diff': 0.0}, 'BS2_S': {'n': 24, 'max_rel_diff': 0.0}, 'AVA_0': {'n': 24, 'max_rel_diff': 0.0}}
+data_through 2026-08-01 2026-08-01 cutoff 2026-09-01 2026-09-01

@@ -88,10 +88,10 @@ WHERE report_version = %(v)s AND tier = 'direct' AND mop IN (6, 12) AND NOT is_l
 GROUP BY GROUPING SETS ((basin, mop), (basin, formation_blueox, mop))
 """
 
-_RUN_SQL = "SELECT run_id, report_version, data_through, counts FROM box.forecast_run WHERE is_record"
+_RUN_SQL = "SELECT run_id, report_version, data_through, counts FROM box.forecast_run WHERE is_record AND basin = 'delaware'"
 _PARAMS_SQL = """
 SELECT s.params FROM box.pud_forecast_stream s JOIN box.forecast_run r USING (run_id)
-WHERE r.is_record AND s.stream = 'oil' AND s.params ? 'qi'
+WHERE r.is_record AND r.basin = 'delaware' AND s.stream = 'oil' AND s.params ? 'qi'
 ORDER BY md5(s.location_id::text) LIMIT %(n)s
 """
 _SIZE_SQL = """

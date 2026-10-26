@@ -30,7 +30,7 @@ from box.tc_curve_report import _read
 
 HAIRCUT_TABLE = Path("docs") / "box" / "prox-2026-10-19" / "haircut_table_candidate.csv"
 
-_RUN_SQL = "SELECT run_id, data_through, report_version FROM box.forecast_run WHERE is_record"
+_RUN_SQL = "SELECT run_id, data_through, report_version FROM box.forecast_run WHERE is_record AND basin = %(basin)s"
 _PUD_SQL = """
 SELECT pf.location_id, pf.stick_id, pf.formation_blueox, pf.bench AS bench_group, pf.coverage, pf.pad_name,
        el.tvd, el.deplet_t, el.operator, extensions.ST_AsText(l.geom),
@@ -40,27 +40,29 @@ JOIN box.location l ON l.location_id = pf.location_id
 LEFT JOIN curated.erebor_locations el ON el.stick_id = pf.stick_id
 LEFT JOIN box.pud_forecast_stream so ON so.run_id = pf.run_id AND so.location_id = pf.location_id AND so.stream = 'oil'
 LEFT JOIN box.pud_forecast_stream sg ON sg.run_id = pf.run_id AND sg.location_id = pf.location_id AND sg.stream = 'gas'
-WHERE pf.run_id = %(run)s AND pf.basin = 'delaware' AND pf.coverage IN ('covered', 'covered_provisional')
+WHERE pf.run_id = %(run)s AND pf.basin = %(basin)s AND pf.coverage IN ('covered', 'covered_provisional')
 """
 _ID_SQL = """
 SELECT count(*), sum(so.eur) FROM box.pud_forecast pf
 JOIN box.pud_forecast_stream so ON so.run_id = pf.run_id AND so.location_id = pf.location_id AND so.stream = 'oil'
-WHERE pf.run_id = %(run)s AND pf.basin = 'delaware' AND pf.coverage IN ('covered', 'covered_provisional')
+WHERE pf.run_id = %(run)s AND pf.basin = %(basin)s AND pf.coverage IN ('covered', 'covered_provisional')
 """
 
 
-def pull(conn: Any) -> tuple[dict[str, Any], pd.DataFrame, pd.DataFrame]:
-    run_id, through, rv = _read(conn, _RUN_SQL)[0]
+def pull(conn: Any, basin: str = "delaware") -> tuple[dict[str, Any], pd.DataFrame, pd.DataFrame]:
+    """The basin's record run (D130) and its forecast PUDs, plus the basin's producers."""
+    run_id, through, rv = _read(conn, _RUN_SQL, {"basin": basin})[0]
     cols = ["location_id", "stick_id", "formation_blueox", "bench_group", "coverage", "pad_name", "tvd_ft", "deplet_t", "operator", "wkt",
             "oil_eur", "oil_eur_per_kft", "gas_eur"]
-    p = pd.DataFrame(_read(conn, _PUD_SQL, {"run": run_id}), columns=cols)
+    p = pd.DataFrame(_read(conn, _PUD_SQL, {"run": run_id, "basin": basin}), columns=cols)
     p["tvd_ft"] = pd.to_numeric(p["tvd_ft"], errors="coerce")
     for c in ("oil_eur", "oil_eur_per_kft", "gas_eur"):
         p[c] = pd.to_numeric(p[c], errors="coerce")
     p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
-    n_id, eur_id = _read(conn, _ID_SQL, {"run": run_id})[0]
-    meta = {"run_id": run_id, "data_through": str(through), "report_version": rv, "identity_n": int(n_id), "identity_oil_eur": float(eur_id)}
-    return meta, p.drop(columns="wkt"), psr.pull_universe(conn)
+    n_id, eur_id = _read(conn, _ID_SQL, {"run": run_id, "basin": basin})[0]
+    meta = {"run_id": run_id, "data_through": str(through), "report_version": rv, "identity_n": int(n_id), "identity_oil_eur": float(eur_id),
+            "basin": basin}
+    return meta, p.drop(columns="wkt"), psr.pull_universe(conn, basin)
 
 
 def pud_links(p: pd.DataFrame, u: pd.DataFrame, ref: dt.date, log_every: int = 5000) -> pd.DataFrame:

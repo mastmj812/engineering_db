@@ -135,7 +135,7 @@ def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "W
     tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
     pool2 = an.with_completed_laterals(pool, ut, tvd)
     return {"wells": wells, "n_excluded": len(excluded), "last": last, "cutoff": cutoff, "asof": asof, "cb": cb, "trn": trn, "t_act": t_act,
-            "ut": ut, "pool": pool, "pool2": pool2, "k_areas": len(ar["geoms"]), "label": "WCA", "extent_id": None}
+            "ut": ut, "pool": pool, "pool2": pool2, "k_areas": len(ar["geoms"]), "label": "WCA", "extent_id": None, "basin": ac.spec_basin("WCA")}
 
 
 def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, measured: bool = False) -> dict[str, Any]:
@@ -147,7 +147,7 @@ def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, meas
     last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
     cutoff = br._add_months(last, 1)
     asof = br._prev_month(cutoff)
-    ext = tar.pull_extent(conn, spec["extent"])
+    ext = tar.pull_extent(conn, spec["extent"], spec["basin"])
     d4 = hr.cohort_frame(wells, ext["geom_ft"], asof)
     cb = hr.rebuild_curves(conn, wells, {"geoms": [ext["geom_ft"]], "frame": d4}, cutoff, asof, workers, area_curves=False)
     trn = hr.wca_factor_frame(conn, cb, wells, asof, pool=bench)
@@ -164,7 +164,8 @@ def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, meas
     tvd = dict(zip(cb["frame"]["api10"], pd.to_numeric(cb["frame"]["tvd_ft"], errors="coerce"), strict=True))
     pool2 = an.with_completed_laterals(pool, ut, tvd)
     return {"wells": wells, "n_excluded": len(excluded), "last": last, "cutoff": cutoff, "asof": asof, "cb": cb, "trn": trn, "t_act": t_act,
-            "ut": ut, "pool": pool, "pool2": pool2, "k_areas": 0, "label": spec["label"], "extent_id": ext["extent_id"], "extent_ft": ext["geom_ft"]}
+            "ut": ut, "pool": pool, "pool2": pool2, "k_areas": 0, "label": spec["label"], "extent_id": ext["extent_id"], "extent_ft": ext["geom_ft"],
+            "basin": spec["basin"]}
 
 
 def calendar_factor(P: dict[str, Any], workers: int, r2: bool = False) -> dict[str, Any]:
@@ -180,10 +181,10 @@ def calendar_factor(P: dict[str, Any], workers: int, r2: bool = False) -> dict[s
     if r2:  # D121: the harness's box_v2s_r2 (box/step16.VARIANTS) on the build's measured-spacing pool, as 16c calibrated it
         v16 = {p16.SELECTION: (s16.MEASURED, p16.RULES)}
         pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"],
-                                extra_pools={s16.MEASURED: P["pool2"]}, variants16=v16)
+                                extra_pools={s16.MEASURED: P["pool2"]}, variants16=v16, basin=P["basin"])
         mt, key = an.monthly_arrays_v2(pt, K_F, (*an.VARIANTS_V2, p16.SELECTION)), p16.SELECTION
     else:
-        pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"])
+        pt = an.predict_many_v2(locs, P["pool"], P["pool2"], P["cutoff"], K_F, workers, bench=P["label"], basin=P["basin"])
         mt, key = an.monthly_arrays_v2(pt, K_F), "box_v2"
     out = {}
     for s in pr.STREAMS:
@@ -215,9 +216,9 @@ def nearest_by_stick(conn: Any, u: pd.DataFrame, cand: pd.DataFrame) -> dict[int
     """D64 nearest neighbour per candidate. Neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical
     staggering (~130 ft TVD apart), not lateral spacing; pooling them read 11-300 ft gaps (7c first build, 2026-10-15)."""
     out: dict[int, tuple[float, str] | None] = {}
-    for form, t in cand.groupby("formation_blueox"):
-        nb_u = u[u["formation_blueox"] == form]
-        pdp = pr.pdp_sticks(conn, [form])
+    for (basin, form), t in cand.groupby(["basin", "formation_blueox"]):
+        nb_u = u[(u["basin"] == basin) & (u["formation_blueox"] == form)]
+        pdp = pr.pdp_sticks(conn, [form], basin)
         nb_lines = pr.project_ft(list(nb_u["wkt"]) + list(pdp["wkt"]))
         nb_ids = [f"pud:{s}" for s in nb_u["stick_id"]] + [f"pdp:{x}" for x in pdp["api10"]]
         g = pr.nearest_gaps(pr.project_ft(list(t["wkt"])), nb_lines, [f"pud:{s}" for s in t["stick_id"]], nb_ids)
@@ -280,7 +281,7 @@ def equivalence(P: dict[str, Any], locs: list[dict[str, Any]], res: list[dict[st
     ok_i = [i for i, r in enumerate(res) if "oil" in r.get("streams", {})]
     pick = sorted(rng.choice(ok_i, size=min(N_EQUIV, len(ok_i)), replace=False).tolist())
     state: dict[str, Any] = {"pool": P["pool"], "pool2": P["pool2"], "cfg": di_config.load(), "k": pr.N_MONTHS, "cutoff": P["cutoff"],
-                             "bench": P["label"]}
+                             "bench": P["label"], "basin": P["basin"]}
     if r2:
         state.update({s16.MEASURED: P["pool2"], "variants16": {p16.SELECTION: (s16.MEASURED, p16.RULES)}})
     an._init(state)
@@ -323,7 +324,7 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
         reg = t15.side_classes(np.array([x["x"] for x in locs]), np.array([x["y"] for x in locs]), P["extent_ft"])
         for x, r, d in zip(locs, reg["region"], reg["edge_dist_mi"], strict=True):
             x["edge_region"], x["edge_dist_mi"] = str(r), float(d)
-    res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers, bench=P["label"], rules=p16.RULES if r2 else None)
+    res = pr.fit_many(locs, P["pool"], P["pool2"], cfg, a.workers, bench=P["label"], rules=p16.RULES if r2 else None, basin=P["basin"])
     print(f"[{bench}] fitted {len(res)} locations ({time.time() - t0:.0f} s)", flush=True)
     eq = equivalence(P, locs, res, r2=r2)
     print(f"[{bench}] equivalence vs predict_location_v2: {eq}", flush=True)
@@ -437,7 +438,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     a.pack, a.pack_sha256 = (load_evidence(a.evidence) if a.selection == "r2" else (None, None))
     B: dict[str, dict[str, Any]] = {}
     with get_connection() as conn:
-        u = pr.universe(conn, a.benches)
+        u = pr.universe(conn, a.benches)  # the run's basin only (D130)
         n_in = {b: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == b)).sum()) for b in a.benches}
         print(f"universe {len(u)}; in-extent candidates per group {n_in} ({time.time() - t0:.0f} s)", flush=True)
         meta = resume_meta(code_key(), a, u)
@@ -455,7 +456,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     first = B[a.benches[0]]
     by_bench = {b: x["record"] for b, x in B.items()}
     r0 = by_bench[a.benches[0]]
-    run = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": code_sha, "engine_sha": boxfit_sha(),
+    run = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "basin": pr.run_basin(a.benches), "code_sha": code_sha, "engine_sha": boxfit_sha(),
            "dealintake_config": int(cfg.raw.get("config_version")), "report_version": sorted(set(u["report_version"])), "wells_dir": str(a.wells),
            "data_through": first["P"]["asof"], "cutoff": first["P"]["cutoff"], "k_areas": r0["k_areas"], "n_pool": r0["n_pool"], "n_excluded": r0["n_excluded"],
            # top level = the first group's (WCA) keys, what erebor reads; every group under by_bench (D103)
@@ -566,23 +567,29 @@ def cmd_store(a: argparse.Namespace) -> int:
     if len(run["report_version"]) != 1:
         raise SystemExit(f"universe spans several vintages {run['report_version']}")
     rv = run["report_version"][0]
+    basin = run.get("basin", "delaware")  # step 19: a run is one basin's (D130); artifacts built before it were all Delaware
+    if set(u["basin"]) != {basin}:
+        raise SystemExit(f"universe basins {sorted(set(u['basin']))} != the run's basin {basin} (D130: one basin per run; "
+                         "an artifact built before step 19 carries every basin's universe - rebuild it)")
     by_stick = {loc["stick_id"]: (loc, r) for loc, r in zip(locs, res, strict=True)}
     conn = get_connection()
     try:
         with conn.cursor() as cur:
             q = cur.execute
             print(f"target {q('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
-            later = q("SELECT count(*) FROM box.location_source WHERE report_version > %s", (rv,)).fetchone()[0]
+            # every location lookup is the run's basin only (D130: each basin publishes on its own schedule)
+            src_b = "box.location_source s JOIN box.location l USING (location_id) WHERE l.basin = %s AND"
+            later = q(f"SELECT count(*) FROM {src_b} s.report_version > %s", (basin, rv)).fetchone()[0]
             if later:
-                raise SystemExit(f"box.location already holds vintages after {rv}: refusing to store an older vintage")
-            have = dict(q("SELECT stick_id, location_id FROM box.location_source WHERE report_version = %s", (rv,)).fetchall())
-            prev_v = q("SELECT max(report_version) FROM box.location_source WHERE report_version < %s", (rv,)).fetchone()[0]
+                raise SystemExit(f"box.location already holds {basin} vintages after {rv}: refusing to store an older vintage")
+            have = dict(q(f"SELECT s.stick_id, s.location_id FROM {src_b} s.report_version = %s", (basin, rv)).fetchall())
+            prev_v = q(f"SELECT max(s.report_version) FROM {src_b} s.report_version < %s", (basin, rv)).fetchone()[0]
             new = u[~u["stick_id"].isin(have)]
             n_carried = 0
             if len(new) and prev_v is not None:
                 # D73: carry locations forward from the most recent earlier vintage; the rest of `new` become 'new' locations
-                prev = q("SELECT location_id, basin, formation_blueox, extensions.ST_AsText(geom) FROM box.location WHERE last_seen_vintage = %s",
-                         (prev_v,)).fetchall()
+                prev = q("SELECT location_id, basin, formation_blueox, extensions.ST_AsText(geom) FROM box.location WHERE last_seen_vintage = %s "
+                         "AND basin = %s", (prev_v, basin)).fetchall()
                 pl = pr.project_ft([w for *_, w in prev])
                 nl = pr.project_ft(list(new["wkt"]))
                 xw = pr.crosswalk([(int(p[0]), p[1], p[2], g) for p, g in zip(prev, pl, strict=True)],
@@ -616,9 +623,9 @@ def cmd_store(a: argparse.Namespace) -> int:
             bb = run.get("by_bench")
             jb = {col: (Jsonb(_jsonable({**run[col], "by_bench": {b: x[col] for b, x in bb.items()}})) if bb else Jsonb(_jsonable(run[col])))
                   for col in ("haircut", "calendar_factor", "disclosure")}
-            rid = q("INSERT INTO box.forecast_run (spec, code_sha, engine_sha, dealintake_config, report_version, data_through, haircut, calendar_factor, "
-                    "disclosure, extents, counts, notes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING run_id",
-                    (pr.SPEC, run["code_sha"], run["engine_sha"], run["dealintake_config"], rv, run["data_through"],
+            rid = q("INSERT INTO box.forecast_run (basin, spec, code_sha, engine_sha, dealintake_config, report_version, data_through, haircut, calendar_factor, "
+                    "disclosure, extents, counts, notes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING run_id",
+                    (basin, pr.SPEC, run["code_sha"], run["engine_sha"], run["dealintake_config"], rv, run["data_through"],
                      jb["haircut"], jb["calendar_factor"], jb["disclosure"],
                      Jsonb(_jsonable({str(k): int(v) for k, v in u.groupby("bench")["extent_id"].first().dropna().items()})),
                      Jsonb({}), run_notes(run))).fetchone()[0]
@@ -677,7 +684,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                 conn.rollback()
                 raise SystemExit(f"identity FAILED, rolled back: {fails}")
             if a.record:
-                q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE is_record", (rid,))
+                # D130: supersede THIS basin's record only; the other basin's record is untouched
+                q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE is_record AND basin = %s", (rid, basin))
                 q("UPDATE box.forecast_run SET is_record = true WHERE run_id = %s", (rid,))
         conn.commit()
     finally:

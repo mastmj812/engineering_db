@@ -43,6 +43,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from box import basin as bsn
 from box import bench_qc as bq
 from box import qc_rule as qr
 from box.flag_cards import NEVER_INTO, pool
@@ -269,11 +270,11 @@ def _esc(v: Any) -> str:
     return html.escape("" if v is None else str(v))
 
 
-def family_map(ctx: pd.DataFrame, members: pd.DataFrame, family: tuple[str, ...]) -> str:
+def family_map(ctx: pd.DataFrame, members: pd.DataFrame, family: tuple[str, ...], state_line_lat: float | None = bq.STATE_LINE_LAT) -> str:
     fig, axes = plt.subplots(1, len(family), figsize=(8 * len(family), 8))
     from box.flag_cards import _BENCH_COLORS as cols
     for ax, bench in zip(np.atleast_1d(axes), family):
-        bq._basemap(ax, ctx, members)
+        bq._basemap(ax, ctx, members, state_line_lat)
         for other in family:
             if other == bench:
                 continue
@@ -295,7 +296,8 @@ def family_map(ctx: pd.DataFrame, members: pd.DataFrame, family: tuple[str, ...]
     return bq._png(fig)
 
 
-def block_ratio_map(ctx: pd.DataFrame, members: pd.DataFrame, xy: np.ndarray, a: str, b: str, min_each: int = 3) -> tuple[str, int]:
+def block_ratio_map(ctx: pd.DataFrame, members: pd.DataFrame, xy: np.ndarray, a: str, b: str, min_each: int = 3,
+                    state_line_lat: float | None = bq.STATE_LINE_LAT) -> tuple[str, int]:
     coh = members["cohort"].values.astype(bool)
     blk = _blocks(xy)
     d = pd.DataFrame({"blk": blk, "bench": members["family_bench"].values, "oil": members["oil12_kft"].values,
@@ -307,7 +309,7 @@ def block_ratio_map(ctx: pd.DataFrame, members: pd.DataFrame, xy: np.ndarray, a:
     else:
         w = w.iloc[0:0]
     fig, ax = plt.subplots(figsize=(8.5, 8))
-    bq._basemap(ax, ctx, members)
+    bq._basemap(ax, ctx, members, state_line_lat)
     if len(w):
         ratio = (w[("med", b)] / w[("med", a)]).astype(float)
         lon = ((w[("lon", a)] + w[("lon", b)]) / 2).astype(float)
@@ -400,15 +402,16 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
 
 
 def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path | list[Path], verdicts: dict[str, str],
-          excluded_ids: set[str], meta: dict[str, Any]) -> dict[str, Any]:
-    """Everything after the pull + consensus scoring (pure apart from file writes)."""
+          excluded_ids: set[str], meta: dict[str, Any], basin: str = bq.BASIN) -> dict[str, Any]:
+    """Everything after the pull + consensus scoring (pure apart from file writes). `basin` (step 19): the bench pages' state-line
+    check and map lines follow it (the Midland has no state line)."""
     family = FAMILIES[family_name]
     out_dir.mkdir(parents=True, exist_ok=True)
     scored = bq.assign_roles(scored)
     # per-bench step-1 pages, unchanged tooling
     bench_summaries = {}
     for bench in family:
-        bs = bq.bench_summary(scored, bench)
+        bs = bq.bench_summary(scored, bench, basin)
         bq.render_bench_page(scored, bs, out_dir / f"qc_{bench}.html")
         scored.loc[scored["formation_blueox"] == bench, bq.WELL_COLS].sort_values("api10").to_csv(out_dir / f"wells_{bench}.csv", index=False)
         bench_summaries[bench] = bs
@@ -462,11 +465,11 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
     for a, b in itertools.pairwise(family):
         pe = pooling_evidence(fam_members, a, b, xy)
         ps = next((r for r in bench_summaries[a]["pair_separation"] if r["other"] == b), None)
-        ratio_png, n_rb = block_ratio_map(ctx, fam_members, xy, a, b)
+        ratio_png, n_rb = block_ratio_map(ctx, fam_members, xy, a, b, state_line_lat=bsn.get(basin).state_line_lat)
         pe["n_ratio_blocks"] = n_rb
         poolings.append((pe, ps, ratio_png))
         pool_json.append({"pooling": pe, "pair_sep": ps})
-    imgs = {"map": family_map(ctx, fam_members, family)}
+    imgs = {"map": family_map(ctx, fam_members, family, bsn.get(basin).state_line_lat)}
     flags = flag_ledger(ruled, family)
     unc = flags[flags["standing"].str.startswith("uncalibrated")]
     s: dict[str, Any] = {

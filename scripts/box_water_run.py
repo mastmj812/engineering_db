@@ -53,6 +53,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     if asof < w.LAST:
         raise SystemExit(f"run data-through {asof} is older than the water spec's scored data-through {w.LAST}")
     run_wells = {g: Path(v["wells_dir"]) for g, v in (run.get("by_bench") or {}).items() if v.get("wells_dir")}
+    basin = run.get("basin", "delaware")  # step 19: the oil run's basin (artifacts before it were all Delaware)
     cov = dict(zip(A["universe"]["stick_id"].astype(int), A["universe"]["coverage"], strict=True))
     out: dict[int, dict[str, Any]] = {}
     groups = tuple(a.groups.split(",")) if a.groups else w.GROUPS
@@ -67,13 +68,13 @@ def cmd_build(a: argparse.Namespace) -> int:
             labels = w.labels_asof(wells, cls, asof, w.vdr_months_asof(vdr, asof))
             pm, pa, pf = bw.pool_asof(wells, labels, asof, None)
             locs = [{k: loc[k] for k in ("api10", "x", "y", "lateral_ft", "spacing_ft", "fp_max")} for loc, _ in pairs]
-            sel = w.select_many(locs, pm, pa, w.ac_label(g), a.workers)
+            sel = w.select_many(locs, pm, pa, w.ac_label(g), a.workers, basin=basin)
             need = sorted({x for s in sel for x in s["api10s"]})
             prod = rep.pull_production(conn, need, asof)
             fits = rep.fit_wells(prod, rep.pull_meta(conn, need), a.workers)
             keys = {s["loc"]: tuple(s["api10s"]) for s in sel}
             uniq = sorted(set(keys.values()))
-            cur = bw.cohort_curves([(str(i), list(k)) for i, k in enumerate(uniq)], pf, fits, a.workers)
+            cur = bw.cohort_curves([(str(i), list(k)) for i, k in enumerate(uniq)], pf, fits, a.workers, basin=basin)
             by_key = {k: cur[str(i)] for i, k in enumerate(uniq)}
             pool = pf.set_index("api10")[["x", "y", "state_code", "label", "first_production_date"]].to_dict("index")
             n_fail = 0
@@ -96,7 +97,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     finally:
         conn.close()
     a.out.mkdir(parents=True, exist_ok=True)
-    meta = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": _git_sha(), "run_built_from": run["code_sha"],
+    meta = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": _git_sha(), "run_built_from": run["code_sha"], "basin": basin,
             "data_through": str(asof), "groups": list(groups), "n": len(out),
             "wells_dirs": {g: str(run_wells.get(g) or w.GROUP_WELLS[g]) for g in groups}}
     with open(a.out / "water.pkl", "wb") as fh:
@@ -144,7 +145,8 @@ def cmd_store(a: argparse.Namespace) -> int:
         with conn.cursor() as cur:
             q = cur.execute
             print(f"target {q('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
-            rid = a.run_id or q("SELECT run_id FROM box.forecast_run WHERE is_record").fetchone()[0]
+            basin = W["meta"].get("basin", "delaware")
+            rid = a.run_id or q("SELECT run_id FROM box.forecast_run WHERE is_record AND basin = %s", (basin,)).fetchone()[0]  # D130
             if q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (rid,)).fetchone()[0]:
                 raise SystemExit(f"run {rid} already carries water")
             pf = {int(s): (int(lid), c) for s, lid, c in q("SELECT stick_id, location_id, coverage FROM box.pud_forecast WHERE run_id = %s "

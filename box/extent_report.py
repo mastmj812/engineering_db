@@ -27,6 +27,7 @@ import shapely
 from scipy.spatial import cKDTree
 from shapely.geometry import LineString, MultiPolygon, Polygon
 
+from box import basin as bsn
 from box import edge_gap as eg
 from box import edge_gap_report as egr
 from box import extent as ex
@@ -34,7 +35,15 @@ from box import geology_io as gio
 
 POOLS = egr.POOLS
 MEMBERS = {"WCA": ("WCA_1", "WCA_2"), "BS2_S": ("BS2_S",)}  # PUD benches per pool (WCXY PUDs reported apart, D20)
-EDGE = eg.EdgeParams(pin_radius_ft=2640.0, close_ft=3960.0)  # D23: the metric of record
+def edge_params(basin: str) -> eg.EdgeParams:
+    """The basin's D23 edge metric (one value per basin): Delaware r = 2,640 / c = 3,960 ft; the Midland's is calibrated in step 20a
+    and refuses until then."""
+    b = bsn.get(basin)
+    return eg.EdgeParams(pin_radius_ft=bsn.require(b.pin_radius_ft, basin, "the D23 pin radius r", "step 20a"),
+                         close_ft=bsn.require(b.closing_ft, basin, "the D23 closing radius c", "step 20a"))
+
+
+EDGE = edge_params(bsn.DELAWARE)  # D23: the metric of record (Delaware)
 CUTOFFS = (dt.date(2021, 1, 1), dt.date(2023, 1, 1))
 GRID = {
     "k": (0.25, 0.5, 0.75, 1.0),
@@ -350,8 +359,8 @@ def edges_frame(pr: Prep, sb: pd.DataFrame, runs: list[dict[str, Any]], bp: ex.B
     return e
 
 
-def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any = None) -> dict[str, Any]:
-    pr = prep(d, pool, None, bp)
+def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any = None, edge: eg.EdgeParams = EDGE) -> dict[str, Any]:
+    pr = prep(d, pool, None, bp, edge)
     sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa, updip)
     b, f = ex.sample_buffers(pr.seg_ix, sb, bp.floor_ft)
     raw, _cells = ex.build_extent(pr.core, pr.xy, b, f, _clamp(sopa, updip), bp)
@@ -408,12 +417,12 @@ def build_pool(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip
     return {"prep": pr, "seg": seg, "extent": ext, "edges": edges, "holes": holes_df, "stats": stats, "updip": updip}
 
 
-def envelope_backtest(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any) -> list[dict[str, Any]]:
+def envelope_backtest(d: pd.DataFrame, pool: str, bp: ex.BufferParams, sopa: Any, updip: Any, edge: eg.EdgeParams = EDGE) -> list[dict[str, Any]]:
     """The chosen config built as the D27 polygon at each cutoff: share of later performing / rolled
     wells (>= 50 % outside the T core, within 3 mi of it, 12-mo known) that it contains."""
     out = []
     for T in CUTOFFS:
-        pr = prep(d, pool, T, bp)
+        pr = prep(d, pool, T, bp, edge)
         sb = ex.segment_buffers(pr.seg, bp, pr.fronts, sopa, updip)
         b, f = ex.sample_buffers(pr.seg_ix, sb, bp.floor_ft)
         rows = {}
@@ -448,17 +457,17 @@ FROM curated.intel_locations il
 JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
 LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
 WHERE il.category = 'PUD'
-  AND il.basin = 'delaware'
+  AND il.basin = %(basin)s
   AND fb.formation_blueox = ANY(%(benches)s)
   AND il.wellstick_geom IS NOT NULL
   AND il.wellstick_geom && ST_MakeEnvelope(%(x0)s, %(y0)s, %(x1)s, %(y1)s, 4326)
 """
 
 
-def pull_puds(conn: Any, benches: list[str], bounds_ll: tuple[float, float, float, float]) -> pd.DataFrame:
+def pull_puds(conn: Any, benches: list[str], bounds_ll: tuple[float, float, float, float], basin: str = bsn.DELAWARE) -> pd.DataFrame:
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_PUD_SQL, {"benches": benches, "x0": bounds_ll[0], "y0": bounds_ll[1], "x1": bounds_ll[2], "y1": bounds_ll[3]})
+        cur.execute(_PUD_SQL, {"benches": benches, "x0": bounds_ll[0], "y0": bounds_ll[1], "x1": bounds_ll[2], "y1": bounds_ll[3], "basin": basin})
         rows = cur.fetchall()
     conn.rollback()
     return pd.DataFrame(rows, columns=["stick_id", "formation_blueox", "status", "wkt"])
@@ -487,20 +496,21 @@ def pud_counts(puds: pd.DataFrame, polys: dict[str, Any]) -> pd.DataFrame:
 # ----------------------------------------------------------------------------
 
 
-def _geojson(b: dict[str, Any], pool: str, version: int, bp: ex.BufferParams, built: str) -> dict[str, Any]:
+def _geojson(b: dict[str, Any], pool: str, version: int, bp: ex.BufferParams, built: str, basin: str = bsn.DELAWARE,
+             edge: eg.EdgeParams = EDGE) -> dict[str, Any]:
     from shapely.geometry import mapping
 
     def rnd(g: Any) -> Any:
         return shapely.set_precision(g, 1e-6)
 
-    feats = [{"type": "Feature", "properties": {"layer": "extent", "pool": pool, "basin": "delaware", "version": version, "source": "generated", "built": built},
+    feats = [{"type": "Feature", "properties": {"layer": "extent", "pool": pool, "basin": basin, "version": version, "source": "generated", "built": built},
               "geometry": mapping(rnd(eg.to_lonlat([b["extent"]])[0]))}]
     e = b["edges"]
     for (_, r), g in zip(e.iterrows(), eg.to_lonlat([x.simplify(20.0) for x in e.geom])):
         g = rnd(g)
         props = {k: (None if isinstance(v, float) and not math.isfinite(v) else v) for k, v in r.drop(labels=["geom"]).items()}
         feats.append({"type": "Feature", "properties": {"layer": "edge", **props}, "geometry": mapping(g)})
-    return {"type": "FeatureCollection", "name": f"box_extent_{pool}_v{version}", "crs_note": "EPSG:4326", "params": asdict(bp), "edge_params": asdict(EDGE), "features": feats}
+    return {"type": "FeatureCollection", "name": f"box_extent_{pool}_v{version}", "crs_note": "EPSG:4326", "params": asdict(bp), "edge_params": asdict(edge), "features": feats}
 
 
 def run(conn: Any, wells_dir: Path, out: Path, version: int = 1, df: pd.DataFrame | None = None, puds: bool = True) -> dict[str, Any]:

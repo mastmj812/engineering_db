@@ -1,11 +1,13 @@
-"""BOX run retention — D123 (supersedes D104): keep ONLY the record run; every earlier run is pruned once a new record is published.
+"""BOX run retention — D123 (supersedes D104): keep ONLY the record run PER BASIN (D130); every earlier run is pruned once a new
+record is published.
 
-    python -m scripts.box_prune_runs                            dry run: lists what would go and what stays (read-only)
+    python -m scripts.box_prune_runs [--basin delaware]         dry run: lists what would go and what stays (read-only)
     python -m scripts.box_prune_runs --apply                    deletes every non-record run Steven has NOT priced
     python -m scripts.box_prune_runs --apply --include-priced   D123: also deletes priced runs, their box_econ.box_pud_econ rows
                                                                 first, in the same transaction (Steven's econ for a superseded run)
 
-Everything happens in ONE transaction, with checks before COMMIT (any failure rolls back).
+Everything happens in ONE transaction, with checks before COMMIT (any failure rolls back). --basin limits the prune to one basin's
+runs (default: every basin); every basin that holds a run must hold exactly one record run, else nothing is pruned.
 
 A run is pruned when it is NOT the record and has no box_econ.box_pud_econ row. Its pud_forecast / _stream / _month /
 location_analog rows cascade (sql/60); box.location rows are shared across runs and stay. box_econ's FK is NO ACTION, so a
@@ -27,16 +29,28 @@ _RUNS_SQL = """
 SELECT f.run_id, f.is_record, f.superseded_by,
        (SELECT count(*) FROM box.pud_forecast p WHERE p.run_id = f.run_id) AS n_pud,
        (SELECT count(*) FROM box.pud_forecast_month m WHERE m.run_id = f.run_id) AS n_month,
-       (SELECT count(*) FROM box_econ.box_pud_econ e WHERE e.run_id = f.run_id) AS n_priced
+       (SELECT count(*) FROM box_econ.box_pud_econ e WHERE e.run_id = f.run_id) AS n_priced,
+       f.basin
 FROM box.forecast_run f ORDER BY f.run_id
 """
 _CHILDREN = ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog", "location_water_analog", "pud_proximity",
              "pud_proximity_parent")
 
 
-def select_prune(runs: list[tuple[Any, ...]], include_priced: bool = False) -> list[int]:
-    """Not the record; priced runs only with include_priced (D123: the record is the only run worth keeping)."""
-    return [int(r[0]) for r in runs if not r[1] and (include_priced or int(r[5]) == 0)]
+def select_prune(runs: list[tuple[Any, ...]], include_priced: bool = False, basin: str | None = None) -> list[int]:
+    """Not the record; priced runs only with include_priced (D123: the record is the only run worth keeping); `basin` (row[6])
+    limits it to that basin's runs."""
+    return [int(r[0]) for r in runs if not r[1] and (include_priced or int(r[5]) == 0) and (basin is None or r[6] == basin)]
+
+
+def records_by_basin(runs: list[tuple[Any, ...]]) -> dict[str, list[int]]:
+    """basin -> its record run ids, for every basin that holds a run (D130: exactly one each)."""
+    out: dict[str, list[int]] = {}
+    for r in runs:
+        out.setdefault(str(r[6]), [])
+        if r[1]:
+            out[str(r[6])].append(int(r[0]))
+    return out
 
 
 def _counts(q: Any, rid: int) -> dict[str, int]:
@@ -47,6 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--include-priced", action="store_true", help="D123: prune priced runs too, deleting their box_econ rows first")
+    ap.add_argument("--basin", default=None, help="prune only this basin's runs (default: every basin)")
     a = ap.parse_args(argv)
     t0 = time.time()
     conn = get_connection()
@@ -56,11 +71,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"target {q('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
             runs = q(_RUNS_SQL).fetchall()
             for r in runs:
-                print(f"  run {r[0]}: record={r[1]} superseded_by={r[2]} pud_forecast={r[3]:,} months={r[4]:,} priced_rows={r[5]:,}")
-            rec = [int(r[0]) for r in runs if r[1]]
-            if len(rec) != 1:
-                raise SystemExit(f"expected exactly one record run, found {rec}")
-            prune = select_prune(runs, a.include_priced)
+                print(f"  run {r[0]} ({r[6]}): record={r[1]} superseded_by={r[2]} pud_forecast={r[3]:,} months={r[4]:,} priced_rows={r[5]:,}")
+            recs = records_by_basin(runs)
+            bad = {b: ids for b, ids in recs.items() if len(ids) != 1}
+            if bad:
+                raise SystemExit(f"expected exactly one record run per basin holding runs, found {recs}")
+            rec = sorted(ids[0] for ids in recs.values())
+            prune = select_prune(runs, a.include_priced, a.basin)
             priced = {int(r[0]): int(r[5]) for r in runs if int(r[0]) in prune and int(r[5])}
             held = [int(r[0]) for r in runs if not r[1] and int(r[5]) and int(r[0]) not in prune]
             if held:
@@ -68,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
             if priced:
                 print(f"priced runs to prune, box_econ rows deleted first: {priced}", flush=True)
             keep = [int(r[0]) for r in runs if int(r[0]) not in prune]
-            print(f"record {rec[0]}; prune {prune}; keep {keep}", flush=True)
+            print(f"record(s) {recs}; prune {prune}; keep {keep}", flush=True)
             if not a.apply or not prune:
                 print("dry run: nothing deleted" if not a.apply else "nothing to prune")
                 conn.rollback()
@@ -94,15 +111,15 @@ def main(argv: list[str] | None = None) -> int:
                 fails.append("box_econ rows left on a pruned run")
             if q("SELECT count(*) FROM box_econ.box_pud_econ").fetchone()[0] != econ_keep:
                 fails.append("box_econ rows of a kept run changed")
-            if q("SELECT run_id FROM box.forecast_run WHERE is_record").fetchall() != [(rec[0],)]:
-                fails.append("record run changed")
+            if [r[0] for r in q("SELECT run_id FROM box.forecast_run WHERE is_record ORDER BY run_id").fetchall()] != rec:
+                fails.append("record run(s) changed")
             if fails:
                 conn.rollback()
                 raise SystemExit(f"checks FAILED, rolled back: {fails}")
         conn.commit()
     finally:
         conn.close()
-    print(f"pruned runs {prune}; kept {keep}; record {rec[0]} unchanged; no orphan rows"
+    print(f"pruned runs {prune}; kept {keep}; record(s) {rec} unchanged; no orphan rows"
           + (f"; box_econ rows deleted {priced}" if priced else "") + f" ({time.time() - t0:.0f} s)")
     return 0
 

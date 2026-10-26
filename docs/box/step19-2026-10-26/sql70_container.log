@@ -1,0 +1,34 @@
+=== pass 1
+[1/3] sql/70: one record run per basin
+    target (IPv4Address('172.17.0.2'), 5432, 'postgres')
+[2/3] validate
+    ok   box.forecast_run.basin exists, NOT NULL (('NO', "'delaware'::text"))
+    ok   box_forecast_run_basin_ck exists
+    ok   every existing run reads basin 'delaware' ({'delaware': 1})
+    ok   runs / record run_ids / pud_forecast rows unchanged by identity (1, [19], 0)
+    ok   sql/60's box_forecast_run_record_uq is gone
+    ok   box_forecast_run_record_basin_uq: CREATE UNIQUE INDEX box_forecast_run_record_basin_uq ON box.forecast_run USING btree (basin) WHERE is_record
+    ok   the per-basin record lookup uses box_forecast_run_record_basin_uq
+[3/3] smoke (rolled back)
+    ok   a Midland record run (20) inserts next to the Delaware record [19]
+    ok   the per-basin flip superseded the Midland record only ({'delaware': [19], 'midland': [21]})
+    ok   a second Delaware record run is refused
+    ok   an unknown basin is refused
+all checks passed
+=== pass 2
+[1/3] sql/70: one record run per basin
+    target (IPv4Address('172.17.0.2'), 5432, 'postgres')
+[2/3] validate
+    ok   box.forecast_run.basin exists, NOT NULL (('NO', "'delaware'::text"))
+    ok   box_forecast_run_basin_ck exists
+    ok   every existing run reads basin 'delaware' ({'delaware': 1})
+    ok   runs / record run_ids / pud_forecast rows unchanged by identity (1, [19], 0)
+    ok   sql/60's box_forecast_run_record_uq is gone
+    ok   box_forecast_run_record_basin_uq: CREATE UNIQUE INDEX box_forecast_run_record_basin_uq ON box.forecast_run USING btree (basin) WHERE is_record
+    ok   the per-basin record lookup uses box_forecast_run_record_basin_uq
+[3/3] smoke (rolled back)
+    ok   a Midland record run (24) inserts next to the Delaware record [19]
+    ok   the per-basin flip superseded the Midland record only ({'delaware': [19], 'midland': [25]})
+    ok   a second Delaware record run is refused
+    ok   an unknown basin is refused
+all checks passed

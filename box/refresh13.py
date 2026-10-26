@@ -5,6 +5,9 @@
   extent_trigger(...) the D17 re-review trigger: >= EXTENT_N producers of a group's tags, first producing after its extent was
                       stored, with lateral midpoints OUTSIDE the extent and within EXTENT_X_MI of it.
   chain(...)          the ordered commands of one refresh: read-only steps run by scripts.box_refresh, every store a separate go.
+
+Step 19 (D130): a refresh is one basin's - its record run, its groups (GROUPS_BY_BASIN), its extents; the other basin's record is
+never read or touched. The Midland groups join GROUPS_BY_BASIN at step 23.
 """
 
 from __future__ import annotations
@@ -23,6 +26,13 @@ GROUPS: dict[str, tuple[tuple[str, ...], str]] = {
     "AVA_2": (("AVA_2",), "AVA_2"), "BS2_C": (("BS2_C",), "BS2_C"), "BS3_S": (("BS3_S",), "BS3_S"), "BS3_C": (("BS3_C",), "BS3_C"),
     "WCB_2": (("WCB_2",), "WCB_2"), "BS1_S": (("BS1_S",), "BS1_S"),
 }
+GROUPS_BY_BASIN: dict[str, dict[str, tuple[tuple[str, ...], str]]] = {"delaware": GROUPS}
+
+
+def groups_for(basin: str) -> dict[str, tuple[tuple[str, ...], str]]:
+    if basin not in GROUPS_BY_BASIN:
+        raise ValueError(f"no record-run groups for basin {basin!r} yet (Midland joins at step 23); known {sorted(GROUPS_BY_BASIN)}")
+    return GROUPS_BY_BASIN[basin]
 
 
 def months_between(a: dt.date, b: dt.date) -> int:
@@ -46,11 +56,11 @@ def extent_trigger(counts: dict[str, int], n: int = EXTENT_N) -> list[str]:
 
 
 EXTENT_SQL = """
-WITH e AS (SELECT geom, created_at FROM box.extent WHERE basin = 'delaware' AND bench = %(bench)s AND is_record)
+WITH e AS (SELECT geom, created_at FROM box.extent WHERE basin = %(basin)s AND bench = %(bench)s AND is_record)
 SELECT count(*)
 FROM curated.wells w
 JOIN curated.formation_blueox fb ON fb.api10 = w.api10, e
-WHERE fb.basin_blueox = 'delaware' AND fb.formation_blueox = ANY (%(forms)s)
+WHERE fb.basin_blueox = %(basin)s AND fb.formation_blueox = ANY (%(forms)s)
   AND w.first_production_date > e.created_at::date
   AND COALESCE(w.lateral_length_ft, 0) > 0 AND w.wellstick_geom IS NOT NULL
   AND NOT extensions.ST_Contains(e.geom, extensions.ST_LineInterpolatePoint(w.wellstick_geom, 0.5))
@@ -60,15 +70,15 @@ WHERE fb.basin_blueox = 'delaware' AND fb.formation_blueox = ANY (%(forms)s)
 
 STATE_SQL = """
 SELECT r.run_id, r.report_version, r.data_through,
-       (SELECT max(report_version) FROM curated.intel_locations) AS live_vintage,
+       (SELECT max(report_version) FROM curated.intel_locations WHERE basin = %(basin)s) AS live_vintage,
        (SELECT max(prod_date) FROM curated.production) AS live_through
-FROM box.forecast_run r WHERE r.is_record
+FROM box.forecast_run r WHERE r.is_record AND r.basin = %(basin)s
 """
 
 
-def chain(pool_dir: str, out: str, workers: int) -> list[dict[str, Any]]:
-    """The refresh, in order. `go` = a WRITE to the database that needs Michael's explicit go (each its own)."""
-    benches = ",".join(GROUPS)
+def chain(pool_dir: str, out: str, workers: int, basin: str = "delaware") -> list[dict[str, Any]]:
+    """The refresh of ONE basin (D130), in order. `go` = a WRITE to the database that needs Michael's explicit go (each its own)."""
+    benches = ",".join(groups_for(basin))
     return [
         {"step": "pool refresh (read-only; Michael confirms the added wells, then commit the directory)", "go": False,
          "cmd": f"python -m scripts.box_pool_refresh --out {pool_dir}"},
@@ -83,6 +93,7 @@ def chain(pool_dir: str, out: str, workers: int) -> list[dict[str, Any]]:
         {"step": "proximity record: rollback rehearsal, then commit as record", "go": True,
          "cmd": f"python -m scripts.box_prox_record store --src-run <base> --outcomes {out}_prox/pud_outcomes.csv.gz --runs {out}_prox_links"
                 " [--commit --record]"},
-        {"step": "prune every non-record run (D123)", "go": True, "cmd": "python -m scripts.box_prune_runs --apply --include-priced"},
+        {"step": f"prune every non-record {basin} run (D123 / D130)", "go": True,
+         "cmd": f"python -m scripts.box_prune_runs --apply --include-priced --basin {basin}"},
         {"step": "Steven re-prices the new record (#eng-updates post = its own go)", "go": True, "cmd": "-"},
     ]

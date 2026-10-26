@@ -35,18 +35,18 @@ FROM box.pud_forecast f
 JOIN box.forecast_run r USING (run_id)
 JOIN box.pud_forecast_stream s ON s.run_id = f.run_id AND s.location_id = f.location_id AND s.stream = 'oil'
 JOIN box.location l ON l.location_id = f.location_id
-WHERE r.is_record
+WHERE r.is_record AND r.basin = 'delaware'  -- D130: the Delaware record
 """
 _COUNTS_SQL = """
 SELECT f.bench, f.coverage, count(*) FROM box.pud_forecast f JOIN box.forecast_run r USING (run_id)
-WHERE r.is_record AND f.basin = 'delaware' GROUP BY 1, 2 ORDER BY 1, 2
+WHERE r.is_record AND r.basin = 'delaware' AND f.basin = 'delaware' GROUP BY 1, 2 ORDER BY 1, 2
 """
 _EXT_SQL = """
 SELECT e.bench, e.extent_id, extensions.ST_AsGeoJSON(extensions.ST_SimplifyPreserveTopology(e.geom, 0.002), 4)
 FROM box.extent e WHERE e.is_record AND e.basin = 'delaware'
-  AND e.bench IN (SELECT DISTINCT f.bench FROM box.pud_forecast f JOIN box.forecast_run r USING (run_id) WHERE r.is_record AND f.coverage = 'covered')
+  AND e.bench IN (SELECT DISTINCT f.bench FROM box.pud_forecast f JOIN box.forecast_run r USING (run_id) WHERE r.is_record AND r.basin = 'delaware' AND f.coverage = 'covered')
 """
-_RUN_SQL = "SELECT run_id FROM box.forecast_run WHERE is_record"
+_RUN_SQL = "SELECT run_id FROM box.forecast_run WHERE is_record AND basin = 'delaware'"
 
 
 def color_of(v: float) -> str:

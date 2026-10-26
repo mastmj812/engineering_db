@@ -28,6 +28,7 @@ from matplotlib.patches import Patch
 from scipy.interpolate import RegularGridInterpolator
 from shapely.geometry import LineString
 
+from box import basin as bsn
 from box import edge_gap as eg
 from box import geology_io as gio
 
@@ -37,8 +38,21 @@ from box import geology_io as gio
 # sibling arrived alongside). First existing root wins, newest layout first, so a move fails loudly in
 # require_grid() instead of silently.
 _ENG = Path("C:/Users/MichaelMast/Blue Ox Resources/Engineering - General")
-GRID_ROOTS = (_ENG / "Grids" / "Delaware" / "Structure", _ENG / "Structure Grids" / "Delaware")
-GRID_ROOT = next((p for p in GRID_ROOTS if p.exists()), GRID_ROOTS[0])
+
+
+def grid_roots(basin: str) -> tuple[Path, ...]:
+    """The basin's structure-grid folders, newest layout first (box/basin.py grid_dirs); () = the basin has none (Midland)."""
+    return tuple(_ENG.joinpath(*parts) for parts in bsn.get(basin).grid_dirs)
+
+
+def grid_root(basin: str) -> Path | None:
+    roots = grid_roots(basin)
+    return next((p for p in roots if p.exists()), roots[0]) if roots else None
+
+
+GRID_ROOTS = grid_roots(bsn.DELAWARE)
+GRID_ROOT = grid_root(bsn.DELAWARE)
+assert GRID_ROOT is not None
 GRID_DIR = GRID_ROOT / "Grids_10-19-26"
 ORIGINAL_GRID_DIR = GRID_ROOT / "Original"
 # file name of a surface's grid, newest scheme first: 10-19 set, then the September set's two schemes
@@ -192,6 +206,9 @@ def _contours(xs: np.ndarray, ys: np.ndarray, Z: np.ndarray, step: float, clip: 
 
 def context_contours(pool: str, clip_usft: Any, grid_dir: Path = GRID_DIR) -> dict[str, list[tuple[LineString, float]]]:
     """Structure (top) and isopach (base − top) contours in the geology frame; {} (with a warning) if a grid is absent."""
+    if pool not in GRIDS:  # no grid surfaces for this pool (every Midland pool: no Midland grids exist, D28 context only)
+        warnings.warn(f"{pool}: no structure-grid surfaces configured — NO structure/isopach contours", stacklevel=2)
+        return {}
     top_s, base_s = GRIDS[pool]
     top_f, base_f = grid_path(top_s, grid_dir), grid_path(base_s, grid_dir)
     if top_f is None or base_f is None:
@@ -223,14 +240,16 @@ def lateral_roles(pr: Any) -> pd.DataFrame:
     return d
 
 
-def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any], bp: Any, contours: dict[str, Any]) -> list[Path]:
+def write_pool(out: Path, pool: str, version: int, built: str, b: dict[str, Any], bp: Any, contours: dict[str, Any],
+               basin: str = bsn.DELAWARE) -> list[Path]:
     """Write one pool's shapefile set; returns the files written."""
     pr = b["prep"]
     files: list[Path] = []
     ext_g = gio.ft13_to_geology([b["extent"]])[0]
-    params = f"k={bp.k:g} cap={bp.cap_ft:.0f} floor={bp.floor_ft:.0f} ref={bp.perf_ref} r=2640 c=3960"
+    bb = bsn.get(basin)
+    params = f"k={bp.k:g} cap={bp.cap_ft:.0f} floor={bp.floor_ft:.0f} ref={bp.perf_ref} r={bb.pin_radius_ft:.0f} c={bb.closing_ft:.0f}"
     files += gio.write_layer(out / f"BOX_{pool}_extent_v{version}", "polygon", [ext_g],
-                             EXTENT_FIELDS, [[pool, "delaware", version, "generated", b["stats"]["extent_sqmi"], built, params]])
+                             EXTENT_FIELDS, [[pool, basin, version, "generated", b["stats"]["extent_sqmi"], built, params]])
     e = b["edges"]
     eg_geoms = gio.ft13_to_geology(list(e.geom.map(lambda g: g.simplify(20.0))))
     files += gio.write_layer(out / f"BOX_{pool}_edges_v{version}", "line", eg_geoms, EDGE_FIELDS,

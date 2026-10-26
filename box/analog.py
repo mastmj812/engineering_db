@@ -34,6 +34,7 @@ from boxfit.tc.fit_p50 import fit_p50_series
 from boxfit.tc.ratio_mode import build_ratio_fitted
 from scipy.spatial import cKDTree
 
+from box import basin as bsn
 from box import lateral as lat_eff
 from box import tc_curve as tc
 from box import tc_record as tr
@@ -46,10 +47,11 @@ RECENT_YEARS = 4
 RECENT_MAX_MI = 10.0
 DEFAULT_SPACING_FT = 880.0  # narvi fallback planned spacing
 TRANSFER_MONTHS = 9
-DF_DELAWARE = 0.08
+DF_DELAWARE = bsn.df_terminal(bsn.DELAWARE)  # 0.08; a basin's Df = bsn.df_terminal(basin) (D132: Midland 0.06)
 MI = 5280.0
 STREAMS = ("oil", "gas")
 BENCH = "WCA"  # the frozen spec's bench (D58); step 9a passes others (BS2_S, WCXY) through the same selection
+BASIN = bsn.DELAWARE  # the default basin (step 19): Df and deal-intake's per-basin lateral tolerance follow `basin`
 
 _STATE: dict[str, Any] = {}
 
@@ -86,7 +88,7 @@ def _candidates(pool: dict[str, Any], idx: Sequence[int], loc: dict[str, Any]) -
 
 
 def select_cohort(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any], *, fp_from: dt.date | None = None,
-                  radii: Sequence[float] = RADII_MI, bench: str = BENCH) -> tuple[list[int], float, list[str]]:
+                  radii: Sequence[float] = RADII_MI, bench: str = BENCH, basin: str = BASIN) -> tuple[list[int], float, list[str]]:
     """deal-intake classify + tier-blind fill over a growing radius; returns (pool indices, radius mi, flags). `bench` is the
     deal-intake bench label (a single-bench plan: no adjacent bench, so it never changes which wells are selected)."""
     sp = loc.get("spacing_ft")
@@ -98,7 +100,7 @@ def select_cohort(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, lo
         if fp_from is not None:
             cands = [c for c in cands if c["first_production_date"] >= fp_from]
         eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=float(loc["lateral_ft"]),
-                                     basin="delaware", planned_spacing_ft=planned_sp)
+                                     basin=basin, planned_spacing_ft=planned_sp)
         if len(eligible) >= min_w or r == radii[-1]:
             sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
             return [c["_i"] for c in sel.selected], r, sel.flags
@@ -136,17 +138,18 @@ def members_with_transfer(pool: dict[str, Any], idx: Sequence[int]) -> list[tc.M
     return out
 
 
-def cohort_fits(members: Sequence[tc.Member], need_p50: bool) -> dict[str, Any] | None:
+def cohort_fits(members: Sequence[tc.Member], need_p50: bool, basin: str = BASIN) -> dict[str, Any] | None:
     agg = tc.aggregate_only(members)
     st = agg.streams
-    oil_mean = fit_p50_series(st["oil"].mean, df_terminal_per_year=DF_DELAWARE, stream="oil")
+    df = bsn.df_terminal(basin)
+    oil_mean = fit_p50_series(st["oil"].mean, df_terminal_per_year=df, stream="oil")
     if not oil_mean:
         return None
     out: dict[str, Any] = {"oil_mean": oil_mean,
                            "ratio": build_ratio_fitted(mean_oil=st["oil"].mean, mean_stream=st["gas"].mean, oil_fitted=oil_mean, n_months=tc.N_MONTHS)}
     if need_p50:
-        out["oil_p50"] = fit_p50_series(st["oil"].p50, df_terminal_per_year=DF_DELAWARE, stream="oil")
-        out["gas_p50"] = fit_p50_series(st["gas"].p50, df_terminal_per_year=DF_DELAWARE, stream="gas")
+        out["oil_p50"] = fit_p50_series(st["oil"].p50, df_terminal_per_year=df, stream="oil")
+        out["gas_p50"] = fit_p50_series(st["gas"].p50, df_terminal_per_year=df, stream="gas")
     return out
 
 
@@ -345,7 +348,7 @@ def _level_only(pool: dict[str, Any], cands: list[dict[str, Any]], min_months: i
 
 
 def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config, loc: dict[str, Any], *, bench: str = BENCH,
-                     diag: dict[str, Any] | None = None, rules: Rules = RECORD_RULES) -> tuple[list[int], float, list[str], str]:
+                     diag: dict[str, Any] | None = None, rules: Rules = RECORD_RULES, basin: str = BASIN) -> tuple[list[int], float, list[str], str]:
     """box_v2 selection: first ring circular; past it, a strike-aligned ellipse when local strike is trusted (D55);
     short completed laterals draw the SHORT_BAND_FT analogs (translated later by Cui). Returns (idx, radius, flags, mode).
     `diag`, when given, receives the local-strike diagnostics (azimuth, R², n) — read-only provenance, no effect on selection.
@@ -375,7 +378,7 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
                 v = c.get("lateral_closer_xy_ft")
                 if v is None or v >= sentinel:
                     c["lateral_closer_xy_ft"] = planned_sp
-        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin="delaware",
+        eligible, _, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin=basin,
                                      planned_spacing_ft=planned_sp, lateral_band_ft=wide if "lateral" in relaxed else band)
         sel = sw.fill(eligible, cfg, bench=bench, adjacent=[], order=["stack_standalone"], order_reason="tier-blind (v10)", tier_blind=True)
         flags = list(sel.flags)
@@ -424,10 +427,11 @@ def select_cohort_v2(pool: dict[str, Any], tree: cKDTree, cfg: di_config.Config,
     return idx, RADII_MI[-1], flags, "circle"
 
 
-def _p50_months(idx: Sequence[int], pool: dict[str, Any], k: int) -> dict[str, np.ndarray] | None:
+def _p50_months(idx: Sequence[int], pool: dict[str, Any], k: int, basin: str = BASIN) -> dict[str, np.ndarray] | None:
     agg = tc.aggregate_only(members_with_transfer(pool, idx))
-    oil = fit_p50_series(agg.streams["oil"].p50, df_terminal_per_year=DF_DELAWARE, stream="oil")
-    gas = fit_p50_series(agg.streams["gas"].p50, df_terminal_per_year=DF_DELAWARE, stream="gas")
+    df = bsn.df_terminal(basin)
+    oil = fit_p50_series(agg.streams["oil"].p50, df_terminal_per_year=df, stream="oil")
+    gas = fit_p50_series(agg.streams["gas"].p50, df_terminal_per_year=df, stream="gas")
     if not oil:
         return None
     return {"oil": _months(oil, k), "gas": _months(gas, k)}
@@ -437,30 +441,30 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
     """di_p50 exactly as v1 (raw laterals) and box_v2 (completed laterals, strike edges, short-lateral translation)."""
     pool1, pool2, tree, cfg, k = _STATE["pool"], _STATE["pool2"], _STATE["tree"], _STATE["cfg"], _STATE["k"]
     out: dict[str, Any] = {"api10": loc["api10"]}
-    bench = _STATE.get("bench", BENCH)
-    idx, r, flags = select_cohort(pool1, tree, cfg, loc, bench=bench)
+    bench, basin = _STATE.get("bench", BENCH), _STATE.get("basin", BASIN)
+    idx, r, flags = select_cohort(pool1, tree, cfg, loc, bench=bench, basin=basin)
     out.update({"radius_mi": r, "n_analogs": len(idx), "flags": ";".join(flags)})
     if len(idx) >= 3:
-        m = _p50_months(idx, pool1, k)
+        m = _p50_months(idx, pool1, k, basin)
         if m:
             out["di_p50"] = {s: m[s] * float(loc["lateral_ft"]) / 1000.0 for s in STREAMS}
     loc2 = {**loc, "lateral_ft": loc["lateral_eff"]}
     diag: dict[str, Any] = {}
-    idx2, r2, _, mode = select_cohort_v2(pool2, tree, cfg, loc2, bench=bench, diag=diag)
+    idx2, r2, _, mode = select_cohort_v2(pool2, tree, cfg, loc2, bench=bench, diag=diag, basin=basin)
     out.update({f"v2_{k_}": v_ for k_, v_ in diag.items()})
     out.update({"v2_radius_mi": r2, "v2_n": len(idx2), "v2_mode": mode, "v2_short": loc2["lateral_ft"] < SHORT_LAT_FT,
                 "v2_uturn": loc["lateral_eff"] != loc["lateral_ft"]})
     if len(idx2) >= 3:
-        m2 = _p50_months(idx2, pool2, k)
+        m2 = _p50_months(idx2, pool2, k, basin)
         if m2:
             mult = lateral_multiplier(float(loc2["lateral_ft"]), [pool2["lateral"][i] for i in idx2], ())
             out["box_v2"] = {s: m2[s] * mult for s in STREAMS}
     for name, (pool_key, rules) in (_STATE.get("variants16") or {}).items():  # step 16, pre-registered in box/step16.py
         p16 = _STATE[pool_key]
-        i16, r16, f16, mode16 = select_cohort_v2(p16, tree, cfg, loc2, bench=bench, rules=rules)
+        i16, r16, f16, mode16 = select_cohort_v2(p16, tree, cfg, loc2, bench=bench, rules=rules, basin=basin)
         out.update({f"{name}_radius_mi": r16, f"{name}_n": len(i16), f"{name}_mode": mode16, f"{name}_flags": ";".join(f16)})
         if len(i16) >= 3:
-            m16 = _p50_months(i16, p16, k)
+            m16 = _p50_months(i16, p16, k, basin)
             if m16:
                 L16, lats16 = float(loc2["lateral_ft"]), [p16["lateral"][i] for i in i16]
                 mult16 = lateral_multiplier(L16, lats16, f16)
@@ -481,11 +485,13 @@ def lateral_multiplier(lateral_ft: float, member_laterals: Sequence[float], flag
 
 def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,
                     workers: int | None = None, bench: str = BENCH, extra_pools: dict[str, dict[str, Any]] | None = None,
-                    variants16: dict[str, tuple[str, Rules]] | None = None, linear_twins: Sequence[str] = ()) -> list[dict[str, Any]]:
+                    variants16: dict[str, tuple[str, Rules]] | None = None, linear_twins: Sequence[str] = (),
+                    basin: str = BASIN) -> list[dict[str, Any]]:
     """`extra_pools` / `variants16` (step 16): more pools on pool2's wells and xy (e.g. measured spacing), and the pre-registered
     variants as name -> (pool key, Rules); each adds a prediction `name` beside di_p50 / box_v2. `linear_twins`: variants that
-    also predict `<name>_lin` — the same cohort scaled linearly per ft (the Cui-vs-linear check)."""
-    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench,
+    also predict `<name>_lin` — the same cohort scaled linearly per ft (the Cui-vs-linear check). `basin` (step 19): Df and the
+    deal-intake lateral tolerance of the non-record variants (the record's r2 band is explicit, so it never reads the basin's)."""
+    state = {"pool": pool, "pool2": pool2, "cfg": di_config.load(), "k": k, "cutoff": cutoff, "bench": bench, "basin": basin,
              **(extra_pools or {}), "variants16": variants16 or {}, "linear_twins": tuple(linear_twins)}
     workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
     if workers == 1:

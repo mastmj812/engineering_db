@@ -28,7 +28,7 @@ from box import prox_pud_report as ppr
 from box import prox_study_report as psr
 from box.tc_curve_report import _read
 
-_RUN_ID_SQL = "SELECT run_id, data_through, report_version FROM box.forecast_run WHERE run_id = %(run)s"
+_RUN_ID_SQL = "SELECT run_id, data_through, report_version, basin FROM box.forecast_run WHERE run_id = %(run)s"
 _PUD_BOX_SQL = """
 SELECT pf.location_id, pf.stick_id, pf.formation_blueox, pf.bench AS bench_group, pf.coverage, pf.pad_name, {ext}ST_AsText(l.geom),
        so.eur AS oil_eur, so.eur_per_kft AS oil_eur_per_kft, sg.eur AS gas_eur
@@ -36,7 +36,7 @@ FROM box.pud_forecast pf
 JOIN box.location l ON l.location_id = pf.location_id
 LEFT JOIN box.pud_forecast_stream so ON so.run_id = pf.run_id AND so.location_id = pf.location_id AND so.stream = 'oil'
 LEFT JOIN box.pud_forecast_stream sg ON sg.run_id = pf.run_id AND sg.location_id = pf.location_id AND sg.stream = 'gas'
-WHERE pf.run_id = %(run)s AND pf.basin = 'delaware' AND pf.coverage IN ('covered', 'covered_provisional')
+WHERE pf.run_id = %(run)s AND pf.basin = %(basin)s AND pf.coverage IN ('covered', 'covered_provisional')
 """
 _EREBOR_SQL = "SELECT stick_id, tvd, deplet_t, operator FROM curated.erebor_locations WHERE stick_id = ANY(%(ids)s)"
 COLS = ["location_id", "stick_id", "formation_blueox", "bench_group", "coverage", "pad_name", "tvd_ft", "deplet_t", "operator", "wkt",
@@ -50,8 +50,8 @@ def _ext(conn: Any) -> str:
 
 
 def pull(box: Any, live: Any, run_id: int) -> tuple[dict[str, Any], pd.DataFrame, pd.DataFrame]:
-    run, through, rv = _read(box, _RUN_ID_SQL, {"run": run_id})[0]
-    b = pd.DataFrame(_read(box, _PUD_BOX_SQL.format(ext=_ext(box)), {"run": run}),
+    run, through, rv, basin = _read(box, _RUN_ID_SQL, {"run": run_id})[0]
+    b = pd.DataFrame(_read(box, _PUD_BOX_SQL.format(ext=_ext(box)), {"run": run, "basin": basin}),
                      columns=[c for c in COLS if c not in ("tvd_ft", "deplet_t", "operator")])
     e = pd.DataFrame(_read(live, _EREBOR_SQL, {"ids": [int(x) for x in b["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
     p = b.merge(e, on="stick_id", how="left")[COLS]
@@ -59,9 +59,10 @@ def pull(box: Any, live: Any, run_id: int) -> tuple[dict[str, Any], pd.DataFrame
     for c in ("oil_eur", "oil_eur_per_kft", "gas_eur"):
         p[c] = pd.to_numeric(p[c], errors="coerce")
     p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
-    n_id, eur_id = _read(box, ppr._ID_SQL, {"run": run})[0]
-    meta = {"run_id": run, "data_through": str(through), "report_version": rv, "identity_n": int(n_id), "identity_oil_eur": float(eur_id)}
-    return meta, p.drop(columns="wkt"), psr.pull_universe(live)
+    n_id, eur_id = _read(box, ppr._ID_SQL, {"run": run, "basin": basin})[0]
+    meta = {"run_id": run, "data_through": str(through), "report_version": rv, "identity_n": int(n_id), "identity_oil_eur": float(eur_id),
+            "basin": basin}
+    return meta, p.drop(columns="wkt"), psr.pull_universe(live, basin)
 
 
 def run(box: Any, live: Any, run_id: int, prec_runs: Path, out: Path, links_out: Path) -> dict[str, Any]:

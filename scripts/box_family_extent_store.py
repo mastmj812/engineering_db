@@ -54,13 +54,13 @@ def _extent_geojson(path: Path) -> object:
     return ex.as_multi(eg.to_ft([shape(feat["geometry"])])[0])
 
 
-def _store_emerging(benches: list[str], dref: str, dry_run: bool) -> int:
+def _store_emerging(benches: list[str], dref: str, dry_run: bool, basin: str = BASIN) -> int:
     """D2 emerging bench: a bench_scope row with in_scope = false and no extent (the WDFD pattern). Refuses if the bench
     already has a scope row or any extent."""
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT bench FROM box.bench_scope WHERE basin = %s AND bench = ANY(%s) UNION SELECT bench FROM box.extent WHERE basin = %s AND bench = ANY(%s)",
-                        (BASIN, benches, BASIN, benches))
+                        (basin, benches, basin, benches))
             clash = sorted(r[0] for r in cur.fetchall())
         conn.rollback()
         if clash:
@@ -76,13 +76,13 @@ def _store_emerging(benches: list[str], dref: str, dry_run: bool) -> int:
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
                        VALUES (%s, %s, false, %s, %s, %s, %s)""",
-                    (BASIN, b, "{" + b + "}", "emerging bench: too little development history for the BOX workflow; hand-worked per deal; shown as not covered, never zero (D2)",
+                    (basin, b, "{" + b + "}", "emerging bench: too little development history for the BOX workflow; hand-worked per deal; shown as not covered, never zero (D2)",
                      dt.date(2026, 10, 16), dref),
                 )
         conn.commit()
         with conn.cursor() as cur:
             cur.execute("SET TRANSACTION READ ONLY")
-            cur.execute("SELECT basin, bench, in_scope, member_benches FROM box.bench_scope WHERE basin = %s AND bench = ANY(%s)", (BASIN, benches))
+            cur.execute("SELECT basin, bench, in_scope, member_benches FROM box.bench_scope WHERE basin = %s AND bench = ANY(%s)", (basin, benches))
             for r in cur.fetchall():
                 print("  live:", r)
         conn.rollback()
@@ -98,9 +98,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--out-of-scope", nargs="*", default=[], help="benches whose bench_scope row is in_scope = false (extent stored for reference; D2 / step 14 pending)")
     ap.add_argument("--decision-ref", default=None)
+    ap.add_argument("--basin", default=BASIN, help="the basin the rows are stored under (step 19)")
     a = ap.parse_args(argv)
     if a.emerging:
-        return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run)
+        return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run, a.basin)
     if not a.pool or a.wells is None:
         ap.error("--wells and --pool are required unless --emerging is given")
     ext_dir = a.wells / "extents"
@@ -111,7 +112,7 @@ def main(argv: list[str] | None = None) -> int:
     with get_connection() as conn:
         # --- identity, read-only
         with conn.cursor() as cur:
-            cur.execute("SELECT bench, count(*) FROM box.extent WHERE basin = %s AND bench = ANY(%s) GROUP BY bench", (BASIN, list(a.pool)))
+            cur.execute("SELECT bench, count(*) FROM box.extent WHERE basin = %s AND bench = ANY(%s) GROUP BY bench", (a.basin, list(a.pool)))
             existing = dict(cur.fetchall())
         conn.rollback()
         if existing:
@@ -151,17 +152,17 @@ def main(argv: list[str] | None = None) -> int:
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
                        VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (basin, bench) DO NOTHING""",
-                    (BASIN, pool, pool not in a.out_of_scope, members,
+                    (a.basin, pool, pool not in a.out_of_scope, members,
                      reason + ("; IN_SCOPE FALSE pending the step-14 D2 decision (extent stored for reference)" if pool in a.out_of_scope else ""),
                      dt.date(2026, 10, 16), dref),
                 )
         conn.commit()
         for pool, (b, edited, dstats) in plan.items():
-            gid = store_generated(conn, pool, a.version, b, bp, run_id, make_record=edited is None)
+            gid = store_generated(conn, pool, a.version, b, bp, run_id, make_record=edited is None, basin=a.basin)
             if edited is None:
                 print(f"stored {pool}: generated v{a.version} extent_id {gid} = version of record (no owner marks)")
                 continue
-            eid = store_edited(conn, pool, a.version, edited, dstats, make_record=True)
+            eid = store_edited(conn, pool, a.version, edited, dstats, make_record=True, basin=a.basin)
             print(f"stored {pool}: generated v{a.version} extent_id {gid}; edited v{a.version} extent_id {eid} = version of record")
         # --- verify, read-only
         with conn.cursor() as cur:
@@ -171,10 +172,10 @@ def main(argv: list[str] | None = None) -> int:
                           round((extensions.ST_Area(e.geom::extensions.geography) / 2589988.110336)::numeric, 1),
                           (SELECT count(*) FROM box.extent_edge g WHERE g.extent_id = e.extent_id)
                    FROM box.extent e WHERE e.basin = %s AND e.bench = ANY(%s) ORDER BY e.extent_id""",
-                (BASIN, list(a.pool)),
+                (a.basin, list(a.pool)),
             )
             rows = cur.fetchall()
-            cur.execute("SELECT bench, count(*) FILTER (WHERE is_record) FROM box.extent WHERE basin = %s GROUP BY bench ORDER BY bench", (BASIN,))
+            cur.execute("SELECT bench, count(*) FILTER (WHERE is_record) FROM box.extent WHERE basin = %s GROUP BY bench ORDER BY bench", (a.basin,))
             rec = cur.fetchall()
         conn.rollback()
         for r in rows:

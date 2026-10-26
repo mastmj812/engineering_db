@@ -1,8 +1,8 @@
 """BOX D84 / D126 — the analog-pool refresh, every group's well set (read-only against the warehouse).
 
-    python -m scripts.box_pool_refresh [--base <dir>] [--out docs/box/pool-YYYY-MM-DD] [--dry-run]
+    python -m scripts.box_pool_refresh [--base <dir>] [--out docs/box/pool-YYYY-MM-DD] [--dry-run] [--basin delaware]
 
-Re-pulls and re-scores the Delaware producing horizontals exactly as step 1 did (box.bench_qc consensus detector), applies
+Re-pulls and re-scores the basin's (default Delaware; step 19) producing horizontals exactly as step 1 did (box.bench_qc consensus detector), applies
 the class rule of record (box.qc_rule) with NO card verdicts, and appends each well never judged before to the pool its
 rule-decided bench names. Writes ONE directory: wells_final_<pool>.csv for all twelve pools (base bytes + appended rows,
 identity-checked per file), new_wells.csv, universe.csv, refresh.json and the review page index.html.
@@ -30,14 +30,14 @@ import pandas as pd
 from box import flag_cards as fc
 from box import pool_refresh as pr
 from box import production_run9 as p9r
-from box.bench_qc import ConsensusParams, pull_delaware_producers, score_consensus
+from box.bench_qc import ConsensusParams, pull_producers, score_consensus
 from box.qc_rule import apply_rule
 from etl.db import get_connection
 
 BOX_DOCS = Path("docs") / "box"
 _EXTENT_SQL = """
 SELECT extent_id, version, extensions.ST_AsText(geom) FROM box.extent
-WHERE basin = 'delaware' AND bench = %(bench)s AND is_record
+WHERE basin = %(basin)s AND bench = %(bench)s AND is_record
 """
 CODE_PATHS = ["box/pool_refresh.py", "box/bench_qc.py", "box/qc_rule.py", "box/flag_cards.py", "box/production_run9.py",
               "scripts/box_pool_refresh.py"]
@@ -66,13 +66,13 @@ def base_files(base_dir: Path) -> dict[str, Path]:
     return out
 
 
-def record_extent(conn: Any, bench: str) -> tuple[int | None, Any]:
-    """The bench's extent of record (shapely geometry), read-only; (None, None) if there is none."""
+def record_extent(conn: Any, bench: str, basin: str = "delaware") -> tuple[int | None, Any]:
+    """The bench's extent of record in `basin` (shapely geometry), read-only; (None, None) if there is none."""
     from shapely import wkt
 
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_EXTENT_SQL, {"bench": bench})
+        cur.execute(_EXTENT_SQL, {"bench": bench, "basin": basin})
         row = cur.fetchone()
     conn.rollback()
     return (None, None) if row is None else (int(row[0]), wkt.loads(row[2]))
@@ -102,13 +102,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--base", type=Path, default=None, help="base refresh dir (default: newest docs/box/pool-* refresh)")
     ap.add_argument("--out", type=Path, default=BOX_DOCS / f"pool-{dt.datetime.now(tz=dt.UTC).astimezone():%Y-%m-%d}")
     ap.add_argument("--dry-run", action="store_true", help="classify and print; write nothing")
+    ap.add_argument("--basin", default="delaware", help="the basin whose pools are refreshed (the twelve pools are Delaware's; step 19)")
     a = ap.parse_args(argv)
+    if a.basin != "delaware":
+        raise SystemExit(f"no {a.basin} analog pools exist yet (they land with step 20's bench QC); nothing to refresh")
     base_dir = a.base or default_base()
     files = base_files(base_dir)
     t0 = time.time()
     with get_connection() as conn:
-        live = pull_delaware_producers(conn)
-        extents = {p: record_extent(conn, p) for p in pr.POOLS}
+        live = pull_producers(conn, a.basin)
+        extents = {p: record_extent(conn, p, a.basin) for p in pr.POOLS}
     live = apply_rule(score_consensus(live), verdicts=None)  # D84: no calibration cards
     bases = {p: pd.read_csv(f, dtype={"api10": str}, low_memory=False) for p, f in files.items()}
     seen, seen_meta = pr.reconstruct_seen(base_dir, live)
@@ -121,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     parts = pr.classify_pools(live, bases, set(seen["api10"]), pr.load_exclusions(), mask)
     summ = pr.summarize_pools(parts)
     universe = pr.next_universe(seen, live, a.out.name)
-    print(f"base {base_dir} | live Delaware producing hz {len(live):,}, data through {live.attrs.get('asof')} | judged universe "
+    print(f"base {base_dir} | live {a.basin} producing hz {len(live):,}, data through {live.attrs.get('asof')} | judged universe "
           f"{seen_meta['method']} {seen_meta['n']:,} (+{len(extra)} step-15 only)")
     print(f"new (never judged) any bench {summ['n_new_any_bench']:,} | added {summ['added_total']} | new in no pool {summ['new_unpooled']}")
     for p, v in summ["pools"].items():

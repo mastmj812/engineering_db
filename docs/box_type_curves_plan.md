@@ -19,7 +19,7 @@ across cutoffs + "consistent with tuning" intervals (passes a good forecast 85�
 `index.html` = the evidence pack; read-only, nothing stored): Novi's Midland per-ft oil bias −5.4 % cum-6 / +4.3 % cum-12 (value
 case is not a bias fix); no Midland bench pair merges like WCA_1 / WCA_2 (rec: no pooling); US → emerging rec, WCC / WCD
 provisional target; Df 0.06 = +4.7 % median EUR; record run: the pack recommended one shared run, decided per basin instead (D130); 19.8 % of
-2023+ Midland laterals sit past the r2 15,000-ft analog band (rec: 21a pre-registers a widened band). **GATE 18 CLOSED 2026-10-26** (D127–D133): build, validated where data allow (D131); US emerging, WCD + WCC provisional target, DEAN build (D127 / D131); no pooling (D128); long laterals via Cui, widened band pre-registered in 21a (D129); one record run per basin, sql/70 in step 19 (D130); Df 0.06 (D132); water = D107 (D133). Next = step 19. Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
+2023+ Midland laterals sit past the r2 15,000-ft analog band (rec: 21a pre-registers a widened band). **GATE 18 CLOSED 2026-10-26** (D127–D133): build, validated where data allow (D131); US emerging, WCD + WCC provisional target, DEAN build (D127 / D131); no pooling (D128); long laterals via Cui, widened band pre-registered in 21a (D129); one record run per basin, sql/70 in step 19 (D130); Df 0.06 (D132); water = D107 (D133). **Step 19 BUILT 2026-10-26, AT GATE 19** (branch `claude/box-step19-basin-param`, erebor `claude/box-record-per-basin`; `docs/box/step19-2026-10-26/FINDINGS.md`): every basin literal on the production path reads `box/basin.py` (Df 0.08 / 0.06 D132); a run is one basin; sql/70 (`forecast_run.basin`, UNIQUE (basin) WHERE is_record) container-validated 11/11 ×2, NOT applied; sql/69 + erebor + BOX scripts read the record per basin. Bar met: smoke WCA / BS2_S / AVA_0 old vs new code bit-identical (90 / 90 locations; universe −4,154 Midland BRNT rows = D130), pool refresh byte-identical, WCC / AVA_0 / 1 / 2 extents within 0.0011–0.0020 sq mi (BS2_S step-3 regression −0.32 sq mi on old code too = live geometry drift), 743 tests green. Midland dry pull: every path opens. Gate asks FINDINGS §4 incl. a proposed Phase 3 simplification (§5). Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
@@ -625,7 +625,7 @@ refresh byte-identity, a Delaware extent rebuild = stored record within 0.005 sq
 (per-basin record index, `box.forecast_run.basin`) container-validated and every record-run reader made basin-aware (BOX scripts,
 sql/69, erebor `box_locations` / Highgrade); live apply on go. A read-only Midland dry
 pull per module proves the paths open (no Midland output reviewed here). Sequence after the step-13b tooling (eng_db #197) merges.
-**Gate 19** = the equivalence report.
+**Gate 19** = the equivalence report. **Built 2026-10-26 — at gate 19** (`docs/box/step19-2026-10-26/FINDINGS.md`; live tail = sql/70 apply → merge → sql/69 re-apply → dictionary regen → erebor merge, each on go).
 
 ### Step 20 — bench QC + extents, by family (≈ 2–3 sessions per family)
 One session builds both the tags and the extent for a family; Michael reviews them together at ONE gate per family. If card

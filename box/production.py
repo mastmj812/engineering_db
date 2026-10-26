@@ -38,6 +38,7 @@ from boxfit.tc.fit_p50 import fit_p50_series
 
 from box import acceptance as ac
 from box import analog as an
+from box import basin as bsn
 from box import edge_gap as eg
 from box import strike as stk
 from box import tc_curve as tc
@@ -94,6 +95,7 @@ LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
 WHERE il.category = 'PUD'
   AND COALESCE(ri.status, 'not_reconciled') IN ('remaining_pud', 'conflict', 'not_reconciled')
   AND il.wellstick_geom IS NOT NULL
+  AND il.basin = ANY (%(basins)s)
 ORDER BY il.stick_id
 """
 
@@ -104,16 +106,32 @@ _PDP_SQL = """
 SELECT w.api10, extensions.ST_AsText(w.wellstick_geom)
 FROM curated.wells w
 JOIN curated.formation_blueox f ON f.api10 = w.api10
-WHERE f.basin_blueox = 'delaware' AND f.formation_blueox = ANY (%(forms)s)
+WHERE f.basin_blueox = %(basin)s AND f.formation_blueox = ANY (%(forms)s)
   AND w.wellstick_geom IS NOT NULL AND COALESCE(w.lateral_length_ft, 0) > 1000
   AND w.first_production_date IS NOT NULL
 """
 
 
-def universe(conn: Any, covered: Sequence[str] = RUN7_COVERED) -> pd.DataFrame:
+def group_basin(group: str) -> str:
+    """The basin a PRODUCTION_BENCHES group belongs to."""
+    return PRODUCTION_BENCHES[group][0]
+
+
+def run_basin(groups: Sequence[str]) -> str:
+    """The ONE basin of a run's groups (D130: one record run per basin); a run mixing basins is refused."""
+    b = sorted({group_basin(g) for g in groups})
+    if len(b) != 1:
+        raise ValueError(f"a BOX run covers one basin (D130); groups {list(groups)} span {b}")
+    return b[0]
+
+
+def universe(conn: Any, covered: Sequence[str] = RUN7_COVERED, basins: Sequence[str] | None = None) -> pd.DataFrame:
+    """The D67 / D117 universe of `basins` (default: the covered groups' basin, D130 - a run's universe is its own basin's).
+    Before step 19 the universe was every basin's: run 19 (Delaware) carries the 4,154 Midland emerging-bench rows."""
+    basins = list(basins) if basins is not None else [run_basin(covered)]
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_UNIVERSE_SQL)
+        cur.execute(_UNIVERSE_SQL, {"basins": basins})
         cols = [d.name for d in cur.description]
         rows = cur.fetchall()
     conn.rollback()
@@ -155,10 +173,10 @@ def covered_class(group: str) -> str:
     return "covered_provisional" if ac.BENCH_SPECS[group].get("provisional") else "covered"
 
 
-def pdp_sticks(conn: Any, forms: Sequence[str]) -> pd.DataFrame:
+def pdp_sticks(conn: Any, forms: Sequence[str], basin: str = bsn.DELAWARE) -> pd.DataFrame:
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_PDP_SQL, {"forms": list(forms)})
+        cur.execute(_PDP_SQL, {"forms": list(forms), "basin": basin})
         rows = cur.fetchall()
     conn.rollback()
     return pd.DataFrame(rows, columns=["api10", "wkt"])
@@ -273,14 +291,15 @@ def fit_location(loc: dict[str, Any]) -> dict[str, Any]:
     selection rules (default the record; D121 builds pass box.production16.RULES with a measured-spacing pool), and the
     lateral multiplier is box.analog.lateral_multiplier (Cui when short or when the rules translate / relax the lateral)."""
     pool2, tree, cfg = _STATE["pool2"], _STATE["tree"], _STATE["cfg"]
+    basin = _STATE.get("basin", an.BASIN)
     idx, r, flags, mode = an.select_cohort_v2(pool2, tree, cfg, loc, bench=_STATE.get("bench", an.BENCH),
-                                              rules=_STATE.get("rules") or an.RECORD_RULES)
+                                              rules=_STATE.get("rules") or an.RECORD_RULES, basin=basin)
     out: dict[str, Any] = {"key": loc["api10"], "radius_mi": float(r), "n_analogs": len(idx), "search_mode": mode, "flags": list(flags),
                            "short_lateral": float(loc["lateral_ft"]) < an.SHORT_LAT_FT}
     if len(idx) < 3:
         return out
     agg = tc.aggregate_only(an.members_with_transfer(pool2, idx))
-    fits = {s: fit_p50_series(agg.streams[s].p50, df_terminal_per_year=an.DF_DELAWARE, stream=s) for s in STREAMS}
+    fits = {s: fit_p50_series(agg.streams[s].p50, df_terminal_per_year=bsn.df_terminal(basin), stream=s) for s in STREAMS}
     if not fits["oil"]:
         out["flags"].append("oil P50 fit failed")
         return out
@@ -300,12 +319,12 @@ def init_state(state: dict[str, Any]) -> None:
 
 
 def fit_many(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cfg: Any, workers: int,
-             bench: str = an.BENCH, rules: an.Rules | None = None) -> list[dict[str, Any]]:
+             bench: str = an.BENCH, rules: an.Rules | None = None, basin: str = an.BASIN) -> list[dict[str, Any]]:
     """`bench` = the deal-intake bench label passed to selection (the harness's BENCH_SPECS[...]["label"]); `rules` = the
-    selection rules (None = the record)."""
+    selection rules (None = the record); `basin` = the group's basin (Df, step 19)."""
     from concurrent.futures import ProcessPoolExecutor
 
-    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None, "bench": bench, "rules": rules}
+    state = {"pool": pool, "pool2": pool2, "cfg": cfg, "k": N_MONTHS, "cutoff": None, "bench": bench, "rules": rules, "basin": basin}
     if workers == 1:
         init_state(state)
         return [fit_location(x) for x in locs]

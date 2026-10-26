@@ -34,10 +34,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--regress", type=Path, default=None, help="gate-1 dir: rebuild the record extents as a regression guard")
     ap.add_argument("--visual-bodies", type=int, default=None, help="render the visual-check map per pool, marking outline components with >= N modern laterals")
+    ap.add_argument("--basin", default="delaware", help="the basin (step 19): its D23 edge metric, PUD pull and labels")
     a = ap.parse_args(argv)
     t0 = time.time()
     with get_connection() as conn:
-        res = fe.run(conn, a.wells, a.out or a.wells / "extents", tuple(a.pool), a.version, a.regress, _git_sha(), a.visual_bodies)
+        res = fe.run(conn, a.wells, a.out or a.wells / "extents", tuple(a.pool), a.version, a.regress, _git_sha(), a.visual_bodies, basin=a.basin)
     s = res["summary"]
     for p, st in s["pools"].items():
         print(f"{p:>6}: extent {st['extent_sqmi']:,.0f} sq mi (core {st['core_sqmi']:,.0f}), {st['n_parts']} parts, {st['n_holes']} holes, "

@@ -52,10 +52,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-BASIN = "delaware"
+from box import basin as bsn
+
+BASIN = bsn.DELAWARE  # the default basin; pull_producers / bench_summary take any (step 19)
 PILOT_BENCHES: tuple[str, ...] = ("WCA_1", "WCA_2", "BS2_S")
 
-STATE_LINE_LAT = 32.0  # TX/NM boundary across the Delaware Basin
+STATE_LINE_LAT = bsn.get(bsn.DELAWARE).state_line_lat  # 32.0, the TX/NM boundary across the Delaware Basin (Midland has none)
 MI_PER_DEG_LAT = 69.0  # ~68.9 mi/deg at 32 N; bins are 10 mi, so this is fine
 FT_PER_MI = 5280.0
 BIN_MI = 10
@@ -185,13 +187,13 @@ def score_subject(
 # ----------------------------------------------------------------------------
 
 
-def state_line_bins(df: pd.DataFrame) -> pd.DataFrame:
+def state_line_bins(df: pd.DataFrame, state_line_lat: float = STATE_LINE_LAT) -> pd.DataFrame:
     """Per 10-mi bin of signed distance from 32 N (negative = TX side):
     producing-horizontal count, approximate density, planned-survey share,
     permit-round share, median TVD, and cohort median 12-mo oil per 1,000 ft."""
     edges = np.arange(BIN_LO_MI, BIN_HI_MI + BIN_MI, BIN_MI)
     d = df.copy()
-    d["dist_mi"] = (d["mid_lat"] - STATE_LINE_LAT) * MI_PER_DEG_LAT
+    d["dist_mi"] = (d["mid_lat"] - state_line_lat) * MI_PER_DEG_LAT
     d["bin_lo"] = pd.cut(d["dist_mi"], edges, right=False, labels=edges[:-1]).astype(float)
     rows = []
     for lo in edges[:-1]:
@@ -288,17 +290,23 @@ WHERE w.basin_blueox = %(basin)s
 """
 
 
-def pull_delaware_producers(conn: Any) -> pd.DataFrame:
-    """Every producing horizontal in the Delaware (all benches — the consensus
+def pull_producers(conn: Any, basin: str = BASIN) -> pd.DataFrame:
+    """Every producing horizontal in the basin (all benches — the consensus
     witnesses are cross-bench) joined to the sql/23 audit. READ ONLY."""
+    bsn.get(basin)
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_SQL, {"basin": BASIN})
+        cur.execute(_SQL, {"basin": basin})
         cols = [c.name for c in cur.description]
         rows = cur.fetchall()
     conn.rollback()
     df = pd.DataFrame(rows, columns=cols)
     return prepare(df)
+
+
+def pull_delaware_producers(conn: Any) -> pd.DataFrame:
+    """The Delaware pull every pre-Phase-3 tool calls (= pull_producers(conn, 'delaware'))."""
+    return pull_producers(conn, bsn.DELAWARE)
 
 
 def prepare(df: pd.DataFrame, asof: date | None = None) -> pd.DataFrame:
@@ -486,12 +494,13 @@ def _share(mask: pd.Series) -> float:
     return float(mask.mean()) if len(mask) else float("nan")
 
 
-def bench_summary(df: pd.DataFrame, bench: str) -> dict[str, Any]:
+def bench_summary(df: pd.DataFrame, bench: str, basin: str = BASIN) -> dict[str, Any]:
     b = df[df["formation_blueox"] == bench]
     nm = b[b["state_code"] == NM_FIPS]
     tx = b[b["state_code"] == TX_FIPS]
     coh = b[b["cohort"]]
     inbound = df[(df["formation_blueox"] != bench) & (df["cons_suggest"] == bench) & (df["cons_status"] == "flag")]
+    line = bsn.get(basin).state_line_lat
     s: dict[str, Any] = {
         "bench": bench,
         "asof": str(df.attrs.get("asof")),
@@ -529,7 +538,8 @@ def bench_summary(df: pd.DataFrame, bench: str) -> dict[str, Any]:
         "cohort_med_oil12_kft_nm_actual": float(coh.loc[(coh["state_code"] == NM_FIPS) & ~coh["planned"], "oil12_kft"].median()) if len(coh) else float("nan"),
         "n_cohort_nm_planned": int(((coh["state_code"] == NM_FIPS) & coh["planned"]).sum()),
         "n_cohort_nm_actual": int(((coh["state_code"] == NM_FIPS) & ~coh["planned"]).sum()),
-        "state_mismatch_n": int(((b["state_code"] == NM_FIPS) & (b["mid_lat"] < STATE_LINE_LAT)).sum() + ((b["state_code"] == TX_FIPS) & (b["mid_lat"] >= STATE_LINE_LAT)).sum()),
+        "state_mismatch_n": (None if line is None else
+                             int(((b["state_code"] == NM_FIPS) & (b["mid_lat"] < line)).sum() + ((b["state_code"] == TX_FIPS) & (b["mid_lat"] >= line)).sum())),
     }
     # NM planned-survey decision input
     nmp = nm[nm["planned"]]
@@ -557,9 +567,13 @@ def bench_summary(df: pd.DataFrame, bench: str) -> dict[str, Any]:
         "nm": int((keep_b & (b["state_code"] == NM_FIPS)).sum()),
         "excluded": int((b["planned"]).sum()),
     }
-    bins = state_line_bins(b)
-    s["state_line"] = bins.to_dict(orient="records")
-    s["border_step"] = border_step_verdict(bins)
+    s["state_line_lat"], s["basin"] = line, basin
+    if line is None:  # no state line in the basin (Midland): nothing to check
+        s["state_line"], s["border_step"] = [], {"verdict": "not_applicable", "reason": f"no state line in the {basin} basin"}
+    else:
+        bins = state_line_bins(b, line)
+        s["state_line"] = bins.to_dict(orient="records")
+        s["border_step"] = border_step_verdict(bins)
     s["pair_separation"] = pair_separation(df, bench)
     return s
 
@@ -616,25 +630,26 @@ def _svg(fig: Any) -> str:
     return body[body.index("<svg") :]
 
 
-def _basemap(ax: Any, ctx: pd.DataFrame, b: pd.DataFrame) -> None:
+def _basemap(ax: Any, ctx: pd.DataFrame, b: pd.DataFrame, state_line_lat: float | None = STATE_LINE_LAT) -> None:
     ax.scatter(ctx["mid_lon"], ctx["mid_lat"], s=1, c="#d1d5db", alpha=0.35, linewidths=0, rasterized=True)
     lon0, lon1 = np.nanpercentile(b["mid_lon"], [0.5, 99.5])
     lat0, lat1 = np.nanpercentile(b["mid_lat"], [0.5, 99.5])
     pad = 0.15
     ax.set_xlim(lon0 - pad, lon1 + pad)
     ax.set_ylim(lat0 - pad, lat1 + pad)
-    ax.axhline(STATE_LINE_LAT, color="#111827", ls="--", lw=0.8)
-    ax.axvline(-103.0, color="#111827", ls="--", lw=0.8)
-    ax.text(lon0 - pad + 0.02, STATE_LINE_LAT + 0.01, "NM", fontsize=8)
-    ax.text(lon0 - pad + 0.02, STATE_LINE_LAT - 0.04, "TX", fontsize=8)
+    if state_line_lat is not None:  # the Delaware's TX / NM line (32 N) and NM's west line (103 W)
+        ax.axhline(state_line_lat, color="#111827", ls="--", lw=0.8)
+        ax.axvline(-103.0, color="#111827", ls="--", lw=0.8)
+        ax.text(lon0 - pad + 0.02, state_line_lat + 0.01, "NM", fontsize=8)
+        ax.text(lon0 - pad + 0.02, state_line_lat - 0.04, "TX", fontsize=8)
     ax.set_aspect(1 / math.cos(math.radians(32.0)))
     ax.set_xlabel("lon")
     ax.set_ylabel("lat")
 
 
-def tag_qc_map(ctx: pd.DataFrame, b: pd.DataFrame, bench: str) -> str:
+def tag_qc_map(ctx: pd.DataFrame, b: pd.DataFrame, bench: str, state_line_lat: float | None = STATE_LINE_LAT) -> str:
     fig, ax = plt.subplots(figsize=(8.5, 8))
-    _basemap(ax, ctx, b)
+    _basemap(ax, ctx, b, state_line_lat)
     clean = b[~b["planned"] & ~b["tvd_round"] & (b["cons_status"] != "flag")]
     ax.scatter(clean["mid_lon"], clean["mid_lat"], s=3, c="#2563eb", alpha=0.5, linewidths=0, label=f"clean (n={len(clean):,})", rasterized=True)
     rnd = b[b["tvd_round"] & ~b["planned"]]
@@ -648,10 +663,10 @@ def tag_qc_map(ctx: pd.DataFrame, b: pd.DataFrame, bench: str) -> str:
     return _png(fig)
 
 
-def perf_map(ctx: pd.DataFrame, b: pd.DataFrame, bench: str) -> str:
+def perf_map(ctx: pd.DataFrame, b: pd.DataFrame, bench: str, state_line_lat: float | None = STATE_LINE_LAT) -> str:
     coh = b[b["cohort"]].copy()
     fig, ax = plt.subplots(figsize=(8.5, 8))
-    _basemap(ax, ctx, b)
+    _basemap(ax, ctx, b, state_line_lat)
     if len(coh):
         lo, hi = np.nanpercentile(coh["oil12_kft"], [5, 95])
         sc = ax.scatter(coh["mid_lon"], coh["mid_lat"], s=5, c=coh["oil12_kft"].clip(lo, hi), cmap="RdYlBu_r", linewidths=0, rasterized=True)
@@ -712,8 +727,8 @@ def render_bench_page(df: pd.DataFrame, s: dict[str, Any], out: Path) -> Path:
     bs = s["border_step"]
     p: list[str] = [
         f"<!doctype html><html><head><meta charset=\"utf-8\"><title>BOX step 1 — bench QC {bench}</title><style>{_CSS}</style></head><body>",
-        f"<h1>BOX step 1 — bench QC: Delaware {bench}</h1>",
-        f"<div class=meta>Grain: producing horizontals (one row per api10) from curated.wells_enriched, basin_blueox = delaware, is_horizontal, first_production_date NOT NULL, grouped on the TVD-corrected formation_blueox. Warehouse as-of (max last_reported_month): {_esc(s['asof'])}. Read-only; nothing written. Plan: docs/box_type_curves_plan.md §5 step 1.</div>",
+        f"<h1>BOX step 1 — bench QC: {bsn.get(s.get('basin', BASIN)).label} {bench}</h1>",
+        f"<div class=meta>Grain: producing horizontals (one row per api10) from curated.wells_enriched, basin_blueox = {s.get('basin', BASIN)}, is_horizontal, first_production_date NOT NULL, grouped on the TVD-corrected formation_blueox. Warehouse as-of (max last_reported_month): {_esc(s['asof'])}. Read-only; nothing written. Plan: docs/box_type_curves_plan.md §5 step 1.</div>",
         "<div class=toc><a href=index.html>← index</a><a href=#counts>counts</a><a href=#tags>tag QC</a><a href=#stateline>state line</a><a href=#nm>NM planned-survey decision</a><a href=#wells>well set</a></div>",
     ]
     # --- counts
@@ -755,7 +770,8 @@ def render_bench_page(df: pd.DataFrame, s: dict[str, Any], out: Path) -> Path:
     p.append("<div class=row><div><h3>consensus status</h3>" + _counts_table(s["cons_status_counts"]) + "</div>"
              "<div><h3>consensus flags → suggested bench</h3>" + _counts_table(s["cons_suggest_counts"]) + "</div>"
              "<div><h3>sql/23 disagreements → nearest band</h3>" + _counts_table(s["sql23_nearest_counts"]) + "</div></div>")
-    p.append(f"<div class=row><img src=\"{tag_qc_map(ctx, b, bench)}\"><img src=\"{perf_map(ctx, b, bench)}\"></div>")
+    line = s.get("state_line_lat", STATE_LINE_LAT)
+    p.append(f"<div class=row><img src=\"{tag_qc_map(ctx, b, bench, line)}\"><img src=\"{perf_map(ctx, b, bench, line)}\"></div>")
     p.append("<h3>Adjacent-bench depth separation where both bands are coherent in the same 1.5-mi neighbourhood</h3>"
              "<p>other band median − own band median, ft (positive = the other bench sits deeper). 'within 100 ft' = the two bands merge into one complex there — depth cannot tell the tags apart, so swaps in that neighbourhood are ambiguous, not flags. "
              "'inverted' = the sign is opposite to the overall median (the stack order flips locally — a tagging tell).</p>")
@@ -767,20 +783,23 @@ def render_bench_page(df: pd.DataFrame, s: dict[str, Any], out: Path) -> Path:
     ))
     # --- state line
     p.append("<h2 id=stateline>3. State-line check</h2>")
-    p.append("<p>10-mi bins of signed distance from 32° N (lateral midpoint; 69 mi/deg). Density ≈ wells ÷ (10 mi × the bin's 2.5–97.5 % east–west span) — a coarse strip density, judged only for bins with ≥ 20 wells. Median 12-mo oil/ft is on the D9 cohort with n per bin. A step in oil/ft or in planned share that lines up with the border and does not line up with TVD is a tagging artifact.</p>")
-    cls = {"flag": "flag bad", "no_step": "flag ok", "not_judged": "flag"}[bs["verdict"]]
-    if bs["verdict"] == "not_judged":
-        txt = f"Border step not judged: {_esc(bs['reason'])}."
+    if bs["verdict"] == "not_applicable":  # no state line in the basin (step 19)
+        p.append(f"<div class=flag>{_esc(bs['reason'])}.</div>")
     else:
-        txt = (f"Border bins (−10..0 vs 0..10): median 12-mo oil/ft relative step {_fmt(bs['border_rel_step'], pct=True)}; "
-               f"typical adjacent-bin step elsewhere {_fmt(bs['typical_rel_step'], pct=True)} (max {_fmt(bs['max_other_rel_step'], pct=True)}, {bs['n_other_steps']} pairs). "
-               + ("<b>FLAG — step lines up with the border.</b>" if bs["verdict"] == "flag" else "No border-aligned step beyond the typical bin-to-bin variation."))
-    p.append(f"<div class='{cls}'>{txt}</div>")
-    p.append(f"<div class=row>{state_line_fig(bins, bench)}</div>")
-    p.append(_table(
-        ["bin (mi)", "side", "producing hz", "NM-tagged", "≈ wells/sq mi", "planned %", "round-TVD %", "median TVD ft", "cohort n", "median oil12 /kft", "p25", "p75"],
-        [[f"{int(r.bin_lo_mi):+d}..{int(r.bin_hi_mi):+d}", r.side, _fmt(r.n_prod_hz), _fmt(r.n_nm_tagged), _fmt(r.density_per_sqmi, 2), _fmt(r.planned_share, pct=True), _fmt(r.round_tvd_share, pct=True), _fmt(r.med_tvd_ft, 0), _fmt(r.n_cohort), _fmt(r.med_oil12_kft, 0), _fmt(r.p25_oil12_kft, 0), _fmt(r.p75_oil12_kft, 0)] for r in bins.itertuples() if r.n_prod_hz > 0],
-    ))
+        p.append("<p>10-mi bins of signed distance from 32° N (lateral midpoint; 69 mi/deg). Density ≈ wells ÷ (10 mi × the bin's 2.5–97.5 % east–west span) — a coarse strip density, judged only for bins with ≥ 20 wells. Median 12-mo oil/ft is on the D9 cohort with n per bin. A step in oil/ft or in planned share that lines up with the border and does not line up with TVD is a tagging artifact.</p>")
+        cls = {"flag": "flag bad", "no_step": "flag ok", "not_judged": "flag"}[bs["verdict"]]
+        if bs["verdict"] == "not_judged":
+            txt = f"Border step not judged: {_esc(bs['reason'])}."
+        else:
+            txt = (f"Border bins (−10..0 vs 0..10): median 12-mo oil/ft relative step {_fmt(bs['border_rel_step'], pct=True)}; "
+                   f"typical adjacent-bin step elsewhere {_fmt(bs['typical_rel_step'], pct=True)} (max {_fmt(bs['max_other_rel_step'], pct=True)}, {bs['n_other_steps']} pairs). "
+                   + ("<b>FLAG — step lines up with the border.</b>" if bs["verdict"] == "flag" else "No border-aligned step beyond the typical bin-to-bin variation."))
+        p.append(f"<div class='{cls}'>{txt}</div>")
+        p.append(f"<div class=row>{state_line_fig(bins, bench)}</div>")
+        p.append(_table(
+            ["bin (mi)", "side", "producing hz", "NM-tagged", "≈ wells/sq mi", "planned %", "round-TVD %", "median TVD ft", "cohort n", "median oil12 /kft", "p25", "p75"],
+            [[f"{int(r.bin_lo_mi):+d}..{int(r.bin_hi_mi):+d}", r.side, _fmt(r.n_prod_hz), _fmt(r.n_nm_tagged), _fmt(r.density_per_sqmi, 2), _fmt(r.planned_share, pct=True), _fmt(r.round_tvd_share, pct=True), _fmt(r.med_tvd_ft, 0), _fmt(r.n_cohort), _fmt(r.med_oil12_kft, 0), _fmt(r.p25_oil12_kft, 0), _fmt(r.p75_oil12_kft, 0)] for r in bins.itertuples() if r.n_prod_hz > 0],
+        ))
     # --- NM decision
     p.append("<h2 id=nm>4. NM planned-survey wells — decision input (gate 1, §9)</h2>")
     p.append(f"<p>{_fmt(s['nm_planned_n'])} NM wells in this bench carry a pre-drill planned survey (their TVD and therefore their bench tag are provisional). "
@@ -823,7 +842,7 @@ def render_index(summaries: list[dict[str, Any]], out: Path, run_meta: dict[str,
             f"<a href=qc_{s['bench']}.html>{s['bench']}</a>", _fmt(s["n_prod_hz"]), _fmt(s["n_tx"]), _fmt(s["n_nm"]), _fmt(s["n_cohort"]),
             _fmt(s["planned_share"], pct=True), _fmt(s["planned_share_nm"], pct=True), _fmt(s["round_tvd_share"], pct=True),
             _fmt(s["sql23_disagree_share"], pct=True), f"{_fmt(s['cons_flag_n'])} ({_fmt(s['cons_flag_share'], pct=True)})", _fmt(s["cons_lith_n"]),
-            _fmt(s["cohort_med_oil12_kft"], 0), bs["verdict"] + ("" if bs["verdict"] == "not_judged" else f" ({_fmt(bs['border_rel_step'], pct=True)} vs typical {_fmt(bs['typical_rel_step'], pct=True)})"),
+            _fmt(s["cohort_med_oil12_kft"], 0), bs["verdict"] + ("" if bs["verdict"] in ("not_judged", "not_applicable") else f" ({_fmt(bs['border_rel_step'], pct=True)} vs typical {_fmt(bs['typical_rel_step'], pct=True)})"),
         ])
     h = ["bench", "producing hz", "TX", "NM", "D9 cohort", "planned %", "planned % (NM)", "round-TVD %", "sql/23 disagree %", "consensus flags", "lith-ambiguous", "cohort med oil12 / kft", "border step"]
     hh = "".join(f"<th>{_esc(x)}</th>" for x in h)
