@@ -103,3 +103,10 @@ def test_no_record_reader_assumes_one_record():
             if "forecast_run" in line and "is_record" in line and "basin" not in line:
                 bad.append(f"{p.name}:{i}")
     assert not bad, bad
+
+
+def test_a_basin_without_grids_never_borrows_the_delaware_ones():
+    from box import family_extent as fe
+
+    with pytest.raises(ValueError, match="no structure grids"):
+        fe.visual_check_png("WCC", None, None, None, Path("x.png"), basin="midland")  # Midland WCC must not draw the Delaware WCC grid

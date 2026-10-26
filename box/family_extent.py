@@ -186,7 +186,8 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     files: list[Path] = pkg.write_sopa(geo_dir, sopa)
     for pool, b in builds.items():
         clip = gio.ft13_to_geology([shapely.box(*b["extent"].bounds).buffer(10 * eg.FT_PER_MI)])[0]
-        cont = pkg.context_contours(pool, clip)
+        # structure grids are Delaware-only (GRIDS is keyed by bench name, and WCB_1 / WCB_2 / WCC exist in both basins)
+        cont = pkg.context_contours(pool, clip) if pkg.grid_root(basin) is not None else {}
         files += pkg.write_pool(geo_dir, pool, version, built, b, bp, cont, basin)
         pkg.legend_png(geo_dir / f"BOX_{pool}_legend.png", pool, b, sopa, bp, version)
         b["stats"]["n_contours"] = {k: len(v) for k, v in cont.items()}
@@ -237,6 +238,8 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
+    if pkg.grid_root(basin) is None:  # the map is drawn over a structure grid; a basin without grids needs its own variant
+        raise ValueError(f"{basin}: no structure grids for the visual check (a grid-free variant is step 20's)")
     top_s, _ = pkg.GRIDS[pool]
     xs, ys, Z = pkg._grid(pkg.require_grid(top_s, grid_dir))
     ev = wells[wells["evidence"] & wells["geom"].notna()]
@@ -435,7 +438,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         if fj.exists():  # the frame recorded when the reviewed PNG was published
             frame = json.loads(fj.read_text(encoding="utf-8"))
         else:  # 15a: re-render (verified bit-identical to the reviewed PNG)
-            frame = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png")["frame"]
+            frame = visual_check_png(pool, w, gen, sopa, edit_dir / f"_frame_{pool}.png", basin=basin)["frame"]
             (edit_dir / f"_frame_{pool}.png").unlink()
         edited = gen
         strokes = ink.get(k, [])
@@ -488,7 +491,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
             "type": "FeatureCollection", "name": f"box_extent_{pool}_v{version}_edited", "crs_note": "EPSG:4326",
             "features": [{"type": "Feature", "properties": {"layer": "extent", "pool": pool, "version": version, "source": "geology_edited", "note": params},
                           "geometry": shapely.geometry.mapping(shapely.set_precision(eg.to_lonlat([edited])[0], 1e-6))}]}), encoding="utf-8")
-        vis = visual_check_png(pool, w, edited, sopa, edit_dir / f"visual_{pool}_edited.png", label=f"extent v{version} EDITED by Michael (hand edit, {pptx.name})")
+        vis = visual_check_png(pool, w, edited, sopa, edit_dir / f"visual_{pool}_edited.png", label=f"extent v{version} EDITED by Michael (hand edit, {pptx.name})", basin=basin)
         ig, ie = inside(gen), inside(edited)
         d1 = pt[pt.status == "D1 universe"]
         res["pools"][pool] = {

@@ -1,0 +1,95 @@
+{
+ "basin": "midland",
+ "params": {
+  "name": "midland",
+  "label": "Midland",
+  "df_terminal": 0.06,
+  "state_line_lat": null,
+  "pin_radius_ft": null,
+  "closing_ft": null,
+  "grid_dirs": [],
+  "novi_basin": "Midland_Basin"
+ },
+ "bench_qc": {
+  "producing_hz": 28859,
+  "asof": "2026-09-01",
+  "by_tag_top10": {
+   "WCA_1": 7721,
+   "WCB_1": 6164,
+   "LSSH": 5812,
+   "WCB_2": 2385,
+   "MS": 1633,
+   "JM": 1630,
+   "WCD": 942,
+   "DEAN": 938,
+   "WCC": 662,
+   "OTHER": 610
+  },
+  "consensus_status": {
+   "agree": 20288,
+   "off_band": 5410,
+   "no_evidence": 1370,
+   "flag": 1244,
+   "ambiguous": 547
+  },
+  "bench_summary_WCA_1": {
+   "n_prod_hz": 7721,
+   "n_cohort": 5495,
+   "border_step": "not_applicable"
+  }
+ },
+ "universe": {
+  "rows": 4154,
+  "by_coverage": {
+   "not_covered_emerging": 4154
+  },
+  "by_bench": {
+   "BRNT": 4154
+  }
+ },
+ "pdp_sticks": {
+  "WCA_1": 7709
+ },
+ "extents": {
+  "pull_puds": {
+   "WCA_1": 11068,
+   "by_status": {
+    "remaining_pud": 10581,
+    "realized_phantom": 330,
+    "conflict": 157
+   }
+  },
+  "edge_params": "refused: midland: the D23 pin radius r is not set; it is measured in step 20a",
+  "extent_of_record": "refused: expected exactly one extent of record for midland/WCA_1, found 0",
+  "grid_root": null
+ },
+ "proximity": {
+  "producers_in_bbox": 31041,
+  "by_basin": {
+   "midland": 28859,
+   "cbp": 1493,
+   "nan": 550,
+   "delaware": 139
+  },
+  "children": 24716
+ },
+ "refresh": {
+  "record_run": "box.forecast_run.basin missing: sql/70 not applied on this database",
+  "extent_trigger": 0,
+  "groups": "refused: no record-run groups for basin 'midland' yet (Midland joins at step 23); known ['delaware']"
+ },
+ "water": {
+  "sample_wells": 500,
+  "water_source": {
+   "indeterminate": 1,
+   "measured": 52,
+   "insufficient": 22,
+   "calculated": 425
+  }
+ },
+ "hindcast": {
+  "novi_report": "basin_research__Midland_Basin__2025Q3",
+  "forecast_rows_seen": 1000
+ },
+ "seconds": 28.6
+}

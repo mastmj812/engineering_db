@@ -173,6 +173,8 @@ record groups (WCA, BS2_S, WCXY_WCA1, WCB_1, WCC, AVA_0/1/2, BS1_S, BS2_C, BS3_C
 (D121), the proximity layer (D113 / D116) and water (D107-D110). A new Novi vintage changes the PUD universe and the stick ids,
 so BOX produces ONE new record run on top of the reloaded `intel_locations` / `reconciled_inventory`. The refresh contract is
 D126 (`docs/box/step13a-2026-10-26/CONTRACT.md`). **Every write below needs its own explicit go, separate from the reload's.**
+One record run PER BASIN (D130, sql/70): the chain below refreshes the Delaware record (`--basin delaware`, the default); it never
+reads or touches another basin's record. The Midland record joins this chain at BOX step 23.
 
 0. **Is it due? (read-only)** `python -m scripts.box_refresh check`: a new vintage, or the record's production-through lagging the
    warehouse by more than 4 months (D126 safety net), plus the extent re-review trigger per group (>= 10 producers first
@@ -206,9 +208,10 @@ D126 (`docs/box/step13a-2026-10-26/CONTRACT.md`). **Every write below needs its 
 6. **Proximity record (WRITE, go):** `python -m scripts.box_prox_record store --src-run <base> --outcomes
    runs/<label>_prox/pud_outcomes.csv.gz --runs runs/<label>_prox_links` (rollback rehearsal), then the same with
    `--commit --record`. The derived run becomes the record.
-7. **Verify live, read-only:** one `is_record` run; per-stream counts and oil MMbbl as the log; `analyst_ro` reads; erebor
+7. **Verify live, read-only:** one `is_record` run per basin (the new Delaware one); per-stream counts and oil MMbbl as the log; `analyst_ro` reads; erebor
    shows the new run.
-8. **Prune (WRITE, go; D123):** `python -m scripts.box_prune_runs --apply --include-priced` keeps ONLY the record run and
+8. **Prune (WRITE, go; D123 / D130):** `python -m scripts.box_prune_runs --apply --include-priced --basin delaware` keeps ONLY the
+   basin's record run and
    deletes a priced run's `box_econ.box_pud_econ` rows first, in one transaction.
 9. **Steven:** post the new record run_id to #eng-updates (its own go; no email) so he re-prices; check
    `box_econ.box_pud_econ_tie` and `downtime_basis` (D63 / D81) after he loads.

@@ -84,7 +84,7 @@ _CONSUMERS = {
     "box.risk_factor": "SUPERSEDED (D66): factors of the retired factor chain; step-6 hindcast scoring only",
     "box.location": "BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d)",
     "box.location_source": "BOX quarterly Novi stick crosswalk (step 7c writer; quarterly-reload skill)",
-    "box.forecast_run": "BOX production run provenance + D62 haircut / D63 F(k) / D69 disclosure; erebor reads the is_record run everywhere (map, selection, Highgrade, workup); anduin BOX toggle",
+    "box.forecast_run": "BOX production run provenance + D62 haircut / D63 F(k) / D69 disclosure; one record run per basin (D130, sql/70); erebor reads the request basin's is_record run everywhere (map, selection, Highgrade, workup); anduin BOX toggle",
     "box.pud_forecast": "BOX coverage-classed PUD forecasts (step 7): erebor map / selection / Highgrade coverage class per location (not covered = a class, never a zero); Steven",
     "box.pud_forecast_stream": "BOX per-stream EUR + analog P50 params (step 7): erebor map tiles / selection / Highgrade EUR and EUR/ft, Blue Ox drop overlay; Steven",
     "box.pud_forecast_month": "BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d); erebor AOI BOX profile (mean per 1,000 ft + sum)",
