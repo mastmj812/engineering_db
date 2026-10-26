@@ -191,3 +191,30 @@ Also for Michael: §3 flag 2 (duplicate D117 numbering).
 
 **Nothing is written.** Midland `box.bench_scope` rows (incl. US emerging if decided) land in step 20 with each family's extent,
 on go. Next = step 19 (basin parameterization; the 13b tooling, eng_db #197, is merged).
+
+## 5. Gate 18 — answers (Michael 2026-10-26; gate still OPEN on the items marked open)
+
+| # | item | decision | record |
+|---|---|---|---|
+| c | US | **D2 emerging** (the Midland `box.bench_scope` row lands with step 20, on go). | D127 |
+| c | WCD | **Build, provisional target** (D105), not the Delaware emerging precedent — 669 producers and growing. | D127 |
+| b | Pooling | **No pooling anywhere**: one extent and one curve group per bench — Spraberry US / MS / JM / LSSH / DEAN (US emerging), Wolfcamp WCA_1 / WCB_1 / WCB_2 / WCC / WCD. | D128 |
+| f | Long laterals | **Long producers testify through Cui & Cross, never excluded by length.** 21a pre-registers a widened Midland analog band (no exclusion of > 15,000-ft producers), every cohort Cui-translated, extrapolating past the paper's 12,500-ft range where needed, scored against the r2 band on tuning folds (D120 condition-6 length classes) with its own acceptance. Michael: more defensible in the Midland than the Delaware because the observed per-ft degradation with length is flatter — 21a measures that directly (if flatter, the Delaware curve over-penalises long laterals and the forecast reads LOW; the direction is disclosed either way). | D129 |
+| e | Record run | **Per-basin record index.** One `is_record` run PER BASIN (sql/70 reserved; `box.forecast_run.basin`, run 19 backfilled `delaware`); D123 becomes "only the record run per basin"; a Midland store never waits for a Delaware rebuild or a Novi vintage. DDL container-validated in step 19 with every reader; live apply on go. | D130 |
+| a | Build + tier target | **open** — recommendation stands (build; validated where data allow). | — |
+| c | WCC, DEAN | **open** — recommendation stands (WCC provisional target; DEAN build). | — |
+| d | Df | **open** — recommendation stands (0.06 /yr). | — |
+| g | Water route | **open** — recommendation stands (D107 as written). | — |
+
+**Correction to §2(e) / §4(e).** That recommendation leaned on "land at a 13c refresh boundary", carried over from the plan's
+step-23 text and D126's cadence ("quarterly with the Novi vintage + on demand"). BOX does not need a new Novi vintage to publish —
+D126 already allows an on-demand refresh — and under D130 the question disappears. What still rests on Novi Intelligence until own
+placement (a later phase): the location universe = the loaded 2026Q3 sticks (D1 / D14 / D117) and their reconciliation (sql/21);
+the loaded vintage stays usable for that whether or not the subscription continues (licence terms are Michael's call). D126's
+cadence wording ties the refresh to the vintage — a step-13 item, flagged, not changed here.
+
+Blast radius for D130 (step 19): `box/production.py`, `box/refresh13.py`, `scripts.box_pud_run` / `box_water_run` /
+`box_prox_record` / `box_prune_runs` / `box_rehearsal`, the `apply_box_pud_forecast` + `apply_box_scout_locations` checks, sql/69
+`curated.box_scout_locations` (record run -> record runs), erebor `app/box_locations.py` (reads the record run with `.scalar()`,
+i.e. assumes one) + `api/highgrade.py`, and this step's builder (`run.iloc[0]`).
+
