@@ -136,3 +136,27 @@ def test_undrilled_counts_d117_by_category():
     assert tot["n"] == 3 and tot["in extent"] == 2  # 3 = realized_phantom out; stick 4 lies outside
     cat = t[t["status"] == "undrilled by category"].set_index("category")
     assert cat.at["PUD", "in extent"] == 1 and cat.at["RES", "in extent"] == 1 and cat.at["RES", "n"] == 2
+
+
+def test_wcb_split_cut_and_boundary():
+    from box import wcb_split as ws
+
+    rng = np.random.default_rng(3)
+    rows = []
+    for lon in (-102.0, -101.85):
+        for lat in np.arange(31.2, 32.4, 0.01):
+            for k in range(3):
+                south = lat < 31.7
+                bench = "WCB_2" if (south and k == 0) else "WCB_1"
+                below = (520.0 if bench == "WCB_2" else 260.0) + rng.normal(0, 30)
+                rows.append({"api10": f"{lon}{lat}{k}", "mid_lon": lon + 0.01, "mid_lat": lat, "box_bench": bench, "below_wca1": below})
+    w = pd.DataFrame(rows)
+    cut = ws.deep_cut(w)
+    assert abs(cut["cut_ft"] - 390) < 15
+    w["deep"] = w["below_wca1"] >= cut["cut_ft"]
+    b = ws.boundary(w)
+    assert len(b) == 2 and (b["boundary_lat"].between(31.65, 31.75)).all() and (b["deep_north"] == 0).all()
+    ln = ws.line(b)
+    assert ln[0][0] == -103.0 and ln[-1][0] == -100.5 and len(ln) == 4
+    d = ws.landing_depth(pd.DataFrame({"tvd_ft": [8000.0, 8000.0], "cons_bands": [{"WCA_1": 7700.0}, None]}))
+    assert d.iloc[0] == 300.0 and np.isnan(d.iloc[1])
