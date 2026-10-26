@@ -86,6 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     out = a.wells / "wcb_split"
     out.mkdir(parents=True, exist_ok=True)
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
+    sha = _git_sha()  # before anything is written (a re-run overwrites tracked outputs)
     scored = pd.read_pickle(a.cache) if a.cache and a.cache.exists() else None
     with get_connection() as conn:
         if scored is None:
@@ -206,7 +207,7 @@ def main(argv: list[str] | None = None) -> int:
     prof.to_csv(out / "profile.csv")
     bnd.to_csv(out / "boundary_by_strip.csv", index=False)
     st_tab.to_csv(out / "sticks.csv", index=False)
-    summary = {"built_at": built, "git_sha": _git_sha(), "asof": str(scored.attrs.get("asof")), "n_wcb_modern": len(w), "n_with_wca1_ref": len(ref),
+    summary = {"built_at": built, "git_sha": sha, "asof": str(scored.attrs.get("asof")), "n_wcb_modern": len(w), "n_with_wca1_ref": len(ref),
                "cut": cut, "line_lonlat": ln, "sides": side.reset_index().to_dict(orient="records"), "areas": areas.to_dict(orient="records"),
                "sticks": st_tab.to_dict(orient="records"), "boundary": bnd.to_dict(orient="records")}
     (out / "summary.json").write_text(json.dumps(summary, indent=1, default=str), encoding="utf-8")
@@ -219,7 +220,7 @@ def main(argv: list[str] | None = None) -> int:
              f"WCB_2 depth = ≥ {cut['cut_ft']:.0f} ft below WCA_1, the midpoint of the southern (&lt; {ws.SOUTH_REF_LAT}°N) tag medians "
              f"({cut['wcb1_median_ft']:.0f} ft WCB_1 / {cut['wcb2_median_ft']:.0f} ft WCB_2). Demarcation: per {ws.LON_STRIP}° longitude strip, the north edge of the "
              f"northernmost {ws.LAT_BIN}° bin with ≥ {ws.DEEP_SHARE:.0%} of laterals at WCB_2 depth (≥ {ws.MIN_BIN} laterals per bin), held flat past the data. "
-             f"Warehouse as-of {scored.attrs.get('asof')}; built {built} at {_git_sha()}. Read-only. Files: <code>wcb_line.geojson</code>, <code>geology/BOX_MID_WCB_split_line.shp</code> (NAD83 UTM 14N US-ft).</div>"),
+             f"Warehouse as-of {scored.attrs.get('asof')}; built {built} at {sha}. Read-only. Files: <code>wcb_line.geojson</code>, <code>geology/BOX_MID_WCB_split_line.shp</code> (NAD83 UTM 14N US-ft).</div>"),
             "<h2>Map</h2>", f"<img src='{img_map}'>",
             "<h2>Latitude profile</h2>", f"<img src='{img_prof}'>", _table(prof.reset_index().rename(columns={"index": "lat band"}), {"deep": ".2f", "tagged_wcb2": ".2f", "median_below_wca1_ft": ",.0f"}),
             "<h2>Landing depth, south vs north of the line</h2>", f"<img src='{img_hist}'>",
