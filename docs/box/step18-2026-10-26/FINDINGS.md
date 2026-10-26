@@ -192,7 +192,7 @@ Also for Michael: §3 flag 2 (duplicate D117 numbering).
 **Nothing is written.** Midland `box.bench_scope` rows (incl. US emerging if decided) land in step 20 with each family's extent,
 on go. Next = step 19 (basin parameterization; the 13b tooling, eng_db #197, is merged).
 
-## 5. Gate 18 — answers (Michael 2026-10-26; gate still OPEN on the items marked open)
+## 5. Gate 18 — CLOSED 2026-10-26 (Michael; D127–D133)
 
 | # | item | decision | record |
 |---|---|---|---|
@@ -201,10 +201,10 @@ on go. Next = step 19 (basin parameterization; the 13b tooling, eng_db #197, is 
 | b | Pooling | **No pooling anywhere**: one extent and one curve group per bench — Spraberry US / MS / JM / LSSH / DEAN (US emerging), Wolfcamp WCA_1 / WCB_1 / WCB_2 / WCC / WCD. | D128 |
 | f | Long laterals | **Long producers testify through Cui & Cross, never excluded by length.** 21a pre-registers a widened Midland analog band (no exclusion of > 15,000-ft producers), every cohort Cui-translated, extrapolating past the paper's 12,500-ft range where needed, scored against the r2 band on tuning folds (D120 condition-6 length classes) with its own acceptance. Michael: more defensible in the Midland than the Delaware because the observed per-ft degradation with length is flatter — 21a measures that directly (if flatter, the Delaware curve over-penalises long laterals and the forecast reads LOW; the direction is disclosed either way). | D129 |
 | e | Record run | **Per-basin record index.** One `is_record` run PER BASIN (sql/70 reserved; `box.forecast_run.basin`, run 19 backfilled `delaware`); D123 becomes "only the record run per basin"; a Midland store never waits for a Delaware rebuild or a Novi vintage. DDL container-validated in step 19 with every reader; live apply on go. | D130 |
-| a | Build + tier target | **open** — recommendation stands (build; validated where data allow). | — |
-| c | WCC, DEAN | **open** — recommendation stands (WCC provisional target; DEAN build). | — |
-| d | Df | **open** — recommendation stands (0.06 /yr). | — |
-| g | Water route | **open** — recommendation stands (D107 as written). | — |
+| a | Build + tier target | **Build the Midland; validated where data allow** (D53 / D99 path per group), D105 provisional otherwise. Value case = one method + defensible workups + the subscription decision + BOX's extent / proximity screens, not a Novi bias fix. | D131 |
+| c | WCC, DEAN | **WCC: build, provisional target. DEAN: build**, tier from 21's counts. | D131 |
+| d | Df | **Midland terminal Df = 0.06 /yr**, a basin parameter in step 19; the Delaware stays 0.08 (bit-identical). | D132 |
+| g | Water route | **D107 as written** into step 22 (measured cohort, 30 / 40 / 50-mi extension, calculated fallback flagged); step 22 scores reach + operator concentration the D109 way. | D133 |
 
 **Correction to §2(e) / §4(e).** That recommendation leaned on "land at a 13c refresh boundary", carried over from the plan's
 step-23 text and D126's cadence ("quarterly with the Novi vintage + on demand"). BOX does not need a new Novi vintage to publish —
