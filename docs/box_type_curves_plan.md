@@ -18,7 +18,7 @@ across cutoffs + "consistent with tuning" intervals (passes a good forecast 85�
 `claude/box-step18-midland-scope`; `docs/box/step18-2026-10-26/FINDINGS.md` §4 = the decision list (a)–(g) with recommendations,
 `index.html` = the evidence pack; read-only, nothing stored): Novi's Midland per-ft oil bias −5.4 % cum-6 / +4.3 % cum-12 (value
 case is not a bias fix); no Midland bench pair merges like WCA_1 / WCA_2 (rec: no pooling); US → emerging rec, WCC / WCD
-provisional target; Df 0.06 = +4.7 % median EUR; one record run (D126 refits the Delaware every refresh anyway); 19.8 % of
+provisional target; Df 0.06 = +4.7 % median EUR; record run: the pack recommended one shared run, decided per basin instead (D130); 19.8 % of
 2023+ Midland laterals sit past the r2 15,000-ft analog band (rec: 21a pre-registers a widened band). **GATE 18 CLOSED 2026-10-26** (D127–D133): build, validated where data allow (D131); US emerging, WCD + WCC provisional target, DEAN build (D127 / D131); no pooling (D128); long laterals via Cui, widened band pre-registered in 21a (D129); one record run per basin, sql/70 in step 19 (D130); Df 0.06 (D132); water = D107 (D133). Next = step 19. Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
