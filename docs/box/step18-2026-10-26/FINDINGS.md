@@ -1,7 +1,7 @@
 # BOX step 18 — Midland scope + value case (decision only)
 
 2026-10-26. Read-only; nothing stored, no DDL. Review surface: `index.html` (headline table, bench cards, laterals, analog reach,
-pooling pairs, Novi accuracy, water, Df, record-run facts, maps). Built at c97ac2a (code committed; only this text and the plan Status line were uncommitted, hence the page's `+dirty`) by `python -m scripts.box_midland_scope`
+pooling pairs, Novi accuracy, water, Df, record-run facts, maps). Built at 586c595 (clean) by `python -m scripts.box_midland_scope`
 (`box/midland_scope.py`, 12 DB-free tests; ~11 min incl. 200 block-bootstrap draws per pair). Warehouse as-of
 2026-09-01 (Midland max `last_reported_month`); Novi 2026Q3 sticks; record run 19. CSVs beside the page: `cards.csv`,
 `pairs.csv`, `novi_bias.csv`, `summary.json`.
