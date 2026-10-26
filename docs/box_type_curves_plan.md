@@ -1,6 +1,7 @@
 # BOX type curves — build plan
 
-**Step 16d LIVE 2026-10-24: LIVE RECORD = run 19** (r2 base run 17 + water + the re-measured proximity layer; 42,970 forecast PUDs, oil 22,623.3 MMbbl, −2.9 % vs run 14; every identity green; base run 17 and run 14 pruned under D123, run 14's 679,600 econ rows with it, so run 19 is the only BOX run; Steven re-prices run 19). (`docs/box/step16d-2026-10-23/FINDINGS.md` §6): r2 build of all 13 benches (51,419 in-extent PUDs, 0 no-analogs, harness equivalence 0.0 everywhere), water, proximity re-measured; rehearsal record run 18 = 42,970 forecast PUDs, oil 22,623 MMbbl (−2.9 % vs run 14), every identity green. Live store = four GOs. **GATE 16c CLOSED 2026-10-23 (D121: r2 selection of record, all 13 benches, owner's judgment). Next = level work on r2, then 16d.** **Step 16c scored 2026-10-23** (branch `claude/box-step16c`, `docs/box/step16c-2026-10-22/FINDINGS.md`; 14 tuning runs under the frozen SHA 109f805, tuning packages only, read-only): as written, the provisional groups adopt `box_v2s` (spacing fix only; r2 fails the stratum and Cui conditions, r2lo also cells + hindcast); BS2_S and WCXY stay validated, WCA / WCB_1 / WCC referred; level-only hindcast −15.3 % (fails ±15 %). Post-look, disclosed: the stratum and Cui conditions compare absolute bias on benches ~10 % over-forecast; read relative to the variant's own level, Cui beats linear in 13 / 13 groups at cum-12 and r2 is the more consistent — but r2 runs ~3 pts higher overall. Recommendation: accept `box_v2s`; keep the three referred groups validated. **Gate 16b CLOSED 2026-10-22 (D120: pre-registration frozen at 109f805).** **Step 16b built 2026-10-22** (eng_db #187 + #188 merged; revision: lateral is a TRANSLATION, not a filter — analogs 5,000–15,000 ft completed lateral, every cohort Cui-translated, ladder count → spacing; candidates `box_v2s_r2` / `_r2lo`, `box_v2s_r1` kept as the comparison; per-bench Cui-vs-linear check = adoption condition 6; `docs/box/step16b-2026-10-22/PREREGISTRATION.md`): selection knobs `box/analog.Rules` (defaults = the record selection, 0 differences on all 50,963 run-10 PUDs), pre-registered variants + adoption rule `box/step16.py`, harness `--step16` (tuning only); nothing scored. Gate 16b = Michael's priority order + the four open items of PREREGISTRATION §8, then the SHA is frozen. **Gate 16a CLOSED 2026-10-22 (D119: spacing fix on all benches, validated tuning cells re-scored).** **Step 16 opened 2026-10-22 — cohort-selection review (D118); 16a done** (eng_db #186 merged; branch `claude/box-cohort-review`, `docs/box/cohort-review-2026-10-22/FINDINGS.md`, read-only): the pool's spacing is fetched only for the F(k) training cohort, so 12,174 of 34,705 pool wells (35 %) with a measured spacing are excluded as standalone (every well < 13 months, every lateral > 13,000 ft; all benches, scored spec included); the 1.5-mi stick class's ±25 % band closes in 5 mi far less often on every bench; 5,175 PUDs reach ≥ 15 mi with ≥ 3 modern local wells inside 3 mi. Gate 16a = where the spacing fix applies.
+**Step 13 RESCOPED 2026-10-24, APPROVED 2026-10-25 (D124; 13d FROZEN = D125, next 13a; order 13d → 13a → 13b → 13c; 13e per formation_blueox tag release) + Step 17 proposed (thin-control
+correction; BS3_C / BS1_S level).** **Step 16d LIVE 2026-10-24: LIVE RECORD = run 19** (r2 base run 17 + water + the re-measured proximity layer; 42,970 forecast PUDs, oil 22,623.3 MMbbl, −2.9 % vs run 14; every identity green; base run 17 and run 14 pruned under D123, run 14's 679,600 econ rows with it, so run 19 is the only BOX run; Steven re-prices run 19). (`docs/box/step16d-2026-10-23/FINDINGS.md` §6): r2 build of all 13 benches (51,419 in-extent PUDs, 0 no-analogs, harness equivalence 0.0 everywhere), water, proximity re-measured; rehearsal record run 18 = 42,970 forecast PUDs, oil 22,623 MMbbl (−2.9 % vs run 14), every identity green. Live store = four GOs. **GATE 16c CLOSED 2026-10-23 (D121: r2 selection of record, all 13 benches, owner's judgment). Next = level work on r2, then 16d.** **Step 16c scored 2026-10-23** (branch `claude/box-step16c`, `docs/box/step16c-2026-10-22/FINDINGS.md`; 14 tuning runs under the frozen SHA 109f805, tuning packages only, read-only): as written, the provisional groups adopt `box_v2s` (spacing fix only; r2 fails the stratum and Cui conditions, r2lo also cells + hindcast); BS2_S and WCXY stay validated, WCA / WCB_1 / WCC referred; level-only hindcast −15.3 % (fails ±15 %). Post-look, disclosed: the stratum and Cui conditions compare absolute bias on benches ~10 % over-forecast; read relative to the variant's own level, Cui beats linear in 13 / 13 groups at cum-12 and r2 is the more consistent — but r2 runs ~3 pts higher overall. Recommendation: accept `box_v2s`; keep the three referred groups validated. **Gate 16b CLOSED 2026-10-22 (D120: pre-registration frozen at 109f805).** **Step 16b built 2026-10-22** (eng_db #187 + #188 merged; revision: lateral is a TRANSLATION, not a filter — analogs 5,000–15,000 ft completed lateral, every cohort Cui-translated, ladder count → spacing; candidates `box_v2s_r2` / `_r2lo`, `box_v2s_r1` kept as the comparison; per-bench Cui-vs-linear check = adoption condition 6; `docs/box/step16b-2026-10-22/PREREGISTRATION.md`): selection knobs `box/analog.Rules` (defaults = the record selection, 0 differences on all 50,963 run-10 PUDs), pre-registered variants + adoption rule `box/step16.py`, harness `--step16` (tuning only); nothing scored. Gate 16b = Michael's priority order + the four open items of PREREGISTRATION §8, then the SHA is frozen. **Gate 16a CLOSED 2026-10-22 (D119: spacing fix on all benches, validated tuning cells re-scored).** **Step 16 opened 2026-10-22 — cohort-selection review (D118); 16a done** (eng_db #186 merged; branch `claude/box-cohort-review`, `docs/box/cohort-review-2026-10-22/FINDINGS.md`, read-only): the pool's spacing is fetched only for the F(k) training cohort, so 12,174 of 34,705 pool wells (35 %) with a measured spacing are excluded as standalone (every well < 13 months, every lateral > 13,000 ft; all benches, scored spec included); the 1.5-mi stick class's ±25 % band closes in 5 mi far less often on every bench; 5,175 PUDs reach ≥ 15 mi with ≥ 3 modern local wells inside 3 mi. Gate 16a = where the spacing fix applies.
 
 **Status (2026-10-16):** **Phase 1 COMPLETE** (steps 0–8; the full step-by-step record is in §12). **BOX record = run 7** **Step 11 (water) done; GATE 11 CLOSED 2026-10-19** (eng_db #159, `docs/box/step11-2026-10-19/`): D107 (WOR-vs-cum-oil ratio on measured-water analogs; NM measured unless insufficient), D108 (water rides on raw box_v2 oil), D109 (12a rule frozen as pre-registered). Next = step 12a on go. **Step 12a done; GATE 12a CLOSED 2026-10-19 (D110)** (branch `claude/box-step12a-water`, `docs/box/step12a-2026-10-19/`): spec frozen 546c51a, tuning identity 39/39 (≤ 4.4e-16), water holdout scored ONCE — 26/26 judged cells inside the frozen intervals; D109 tiers: WCA + BS2_S water validated, the other 11 provisional; WCA TX holdout water 15–17 % high (NM ~0) = workup caveat (D110). Next = 12b (sql/62 container-validated first, live apply on go). **Step 12b DONE 2026-10-19 — sql/62 APPLIED LIVE + water STORED on record run 10 (D111, D72 retired)** (branch `claude/box-step12b-water`, `docs/box/step12b-2026-10-19/`): sql/62 (water stream + per-stream tier + box.location_water_analog) 16/16 in a container; water built for all 50,963 run-10 locations (0 fit failures) and stored into the container's run 10 with every identity green (oil/gas md5 = live). Live: 16/16, store 806 s with every identity green. Next: Steven note (Michael sends), erebor water display, Blue Ox drop water.
 (stored 2026-10-16, D92): 1,907 covered Delaware WCA_1 / WCA_2 PUDs inside extent 6, oil + gas, uptime-free, D62 haircut factors
@@ -160,6 +161,8 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D121 | **Gate 16c CLOSED by owner's judgment: the r2 cohort selection (`box_v2s_r2`) is the selection of record on ALL 13 benches.** Same bench, then distance; lateral length is a Cui & Cross translation, never a rule (analogs 5,000–15,000 ft completed lateral); at each ring, before the radius grows, give up the count (≥ 5 wells), then admit standalone wells; plus the D119 spacing fix. No v2s-vs-r2 re-comparison: v2s's behaviour (a thin-bench PUD forecast from 15–19-mi analogs with same-bench producers 2 mi away) is wrong for the purpose, and the Blue Ox opportunity set is mostly edge / thin-PDP positions. Disclosed with it: the pre-registered rule (D120) picked `box_v2s`; r2 ran ~3 pts more over-forecast (oil cum-12 −10.8 % vs −8.0 % on the provisional groups, raw, before any level correction); conditions 3 and 6 were confounded by level (FINDINGS §3). Level-only short-history wells rejected (hindcast −15.3 %). Validated benches re-earn their tier under r2 (their r2 tuning cells exist from 16c). Next: the level work on r2 (walk-forward haircut, proximity factor in the backtest), then one production build (16d). Michael 2026-10-23. | "Placing lateral length in the ladder mirrored how a reservoir engineer would work; in practice it is not appropriate, and Cui accounts for length to a satisfactory degree" (Michael). `docs/box/step16c-2026-10-22/FINDINGS.md`. |
 | D122 | **16d stack: WCA gas carries NO walk-forward haircut; WCA oil and BS2_S oil + gas keep theirs** (recomputed from the r2 + proximity tuning cells, D120 §4). Under r2 + proximity WCA gas is unbiased within ~2 % at every horizon; its table (1.001 / 1.017 / 1.001 / 0.995) is a cutoff-mix wobble — older cutoffs (2019–20) forecast gas low, newer (2021–24) high, and each horizon averages a different cutoff set — which the 9c monotonicity guard refuses (reversal 0.015 > 0.01). Represented as a per-stream `None` (months exactly raw; the dropped table kept in the evidence pack). Watch item: the newest WCA gas cohort trends high (2024 cutoff cum-12 −5.8 %, 111 packages). Michael 2026-10-23. | `docs/box/step16d-2026-10-23/r2_evidence.json`; the per-cutoff cells were reviewed with Michael before the call. |
 | D123 | **Run retention: keep ONLY the record run (supersedes D104 and D75).** What is valuable is an evergreen forecast of the highest quality we can manage; an older run has no value once a new record is published and verified live — priced or not. Prune every non-record run then; a priced run's `box_econ.box_pud_econ` rows go with it, deleted first in the same transaction (`python -m scripts.box_prune_runs --apply --include-priced`). Committed FINDINGS keep the run-to-run comparisons. Michael 2026-10-24. | Live record = run 19 (rehearsal run 18's twin). r2 base run 17 pruned 2026-10-24; run 14 pruned 2026-10-24 with `--include-priced` (its 679,600 econ rows deleted first, 798 s); run 19 is the only BOX run. Michael's go: "Prune run 14 now with --include-priced; delete Steven's run-14 econ rows in the same transaction." |
+| D124 | **Step 13 rescope APPROVED as written (gate 13a opens; order 13d → 13a → 13b → 13c, 13e per tag release).** The refresh produces one new record per Novi vintage plus on demand (cadence itself decided at 13a); a `formation_blueox` reclass is a tag release (13e), warehouse first; the prospective verdict is scored on the tags current at scoring time, freeze-time tags as a sensitivity (13d). Step 17 proposed alongside. Michael 2026-10-25. | "Approve the step-13 rescope as written; start 13d." eng_db #194. |
+| D125 | **Gate 13d CLOSED: the 2026 prospective test frozen as written** (`box/prospective16.py`, digest 6bc67994; eng_db #195). 13 groups, run-19 method at cutoff 2025-12-01, tags at scoring time; verdict = D99 consistency ALONE per cell (oil + gas cum-12 / cum-24, >= 30 packages; |bias| <= 10 % reported, never gating); judged ONCE on the full cohort, cum-12 at production through >= 2028-01-01, cum-24 >= 2029-01-01; the H1-2026 cum-12 read (~2027-Q3) reported only; thin groups below 30 packages NOT JUDGED, tier unchanged. D85 kept, informational. Michael 2026-10-25. | Freeze snapshot 1,715 wells (Jan-Aug 2026); 78 tuning views hash-pinned (`tuning_views.sha256`), copied by Michael to the OneDrive share. |
 
 ## 3. Scope guard (what this plan does NOT do)
 
@@ -387,11 +390,90 @@ thresholds set before scoring — D58 pattern). **Gate 11:** method + acceptance
 `pud_forecast_month` admit water (sql/62, reserved here; container-validated, then go-apply), production run with water on every
 covered bench, D72 retired by a new decision, Steven told. **Gate 12b.**
 
-### Step 13 — quarterly refresh, end to end (1 session; TIME-BOUND)
-The chain in `novi-quarterly-reload` §9 has never run live: new vintage → D73/D83 crosswalk → D84 pool refresh → rebuild → store.
-Rehearse it in a container on the live data before the next Novi vintage (`intel_sf.report_check` warning), then run it live on
-that vintage on go. Also decide the **between-vintage cadence** (run 7 holds production through 2026-07-01: re-run monthly,
-quarterly with the vintage, or on demand). **Gate 13.** An interrupt: do it when the vintage is near, whatever else is in flight.
+### Step 13 — steady-state refresh (RESCOPED 2026-10-24, APPROVED 2026-10-25 = D124; TIME-BOUND)
+Goal (D123): an evergreen record of the best quality we can manage. Each refresh produces ONE new record run, the previous run is
+pruned with its econ, and Steven re-prices. The original step 13 (rehearse the WCA-only chain of `novi-quarterly-reload` §9) is
+superseded: that chain predates 13 groups, water, the proximity layer and r2.
+
+**What a refresh does today (run 19 as built):**
+
+| input | today | gap |
+|---|---|---|
+| Novi PUD universe + sticks | new vintage → D73 / D83 crosswalk at store | none (rehearsed 7d, never live) |
+| production data | each build reads the last full month from the warehouse | none |
+| analog well sets (bench QC tags) | `box_pool_refresh` adds new wells to WCA only; BS2_S copied; 11 groups frozen at the 2026-10-16 step-15 sets | **no new producer enters 11 groups' cohorts** |
+| a PDP well's bench (`formation_blueox`) | each `wells_final_*.csv` carries the tag as of its judging (2026-10-06 WCA, 2026-10-16 step 15); D84 never re-decides an existing well. The proximity layer alone reads the live tag (`curated.wells_enriched`) | **a reclass never reaches the analog pools, the evidence or the extents** (13e) |
+| selection rules (D121) | frozen method of record | none |
+| per-well fits, F(k) | recomputed at build | none |
+| walk-forward haircut (WCA oil, BS2_S oil + gas) + every disclosure line | frozen evidence pack `r2_evidence.json` (tuning cutoffs 2019–2024) | no rule for when it is re-scored |
+| tier (validated / provisional) | frozen | changes only through the prospective test (13d) |
+| extents | frozen; re-review "on trigger" (D17) | trigger constants N, X never set |
+| proximity | configuration re-measured per run (D116, `box_step16d prox-measure`); precedent children + factor table frozen (`prox-2026-10-19`) | no rule for refreshing precedent |
+| water | method frozen; `water11.LAST` pinned at 2026-07-01 | the pin must be bumped by hand, or the build refuses |
+| run-time | build 7.3 h + water 0.7 h + prox 0.2 h + live store ≈ 3.1 h (per-bench resume) | laptop-bound; ~11 h per refresh |
+| procedure | skill §9 = WCA-only run-7 chain | stale |
+
+- **13a — refresh contract + cadence (decision only, 1 short session). Gate 13a.** For each row above: recomputed per refresh,
+  or frozen with a stated re-score rule. Proposed:
+  - analog well sets: new wells only, on all 13 groups (D84 extended);
+  - haircut + disclosure: re-scored once a year, when a new cutoff year has cum-12 (2025 cutoff ≈ 2027-Q1), under the frozen
+    D120 §4 source rule, never between;
+  - proximity precedent: refreshed in the same annual cycle;
+  - extents: set N, X (D17) or keep geology-review-only;
+  - cadence: **quarterly with the Novi vintage, plus on demand** for a live deal. No monthly production-only refresh: one
+    month of analog production barely moves an undrilled PUD's P50, and each refresh costs Steven a re-price.
+- **13b — tooling + container rehearsal (1–2 sessions). Gate 13b.**
+  - `box_pool_refresh` generalized to every group's well set;
+  - the water data-through pin read from the run, not hand-bumped;
+  - one driver chaining build → water → prox-measure → prox record (store steps still each an explicit go, D123 prune at the end);
+  - skill §9 rewritten to the 13-group chain.
+  - Rehearsal on the current vintage in the `scripts.box_rehearsal` container: a no-vintage refresh must reproduce run 19's
+    method exactly. Only the production month and new pool wells may move; every change is reported per bench.
+- **13c — live on the next Novi vintage (on go). Gate 13c.**
+  - The first live crosswalk (D73 / D83: carried / new / stopped counted).
+  - Then the full chain, prune the old record (D123), and Steven re-prices.
+  - An interrupt: run it when `intel_sf.report_check` warns, whatever else is in flight.
+- **13d — prospective test pre-registered for all 13 groups under r2. DONE; GATE 13d CLOSED 2026-10-25 (D125, frozen as written;
+  `docs/box/step13d-2026-10-25/PREREGISTRATION.md`, eng_db #195). Next: 13a.**
+  - D85 froze a WCA-only cohort on the run-4 method (box_v2 × D62).
+  - Freeze a new definition before any 2026 outcome is read: groups, cutoff 2025-12-01, first production in 2026, the r2 +
+    proximity (+ haircut) method as of run 19, horizons, and the verdict rule.
+  - **Which tags govern bench membership (proposed).** The verdict is scored on the tags current at SCORING time: the latest
+    tag release (13e), with its release ID recorded in the score. This applies to the 2026 wells (which group they test) and to
+    the analog pools the hindcast forecasts them from. The freeze-time tags are scored alongside as a sensitivity, never as the
+    verdict. Why: the test asks whether BOX forecasts each bench correctly, and the tags of record are the best available
+    statement of the bench. A release that MERGES or SPLITS groups (e.g. rule A) changes the test's units: the affected groups
+    are re-defined by an amendment written and committed before any score is read, never after.
+  - This is the only path that moves a bench between tiers, in either direction. The first judged cum-12 is ≈ 2027-Q2.
+  - Time-sensitive: the 2026 wells accrue production every month. Freezing late is still valid; freezing after a look is not.
+
+- **13e — tag release (event-driven, per release). Gate 13e per release.** The tops-vs-tag work with the geologist
+  (`docs/box/tops-qc-*`) will reclass PDP wells from one `formation_blueox` to another. That is a different event from a
+  refresh: an existing well's bench changes.
+  - **Warehouse first** (warehouse-change skill). Reclasses land in batches ("releases"), never as a drip: a reviewable,
+    versioned change to `formation_blueox` (the override pattern of the 98 WCB_2 overrides) with a diff list (api10, old tag,
+    new tag, reason, release ID). Applied and verified live before BOX reads it. Downstream outside BOX (reconciliation, sql/30
+    support, dev_scenario bench pairs, anduin cohorts, narvi offsets, deal-intake) follows the skill's propagation list.
+  - **BOX applies the diff to every frozen pool** (`wells_final_*.csv`), not by re-running the class rule over old wells (D84
+    still holds for judging NEW wells). A moved well leaves one group's pool and enters another's; the release ID is
+    stamped on the pool directory and the run notes.
+  - **Triage per group, by what moved:** the moved wells counted as tuning wells, as named analogs of record-run PUDs, and as
+    extent-edge wells.
+    - Small: the next refresh (13c cycle) picks it up; the evidence pack stands, with the release disclosed.
+    - Large: that group's evidence is re-scored on the new tags (tuning cells under the frozen D120 §4 source rule). The tier
+      does not move (holdouts are spent); only the prospective test moves it (13d).
+    - Group-changing (a merge or split, e.g. rule A = WCXY + WCA_1 + WCA_2 as one bench): a re-acceptance of that family on the
+      step-15 pattern, its own gate. Never folded into a refresh.
+    - Extent-edge moves: the extent is re-reviewed for that bench (ties to 13a's trigger rule).
+  - The "small" / "large" thresholds are set at gate 13a, before the first release is triaged.
+  - Proximity reads live tags, so it picks up a release at its next re-measure. Its precedent study and factor table
+    (`prox-2026-10-19`) were calibrated on the old tags and are refreshed in the annual cycle (13a), or sooner if a release is
+    large on the parent benches.
+  - Sequencing: a large or group-changing release that is near makes step 17's corrections (and any re-score) wait for it, so
+    they are not fitted to tags about to change.
+
+Order: 13d → 13a → 13b → 13c (13c waits for the vintage); 13e whenever a release is ready. Step 17 runs alongside (read-only),
+unless a large release is near (13e).
 
 ### Step 14 — thin benches: D2 decision (1 short session, decision only)
 Evidence table (above) for BS2_C, AVA_0 / AVA_1 / AVA_2, WCD (and the `OTHER` / unmapped tag): producers, vintage, spread of
@@ -425,9 +507,24 @@ Trigger: off-trend BS1_S EUR/ft in erebor (Pad 1925). Each sub-step ends at its 
   superseded runs pruned per D123. **Gate 16d.**
 - **16e — validated groups**, from the 16a / 16c evidence, with their own re-acceptance path.
 
+### Step 17 — level corrections (PROPOSED 2026-10-24; read-only until a production gate)
+Run 19's disclosed oil bias (tuning, r2 + proximity [+ haircut]; negative = forecast HIGH) leaves two large, unstated-in-volume
+misses. Neither is a refresh item: each is a method change and gets its own pre-registration (D53 / D120 pattern) and scoring
+before it touches a record run.
+- **17a — thin-control correction (all 13 groups).** Thin-control wells run high at cum-24: WCC −25 %, BS2_S −20 %, WCXY −19 %,
+  BS3_C −18 %, BS1_S −15 % (level FINDINGS §2.5). This is the Blue Ox opportunity set (edge / thin PDP, D121).
+  Pre-register the candidate corrections (e.g. a factor by local-control class, by tier or pooled), score them on tuning folds,
+  and read the 2026 prospective cohort as the clean check (13d). **Gate 17a.**
+- **17b — BS3_C and BS1_S level (provisional).** Oil cum-12 / cum-24: BS3_C −13.7 / −17.8 %, BS1_S −12.1 / −13.5 %. Together
+  that is 11,993 PUDs and 6,334 MMbbl. The per-bench walk-forward overshot on thin provisional benches (BS1_S +8 %), and the
+  family-pooled one lags the 2022–23 vintage episode. Diagnose first: is it the episode, or bench-specific (BS3_C turned worse
+  under r2: −10.9 → −13.7 % cum-12)? Then pre-register one correction candidate. **Gate 17b.**
+- AVA_0 (350 PUDs, −22 %) is NOT worked here: it is too thin to correct or test. Work it by hand per deal, as with emerging zones.
+
 ### Standing items (not steps; on the calendar)
 - **Prospective 2026 confirmation** (D85, digest a72c797d): first cum-6 read on the frozen cohort; cum-12 ~2027-Q2. Read-only
-  scoring session when data allow; report, don't re-tune.
+  scoring session when data allow; report, don't re-tune. D85 covers WCA only on the run-4 method; step 13d proposes the
+  13-group r2 definition.
 - **Steven's econ loop**: when he prices run 7 (or later), verify `box_pud_econ_tie` and the `downtime_basis` (D81).
 - **Geology review of the extents** (D28, non-blocking): import on return, re-run downstream.
 - **Long laterals** (D77, Pad 548 class): a long-lateral translation is a spec change with its own acceptance — schedule when the
@@ -536,10 +633,11 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | 10 | 1–2 | anduin repo |
 | 11 | 1–2 | read-only research |
 | 12 | 2 | 12a scoring; 12b schema (sql/62) + production |
-| 13 | 1 | time-bound interrupt before the next Novi vintage |
+| 13 | 4–5 + 1 per tag release | rescoped 2026-10-24: 13d prospective pre-registration → 13a contract + cadence → 13b tooling + rehearsal → 13c live on the next vintage; 13e per tag release (warehouse first) |
 | 14 | 1 short | decision only |
 | 15 | ≈ 4–5 per family | 15a BS3 → 15b WCB → 15c BS1_S → 15d WCC |
 | 16 | ≈ 4–6 | 16a diagnosis (done) → 16b rule menu + pre-registration → 16c tuning-fold scoring → 16d production → 16e validated |
+| 17 | ≈ 2–4 per sub-step | 17a thin-control correction, 17b BS3_C / BS1_S level; each pre-registered, scored, then a production gate |
 
 **Phase 2 order:** 9a → 9b → 9c → 11 → 12a → 12b → 14 → 15a → 15b → 15c → 15d. **Step 10 runs alongside 9** (swap it ahead if a
 live deal needs BOX in a drop). **Step 13 interrupts** whenever the next vintage is near.
