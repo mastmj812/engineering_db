@@ -1,4 +1,4 @@
-# Step 13a — the BOX refresh contract and cadence (PROPOSED 2026-10-26, AT GATE 13a)
+# Step 13a — the BOX refresh contract and cadence (APPROVED 2026-10-26 as written = D126)
 
 Decision only: nothing built, nothing stored. Sits on D123 (keep only the record), D124 (step 13 approved) and D125 (the 2026
 prospective test, frozen). The tooling that implements it is 13b.
@@ -124,7 +124,7 @@ An extent re-review is triggered as in §4.
   time.
 - **So per year:** 4 record runs (plus any on-demand), 4 re-prices, 1 annual re-score (Q1).
 
-## 7. Gate 13a — your calls
+## 7. Gate 13a — the calls (APPROVED as written, Michael 2026-10-26: "approve the contract as written (CONTRACT §7, all five)")
 
 1. The contract table (§2): new-wells-only pools on all 13 groups; evidence and proximity precedent frozen between annual
    re-scores.
