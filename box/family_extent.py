@@ -331,7 +331,7 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
         ax.set_title(f"{pool}: {label} ({area:,.0f} sq mi, black) over {top_s} structure; "
                      f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); potash area blue; dashed = TX/NM line", fontsize=9)
     else:
-        ax.set_title(f"{bsn.get(basin).label} {pool}: {label} ({area:,.0f} sq mi, black; no structure grid exists for this basin); "
+        ax.set_title(f"{bsn.get(basin).label} {pool}: {label} ({area:,.0f} sq mi, black; no structure grid exists for this basin)\n"
                      f">= 2016 laterals coloured (n={len(ev):,}), pre-2016 grey (n={len(old):,}); dashed = step-2 outline bodies", fontsize=9)
     fig.tight_layout()
     fig.set_dpi(dpi)
