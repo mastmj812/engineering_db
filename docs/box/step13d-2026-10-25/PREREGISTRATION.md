@@ -1,6 +1,6 @@
 # Step 13d — 2026 prospective test of the run-19 method, all 13 groups (PRE-REGISTRATION, 2026-10-25)
 
-**Status: drafted and digest-pinned, AT GATE 13d.** Nothing is scored. No 2026 well's production volume has been read; the
+**Status: FROZEN 2026-10-25 at gate 13d (D125), as written.** The definition did not change at the gate, so the pinned digest stands; the merge of this file's PR is the freeze. Nothing is scored. No 2026 well's production volume has been read; the
 only 2026 facts used are well identities, tags, first-production dates and states (`cohort_at_freeze.csv`).
 
 - Definition of record: `box/prospective16.py` `DEFINITION`, SHA-256 `6bc67994…` pinned in `DIGEST`; `tests/test_box_prospective16.py`
@@ -124,7 +124,7 @@ package bias lies inside **P2.5–P97.5 of the group's own tuning package bias d
 
 **Early reads** use the same scorer and are labelled "not judged".
 
-## 8. Gate 13d — your calls
+## 8. Gate 13d — the calls (DECIDED 2026-10-25, Michael; D125)
 
 1. **Verdict rule.** Proposed: D99 consistency. It tests "the disclosed bias is honest", which is how every current validated
    group earned its tier.
@@ -138,3 +138,10 @@ package bias lies inside **P2.5–P97.5 of the group's own tuning package bias d
    Accept "tier unchanged", or leave the door open to pool them with a 2027 cohort under a later pre-registration?
 4. **Durability.** The 78 tuning views (29 MB) live only in `runs/step16c` on this laptop and are pinned by hash.
    Recommendation: copy them to the OneDrive share now. Without them the intervals cannot be drawn in 2028.
+
+**Answers (Michael, gate 13d):** "verdict = D99 consistency alone; full-cohort judgment ~2028-Q1 with the H1 read reported; thin
+groups stay tier unchanged; I'll copy the 78 views to OneDrive. Freeze as written."
+1. Verdict = **D99 consistency alone**. |bias| <= 10 % stays reported, never gating; the size of the bias is step 17's.
+2. Judgment = **the full cohort, once, with production through >= 2028-01-01**. The H1-2026 cum-12 read (~2027-Q3) is reported, not judged.
+3. Thin groups that do not reach 30 packages are **NOT JUDGED, tier unchanged**. No pooled 2027 cohort is pre-committed.
+4. Michael copies the 78 tuning views (`runs/step16c`, hashes in `tuning_views.sha256`) to the OneDrive share.
