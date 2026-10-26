@@ -1,0 +1,24 @@
+edge_no,seg_no,edge_class,side,gap_ft,perf_class,perf_ratio,buffer_ft,rule,flag,length_ft
+0,42,pinned,W,0.0,strong,2.055298785379955,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",13798.399149542798
+1,64,pinned,SW,0.0,unknown,0.7144522908032497,7920.0,live front -> cap (D22),live front: performing step-outs ahead of the body; buffered at the cap,98688.18891293836
+2,74,pinned,S,0.0,strong,1.370817621947304,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",8898.978516448895
+3,76,pinned,S,0.0,strong,1.370817621947304,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",15298.224720296233
+4,78,bridge,S,99.99597762683882,strong,1.370817621947304,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1299.8522723870774
+5,79,bridge,S,0.0,strong,1.3825120266964017,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,56093.06966611539
+6,86,pinned,SE,0.0,strong,1.06577633699887,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",9198.938699346205
+7,89,pinned,SE,0.0,strong,0.9676995479145164,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",53492.75936989188
+8,91,bridge,SE,0.0,strong,1.0219337705580955,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,4399.49790792731
+9,93,bridge,SE,0.0,strong,1.3024412371547949,7920.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,24897.136131613108
+10,94,bridge,E,0.0,strong,1.3024412371547949,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,1799.7891080152933
+11,96,bridge,E,0.0,strong,1.3024412371547949,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,36395.29518089146
+12,102,pinned,E,0.0,strong,1.138349738491156,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",10398.679179819463
+13,108,pinned,NE,0.0,strong,0.997202527523564,1760.0,pinned: floor,"pinned edge, strong wells: edge not explained by performance; what stops it?",69990.46826761613
+14,110,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,19697.588642289444
+15,111,gap,N,299.9879328805165,unknown,,1320.0,gap: k × gap,,199.97727267503024
+16,112,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,6299.284089260771
+17,114,bridge,N,0.0,strong,1.2950662715397254,1760.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,11298.641137857034
+18,116,bridge,N,0.0,unknown,,1320.0,envelope bridge (D27),bridged gap between development trends (D27): any structural or reservoir break here?,126483.40424033276
+19,117,gap,N,1999.9195525367763,unknown,,1320.0,gap: k × gap,,1999.7671756815846
+20,22,pinned,NW,0.0,strong,1.7413632597657531,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",15098.26193795247
+21,30,pinned,NW,0.0,strong,1.7185980249633326,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",78091.00152829521
+22,40,pinned,W,0.0,strong,2.055298785379955,7920.0,live front -> cap (D22),"pinned edge, strong wells: edge not explained by performance; what stops it?; live front: performing step-outs ahead of the body; buffered at the cap",8498.992806472657

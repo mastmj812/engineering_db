@@ -1,0 +1,163 @@
+dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,cohort,formation_blueox,perf_ratio,role,class
+9.067955761285488,W,4200348154,FEE 'BN' 2112WD,Fasken Oil,Andrews,2021-07-14,10911.981728742096,True,WCD,0.6300550309948465,"excluded: isolated test (tested, not developed)",rolled
+11.892453352424178,W,4200348450,"FEE ""BM"" 1614WD",Fasken Oil,Andrews,2022-07-16,18073.924313115604,True,WCD,1.0435837619947417,"excluded: isolated test (tested, not developed)",ok
+12.093803406887465,W,4200348452,"FEE ""BM"" 1504WD",Fasken Oil,Andrews,2022-07-22,22325.19099316445,True,WCD,1.2890508115601107,"excluded: isolated test (tested, not developed)",ok
+13.398493624691739,NW,4200349016,FEE 'AR' 2013WD,Fasken Oil,Andrews,2026-01-24,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+5.782338583143998,NW,4200349019,UL DENGAR 40-3 A 1WD,Diamondback,Andrews,2025-02-22,15545.207484059789,True,WCD,0.8975762997652742,"excluded: test (1-well step-out, not development)",ok
+7.535190110428368,NW,4200349163,UL MASON WEST UNIT 3WD,Diamondback,Andrews,2026-05-12,,False,WCD,,island,no12
+7.7338242376972826,NW,4200349165,UL MASON WEST UNIT 1WD,Diamondback,Andrews,2026-05-12,,False,WCD,,island,no12
+7.268004048821638,NW,4200349232,UL MONTY WEST 46-39 G 1WD,Diamondback,Andrews,2026-05-17,,False,WCD,,island,no12
+6.991608771144492,NW,4200349233,UL MONTY WEST 46-39 H 2WD,Diamondback,Andrews,2026-05-18,,False,WCD,,island,no12
+8.773544661472506,W,4200349246,CASSELMAN 32 5HC,Apache,Andrews,2026-07-15,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.669332057823638,W,4200349248,CASSELMAN 32 7HC,Apache,Andrews,2026-07-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+12.305254714035438,N,4211534130,PANTHER I UNIT #1H,Laguna Texas Resources,Dawson,2026-07-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+9.690705407507345,SE,4217337370,G. SCHWARTZ 17-8 (ALLOC-A) 1NC,Crescent Energy,Glasscock,2016-08-09,20469.39802697805,True,WCD,1.1818978008699637,"excluded: isolated test (tested, not developed)",ok
+3.2230608262817544,E,4217337402,THOMAS 4101HD,Lake Crystal,Glasscock,2017-04-01,462.55119953189,True,WCD,0.026707587824321255,"excluded: test (2-well step-out, not development)",rolled
+13.730750101578092,SE,4217337465,BARBEE B 2-1 (ALLOC-F) 6SC,Crescent Energy,Glasscock,2017-03-15,7847.62170715815,True,WCD,0.4531196679807252,"excluded: isolated test (tested, not developed)",rolled
+9.982049486327075,SE,4217337500,G. SCHWARTZ 17-8 (ALLOC-C) 3NC,Crescent Energy,Glasscock,2017-05-23,13077.394713036489,True,WCD,0.7550854222520653,"excluded: isolated test (tested, not developed)",ok
+10.331607540003144,SE,4217337502,G. SCHWARTZ 17-8 (ALLOC-F) 6NC,Crescent Energy,Glasscock,2017-05-13,12835.852478839175,True,WCD,0.7411388354966184,"excluded: isolated test (tested, not developed)",ok
+10.164701800268935,SE,4217337503,G. SCHWARTZ 17-8 (ALLOC-D) 4NC,Crescent Energy,Glasscock,2017-05-21,9921.09500805153,True,WCD,0.5728414854596081,"excluded: isolated test (tested, not developed)",rolled
+10.484117682427616,SE,4217337504,G. SCHWARTZ 17-8 (ALLOC-H) 8NC,Crescent Energy,Glasscock,2017-05-07,12152.260842817595,True,WCD,0.7016684294669848,"excluded: isolated test (tested, not developed)",ok
+9.006558067470989,E,4217337510,FOSTER 4344 2HD,SM Energy,Glasscock,2017-08-10,6662.132644956315,True,WCD,0.3846698330747304,"excluded: isolated test (tested, not developed)",rolled
+3.7242316384440017,SE,4217337607,MATTHIAS 0913HD,Lake Crystal,Glasscock,2018-02-13,7725.330167680664,True,WCD,0.44605858580415375,"excluded: test (2-well step-out, not development)",rolled
+9.78339239692425,SE,4217337641,FOXTROT NS 30-31 05 405H,Hannathon Petroleum II,Glasscock,2017-11-27,13578.362751065126,True,WCD,0.7840111884945228,"excluded: isolated test (tested, not developed)",ok
+8.32515723705094,SE,4217337654,BEARKAT 8-5 (ALLOC-A) 1NC,Crescent Energy,Glasscock,2017-12-15,15244.980800877673,True,WCD,0.8802412879516507,"excluded: isolated test (tested, not developed)",ok
+8.248268762041215,SE,4217337655,BEARKAT 8-5 (ALLOC-D) 4NC,Crescent Energy,Glasscock,2017-12-21,8430.462916874067,True,WCD,0.48677277019270704,"excluded: isolated test (tested, not developed)",rolled
+8.943423270219602,E,4217337899,FOSTER 4344 3HD,SM Energy,Glasscock,2019-02-08,9112.911392405063,True,WCD,0.5261771704283217,"excluded: isolated test (tested, not developed)",rolled
+8.295919348294463,E,4217338052,FOSTER 4344 4HD,SM Energy,Glasscock,2019-08-29,5629.461989507252,True,WCD,0.3250436938453503,"excluded: isolated test (tested, not developed)",rolled
+8.082376905524708,E,4217338120,FOSTER 4344 5HD,SM Energy,Glasscock,2020-09-01,9202.288194101982,True,WCD,0.5313377640732915,"excluded: isolated test (tested, not developed)",rolled
+7.410694951331327,E,4217338155,FOSTER E 6HD,SM Energy,Glasscock,2020-01-15,6790.4807299468885,False,WCD,0.3920806186384437,"excluded: test (1-well step-out, not development)",rolled
+12.376711833717232,SE,4217338225,LACY CREEK 34-27 (ALLOC-F) 6NC,Crescent Energy,Glasscock,2020-02-02,7827.279026031872,True,WCD,0.4519450867812557,"excluded: isolated test (tested, not developed)",rolled
+12.782150554342973,SE,4217338227,LACY CREEK 34-27 (ALLOC-H) 8NC,Crescent Energy,Glasscock,2020-02-15,11337.5,True,WCD,0.6546243470229424,"excluded: isolated test (tested, not developed)",rolled
+3.006120722787874,E,4217338899,HAIRBALL 1HD,SM Energy,Glasscock,2023-10-21,9044.572468162523,True,WCD,0.5222312984408004,island,rolled
+2.961435874284688,E,4217338900,HAIRBALL E 2HD,SM Energy,Glasscock,2023-10-19,3787.70550393138,True,WCD,0.21870114595160173,island,rolled
+2.9339671596020707,E,4217338901,HAIRBALL F 3HD,SM Energy,Glasscock,2023-10-22,8760.516155252997,True,WCD,0.5058299596662784,island,rolled
+3.874677919010877,SE,4217339029,BODINE T 17-29 9 9H,Hannathon Petroleum II,Glasscock,2024-01-15,5107.7773055673615,True,WCD,0.2949217537724929,"excluded: test (2-well step-out, not development)",rolled
+3.739587577063794,SE,4217339030,BODINE T 17-29 10 10H,Hannathon Petroleum II,Glasscock,2024-01-15,6604.198538160802,True,WCD,0.38132473258243754,"excluded: test (2-well step-out, not development)",rolled
+2.22271260907064,SE,4217339126,SHERMINATOR 12-13 A 2WD,Black Swan Opco,Glasscock,2024-10-23,5100.089632506722,True,WCD,0.2944778694984072,"excluded: test (2-well step-out, not development)",rolled
+2.422534299919848,SE,4217339130,SHERMINATOR 12-13 C 6WD,Black Swan Opco,Glasscock,2024-10-26,6258.974102589741,True,WCD,0.36139156206759127,"excluded: test (2-well step-out, not development)",rolled
+6.209474052986662,SE,4217339156,EDWIN WILDE 10-15 B 2WD,Black Swan Opco,Glasscock,2025-05-05,3608.591168519075,True,WCD,0.20835913008728169,island,rolled
+5.6933711984961075,SE,4217339160,DALE WILDE 10-15 A 1WD,Black Swan Opco,Glasscock,2025-05-15,6832.4438626523015,True,WCD,0.3945035591761564,island,rolled
+5.708336537917674,SE,4217339163,DALE WILDE 10-15 D 4WD,Black Swan Opco,Glasscock,2025-05-15,7592.078809811017,True,WCD,0.4383646865198902,island,rolled
+10.603543143498932,SE,4217339238,MOLLIE 44-41 08 8H,Hannathon Petroleum II,Glasscock,2025-07-28,13611.46730170361,True,WCD,0.7859226367719389,"excluded: isolated test (tested, not developed)",ok
+4.838127179880959,NE,4222739460,READ 34 1H,Paladin Petroleum III,Howard,2020-06-21,7462.417582417582,True,WCD,0.4308780804500669,island,rolled
+2.6251337257297247,NE,4222740092,ARLINGTON 33-40 B UNIT 3H,Highpeak Energy,Howard,2019-11-18,10000.0,True,WCD,0.5773974394910186,"excluded: test (2-well step-out, not development)",rolled
+2.57549975954424,NE,4222740093,ARLINGTON 33-40 C UNIT 4H,Highpeak Energy,Howard,2019-08-17,5225.727886637883,True,WCD,0.3017321901221526,"excluded: test (2-well step-out, not development)",rolled
+6.590545373713527,NE,4222741158,B-SIDE 21-16 H 3W,Bayswater,Howard,2022-01-29,11396.563374843132,True,WCD,0.6580346511631546,island,rolled
+8.276552719130564,NE,4222741548,FLEEMAN 51-9 B UNIT D 5H,Highpeak Energy,Howard,2022-11-12,7901.157364196379,True,WCD,0.4562108031102595,"excluded: isolated test (tested, not developed)",rolled
+6.106427251859911,NE,4222741749,SIDE HUSTLE 27-22-15 H 1W,Bayswater,Howard,2022-12-15,8284.187597849022,False,WCD,0.47832687072612784,island,rolled
+8.213185650186078,NE,4222741764,JIMMY 4-9 R 2WD,Bayswater,Howard,2023-09-08,6088.320802005012,True,WCD,0.35153808418775995,"excluded: isolated test (tested, not developed)",rolled
+6.103513881404582,NE,4222741774,SIDEKICK 27-22-15 H 2W,Bayswater,Howard,2022-12-09,7492.670742128443,False,WCD,0.4326248901454233,island,rolled
+4.2320076551799115,NE,4222741794,READ 33 2H,Paladin Petroleum III,Howard,2023-04-18,4244.318181818182,True,WCD,0.2450658450566994,island,rolled
+9.72042236351573,NE,4222741798,ORIENT 1-12 H 2WD,Bayswater,Howard,2023-05-08,4854.134723499949,True,WCD,0.28027649602933147,"excluded: isolated test (tested, not developed)",rolled
+9.86921808793435,NE,4222741802,FAR EAST 1-12 H 1WD,Bayswater,Howard,2023-05-07,3647.276573241671,True,WCD,0.21059281545053177,"excluded: isolated test (tested, not developed)",rolled
+10.031736921186855,NE,4222741853,FAR EAST 1-12 H 2WD,Bayswater,Howard,2024-05-25,680.9402146142054,True,WCD,0.03931731363647069,"excluded: isolated test (tested, not developed)",rolled
+10.196769606048022,NE,4222741855,RISING SUN 6-7 H 1WD,Bayswater,Howard,2023-08-01,4817.577925396014,True,WCD,0.27816571586721117,"excluded: isolated test (tested, not developed)",rolled
+7.156009292752067,NE,4222742035,JIMMY FOREVER 4-9-16 AL1 H 1WD,Bayswater,Howard,2023-09-08,8486.594741262355,False,WCD,0.4900138073602828,island,rolled
+11.446915049647254,NE,4222742086,KAMIKAZE 5-8 H 2WD,Bayswater,Howard,2023-11-18,3970.0241064877896,True,WCD,0.22922817538036688,"excluded: isolated test (tested, not developed)",rolled
+11.25683430437434,NE,4222742089,KAMIKAZE 5-8 H 1WD,Bayswater,Howard,2024-06-01,1513.001638001638,True,WCD,0.08736032717278629,"excluded: isolated test (tested, not developed)",rolled
+43.0847716862247,SE,4223536642,DARK HORSE N316H,Triple Crown Resources,Irion,2024-12-09,1074.8005753890416,True,WCD,0.06205871001931062,"excluded: isolated test (tested, not developed)",rolled
+6.598695106554154,NW,4231741517,UL 2631 06WD,Diamondback,Martin,2018-11-16,7972.931915481287,True,WCD,0.4603550473235118,"excluded: test (1-well step-out, not development)",rolled
+5.866545006523064,W,4231743236,SOUTH CURTIS RANCH 0401CP,Occidental,Martin,2021-04-10,17263.247090724213,True,WCD,0.9967754667484938,"excluded: test (1-well step-out, not development)",ok
+2.9175056566427418,N,4231744661,SLIDER A 2295WD,SM Energy,Martin,2024-04-06,17117.381750896264,True,WCD,0.9883532393757792,"excluded: test (1-well step-out, not development)",ok
+8.759471949245537,W,4231744984,JOHNSON RANCH WEST A 13-1 4301H,Diamondback,Martin,2025-10-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+8.757552707112845,W,4231744985,JOHNSON RANCH WEST B 13-1 2602H,Diamondback,Martin,2025-10-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+2.4348922825605945,NW,4231745385,CHAMONIX 247 G 12WD,Diamondback,Martin,2024-03-24,15091.104563191844,True,WCD,0.8713565133878198,island,ok
+2.36112059675074,NW,4231745386,CHAMONIX 247 K 16WD,Diamondback,Martin,2024-03-16,13583.260332882057,True,WCD,0.7842939736146022,island,ok
+2.2685203398082994,NW,4231745387,CHAMONIX 247 L 17WD,Diamondback,Martin,2024-03-16,15696.788111217642,True,WCD,0.9063285263650129,island,ok
+2.48477156848476,NW,4231745391,CHAMONIX 247 B 7WD,Diamondback,Martin,2024-03-24,14685.673329616946,True,WCD,0.8479470177722367,island,ok
+2.3370306748356544,NW,4231745777,SIMMS 30-18 A 22WD,Diamondback,Martin,2024-05-11,14218.744010732767,False,WCD,0.8209866384575357,"excluded: test (1-well step-out, not development)",ok
+3.7722409437158837,NW,4231746066,HR BANE 249J 103HR,Ovintiv,Martin,2024-10-05,21345.89541338008,True,WCD,1.2325065355328737,"excluded: test (1-well step-out, not development)",ok
+2.8699157343181283,NW,4231746310,LOUDER-WOODY 33I 9H,Exxon Mobil,Martin,2026-05-30,,False,WCD,,island,no12
+2.795169932355658,NW,4231746321,LOUDER-WOODY 33C 3H,Exxon Mobil,Martin,2026-06-03,,False,WCD,,island,no12
+5.498915548266367,NW,4231746515,EL DORADO 41-32 A 1WD,Diamondback,Martin,2025-10-27,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+5.651730091534605,NW,4231746516,EL DORADO 41-32 C 2WD,Diamondback,Martin,2025-10-27,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+3.1422138841712357,NW,4231747068,MCMORRIES-WOODY 33K 111H,Exxon Mobil,Martin,2026-05-14,,False,WCD,,island,no12
+3.054421693085975,NW,4231747069,MCMORRIES-WOODY 33L 112H,Exxon Mobil,Martin,2026-05-14,,False,WCD,,island,no12
+4.4436824275385804,NW,4231747221,DR ORSON Q 77H,Hibernia Resources IV,Martin,2026-07-27,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+4.212116451081733,NW,4231747222,DR ORSON R 79H,Hibernia Resources IV,Martin,2026-07-27,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+2.971901587990705,SW,4232943378,GBG CERBERUS 34/39 UNIT 0164WD,Chevron,Midland,2020-01-14,9993.697478991597,True,WCD,0.5770335335417596,"excluded: test (1-well step-out, not development)",rolled
+4.536916595437798,S,4232943973,ATKINS 47-02 UNIT 2 0286NH,Exxon Mobil,Midland,2020-10-21,5812.349019228911,True,WCD,0.3356035441130907,"excluded: test (1-well step-out, not development)",rolled
+5.460882666886237,W,4232945500,SOUTH CURTIS RANCH 1186CP,Occidental,Midland,2022-08-27,2210.138399803456,True,WCD,0.1276128252967293,"excluded: test (1-well step-out, not development)",rolled
+13.307790975177145,SW,4232945561,HOLZGRAF GERONIMO (SA) A 3481WD,Discovery Operating,Midland,2023-02-02,10612.743227775658,True,WCD,0.6127770765693313,"excluded: isolated test (tested, not developed)",rolled
+3.8596096608964383,W,4232945790,KNIGHT 110 MIPA UNIT H110UH,Permian Deep Rock,Midland,2024-09-19,11215.344938749196,True,WCD,0.6475711450642342,"excluded: test (1-well step-out, not development)",rolled
+2.722987055827647,W,4232946356,ST 4540WD,Diamondback,Midland,2024-02-23,8624.231950844853,True,WCD,0.49796094459944507,"excluded: test (2-well step-out, not development)",rolled
+2.8020496427351187,W,4232946358,BOMBARDIER A UNIT 409WD,Diamondback,Midland,2024-02-21,7097.420100115518,True,WCD,0.40980321927987895,"excluded: test (2-well step-out, not development)",rolled
+4.57056369131851,W,4232946644,FASKEN 1X 108HR,Ovintiv,Midland,2024-03-23,5715.759423862973,False,WCD,0.33002648560851405,island,rolled
+4.633370118730621,W,4232947973,FASKEN 1BB 308HL,Ovintiv,Midland,2026-03-01,,False,WCD,,island,no12
+4.64698823217825,W,4232947976,FASKEN 1B 304HC,Ovintiv,Midland,2026-04-01,,False,WCD,,island,no12
+2.4590378825875674,W,4232948052,HOFFERKAMP-IRVIN 20G 7H,Exxon Mobil,Midland,2026-03-05,,False,WCD,,"excluded: test (1-well step-out, not development)",no12
+15.695258743904821,SE,4238339037,SRH NORTH 1630HC,Apache,Reagan,2016-10-01,3321.55586548892,True,WCD,0.19178578518596767,"excluded: isolated test (tested, not developed)",rolled
+9.994038840688084,SE,4238339432,BODINE A 174-173 (ALLOC-B) 2RC,Crescent Energy,Reagan,2016-03-06,11682.487201365188,True,WCD,0.6745438196954856,"excluded: isolated test (tested, not developed)",rolled
+16.98104165174535,S,4238339946,"UNIVERSITY ""2-20"" 76H",Exxon Mobil,Reagan,2018-04-16,19590.84846619473,True,WCD,1.1311705741837388,"excluded: isolated test (tested, not developed)",ok
+16.982042441433983,S,4238339947,"UNIVERSITY ""2-20"" 77H",Exxon Mobil,Reagan,2018-04-14,11910.505460519957,True,WCD,0.6877095355948019,"excluded: isolated test (tested, not developed)",rolled
+16.976707838792823,S,4238339948,"UNIVERSITY ""2-20"" 78H",Exxon Mobil,Reagan,2018-04-18,16945.051727503414,True,WCD,0.9784029479503334,"excluded: isolated test (tested, not developed)",ok
+9.612123968693174,S,4238341099,TEICHMAN H 8H,SM Energy,Reagan,2022-07-07,14875.233819678264,False,WCD,0.8588921919312434,"excluded: isolated test (tested, not developed)",ok
+3.642194720506412,S,4238341279,AMERIGO 0980CP-R 1HR,Occidental,Reagan,2023-03-31,7284.69255062233,True,WCD,0.4206162826208631,"excluded: test (1-well step-out, not development)",rolled
+15.000837969571176,S,4238341283,UL DARBY H 8H,SM Energy,Reagan,2023-09-22,16293.796711509718,False,WCD,0.9407996500812891,"excluded: isolated test (tested, not developed)",ok
+9.536937342920336,S,4238341366,ALEXIS RAE B 2H,SM Energy,Reagan,2023-11-28,11778.179626280891,True,WCD,0.6800690758079869,"excluded: isolated test (tested, not developed)",rolled
+9.502390301692227,S,4238341370,ALEXIS RAE F 6H,SM Energy,Reagan,2023-11-29,9996.464001571554,True,WCD,0.5771932718471557,"excluded: isolated test (tested, not developed)",rolled
+8.571500935248867,S,4238341376,AINSLEY JEANNE D 4H,SM Energy,Reagan,2023-11-29,9280.077733937933,False,WCD,0.5358293121853377,"excluded: isolated test (tested, not developed)",rolled
+6.3831456736458225,S,4238341409,MERCHANT 1189CP,Occidental,Reagan,2023-10-21,4483.160734487859,True,WCD,0.25885655289199644,"excluded: test (1-well step-out, not development)",rolled
+24.390137136561087,SE,4238341431,BULLHEAD 1002UC,Discovery Natural Resources,Reagan,2024-04-01,7455.521155830754,True,WCD,0.4304798825447797,"excluded: isolated test (tested, not developed)",rolled
+16.98150275024588,S,4238341466,UNIVERSITY 09C 1211WD,Sequitur Energy,Reagan,2024-03-30,10485.49677170666,True,WCD,0.6054298987774768,"excluded: isolated test (tested, not developed)",rolled
+18.057748769422297,S,4238341525,UNIVERSITY 27-34 01WD,Sequitur Energy,Reagan,2024-06-29,8104.796193905106,True,WCD,0.46796885699573615,"excluded: isolated test (tested, not developed)",rolled
+18.03509049212302,S,4238341526,UNIVERSITY 27-34 05WD,Sequitur Energy,Reagan,2024-06-24,9976.156721226962,True,WCD,0.5760207346797563,"excluded: isolated test (tested, not developed)",rolled
+14.239495708669677,S,4238341554,UL HUTTON F 6H,SM Energy,Reagan,2024-06-11,15989.3661971831,False,WCD,0.9232219101337769,"excluded: isolated test (tested, not developed)",ok
+14.097726746611567,S,4238341556,UL HUTTON N 14H,SM Energy,Reagan,2024-06-13,12654.388450381164,False,WCD,0.7306611489574804,"excluded: isolated test (tested, not developed)",ok
+14.035297942614482,S,4238341559,UL HUTTON R 18H,SM Energy,Reagan,2024-06-14,15094.861138597533,False,WCD,0.8715734170898698,"excluded: isolated test (tested, not developed)",ok
+13.979585793233488,S,4238341563,UL HUTTON V 22H,SM Energy,Reagan,2024-06-15,14716.35892452219,False,WCD,0.8497187961649914,"excluded: isolated test (tested, not developed)",ok
+14.160406742007867,S,4238341569,UL HUTTON I 9H,SM Energy,Reagan,2024-06-10,17565.495867768594,False,WCD,1.0142272337439655,"excluded: isolated test (tested, not developed)",ok
+14.466046665398292,S,4238341585,EMMA JANE H 12H,SM Energy,Reagan,2024-06-22,19357.330333708287,True,WCD,1.117687297006499,"excluded: isolated test (tested, not developed)",ok
+14.374499261276313,S,4238341586,EMMA JANE K 13H,SM Energy,Reagan,2024-06-23,15452.380952380952,True,WCD,0.892216519594455,"excluded: isolated test (tested, not developed)",ok
+14.298759934689638,S,4238341587,EMMA JANE V 14H,SM Energy,Reagan,2024-06-21,15299.809385495144,True,WCD,0.8834070763885552,"excluded: isolated test (tested, not developed)",ok
+12.824366387748967,S,4238341626,HOLLY I 9H,SM Energy,Reagan,2025-02-01,8607.769423558897,True,WCD,0.49701040248919887,"excluded: isolated test (tested, not developed)",rolled
+12.033176474906627,S,4238341629,HOLLY M 13H,SM Energy,Reagan,2025-02-01,8178.074093536521,False,WCD,0.47219990415758206,"excluded: isolated test (tested, not developed)",rolled
+12.81683911283562,S,4238341630,HOLLY A 2H,SM Energy,Reagan,2025-01-15,9602.147039687705,True,WCD,0.5544255114331945,"excluded: isolated test (tested, not developed)",rolled
+12.553807945004028,S,4238341639,HOLLY Q 17H,SM Energy,Reagan,2025-02-08,10317.013560391044,True,WCD,0.5957017212963907,"excluded: isolated test (tested, not developed)",rolled
+12.980608295272006,S,4238341643,HOLLY U 21H,SM Energy,Reagan,2025-02-08,6564.256656804733,True,WCD,0.37901849858009273,"excluded: isolated test (tested, not developed)",rolled
+12.819561957425853,S,4238341651,HOLLY E 5H,SM Energy,Reagan,2025-01-10,7554.549074258412,True,WCD,0.4361977291986052,"excluded: isolated test (tested, not developed)",rolled
+13.056499541744135,S,4238341653,HOLLY Y 25H,SM Energy,Reagan,2025-02-08,9179.675856929956,True,WCD,0.530032133514888,"excluded: isolated test (tested, not developed)",rolled
+13.231103685258216,S,4238341657,HOLLY CC 29H,SM Energy,Reagan,2025-02-15,10260.30877467266,True,WCD,0.5924276014883225,"excluded: isolated test (tested, not developed)",rolled
+16.597956476926644,S,4238341695,UNIVERSITY 35-19A 1D,SM Energy,Reagan,2024-09-10,8149.47245017585,True,WCD,0.4705484525934134,"excluded: isolated test (tested, not developed)",rolled
+16.647914785822504,S,4238341697,UNIVERSITY 35-19 40 7D,SM Energy,Reagan,2024-09-28,5006.665378670788,True,WCD,0.28908357700328446,"excluded: isolated test (tested, not developed)",rolled
+16.624542701302197,S,4238341701,UNIVERSITY 35-19B 5D,SM Energy,Reagan,2024-09-07,7078.818697437903,True,WCD,0.4087291790521793,"excluded: isolated test (tested, not developed)",rolled
+14.802313150240165,S,4238341731,STUDLEY AV I 23-5 6209H,Double Eagle Energy IV,Reagan,2024-06-18,6766.643122020131,True,WCD,0.3907042412603936,"excluded: isolated test (tested, not developed)",rolled
+16.79788830161992,S,4238341746,UNIVERSITY 2-58 2503WD,Sequitur Energy,Reagan,2025-02-19,8488.239830345094,True,WCD,0.49010879438269356,"excluded: isolated test (tested, not developed)",rolled
+16.756268559032794,S,4238341747,UNIVERSITY 2-58 2504WD,Sequitur Energy,Reagan,2025-02-19,8103.57833655706,True,WCD,0.46789853822429345,"excluded: isolated test (tested, not developed)",rolled
+14.57945403531316,S,4238341765,UL TALLEY B 2H,SM Energy,Reagan,2025-03-02,10312.5,True,WCD,0.595441109475113,"excluded: isolated test (tested, not developed)",rolled
+14.735227240851435,S,4238341768,UL STATE LINDSEY DIXON C 3H,SM Energy,Reagan,2025-03-02,10290.77216066482,True,WCD,0.5941865495953325,"excluded: isolated test (tested, not developed)",rolled
+15.262480167955141,S,4238341771,UL STATE LINDSEY DIXON G 7H,SM Energy,Reagan,2025-03-04,12785.082747676262,True,WCD,0.7382074042189072,"excluded: isolated test (tested, not developed)",ok
+15.27870109563581,S,4238341774,UL LINDSEY DIXON C 3H,SM Energy,Reagan,2025-03-04,12376.106194690266,True,WCD,0.7145932027683094,"excluded: isolated test (tested, not developed)",ok
+13.828367534049747,S,4238341782,DIXON-TURNER A 1H,SM Energy,Reagan,2025-03-08,10143.011917659804,True,WCD,0.5856549109983658,"excluded: isolated test (tested, not developed)",rolled
+13.856458804886932,S,4238341785,DIXON-TURNER E 5H,SM Energy,Reagan,2025-03-08,9968.452679018528,True,WCD,0.5755759052552684,"excluded: isolated test (tested, not developed)",rolled
+13.889887268468202,S,4238341786,DIXON-TURNER G 7H,SM Energy,Reagan,2025-03-08,11564.94639740713,True,WCD,0.6677570437713757,"excluded: isolated test (tested, not developed)",rolled
+12.650485391091204,SE,4238341789,BODINE A2 09 9H,Hannathon Petroleum II,Reagan,2026-03-15,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+11.378825320316121,S,4238341800,CAMILLE M 13H,SM Energy,Reagan,2025-04-15,14821.852731591449,False,WCD,0.8558099815733863,"excluded: isolated test (tested, not developed)",ok
+11.310831484204224,S,4238341801,CAMILLE N 14H,SM Energy,Reagan,2025-04-15,11604.26160066748,False,WCD,0.6700270935409353,"excluded: isolated test (tested, not developed)",rolled
+11.23423780507277,S,4238341802,CAMILLE O 15H,SM Energy,Reagan,2025-04-15,13659.50466387906,False,WCD,0.7886963017639397,"excluded: isolated test (tested, not developed)",ok
+11.145292824444407,S,4238341803,CAMILLE P 16H,SM Energy,Reagan,2025-03-26,8161.325752681226,False,WCD,0.47123285924502506,"excluded: isolated test (tested, not developed)",rolled
+11.085722531953772,S,4238341804,CAMILLE Q 17H,SM Energy,Reagan,2025-03-26,11358.941418293936,False,WCD,0.6558623690251398,"excluded: isolated test (tested, not developed)",rolled
+23.179427408290103,SE,4238341860,NORTH CREEK B 317UC,Discovery Natural Resources,Reagan,2025-05-13,4749.307611498424,True,WCD,0.27422380542343955,"excluded: isolated test (tested, not developed)",rolled
+30.60031434582628,S,4238341868,TANGELO A 1-4 1H,RP Operating,Reagan,2025-01-28,3351.09003010125,True,WCD,0.19349108028843423,"excluded: isolated test (tested, not developed)",rolled
+12.814100388271758,S,4238341932,HARTGROVE 5H,SM Energy,Reagan,2025-06-04,15321.904960400168,True,WCD,0.8846828692259795,"excluded: isolated test (tested, not developed)",ok
+12.926217511337779,S,4238341933,HARTGROVE 6H,SM Energy,Reagan,2025-06-23,14843.862128955094,True,WCD,0.8570807985416372,"excluded: isolated test (tested, not developed)",ok
+12.954028890813158,S,4238341945,TURNER M 13H,SM Energy,Reagan,2025-09-15,7442.066877666162,False,WCD,0.4297030359685362,"excluded: isolated test (tested, not developed)",rolled
+12.989970748184982,S,4238341946,TURNER N 14H,SM Energy,Reagan,2025-09-15,7402.987138708339,False,WCD,0.4274465818475138,"excluded: isolated test (tested, not developed)",rolled
+13.021328473627063,S,4238341947,TURNER O 15H,SM Energy,Reagan,2025-09-15,7326.961288112368,False,WCD,0.42305686870058967,"excluded: isolated test (tested, not developed)",rolled
+13.072052942363161,S,4238341948,TURNER P 16H,SM Energy,Reagan,2025-09-15,6441.269841269842,False,WCD,0.3719172713419927,"excluded: isolated test (tested, not developed)",rolled
+13.104844374735542,S,4238341949,TURNER Q 17H,SM Energy,Reagan,2025-09-15,7254.952032576437,False,WCD,0.41889907272397964,"excluded: isolated test (tested, not developed)",rolled
+24.227813322135034,SE,4238342057,BULLHEAD 0758UC,Discovery Natural Resources,Reagan,2025-12-20,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+7.583202361382621,S,4238342070,HELLCAT WEST A 1-12 6201H,Double Eagle Energy IV,Reagan,2026-01-12,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+7.621574377896483,S,4238342073,HELLCAT WEST E 1-12 6205H,Double Eagle Energy IV,Reagan,2026-01-10,,False,WCD,,"excluded: test (2-well step-out, not development)",no12
+12.771645527652042,S,4238342145,MARY ROSE D 11H,SM Energy,Reagan,2025-10-10,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+11.57550893308796,S,4238342175,SHERIFF JUSTICE A 1HD,SM Energy,Reagan,2026-03-15,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+11.618979144234727,S,4238342178,SHERIFF JUSTICE C 1HD,SM Energy,Reagan,2026-02-21,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+23.25734907484734,SE,4238342209,NORTH CREEK B 317UD,Discovery Natural Resources,Reagan,2025-12-05,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+27.63055914501732,SE,4238342237,CHILI 0777DC,Discovery Natural Resources,Reagan,2026-06-01,,False,WCD,,"excluded: isolated test (tested, not developed)",no12
+7.699032427334485,SW,4246141367,DAVIDSON 48BB 9HR,Ovintiv,Upton,2020-09-12,6791.487326637972,True,WCD,0.39213873927364684,"excluded: test (1-well step-out, not development)",rolled
+16.4783699974563,SW,4246142321,BRITAIN DORCUS (SA) A 4280WD,SM Energy,Upton,2024-05-11,6724.084479751986,True,WCD,0.3882469161530095,"excluded: isolated test (tested, not developed)",rolled
+17.844843177248986,S,4246142344,SKELETOR A 5363HD,Diamondback,Upton,2023-04-18,8846.680080482898,False,WCD,0.5108050426467025,"excluded: isolated test (tested, not developed)",rolled
+14.910110963076157,S,4246142364,UL DARBY C 3H,SM Energy,Upton,2023-09-13,16218.30577313606,False,WCD,0.9364408226291167,"excluded: isolated test (tested, not developed)",ok
+5.565526775330571,S,4246142984,BROOK N-13WD 204H,Exxon Mobil,Upton,2025-07-04,17611.146700832796,True,WCD,1.0168631011561557,"excluded: test (1-well step-out, not development)",ok
+11.081337467197773,S,4246143025,NIGHT FLIGHT 4738 G 10HC,Apache,Upton,2025-07-21,9132.385422418552,True,WCD,0.5273015959349577,"excluded: isolated test (tested, not developed)",rolled

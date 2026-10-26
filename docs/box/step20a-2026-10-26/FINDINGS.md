@@ -1,0 +1,193 @@
+# BOX step 20a: Midland Wolfcamp bench QC + extents. AT GATE 20a (nothing stored)
+
+**Scope (plan §5 step 20a, D128 / D131 / D134 A–B / D117):** Midland WCA_1, WCB_1, WCB_2, WCC, WCD. One extent per bench, no
+pooling (D128). The Delaware class rule of record applied as written; cards only for a swap class clearly unlike its Delaware
+analogue (D134 B). The Delaware D23 r / c (2,640 / 3,960 ft) and D27 constants, no step-2 repeat (D134 A). Read-only: no
+`box.bench_scope` row and no `box.extent` record is written; storing is a separate go.
+
+**Built:** QC pages at 7ffd598, extents at 5e30702 (a title-wrap fix only), branch `claude/box-step20a-midland-wolfcamp`.
+Producing horizontals pulled 2026-10-26 (Midland as-of last reported month 2026-09-01; Delaware analogue 2026-08-01).
+
+Pages (serve `python -m http.server 8766 --directory docs/box`):
+- `index.html`: family page (well sets, flag ledger, sensitivity, D128 context, §4b analogue test, §4c allocation screen)
+- `qc_<bench>.html`: per-bench QC pages
+- `cards.html`: **50 cards for you** (`cards_sample.csv` column `verdict`)
+- `extents/index.html`, `extents/extent_<bench>.html`: interactive maps
+- `extents/visual_<bench>.png`: the maps for your pen loops
+- `extents/geology/`: NAD83 UTM 14N US-ft shapefiles. Context only (D28). No structure layers: no Midland grids exist.
+
+## 0. Your question: shouldn't the tags be QC'd before the extent work?
+
+They were, in this order: bench QC first, extents built on its output. Three things are still open, and they matter to
+different degrees.
+
+1. **Done: the tag QC of record.** The consensus detector, the sql/23 second vote, the GOR veto and the class rule, all as
+   written (D134 B). It moves 60 wells into WCA_1 and 2 out. Applying *every* flag would move the bench cohort medians of
+   12-mo oil per 1,000 ft by ≤ 0.5 % on WCA_1 / WCB_1 / WCB_2 / WCD, and **−3.2 % on WCC**.
+2. **Open: the 50 cards (§1b).** By the plan's design (§5 step 20), the cards are judged at this same gate, and the extent
+   regenerates from the ratified set before anything is stored (about 9 min). Measured exposure: if you accept a class,
+   these modern laterals land outside the target bench's extent:
+
+   | Class | Modern laterals flagged | Already inside the target extent | Outside it |
+   |---|---:|---:|---:|
+   | WCA → WCB_1 | 270 | 261 | 9 |
+   | WCB_1 → WCA | 76 | 72 | 4 |
+   | WCB_2 → WCB_1 | 124 | 124 | 0 |
+   | WCC → WCB_2 | 28 | 25 | 3 |
+   | WCB_2 → WCC | 12 | 6 | 6 |
+
+   So the WCA_1 / WCB_1 extents cannot move materially. WCC and WCB_2 can, and those two need your loops anyway (§2).
+3. **Missing: an independent tag check.** The Delaware has the tops-vs-tag QC against Holden's grids. The Midland has no
+   structure grids and no tops QC (plan Phase 3, difference 8), so its tags rest on Novi + sql/23 + this detector.
+
+**Recommendation:** judge the cards first, mainly the WCC / WCB_2 classes. Draw loops on WCA_1 / WCB_1 now; they are
+insensitive to the outcome. Draw WCC / WCB_2 loops after I regenerate those two from your verdicts.
+
+## 1. Bench QC (Delaware class rule as written)
+
+| Bench | Tagged live | Final set | First production ≥ 2016 | D9 cohort | Moved in / out by the rule | sql/23 disagrees | Consensus flag rate |
+|---|---:|---:|---:|---:|---|---:|---:|
+| WCA_1 | 7,721 | 7,779 | 6,998 | 5,536 | +52 WCB_1, +5 WCB_2, +3 WCD; −2 to WCB_2 | 9.3 % | 5.1 % |
+| WCB_1 | 6,164 | 6,112 | 4,511 | 3,515 | −52 to WCA_1 | 11.9 % | 4.4 % |
+| WCB_2 | 2,385 | 2,382 | 1,876 | 1,477 | +2, −5 | 13.0 % | 7.3 % |
+| WCC | 662 | 662 | 480 | 390 | — | **16.2 %** | 6.3 % |
+| WCD | 942 | 939 | 802 | 546 | −3 to WCA_1 | 2.7 % | 0.7 % |
+
+How these sets were built:
+- No frozen Midland pools exist, so every well is new to BOX (nothing is "kept on gate-1 judgment").
+- No exclusions apply.
+- Planned surveys are ~0 % (no NM overprint).
+- Permit-round TVDs are 1.1–2.7 %.
+- No api10 sits in two sets.
+
+**D128 context** (5-mi block + first-production-year fixed effects, D9 cohort, ratio of the second bench to the first):
+
+| Pair | Oil per 1,000 ft | GOR |
+|---|---|---|
+| WCB_1 / WCA_1 | 0.970 | 1.284 |
+| WCB_2 / WCB_1 | 0.937 [0.894–0.971] | 0.957 |
+| WCC / WCB_2 | 0.863 | 1.144 |
+| WCD / WCC | 1.124 [0.92–1.39] | 1.104 |
+
+These agree with the gate-18 pack (WCB_2 / WCB_1 0.927); D128 stands.
+
+**Defect found and fixed (affects a recorded step-15 number).** `family_qc.pooling_evidence` compared bench b against *every
+other family member*, not just bench a. Two-bench families are unaffected, but the Delaware AVA family (3 benches, step 15)
+was. Recomputed on today's data:
+
+| AVA_1 / AVA_0 | Recorded | Corrected |
+|---|---|---|
+| Oil per 1,000 ft | 0.990 | 0.986 |
+| GOR | 1.198 | 1.118 (CI now spans 1) |
+| Shape | 0.930 | 0.885 |
+
+On AVA_2 / AVA_1, oil moves 1.000 → 1.003 and GOR 0.820 → 0.757. No AVA decision rests on these numbers (AVA is
+separate and provisional, D105). The committed step-15 page is left as the record and is not rewritten. Before the fix,
+this run had printed WCB_2 / WCB_1 = 1.01; that is how the defect surfaced.
+
+### 1b. Swap classes vs their Delaware analogue (D134 B) → `swap_classes_vs_delaware.csv`, `cards.html`
+
+The test was stated before any card was drawn. A class is "unlike" when it has ≥ 20 Midland flags and ≥ 10 Delaware flags,
+and any of these holds:
+- the flag rate is ≥ 2× or ≤ ½× the Delaware rate;
+- sql/23 concurrence or the GOR own-vote share differs by ≥ 25 points;
+- the median own-band TVD offset is ≥ 1.5× or ≤ ⅔× the Delaware's.
+
+**These thresholds are mine — confirm or replace them.**
+
+| Class (rule standing) | Midland flags (per 1,000 tagged) | Delaware flags (per 1,000) | sql/23 concurs, Mid / Del | Verdict |
+|---|---|---|---|---|
+| WCA → WCB_1 (rejected 0.40, tag kept) | 333 (43.1) | 132 (10.8) | 70 % / 41 % | **unlike**: rate 4.0×, concurrence +29 pts, TVD 1.63× |
+| WCB_1 → WCB_2 (uncalibrated) | 168 (27.3) | 34 (17.6) | 53 % / 65 % | alike: rule as written, tag kept |
+| WCB_2 → WCB_1 (uncalibrated) | 146 (61.2) | 42 (34.7) | 69 % / 60 % | **unlike**: TVD 0.66×, *borderline* (cut is 0.667) |
+| WCB_1 → WCA (**accepted 0.70**, 52 applied) | 90 (14.6) | 159 (82.4) | 67 % / 65 % | **unlike**: rate 0.18× |
+| WCC → WCB_2 (uncalibrated) | 34 (51.4) | 35 (30.8) | 79 % / 46 % | **unlike**: concurrence +34 pts |
+| WCB_2 → WCC (uncalibrated) | 21 (8.8) | 28 (23.1) | 48 % / 46 % | **unlike**: rate 0.38×, TVD 0.63× |
+| WCA ↔ DEAN, LSSH → WCA | 51 / 45 / 20 | — | — | no analogue: tag kept |
+
+Five classes are carded, 10 cards each = **50 cards**. Two of them carry the most weight:
+- **WCA → WCB_1** (217 cohort wells): the Delaware rejected this class, but in the Midland it flags 4× as often and sql/23
+  agrees far more.
+- **WCB_1 → WCA** is the one *accepted* class being applied (52 wells).
+
+## 2. Extents (D27 one-body envelopes; Delaware r / c and D27 constants per D134 A)
+
+| Bench | Extent, sq mi | ≥ 2016 laterals inside | Bodies ≥ 50 laterals | Live fronts | Isolated tests outside | Undrilled Novi sticks inside (PUD + RES, D117) / basin total |
+|---|---:|---:|---:|---|---:|---|
+| WCA_1 | 5,613 | 6,939 of 6,998 (99 %) | 1 | none | 63 | 5,432 / 12,281 (44 %) |
+| WCB_1 | 5,127 | 4,478 of 4,511 (99 %) | 1 | E | 37 | 5,401 / 9,522 (57 %) |
+| WCB_2 | 2,675 | 1,593 of 1,876 (85 %) | 5 | N, W, NW | 306 | 995 / 2,096 (47 %) |
+| WCC | 746 | **233 of 480 (49 %)** | 2 | SE, SW, W, NW | 256 | 853 / 8,542 (**10 %**) |
+| WCD | 1,627 (2 parts) | 672 of 802 (84 %) | 2 | NW | 135 | 1,747 / 8,452 (21 %) |
+
+Basin totals are from the live warehouse (status remaining / conflict / not yet reconciled, all categories). The
+per-category split is in `extents/pud_counts_<bench>.csv`.
+
+- **WCA_1 and WCB_1: the Delaware metric holds.** One body each (6,910 / 4,432 laterals), no visible failure, so D134 A
+  stands. WCA_1 leaves a large E embayment: an undeveloped bite wider than the 8-mi bridge, open by design.
+- **WCB_2, WCC and WCD fail the one-body construction visibly**, the step-15 multi-trend pattern (BS2_C / WCB_2 Delaware):
+  - WCB_2 drops bodies 2 / 4 / 5 (82 / 57 / 51 laterals; N, SE).
+  - WCC's D27 body holds only 105 laterals. The SE body (71) and the scattered NW development are out.
+  - WCD's south body (57) is out.
+
+  Per the step-15 convention, your **red closed loops are the extent** for these (`visual_<bench>.png`, PowerPoint pen,
+  read back by `scripts.box_family_extent_edits`). Re-tuning r / c would be a new decision (D134 A); I don't recommend it.
+- **Rule 11 shows up as expected.** Only 10 % of Novi's undrilled WCC sticks and 21 % of WCD's sit inside any developed
+  envelope. Even WCA_1, the most developed bench, holds only 44 % of its undrilled sticks inside.
+
+## 3. Allocation-well screen (plan Phase 3, difference 6) → §4c, `alloc_twin_pairs.csv`
+
+**Twin laterals.** The screen looks for coinciding sticks: ≥ 80 % overlap within 150 ft, and |ΔTVD| ≤ 150 ft. Pairs touching
+the family:
+
+| Pair class | Count | What it is |
+|---|---:|---|
+| Stacked pair | 22 | Two benches down one surface path |
+| Re-drill | 10 | One side never reached 12 months |
+| Same-bench twin | 13 | Both producing, same bench |
+
+**None of the 13 twins shows the El Campeon split** (same GOR, one side under half the other's oil). By name they are
+stacked pairs that Novi tagged the same bench: WA/WB, 4209H/4309H, HL/HU.
+
+Detector check on the Delaware: it puts 22 of the 46 recorded exclusions in a coinciding pair (10 of them with the split
+signature). It works as a review list, not as a filter.
+
+**Production sharing.** Novi's `has_production_sharing` covers 43 % of the family's D9 cohort. Within block, sharing wells
+read 1.033× [1.003–1.064] oil per 1,000 ft (Delaware TX: 0.993×) and 1.025× GOR. That is a small level difference, not a
+defect.
+
+**Proposed exclusions: none.**
+
+## 4. Gate 20a: your calls
+
+1. **Cards:** verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
+   WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
+2. **Pen loops:** loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
+   loops.
+3. **Conflict to resolve (D128 vs D134 B).** D128 sent the WCB_1 ↔ WCB_2 and WCB_2 ↔ WCC swap classes to 20a's cards. D134 B
+   cards only "unlike" classes. I followed D134 B (the later decision), so **WCB_1 → WCB_2 (168 flags, alike) is not
+   carded**. Say if you want it carded per D128.
+4. **Spraberry → Wolfcamp flags (DEAN / LSSH → WCA, 65).** The rule's "never Bone Spring → Wolfcamp" names Bone Spring and
+   Avalon only. These classes therefore fall to "uncalibrated, tag kept": the same membership, but the well stays a depth
+   witness. Should the prefix list gain the Spraberry benches at 20b?
+5. **Storage, on your go after 1–2:** five `box.bench_scope` rows (basin `midland`, `in_scope` true, `validation`
+   provisional until step 21, `member_benches` = {bench}) and five `box.extent` records.
+
+   Naming: I recommend the row be `WCA_1`, not the Delaware's pooled `WCA` (D128: one bench each; the Midland has no WCA_2 /
+   WCXY tags). Note that `box/production.py` resolves sticks through `member_benches`, so either name works there.
+6. **Not this step, but flagged:** `box/production._UNIVERSE_SQL` still filters `il.category = 'PUD'`, while D117 says any
+   category. AUDIT step 3 ("BOX universe drops category = 'PUD'") is not on main at 414dddd. This matters before the first
+   Midland record (step 23), and it already applies to the Delaware record.
+
+## 5. How to check
+
+```
+python -m pytest -q tests/test_box_step20a.py tests/test_box_family_qc.py tests/test_box_basin.py
+python -m scripts.box_family_qc --family MID_WC --out <dir> --analogue --cards --alloc     # ~8 min, read-only
+python -m scripts.box_family_extents --wells <dir> --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland --visual-bodies 50   # ~9 min
+```
+
+- **Full suite:** 749 passed, 46 skipped.
+- **Ruff:** clean on every touched file. mypy is not installed in this venv.
+- **Delaware unchanged.** WCC rebuilt through the modified extent code = its step-15 build within 6e-6 sq mi. Delaware
+  two-bench family membership code paths are identity-mapped (test). The AVA pooling contrast changes, by design (§1).
