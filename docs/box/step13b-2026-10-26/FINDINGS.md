@@ -1,4 +1,4 @@
-# Step 13b — refresh tooling (2026-10-26). Tooling done; the container rehearsal waits on two calls from Michael.
+# Step 13b — refresh tooling (2026-10-26). Tooling done; pool CONFIRMED; the container rehearsal waits on a build window.
 
 This implements the D126 contract (`docs/box/step13a-2026-10-26/CONTRACT.md`). Nothing has been written to the database.
 
@@ -79,6 +79,6 @@ chain in the `scripts.box_rehearsal` container (base → water → proximity mea
 
 ## 4. Your calls before the rehearsal
 
-1. **Confirm the 134 added pool wells** (D84 gate). The pool directory is committed as proposed; the build refuses an
+1. **Confirm the 134 added pool wells** (D84 gate). **CONFIRMED by Michael 2026-10-26** ("Confirmed the 134 added pool wells in docs/box/pool-2026-10-26"). The pool directory is committed as proposed; the build refuses an
    uncommitted pool.
 2. **A window for the ~8 h build** (laptop up and plugged in). The build resumes per group if it is interrupted.
