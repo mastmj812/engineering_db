@@ -170,7 +170,7 @@ defect.
 4. **Spraberry → Wolfcamp flags (DEAN / LSSH → WCA, 65).** The rule's "never Bone Spring → Wolfcamp" names Bone Spring and
    Avalon only. These classes therefore fall to "uncalibrated, tag kept": the same membership, but the well stays a depth
    witness. Should the prefix list gain the Spraberry benches at 20b?
-5. **Storage, on your go after 1–2:** five `box.bench_scope` rows (basin `midland`, `in_scope` true, `validation`
+5. **Storage, on your go after 1–2** (and after D136 is applied in the same regeneration pass): five `box.bench_scope` rows (basin `midland`, `in_scope` true, `validation`
    provisional until step 21, `member_benches` = {bench}) and five `box.extent` records.
 
    Naming: I recommend the row be `WCA_1`, not the Delaware's pooled `WCA` (D128: one bench each; the Midland has no WCA_2 /
@@ -228,7 +228,9 @@ line, so the extents don't plan an extra WCB where only one is developed?
   - `wcb_split/extent_WCB_2_v1_clipped.geojson` and `wcb_split/geology/BOX_WCB_2_extent_v1_clipped.shp`: the clipped extent;
   - `wcb_split/visual_WCB_2_clipped.png` (+ frame): **draw your WCB_2 loops on this one** instead of the unclipped map.
 
-**Decisions this needs (new D-number at the gate):**
+**DECIDED 2026-10-26 = D136 (Michael: "Adopt the data-derived line; WCB_2 extent = D27 envelope clipped at it; count north WCB_2-tagged producers at WCB_1 depth as WCB_1 for BOX"):** (a) the data-derived line; (b) WCB_2 extent clipped at it, WCB_1 unchanged; (c) of the 430 WCB_2-tagged wells north of the line, 266 land at WCB_1 depth and count as WCB_1 (210 D9 cohort), 45 at WCB_2 depth keep WCB_2, 119 have no WCA_1 reference and keep their tag. Applied in the regeneration pass with the card verdicts (one rebuild), before storage.
+
+**The calls as they were put (answered by D136):**
 
 - **(a) The line.** Accept the data-derived polyline, or pen your own on the map. Your local knowledge of where operators
   stopped the second landing beats a 0.05° bin.
