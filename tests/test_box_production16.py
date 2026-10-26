@@ -152,3 +152,13 @@ def test_run_notes_reads_the_r2_haircut_not_the_spec_name():
     assert "D102" not in n and "D62 haircut" not in n
     legacy = bpr.run_notes({"by_bench": {"WCA": {"spec": "box_v2_wf"}, "BS2_S": {"spec": "box_v2_wf"}, "WCXY_WCA1": {"spec": "box_v2"}}})
     assert "WCA: box_v2_wf x D62 haircut" in legacy and "BS2_S: box_v2_wf on its own D102 haircut" in legacy and "(D97)" in legacy
+
+
+def test_run_notes_stamp_the_pool_sets_and_the_evidence_pack():
+    run = {"by_bench": {"WCA": {"spec": "box_v2s_r2_wf", "haircut": {"method": "none"}, "wells_dir": r"docs\box\pool-2026-10-26",
+                                "selection": {"evidence_sha256": "90da3c56cb9dc31cf5"}},
+                        "WCB_1": {"spec": "box_v2s_r2", "haircut": {"method": "none"}, "wells_dir": "docs/box/pool-2026-10-26",
+                                  "selection": {"evidence_sha256": "90da3c56cb9dc31cf5"}}}}
+    n = bpr.run_notes(run)
+    assert n.endswith("; analog pools docs/box/pool-2026-10-26 (D84 / D126); evidence pack 90da3c56cb9d (D120 / D126)")
+    assert bpr.provenance_clause({"by_bench": {"WCA": {"spec": "box_v2_wf"}}}) == ""

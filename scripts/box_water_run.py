@@ -49,9 +49,10 @@ def cmd_build(a: argparse.Namespace) -> int:
     with open(a.run_pkl, "rb") as fh:
         A = pickle.load(fh)
     run = A["run"]
-    asof = run["data_through"]
-    if asof != w.LAST:
-        raise SystemExit(f"run data-through {asof} != the water spec's {w.LAST}")
+    asof = run["data_through"]  # D126: water follows the run's data-through (no hand-bumped pin)
+    if asof < w.LAST:
+        raise SystemExit(f"run data-through {asof} is older than the water spec's scored data-through {w.LAST}")
+    run_wells = {g: Path(v["wells_dir"]) for g, v in (run.get("by_bench") or {}).items() if v.get("wells_dir")}
     cov = dict(zip(A["universe"]["stick_id"].astype(int), A["universe"]["coverage"], strict=True))
     out: dict[int, dict[str, Any]] = {}
     groups = tuple(a.groups.split(",")) if a.groups else w.GROUPS
@@ -61,7 +62,7 @@ def cmd_build(a: argparse.Namespace) -> int:
         for g in groups:
             t1 = time.time()
             pairs = [(loc, r) for loc, r in zip(A["locs"], A["results"], strict=True) if loc["prod_bench"] == g and "oil" in r.get("streams", {})]
-            wells = bw.group_frame(conn, g)
+            wells = bw.group_frame(conn, g, run_wells.get(g))  # the oil run's set for the group (D126)
             cls = bw.pull_cls(conn, list(wells["api10"]))
             labels = w.labels_asof(wells, cls, asof, w.vdr_months_asof(vdr, asof))
             pm, pa, pf = bw.pool_asof(wells, labels, asof, None)
@@ -96,7 +97,8 @@ def cmd_build(a: argparse.Namespace) -> int:
         conn.close()
     a.out.mkdir(parents=True, exist_ok=True)
     meta = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": _git_sha(), "run_built_from": run["code_sha"],
-            "data_through": str(asof), "groups": list(groups), "n": len(out)}
+            "data_through": str(asof), "groups": list(groups), "n": len(out),
+            "wells_dirs": {g: str(run_wells.get(g) or w.GROUP_WELLS[g]) for g in groups}}
     with open(a.out / "water.pkl", "wb") as fh:
         pickle.dump({"meta": meta, "water": out}, fh)
     print(f"wrote {a.out / 'water.pkl'}: {len(out)} locations ({time.time() - t0:.0f} s)", flush=True)
