@@ -1,0 +1,181 @@
+{
+ "built_at": "2026-10-26T17:15:04-05:00",
+ "git_sha": "d05e3eb+dirty",
+ "asof": "2026-09-01",
+ "n_wcb_modern": 6387,
+ "n_with_wca1_ref": 4569,
+ "cut": {
+  "wcb1_median_ft": 262.5,
+  "wcb2_median_ft": 521.75,
+  "cut_ft": 392.125
+ },
+ "line_lonlat": [
+  [
+   -103.0,
+   31.7
+  ],
+  [
+   -102.225,
+   31.7
+  ],
+  [
+   -102.075,
+   31.7
+  ],
+  [
+   -101.925,
+   31.85
+  ],
+  [
+   -101.775,
+   31.9
+  ],
+  [
+   -101.625,
+   31.7
+  ],
+  [
+   -101.475,
+   31.55
+  ],
+  [
+   -101.325,
+   31.55
+  ],
+  [
+   -100.5,
+   31.55
+  ]
+ ],
+ "sides": [
+  {
+   "north": "south of line",
+   "n": 2312,
+   "deep": 1144,
+   "deep_share": 0.49480968858131485,
+   "tagged_wcb2": 1060,
+   "median_below_wca1_ft": 391.0
+  },
+  {
+   "north": "north of line",
+   "n": 2257,
+   "deep": 79,
+   "deep_share": 0.035002215330084185,
+   "tagged_wcb2": 279,
+   "median_below_wca1_ft": 257.0
+  }
+ ],
+ "areas": [
+  {
+   "extent": "WCB_1",
+   "sq_mi": 5127.422354154775,
+   "north_of_line_sq_mi": 2501.3724673647093
+  },
+  {
+   "extent": "WCB_2",
+   "sq_mi": 2674.8693215063217,
+   "north_of_line_sq_mi": 633.894912930714
+  },
+  {
+   "extent": "WCB_2 clipped at the line",
+   "sq_mi": 2040.9744085756035,
+   "north_of_line_sq_mi": 0.0
+  }
+ ],
+ "sticks": [
+  {
+   "formation_blueox": "WCB_1",
+   "north": "south of line",
+   "undrilled": 3267,
+   "PUD": 2172,
+   "RES": 1095,
+   "in_own_extent_generated": 1813,
+   "in_own_extent_clipped": 1813
+  },
+  {
+   "formation_blueox": "WCB_1",
+   "north": "north of line",
+   "undrilled": 6255,
+   "PUD": 5576,
+   "RES": 679,
+   "in_own_extent_generated": 3588,
+   "in_own_extent_clipped": 3588
+  },
+  {
+   "formation_blueox": "WCB_2",
+   "north": "south of line",
+   "undrilled": 1224,
+   "PUD": 1175,
+   "RES": 49,
+   "in_own_extent_generated": 851,
+   "in_own_extent_clipped": 851
+  },
+  {
+   "formation_blueox": "WCB_2",
+   "north": "north of line",
+   "undrilled": 872,
+   "PUD": 835,
+   "RES": 37,
+   "in_own_extent_generated": 144,
+   "in_own_extent_clipped": 0
+  }
+ ],
+ "boundary": [
+  {
+   "lon": -102.225,
+   "n": 259,
+   "boundary_lat": 31.7,
+   "n_north": 182,
+   "deep_north": 4,
+   "deep_share_north": 0.02197802197802198
+  },
+  {
+   "lon": -102.075,
+   "n": 831,
+   "boundary_lat": 31.7,
+   "n_north": 677,
+   "deep_north": 31,
+   "deep_share_north": 0.04579025110782865
+  },
+  {
+   "lon": -101.925,
+   "n": 1283,
+   "boundary_lat": 31.85,
+   "n_north": 622,
+   "deep_north": 19,
+   "deep_share_north": 0.03054662379421222
+  },
+  {
+   "lon": -101.775,
+   "n": 1126,
+   "boundary_lat": 31.9,
+   "n_north": 401,
+   "deep_north": 11,
+   "deep_share_north": 0.02743142144638404
+  },
+  {
+   "lon": -101.625,
+   "n": 599,
+   "boundary_lat": 31.7,
+   "n_north": 234,
+   "deep_north": 6,
+   "deep_share_north": 0.02564102564102564
+  },
+  {
+   "lon": -101.475,
+   "n": 234,
+   "boundary_lat": 31.55,
+   "n_north": 70,
+   "deep_north": 3,
+   "deep_share_north": 0.04285714285714286
+  },
+  {
+   "lon": -101.325,
+   "n": 133,
+   "boundary_lat": 31.55,
+   "n_north": 45,
+   "deep_north": 0,
+   "deep_share_north": 0.0
+  }
+ ]
+}

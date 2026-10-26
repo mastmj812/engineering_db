@@ -179,6 +179,68 @@ defect.
    category. AUDIT step 3 ("BOX universe drops category = 'PUD'") is not on main at 414dddd. This matters before the first
    Midland record (step 23), and it already applies to the Delaware record.
 
+## 6. One vs two Wolfcamp B landings (Michael's question, 2026-10-26) → `wcb_split/`
+
+**The question:** is WCB_1 + WCB_2 developed in the south and a single WCB landing in the north — and if so, where is the
+line, so the extents don't plan an extra WCB where only one is developed?
+
+**Answer: yes. The PDP data shows it sharply.**
+
+**Method (tags ignored, because a single landing carries either tag).**
+- Landing depth = lateral TVD minus the local WCA_1 band median (1.5-mi consensus neighbourhood), so structure drops out.
+- A lateral sits at **WCB_2 depth** when it lands ≥ 392 ft below WCA_1. That cut is the midpoint of the southern tag medians
+  (WCB_1 262 ft, WCB_2 522 ft): measured from the data, not chosen.
+- 4,569 of the 6,387 modern WCB laterals have a WCA_1 reference to measure from.
+
+| Latitude °N | Laterals | Share at WCB_2 depth | Share tagged WCB_2 |
+|---|---:|---:|---:|
+| 31.25–31.65 | 1,601 | 48–54 % | 45–56 % |
+| 31.65–31.85 | 826 | 35–38 % | 24–34 % |
+| 31.85–31.95 | 370 | 10 % | 11 % |
+| 31.95–32.55 | 1,609 | **0–3 %** | 7–23 % |
+
+- **South of the line, landing depth is bimodal; north of it, unimodal at WCB_1 depth.** North, median 257 ft below WCA_1, and
+  only 79 of 2,257 laterals (3.5 %) land at WCB_2 depth. South, 49 %.
+- **The 279 WCB_2-tagged producers north of the line are the single landing carrying a WCB_2 tag.** They land at WCB_1
+  depth (median ~290 ft below WCA_1).
+- **The line is wavy, not straight E-W.** Per 0.15° longitude strip, the north edge of the last latitude bin with ≥ 20 % of
+  laterals at WCB_2 depth:
+
+  | Longitude | −102.2 | −102.1 | −101.9 | −101.8 | −101.6 | −101.5 | −101.3 |
+  |---|---|---|---|---|---|---|---|
+  | Boundary °N | 31.70 | 31.70 | 31.85 | 31.90 | 31.70 | 31.55 | 31.55 |
+
+  The east end (−101.5 / −101.3) is sparse: there is no WCB development between ~31.6° and 32.3° there. North of the line,
+  every strip holds 0–5 % WCB_2-depth laterals.
+- **What the generated extents do north of the line.** The WCB_2 extent reaches 634 sq mi (24 %) past it, all stacked under
+  WCB_1. That piece holds **144 undrilled Novi WCB_2 sticks** (PUD + RES). Novi has 872 undrilled WCB_2 sticks north of the
+  line in all; the generated extent already excludes the other 728.
+- **Proposal (not stored):** clip the WCB_2 extent at the line. Clipped it is 2,041 sq mi: 0 of Novi's northern WCB_2 sticks
+  inside, and the 851 southern ones unchanged.
+
+  The clip is a reservoir reason in D27's sense: there is no second WCB landing to develop there. The 872 northern sticks
+  would show as `not_covered_outside_extent`, never as zero.
+
+  The WCB_1 extent is unchanged: the single northern landing *is* WCB_1, and its 3,588 undrilled sticks inside stay.
+- Files:
+  - `wcb_split/index.html`: map, profile, histograms, tables;
+  - `wcb_split/wcb_line.geojson` and `wcb_split/geology/BOX_MID_WCB_split_line.shp`: the line;
+  - `wcb_split/extent_WCB_2_v1_clipped.geojson` and `wcb_split/geology/BOX_WCB_2_extent_v1_clipped.shp`: the clipped extent;
+  - `wcb_split/visual_WCB_2_clipped.png` (+ frame): **draw your WCB_2 loops on this one** instead of the unclipped map.
+
+**Decisions this needs (new D-number at the gate):**
+
+- **(a) The line.** Accept the data-derived polyline, or pen your own on the map. Your local knowledge of where operators
+  stopped the second landing beats a 0.05° bin.
+- **(b) The extent rule.** WCB_2 extent = the D27 envelope clipped at the line (recommended). WCB_1 stays as generated.
+- **(c) The 279 northern WCB_2-tagged producers.** Leave them as WCB_2 evidence (as the rule of record does now), or count
+  them as WCB_1 for BOX north of the line.
+
+  I recommend counting them as WCB_1 when they land at WCB_1 depth: otherwise they testify as WCB_2 analogs near the line
+  while producing from the WCB_1 landing. That is a BOX-only membership rule, a step-21 input.
+- **(d) Cards.** If you adopt (b) + (c), the WCB_2 → WCB_1 cards (§1b) mostly answer themselves north of the line; the
+  southern WCB_1 ↔ WCB_2 cards still matter.
+
 ## 5. How to check
 
 ```
@@ -189,5 +251,6 @@ python -m scripts.box_family_extents --wells <dir> --pool WCA_1 WCB_1 WCB_2 WCC 
 
 - **Full suite:** 749 passed, 46 skipped.
 - **Ruff:** clean on every touched file. mypy is not installed in this venv.
+- **WCB split (§6):** `python -m scripts.box_wcb_split --wells docs/box/step20a-2026-10-26` (~30 s, read-only).
 - **Delaware unchanged.** WCC rebuilt through the modified extent code = its step-15 build within 6e-6 sq mi. Delaware
   two-bench family membership code paths are identity-mapped (test). The AVA pooling contrast changes, by design (§1).
