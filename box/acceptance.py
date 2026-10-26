@@ -40,6 +40,7 @@ import pandas as pd
 
 from box import analog as an
 from box import backtest_report as br
+from box import basin as bsn
 from box import edge_gap_report as egr
 from box import exclusions
 from box import hindcast as hc
@@ -121,6 +122,16 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},
 }
+
+
+# step 19: every entry above is Delaware; a Midland group (step 21a) names "basin": "midland" in its entry
+for _spec in BENCH_SPECS.values():
+    _spec.setdefault("basin", bsn.DELAWARE)
+
+
+def spec_basin(group: str) -> str:
+    """The basin of a BENCH_SPECS group (step 19)."""
+    return str(BENCH_SPECS[group]["basin"])
 
 
 def bench_wells(wells_dir: Path, bench: str) -> tuple[pd.DataFrame, pd.DataFrame, set[str] | None]:
@@ -242,7 +253,8 @@ WF_LOG: list[dict[str, Any]] = []
 
 
 def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], cutoff: dt.date, workers: int | None,
-                              bench: str = an.BENCH, keep: dict[str, Any] | None = None, step16: bool = False) -> pd.DataFrame:
+                              bench: str = an.BENCH, keep: dict[str, Any] | None = None, step16: bool = False,
+                              basin: str = an.BASIN) -> pd.DataFrame:
     """D57 run: di_p50 (raw laterals) and box_v2 (D56 completed laterals, D55 strike edges, short-lateral Cui translation),
     each calibrated by its own F(k) on a seeded training sample with as-of, leave-self-out cohorts. `bench` = the deal-intake
     bench label; `keep`, when given, receives the uptime-free box_v2 months per location and its F(k) per stream (step 9a).
@@ -273,9 +285,9 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
     ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
     twins = s16.LINEAR_TWINS if step16 else ()
     pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench, extra_pools=extra, variants16=v16,
-                            linear_twins=twins)
+                            linear_twins=twins, basin=basin)
     pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers, bench=bench,
-                            extra_pools=extra, variants16=v16, linear_twins=twins)
+                            extra_pools=extra, variants16=v16, linear_twins=twins, basin=basin)
     mv, mt = an.monthly_arrays_v2(pv, K_MONTHS, variants), an.monthly_arrays_v2(pt, K_MONTHS, variants)
     if keep is not None:
         keep.update({"api10": view["api10"].to_numpy(), "months": {s: mv["box_v2"][s] for s in STREAMS}, "F": {}})
@@ -385,7 +397,7 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         last = actuals_through
     subj = wells[np.array([f >= dt.date(2016, 1, 1) for f in wells["first_production_date"]]) & (pd.to_numeric(wells["lateral_length_ft"], errors="coerce") > 0).to_numpy()]
     P = s3r.build_pairs(conn, subj.reset_index(drop=True))
-    ext = tar.pull_extent(conn, spec["extent"]) if fold == "analog" else None
+    ext = tar.pull_extent(conn, spec["extent"], spec["basin"]) if fold == "analog" else None
     cells, fold_meta, analog_prov, views, kept = [], [], [], {}, {}
     for c in cutoffs:
         if fold == "full":
@@ -399,7 +411,8 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         view = hs[hs["package_held_out"] == score_holdout].copy().reset_index(drop=True)  # tuning view excludes held-out packages entirely
         if mode == "v2":
             kept[str(c)] = {}
-            aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)], step16=step16)
+            aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)], step16=step16,
+                                              basin=spec["basin"])
             base_vs = NON_WF_V2 if fold == "full" else VARIANTS_ANALOG_BASE
             cells.append(score_fold(view, str(c), (*base_vs, *s16.SCORED) if step16 else base_vs))
             views[str(c)] = view

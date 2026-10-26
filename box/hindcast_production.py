@@ -23,11 +23,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from box import basin as bsn
 from box import hindcast as hc
 from box import tc_curve_report as rep
 
 K = 24
-NOVI_REPORT_NAME = "basin_research__Delaware_Basin__2025Q3"
+NOVI_REPORT_NAME = bsn.novi_report(bsn.DELAWARE, "2025Q3")  # basin_research__Delaware_Basin__2025Q3; pull_novi keys on its basin + report
 
 _NOVI_SQL = """
 WITH v AS (
@@ -79,7 +80,7 @@ def box_months(fr: pd.DataFrame, cb: dict[str, Any], rm: dict[int, dict[str, Any
 
 
 def pull_novi(conn: Any, api10s: list[str], report: str, basin: str) -> dict[str, dict[str, np.ndarray]]:
-    rows = rep._read(conn, _NOVI_SQL, {"r": report, "b": basin, "a": api10s, "rn": NOVI_REPORT_NAME, "dmax": 30 * K})
+    rows = rep._read(conn, _NOVI_SQL, {"r": report, "b": basin, "a": api10s, "rn": bsn.novi_report(basin, report), "dmax": 30 * K})
     d = pd.DataFrame(rows, columns=["api10", "mop", "oil", "gas"])
     if d.duplicated(["api10", "mop"]).any():
         raise RuntimeError("Novi forecast: more than one row per (well, month)")

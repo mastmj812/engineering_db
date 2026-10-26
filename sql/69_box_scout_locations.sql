@@ -17,7 +17,8 @@
 -- Novi supplies geometry + names only: no Novi tag, tier or NPV. Steven's screen_pass / rejection_step
 -- stay out (his screen includes Novi's Tier-4 cut, which conflicts with BOX D90 — pending with him).
 --
--- BOX: the record run (box.forecast_run.is_record). EUR = raw 50-yr technical integral incl. the bench
+-- BOX: the record runs (box.forecast_run.is_record — one PER BASIN since D130 / sql/70; each stick's row comes from its
+-- own basin's record, and the econ case is picked per record run). EUR = raw 50-yr technical integral incl. the bench
 -- haircut and the D113 proximity oil factor. box_tier keeps validated and PROVISIONAL apart (D105).
 -- ECON: Steven's box_econ.box_pud_econ for the record run, deck wti70_hh3 (WTI $70 / HH $3), its most
 -- recently built assumption set — display only (D13: nothing here computes economics; econ never flows
@@ -37,16 +38,16 @@ DROP VIEW IF EXISTS curated.box_scout_locations;
 
 CREATE VIEW curated.box_scout_locations AS
 WITH run AS (
-    SELECT run_id FROM box.forecast_run WHERE is_record
+    SELECT run_id FROM box.forecast_run WHERE is_record  -- one per basin (D130, sql/70)
 ),
 econ_case AS (
-    -- the default deck's most recently built assumption set on the record run (erebor pick_econ_case)
-    SELECT e.deck_id, e.assumption_set_id
-    FROM box_econ.box_pud_econ e JOIN run ON e.run_id = run.run_id
-    WHERE e.deck_id = 'wti70_hh3'
-    GROUP BY e.deck_id, e.assumption_set_id
-    ORDER BY max(e.built_at) DESC NULLS LAST, e.assumption_set_id DESC
-    LIMIT 1
+    -- per record run: the default deck's most recently built assumption set (erebor pick_econ_case)
+    SELECT DISTINCT ON (g.run_id) g.run_id, g.deck_id, g.assumption_set_id
+    FROM (SELECT e.run_id, e.deck_id, e.assumption_set_id, max(e.built_at) AS built_at
+          FROM box_econ.box_pud_econ e JOIN run ON e.run_id = run.run_id
+          WHERE e.deck_id = 'wti70_hh3'
+          GROUP BY e.run_id, e.deck_id, e.assumption_set_id) g
+    ORDER BY g.run_id, g.built_at DESC NULLS LAST, g.assumption_set_id DESC
 )
 SELECT
     el.stick_id,
@@ -80,7 +81,7 @@ JOIN box.pud_forecast bp
   ON bp.run_id = run.run_id AND bp.coverage IN ('covered', 'covered_provisional')
 JOIN curated.erebor_locations el
   ON el.stick_id = bp.stick_id AND el.category <> 'PDP'
-JOIN econ_case ON true
+JOIN econ_case ON econ_case.run_id = bp.run_id
 JOIN box_econ.box_pud_econ be
   ON be.run_id = bp.run_id AND be.location_id = bp.location_id
  AND be.deck_id = econ_case.deck_id AND be.assumption_set_id = econ_case.assumption_set_id
@@ -118,5 +119,5 @@ COMMENT ON COLUMN curated.box_scout_locations.irr_pct IS 'Steven''s IRR, %; blan
 COMMENT ON COLUMN curated.box_scout_locations.breakeven_wti_pv20 IS 'Steven''s breakeven WTI price at PV20, $/bbl (lower = better).';
 COMMENT ON COLUMN curated.box_scout_locations.capex_mm IS 'Steven''s capex, $MM.';
 COMMENT ON COLUMN curated.box_scout_locations.econ_deck IS 'Price deck of the econ columns (Steven''s default: WTI $70 / HH $3).';
-COMMENT ON COLUMN curated.box_scout_locations.box_run_id IS 'BOX record run the forecast comes from.';
+COMMENT ON COLUMN curated.box_scout_locations.box_run_id IS 'BOX record run the forecast comes from (its basin''s record: one record run per basin, D130).';
 COMMENT ON COLUMN curated.box_scout_locations.econ_pushed_at IS 'When Steven pushed these econ numbers.';

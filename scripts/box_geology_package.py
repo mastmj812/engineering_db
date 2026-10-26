@@ -73,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=Path("docs") / "box" / f"geology-package-{dt.datetime.now(tz=dt.UTC).astimezone():%Y-%m-%d}")
     ap.add_argument("--grid-dir", type=Path, default=pkg.GRID_DIR, help=f"structure grid folder (default {pkg.GRID_DIR.name}; September set: {pkg.ORIGINAL_GRID_DIR})")
+    ap.add_argument("--basin", default="delaware", help="the basin whose extents of record are packaged (step 19)")
     a = ap.parse_args(argv)
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     with get_connection() as conn, conn.cursor() as cur:
@@ -80,7 +81,8 @@ def main(argv: list[str] | None = None) -> int:
         cur.execute(
             """SELECT e.bench, e.extent_id, e.version, e.source, e.area_sqmi, extensions.ST_AsText(e.geom)
                FROM box.extent e JOIN box.bench_scope s USING (basin, bench)
-               WHERE e.is_record AND s.in_scope AND e.basin = 'delaware' ORDER BY e.bench"""
+               WHERE e.is_record AND s.in_scope AND e.basin = %s ORDER BY e.bench""",
+            (a.basin,),
         )
         rows = cur.fetchall()
         conn.rollback()
@@ -91,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         geo = gio.ft13_to_geology([g13])[0]
         note = "owner edit 2026-10-16" if src == "geology_edited" else "BOX D27 envelope"
         gio.write_layer(a.out / f"BOX_{bench}_extent_RECORD", "polygon", [geo], RECORD_FIELDS,
-                        [[bench, "delaware", eid, ver, src, float(area), built[:10], note]])
+                        [[bench, a.basin, eid, ver, src, float(area), built[:10], note]])
         back = gio.read_extent(a.out / f"BOX_{bench}_extent_RECORD.shp")
         rt = gio.geology_to_ft13([back])[0]
         err = rt.symmetric_difference(g13).area / eg.FT_PER_MI**2

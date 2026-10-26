@@ -34,7 +34,7 @@ BENCHES = (("bs2s", "tuning_BS2_S", "BS2_S — gate-1 set + D84 refresh, extent 
            ("wcxy_wca1", "tuning_WCXY_WCA1", "WCXY targets — PRE-REGISTERED pool WCXY + WCA_1 (Michael 2026-10-16, proposed D93; WCA_2 out, BS3_S deferred)"),
            ("wcxy_on_wca", "tuning_WCXY_on_WCA", "SENSITIVITY — WCXY targets on the whole WCA analog pool (contradicts D20 as written)"))
 
-_RUN_SQL = "SELECT run_id, haircut FROM box.forecast_run WHERE is_record"
+_RUN_SQL = "SELECT run_id, haircut FROM box.forecast_run WHERE is_record AND basin = 'delaware'"
 _WCXY_PUD_SQL = """
 SELECT f.location_id, f.coverage, f.inside_extent, extensions.ST_X(extensions.ST_Centroid(l.geom)), extensions.ST_Y(extensions.ST_Centroid(l.geom))
 FROM box.pud_forecast f JOIN box.location l USING (location_id)

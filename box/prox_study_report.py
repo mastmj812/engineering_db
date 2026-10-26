@@ -47,7 +47,7 @@ _UNIVERSE_SQL = """
 WITH bb AS (
     SELECT extensions.ST_Expand(extensions.ST_SetSRID(extensions.ST_Extent(w.wellstick_geom)::extensions.geometry, 4326), 0.05) AS g
     FROM curated.wells w JOIN curated.wells_enriched we ON we.api10 = w.api10
-    WHERE we.basin_blueox = 'delaware' AND w.wellstick_geom IS NOT NULL
+    WHERE we.basin_blueox = %(basin)s AND w.wellstick_geom IS NOT NULL
 )
 SELECT w.api10, COALESCE(we.formation_blueox, '(unmapped)') AS bench, we.basin_blueox, w.first_production_date, w.tvd_ft,
        extensions.ST_AsText(CASE
@@ -75,9 +75,10 @@ FROM curated.dev_scenario WHERE api10 = ANY(%(a)s)
 # ----------------------------------------------------------------------------
 
 
-def pull_universe(conn: Any) -> pd.DataFrame:
+def pull_universe(conn: Any, basin: str = "delaware") -> pd.DataFrame:
+    """Every producing horizontal inside the basin's bounding box (+0.05 deg): the parents a PUD / child can have, any bench."""
     cols = ["api10", "bench", "basin", "fp", "tvd_ft", "wkt"]
-    u = pd.DataFrame(_read(conn, _UNIVERSE_SQL), columns=cols).drop_duplicates("api10").reset_index(drop=True)
+    u = pd.DataFrame(_read(conn, _UNIVERSE_SQL, {"basin": basin}), columns=cols).drop_duplicates("api10").reset_index(drop=True)
     u["tvd_ft"] = pd.to_numeric(u["tvd_ft"], errors="coerce")
     u["geom"] = eg.to_ft([shapely.from_wkt(w) for w in u["wkt"]])
     u["lat_ft"] = [float(g.length) for g in u["geom"]]
@@ -85,8 +86,8 @@ def pull_universe(conn: Any) -> pd.DataFrame:
     return u.drop(columns="wkt")
 
 
-def children_of(u: pd.DataFrame) -> pd.DataFrame:
-    c = u[(u["basin"] == "delaware") & (u["fp"] >= FP_MIN) & u["tvd_ft"].notna() & (u["lat_ft"] >= MIN_LATERAL_FT)].copy()
+def children_of(u: pd.DataFrame, basin: str = "delaware") -> pd.DataFrame:
+    c = u[(u["basin"] == basin) & (u["fp"] >= FP_MIN) & u["tvd_ft"].notna() & (u["lat_ft"] >= MIN_LATERAL_FT)].copy()
     c["state"] = np.where(c["api10"].str.startswith("30"), "NM", np.where(c["api10"].str.startswith("42"), "TX", "?"))
     c["fp_year"] = [d.year for d in c["fp"]]
     return c.reset_index(drop=True)
@@ -126,10 +127,10 @@ def attach_parent_cum(conn: Any, links: pd.DataFrame, u: pd.DataFrame, kids: pd.
     return links
 
 
-def opportunity(u: pd.DataFrame, benches: tuple[str, ...] = MAIN_BENCHES) -> dict[tuple[str, str], set[str]]:
-    """Parents (Delaware, first production <= OPP_PARENT_FP_MAX, any vintage start) whose lateral lies within 2 mi of
+def opportunity(u: pd.DataFrame, benches: tuple[str, ...] = MAIN_BENCHES, basin: str = "delaware") -> dict[tuple[str, str], set[str]]:
+    """Parents (the basin's, first production <= OPP_PARENT_FP_MAX, any vintage start) whose lateral lies within 2 mi of
     a >= 2016 producer of the child bench — that bench is a live target around this parent."""
-    del_u = u[(u["basin"] == "delaware") & (u["lat_ft"] > 0)]
+    del_u = u[(u["basin"] == basin) & (u["lat_ft"] > 0)]
     targets = {b: del_u[(del_u["bench"] == b) & (del_u["fp"] >= FP_MIN)] for b in benches}
     trees = {b: shapely.STRtree(list(t["geom"])) for b, t in targets.items() if len(t)}
     out: dict[tuple[str, str], set[str]] = {}

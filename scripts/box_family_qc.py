@@ -23,7 +23,7 @@ import pandas as pd
 
 from box import exclusions
 from box import family_qc as fq
-from box.bench_qc import pull_delaware_producers, score_consensus
+from box.bench_qc import pull_producers, score_consensus
 from box.qc_rule import load_verdicts
 
 GATE1_CARDS = Path("docs") / "box" / "step1-2026-10-06" / "cards_sample.csv"
@@ -44,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--verdicts", type=Path, action="append", default=None)
     ap.add_argument("--cache", type=Path, default=None, help="pickle of the scored frame; read if present, else written")
     ap.add_argument("--asks", type=Path, default=None, help="JSON list of gate-ask strings (HTML) for the page")
+    ap.add_argument("--basin", default="delaware", help="the basin pulled and scored (step 19)")
     a = ap.parse_args(argv)
     out = a.out or Path("docs") / "box" / f"step15a-{dt.datetime.now(tz=dt.UTC).astimezone():%Y-%m-%d}"
     t0 = time.time()
@@ -53,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
         from etl.db import get_connection
 
         with get_connection() as conn:
-            scored = score_consensus(pull_delaware_producers(conn))
+            scored = score_consensus(pull_producers(conn, a.basin))
         if a.cache:
             scored.to_pickle(a.cache)
     verdicts: dict[str, str] = {}
@@ -66,7 +67,7 @@ def main(argv: list[str] | None = None) -> int:
         "verdicts": {"agree": sum(v == "AGREE" for v in verdicts.values()), "reject": sum(v == "REJECT" for v in verdicts.values())},
         "asks": json.loads(a.asks.read_text(encoding="utf-8")) if a.asks else [],
     }
-    s = fq.build(scored, a.family, out, a.pool_dir, verdicts, excluded, meta)
+    s = fq.build(scored, a.family, out, a.pool_dir, verdicts, excluded, meta, basin=a.basin)
     for b in s["benches"]:
         r = s["set"][b]
         print(f"{b}: tagged {r['tagged_live']:,} -> final {r['final']:,} (member {r['member']:,}, churn kept {r['old_churn_kept']}, "

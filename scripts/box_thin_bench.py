@@ -58,7 +58,7 @@ SELECT f.bench, f.location_id, f.inside_extent,
 FROM box.pud_forecast f
 JOIN box.forecast_run r USING (run_id)
 JOIN box.location l USING (location_id)
-WHERE r.is_record AND f.basin = 'delaware' AND f.bench = ANY(%(b)s)
+WHERE r.is_record AND r.basin = 'delaware' AND f.basin = 'delaware' AND f.bench = ANY(%(b)s)
 """
 
 

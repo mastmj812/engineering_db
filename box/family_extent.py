@@ -33,6 +33,7 @@ import pandas as pd
 import shapely
 from shapely.geometry import Polygon, shape
 
+from box import basin as bsn
 from box import edge_gap as eg
 from box import edge_gap_report as egr
 from box import extent as ex
@@ -160,7 +161,9 @@ def index_html(builds: dict[str, dict[str, Any]], ctx: dict[str, Any]) -> str:
 
 
 def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: int = 1, gate1_dir: Path | None = None, git_sha: str = "",
-        bodies_min: int | None = None) -> dict[str, Any]:
+        bodies_min: int | None = None, basin: str = "delaware") -> dict[str, Any]:
+    """`basin` (step 19): its D23 edge metric (er.edge_params - refused until calibrated), PUD pull and labels."""
+    edge = er.edge_params(basin)
     out.mkdir(parents=True, exist_ok=True)
     geo_dir = out / "geology"
     bp = record_params()
@@ -169,14 +172,14 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     df = egr.attach_geometry(df, egr.pull_laterals(conn, sorted(df["api10"].unique())))
     n_nogeom = df.groupby("pool")["geom"].apply(lambda s: int(s.isna().sum())).to_dict()
     sopa = er.load_sopa()
-    builds = {pool: er.build_pool(df[df.pool == pool], pool, bp, sopa, None) for pool in pools}
-    env_bt = pd.DataFrame([r for pool in pools for r in er.envelope_backtest(df[df.pool == pool], pool, bp, sopa, None)])
+    builds = {pool: er.build_pool(df[df.pool == pool], pool, bp, sopa, None, edge) for pool in pools}
+    env_bt = pd.DataFrame([r for pool in pools for r in er.envelope_backtest(df[df.pool == pool], pool, bp, sopa, None, edge)])
     rec = record_extents()
     # D1 PUD universe (read-only)
     pud_tabs: dict[str, pd.DataFrame] = {}
     for pool, b in builds.items():
         env = eg.to_lonlat([shapely.box(*b["extent"].bounds).buffer(eg.FT_PER_MI)])[0].bounds
-        pu = er.pull_puds(conn, [pool], env)
+        pu = er.pull_puds(conn, [pool], env, basin)
         pud_tabs[pool] = er.pud_counts(pu, {"in extent": b["extent"], "in drilled core": b["prep"].core, "in step-2 outline": Polygon(b["prep"].r["body"].exterior)})
     pud_summary = pd.concat([t[t.status == "D1 universe"].assign(pool=p) for p, t in pud_tabs.items()], ignore_index=True)
     # geology package
@@ -184,7 +187,7 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     for pool, b in builds.items():
         clip = gio.ft13_to_geology([shapely.box(*b["extent"].bounds).buffer(10 * eg.FT_PER_MI)])[0]
         cont = pkg.context_contours(pool, clip)
-        files += pkg.write_pool(geo_dir, pool, version, built, b, bp, cont)
+        files += pkg.write_pool(geo_dir, pool, version, built, b, bp, cont, basin)
         pkg.legend_png(geo_dir / f"BOX_{pool}_legend.png", pool, b, sopa, bp, version)
         b["stats"]["n_contours"] = {k: len(v) for k, v in cont.items()}
     rule_txt = (
@@ -200,21 +203,21 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
            "overlap": overlap_table(builds, rec), "overview_png": overview_png(builds, rec, sopa), "pud_summary": pud_summary, "regression": regression}
     for pool, b in builds.items():
         (out / f"extent_{pool}.html").write_text(pages.pool_page(pool, b, ctx), encoding="utf-8")
-        (out / f"extent_{pool}_v{version}.geojson").write_text(json.dumps(er._geojson(b, pool, version, bp, built)), encoding="utf-8")
+        (out / f"extent_{pool}_v{version}.geojson").write_text(json.dumps(er._geojson(b, pool, version, bp, built, basin, edge)), encoding="utf-8")
         b["edges"].drop(columns=["geom"]).to_csv(out / f"edges_{pool}.csv", index=False)
         b["prep"].stepouts.drop(columns=["ix"]).to_csv(out / f"stepouts_{pool}.csv", index=False)
         b["holes"].drop(columns=["geom"]).to_csv(out / f"holes_{pool}.csv", index=False)
         pud_tabs[pool].assign(pool=pool).to_csv(out / f"pud_counts_{pool}.csv", index=False)
     if bodies_min is not None:  # the owner's visual-check maps (+ their pixel frames, read back by run_edits)
         for pool, b in builds.items():
-            v = visual_check_png(pool, df[df.pool == pool], b["extent"], sopa, out / f"visual_{pool}.png", bodies_min=bodies_min)
+            v = visual_check_png(pool, df[df.pool == pool], b["extent"], sopa, out / f"visual_{pool}.png", bodies_min=bodies_min, edge=edge, basin=basin)
             b["stats"]["n_bodies_ge_min"] = v["n_bodies"]
             b["stats"]["evidence_inside"] = v["n_inside"]
     (out / "index.html").write_text(index_html(builds, ctx), encoding="utf-8")
     env_bt.to_csv(out / "backtest_envelope.csv", index=False)
     ctx["overlap"].to_csv(out / "overlap.csv", index=False)
     summary = {
-        "built_at": built, "git_sha": git_sha, "wells_dir": str(wells_dir), "version": version, "edge_params": asdict(er.EDGE), "buffer_params": asdict(bp),
+        "built_at": built, "git_sha": git_sha, "basin": basin, "wells_dir": str(wells_dir), "version": version, "edge_params": asdict(edge), "buffer_params": asdict(bp),
         "params_source": str(STEP3_DIR / "summary.json"), "laterals_without_geometry": n_nogeom,
         "pools": {p: b["stats"] for p, b in builds.items()}, "envelope_backtest": env_bt.to_dict(orient="records"),
         "overlap": ctx["overlap"].to_dict(orient="records"), "pud_d1": pud_summary.to_dict(orient="records"), "regression": regression,
@@ -230,7 +233,7 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
 
 
 def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any, path: Path, dpi: int = 110, label: str = "one-body D27 extent as is",
-                     bodies_min: int | None = None, grid_dir: Path = pkg.GRID_DIR) -> dict[str, Any]:
+                     bodies_min: int | None = None, grid_dir: Path = pkg.GRID_DIR, edge: eg.EdgeParams = er.EDGE, basin: str = "delaware") -> dict[str, Any]:
     """One static map in the geology frame (NAD83 UTM 14N US-ft): filled structure of the bench top (Holden HCA grid,
     D25 context), 250-ft contours, PDP laterals (>= 2016 coloured by 12-mo oil / kft, pre-2016 grey), the extent,
     the potash area and the 32 N / -103 state lines."""
@@ -277,8 +280,8 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     if bodies_min is not None and len(ev):
         # development bodies: step-2 outline components (D23 r / c) holding >= bodies_min modern laterals; #1 = the D27 body
         lines = list(ev["geom"])
-        o = eg.outline(lines, er.EDGE)
-        cp = eg.components(o, lines, er.EDGE)
+        o = eg.outline(lines, edge)
+        cp = eg.components(o, lines, edge)
         cp = cp[cp["n_laterals"] >= bodies_min].reset_index(drop=True)
         n_bodies = len(cp)
         for rank, r in cp.iterrows():
@@ -292,10 +295,11 @@ def visual_check_png(pool: str, wells: pd.DataFrame, extent_ft13: Any, sopa: Any
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(lo, hi))
     cb2 = fig.colorbar(sm, ax=ax, shrink=0.55, pad=0.06, location="left")
     cb2.set_label(">= 2016 laterals: 12-mo oil, bbl / 1,000 ft (p5-p95; black = < 12 mo)")
-    # state lines (32 N, -103 W) in the geology frame
+    # state lines (32 N, -103 W) in the geology frame - the Delaware's only (a basin with no state line draws none)
     from shapely.geometry import LineString
 
-    sl = gio.ft13_to_geology(eg.to_ft([LineString([(-105.0, 32.0), (-103.0, 32.0)]), LineString([(-103.0, 31.0), (-103.0, 33.5)])]))
+    line = bsn.get(basin).state_line_lat
+    sl = [] if line is None else gio.ft13_to_geology(eg.to_ft([LineString([(-105.0, line), (-103.0, line)]), LineString([(-103.0, 31.0), (-103.0, 33.5)])]))
     for g in sl:
         c = np.asarray(g.coords)
         ax.plot(c[:, 0], c[:, 1], color="#111827", lw=0.8, ls="--")
@@ -409,7 +413,8 @@ def apply_hand_edit(generated_ft13: Any, edit_line_geo: list[tuple[float, float]
     return edited, add.difference(generated_ft13)
 
 
-def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path, ext_dir: Path, version: int = 1, git_sha: str = "") -> dict[str, Any]:
+def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path, ext_dir: Path, version: int = 1, git_sha: str = "",
+              basin: str = "delaware") -> dict[str, Any]:
     """Michael's hand edits -> edited extents (v1 edited, NOT stored): shapefile in the geology round-trip format, the
     step-3 diff page, the visual check redrawn with the edited outline, laterals + D1 PUDs inside generated vs edited."""
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
@@ -466,7 +471,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
         # shapefile in the geology round-trip format (D7 / D28) + the step-3 diff page
         params = f"hand edit by Michael 2026-10-16 ({pptx.name} slide {k}) on generated v{version}"
         gio.write_layer(edit_dir / f"BOX_{pool}_extent_v{version}_edited", "polygon", gio.ft13_to_geology([edited]), pkg.EXTENT_FIELDS,
-                        [[pool, "delaware", version, "geology_edited", edited.area / eg.FT_PER_MI**2, built, params]])
+                        [[pool, basin, version, "geology_edited", edited.area / eg.FT_PER_MI**2, built, params]])
         d = ex.diff(gen, edited, shapely.centroid(gen))
         ev = w[w["evidence"] & w["geom"].notna()]
         L = np.asarray(list(ev["geom"]), dtype=object)
@@ -475,7 +480,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
             return shapely.length(shapely.intersection(L, g)) / shapely.length(L) >= 0.5
 
         env = eg.to_lonlat([shapely.box(*shapely.union_all([gen, edited]).bounds).buffer(eg.FT_PER_MI)])[0].bounds
-        pu = er.pull_puds(conn, [pool], env)
+        pu = er.pull_puds(conn, [pool], env, basin)
         pt = er.pud_counts(pu, {"in generated": gen, "in edited": edited})
         (edit_dir / f"diff_{pool}_v{version}.html").write_text(pages.diff_page(pool, version, d, gen, edited, built, f"{pptx.name} slide {k}", pt), encoding="utf-8")
         pt.assign(pool=pool).to_csv(edit_dir / f"pud_counts_{pool}.csv", index=False)

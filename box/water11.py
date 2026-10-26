@@ -54,6 +54,7 @@ from scipy.spatial import cKDTree
 
 from box import acceptance as ac
 from box import analog as an
+from box import basin as bsn
 from box import tc_curve as tc
 
 LADDER_MI: tuple[float, ...] = an.RADII_MI  # D54
@@ -170,9 +171,9 @@ def vdr_months_asof(vdr: pd.DataFrame, asof: dt.date | None) -> dict[str, int]:
 
 
 def select_water(pool: Mapping[str, Any], tree: cKDTree, cfg: Any, loc: Mapping[str, Any], radii: Sequence[float], bench: str,
-                 min_w: int = MIN_WELLS, basin: str = "delaware") -> tuple[list[int], float, int]:
+                 min_w: int = MIN_WELLS, basin: str = an.BASIN) -> tuple[list[int], float, int]:
     """(pool indices, radius reached mi, eligible count at that radius): box_v2's first-ring selection on circles over `radii`.
-    `basin` sets deal-intake's per-basin lateral tolerance (BOX is Delaware-only; deal-intake screens pass their own)."""
+    `basin` sets deal-intake's per-basin lateral tolerance (a BOX run passes its basin, step 19; deal-intake screens pass their own)."""
     from dealintake import select_wells as sw
 
     sp = loc.get("spacing_ft")
@@ -224,9 +225,9 @@ def _empty() -> tuple[list[int], float, int]:
 
 
 def select_one(loc: dict[str, Any]) -> dict[str, Any]:
-    pm, pa, cfg, bench = _W["pool_m"], _W["pool_a"], _W["cfg"], _W["bench"]
-    meas = select_water(pm, _W["tree_m"], cfg, loc, WATER_RADII_MI, bench) if _W["tree_m"] is not None else _empty()
-    ch = choose(meas, lambda: select_water(pa, _W["tree_a"], cfg, loc, LADDER_MI, bench))
+    pm, pa, cfg, bench, basin = _W["pool_m"], _W["pool_a"], _W["cfg"], _W["bench"], _W.get("basin", an.BASIN)
+    meas = select_water(pm, _W["tree_m"], cfg, loc, WATER_RADII_MI, bench, basin=basin) if _W["tree_m"] is not None else _empty()
+    ch = choose(meas, lambda: select_water(pa, _W["tree_a"], cfg, loc, LADDER_MI, bench, basin=basin))
     pool = pm if ch["source"] == "measured" else pa
     ch["api10s"] = [str(pool["api10"][i]) for i in ch["idx"]]
     ch["nm_share"] = float(np.mean([pool["state"][i] == NM for i in ch["idx"]])) if ch["idx"] else float("nan")
@@ -235,10 +236,11 @@ def select_one(loc: dict[str, Any]) -> dict[str, Any]:
     return ch
 
 
-def select_many(locs: list[dict[str, Any]], pool_m: dict[str, Any], pool_a: dict[str, Any], bench: str, workers: int | None) -> list[dict[str, Any]]:
+def select_many(locs: list[dict[str, Any]], pool_m: dict[str, Any], pool_a: dict[str, Any], bench: str, workers: int | None,
+                basin: str = an.BASIN) -> list[dict[str, Any]]:
     from dealintake import config as di_config
 
-    state = {"pool_m": pool_m, "pool_a": pool_a, "cfg": di_config.load(), "bench": bench}
+    state = {"pool_m": pool_m, "pool_a": pool_a, "cfg": di_config.load(), "bench": bench, "basin": basin}
     workers = workers or max(1, min(8, (os.cpu_count() or 2) - 1))
     if workers == 1 or len(locs) < 64:
         _init(state)
@@ -259,20 +261,22 @@ def make_pool(w: pd.DataFrame) -> dict[str, Any]:
 # ----------------------------------------------------------------------------
 
 
-def cohort_water(members: Sequence[tc.Member]) -> dict[str, Any]:
-    """Per-1,000-ft water curves of a cohort: the WOR-vs-cum-oil ratio (alpha, beta, sub_mode) and the water Arps P50 months."""
+def cohort_water(members: Sequence[tc.Member], basin: str = an.BASIN) -> dict[str, Any]:
+    """Per-1,000-ft water curves of a cohort: the WOR-vs-cum-oil ratio (alpha, beta, sub_mode) and the water Arps P50 months.
+    `basin` = the Df of the fits (step 19)."""
     from boxfit.tc.fit_p50 import fit_p50_series
     from boxfit.tc.ratio_mode import build_ratio_fitted
 
     agg = tc.aggregate_only(members)
     st = agg.streams
     out: dict[str, Any] = {"ratio": None, "arps_months": None, "arps": None}
-    oil_mean = fit_p50_series(st["oil"].mean, df_terminal_per_year=an.DF_DELAWARE, stream="oil")
+    df = bsn.df_terminal(basin)
+    oil_mean = fit_p50_series(st["oil"].mean, df_terminal_per_year=df, stream="oil")
     if oil_mean:
         r = build_ratio_fitted(mean_oil=st["oil"].mean, mean_stream=st["water"].mean, oil_fitted=oil_mean, n_months=tc.N_MONTHS)
         if r:
             out["ratio"] = {k: r[k] for k in ("alpha", "beta", "sub_mode", "r2", "n_months")}
-    wf = fit_p50_series(st["water"].p50, df_terminal_per_year=an.DF_DELAWARE, stream="water")
+    wf = fit_p50_series(st["water"].p50, df_terminal_per_year=df, stream="water")
     if wf:
         out["arps"] = {k: wf.get(k) for k in ("qi", "Di", "b", "Df", "qo", "peak_index")}
         out["arps_months"] = tc.monthly_volumes(wf, K)

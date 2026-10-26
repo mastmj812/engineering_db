@@ -90,14 +90,14 @@ def _mean_known(ids: Sequence[int], k12: np.ndarray) -> tuple[float, int]:
 
 
 def pud_row(loc: Mapping[str, Any], res: Mapping[str, Any], pool: Mapping[str, Any], tree: Any, cfg: Any, bench: str,
-            pool_fix: Mapping[str, Any] | None = None) -> dict[str, Any]:
+            pool_fix: Mapping[str, Any] | None = None, basin: str = an.BASIN) -> dict[str, Any]:
     """One covered PUD: record selection vs the near pool wells (binding rule per well) and the year-1 gap; with `pool_fix`
     (the pool with measured spacing), the record selection re-run on it, and a reproduction check of the record itself."""
     lat = float(loc["lateral_eff"])
     lo = {**loc, "lateral_ft": lat}
     idx = [int(i) for i in tree.query_ball_point([loc["x"], loc["y"]], r=NEAR_MI * MI)]
     cands = an._candidates(pool, idx, lo)
-    el, ex, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin="delaware",
+    el, ex, _ = sw.classify(cands, cfg, bench=bench, planned_stack=[bench], planned_lateral_ft=lat, basin=basin,
                             planned_spacing_ft=planned_spacing(loc), lateral_band_ft=lateral_band(lat))
     months = {int(c["_i"]): float(pool["months"][c["_i"]]) for c in cands}
     counts = {f"near_{k}": 0 for k in ("eligible", *REASONS, "multiple")}
@@ -121,8 +121,8 @@ def pud_row(loc: Mapping[str, Any], res: Mapping[str, Any], pool: Mapping[str, A
     r = float(res["radius_mi"])
     fix: dict[str, Any] = {}
     if pool_fix is not None:
-        rep, r_rep, _, _ = an.select_cohort_v2(pool, tree, cfg, lo, bench=bench)
-        fi, r_fix, _, mode_fix = an.select_cohort_v2(pool_fix, tree, cfg, lo, bench=bench)
+        rep, r_rep, _, _ = an.select_cohort_v2(pool, tree, cfg, lo, bench=bench, basin=basin)
+        fi, r_fix, _, mode_fix = an.select_cohort_v2(pool_fix, tree, cfg, lo, bench=bench, basin=basin)
         own_fix, n_own_fix = _mean_known(fi, pool["oil12_kft"])
         df = [float(np.hypot(pool["x"][i] - loc["x"], pool["y"][i] - loc["y"]) / MI) for i in fi]
         fix = {"repro_ok": bool(r_rep == r and sorted(pool["api10"][i] for i in rep) == sorted(an_ids)),
