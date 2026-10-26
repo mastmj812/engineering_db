@@ -41,6 +41,7 @@ from box import extent_package as pkg
 from box import extent_pages as pages
 from box import extent_report as er
 from box import geology_io as gio
+from box import wcb_split as ws
 
 STEP3_DIR = Path("docs") / "box" / "step3-2026-10-07"
 JOIN_PX = 110.0  # pen-lift gap (map pixels) joined into one stroke
@@ -180,6 +181,8 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
     n_nogeom = df.groupby("pool")["geom"].apply(lambda s: int(s.isna().sum())).to_dict()
     sopa = er.load_sopa()
     builds = {pool: er.build_pool(df[df.pool == pool], pool, bp, sopa, None, edge) for pool in pools}
+    if basin == bsn.MIDLAND and "WCB_2" in builds:  # D136: the Midland WCB_2 extent stops at the WCB split line
+        ws.clip_d136(builds["WCB_2"])
     env_bt = pd.DataFrame([r for pool in pools for r in er.envelope_backtest(df[df.pool == pool], pool, bp, sopa, None, edge)])
     rec = record_extents() if delaware else {}
     # D1 PUD universe (read-only); outside the Delaware the D117 undrilled universe (PUD + RES) by category
@@ -502,8 +505,11 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
             return shapely.length(shapely.intersection(L, g)) / shapely.length(L) >= 0.5
 
         env = eg.to_lonlat([shapely.box(*shapely.union_all([gen, edited]).bounds).buffer(eg.FT_PER_MI)])[0].bounds
-        pu = er.pull_puds(conn, [pool], env, basin)
-        pt = er.pud_counts(pu, {"in generated": gen, "in edited": edited})
+        polys = {"in generated": gen, "in edited": edited}
+        if basin == bsn.DELAWARE:
+            pt, total = er.pud_counts(er.pull_puds(conn, [pool], env, basin), polys), "D1 universe"
+        else:  # D117: undrilled = any Novi category (PUD + RES), as in run()
+            pt, total = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys), "undrilled (D117)"
         (edit_dir / f"diff_{pool}_v{version}.html").write_text(pages.diff_page(pool, version, d, gen, edited, built, f"{pptx.name} slide {k}", pt), encoding="utf-8")
         pt.assign(pool=pool).to_csv(edit_dir / f"pud_counts_{pool}.csv", index=False)
         (edit_dir / f"extent_{pool}_v{version}_edited.geojson").write_text(json.dumps({
@@ -512,7 +518,7 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
                           "geometry": shapely.geometry.mapping(shapely.set_precision(eg.to_lonlat([edited])[0], 1e-6))}]}), encoding="utf-8")
         vis = visual_check_png(pool, w, edited, sopa, edit_dir / f"visual_{pool}_edited.png", label=f"extent v{version} EDITED by Michael (hand edit, {pptx.name})", basin=basin)
         ig, ie = inside(gen), inside(edited)
-        d1 = pt[pt.status == "D1 universe"]
+        d1 = pt[pt.status == total]
         res["pools"][pool] = {
             "slide": k, "n_freeforms": len(ff[k]["lines"]), "n_ink_strokes": len(strokes), "stroke_kinds": kinds, "generated_sqmi": gen.area / eg.FT_PER_MI**2, "edited_sqmi": edited.area / eg.FT_PER_MI**2, "added_sqmi": d["added_sqmi"], "removed_sqmi": d["removed_sqmi"],
             "n_parts": len(edited.geoms), "n_evidence": len(ev), "inside_generated": int(ig.sum()), "inside_edited": int(ie.sum()), "outside_edited": int((~ie).sum()),

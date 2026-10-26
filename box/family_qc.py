@@ -46,6 +46,7 @@ import pandas as pd
 from box import basin as bsn
 from box import bench_qc as bq
 from box import qc_rule as qr
+from box import wcb_split as ws
 from box.flag_cards import NEVER_INTO, pool
 
 FAMILIES: dict[str, tuple[str, ...]] = {
@@ -127,15 +128,16 @@ def family_membership(
     return d.sort_values("api10").reset_index(drop=True)
 
 
-def class_standing(c: str, sug: str) -> str:
-    """How the class rule of record treats a pooled swap class (gate-1 card ledger); same order as qc_rule.decide:
-    a flag into WCXY is never applied (D20) before any class test."""
+def class_standing(c: str, sug: str, basin: str | None = None) -> str:
+    """How the class rule of record treats a pooled swap class (the basin's card ledger, qc_rule.ledger); same order as
+    qc_rule.decide: a flag into WCXY is never applied (D20) before any class test."""
+    accepted, rejected = qr.ledger(basin)
     if sug in NEVER_INTO:
         return "into WCXY band (never applied, D20; witness kept)"
-    if c in qr.ACCEPTED_CLASSES:
-        return f"accepted ({qr.ACCEPTED_CLASSES[c]:.2f})"
-    if c in qr.REJECTED_CLASSES:
-        return f"rejected ({qr.REJECTED_CLASSES[c]:.2f})"
+    if c in accepted:
+        return f"accepted ({accepted[c]:.2f})"
+    if c in rejected:
+        return f"rejected ({rejected[c]:.2f})"
     if c in qr.HOLD_CLASSES:
         return f"hold ({qr.HOLD_CLASSES[c]:.2f})"
     a, b = c.split("->")
@@ -144,7 +146,7 @@ def class_standing(c: str, sug: str) -> str:
     return "uncalibrated (tag kept)"
 
 
-def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...]) -> pd.DataFrame:
+def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...], basin: str | None = None) -> pd.DataFrame:
     """Consensus flags with the tagged or suggested bench in the family, by pooled swap class and rule disposition."""
     fam = set(family)
     f = ruled[(ruled["cons_status"] == "flag") & ruled["cons_suggest"].notna()].copy()
@@ -153,7 +155,7 @@ def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...]) -> pd.DataFrame:
         return pd.DataFrame(columns=["swap_class", "direction", "standing", "box_action", "n", "n_cohort"])
     f["swap_class"] = f["formation_blueox"].map(pool) + "->" + f["cons_suggest"].map(pool)
     f["direction"] = np.where(f["formation_blueox"].isin(fam), "out of family", "into family")
-    f["standing"] = [class_standing(c, g) for c, g in zip(f["swap_class"], f["cons_suggest"])]
+    f["standing"] = [class_standing(c, g, basin) for c, g in zip(f["swap_class"], f["cons_suggest"])]
     g = (f.groupby(["swap_class", "direction", "standing", "box_action"])
          .agg(n=("api10", "size"), n_cohort=("cohort", "sum")).reset_index())
     return g.sort_values(["direction", "n"], ascending=[False, False]).reset_index(drop=True)
@@ -415,7 +417,7 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
 
 
 def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path | list[Path], verdicts: dict[str, str],
-          excluded_ids: set[str], meta: dict[str, Any], basin: str = bq.BASIN) -> dict[str, Any]:
+          excluded_ids: set[str], meta: dict[str, Any], basin: str = bq.BASIN, owner: dict[str, str] | None = None) -> dict[str, Any]:
     """Everything after the pull + consensus scoring (pure apart from file writes). `basin` (step 19): the bench pages' state-line
     check and map lines follow it (the Midland has no state line)."""
     family = FAMILIES[family_name]
@@ -430,7 +432,11 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
         bq.render_bench_page(scored, bs, out_dir / f"qc_{bench}.html")
         scored.loc[scored["formation_blueox"] == bench, bq.WELL_COLS].sort_values("api10").to_csv(out_dir / f"wells_{bench}.csv", index=False)
         bench_summaries[bench] = bs
-    ruled = qr.apply_rule(scored, verdicts)
+    ruled = qr.apply_rule(scored, verdicts, basin)
+    if basin == bsn.MIDLAND and "WCB_2" in family:  # D136: one WCB landing north of the split line
+        ruled = ws.apply_d136(ruled)
+    if owner:  # Michael's per-well assignments outrank every rule
+        ruled = qr.apply_owner(ruled, owner)
     frozen = frozen_pools(pool_dir)
     # the judged universe (D84); a basin with no frozen pools yet (Midland, step 20) has judged nothing
     udir = next((d for d in ([pool_dir] if isinstance(pool_dir, Path) else pool_dir) if (d / "universe.csv").exists()), None)
@@ -485,7 +491,7 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
         poolings.append((pe, ps, ratio_png))
         pool_json.append({"pooling": pe, "pair_sep": ps})
     imgs = {"map": family_map(ctx, fam_members, family, bsn.get(basin).state_line_lat)}
-    flags = flag_ledger(ruled, family)
+    flags = flag_ledger(ruled, family, basin)
     unc = flags[flags["standing"].str.startswith("uncalibrated")]
     s: dict[str, Any] = {
         **meta, "family": family_name, "benches": list(family), "pool_dir": str(pool_dir) if isinstance(pool_dir, Path) else [str(d) for d in pool_dir], "set": set_s,

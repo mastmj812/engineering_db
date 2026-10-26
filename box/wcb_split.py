@@ -9,12 +9,21 @@ independent of the WCB_1 / WCB_2 tags (which mix: a single landing carries eithe
     population's tag medians (WCB_1 / WCB_2), measured, not chosen.
   * the demarcation = per longitude strip, the north edge of the northernmost latitude bin in which >= DEEP_SHARE of the
     WCB laterals land at WCB_2 depth (bins with >= MIN_BIN laterals); flat continuation past the data.
+
+D136 (Michael 2026-10-26) adopted the measured line and cut as of record (D136_LINE, D136_CUT_FT): the Midland WCB_2 extent
+stops at the line (``clip_d136``) and a WCB_2-tagged producer north of it landing at WCB_1 depth counts as WCB_1 for BOX
+(``apply_d136``). BOX-only; no warehouse change.
 """
 
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import shapely
+from shapely.geometry import Polygon
+
+from box import edge_gap as eg
+from box import extent as ex
 
 SOUTH_REF_LAT = 31.6  # the reference population for the depth cut: laterals south of this (two landings, by the profile)
 DEEP_SHARE = 0.20
@@ -22,6 +31,12 @@ LAT_BIN = 0.05
 LON_STRIP = 0.15
 MIN_BIN = 10
 MIN_STRIP = 60
+
+# D136 of record (docs/box/step20a-2026-10-26/wcb_split/wcb_line.geojson; cut = 392.125 ft measured, recorded as 392)
+D136_LINE: list[tuple[float, float]] = [(-103.0, 31.7), (-102.225, 31.7), (-102.075, 31.7), (-101.925, 31.85), (-101.775, 31.9),
+                                        (-101.625, 31.7), (-101.475, 31.55), (-101.325, 31.55), (-100.5, 31.55)]
+D136_CUT_FT = 392.0
+_NORTH_LAT = 34.0  # north edge of the "north of the line" polygon (past the Midland)
 
 
 def landing_depth(wells: pd.DataFrame) -> pd.Series:
@@ -72,3 +87,34 @@ def line(bnd: pd.DataFrame, west: float = -103.0, east: float = -100.5) -> list[
     """The demarcation as a lon / lat polyline, held flat past the first and last strip."""
     pts = [(float(r.lon), float(r.boundary_lat)) for r in bnd.itertuples()]
     return [(west, pts[0][1]), *pts, (east, pts[-1][1])]
+
+
+def north_poly(ln: list[tuple[float, float]] = D136_LINE) -> Polygon:
+    """Lon / lat polygon of everything north of the line (one landing)."""
+    return Polygon([*ln, (ln[-1][0], _NORTH_LAT), (ln[0][0], _NORTH_LAT)])
+
+
+def apply_d136(ruled: pd.DataFrame) -> pd.DataFrame:
+    """D136 (c) on a box.qc_rule.apply_rule frame: a WCB_2-tagged well still WCB_2 after the class rule, whose lateral midpoint
+    lies north of the line and lands < D136_CUT_FT below the local WCA_1 band, becomes WCB_1. No WCA_1 band (NaN depth) =
+    not measurable, tag kept (rule as written)."""
+    out = ruled.copy()
+    below = landing_depth(out)
+    lon = pd.to_numeric(out["mid_lon"], errors="coerce").to_numpy(float)
+    lat = pd.to_numeric(out["mid_lat"], errors="coerce").to_numpy(float)
+    north = shapely.contains_xy(north_poly(), lon, lat)
+    hit = ((out["formation_blueox"] == "WCB_2") & (out["box_bench"] == "WCB_2") & north & (below < D136_CUT_FT)).to_numpy()
+    out.loc[hit, "box_bench"] = "WCB_1"
+    out.loc[hit, "box_action"] = "reassign"
+    out.loc[hit, "box_reason"] = [f"D136: north of the WCB split line at WCB_1 depth ({d:,.0f} ft below WCA_1)" for d in below[hit]]
+    return out
+
+
+def clip_d136(build: dict) -> None:
+    """D136 (b): clip a built WCB_2 extent (box.extent_report.build_pool output) at the line, in place."""
+    gen = build["extent"]
+    north = eg.to_ft([north_poly()])[0]
+    build["extent"] = ex.as_multi(gen.difference(north))
+    build["stats"]["d136_unclipped_sqmi"] = gen.area / eg.FT_PER_MI**2
+    build["stats"]["extent_sqmi"] = build["extent"].area / eg.FT_PER_MI**2
+    build["stats"]["n_parts"] = len(build["extent"].geoms)

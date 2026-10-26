@@ -160,3 +160,61 @@ def test_wcb_split_cut_and_boundary():
     assert ln[0][0] == -103.0 and ln[-1][0] == -100.5 and len(ln) == 4
     d = ws.landing_depth(pd.DataFrame({"tvd_ft": [8000.0, 8000.0], "cons_bands": [{"WCA_1": 7700.0}, None]}))
     assert d.iloc[0] == 300.0 and np.isnan(d.iloc[1])
+
+
+def test_midland_ledger_swaps_in_its_carded_classes_only():
+    from box import qc_rule as qr
+
+    acc, rej = qr.ledger("midland")
+    assert acc["WCA->WCB_1"] == 0.70 and "WCA->WCB_1" not in rej  # Delaware 0.40 rejected; Midland cards 7/10 = the gate
+    assert rej["WCB_1->WCA"] == 0.50 and "WCB_1->WCA" not in acc  # Delaware 0.70 accepted; Midland cards 5/10
+    assert acc["WCB_2->WCB_1"] == 1.00 and acc["WCB_2->WCC"] == 0.70 and acc["WCC->WCB_2"] == 0.70
+    assert acc["WCC->WCA"] == qr.ACCEPTED_CLASSES["WCC->WCA"]  # uncarded classes keep the Delaware ledger
+    d_acc, d_rej = qr.ledger(None)
+    assert d_acc == qr.ACCEPTED_CLASSES and d_rej == qr.REJECTED_CLASSES
+    row = pd.Series({"api10": "1", "formation_blueox": "WCA_1", "cons_status": "flag", "cons_suggest": "WCB_1", "sql23_nearest": "WCB_1",
+                     "cons_gor_vote": "none", "cons_witness": True, "planned": False})
+    assert qr.decide(row)[1] == "keep" and qr.decide(row, basin="midland")[:2] == ("WCB_1", "reassign")
+
+
+def test_d136_reassigns_only_north_wcb2_at_wcb1_depth():
+    from box import wcb_split as ws
+
+    def r(api, tag, bench, lat, below):
+        return {"api10": api, "formation_blueox": tag, "box_bench": bench, "box_action": "keep", "box_reason": "", "mid_lon": -102.0,
+                "mid_lat": lat, "tvd_ft": 8000.0, "cons_bands": None if below is None else {"WCA_1": 8000.0 - below}}
+    d = pd.DataFrame([
+        r("1", "WCB_2", "WCB_2", 32.2, 250.0),   # north, WCB_1 depth -> WCB_1
+        r("2", "WCB_2", "WCB_2", 32.2, 500.0),   # north, WCB_2 depth -> kept
+        r("3", "WCB_2", "WCB_2", 32.2, None),    # north, no WCA_1 band -> kept (not measurable)
+        r("4", "WCB_2", "WCB_2", 31.4, 250.0),   # south of the line -> kept
+        r("5", "WCB_1", "WCB_1", 32.2, 250.0),   # not WCB_2-tagged
+        r("6", "WCB_2", "WCC", 32.2, 250.0),     # already moved by the class rule
+    ])
+    o = ws.apply_d136(d).set_index("api10")
+    assert o["box_bench"].to_dict() == {"1": "WCB_1", "2": "WCB_2", "3": "WCB_2", "4": "WCB_2", "5": "WCB_1", "6": "WCC"}
+    assert o.at["1", "box_action"] == "reassign" and o.at["1", "box_reason"].startswith("D136")
+
+
+def test_d136_clip_stops_wcb2_at_the_line():
+    from box import edge_gap as eg
+    from box import extent as ex
+    from box import wcb_split as ws
+
+    gen = ex.as_multi(eg.to_ft([Polygon([(-102.1, 31.4), (-101.9, 31.4), (-101.9, 32.2), (-102.1, 32.2)])])[0])
+    b = {"extent": gen, "stats": {"extent_sqmi": gen.area / eg.FT_PER_MI**2, "n_parts": 1}}
+    ws.clip_d136(b)
+    assert b["stats"]["d136_unclipped_sqmi"] > b["stats"]["extent_sqmi"] > 0
+    lat_max = eg.to_lonlat([b["extent"]])[0].bounds[3]
+    assert lat_max < 31.86  # the line crosses -102.1..-101.9 between 31.70 and 31.85
+
+
+def test_owner_assignment_outranks_the_rule_and_joins_the_family():
+    from box import qc_rule as qr
+
+    d = _ruled([["1", "OTHER", "OTHER", "off_band", None, "keep", False], ["2", "WCC", "WCC", "agree", None, "keep", True]])
+    d["box_reason"] = ""
+    o = qr.apply_owner(d, {"1": "WCD"})
+    assert o.set_index("api10")["box_bench"].to_dict() == {"1": "WCD", "2": "WCC"}
+    r = fq.family_membership(o, MID, frozen={}, seen_ids=set(), excluded_ids=set()).set_index("api10")
+    assert r.at["1", "family_role"] == "member" and r.at["1", "family_bench"] == "WCD"

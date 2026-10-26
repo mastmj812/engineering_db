@@ -223,7 +223,9 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"({st['bridged_sqmi']:,.0f} sq mi bridged or filled; {st['bridge_edge_mi']:,.0f} mi of edge placed by a bridge). "
         f"Updip depth limit: {('2BS top ' + format(st['updip_limit'][1], ',.0f') + ' ft') if st['updip_limit'] else 'none'}. "
         f"Edge generalized ({bp.gen_tol_mi:g}-mi simplification, bulges where a developed lateral would fall out, {bp.gen_round_mi:g}-mi rounding): raw envelope {st['envelope_raw_sqmi']:,.0f} sq mi. "
-        f">= 2016 laterals outside the extent: {st['developed_outside']} (all step-out tests: {st['n_isolated_tests']}, of which {st['n_tests_within_reach']} are 1-2-well tests within {bp.bridge_mi:g} mi; other {st['developed_outside_not_isolated']}).</div>"),
+        f">= 2016 laterals outside the extent: {st['developed_outside']} (all step-out tests: {st['n_isolated_tests']}, of which {st['n_tests_within_reach']} are 1-2-well tests within {bp.bridge_mi:g} mi; other {st['developed_outside_not_isolated']}).</div>"
+        + (f"<div class='flag'><b>D136 (Michael 2026-10-26):</b> clipped at the WCB split line (one WCB landing north of it): envelope {st['d136_unclipped_sqmi']:,.0f} sq mi "
+           f"before the clip, {st['extent_sqmi']:,.0f} after.</div>" if "d136_unclipped_sqmi" in st else "")),
         "<h2 id=themap>Map</h2><div class=lg>" + "".join(f"<span style='background:{c}'></span>{r}" for r, c in pkg.RULE_COLOURS.items() if r in set(b['edges'].rule)) + "</div>",
         "<div id=map></div><div class=meta>Edge colour = the clause that set the buffer; click an edge for buffer, gap, performance and the geology flag. Magenta = step-out within the bridging width (developed, in), black = isolated test (out). Violet dashed = updip of the depth limit. Toggle the drilled core and the step-2 measuring outline top-right.</div>",
         f"<details><summary>static overview (the legend PNG shipped to geology)</summary><img src='geology/BOX_{pool}_legend.png'></details>",
@@ -293,7 +295,7 @@ def diff_page(pool: str, version: int, d: dict[str, Any], gen_ft: Any, edi_ft: A
         "<div id=dmap style='height:700px;border:1px solid #d1d5db;margin:8px 0'></div>",
         "<h2>By side</h2>" + (_table(by_side, {c: ",.2f" for c in by_side.columns if c != "side"}) if len(pieces) else "<div class=meta>no change</div>"),
         "<h2>Pieces</h2>" + (_table(pieces.sort_values("area_sqmi", ascending=False), {"area_sqmi": ",.2f"}, max_rows=200) if len(pieces) else "<div class=meta>no change</div>"),
-        ("<h2>D1 PUD universe: generated vs edited (read-only)</h2>" + _table(puds, {}) if puds is not None and len(puds) else ""),
+        ("<h2>Undrilled universe (D1 PUD in the Delaware; D117 PUD + RES elsewhere): generated vs edited (read-only)</h2>" + _table(puds, {}) if puds is not None and len(puds) else ""),
         _DIFF_JS.replace("__DATA__", json.dumps(data, separators=(",", ":"))),
         "</body></html>",
     ])

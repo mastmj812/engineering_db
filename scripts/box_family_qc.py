@@ -35,6 +35,7 @@ from box import exclusions, flag_cards
 from box import family_qc as fq
 from box import swap_compare as sc
 from box.bench_qc import TX_FIPS, pull_producers, score_consensus
+from box.qc_rule import load_owner_benches as qr_load_owner
 from box.qc_rule import load_verdicts
 
 GATE1_CARDS = Path("docs") / "box" / "step1-2026-10-06" / "cards_sample.csv"
@@ -109,6 +110,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="frozen pool dirs (wells_final_*.csv); the first with universe.csv gives the judged universe. Default: the "
                          "Delaware pools (pool-2026-10-15 + step15a-2026-10-16) for a Delaware family, none for the Midland")
     ap.add_argument("--verdicts", type=Path, action="append", default=None)
+    ap.add_argument("--owner-benches", type=Path, default=None, help="CSV api10,bench[,note]: Michael's per-well assignments (BOX-only, outrank the rule)")
     ap.add_argument("--cache", type=Path, default=None, help="pickle of the scored frame; read if present, else written")
     ap.add_argument("--asks", type=Path, default=None, help="JSON list of gate-ask strings (HTML) for the page")
     ap.add_argument("--basin", default=None, help="the basin pulled and scored (step 19); default = the family's (FAMILY_BASIN)")
@@ -152,7 +154,9 @@ def main(argv: list[str] | None = None) -> int:
         extra.append(sec)
         print(f"alloc: {meta['alloc']['pair_classes']}; delaware check {meta['alloc']['delaware_check']}; sharing oil {meta['alloc']['sharing_oil']}")
     meta["extra_sections"] = extra
-    s = fq.build(scored, a.family, out, pool_dir, verdicts, excluded, meta, basin=basin)
+    owner = qr_load_owner(a.owner_benches) if a.owner_benches else {}
+    meta["owner_benches"] = owner
+    s = fq.build(scored, a.family, out, pool_dir, verdicts, excluded, meta, basin=basin, owner=owner)
     for b in s["benches"]:
         r = s["set"][b]
         print(f"{b}: tagged {r['tagged_live']:,} -> final {r['final']:,} (member {r['member']:,}, churn kept {r['old_churn_kept']}, "
