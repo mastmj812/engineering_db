@@ -1,4 +1,4 @@
-# Step 19 — basin parameterization (2026-10-26). Built; AT GATE 19.
+# Step 19 — basin parameterization (2026-10-26). DONE; GATE 19 CLOSED 2026-10-26 (D134, D135). sql/70 + sql/69 applied live.
 
 Plan: `docs/box_type_curves_plan.md` §5 step 19 (difference 7, D130, D132). Code only: nothing was written to the warehouse.
 sql/70 is container-validated, NOT applied live.

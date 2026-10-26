@@ -19,7 +19,7 @@ across cutoffs + "consistent with tuning" intervals (passes a good forecast 85�
 `index.html` = the evidence pack; read-only, nothing stored): Novi's Midland per-ft oil bias −5.4 % cum-6 / +4.3 % cum-12 (value
 case is not a bias fix); no Midland bench pair merges like WCA_1 / WCA_2 (rec: no pooling); US → emerging rec, WCC / WCD
 provisional target; Df 0.06 = +4.7 % median EUR; record run: the pack recommended one shared run, decided per basin instead (D130); 19.8 % of
-2023+ Midland laterals sit past the r2 15,000-ft analog band (rec: 21a pre-registers a widened band). **GATE 18 CLOSED 2026-10-26** (D127–D133): build, validated where data allow (D131); US emerging, WCD + WCC provisional target, DEAN build (D127 / D131); no pooling (D128); long laterals via Cui, widened band pre-registered in 21a (D129); one record run per basin, sql/70 in step 19 (D130); Df 0.06 (D132); water = D107 (D133). **Step 19 BUILT 2026-10-26, AT GATE 19** (branch `claude/box-step19-basin-param`, erebor `claude/box-record-per-basin`; `docs/box/step19-2026-10-26/FINDINGS.md`): every basin literal on the production path reads `box/basin.py` (Df 0.08 / 0.06 D132); a run is one basin; sql/70 (`forecast_run.basin`, UNIQUE (basin) WHERE is_record) container-validated 11/11 ×2, NOT applied; sql/69 + erebor + BOX scripts read the record per basin. Bar met: smoke WCA / BS2_S / AVA_0 old vs new code bit-identical (90 / 90 locations; universe −4,154 Midland BRNT rows = D130), pool refresh byte-identical, WCC / AVA_0 / 1 / 2 extents within 0.0011–0.0020 sq mi (BS2_S step-3 regression −0.32 sq mi on old code too = live geometry drift), 743 tests green. Midland dry pull: every path opens. Gate asks FINDINGS §4 incl. a proposed Phase 3 simplification (§5). Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
+2023+ Midland laterals sit past the r2 15,000-ft analog band (rec: 21a pre-registers a widened band). **GATE 18 CLOSED 2026-10-26** (D127–D133): build, validated where data allow (D131); US emerging, WCD + WCC provisional target, DEAN build (D127 / D131); no pooling (D128); long laterals via Cui, widened band pre-registered in 21a (D129); one record run per basin, sql/70 in step 19 (D130); Df 0.06 (D132); water = D107 (D133). **Step 19 BUILT 2026-10-26, AT GATE 19** (branch `claude/box-step19-basin-param`, erebor `claude/box-record-per-basin`; `docs/box/step19-2026-10-26/FINDINGS.md`): every basin literal on the production path reads `box/basin.py` (Df 0.08 / 0.06 D132); a run is one basin; sql/70 (`forecast_run.basin`, UNIQUE (basin) WHERE is_record) container-validated 11/11 ×2, NOT applied; sql/69 + erebor + BOX scripts read the record per basin. Bar met: smoke WCA / BS2_S / AVA_0 old vs new code bit-identical (90 / 90 locations; universe −4,154 Midland BRNT rows = D130), pool refresh byte-identical, WCC / AVA_0 / 1 / 2 extents within 0.0011–0.0020 sq mi (BS2_S step-3 regression −0.32 sq mi on old code too = live geometry drift), 743 tests green. Midland dry pull: every path opens. **GATE 19 CLOSED 2026-10-26 (D134, D135):** recommendations accepted; Phase 3 simplified (D134 A–D, E unchanged; step 22 folded into 21); sql/70 + sql/69 APPLIED LIVE 2026-10-26 (eng_db #200 merged). Next = step 20a. Phase 3 does not pause Phase 2: steps 13 / 17 keep their own order; Midland reaches a record run only at step 23.
 
 **Owner:** Michael. **Executor:** Claude sessions, one step per session unless Michael says
 otherwise. **Workflow rule:** every step ends at its gate — report what exists and how to verify
@@ -178,6 +178,8 @@ forecasts become a comparison, and eventually an optional subscription. Own loca
 | D131 | **Build the Midland; tier target = validated where data allow** (D53 / D99 per group), D105 provisional otherwise. WCC = build, provisional target; DEAN = build, tier from step 21's counts. The value case is one method across the asset base, defensible analog workups (D54), the subscription decision and BOX's own extent / proximity screens — not a Novi bias fix. Michael 2026-10-26, gate 18. | Novi 2025Q3 Midland per-ft oil bias −5.4 % cum-6 / +4.3 % cum-12 (Delaware −20.9 / −14.9 %); the six big benches hold 79–650 modern wells per D53 fold; WCC 460 producers, flat vintage, 23–57 wells a fold (Delaware BS2_C pattern); DEAN 780, 0 % of sticks past 20 mi (FINDINGS §2a, §2c). |
 | D132 | **Midland terminal Df = 0.06 /yr** (in-house Midland value), a basin parameter in step 19; the Delaware keeps 0.08 and reproduces bit-identically. Michael 2026-10-26, gate 18. | On 3,000 run-19 oil fits, 0.06 vs 0.08 = +4.7 % median 50-yr EUR (P10 +3.4 %, P90 +6.3 %); the switch is ~13–17 years out, so cum-12 / 24 / 36 do not move (FINDINGS §2d). |
 | D133 | **Midland water route = D107 as written** into step 22: measured-water cohort, 30 / 40 / 50-mi extension, vendor-calculated fallback flagged; step 22 scores reach and operator concentration per group the D109 way. Michael 2026-10-26, gate 18. | 65–74 % of Midland water is vendor-calculated (all Texas); the 10th measured analog sits 8–14 mi out on the main benches (WCC ~30 mi); top measured operator 26–40 % (FINDINGS §2g). |
+| D134 | **Phase 3 transfers the Delaware method; it does not re-derive it.** (A) Midland edge metric = the Delaware D23 r = 2,640 / c = 3,960 ft and the D27 constants (`box/basin.py`); no step-2 repeat — extents judged on the rendered maps + owner loops, reopened only on a visible failure (e.g. WCA_1 not one body). (B) Bench QC applies the Delaware class rule of record (`box/qc_rule`) as written; a swap class is carded only when its flag rate or GOR / TVD signature is clearly unlike its Delaware analogue. (C) Long laterals: no second (widened-band) variant — > 15,000-ft producers are in the pool (D129), every cohort is Cui-translated (extrapolation flagged), and the D120 condition-6 length classes are REPORTED in 21b, not judged. (D) Step 22 is folded into 21: D107 water (D133) scored the D109 way from the same folds. (E) Tuning + one-time holdout per group unchanged (validation does not transfer across basins). Michael 2026-10-26, gate 19. | Michael: "we planned and refined this process first on the Delaware; all I'm trying to do now is apply it to the Midland." ≈ 10–14 → ≈ 7–9 sessions. `docs/box/step19-2026-10-26/FINDINGS.md` §5. |
+| D135 | **Gate 19 CLOSED: basin parameterization accepted** (Delaware bit-identical: smoke 90 / 90, pool refresh byte-identical, generated extents ≤ 0.002 sq mi). (1) A run's universe is its basin's: the next Delaware record drops run 19's 4,154 Midland BRNT `not_covered_emerging` rows; they return with the first Midland record; erebor reads them `not_screened` meanwhile. (2) `forecast_run.basin` keeps DEFAULT 'delaware'. (3) Live order: sql/70 → merge → sql/69 → dictionary → erebor. (4) Midland groups get keys distinct from the Delaware's (`MID_<bench>`), each entry with `basin: "midland"`. sql/70 + sql/69 applied live 2026-10-26. Michael 2026-10-26. | `docs/box/step19-2026-10-26/FINDINGS.md` §2–§4; eng_db #200, erebor #28. |
 
 ## 3. Scope guard (what this plan does NOT do)
 
@@ -625,32 +627,33 @@ refresh byte-identity, a Delaware extent rebuild = stored record within 0.005 sq
 (per-basin record index, `box.forecast_run.basin`) container-validated and every record-run reader made basin-aware (BOX scripts,
 sql/69, erebor `box_locations` / Highgrade); live apply on go. A read-only Midland dry
 pull per module proves the paths open (no Midland output reviewed here). Sequence after the step-13b tooling (eng_db #197) merges.
-**Gate 19** = the equivalence report. **Built 2026-10-26 — at gate 19** (`docs/box/step19-2026-10-26/FINDINGS.md`; live tail = sql/70 apply → merge → sql/69 re-apply → dictionary regen → erebor merge, each on go).
+**Gate 19** = the equivalence report. **DONE 2026-10-26, gate 19 CLOSED (D134, D135)** (`docs/box/step19-2026-10-26/FINDINGS.md`; live tail = sql/70 apply → merge → sql/69 re-apply → dictionary regen → erebor merge, each on go).
 
 ### Step 20 — bench QC + extents, by family (≈ 2–3 sessions per family)
 One session builds both the tags and the extent for a family; Michael reviews them together at ONE gate per family. If card
 verdicts move membership, the extent regenerates from the ratified set before anything is stored (deterministic, cheap).
 - **20a Wolfcamp** (WCA_1, WCB_1, WCB_2, + WCC / WCD per step 18). Bench QC (`box/family_qc` pattern: consensus flags, sql/23
-  second vote, GOR tiebreak, class rule of record ratified by swap class from cards, never per well; allocation-well screen into
-  `docs/box/exclusions.csv`). **Midland edge-metric calibration** on WCA_1 (step-2 repeat: D23's one-value-per-basin pin radius r
-  and closing c, the smallest c making WCA_1 one body; the step-out table; whether D27's 8-mi bridge / ≥ 3-lateral cluster
-  constants hold on blanket development). Then D27 envelopes per pool.
-- **20b Spraberry** (US / MS / JM / LSSH / DEAN per step 18), reusing 20a's edge calibration.
-- Deliverable per family: FINDINGS, QC pages + cards, interactive extent maps, undrilled sticks inside vs outside per bench
+  second vote, GOR tiebreak; **the Delaware class rule of record applied as written (D134 B)** — cards only for a swap class
+  clearly unlike its Delaware analogue, never per well; allocation-well screen into `docs/box/exclusions.csv`). **Edge metric =
+  the Delaware D23 r / c and D27 constants (D134 A, `box/basin.py`) — no step-2 repeat**; D27 envelopes per pool, judged on the
+  rendered maps + owner loops (a visible failure, e.g. WCA_1 not one body, reopens it).
+- **20b Spraberry** (US / MS / JM / LSSH / DEAN per step 18), same rule and edge metric.
+- Deliverable per family: FINDINGS, QC pages (+ cards only where D134 B calls for them), interactive extent maps, undrilled sticks inside vs outside per bench
   (expected to cut WCC / WCD hardest — rule 11), the geology shapefile package (context, D28).
 - Store on go: Midland `box.bench_scope` rows + `box.extent` records (`basin = 'midland'`). **Gate 20a / Gate 20b.**
 
 ### Step 21 — tuning + holdout (≈ 3–4 sessions)
 - **21a pre-registration** (D53 / D120 pattern): Midland groups, cutoffs, horizons, the D99 holdout rule, D105 tier criteria, the
   haircut source per group (D94 / D102), the proximity layer measured on Midland producers (D112–D116 pattern; stacked multi-
-  parent development is the Midland norm — expect it to matter), the long-lateral translation if step 18 brought it in.
+  parent development is the Midland norm — expect it to matter), long laterals per D129 / D134 C (> 15,000-ft producers in
+  the pool, every cohort Cui-translated, ONE variant; the condition-6 length classes reported, not judged), and the D107 water
+  route (D133 / D134 D: measured-water cohort, D109 scoring, reach + operator concentration per group).
   **Gate 21a** = SHA frozen.
-- **21b** tuning-fold scoring. **21c** one-time holdout per group. **Gate 21c** = validated / provisional per group + haircut
-  tables (9c guard, D106).
+- **21b** tuning-fold scoring (oil / gas / water). **21c** one-time holdout per group. **Gate 21c** = validated / provisional per
+  group (oil, gas and water tiers) + haircut tables (9c guard, D106).
 
-### Step 22 — Midland water (1–2 sessions)
-D107 on the Midland: size the measured cohort per group (the radius it needs, operator concentration), score it the D109 way,
-and compare against the step-18 route (measured-only at a wider radius; provisional with disclosure; other). **Gate 22.**
+### Step 22 — Midland water — FOLDED INTO STEP 21 (D134 D, 2026-10-26)
+D107 water (D133) is pre-registered in 21a and scored the D109 way in 21b / 21c from the same folds; no separate gate.
 
 ### Step 23 — production: one record run, both basins (≈ 2 sessions)
 Build Midland (oil / gas / water / proximity) as the Midland record run (D130; the Delaware record is untouched) →
@@ -767,16 +770,15 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | **Phase 3** | | |
 | 18 | 1 short | decision only (Midland scope, families, thin benches, Df, record-run strategy, long laterals, water route) |
 | 19 | 1–2 | basin parameterization; Delaware bit-identical |
-| 20 | ≈ 2–3 per family | 20a Wolfcamp (+ Midland edge calibration) → 20b Spraberry; tags + extent at one gate per family |
-| 21 | ≈ 3–4 | 21a pre-registration → 21b tuning → 21c holdout once |
-| 22 | 1–2 | Midland water |
+| 20 | ≈ 1–2 per family | 20a Wolfcamp → 20b Spraberry; tags + extent at one gate per family (Delaware rule + edge metric, D134) |
+| 21 | ≈ 3–4 | 21a pre-registration (incl. water, one long-lateral variant) → 21b tuning → 21c holdout once |
+| 22 | — | folded into 21 (D134) |
 | 23 | ≈ 2 | build + container rehearsal + live store as the one record run |
 
 **Phase 2 order:** 9a → 9b → 9c → 11 → 12a → 12b → 14 → 15a → 15b → 15c → 15d. **Step 10 runs alongside 9** (swap it ahead if a
 live deal needs BOX in a drop). **Step 13 interrupts** whenever the next vintage is near.
 
-**Phase 3 order:** 18 → 19 → 20a → 20b → 21a → 21b → 21c → 22 → 23. Step 22's measured-cohort sizing is read-only and may run
-alongside 20 / 21. Step 23 publishes on its own schedule (D130). Phase 3 shares this checkout and
+**Phase 3 order (D134):** 18 → 19 → 20a → 20b → 21a → 21b → 21c → 23 (step 22 folded into 21). Step 23 publishes on its own schedule (D130). Phase 3 shares this checkout and
 the warehouse with steps 13 / 17: worktree per writing session, and any `sql/NN` reserved here first (**sql/70 reserved = D130 per-basin record index, step 19**).
 
 **Parallel sessions (Phase 2):**
