@@ -332,6 +332,8 @@ def test_tag_screen_clear_verdict():
     assert ts.clear_verdict("reject. Canyon sands, out of scope") == "reject"
     assert ts.clear_verdict("WCD", "WCB_1") == "reject" and ts.clear_verdict("WCD", "WCD") == "agree"
     assert ts.clear_verdict("bad tvd") == "" and ts.clear_verdict("Lets discuss") == "" and ts.clear_verdict(np.nan) == ""
+    known = {"WCB_2", "WCC", "OTHER"}
+    assert ts.unknown_bench_codes(["WCC", "WCB2", "agree", "reject", "bad tvd", np.nan, "OTHER", "WCB2"], known) == ["WCB2"]
 
 
 def test_tag_screen_parked_names_are_class_names():

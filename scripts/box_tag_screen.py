@@ -114,6 +114,11 @@ def main(argv: list[str] | None = None) -> int:
     # prior verdicts: an earlier card on the same well proposing the same destination. ``judged`` = the count's reading
     # (agree / reject); ``verbatim`` = what was written and where (always what the file shows); ``carried`` = written
     # verdicts the count does not read (free text: holds, data defects) — never re-drawn, never dropped.
+    known = set(pd.concat([d["formation_blueox"], d["screen_dest"], d["other_vendor"]]).dropna().astype(str))
+    vfiles = [*(a.prior_verdicts or []), *([a.out / "cards_sample.csv"] if a.round == 2 else [])]
+    bad = {str(f): ts.unknown_bench_codes(pd.read_csv(f, dtype=str)["verdict"], known) for f in vfiles}
+    if any(bad.values()):
+        raise ValueError(f"verdicts that look like bench codes but are not one: { {k: v for k, v in bad.items() if v} }")
     judged: dict[str, str] = {}
     verbatim: dict[str, tuple[str, str]] = {}
     carried_rows: list[pd.DataFrame] = []

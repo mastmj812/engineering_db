@@ -173,6 +173,16 @@ def clear_verdict(text: Any, dest: str | None = None) -> str:
     return ""
 
 
+def unknown_bench_codes(texts: Any, known: set[str]) -> list[str]:
+    """Verdicts written as a bench code that is not a real code (a typo like 'WCB2' would otherwise count as a reject)."""
+    out = []
+    for t in texts:
+        v = "" if t is None or (isinstance(t, float) and np.isnan(t)) else str(t).strip()
+        if v and v.lower() != "agree" and not v.lower().startswith("reject") and v == v.upper() and " " not in v                 and any(ch.isalpha() for ch in v) and v not in known:
+            out.append(v)
+    return sorted(set(out))
+
+
 def decide(n_agree: int, n_judged: int, n_class: int, gate: float = 0.70) -> str:
     """Sequential class decision. A class carded in full is judged on its precision. Otherwise round 1 = ROUND1 cards:
     all agree -> accept; so few agree that even 5 more agrees cannot reach the gate on 10 -> reject; else round 2 tops up to
