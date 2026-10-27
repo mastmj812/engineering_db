@@ -1,33 +1,8 @@
 {
- "built_at": "2026-10-26T19:07:29-05:00",
- "git_sha": "5b5e992",
+ "built_at": "2026-10-26T21:18:29-05:00",
+ "git_sha": "2dab9a8+dirty",
  "source": "docs\\box\\step20a-2026-10-26\\extents\\midland_wolfcamp_extents_2026-10-26.pptx",
  "pools": {
-  "WCC": {
-   "slide": 4,
-   "n_freeforms": 0,
-   "n_ink_strokes": 1,
-   "stroke_kinds": [
-    "owner_outline"
-   ],
-   "generated_sqmi": 746.0729275874252,
-   "edited_sqmi": 6058.743104395802,
-   "added_sqmi": 5312.670176808388,
-   "removed_sqmi": 0.0,
-   "n_parts": 1,
-   "n_evidence": 464,
-   "inside_generated": 220,
-   "inside_edited": 461,
-   "outside_edited": 3,
-   "d1_in_generated": 853,
-   "d1_in_edited": 7318,
-   "outside_by_county": {
-    "Crockett": 1,
-    "Ector": 1,
-    "Reagan": 1
-   },
-   "visual": "WCC"
-  },
   "WCD": {
    "slide": 5,
    "n_freeforms": 0,

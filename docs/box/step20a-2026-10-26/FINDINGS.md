@@ -162,7 +162,7 @@ defect.
 
 1. **Cards:** DONE 2026-10-26, applied in r2 (§7). Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
    WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
-2. **Pen loops:** DONE 2026-10-26 (WCC + WCD looped, the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
+2. **Pen loops:** DONE 2026-10-26 (WCD looped; WCC loop drawn then withdrawn, deck re-saved 21:16, WCC = r2 generated; the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
    loops.
 3. **Conflict to resolve (D128 vs D134 B).** D128 sent the WCB_1 ↔ WCB_2 and WCB_2 ↔ WCC swap classes to 20a's cards. D134 B
    cards only "unlike" classes. I followed D134 B (the later decision), so **WCB_1 → WCB_2 (168 flags, alike) is not
@@ -243,7 +243,7 @@ line, so the extents don't plan an extra WCB where only one is developed?
 - **(d) Cards.** If you adopt (b) + (c), the WCB_2 → WCB_1 cards (§1b) mostly answer themselves north of the line; the
   southern WCB_1 ↔ WCB_2 cards still matter.
 
-## 7. r2 regeneration (2026-10-26): your cards + D136 + owner WCD + your loops → `r2/`, `extents/edited/`
+## 7. r2 regeneration (2026-10-26): your cards + D136 + owner WCD + your WCD loop → `r2/`, `extents/edited/`
 
 One rebuild, read-only, nothing stored. r1 (what you reviewed) is left as it was. Commits 5b5e992 (inputs) and 52a7fb2
 (speed fix, below).
@@ -290,16 +290,22 @@ The benches stay separable after the moves (D128, no pooling, unaffected).
 | WCA_1 | r2 generated, no loop drawn | `r2/extents/extent_WCA_1_v1.geojson` | 5,519 (5,613) | 5,204 |
 | WCB_1 | r2 generated, no loop drawn | `r2/extents/extent_WCB_1_v1.geojson` | 5,220 (5,127) | 5,599 |
 | WCB_2 | r2 generated, D136 clip (2,298 before the clip), no loop drawn | `r2/extents/extent_WCB_2_v1.geojson` | 2,003 (2,041 clipped) | 851 |
-| WCC | **your loop** (slide 4) | `extents/edited/extent_WCC_v1_edited.geojson` | 6,059 (746) | **7,318** (generated: 853) |
+| WCC | r2 generated (your slide-4 loop withdrawn) | `r2/extents/extent_WCC_v1.geojson` | 652 (746) | 699 |
 | WCD | **your loop** (slide 5) | `extents/edited/extent_WCD_v1_edited.geojson` | 3,371 (1,627) | 3,598 (generated: 1,747) |
 
-Both loops were read as drawn (`extents/edited/reading_*.png`: your red stroke and the black reading coincide). Inside the
-loops: WCC holds 461 of 464 ≥ 2016 laterals, WCD 771 of 804.
+The WCD loop was read as drawn (`extents/edited/reading_WCD.png`: your red stroke and the black reading coincide; the
+re-saved deck re-reads byte-identical). Inside it: 771 of 804 ≥ 2016 WCD laterals.
+
+**WCC (2026-10-26, Michael: "drop my red edit for WCC and just use the black WCC extent you originally derived").** The
+re-saved deck has no stroke on slide 4; the WCC edited files are removed. The black outline on the slide was r1's (746 sq
+mi, 853 undrilled). Stored = the **r2** generated extent, as for WCA_1 / WCB_1 / WCB_2: same construction, same shape, on
+the r2 WCC set (649 wells; 25 moved to WCB_2, 12 in from WCB_2). It is 652 sq mi, 699 undrilled; the west flank pulls in
+~1 mi (`r2/extents/visual_WCC.png` vs `extents/visual_WCC.png`). 216 of 464 ≥ 2016 WCC laterals are inside; the SE body
+(72) and the scattered north development stay out, as you chose. Storing the r1 outline instead would mismatch the
+membership it is stored with.
 
 **Flags before storage:**
-- **WCC density.** Your loop adds 6,465 undrilled WCC locations over the generated extent. The north lobe is held by
-  scattered single tests (`extents/edited/visual_WCC_edited.png`). For scale: 7,318 undrilled on 464 modern laterals,
-  against WCB_2's 851 on 1,596. That may be what you intend; it is the largest single swing in 20a's location count.
+- ~~WCC density~~ — resolved: loop withdrawn, WCC = generated (699 undrilled).
 - **4246139575** (UNIVERSITY "3-19" 51H, one of your six WCD wells) sits just outside your WCD loop at its south tip
   (31.26°N). It is pre-2016, so it is not ≥ 2016 evidence. Extend the loop or leave it.
 - **Speed fix (no number moves):** the pooling contrast fitted one dummy column per 5-mi block on every bootstrap draw
@@ -329,6 +335,6 @@ python -m scripts.box_family_qc --family MID_WC --out docs/box/step20a-2026-10-2
     --verdicts docs/box/step20a-2026-10-26/cards_sample.csv --owner-benches docs/box/step20a-2026-10-26/owner_benches.csv     # ~90 s with --cache
 python -m scripts.box_family_extents --wells docs/box/step20a-2026-10-26/r2 --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland --step 20a --visual-bodies 50
 python -m scripts.box_family_extent_edits --pptx docs/box/step20a-2026-10-26/extents/midland_wolfcamp_extents_2026-10-26.pptx \
-    --slide 4=WCC --slide 5=WCD --wells docs/box/step20a-2026-10-26/r2 --ext docs/box/step20a-2026-10-26/extents --basin midland
+    --slide 5=WCD --wells docs/box/step20a-2026-10-26/r2 --ext docs/box/step20a-2026-10-26/extents --basin midland
 ```
 The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames are r1's.
