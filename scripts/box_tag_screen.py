@@ -182,6 +182,10 @@ def main(argv: list[str] | None = None) -> int:
         sample = pd.concat([sample, rest[[c for c in sample.columns if c in rest.columns]]], ignore_index=True)
     lost = set(carried["api10"]) - (set(sample["api10"]) if len(sample) else set())
     assert not lost, f"verdicts would be dropped: {sorted(lost)}"
+    if sample_path.exists() and len(sample):  # keep the row order Michael edits by: existing rows where they were, new ones after
+        prev = pd.read_csv(sample_path, dtype=str)["api10"].tolist()
+        pos = {k: i for i, k in enumerate(prev)}
+        sample = sample.assign(_o=sample["api10"].astype(str).map(pos)).sort_values("_o", kind="stable", na_position="last").drop(columns="_o")
     sample.to_csv(sample_path, index=False)
     cls.to_csv(a.out / "classes.csv")
 
