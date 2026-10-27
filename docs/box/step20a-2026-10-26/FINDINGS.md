@@ -607,8 +607,17 @@ BOX bar, fail at the strict bar.**
   - A plausible story (Michael, conjecture, no data): both were permitted and named for their targets, then one landed
     shallower after a casing-plan change while drilling.
   - Both vendors say WOLFCAMP C for 4512WC, likely copied from the permit. So two vendors agreeing on a named well
-    does not confirm its landing. The screen cannot see such a well unless depth flags it: 4512WC sits off band, with
-    no local WCB_1 band to suggest.
+    does not confirm its landing. Only depth can flag such a well, and here it did not, because of a detector defect:
+  - **Bad-TVD witnesses poison the local bands.** 4512WC has 8 WCB_1 witnesses within 1.5 mi, but two of them are
+    Mayer 4509H / 4511H at 841 / 845 ft TVD. Those two push the WCB_1 IQR to 1,588 ft, past the 150-ft coherence cap,
+    so the band is dropped.
+  - Without them, the band is 6 wells, median 6,799 ft, IQR 26 ft. 4512WC then sits 13 ft from it and flags
+    WCC → WCB_1. 4512WB flags WCB_2 → WCC either way.
+  - **Midland-wide (scratch re-score, live tags):** 20 witnesses have TVD < 2,500 ft. Excluding them restores a band
+    for 57 wells, changes the status of about 20, and adds 3 Wolfcamp flags (WCB_1 → WCA_1 ×2, and this
+    WCC → WCB_1).
+  - The fix is the §8.1 depth gate applied to witnesses, not just subjects. It changes `box.bench_qc` for every
+    basin, so it is not built: your call.
 - **The file was saved from Excel.** Excel reformatted dates (m/d/yyyy), booleans (TRUE/FALSE) and float precision.
   The screen reads only api10, verdict and the destination, so nothing is affected. Rows the run regenerates come back
   clean; the 22 carried free-text rows keep Excel's formatting.
