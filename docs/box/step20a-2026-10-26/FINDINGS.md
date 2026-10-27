@@ -327,8 +327,86 @@ same tag question.
   (18 s a fit on WCA_1 / WCB_1, hours per run). It now absorbs the blocks by within-block demeaning (Frisch–Waugh). The
   coefficient is identical to 1e-14 (test pinned) and the run takes 88 s.
 
-**Still open at gate 20a:** the storage go (the five rows + extents above); asks 3, 4 and 6 in §4; the unlike-threshold
+**Superseded order (Michael 2026-10-26, §8): fix the Midland tags first, then re-run 20a, then store.** **Still open at gate 20a:** the storage go (the five rows + extents above); asks 3, 4 and 6 in §4; the unlike-threshold
 confirm (§4.1).
+
+## 8. Midland tag screen (2026-10-26): every PDP tag vs its neighbourhood → `tag_screen/`
+
+**Why (Michael):** many Midland PDP wells tagged WCC are questionable, worst to the north, which defeats drawing extents
+around them. Screen all Midland PDP tags against their neighbourhood bands, pick a subset for manual review, fix the
+tags in the warehouse, then re-run 20a. Spraberry classes are carded at 20b.
+
+**The blind spot it closes.** The 1.5-mi consensus bands are built from the neighbours' tags, so a neighbourhood that
+shares one wrong label "agrees" with itself. The warehouse tag takes Novi's formation unless Novi's call is coarse
+(sql/16), and Novi's `WOLFCAMP C` counts as fine-grained: Novi sets 563 of the 662 WCC tags. Enverus agrees on only
+305 of those 563 (WCB_2 173, WCB_1 41, WCD 27, WCA_1 9, other 8). North of the WCC extent it agrees on 35 of 105.
+The stack also thins northward. Below the local WCA_1 band, WCB_2 goes from ~520 ft (south) to ~300 ft (north) and
+WCD from ~1,870 to ~1,200 ft. So the screen uses local bands, never fixed southern offsets.
+
+**Rules (fixed before any card was looked at; `box/tag_screen.py`):**
+- **A (depth):** the well sits in another bench's local band (consensus `flag`) AND at least one vote that does not
+  come from the neighbours' tags names that bench: the other vendor's label, sql/23's nearest bench, or GOR.
+  Destination = that bench.
+- **B (label):** Novi and Enverus disagree AND the neighbourhood cannot confirm the tag (off band / ambiguous / no
+  evidence). Destination = the other vendor's bench.
+- A coarse Novi value is no vote. Sand ↔ carbonate swaps are never flags.
+- Counted, not flagged: the vendors disagree but the well sits in its own tag's band (`conflict_agree.csv`). There,
+  depth cannot settle naming.
+
+Caveat: on the large Enverus-sourced classes (WCA_1 ↔ WCB_1, WCB_1 ↔ WCB_2) Novi's call is coarse, so the second vote
+is almost always sql/23. sql/23 is a separate depth method (nearest of 12 reference laterals), not a fully independent
+witness.
+
+**Result** (28,859 producing horizontals, as of the 20a pull, read-only):
+- **1,526 flagged (5.3 %):** 885 under rule A, 641 under rule B, in 98 classes.
+- **Flag rate by tag:** WCC 24.8 % (164 of 662), DEAN 12.4 %, WCB_2 5.2 %, WCD 4.7 %, LSSH 4.6 %, WCA_1 3.7 %,
+  WCB_1 2.7 %. Small tags are worse: OTHER 18 %, MISS 50 %, STRN 93 %.
+- **WCC:** 164 flagged, 55 of them north of the extent's top. Proposed: WCB_2 105, WCB_1 24, WCD 18 (14 north),
+  WCA_1 9, other 8. Another 112 WCC wells have Enverus disagreeing while sitting in a WCC band (85 Enverus WCB_2).
+  Those are not flagged.
+- **Wolfcamp scope:** 56 classes (1,042 wells) touch the Wolfcamp; 42 classes (484 wells) are Spraberry-only (20b).
+  **21 classes are carded** (913 wells, 556 cohort): those with ≥ 5 D9-cohort wells. 35 small classes (129 wells, 33
+  cohort) are listed only and keep their tags.
+- **Spraberry ↔ Wolfcamp crossings are carded now** (DEAN → WCA_1, WCA_1 → DEAN, LSSH → WCA_1 / WCB_1). They are §4
+  item 4.
+
+**Cards (`tag_screen/cards.html`, verdicts in `tag_screen/cards_sample.csv`).** Sequential:
+- 5 cards per class. 5/5 agree accepts; 0–1 of 5 rejects (even 5 more agrees cannot reach 7/10); otherwise 5 more and
+  the class is judged at 7/10 (qc_rule.CLASS_GATE).
+- Your 20a verdicts are reused where the same well proposes the same move: 34 wells, `verdict_source = 20a`.
+  WCB_2 → WCB_1 (A) is already accepted on them (6/6).
+- WCA_1 → WCB_1 (6/8), WCB_1 → WCA_1 (3/6), WCC → WCB_2 (A) (6/9) and WCB_2 → WCC (3/5) go straight to round 2.
+- **92 new cards** for this round. Each card shows the tag source, both vendors' raw labels and the proposed bench.
+
+**Warehouse fix (needs your "go apply"; nothing written).** An accepted class becomes rows in
+`ref.formation_tag_overrides` (seed CSV + `scripts.apply_formation_tag_overrides`). An override wins over the vendor
+labels in `curated.formation_blueox`. Live dependents (read-only pg_depend query, 2026-10-26):
+- Level 1: bench_reference, codev_context, intel_formation_blueox, intel_pdp_support, producing_reference,
+  wells_enriched (view).
+- Level 2: formation_blueox_tvd, reconciled_inventory, erebor_locations, net_new_pdp, intel_forecast_accuracy(_vintage),
+  dev_scenario (view).
+- Level 3: box_scout_locations (view).
+
+It is a REFRESH chain, not a DROP / CASCADE rebuild. I was wrong earlier on both counts: it is not a cascade rebuild,
+but it is also not "just the 90k-row view". Several of these are quarterly-owned (not in the nightly) and
+intel_pdp_support is the ~50-min one. sql/44's own header says to bundle with a quarterly-chain rebuild window.
+
+**Consequences:**
+- intel_formation_blueox re-infers Novi PUD / RES stick benches from bench_reference. Midland stick tags can move, which
+  changes 20a's undrilled counts; the 20a re-run picks that up.
+- Delaware rows don't change (Midland api10s only), but the refresh is basin-wide.
+
+**Conflict to flag, not resolved (convention of record).** sql/44's header says a row lands in the override table "only
+after MM ratifies it well-by-well (supervised rounds, no auto-flips)". Class-wholesale acceptance writes rows for wells
+nobody looked at individually. The Delaware precedent left exactly this option open: "WCB_1 → WCB_2 class wholesale
+accept, 51 rows, 9/1 sample", never taken.
+
+Options:
+- (a) Allow class-accepted rows, each with a provenance note (class, sample k/n, date). Amend the header.
+- (b) Keep well-by-well. Cards then pick the classes worth a full review, and you review every well in them.
+- (c) Class acceptance stays BOX-only, as 20a already does. The warehouse gets only the wells you card.
+
+Your call.
 
 ## 5. How to check
 
@@ -353,3 +431,9 @@ python -m scripts.box_family_extent_edits --pptx docs/box/step20a-2026-10-26/ext
     --slide 5=WCD --wells docs/box/step20a-2026-10-26/r2 --ext docs/box/step20a-2026-10-26/extents --basin midland
 ```
 The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames are r1's.
+
+**Tag screen (§8), read-only (~70 s with --cache):**
+```
+python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen \n    --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv            # round 1
+python -m scripts.box_tag_screen ... --round 2                                 # after round-1 verdicts: tops up the mixed classes
+```

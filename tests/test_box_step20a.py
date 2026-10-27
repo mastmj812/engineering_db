@@ -233,3 +233,61 @@ def test_fe_contrast_equals_explicit_block_dummies():
     X["is_b"] = is_b.astype(float)
     ref = np.linalg.lstsq(X.values, y, rcond=None)[0][-1]
     assert abs(fq.fe_contrast(y, is_b, block, year) - ref) < 1e-10
+
+
+# --- tag screen (box/tag_screen.py) -------------------------------------------------------------------------------
+
+
+def _screen_frame(rows):
+    cols = ["api10", "formation_blueox", "cons_status", "cons_suggest", "sql23_nearest", "cons_gor_vote", "cons_own_delta",
+            "cons_nearest_delta", "cohort", "tag_source", "novi_formation", "novi_code", "env_code"]
+    d = pd.DataFrame(rows, columns=cols)
+    lab = d[["api10", "tag_source", "novi_formation", "novi_code", "env_code"]]
+    return d.drop(columns=["tag_source", "novi_formation", "novi_code", "env_code"]), lab
+
+
+def test_tag_screen_novi_coarse_list_matches_sql16():
+    from pathlib import Path
+
+    from box import tag_screen as ts
+
+    sql = Path("sql/16_formation_blueox.sql").read_text(encoding="utf-8")
+    block = sql[sql.index("(w.formation IN ("):sql.index("AS is_trigger")]
+    import re
+
+    assert set(re.findall(r"'([^']+)'", block)) == ts.NOVI_COARSE
+
+
+def test_tag_screen_rules():
+    from box import tag_screen as ts
+
+    s, lab = _screen_frame([
+        # A: depth flag + sql/23 agrees
+        ["1", "WCC", "flag", "WCB_2", "WCB_2", "none", 200.0, 30.0, True, "novi", "WOLFCAMP C", "WCC", "WCC"],
+        # depth flag but no independent vote: not flagged
+        ["2", "WCC", "flag", "WCB_2", "WCC", "own", 200.0, 30.0, True, "novi", "WOLFCAMP C", "WCC", "WCC"],
+        # B: vendors disagree, off band
+        ["3", "WCC", "off_band", None, None, "none", np.nan, 300.0, True, "novi", "WOLFCAMP C", "WCC", "WCD"],
+        # vendors disagree but the well sits in its own band: counted, not flagged
+        ["4", "WCC", "agree", None, None, "none", 10.0, 10.0, True, "novi", "WOLFCAMP C", "WCC", "WCB_2"],
+        # coarse Novi value is no vote: an Enverus-sourced tag with Novi 'WOLFCAMP B' has no second label
+        ["5", "WCB_1", "off_band", None, None, "none", np.nan, 300.0, True, "enverus", "WOLFCAMP B", "WCB_1", "WCB_1"],
+    ])
+    d = ts.screen(s, lab).set_index("api10")
+    assert d.loc["1", "screen_class"] == "WCC->WCB_2 (A)"
+    assert d.loc["2", "screen_rule"] == ""
+    assert d.loc["3", "screen_class"] == "WCC->WCD (B)"
+    assert d.loc["4", "screen_rule"] == "" and bool(d.loc["4", "conflict_agree"])
+    assert pd.isna(d.loc["5", "other_vendor"]) and d.loc["5", "screen_rule"] == ""
+
+
+def test_tag_screen_sequential_decision():
+    from box import tag_screen as ts
+
+    assert ts.decide(5, 5, 40) == "accept"
+    assert ts.decide(1, 5, 40) == "reject"  # 1 + 5 more < 7
+    assert ts.decide(2, 5, 40) == "round 2"
+    assert ts.decide(7, 10, 40) == "accept"
+    assert ts.decide(6, 10, 40) == "reject"
+    assert ts.decide(3, 4, 4) == "accept"  # carded in full: precision 0.75
+    assert ts.decide(0, 0, 40) == "pending"

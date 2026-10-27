@@ -1,0 +1,187 @@
+{
+ "built_at": "2026-10-26T21:49:03-05:00",
+ "git_sha": "3a355f6+dirty",
+ "basin": "midland",
+ "family": "MID_WC",
+ "round": 1,
+ "asof": "2026-09-01",
+ "n_producers": 28859,
+ "n_flagged": 1526,
+ "by_rule": {
+  "A": 885,
+  "B": 641
+ },
+ "n_conflict_agree": 453,
+ "classes": {
+  "WCA_1->WCB_1 (A)": {
+   "n": 258,
+   "n_cohort": 167,
+   "prior_judged": 8,
+   "prior_agree": 6,
+   "state_before": "round 2",
+   "new_cards": 2
+  },
+  "WCB_2->WCB_1 (A)": {
+   "n": 104,
+   "n_cohort": 69,
+   "prior_judged": 6,
+   "prior_agree": 6,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCB_1->WCB_2 (A)": {
+   "n": 95,
+   "n_cohort": 56,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCB_1->WCA_1 (A)": {
+   "n": 63,
+   "n_cohort": 46,
+   "prior_judged": 6,
+   "prior_agree": 3,
+   "state_before": "round 2",
+   "new_cards": 4
+  },
+  "WCC->WCB_2 (B)": {
+   "n": 75,
+   "n_cohort": 29,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "DEAN->WCA_1 (B)": {
+   "n": 39,
+   "n_cohort": 23,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCC->WCB_2 (A)": {
+   "n": 30,
+   "n_cohort": 21,
+   "prior_judged": 9,
+   "prior_agree": 6,
+   "state_before": "round 2",
+   "new_cards": 1
+  },
+  "DEAN->WCA_1 (A)": {
+   "n": 34,
+   "n_cohort": 20,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCA_1->DEAN (A)": {
+   "n": 23,
+   "n_cohort": 17,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "OTHER->WCA_1 (B)": {
+   "n": 17,
+   "n_cohort": 16,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "LSSH->WCA_1 (A)": {
+   "n": 18,
+   "n_cohort": 13,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "LSSH->WCA_1 (B)": {
+   "n": 15,
+   "n_cohort": 12,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCC->WCB_1 (B)": {
+   "n": 18,
+   "n_cohort": 10,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCC->WCD (B)": {
+   "n": 18,
+   "n_cohort": 10,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "LSSH->WCB_1 (A)": {
+   "n": 11,
+   "n_cohort": 10,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "OTHER->WCD (B)": {
+   "n": 48,
+   "n_cohort": 7,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCB_1->WCC (A)": {
+   "n": 8,
+   "n_cohort": 7,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCD->WCC (B)": {
+   "n": 11,
+   "n_cohort": 6,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "WCB_2->WCC (A)": {
+   "n": 10,
+   "n_cohort": 6,
+   "prior_judged": 5,
+   "prior_agree": 3,
+   "state_before": "round 2",
+   "new_cards": 5
+  },
+  "WCC->WCA_1 (B)": {
+   "n": 9,
+   "n_cohort": 6,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  },
+  "OTHER->WCB_1 (B)": {
+   "n": 9,
+   "n_cohort": 5,
+   "prior_judged": 0,
+   "prior_agree": 0,
+   "state_before": "pending",
+   "new_cards": 5
+  }
+ },
+ "n_new_cards": 92,
+ "seconds": 66.5
+}
