@@ -1,4 +1,4 @@
-# Step 13b — refresh tooling + container rehearsal (2026-10-26/27). AT GATE 13b.
+# Step 13b — refresh tooling + container rehearsal (2026-10-26/27). GATE 13b CLOSED (D137).
 
 This implements the D126 contract (`docs/box/step13a-2026-10-26/CONTRACT.md`). The tooling merged as eng_db #197. The rehearsal
 (§3) stored only into the throwaway `scripts.box_rehearsal` container. **Nothing has been written to the live database.**
@@ -167,6 +167,9 @@ Each matched location is put in ONE class, in this order.
   - zero from the 134 added wells.
 
 ## 4. Your calls (gate 13b)
+
+**Decided 2026-10-27 (D137): (b) live spacing, and gate 13b is closed.** Each refresh's findings report the WellSpacing
+revision count since the previous pool. The container stays up until you say to remove it.
 
 1. **Novi spacing revisions between refreshes.** D126 freezes the measured-spacing METHOD. It is silent on the VALUES, which
    Novi rewrites nightly. So a re-build of the same pool a week later selects different analogs (here −37.6 MMbbl,
