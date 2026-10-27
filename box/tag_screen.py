@@ -42,6 +42,11 @@ NOVI_COARSE: frozenset[str] = frozenset({
 # sql/16 basin-scoped triggers (trig CTE): Novi values coarse in one basin only — pinned to sql/16 by a test.
 # Drafted 2026-10-27 (Midland WOLFCAMP C); not live until the sql/16 apply.
 NOVI_COARSE_BY_BASIN: dict[str, frozenset[str]] = {"midland": frozenset({"WOLFCAMP C"})}
+# Classes Michael parked: no more cards, never applied (tags stay), verdicts already written kept. Keyed by basin.
+PARKED: dict[str, dict[str, str]] = {"midland": {
+    "OTHER->WCA_1 (B)": "parked 2026-10-27 (Michael): TVD-defect bucket, not a naming class (median margin 6,225 ft; "
+                        "8 of 9 verdicts TVD holds); OTHER is outside every cohort",
+}}
 UNCONFIRMED = ("off_band", "ambiguous", "no_evidence")
 CARDS_PER_CLASS = 10
 MIN_COHORT_TO_CARD = 5  # a class with fewer D9-cohort wells barely moves a bench's evidence: listed, not carded, not applied

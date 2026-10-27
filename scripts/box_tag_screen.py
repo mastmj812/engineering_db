@@ -154,11 +154,13 @@ def main(argv: list[str] | None = None) -> int:
         g = flagged[flagged["screen_class"] == name]
         done = g[g["api10"].isin(judged)]
         n_agree = int((done["api10"].map(judged) == "agree").sum())
-        state = ts.decide(n_agree, len(done), len(g))
-        target = 0 if state in ("accept", "reject") else ts.CARDS_PER_CLASS if state == "round 2" else ts.ROUND1
+        parked = ts.PARKED.get(a.basin, {}).get(name)
+        state = "parked" if parked else ts.decide(n_agree, len(done), len(g))
+        target = 0 if state in ("accept", "reject", "parked") else ts.CARDS_PER_CLASS if state == "round 2" else ts.ROUND1
         need = max(0, min(target, len(g)) - len(done))
         new = ts.sample(g[~g["api10"].isin(seen)], need) if need else g.iloc[0:0]
-        status[name] = {"n": int(c["n"]), "n_cohort": int(c["n_cohort"]), "prior_judged": len(done), "prior_agree": n_agree, "state_before": state, "new_cards": len(new)}
+        status[name] = {"n": int(c["n"]), "n_cohort": int(c["n_cohort"]), "prior_judged": len(done), "prior_agree": n_agree, "state_before": state, "new_cards": len(new),
+                        **({"parked": parked} if parked else {})}
         for _, s in done.iterrows():
             text, src = verbatim[s["api10"]]
             rows.append({**{k: s.get(k) for k in _COLS}, "verdict": text, "verdict_source": src})
@@ -198,9 +200,10 @@ def main(argv: list[str] | None = None) -> int:
         f"{len(carded)} of them carded (≥ {ts.MIN_COHORT_TO_CARD} cohort wells), {len(listed)} listed only. Spraberry-only classes: 20b.</p>"),
         "<div class=toc>" + "".join(f"<a href=\"#c{_esc(n)}\">{_esc(n)}</a>" for n in carded.index if status[n]["new_cards"]) + "</div>",
         "<h2>Carded classes</h2>",
-        _table(["class", "flagged", "cohort", "other-vendor votes", "sql/23 votes", "GOR votes", "judged on 20a cards", "new cards"],
+        _table(["class", "flagged", "cohort", "other-vendor votes", "sql/23 votes", "GOR votes", "judged on earlier cards", "state", "new cards"],
                [[n, _fmt(int(r.n)), _fmt(int(r.n_cohort)), _fmt(int(r.vendor_votes)), _fmt(int(r.sql23_votes)), _fmt(int(r.gor_votes)),
-                 f"{status[n]['prior_judged']} ({status[n]['prior_agree']} agree)", _fmt(status[n]["new_cards"])] for n, r in carded.iterrows()]),
+                 f"{status[n]['prior_judged']} ({status[n]['prior_agree']} agree)", status[n].get("parked") or status[n]["state_before"],
+                 _fmt(status[n]["new_cards"])] for n, r in carded.iterrows()]),
         "<h2>Wolfcamp classes listed, not carded (&lt; 5 cohort wells; tags stay)</h2>",
         _table(["class", "flagged", "cohort"], [[n, _fmt(int(r.n)), _fmt(int(r.n_cohort))] for n, r in listed.iterrows()]),
         ("<h2>Not flagged: vendors disagree, but the well sits in its own tag's band</h2>"

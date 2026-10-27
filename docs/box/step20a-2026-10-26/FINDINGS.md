@@ -535,6 +535,9 @@ filled in too (all agree), so the two Discovery classes now decide on the count.
 - **OTHER → WCA_1 (B) is a TVD-defect bucket, not a naming class.** Median margin is 6,225 ft, 8 of 9 verdicts are TVD
   holds, and 3 of the 4 new cards sit under 2,000 ft TVD. A rejected or uncarded class keeps its tags, and OTHER is
   outside every cohort. Parking it costs nothing; the proposed depth gate (§8.1) would remove it.
+  **Parked 2026-10-27 (Michael)** via `box.tag_screen.PARKED`. A parked class gets no more cards and is never applied,
+  so its tags stay. The verdicts already written are kept. The next round run drops its 4 blank cards; they stay in
+  the current file until then, so the file you're editing is never rewritten under you.
 - **These classes are on the what-if basis.** Override rows are seeded by api10 from whichever basis is live when they
   are written: after the sql/16 apply, or on live tags without it.
 

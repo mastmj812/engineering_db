@@ -332,3 +332,17 @@ def test_tag_screen_clear_verdict():
     assert ts.clear_verdict("reject. Canyon sands, out of scope") == "reject"
     assert ts.clear_verdict("WCD", "WCB_1") == "reject" and ts.clear_verdict("WCD", "WCD") == "agree"
     assert ts.clear_verdict("bad tvd") == "" and ts.clear_verdict("Lets discuss") == "" and ts.clear_verdict(np.nan) == ""
+
+
+def test_tag_screen_parked_names_are_class_names():
+    """A typo in a parked class name parks nothing, silently: pin the 'FROM->TO (A|B)' shape and real bench codes."""
+    import re
+
+    from box import tag_screen as ts
+    codes = {"WCA_1", "WCB_1", "WCB_2", "WCC", "WCD", "DEAN", "LSSH", "MS", "OTHER", "(unmapped)"}
+    for basin, parked in ts.PARKED.items():
+        assert basin in ("midland", "delaware")
+        for name, why in parked.items():
+            m = re.fullmatch(r"(\S+)->(\S+) \(([AB])\)", name)
+            assert m and m[1] in codes and m[2] in codes, name
+            assert why.startswith("parked 20")
