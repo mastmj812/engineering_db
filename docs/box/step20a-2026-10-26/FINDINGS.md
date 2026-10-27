@@ -304,6 +304,21 @@ the r2 WCC set (649 wells; 25 moved to WCB_2, 12 in from WCB_2). It is 652 sq mi
 (72) and the scattered north development stay out, as you chose. Storing the r1 outline instead would mismatch the
 membership it is stored with.
 
+**Why (Michael):** "a lot of the midland PDP wells currently shown as formation_blueox=WCC are pretty questionable [...]
+especially those to the north, so i opted to the original (black) extent towards the south." The extent is drawn only
+where the WCC tags are trusted.
+
+**What the extent does not do.** It limits where WCC PUDs are forecast. It does not take the questionable WCC-tagged wells
+out of the WCC analog pool: the D54 ladder runs 5 → 7.5 → 10 → 15 → 20 mi until 10 analogs are eligible, and it can
+reach outside the extent. Of the 464 ≥ 2016 WCC laterals, 217 are inside, 35 within 5 mi of the edge, 19 at 5–10 mi,
+42 at 10–20 mi (32 of them north) and 151 beyond 20 mi (out of reach). The outside wells run lower (median 12-mo oil
+6,600–9,700 bbl / 1,000 ft vs 11,960 inside). At ~26 modern wells per 5-mi circle on average, most locations should fill
+at 5 mi; edge locations may not. The analog radius reached and the share of analogs from outside the extent are
+measurable only at the forecast step. **Proposed check (21a, not a rule change):** report both for every Midland WCC
+location. If outside wells carry material weight, the fix is a tag decision (13e-style, warehouse first) or a pool rule.
+Either way it is your call, not decided here. Where the questionable northern wells actually land (WCB_2? WCD?) is the
+same tag question.
+
 **Flags before storage:**
 - ~~WCC density~~ — resolved: loop withdrawn, WCC = generated (699 undrilled).
 - **4246139575** (UNIVERSITY "3-19" 51H, one of your six WCD wells) sits just outside your WCD loop at its south tip
