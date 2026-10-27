@@ -488,7 +488,7 @@ re-scored. sql/23 is not re-simulated; 0 corrected rows were affected.
 |---|---|---|
 | Producer tags changed | — | 258 (WCC → WCB_2 173, WCB_1 41, WCD 27, WCA_1 9, OTHER 5, MS 3) |
 | Flagged | 1,526 (A 885, B 641) | 1,372 (A 859, B 513) |
-| WCC flagged | 164 of 662 (24.8 %) | 19 of 404 (4.7 %), in line with the other Wolfcamp benches |
+| WCC flagged | 164 of 662 (24.8 %) | 19 of 404 (4.7 %), in line with the other Wolfcamp benches. **Partly circular, see §8.4** |
 | Vendors disagree, sits in own band | 453 | 341 |
 | Carded classes | 21 | 16 |
 
@@ -540,6 +540,51 @@ filled in too (all agree), so the two Discovery classes now decide on the count.
   the current file until then, so the file you're editing is never rewritten under you.
 - **These classes are on the what-if basis.** Override rows are seeded by api10 from whichever basis is live when they
   are written: after the sql/16 apply, or on live tags without it.
+
+### 8.4 What-if round 2 back (2026-10-27) + consistency audit of every verdict
+
+Round 2 is recorded: 9 verdicts with `verdict_source = what-if round 2`, 141 rows, 0 lost, 0 edited, 0 new cards.
+WCB_2 → WCC (A) now stands at 2 agree, 7 reject, 1 hold → reject. OTHER → WCA_1 (B) stays parked; its 4 cards
+were filled in and are kept as written. Michael asked to be told where his calls don't hang together. Found:
+
+1. **The 5 Sequitur cards are the only cards whose what-if tag differs from the live tag.** All 5 are live WCC and
+   what-if WCB_2.
+   - "reject" on these cards means "they are WCB_2", which agrees with the drafted rule.
+   - If the intent was "they are WCC, leave them", these are agrees, and the class reaches 7/10 → accept.
+   - University 9 2107WC ("already showing WCC") and 2109WC (reject) are on the same pad, 35 ft apart in TVD.
+   - Every vote except Enverus says WCC: the operator's "WC" suffix, Novi, the local WCC band (4–55 ft away) and
+     sql/23 nearest.
+2. **The drafted sql/16 rule misfires where operators name their landings.**
+   - Ovintiv, Andrews: the operator's suffixes separate cleanly by depth: WA 9,268, WB 9,725, WC 10,195 and WD
+     10,643 ft median TVD. The rule moves 14 of the 15 WC wells to WCB_1 (Enverus WOLFCAMP B UPPER). That is the
+     bench of their own WB wells, 470 ft shallower. Whatever WC is, it is not the WB landing.
+   - Sequitur: 12 "…WC" wells go to WCB_2.
+   - In all, 34 of the 258 retagged producers carry a WC landing suffix.
+3. **The what-if WCC flag rate (4.7 %) is partly circular, and is withdrawn as evidence for the rule.**
+   - 112 of the 258 retagged wells sat inside their own WCC band on live tags. After the retag, 84 of them also sit
+     inside the new band, because their neighbours were retagged with them.
+   - A whole neighbourhood relabelled together looks clean to the consensus detector either way (§1, the known
+     blind spot).
+   - The non-circular evidence for the rule remains §8.2's independent-band test, which is net positive but noisy.
+4. **OTHER → WCD (B) accepts at 7/10 but holds three different populations:**
+   - Deep and consistent: Glasscock, Upton, Reagan and Terry, 9,000–11,100 ft.
+   - Shallow Irion/Schleicher, 6,616–7,308 ft: your Canyon-sand rejects, with 4 unseen members, 2 of them Moriah.
+   - A Diamondback Johnson Ranch / George Holt Glass pad in Martin, first production 2025-10-01: 7 wells, all at
+     TVD 10,605 ft, with name series 24xx, 26xx, 28xx and 43xx. This is a pad-copied TVD, not 7 measurements.
+   - Wholesale it would move all three.
+5. **Discovery: accepting the two LSSH (A) classes moves 14 of 85 Discovery LSSH producers** (5 → WCA_1, 9 → WCB_1).
+   - The other 71 stay LSSH, among them 43 unflagged LS-named wells. 34 of the 85 are in Midland County, where LS
+     depths looked right (§8.1).
+   - One SH-named well goes to WCA_1.
+   - The classes are not the Discovery group call: that would be a separate operator × area decision.
+6. **Own-destination calls that no class carries:** Cypert B 57-51 221 → WCD and Coachwhip 17-20 261 → WCD. Under
+   convention (a) they land only as single-well `carded <date>` rows.
+7. **Minor:**
+   - In OTHER → WCB_1 (B), 3 of the 5 rejects are wells under 1,100 ft TVD (marked "bad tvd" elsewhere). Same
+     outcome: tags stay.
+   - Accepting both B1/B2 reverse classes creates 2 local inversions. One is FEE 'BN' 2110WB → WCB_1 at 9,992 ft,
+     113 ft below 2101WB → WCB_2 at 9,879 ft, 0.53 mi apart.
+   - Seeding rule (both bars): a well whose own card says reject is never moved by its class's accept.
 
 ## 5. How to check
 

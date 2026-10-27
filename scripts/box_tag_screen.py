@@ -76,6 +76,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="earlier card files (20a / tag-screen cards_sample.csv): same well, same move -> agree / reject reused")
     ap.add_argument("--whatif", action="store_true", help="apply the drafted sql/16 basin trigger to the tags in memory, re-score")
     ap.add_argument("--round", type=int, default=1, choices=(1, 2))
+    ap.add_argument("--label", default=None,
+                    help="verdict_source stamped on this folder's newly filled cards (default: 'round 1' / 'what-if round 1')")
     a = ap.parse_args(argv)
     t0 = dt.datetime.now(tz=dt.UTC)
     family = FAMILIES[a.family]
@@ -130,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
             carried_rows.append(free.assign(verdict_source=free["verdict_source"].replace("", "round 1")))
 
     sample_path = a.out / "cards_sample.csv"
-    fresh = "what-if round 1" if a.whatif else "round 1"  # label for this folder's own round-1 verdicts
+    fresh = a.label or ("what-if round 1" if a.whatif else "round 1")  # label for this folder's newly filled verdicts
     if a.round == 2:
         old = pd.read_csv(sample_path, dtype=str).fillna("")
         for r in old.itertuples():
@@ -141,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
         carried_rows.append(kept.assign(verdict_source=kept["verdict_source"].replace("", fresh)))
     elif sample_path.exists():  # verdicts other than the prefilled ones are Michael's record: never overwrite them
         old = pd.read_csv(sample_path, dtype=str).fillna("")
-        if ((old["verdict"].str.strip() != "") & ~old["verdict_source"].isin(["20a", "round 1", "what-if round 1"])).any():
+        if ((old["verdict"].str.strip() != "") & ~old["verdict_source"].isin(["20a", "round 1", "what-if round 1", "what-if round 2"])).any():
             raise fc.VerdictFileExists(f"{sample_path} carries verdicts; use --round 2")
     carried = pd.concat(carried_rows, ignore_index=True).drop_duplicates("api10", keep="last") if carried_rows else pd.DataFrame(columns=["api10"])
     seen = set(judged) | set(carried["api10"])  # a well already carded is never re-drawn
