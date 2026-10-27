@@ -67,7 +67,7 @@ COHORT_FP_MIN = date(2016, 1, 1)  # D9
 COHORT_LL_MIN_FT = 6_000  # D9
 COHORT_LL_MAX_FT = 13_000  # D9
 SEASONING_DAYS = 182  # consensus v2.1: >= 6 mo online before a TVD is evidence
-# consensus v2.2 (2026-10-27, BOX step 20a): a TVD this shallow is a data defect (TVD = MD class), never band evidence.
+# consensus v2.2 (2026-10-27, BOX step 20a; D138, both basins): a TVD this shallow is a data defect (TVD = MD class), never band evidence.
 # Two Mayer wells at 841 / 845 ft pushed a local WCB_1 IQR to 1,588 ft and dropped a 6-well, 26-ft-IQR band. Witness gate
 # only: the well itself is still scored.
 MIN_WITNESS_TVD_FT = 2_500

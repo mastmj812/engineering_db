@@ -651,10 +651,9 @@ longer counts as depth evidence for its neighbours' bands. It is still scored as
   All five were first judged at step 1 (2026-10-06). The pool refresh keeps judged wells' calls (the frozen
   universe), so **no current or record pool changes.** 305H is already in `pool-2026-10-26/wells_final_BS2_S.csv`.
   The gate reaches only wells first judged at a later refresh (13c onward).
-- **Settled-decision conflict (flagged, not resolved).** D134 (B) applies the Delaware class rule "as written", and
-  D135 accepted the parameterization as "Delaware bit-identical". The class rule is untouched, but the detector that
-  feeds it now gives different Delaware output: 91 statuses and 5 rule outcomes. Future refreshes in both basins run
-  on v2.2. This needs a decision of record, or the gate becomes Midland-only.
+- **Ratified as D138 (Michael, 2026-10-27): v2.2 holds in both basins; the Delaware output change is accepted.** This had conflicted with D134 (B), which applies the Delaware class rule "as written", and D135, which accepted the
+  parameterization as "Delaware bit-identical". The class rule is untouched; the detector feeding it changed (91
+  Delaware statuses, 5 rule outcomes). Future refreshes in both basins run on v2.2.
 
 ## 5. How to check
 
