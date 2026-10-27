@@ -398,8 +398,10 @@ intel_pdp_support is the ~50-min one. sql/44's own header says to bundle with a 
 
 **Conflict to flag, not resolved (convention of record).** sql/44's header says a row lands in the override table "only
 after MM ratifies it well-by-well (supervised rounds, no auto-flips)". Class-wholesale acceptance writes rows for wells
-nobody looked at individually. The Delaware precedent left exactly this option open: "WCB_1 → WCB_2 class wholesale
-accept, 51 rows, 9/1 sample", never taken.
+nobody looked at individually. Delaware precedent (2026-09-16/17): wholesale accept of the 51-well WCB_1 → WCB_2 class
+was offered on a 9/10 sample and not taken. You reviewed all 51 instead: 44 ratified (13 in batch 1, 31 in batch 2),
+7 rejected, 86 % against the sample's 90 %. The rejects sat at the evidence margin (82–119 ft). A wholesale accept would
+have written those 7 as overrides. The opposite class, WCB_2 → WCB_1, ran ~26 % and stayed case-by-case.
 
 Options:
 - (a) Allow class-accepted rows, each with a provenance note (class, sample k/n, date). Amend the header.
