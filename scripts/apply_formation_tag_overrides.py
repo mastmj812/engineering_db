@@ -41,7 +41,8 @@ def _run_sql_with_copy(cur, sql_path: Path, table: str, columns: str, csv_path: 
 
 
 def main() -> None:
-    expected = list(csv.DictReader(open(SEED, encoding="utf-8")))
+    with open(SEED, encoding="utf-8") as fh:
+        expected = list(csv.DictReader(fh))
     t0 = time.monotonic()
     conn = get_connection()
     try:
@@ -78,6 +79,15 @@ def main() -> None:
             ).fetchone()[0]
             print(f"    rows with source=ratified_override: {n_src} (identity: = override rows "
                   f"whose api10 exists in curated.wells)", flush=True)
+            # sql/16 basin-scoped trigger (Midland 'WOLFCAMP C' defers to Enverus): no Novi-sourced row may remain
+            # where Enverus has a value.
+            n_trig = cur.execute("""
+                SELECT COUNT(*) FROM curated.formation_blueox fb JOIN curated.wells w USING (api10)
+                WHERE fb.basin_blueox = 'midland' AND w.formation = 'WOLFCAMP C'
+                  AND w.env_interval IS NOT NULL AND fb.formation_blueox_source = 'novi'
+            """).fetchone()[0]
+            print(f"    midland WOLFCAMP C rows still Novi-sourced with an Enverus value: {n_trig}"
+                  f"  [{'OK' if n_trig == 0 else 'MISMATCH'}]", flush=True)
     finally:
         conn.close()
     print(f"=== DONE in {time.monotonic() - t0:.0f}s — now run the downstream chain "

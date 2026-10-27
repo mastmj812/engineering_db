@@ -39,6 +39,9 @@ NOVI_COARSE: frozenset[str] = frozenset({
     "WOLFCAMP A", "WOLFCAMP A (XY)", "WOLFCAMP A (XY) SHELF", "WOLFCAMP B", "LOWER SPRABERRY SAND",
     "WOLFCAMP", "BONE SPRING", "BONE SPRINGS", "SPRABERRY", "UNKNOWN", "SUB-WOODFORD",
 })
+# sql/16 basin-scoped triggers (trig CTE): Novi values coarse in one basin only — pinned to sql/16 by a test.
+# Drafted 2026-10-27 (Midland WOLFCAMP C); not live until the sql/16 apply.
+NOVI_COARSE_BY_BASIN: dict[str, frozenset[str]] = {"midland": frozenset({"WOLFCAMP C"})}
 UNCONFIRMED = ("off_band", "ambiguous", "no_evidence")
 CARDS_PER_CLASS = 10
 MIN_COHORT_TO_CARD = 5  # a class with fewer D9-cohort wells barely moves a bench's evidence: listed, not carded, not applied
@@ -65,10 +68,11 @@ def pull_labels(conn: Any, basin: str, api10: list[str]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=cols).astype({"api10": str})
 
 
-def other_vendor(row: pd.Series) -> str | None:
-    """The bench the vendor NOT used for the tag would give (None = no usable second label)."""
+def other_vendor(row: pd.Series, basin_coarse: frozenset[str] = frozenset()) -> str | None:
+    """The bench the vendor NOT used for the tag would give (None = no usable second label). ``basin_coarse`` = the
+    basin's extra coarse Novi values (only once the sql/16 basin trigger is live, or in a what-if)."""
     src = row.get("tag_source")
-    novi = None if (row.get("novi_formation") in NOVI_COARSE) else row.get("novi_code")
+    novi = None if (row.get("novi_formation") in NOVI_COARSE | basin_coarse) else row.get("novi_code")
     env = row.get("env_code")
     if src == "novi":
         return env if isinstance(env, str) else None
@@ -77,10 +81,28 @@ def other_vendor(row: pd.Series) -> str | None:
     return None  # ratified_override / unmapped: the tag is already a human call
 
 
-def screen(scored: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
+def whatif_retag(producers: pd.DataFrame, labels: pd.DataFrame, basin: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """What the drafted sql/16 basin trigger does to the producer tags: a Novi-sourced tag whose Novi value is coarse in
+    this basin takes the Enverus code instead (crosswalk gap -> '(unmapped)'; no Enverus value -> unchanged, as sql/16).
+    Rows sql/23 TVD-corrected keep their corrected tag (sql/23 is not re-simulated) — an approximation, counted by the
+    caller. Returns (producers, labels), both with the change applied."""
+    extra = NOVI_COARSE_BY_BASIN.get(basin, frozenset())
+    lab = labels.copy()
+    hit = lab["novi_formation"].isin(extra) & (lab["tag_source"] == "novi") & lab["env_interval"].notna()
+    new = lab.loc[hit].set_index("api10")["env_code"].fillna("(unmapped)")
+    lab.loc[hit, "tag_source"] = "enverus"
+    p = producers.copy()
+    m = p["api10"].map(new)
+    keep = p["formation_blueox_tvd_corrected"].fillna(False).astype(bool)
+    p["whatif_changed"] = m.notna() & ~keep & (m != p["formation_blueox"])
+    p.loc[m.notna() & ~keep, "formation_blueox"] = m[m.notna() & ~keep]
+    return p, lab
+
+
+def screen(scored: pd.DataFrame, labels: pd.DataFrame, basin_coarse: frozenset[str] = frozenset()) -> pd.DataFrame:
     """Apply rules A / B to a consensus-scored frame; adds other_vendor, votes_*, screen_rule, screen_dest, screen_class."""
     d = scored.merge(labels, on="api10", how="left")
-    d["other_vendor"] = [other_vendor(r) for _, r in d.iterrows()]
+    d["other_vendor"] = [other_vendor(r, basin_coarse) for _, r in d.iterrows()]
     tag = d["formation_blueox"]
     sug = d["cons_suggest"]
     d["vote_vendor"] = d["other_vendor"].notna() & (d["other_vendor"] == sug)
@@ -129,6 +151,21 @@ def sample(cls: pd.DataFrame, n: int = CARDS_PER_CLASS) -> pd.DataFrame:
 
 
 ROUND1 = 5  # cards per class in round 1 (sequential, below)
+
+
+def clear_verdict(text: Any, dest: str | None = None) -> str:
+    """A card verdict as the class count reads it: 'agree' / 'reject' / '' (not counted). 'reject...' with a comment is a
+    reject; a bare bench code is the reviewer's own destination (agree when it is the proposed one, else reject for the
+    class — the well-level call is kept verbatim in the file); any other free text is a hold, never counted."""
+    v = "" if text is None or (isinstance(text, float) and np.isnan(text)) else str(text).strip()
+    low = v.lower()
+    if low == "agree":
+        return "agree"
+    if low.startswith("reject"):
+        return "reject"
+    if v and v == v.upper() and " " not in v and any(ch.isalpha() for ch in v):
+        return "agree" if dest is not None and v == dest else "reject"
+    return ""
 
 
 def decide(n_agree: int, n_judged: int, n_class: int, gate: float = 0.70) -> str:

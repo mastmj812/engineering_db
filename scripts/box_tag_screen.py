@@ -6,7 +6,10 @@
 Read-only: pulls + scores the basin's producing horizontals (box.bench_qc), pulls both vendors' labels, applies
 box.tag_screen rules A / B, writes screen_flags.csv (every flagged well), classes.csv, conflict_agree.csv, cards.html,
 cards_sample.csv (verdict column; wells judged on the 20a cards are prefilled, verdict_source = 20a) and summary.json.
-Round 2 (--round 2) reads the round-1 verdicts and tops up the mixed classes. Nothing is written to the warehouse.
+Round 2 (--round 2) reads the round-1 verdicts and tops up the mixed classes; every non-blank verdict already in the
+file is carried over verbatim (free-text comments included). --whatif applies the drafted sql/16 basin trigger
+(box.tag_screen.NOVI_COARSE_BY_BASIN) to the tags in memory and re-scores before screening. Nothing is written to the
+warehouse.
 """
 
 from __future__ import annotations
@@ -23,7 +26,15 @@ import pandas as pd
 
 from box import flag_cards as fc
 from box import tag_screen as ts
-from box.bench_qc import DEFAULT_PARAMS, NM_FIPS, _esc, _fmt, _project_xy_ft, _table
+from box.bench_qc import (
+    DEFAULT_PARAMS,
+    NM_FIPS,
+    _esc,
+    _fmt,
+    _project_xy_ft,
+    _table,
+    score_consensus,
+)
 from box.family_qc import FAMILIES
 from scripts.box_family_qc import _git_sha, _scored
 
@@ -61,7 +72,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--family", default="MID_WC", help="classes touching this family are carded (the Spraberry waits for 20b)")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--cache", type=Path, default=None, help="pickle of the scored frame; read if present, else written")
-    ap.add_argument("--prior-verdicts", type=Path, default=None, help="20a cards_sample.csv: same well, same move -> verdict reused")
+    ap.add_argument("--prior-verdicts", type=Path, nargs="+", default=None,
+                    help="earlier card files (20a / tag-screen cards_sample.csv): same well, same move -> agree / reject reused")
+    ap.add_argument("--whatif", action="store_true", help="apply the drafted sql/16 basin trigger to the tags in memory, re-score")
     ap.add_argument("--round", type=int, default=1, choices=(1, 2))
     a = ap.parse_args(argv)
     t0 = dt.datetime.now(tz=dt.UTC)
@@ -73,7 +86,22 @@ def main(argv: list[str] | None = None) -> int:
 
     with get_connection() as conn:
         labels = ts.pull_labels(conn, a.basin, scored["api10"].tolist())
-    d = ts.screen(scored, labels)
+    whatif: dict = {}
+    basin_coarse: frozenset[str] = frozenset()
+    if a.whatif:
+        attrs = dict(scored.attrs)
+        p, labels = ts.whatif_retag(scored.drop(columns=[c for c in scored.columns if c.startswith("cons_")]), labels, a.basin)
+        basin_coarse = ts.NOVI_COARSE_BY_BASIN.get(a.basin, frozenset())
+        lab_hit = labels["novi_formation"].isin(basin_coarse) & (labels["tag_source"] == "enverus")
+        whatif = {"trigger": sorted(basin_coarse), "retagged": int(p["whatif_changed"].sum()),
+                  "kept_sql23_corrected": int((p["api10"].isin(labels.loc[lab_hit, "api10"]) & p["formation_blueox_tvd_corrected"].fillna(False).astype(bool)).sum()),
+                  "by_move": {f"{a_}->{b_}": int(n) for (a_, b_), n in
+                              scored.loc[p["whatif_changed"].values, "formation_blueox"].to_frame("a").assign(b=p.loc[p["whatif_changed"], "formation_blueox"].values)
+                              .value_counts().items()}}
+        p.attrs.update(attrs)
+        scored = score_consensus(p.drop(columns=["whatif_changed"]))
+        scored.attrs.update(attrs)
+    d = ts.screen(scored, labels, basin_coarse)
     flagged = d[d["screen_rule"] != ""]
     flagged[_COLS].sort_values(["screen_class", "api10"]).to_csv(a.out / "screen_flags.csv", index=False)
     d.loc[d["conflict_agree"], [c for c in _COLS if not c.startswith("screen")]].to_csv(a.out / "conflict_agree.csv", index=False)
@@ -81,25 +109,40 @@ def main(argv: list[str] | None = None) -> int:
     cls["touches_family"] = [ts.touches(f, t, family) for f, t in zip(cls["from"], cls["to"])]
     cls["carded"] = cls["touches_family"] & (cls["n_cohort"] >= ts.MIN_COHORT_TO_CARD)
 
-    # prior verdicts: a 20a card on the same well proposing the same destination
-    prior: dict[str, str] = {}
-    if a.prior_verdicts:
-        pv = pd.read_csv(a.prior_verdicts, dtype={"api10": str})
+    # prior verdicts: an earlier card on the same well proposing the same destination. ``judged`` = the count's reading
+    # (agree / reject); ``verbatim`` = what was written and where (always what the file shows); ``carried`` = written
+    # verdicts the count does not read (free text: holds, data defects) — never re-drawn, never dropped.
+    judged: dict[str, str] = {}
+    verbatim: dict[str, tuple[str, str]] = {}
+    carried_rows: list[pd.DataFrame] = []
+    for path in a.prior_verdicts or []:
+        pv = pd.read_csv(path, dtype=str).fillna("")
+        dcol = "screen_dest" if "screen_dest" in pv.columns else "cons_suggest"
         for r in pv.itertuples():
-            dest = str(r.cons_suggest)
-            hit = flagged[(flagged["api10"] == r.api10) & (flagged["screen_dest"] == dest)]
-            if len(hit) and str(r.verdict).strip() in ("agree", "reject"):
-                prior[r.api10] = str(r.verdict).strip()
+            text = str(r.verdict).strip()
+            v = ts.clear_verdict(text, str(getattr(r, dcol)))
+            src = (getattr(r, "verdict_source", "") or "round 1") if "verdict_source" in pv.columns else "20a"
+            hit = flagged[(flagged["api10"] == r.api10) & (flagged["screen_dest"] == str(getattr(r, dcol)))]
+            if len(hit) and v:
+                judged[r.api10], verbatim[r.api10] = v, (text, src)
+        if "screen_class" in pv.columns:
+            free = pv[(pv["verdict"].str.strip() != "") & (pv["verdict"].map(ts.clear_verdict) == "")]
+            carried_rows.append(free.assign(verdict_source=free["verdict_source"].replace("", "round 1")))
 
     sample_path = a.out / "cards_sample.csv"
-    judged: dict[str, str] = dict(prior)
     if a.round == 2:
-        old = pd.read_csv(sample_path, dtype={"api10": str})
-        judged.update({r.api10: str(r.verdict).strip() for r in old.itertuples() if str(r.verdict).strip() in ("agree", "reject")})
-    elif sample_path.exists():  # verdicts other than the prefilled 20a ones are Michael's record: never overwrite them
         old = pd.read_csv(sample_path, dtype=str).fillna("")
-        if ((old["verdict"].str.strip() != "") & (old["verdict_source"] != "20a")).any():
+        for r in old.itertuples():
+            v = ts.clear_verdict(r.verdict, r.screen_dest)
+            if v:
+                judged[r.api10], verbatim[r.api10] = v, (str(r.verdict).strip(), r.verdict_source or "round 1")
+        carried_rows.append(old[(old["verdict"].str.strip() != "")])
+    elif sample_path.exists():  # verdicts other than the prefilled ones are Michael's record: never overwrite them
+        old = pd.read_csv(sample_path, dtype=str).fillna("")
+        if ((old["verdict"].str.strip() != "") & ~old["verdict_source"].isin(["20a", "round 1"])).any():
             raise fc.VerdictFileExists(f"{sample_path} carries verdicts; use --round 2")
+    carried = pd.concat(carried_rows, ignore_index=True).drop_duplicates("api10", keep="last") if carried_rows else pd.DataFrame(columns=["api10"])
+    seen = set(judged) | set(carried["api10"])  # a well already carded is never re-drawn
 
     pos = d["mid_lon"].notna() & d["mid_lat"].notna()
     xy = np.full((len(d), 2), np.nan)
@@ -112,16 +155,22 @@ def main(argv: list[str] | None = None) -> int:
         state = ts.decide(n_agree, len(done), len(g))
         target = 0 if state in ("accept", "reject") else ts.CARDS_PER_CLASS if state == "round 2" else ts.ROUND1
         need = max(0, min(target, len(g)) - len(done))
-        new = ts.sample(g[~g["api10"].isin(judged)], need) if need else g.iloc[0:0]
+        new = ts.sample(g[~g["api10"].isin(seen)], need) if need else g.iloc[0:0]
         status[name] = {"n": int(c["n"]), "n_cohort": int(c["n_cohort"]), "prior_judged": len(done), "prior_agree": n_agree, "state_before": state, "new_cards": len(new)}
         for _, s in done.iterrows():
-            rows.append({**{k: s.get(k) for k in _COLS}, "verdict": judged[s["api10"]], "verdict_source": "20a" if s["api10"] in prior else "round 1"})
+            text, src = verbatim[s["api10"]]
+            rows.append({**{k: s.get(k) for k in _COLS}, "verdict": text, "verdict_source": src})
         for _, s in new.iterrows():
             rows.append({**{k: s.get(k) for k in _COLS}, "verdict": "", "verdict_source": ""})
         if len(new):
             sections.append(f"<h2 id=\"c{_esc(name)}\">{_esc(name)} — {int(c['n'])} flagged ({int(c['n_cohort'])} cohort); "
                             f"{len(done)} already judged ({n_agree} agree), {len(new)} new cards</h2>" + "".join(_card(d, xy, s) for _, s in new.iterrows()))
     sample = pd.DataFrame(rows)
+    if len(carried):  # never drop a written verdict: rows not re-emitted above (free text, set-aside wells) ride along verbatim
+        rest = carried[~carried["api10"].isin(sample["api10"] if len(sample) else [])]
+        sample = pd.concat([sample, rest[[c for c in sample.columns if c in rest.columns]]], ignore_index=True)
+    lost = set(carried["api10"]) - (set(sample["api10"]) if len(sample) else set())
+    assert not lost, f"verdicts would be dropped: {sorted(lost)}"
     sample.to_csv(sample_path, index=False)
     cls.to_csv(a.out / "classes.csv")
 
@@ -131,7 +180,10 @@ def main(argv: list[str] | None = None) -> int:
     fam_conf = d[d["conflict_agree"] & (d["formation_blueox"].isin(family) | d["other_vendor"].isin(family))]
     page = [
         f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Midland tag screen</title><style>{fc._CSS}</style></head><body>",
-        f"<h1>{_esc(a.basin.title())} tag screen — review cards (round {a.round})</h1>",
+        f"<h1>{_esc(a.basin.title())} tag screen — review cards (round {a.round}){' — WHAT-IF: drafted sql/16 trigger' if a.whatif else ''}</h1>",
+        (f"<div class=meta><b>What-if:</b> Novi {', '.join(_esc(t) for t in sorted(basin_coarse))} defers to Enverus in this basin (drafted sql/16, "
+         f"NOT live). {whatif.get('retagged', 0):,} producer tags change before scoring; {whatif.get('kept_sql23_corrected', 0):,} sql/23-corrected rows keep "
+         "their corrected tag (sql/23 not re-simulated).</div>" if a.whatif else ""),
         (f"<div class=meta>Built {built}, git {_git_sha()}, read-only; {len(d):,} producing horizontals as of {_esc(scored.attrs.get('asof'))}. "
         "Rule A: the well sits in another bench's local band (1.5-mi consensus) and at least one vote that does not come from the neighbours' tags "
         "agrees (the other vendor's label, sql/23 nearest, GOR). Rule B: Novi and Enverus disagree and the neighbourhood cannot confirm the tag "
@@ -157,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
         "</body></html>",
     ]
     (a.out / "cards.html").write_text("".join(page), encoding="utf-8")
-    summary = {"built_at": built, "git_sha": _git_sha(), "basin": a.basin, "family": a.family, "round": a.round, "asof": str(scored.attrs.get("asof")),
+    summary = {"built_at": built, "git_sha": _git_sha(), "basin": a.basin, "family": a.family, "round": a.round, "whatif": whatif or None, "asof": str(scored.attrs.get("asof")),
                "n_producers": len(d), "n_flagged": len(flagged), "by_rule": flagged["screen_rule"].value_counts().to_dict(),
                "n_conflict_agree": int(d["conflict_agree"].sum()), "classes": status, "n_new_cards": int(sum(s["new_cards"] for s in status.values())),
                "seconds": round((dt.datetime.now(tz=dt.UTC) - t0).total_seconds(), 1)}

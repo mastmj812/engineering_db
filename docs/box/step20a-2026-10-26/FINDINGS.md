@@ -414,6 +414,95 @@ ones you did. Rejected classes write nothing; a well you rejected inside an acce
 and its table COMMENT are amended in the same commit as the first class-accepted rows (the COMMENT reaches the live table
 only when that apply runs).
 
+### 8.1 Round 1 back (2026-10-27) and what it showed
+
+Your round-1 verdicts are in `tag_screen/cards_sample.csv` (126 rows: 92 yours, 34 reused from 20a). 18 are free text.
+The card count reads them as follows (`box.tag_screen.clear_verdict`). The text itself is kept verbatim in every file:
+- `reject …` counts as a reject.
+- A bare bench code (Cypert B 221: `WCD`) is your destination for that well. It counts as a reject for its class.
+- Anything else is a hold: not counted, and the well is never drawn again. This covers 8 "bad tvd", 1 "suspect tvd"
+  and 6 Discovery "let's discuss".
+
+**Shallow TVDs: Midland worse in modern wells.**
+- Producing horizontals with TVD < 2,500 ft: Delaware 101, Midland 67.
+- **Delaware:** 54 New Mexico wells carry a 9-ft placeholder; 86 of the 101 are pre-2016.
+- **Midland:** 66 of 67 have TVD = MD (400–2,000 ft), and 45 are 2016+.
+- Since 2016: Midland 0.18 % against Delaware 0.06 %.
+- Novi and Enverus carry identical bad values, so the defect is upstream of the warehouse. Novi then picks the formation
+  from the bad depth (Yates / Grayburg / Clear Fork), which lands the well as `OTHER`.
+- Proposed, not yet built: wells more than 2,000 ft from every local band leave the screen as data defects. That catches
+  all 8 "bad tvd" cards and keeps Cypert (1,276 ft).
+
+**Discovery LS/SH (Reagan / Irion / Glasscock, ~40 wells): the label looks wrong, not the TVD.**
+- Novi and Enverus agree on TVD and MD to the foot. None are on planned surveys.
+- Discovery's own Reagan pads stack by median TVD: AS 7,003 → AN 7,126 → **LS 7,192** → LA 7,242 → UB 7,281 →
+  **SH 7,404** → US 7,456 → CS 7,726.
+- So LS and SH sit inside the Wolfcamp A/B sequence, below Wolfcamp A wells on the same pads. A Lower Spraberry Shale
+  can't sit there.
+- Their AS and UB benches line up with Permian Resources' Wolfcamp A / B offsets. Discovery's LS wells in Midland and
+  Upton County (~8,900 ft) look genuine.
+- Open: your call on LS → WCA_1, SH → WCB_1 as one group.
+
+### 8.2 Novi WOLFCAMP C in the Midland: drafted sql/16 rule + what-if screen
+
+**Evidence.** Novi's 'WOLFCAMP C' is not on the sql/16 coarse list, so it sets 563 of the Midland's 662 producer WCC
+tags. The test below scores those wells against 2-mile bands built only from wells whose tag does not come from Novi's
+WOLFCAMP C call (546 with a sane TVD and a jury):
+
+| Nearest independent band | WCB_1 | WCB_2 | WCC | WCD |
+|---|---|---|---|---|
+| Wells | 113 | 203 | 190 | 16 |
+
+- **Where Enverus disagrees, its label is usually the depth-consistent one.** For Enverus WCB_2: 99 of 168 sit nearest
+  WCB_2, against 22 nearest WCC.
+- **South:** both-vendor WCC sits a median 148 ft below WCB_2, under 150 ft in half the cases. WCD is ~1,300 ft down.
+- **North:** there is no both-vendor WCC band anywhere.
+- This is nearest-median-band with no margin gates: direction, not per-well calls.
+
+**Draft (`sql/16`, not applied).**
+- A `trig` CTE adds basin-scoped triggers: Midland 'WOLFCAMP C' defers to Enverus ENVInterval. As before, it falls back
+  to Novi when Enverus is NULL.
+- The Delaware is untouched.
+- Pinned to `box.tag_screen.NOVI_COARSE_BY_BASIN` by a test.
+
+**Dry run.** The new SELECT, evaluated read-only against live:
+- 95,651 rows, unique on api10, same count as live.
+- 1,335 Midland rows switch source to Enverus. 849 keep WCC; 486 change code: WCB_2 257, WCD 120, WCB_1 55, OTHER 22,
+  WCA_1 18, other 14. These cover all wells, not just producers.
+- 0 Delaware rows change.
+
+**Blast radius.** It is a logic change, so `DROP … CASCADE`. Same chain as the override apply:
+- bench_reference, codev_context, intel_formation_blueox, intel_pdp_support, producing_reference, wells_enriched;
+- then formation_blueox_tvd, reconciled_inventory, **erebor_locations**, net_new_pdp, intel accuracy, dev_scenario;
+- then box_scout_locations.
+
+The sql/16 header's "nothing heavy depends on it" was stale and is corrected. The change rides the same window as the
+override rows: `scripts.apply_formation_tag_overrides`, which now also asserts 0 Midland WOLFCAMP C rows still
+Novi-sourced where Enverus has a value, then the quarterly tail it names. Off-hours, apps dark until the tail finishes.
+Needs your "go apply".
+
+**What-if screen (`tag_screen_whatif_wc/`).** The rule is applied to the producer tags in memory, then everything is
+re-scored. sql/23 is not re-simulated; 0 corrected rows were affected.
+
+| | Live tags | What-if |
+|---|---|---|
+| Producer tags changed | — | 258 (WCC → WCB_2 173, WCB_1 41, WCD 27, WCA_1 9, OTHER 5, MS 3) |
+| Flagged | 1,526 (A 885, B 641) | 1,372 (A 859, B 513) |
+| WCC flagged | 164 of 662 (24.8 %) | 19 of 404 (4.7 %), in line with the other Wolfcamp benches |
+| Vendors disagree, sits in own band | 453 | 341 |
+| Carded classes | 21 | 16 |
+
+- **Retagged wells mostly sit cleanly.** Of the 258, only 6 flag again: WCB_2 → WCC (A).
+- **The WCC rule-B classes disappear:** WCC → WCB_2 (75), WCC → WCB_1 (18), WCC → WCD (18) and WCC → WCA_1 (9).
+- **Class states with your round-1 + 20a verdicts reused** (same well, same move):
+  - Accept: WCB_2 → WCB_1 (A), 5/5.
+  - Reject: WCA_1 → WCB_1 (6/10), WCB_1 → WCA_1 (4/10), DEAN → WCA_1 (B) (1/5), WCC → WCB_2 (A) (3/7),
+    WCD → WCC (B) (0/5).
+  - Round 2: WCB_1 → WCB_2, DEAN → WCA_1 (A), WCA_1 → DEAN, LSSH → WCA_1 (B), OTHER → WCD (B).
+  - Pending: LSSH → WCA_1 (A), LSSH → WCB_1 (A), OTHER → WCA_1 (B), OTHER → WCB_1 (B), WCB_2 → WCC (A).
+- **41 new cards**, none of them a well you've already seen. 13 sit in the two open groups (7 Discovery LS/SH, 6 with
+  TVD < 2,500 ft); leave those blank until the Discovery group and the depth gate are decided.
+
 ## 5. How to check
 
 ```
@@ -422,7 +511,7 @@ python -m scripts.box_family_qc --family MID_WC --out <dir> --analogue --cards -
 python -m scripts.box_family_extents --wells <dir> --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland --visual-bodies 50   # ~9 min
 ```
 
-- **Full suite:** 749 passed, 46 skipped.
+- **Full suite:** 761 passed, 46 skipped (2026-10-27, after §8.2).
 - **Ruff:** clean on every touched file. mypy is not installed in this venv.
 - **WCB split (§6):** `python -m scripts.box_wcb_split --wells docs/box/step20a-2026-10-26` (~30 s, read-only).
 - **Delaware unchanged.** WCC rebuilt through the modified extent code = its step-15 build within 6e-6 sq mi. Delaware
@@ -440,6 +529,12 @@ The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames 
 
 **Tag screen (§8), read-only (~70 s with --cache):**
 ```
-python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen \n    --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv            # round 1
+python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen \
+    --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv            # round 1
 python -m scripts.box_tag_screen ... --round 2                                 # after round-1 verdicts: tops up the mixed classes
+python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
+    --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
+                                                                               # drafted sql/16 Midland WOLFCAMP C rule, in memory
 ```
+sql/16 dry run (read-only): evaluate the CREATE body inside `SET TRANSACTION READ ONLY` and diff it against
+`curated.formation_blueox` (§8.2 numbers).

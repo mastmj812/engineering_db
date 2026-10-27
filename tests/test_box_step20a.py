@@ -291,3 +291,44 @@ def test_tag_screen_sequential_decision():
     assert ts.decide(6, 10, 40) == "reject"
     assert ts.decide(3, 4, 4) == "accept"  # carded in full: precision 0.75
     assert ts.decide(0, 0, 40) == "pending"
+
+
+def test_tag_screen_basin_coarse_matches_sql16_trig():
+    import re
+    from pathlib import Path
+
+    from box import tag_screen as ts
+
+    sql = Path("sql/16_formation_blueox.sql").read_text(encoding="utf-8")
+    trig = sql[sql.index("trig AS ("):sql.index("AS defer_to_enverus")]
+    found = {b: set(re.findall(r"'([^']+)'", blk)) for b, blk in re.findall(r"basin_token = '(\w+)' AND base\.novi_formation IN \(([^)]*)\)", trig)}
+    assert found == {b: set(v) for b, v in ts.NOVI_COARSE_BY_BASIN.items()}
+
+
+def test_tag_screen_whatif_retag():
+    from box import tag_screen as ts
+
+    prod = pd.DataFrame({"api10": ["1", "2", "3", "4", "5"], "formation_blueox": ["WCC", "WCC", "WCC", "WCC", "WCB_1"],
+                         "formation_blueox_tvd_corrected": [False, False, True, False, False]})
+    lab = pd.DataFrame({"api10": ["1", "2", "3", "4", "5"],
+                        "novi_formation": ["WOLFCAMP C", "WOLFCAMP C", "WOLFCAMP C", "WOLFCAMP C", "WOLFCAMP B"],
+                        "env_interval": ["WOLFCAMP B LOWER", None, "WOLFCAMP B LOWER", "WOLFCAMP C AND ABOVE", "WOLFCAMP B UPPER"],
+                        "tag_source": ["novi", "novi", "novi", "novi", "enverus"], "env_code": ["WCB_2", None, "WCB_2", "OTHER", "WCB_1"]})
+    p, lb = ts.whatif_retag(prod, lab, "midland")
+    p = p.set_index("api10")
+    assert p.loc["1", "formation_blueox"] == "WCB_2" and p.loc["1", "whatif_changed"]
+    assert p.loc["2", "formation_blueox"] == "WCC"  # no Enverus value: sql/16 falls back to Novi
+    assert p.loc["3", "formation_blueox"] == "WCC"  # sql/23-corrected row kept (not re-simulated)
+    assert p.loc["4", "formation_blueox"] == "OTHER"
+    assert lb.set_index("api10").loc["1", "tag_source"] == "enverus"
+    q, _ = ts.whatif_retag(prod, lab, "delaware")
+    assert (q["formation_blueox"] == prod["formation_blueox"]).all()
+
+
+def test_tag_screen_clear_verdict():
+    from box import tag_screen as ts
+
+    assert ts.clear_verdict("agree") == "agree"
+    assert ts.clear_verdict("reject. Canyon sands, out of scope") == "reject"
+    assert ts.clear_verdict("WCD", "WCB_1") == "reject" and ts.clear_verdict("WCD", "WCD") == "agree"
+    assert ts.clear_verdict("bad tvd") == "" and ts.clear_verdict("Lets discuss") == "" and ts.clear_verdict(np.nan) == ""

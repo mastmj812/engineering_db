@@ -17,9 +17,14 @@
 --     (ref.formation_tag_overrides is likewise a JOINed table). An override is a
 --     human-ratified re-tag (gunbarrel review); it WINS over the crosswalk and
 --     stamps formation_blueox_source = 'ratified_override'.
---   * Mapping LOGIC change (this file) -> DROP + re-create THIS matview only.
---     Nothing heavy depends on it; only curated.wells_enriched (a plain VIEW)
---     joins it, and that rebuilds for free.
+--   * Mapping LOGIC change (this file) -> DROP ... CASCADE + re-create. NOT cheap
+--     any more: live dependents (pg_depend, 2026-10-27) are bench_reference,
+--     codev_context, intel_formation_blueox, intel_pdp_support,
+--     producing_reference, wells_enriched (view) -> formation_blueox_tvd,
+--     reconciled_inventory, erebor_locations, net_new_pdp,
+--     intel_forecast_accuracy(_vintage), dev_scenario (view) ->
+--     box_scout_locations (view). Apply inside a chain-rebuild window via
+--     scripts/apply_formation_tag_overrides (its header carries the tail order).
 --
 -- Inputs all come from curated.wells columns, whose definitions are byte-identical
 -- to what the old inline `bx` LATERAL read from the raw tables:
@@ -33,7 +38,9 @@
 -- unreliable Novi values that defer to Enverus ENVInterval (finer Wolfcamp/
 -- Spraberry benches; generic/unknown values; and SUB-WOODFORD, which Enverus
 -- usually resolves to WOODFORD — a core step-out target). Either branch falls
--- back to the other source when the preferred value is NULL. The selected raw
+-- back to the other source when the preferred value is NULL. Basin-scoped
+-- triggers (trig CTE) add values that are coarse in one basin only: Midland
+-- 'WOLFCAMP C' (2026-10-27). The selected raw
 -- string is standardized via ref.formation_crosswalk on (basin, raw_value).
 --
 -- Basin resolves from Novi Subbasin, falling back to Enverus ENVBasin. Three
@@ -98,20 +105,35 @@ LEFT JOIN LATERAL (
                 -- WOODFORD for most modern horizontals — a core step-out target.
                 'SUB-WOODFORD'
             ))              AS is_trigger
+    ),
+    trig AS (
+        -- Basin-scoped triggers: Novi values that are coarse in ONE basin only.
+        -- Midland 'WOLFCAMP C' (BOX step 20a tag screen, 2026-10-27): Enverus
+        -- disagrees on 258 of 563 Midland producers, and local bands built
+        -- without Novi's call put ~2/3 of them at WCB_1 / WCB_2 depth; where
+        -- Enverus disagrees its label is usually the depth-consistent one.
+        -- Delaware 'WOLFCAMP C' is untouched (Delaware WCC tags are already
+        -- Enverus-sourced through the WOLFCAMP B trigger).
+        SELECT base.*,
+               (base.is_trigger
+                OR (base.basin_token = 'midland' AND base.novi_formation IN (
+                    'WOLFCAMP C'
+                ))) AS defer_to_enverus
+        FROM base
     )
     SELECT
-        base.basin_token,
-        CASE WHEN base.is_trigger
-             THEN COALESCE(base.env_interval, base.novi_formation)
-             ELSE COALESCE(base.novi_formation, base.env_interval)
+        trig.basin_token,
+        CASE WHEN trig.defer_to_enverus
+             THEN COALESCE(trig.env_interval, trig.novi_formation)
+             ELSE COALESCE(trig.novi_formation, trig.env_interval)
         END AS raw_value,
-        CASE WHEN base.is_trigger
-             THEN CASE WHEN base.env_interval IS NOT NULL THEN 'enverus' ELSE 'novi' END
-             ELSE CASE WHEN base.novi_formation IS NOT NULL THEN 'novi'
-                       WHEN base.env_interval   IS NOT NULL THEN 'enverus'
+        CASE WHEN trig.defer_to_enverus
+             THEN CASE WHEN trig.env_interval IS NOT NULL THEN 'enverus' ELSE 'novi' END
+             ELSE CASE WHEN trig.novi_formation IS NOT NULL THEN 'novi'
+                       WHEN trig.env_interval   IS NOT NULL THEN 'enverus'
                        ELSE NULL END
         END AS source
-    FROM base
+    FROM trig
 ) bx ON TRUE
 LEFT JOIN ref.formation_crosswalk fx
        ON fx.basin     = bx.basin_token
@@ -130,4 +152,4 @@ CREATE INDEX idx_curated_formation_blueox_code
 
 
 COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS
-'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / ratified re-tags) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: ref.formation_tag_overrides (human-ratified gunbarrel re-tags, source=ratified_override, sql/44) wins outright; otherwise Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD) that defer to Enverus ENVInterval, with the raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';
+'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / ratified re-tags) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: ref.formation_tag_overrides (human-ratified gunbarrel re-tags, source=ratified_override, sql/44) wins outright; otherwise Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD; Midland-only WOLFCAMP C) that defer to Enverus ENVInterval, with the raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';
