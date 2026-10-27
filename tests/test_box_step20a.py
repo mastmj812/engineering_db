@@ -293,16 +293,18 @@ def test_tag_screen_sequential_decision():
     assert ts.decide(0, 0, 40) == "pending"
 
 
-def test_tag_screen_basin_coarse_matches_sql16_trig():
-    import re
+def test_tag_screen_whatif_coarse_is_not_in_sql16():
+    """The Midland WOLFCAMP C trigger was dropped (FINDINGS §8.7): the live screen assumes sql/16 has no basin trigger."""
     from pathlib import Path
 
     from box import tag_screen as ts
 
     sql = Path("sql/16_formation_blueox.sql").read_text(encoding="utf-8")
-    trig = sql[sql.index("trig AS ("):sql.index("AS defer_to_enverus")]
-    found = {b: set(re.findall(r"'([^']+)'", blk)) for b, blk in re.findall(r"basin_token = '(\w+)' AND base\.novi_formation IN \(([^)]*)\)", trig)}
-    assert found == {b: set(v) for b, v in ts.NOVI_COARSE_BY_BASIN.items()}
+    assert "defer_to_enverus" not in sql and "trig AS (" not in sql
+    trigger_list = sql[sql.index("(w.formation IN ("):sql.index("AS is_trigger")]
+    for values in ts.NOVI_COARSE_BY_BASIN.values():
+        for v in values:
+            assert f"'{v}'" not in trigger_list
 
 
 def test_tag_screen_whatif_retag():
@@ -368,3 +370,17 @@ def test_wc_rule_depth_call():
     assert depth_call(r("off band", "WCB_2", np.nan, np.nan), rung) == ("undecided", None)
     assert depth_call(r("no jury", "OTHER", np.nan, np.nan), rung) == ("undecided", None)
     assert depth_call(r("off band", "WCB_1", np.nan, 440.0), rung) == ("other rung", "WCB_2")
+
+
+def test_tag_screen_reuse_verdict():
+    """A card counts only for its own move; a bench-code verdict is a well call that answers any move."""
+    from box import tag_screen as ts
+
+    known = {"WCB_1", "WCB_2", "WCC", "WCD"}
+    assert ts.reuse_verdict("agree", "WCB_2", "WCB_2", known) == "agree"
+    assert ts.reuse_verdict("agree", "WCB_2", "WCB_1", known) == ""  # drawn for another move
+    assert ts.reuse_verdict("reject", "WCC", "WCB_2", known) == ""
+    assert ts.reuse_verdict("WCC", "WCC", "WCB_2", known) == "reject"  # Sequitur: the well is WCC, whatever is proposed
+    assert ts.reuse_verdict("WCD", "WCB_1", "WCD", known) == "agree"
+    assert ts.reuse_verdict("agree", "WCB_2", None, known) == ""  # not flagged now
+    assert ts.reuse_verdict("bad tvd", "WCB_2", "WCB_2", known) == ""

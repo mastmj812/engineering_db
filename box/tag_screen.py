@@ -39,8 +39,9 @@ NOVI_COARSE: frozenset[str] = frozenset({
     "WOLFCAMP A", "WOLFCAMP A (XY)", "WOLFCAMP A (XY) SHELF", "WOLFCAMP B", "LOWER SPRABERRY SAND",
     "WOLFCAMP", "BONE SPRING", "BONE SPRINGS", "SPRABERRY", "UNKNOWN", "SUB-WOODFORD",
 })
-# sql/16 basin-scoped triggers (trig CTE): Novi values coarse in one basin only — pinned to sql/16 by a test.
-# Drafted 2026-10-27 (Midland WOLFCAMP C); not live until the sql/16 apply.
+# What-if only (--whatif): Novi values treated as coarse in one basin. The Midland WOLFCAMP C trigger was drafted into
+# sql/16 on 2026-10-27 and DROPPED the same day (Michael), never applied: depth backed 81 of its 258 retags and opposed
+# 91 (step 20a FINDINGS §8.7). A test pins that sql/16 carries none of these.
 NOVI_COARSE_BY_BASIN: dict[str, frozenset[str]] = {"midland": frozenset({"WOLFCAMP C"})}
 # Classes Michael parked: no more cards, never applied (tags stay), verdicts already written kept. Keyed by basin.
 PARKED: dict[str, dict[str, str]] = {"midland": {
@@ -170,6 +171,17 @@ def clear_verdict(text: Any, dest: str | None = None) -> str:
         return "reject"
     if v and v == v.upper() and " " not in v and any(ch.isalpha() for ch in v):
         return "agree" if dest is not None and v == dest else "reject"
+    return ""
+
+
+def reuse_verdict(text: Any, card_dest: str, live_dest: str | None, known: set[str]) -> str:
+    """How an earlier card counts for the move proposed NOW ('' = it does not apply). A card counts only for the move it
+    was drawn for (same destination); a bench-code verdict is the reviewer's call on the well and answers any move."""
+    if live_dest is None:
+        return ""
+    v = "" if text is None or (isinstance(text, float) and np.isnan(text)) else str(text).strip()
+    if v in known or card_dest == live_dest:
+        return clear_verdict(v, live_dest)
     return ""
 
 

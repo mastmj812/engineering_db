@@ -3,7 +3,7 @@ WCA_1->WCB_1 (A),A,WCA_1,WCB_1,258,167,0,234,65,49.95454545454545,True,True
 WCB_2->WCB_1 (A),A,WCB_2,WCB_1,104,69,0,101,6,inf,True,True
 LSSH->JM (A),A,LSSH,JM,110,65,77,87,9,32.47222222222222,False,False
 WCB_1->WCB_2 (A),A,WCB_1,WCB_2,95,56,0,89,15,inf,True,True
-WCB_1->WCA_1 (A),A,WCB_1,WCA_1,63,46,0,60,11,inf,True,True
+WCB_1->WCA_1 (A),A,WCB_1,WCA_1,64,46,0,61,11,inf,True,True
 LSSH->JM (B),B,LSSH,JM,68,36,0,0,0,520.5,False,False
 WCC->WCB_2 (B),B,WCC,WCB_2,75,29,0,0,0,288.75,True,True
 DEAN->WCA_1 (B),B,DEAN,WCA_1,39,23,0,0,0,202.0,True,True
@@ -34,10 +34,10 @@ OTHER->WCB_1 (B),B,OTHER,WCB_1,9,5,0,0,0,5731.0,True,True
 MS->LSSH (B),B,MS,LSSH,7,5,0,0,0,261.0,False,False
 MISS->OTHER (B),B,MISS,OTHER,23,4,0,0,0,2024.0,False,False
 LSSH->WCB_1 (B),B,LSSH,WCB_1,13,4,0,0,0,98.5,True,False
+WCC->WCB_1 (A),A,WCC,WCB_1,7,4,5,6,0,inf,True,False
 JM->LSSH (A),A,JM,LSSH,6,4,3,4,1,inf,False,False
 WCB_2->WCA_1 (A),A,WCB_2,WCA_1,6,4,0,6,0,inf,True,False
 WDFD->BRNT (B),B,WDFD,BRNT,7,3,0,0,0,2150.0,False,False
-WCC->WCB_1 (A),A,WCC,WCB_1,6,3,5,5,0,inf,True,False
 MS->JM (A),A,MS,JM,5,3,0,5,0,inf,False,False
 US->OTHER (B),B,US,OTHER,5,3,0,0,0,650.5,False,False
 JM->MS (B),B,JM,MS,4,3,0,0,0,331.0,False,False
@@ -73,12 +73,12 @@ WCD->WCB_2 (A),A,WCD,WCB_2,1,1,1,1,0,inf,True,False
 OTHER->WCD (A),A,OTHER,WCD,16,0,14,7,0,inf,True,False
 BRNT->OTHER (B),B,BRNT,OTHER,5,0,0,0,0,1737.5,False,False
 MS->OTHER (B),B,MS,OTHER,5,0,0,0,0,,False,False
+OTHER->WCB_1 (A),A,OTHER,WCB_1,5,0,0,5,0,inf,True,False
 STRN->WCD (A),A,STRN,WCD,5,0,5,3,0,inf,True,False
 STRN->WCD (B),B,STRN,WCD,5,0,0,0,0,,True,False
 WCC->OTHER (B),B,WCC,OTHER,5,0,0,0,0,,True,False
 WDFD->OTHER (B),B,WDFD,OTHER,5,0,0,0,0,1887.0,False,False
 OTHER->WCC (B),B,OTHER,WCC,4,0,0,0,0,,True,False
-OTHER->WCB_1 (A),A,OTHER,WCB_1,3,0,0,3,0,inf,True,False
 OTHER->DEAN (A),A,OTHER,DEAN,2,0,0,2,0,inf,False,False
 OTHER->US (B),B,OTHER,US,2,0,0,0,0,,False,False
 STRN->OTHER (B),B,STRN,OTHER,2,0,0,0,0,,False,False

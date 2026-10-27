@@ -2,3 +2,5 @@ api10,well_name,live_tag,call,source,date,note
 4231740927,CYPERT B 57-51 221,OTHER,WCD,round 1 card (OTHER->WCB_1 (B)),2026-10-27,own destination written on the card
 4222741266,COACHWHIP 17-20 261,OTHER,WCD,what-if round 2 card (OTHER->WCA_1 (B)),2026-10-27,own destination on a card of the parked class
 4223536196,MAYER 4512WC,WCC,WCB_1,Michael in chat,2026-10-27,"not carded; depth sits with the local WB wells (6,773-6,809 ft), not the WC wells (7,060-7,172 ft); both vendors say WOLFCAMP C, likely from the permit; depth wins over the name"
+4246140268,ELWOOD #16-21 4403H,WCB_1,WCB_2,what-if round 1 card (WCB_1->WCB_2 (A)): agree,2026-10-27,"not flagged on live tags: TVD 9,813 sits 4 ft from the local WCB_2 band and 63 ft from WCB_1 (ambiguous), so no class carries the call"
+4222738931,HORTON B 2223 1HA,WCA_1,DEAN,what-if round 1 card (WCA_1->DEAN (A)): agree,2026-10-27,"not flagged on live tags: TVD 7,763 sits 96 ft from the local DEAN band and 134 ft from WCA_1 (ambiguous); its class was rejected, the call is well-level"

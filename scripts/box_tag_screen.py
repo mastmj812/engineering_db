@@ -8,8 +8,10 @@ box.tag_screen rules A / B, writes screen_flags.csv (every flagged well), classe
 cards_sample.csv (verdict column; wells judged on the 20a cards are prefilled, verdict_source = 20a) and summary.json.
 Round 2 (--round 2) reads the round-1 verdicts and tops up the mixed classes; every non-blank verdict already in the
 file is carried over verbatim (free-text comments included). --whatif applies the drafted sql/16 basin trigger
-(box.tag_screen.NOVI_COARSE_BY_BASIN) to the tags in memory and re-scores before screening. Nothing is written to the
-warehouse.
+(box.tag_screen.NOVI_COARSE_BY_BASIN) to the tags in memory and re-scores before screening. A prior verdict written as
+a bench code is the reviewer's call on the WELL: it answers whatever move the screen now proposes for it (agree when the
+code is the destination, else reject). --depth-check adds the depth-only result (scripts.box_wc_rule_depth_check) to the
+cards of the wells it covers. Nothing is written to the warehouse.
 """
 
 from __future__ import annotations
@@ -44,7 +46,7 @@ _COLS = ["screen_class", "screen_rule", "api10", "well_name", "operator", "count
          "gor12", "mid_lon", "mid_lat"]
 
 
-def _card(df: pd.DataFrame, xy: np.ndarray, subj: pd.Series) -> str:
+def _card(df: pd.DataFrame, xy: np.ndarray, subj: pd.Series, depth: dict[str, dict] | None = None) -> str:
     i = int(df.index[df["api10"] == subj["api10"]][0])
     png, meta = fc.card_figure(subj, fc._neighbourhood(df, xy, i, DEFAULT_PARAMS), DEFAULT_PARAMS)
     own = meta["bands"].get(subj["formation_blueox"])
@@ -63,6 +65,15 @@ def _card(df: pd.DataFrame, xy: np.ndarray, subj: pd.Series) -> str:
         f"sql/23 nearest {_esc(subj['sql23_nearest'])} · 12-mo oil {_fmt(subj['oil12_kft'], 0)} bbl/kft{'' if subj['cohort'] else ' (not cohort)'} · "
         f"GOR {_fmt(subj.get('gor12'), 0)} scf/bbl"
     )
+    dc = (depth or {}).get(str(subj["api10"]))
+    if dc:  # FINDINGS §8.7: jury = clean witnesses minus every Novi WOLFCAMP C well
+        new, off, below = dc["new_tag"], dc.get("off_new_ft"), dc.get("off_wca1_ft")
+        kv += (f"<br><b>depth only</b> (neighbours Novi does not call WOLFCAMP C), for Enverus {_esc(new)}: "
+               f"<b>{_esc(dc['depth_call'])}</b> · jury bands {_esc(dc['jury_bands'] or 'none')}")
+        if off is not None and not pd.isna(off):
+            kv += f" · {_fmt(off, 0)} ft from the {_esc(new)} band (+ = deeper)"
+        if below is not None and not pd.isna(below):
+            kv += f" · {_fmt(below, 0)} ft below WCA_1 (rung {_esc(dc['ladder_rung'])})"
     return f"<div class=card id=\"w{_esc(subj['api10'])}\"><div class=kv>{kv}</div><img src=\"{png}\"></div>"
 
 
@@ -76,6 +87,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="earlier card files (20a / tag-screen cards_sample.csv): same well, same move -> agree / reject reused")
     ap.add_argument("--whatif", action="store_true", help="apply the drafted sql/16 basin trigger to the tags in memory, re-score")
     ap.add_argument("--round", type=int, default=1, choices=(1, 2))
+    ap.add_argument("--depth-check", type=Path, default=None,
+                    help="scripts.box_wc_rule_depth_check CSV: its depth-only result is printed on the cards of the wells it covers")
     ap.add_argument("--label", default=None,
                     help="verdict_source stamped on this folder's newly filled cards (default: 'round 1' / 'what-if round 1')")
     a = ap.parse_args(argv)
@@ -119,6 +132,7 @@ def main(argv: list[str] | None = None) -> int:
     bad = {str(f): ts.unknown_bench_codes(pd.read_csv(f, dtype=str)["verdict"], known) for f in vfiles}
     if any(bad.values()):
         raise ValueError(f"verdicts that look like bench codes but are not one: { {k: v for k, v in bad.items() if v} }")
+    dest_now = dict(zip(flagged["api10"], flagged["screen_dest"].astype(str)))  # the move proposed for each flagged well now
     judged: dict[str, str] = {}
     verbatim: dict[str, tuple[str, str]] = {}
     carried_rows: list[pd.DataFrame] = []
@@ -127,10 +141,9 @@ def main(argv: list[str] | None = None) -> int:
         dcol = "screen_dest" if "screen_dest" in pv.columns else "cons_suggest"
         for r in pv.itertuples():
             text = str(r.verdict).strip()
-            v = ts.clear_verdict(text, str(getattr(r, dcol)))
             src = (getattr(r, "verdict_source", "") or "round 1") if "verdict_source" in pv.columns else "20a"
-            hit = flagged[(flagged["api10"] == r.api10) & (flagged["screen_dest"] == str(getattr(r, dcol)))]
-            if len(hit) and v:
+            v = ts.reuse_verdict(text, str(getattr(r, dcol)), dest_now.get(r.api10), known)
+            if v:
                 judged[r.api10], verbatim[r.api10] = v, (text, src)
         if "screen_class" in pv.columns:
             free = pv[(pv["verdict"].str.strip() != "") & (pv["verdict"].map(ts.clear_verdict) == "")]
@@ -140,8 +153,8 @@ def main(argv: list[str] | None = None) -> int:
     fresh = a.label or ("what-if round 1" if a.whatif else "round 1")  # label for this folder's newly filled verdicts
     if a.round == 2:
         old = pd.read_csv(sample_path, dtype=str).fillna("")
-        for r in old.itertuples():
-            v = ts.clear_verdict(r.verdict, r.screen_dest)
+        for r in old.itertuples():  # same reading as the prior files
+            v = ts.reuse_verdict(r.verdict, r.screen_dest, dest_now.get(r.api10), known)
             if v:
                 judged[r.api10], verbatim[r.api10] = v, (str(r.verdict).strip(), r.verdict_source or fresh)
         kept = old[(old["verdict"].str.strip() != "")]
@@ -153,6 +166,8 @@ def main(argv: list[str] | None = None) -> int:
     carried = pd.concat(carried_rows, ignore_index=True).drop_duplicates("api10", keep="last") if carried_rows else pd.DataFrame(columns=["api10"])
     seen = set(judged) | set(carried["api10"])  # a well already carded is never re-drawn
 
+    depth = ({str(k): r for k, r in pd.read_csv(a.depth_check, dtype={"api10": str}).set_index("api10").to_dict("index").items()}
+             if a.depth_check else None)
     pos = d["mid_lon"].notna() & d["mid_lat"].notna()
     xy = np.full((len(d), 2), np.nan)
     xy[pos.values] = _project_xy_ft(d.loc[pos, "mid_lon"].values, d.loc[pos, "mid_lat"].values)
@@ -175,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
             rows.append({**{k: s.get(k) for k in _COLS}, "verdict": "", "verdict_source": ""})
         if len(new):
             sections.append(f"<h2 id=\"c{_esc(name)}\">{_esc(name)} — {int(c['n'])} flagged ({int(c['n_cohort'])} cohort); "
-                            f"{len(done)} already judged ({n_agree} agree), {len(new)} new cards</h2>" + "".join(_card(d, xy, s) for _, s in new.iterrows()))
+                            f"{len(done)} already judged ({n_agree} agree), {len(new)} new cards</h2>" + "".join(_card(d, xy, s, depth) for _, s in new.iterrows()))
     sample = pd.DataFrame(rows)
     if len(carried):  # never drop a written verdict: rows not re-emitted above (free text, set-aside wells) ride along verbatim
         rest = carried[~carried["api10"].isin(sample["api10"] if len(sample) else [])]

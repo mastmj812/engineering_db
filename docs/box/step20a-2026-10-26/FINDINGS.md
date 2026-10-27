@@ -721,6 +721,51 @@ stays in). Neither the live nor the what-if tag can vote for itself, and the jur
   re-run will list which ones do.
 - Your call: this reverses a draft you asked for.
 
+### 8.8 Rule dropped; the screen is back on live tags (2026-10-27) → `tag_screen/` round 2
+
+**Michael (2026-10-27): drop the drafted WOLFCAMP C rule (§8.7).**
+- sql/16, sql/31 and `apply_formation_tag_overrides` are back to main's logic. Only the corrected sql/16 header (a logic
+  change is a DROP CASCADE reaching erebor_locations) is kept.
+- `tag_screen.NOVI_COARSE_BY_BASIN` survives for `--whatif` only. A test now pins that sql/16 carries none of it.
+- `tag_screen_whatif_wc/` stays as evidence. Nothing was ever applied.
+
+**Re-run.** The live-tag screen, consensus v2.2, as of 2026-09-01:
+- 1,530 flagged (A 889, B 641); 21 classes carded.
+- Prior verdicts are read from the 20a cards, the live round-1 cards and the what-if cards. A card counts only for the
+  move it was drawn for (same well, same destination).
+- **New: a verdict written as a bench code is your call on the well** and answers whatever move is proposed now.
+- 0 of the 126 round-1 verdicts were dropped or changed. Your 92 round-1 verdicts are now stamped `round 1`.
+
+**What carried from the what-if cards:** 42 of your 50 verdicts (38 round 1, 4 round 2), across 10 classes. The 8 that
+did not:
+
+| Well | What-if card | Your verdict | Live tags |
+|---|---|---|---|
+| University 43 1010WC / 1014WC, University 9 2107WC / 2109WC / 2914WC (Sequitur) | WCB_2 → WCC | WCC | Tag WCC, sits in its own band, not flagged. Your call holds with no override. |
+| University Lucy 0103H | WCB_2 → WCC | WCB_2 | Tag already WCB_2 (Enverus), sits in its band. Nothing to do. |
+| Elwood #16-21 4403H | WCB_1 → WCB_2 | agree | Tag WCB_1, ambiguous (4 ft from WCB_2, 63 ft from WCB_1). Not flagged → **added to `tag_screen/well_calls.csv`** |
+| Horton B 2223 1HA | WCA_1 → DEAN | agree | Tag WCA_1, ambiguous (96 ft from DEAN, 134 ft from WCA_1). Not flagged → **added to `well_calls.csv`** |
+
+**Class states** (BOX 7/10 gate, sequential 5 then 10):
+
+| State | Classes (agree / judged) |
+|---|---|
+| Accept | WCB_2 → WCB_1 (A) 6/6 · LSSH → WCA_1 (A) 5/5 · LSSH → WCB_1 (A) 5/5 · OTHER → WCD (B) 7/10 |
+| Round 2 | **WCC → WCB_2 (B) 4/5, WCC → WCB_1 (B) 4/5, WCC → WCD (B) 4/5** (5 new cards each) · WCB_1 → WCB_2 (A) 7/9 (1 new card) |
+| Reject | WCC → WCA_1 (B) 0/5 · WCA_1 → WCB_1 (A) 6/10 · WCB_1 → WCA_1 (A) 4/10 · WCC → WCB_2 (A) 6/10 · DEAN → WCA_1 (A) 6/10 and (B) 1/5 · WCA_1 → DEAN (A) 4/9 · LSSH → WCA_1 (B) 4/10 · WCB_1 → WCC (A) 1/5 · WCD → WCC (B) 0/5 · WCB_2 → WCC (A) 3/10 · OTHER → WCB_1 (B) 0/5 |
+| Parked | OTHER → WCA_1 (B) |
+
+- **Changes from the what-if basis:**
+  - WCB_1 → WCB_2 (A) needs one more card: the live class is 7/9, not 8/10.
+  - WCB_2 → WCC (A) is now a reject. On the what-if basis that class held the rule's retags moving back; on live tags it
+    holds the 10 natural WCB_2 → WCC wells, 3/10.
+- **16 new cards.** These are the rows with a blank verdict in `tag_screen/cards_sample.csv`: Excel rows 132–137 and
+  155–164.
+  - Each WCC card carries a **depth only** line: the §8.7 result, the jury bands and the offsets.
+  - The 15 WCC cards split: 3 depth backs the move, 3 sit in the WC slot, 2 not the new tag, 1 other rung,
+    6 undecided.
+- OTHER → WCD (B) still accepts at 7/10. The Irion Canyon-sand and Diamondback copied-TVD subgroups (§8.4) remain open.
+
 ## 5. How to check
 
 ```
@@ -750,6 +795,7 @@ The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames 
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv            # round 1
 python -m scripts.box_tag_screen ... --round 2                                 # after round-1 verdicts: tops up the mixed classes
+python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen --round 2     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen_whatif_wc/cards_sample.csv     --depth-check docs/box/step20a-2026-10-26/tag_screen_whatif_wc/depth_check.csv     # §8.8: live tags, every verdict carried
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
                                                                                # drafted sql/16 Midland WOLFCAMP C rule, in memory
