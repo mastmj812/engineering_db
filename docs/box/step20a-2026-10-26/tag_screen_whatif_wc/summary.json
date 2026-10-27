@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-27T14:55:01-05:00",
- "git_sha": "1ba21f0+dirty",
+ "built_at": "2026-10-27T15:15:08-05:00",
+ "git_sha": "6f3a6a7+dirty",
  "basin": "midland",
  "family": "MID_WC",
  "round": 2,
@@ -21,9 +21,9 @@
  },
  "asof": "2026-09-01",
  "n_producers": 28859,
- "n_flagged": 1372,
+ "n_flagged": 1374,
  "by_rule": {
-  "A": 859,
+  "A": 861,
   "B": 513
  },
  "n_conflict_agree": 341,
@@ -53,7 +53,7 @@
    "new_cards": 0
   },
   "WCB_1->WCA_1 (A)": {
-   "n": 64,
+   "n": 63,
    "n_cohort": 46,
    "prior_judged": 10,
    "prior_agree": 4,
@@ -159,5 +159,5 @@
   }
  },
  "n_new_cards": 0,
- "seconds": 17.2
+ "seconds": 19.2
 }

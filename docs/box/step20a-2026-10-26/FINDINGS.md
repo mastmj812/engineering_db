@@ -622,6 +622,40 @@ BOX bar, fail at the strict bar.**
   The screen reads only api10, verdict and the destination, so nothing is affected. Rows the run regenerates come back
   clean; the 22 carried free-text rows keep Excel's formatting.
 
+### 8.6 Consensus v2.2: TVD < 2,500 ft is never a witness (built 2026-10-27, Michael's ask)
+
+`box.bench_qc.MIN_WITNESS_TVD_FT = 2_500`. A well that shallow is a TVD-defect row (the TVD = MD class, §8.1). It no
+longer counts as depth evidence for its neighbours' bands. It is still scored as a subject. Test:
+`test_score_consensus_shallow_tvd_is_not_a_witness`, built on the Mayer case, which fails without the gate. Full suite:
+763 passed, 46 skipped.
+
+| | Midland (as of 2026-09-01) | Delaware (as of 2026-08-01) |
+|---|---|---|
+| Producers with TVD < 2,500 ft (witnesses before) | 67 (20) | 101 (57) |
+| Detector status / suggestion changed | 24 | 91 |
+| BOX class-rule outcome changed (`qc_rule.apply_rule`, + D136 in the Midland) | **0** | **5**, all BS3_C → BS2_S, 1 in the D9 cohort |
+| Tag screen, flagged | what-if 1,372 → 1,374; live 1,526 → 1,530 | — |
+
+- **Midland 20a deliverable: unchanged.** 0 rule outcomes move, D136 still reassigns the same 232, and the tag-screen
+  classes and every verdict are unchanged.
+  - The only class-size moves are WCB_1 → WCA_1 (A) 64 → 63, WCC → WCB_1 (A) 1 → 2 and OTHER → WCB_1 (A) 3 → 5.
+  - Mayer 4512WC now flags WCC → WCB_1 (A), with sql/23 as the second vote. That class has 1 cohort well, so it is
+    listed, not carded. The call is in `tag_screen/well_calls.csv`.
+- **Delaware: the 5 wells all gain a BS2_S band that bad-TVD witnesses had poisoned:**
+  - Makers Mark Fed Com 210H
+  - Mesquite 2 State Com 003H
+  - Quien Sabe 25 Fed 001H
+  - Devon 6 Fee 002H
+  - Poker Lake Unit 15 TWR 305H (cohort; sql/23 and GOR also vote BS2_S)
+
+  All five were first judged at step 1 (2026-10-06). The pool refresh keeps judged wells' calls (the frozen
+  universe), so **no current or record pool changes.** 305H is already in `pool-2026-10-26/wells_final_BS2_S.csv`.
+  The gate reaches only wells first judged at a later refresh (13c onward).
+- **Settled-decision conflict (flagged, not resolved).** D134 (B) applies the Delaware class rule "as written", and
+  D135 accepted the parameterization as "Delaware bit-identical". The class rule is untouched, but the detector that
+  feeds it now gives different Delaware output: 91 statuses and 5 rule outcomes. Future refreshes in both basins run
+  on v2.2. This needs a decision of record, or the gate becomes Midland-only.
+
 ## 5. How to check
 
 ```

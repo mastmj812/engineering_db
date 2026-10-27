@@ -16,7 +16,7 @@ Two tag-disagreement measures are reported side by side:
      ``corrected`` flip.
   2. ``cons``   — a re-implementation of the gunbarrel-consensus detector v2 from
      its recorded rules (memory note wcb2-deep-tvd-screening, 2026-09-15): clean
-     witnesses <= 1.5 mi (real survey, non-round TVD, >= 6 mo seasoned), band =
+     witnesses <= 1.5 mi (real survey, non-round TVD >= 2,500 ft (v2.2), >= 6 mo seasoned), band =
      >= 3 witnesses with IQR <= 150 ft, bands < 100 ft apart merge into a
      complex, flag when the well sits <= 120 ft inside another band while its
      own band is absent / incoherent / >= 2x farther and the runner-up is
@@ -67,6 +67,10 @@ COHORT_FP_MIN = date(2016, 1, 1)  # D9
 COHORT_LL_MIN_FT = 6_000  # D9
 COHORT_LL_MAX_FT = 13_000  # D9
 SEASONING_DAYS = 182  # consensus v2.1: >= 6 mo online before a TVD is evidence
+# consensus v2.2 (2026-10-27, BOX step 20a): a TVD this shallow is a data defect (TVD = MD class), never band evidence.
+# Two Mayer wells at 841 / 845 ft pushed a local WCB_1 IQR to 1,588 ft and dropped a 6-well, 26-ft-IQR band. Witness gate
+# only: the well itself is still scored.
+MIN_WITNESS_TVD_FT = 2_500
 MIN_BIN_N = 20  # below this a bin's median / density is shown but not judged
 
 NM_FIPS, TX_FIPS = 30, 42
@@ -368,6 +372,7 @@ def score_consensus(df: pd.DataFrame, p: ConsensusParams = DEFAULT_PARAMS) -> pd
         pos_ok
         & ~df["planned"]
         & ~df["tvd_round"]
+        & (df["tvd_ft"].astype(float) >= MIN_WITNESS_TVD_FT)
         & seasoned
         & ~df["formation_blueox"].isin(["(unmapped)", "OTHER"])
     )

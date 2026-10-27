@@ -3,7 +3,7 @@ WCA_1->WCB_1 (A),A,WCA_1,WCB_1,256,165,0,232,65,49.95454545454545,True,True
 WCB_2->WCB_1 (A),A,WCB_2,WCB_1,103,69,0,100,6,inf,True,True
 LSSH->JM (A),A,LSSH,JM,110,65,77,87,9,32.47222222222222,False,False
 WCB_1->WCB_2 (A),A,WCB_1,WCB_2,94,55,0,88,15,inf,True,True
-WCB_1->WCA_1 (A),A,WCB_1,WCA_1,64,46,0,61,11,inf,True,True
+WCB_1->WCA_1 (A),A,WCB_1,WCA_1,63,46,0,60,11,inf,True,True
 LSSH->JM (B),B,LSSH,JM,68,36,0,0,0,520.5,False,False
 DEAN->WCA_1 (B),B,DEAN,WCA_1,39,23,0,0,0,202.0,True,True
 DEAN->WCA_1 (A),A,DEAN,WCA_1,34,20,9,34,1,inf,True,True
@@ -54,6 +54,7 @@ WCD->WCA_1 (A),A,WCD,WCA_1,3,1,3,3,0,inf,True,False
 JM->WCA_1 (B),B,JM,WCA_1,2,1,0,0,0,821.0,True,False
 WCA_1->LSSH (A),A,WCA_1,LSSH,2,1,0,2,0,inf,True,False
 WCA_1->WCB_2 (A),A,WCA_1,WCB_2,2,1,0,2,0,inf,True,False
+WCC->WCB_1 (A),A,WCC,WCB_1,2,1,0,2,0,inf,True,False
 BRNT->WCB_2 (B),B,BRNT,WCB_2,1,1,0,0,0,1244.0,True,False
 JM->US (B),B,JM,US,1,1,0,0,0,410.0,False,False
 LSSH->WCD (B),B,LSSH,WCD,1,1,0,0,0,157.0,True,False
@@ -66,11 +67,11 @@ WCD->WCB_2 (A),A,WCD,WCB_2,1,1,1,1,0,inf,True,False
 OTHER->WCD (A),A,OTHER,WCD,16,0,14,7,0,inf,True,False
 BRNT->OTHER (B),B,BRNT,OTHER,5,0,0,0,0,1737.5,False,False
 MS->OTHER (B),B,MS,OTHER,5,0,0,0,0,,False,False
+OTHER->WCB_1 (A),A,OTHER,WCB_1,5,0,0,5,0,inf,True,False
 STRN->WCD (A),A,STRN,WCD,5,0,5,3,0,inf,True,False
 STRN->WCD (B),B,STRN,WCD,5,0,0,0,0,,True,False
 WDFD->OTHER (B),B,WDFD,OTHER,5,0,0,0,0,1887.0,False,False
 OTHER->WCC (B),B,OTHER,WCC,4,0,0,0,0,,True,False
-OTHER->WCB_1 (A),A,OTHER,WCB_1,3,0,0,3,0,inf,True,False
 OTHER->DEAN (A),A,OTHER,DEAN,2,0,0,2,0,inf,False,False
 OTHER->US (B),B,OTHER,US,2,0,0,0,0,,False,False
 STRN->OTHER (B),B,STRN,OTHER,2,0,0,0,0,,False,False
@@ -84,7 +85,6 @@ OTHER->BRNT (B),B,OTHER,BRNT,1,0,0,0,0,6286.0,False,False
 OTHER->MS (B),B,OTHER,MS,1,0,0,0,0,,False,False
 STRN->BRNT (B),B,STRN,BRNT,1,0,0,0,0,234.0,False,False
 WCB_1->LSSH (A),A,WCB_1,LSSH,1,0,0,1,0,inf,True,False
-WCC->WCB_1 (A),A,WCC,WCB_1,1,0,0,1,0,inf,True,False
 WCD->JM (A),A,WCD,JM,1,0,0,1,0,inf,True,False
 WCD->JM (B),B,WCD,JM,1,0,0,0,0,799.0,True,False
 WCD->STRN (A),A,WCD,STRN,1,0,0,1,0,inf,True,False
