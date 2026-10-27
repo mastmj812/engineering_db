@@ -130,16 +130,18 @@ def main(argv: list[str] | None = None) -> int:
             carried_rows.append(free.assign(verdict_source=free["verdict_source"].replace("", "round 1")))
 
     sample_path = a.out / "cards_sample.csv"
+    fresh = "what-if round 1" if a.whatif else "round 1"  # label for this folder's own round-1 verdicts
     if a.round == 2:
         old = pd.read_csv(sample_path, dtype=str).fillna("")
         for r in old.itertuples():
             v = ts.clear_verdict(r.verdict, r.screen_dest)
             if v:
-                judged[r.api10], verbatim[r.api10] = v, (str(r.verdict).strip(), r.verdict_source or "round 1")
-        carried_rows.append(old[(old["verdict"].str.strip() != "")])
+                judged[r.api10], verbatim[r.api10] = v, (str(r.verdict).strip(), r.verdict_source or fresh)
+        kept = old[(old["verdict"].str.strip() != "")]
+        carried_rows.append(kept.assign(verdict_source=kept["verdict_source"].replace("", fresh)))
     elif sample_path.exists():  # verdicts other than the prefilled ones are Michael's record: never overwrite them
         old = pd.read_csv(sample_path, dtype=str).fillna("")
-        if ((old["verdict"].str.strip() != "") & ~old["verdict_source"].isin(["20a", "round 1"])).any():
+        if ((old["verdict"].str.strip() != "") & ~old["verdict_source"].isin(["20a", "round 1", "what-if round 1"])).any():
             raise fc.VerdictFileExists(f"{sample_path} carries verdicts; use --round 2")
     carried = pd.concat(carried_rows, ignore_index=True).drop_duplicates("api10", keep="last") if carried_rows else pd.DataFrame(columns=["api10"])
     seen = set(judged) | set(carried["api10"])  # a well already carded is never re-drawn

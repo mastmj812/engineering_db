@@ -1,9 +1,9 @@
 {
- "built_at": "2026-10-27T11:15:50-05:00",
- "git_sha": "28d2271+dirty",
+ "built_at": "2026-10-27T12:43:03-05:00",
+ "git_sha": "5e39b72+dirty",
  "basin": "midland",
  "family": "MID_WC",
- "round": 1,
+ "round": 2,
  "whatif": {
   "trigger": [
    "WOLFCAMP C"
@@ -47,10 +47,10 @@
   "WCB_1->WCB_2 (A)": {
    "n": 94,
    "n_cohort": 55,
-   "prior_judged": 5,
-   "prior_agree": 4,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 8,
+   "state_before": "accept",
+   "new_cards": 0
   },
   "WCB_1->WCA_1 (A)": {
    "n": 64,
@@ -71,18 +71,18 @@
   "DEAN->WCA_1 (A)": {
    "n": 34,
    "n_cohort": 20,
-   "prior_judged": 5,
-   "prior_agree": 2,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 6,
+   "state_before": "reject",
+   "new_cards": 0
   },
   "WCA_1->DEAN (A)": {
    "n": 24,
    "n_cohort": 18,
-   "prior_judged": 5,
-   "prior_agree": 2,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 5,
+   "state_before": "reject",
+   "new_cards": 0
   },
   "OTHER->WCA_1 (B)": {
    "n": 17,
@@ -95,10 +95,10 @@
   "LSSH->WCA_1 (A)": {
    "n": 18,
    "n_cohort": 13,
-   "prior_judged": 3,
-   "prior_agree": 3,
-   "state_before": "pending",
-   "new_cards": 2
+   "prior_judged": 5,
+   "prior_agree": 5,
+   "state_before": "accept",
+   "new_cards": 0
   },
   "WCC->WCB_2 (A)": {
    "n": 18,
@@ -111,34 +111,34 @@
   "LSSH->WCA_1 (B)": {
    "n": 15,
    "n_cohort": 12,
-   "prior_judged": 5,
-   "prior_agree": 2,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 4,
+   "state_before": "reject",
+   "new_cards": 0
   },
   "LSSH->WCB_1 (A)": {
    "n": 11,
    "n_cohort": 10,
-   "prior_judged": 0,
-   "prior_agree": 0,
-   "state_before": "pending",
-   "new_cards": 5
+   "prior_judged": 5,
+   "prior_agree": 5,
+   "state_before": "accept",
+   "new_cards": 0
   },
   "OTHER->WCD (B)": {
    "n": 48,
+   "n_cohort": 7,
+   "prior_judged": 10,
+   "prior_agree": 7,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCB_2->WCC (A)": {
+   "n": 11,
    "n_cohort": 7,
    "prior_judged": 5,
    "prior_agree": 2,
    "state_before": "round 2",
    "new_cards": 5
-  },
-  "WCB_2->WCC (A)": {
-   "n": 11,
-   "n_cohort": 7,
-   "prior_judged": 4,
-   "prior_agree": 2,
-   "state_before": "pending",
-   "new_cards": 1
   },
   "WCD->WCC (B)": {
    "n": 11,
@@ -151,12 +151,12 @@
   "OTHER->WCB_1 (B)": {
    "n": 9,
    "n_cohort": 5,
-   "prior_judged": 1,
+   "prior_judged": 5,
    "prior_agree": 0,
-   "state_before": "pending",
-   "new_cards": 4
+   "state_before": "reject",
+   "new_cards": 0
   }
  },
- "n_new_cards": 41,
- "seconds": 55.7
+ "n_new_cards": 9,
+ "seconds": 21.6
 }

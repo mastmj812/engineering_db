@@ -503,6 +503,41 @@ re-scored. sql/23 is not re-simulated; 0 corrected rows were affected.
 - **41 new cards**, none of them a well you've already seen. 13 sit in the two open groups (7 Discovery LS/SH, 6 with
   TVD < 2,500 ft); leave those blank until the Discovery group and the depth gate are decided.
 
+### 8.3 What-if round 1 back (2026-10-27) → round 2 drawn
+
+All 41 cards came back: 25 agree, 12 reject, 3 "bad tvd", 1 "suspect tvd". Every written verdict is kept verbatim in
+`tag_screen_whatif_wc/cards_sample.csv`; the new ones carry `verdict_source = what-if round 1`. The 8 Discovery cards were
+filled in too (all agree), so the two Discovery classes now decide on the count.
+
+| Class | Flagged (cohort) | Agree / judged | BOX 7/10 | Strict (5/5 or ≥ 9/10) |
+|---|---|---|---|---|
+| WCB_2 → WCB_1 (A) | 103 (69) | 5/5 | accept | accept |
+| LSSH → WCA_1 (A) | 18 (13) | 5/5 (+2 holds) | accept | accept |
+| LSSH → WCB_1 (A) | 11 (10) | 5/5 (+5 holds) | accept | accept |
+| WCB_1 → WCB_2 (A) | 94 (55) | 8/10 | accept | fail |
+| OTHER → WCD (B) | 48 (7) | 7/10 | accept | fail |
+| WCA_1 → WCB_1 (A), WCB_1 → WCA_1 (A), DEAN → WCA_1 (A, B), WCA_1 → DEAN (A), LSSH → WCA_1 (B), WCC → WCB_2 (A), WCD → WCC (B), OTHER → WCB_1 (B) | | 6/10, 4/10, 6/10, 1/5, 5/10, 4/10, 3/7, 0/5, 0/5 | reject | reject |
+| WCB_2 → WCC (A) | 11 (7) | 2/5 | round 2: 5 new cards | |
+| OTHER → WCA_1 (B) | 17 (16) | 0/1 (+8 holds) | pending: 4 new cards | |
+
+- **The two strict-bar failures both split cleanly on something you can see:**
+  - WCB_1 → WCB_2: the 2 rejects have the two smallest finite margins (2.1, 2.4); every agree is ≥ 9.6 or has no own
+    band at all.
+  - OTHER → WCD: all 3 rejects are Irion wells at 6,616–6,852 ft TVD (2 Moriah Canyon sands, 1 Walter); every agree is
+    ≥ 8,254 ft.
+  - Both splits were found after seeing the verdicts. A cut drawn there would be fitted to these cards, not tested by
+    them.
+- **WCB_2 → WCC (A) round 2 is a direct test of the drafted rule.** The 5 new cards are Sequitur "UNIVERSITY … WC" wells
+  in Irion/Reagan:
+  - Novi says WOLFCAMP C; Enverus says WOLFCAMP B LOWER, so the what-if retags them to WCB_2.
+  - They sit 4–55 ft from the local WCC band.
+  - Agrees here mean the trigger moves these wells the wrong way.
+- **OTHER → WCA_1 (B) is a TVD-defect bucket, not a naming class.** Median margin is 6,225 ft, 8 of 9 verdicts are TVD
+  holds, and 3 of the 4 new cards sit under 2,000 ft TVD. A rejected or uncarded class keeps its tags, and OTHER is
+  outside every cohort. Parking it costs nothing; the proposed depth gate (§8.1) would remove it.
+- **These classes are on the what-if basis.** Override rows are seeded by api10 from whichever basis is live when they
+  are written: after the sql/16 apply, or on live tags without it.
+
 ## 5. How to check
 
 ```
