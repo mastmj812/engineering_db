@@ -194,12 +194,13 @@ def fe_contrast(y: np.ndarray, is_b: np.ndarray, block: np.ndarray, year: np.nda
     m = np.array([b in keep_blocks for b in block])
     if m.sum() < 10 or is_b[m].sum() < 5 or (1 - is_b[m]).sum() < 5:
         return math.nan
-    X = pd.get_dummies(pd.DataFrame({"blk": block[m], "yr": year[m].astype(str)}), drop_first=False, dtype=float)
-    # drop one year dummy to avoid collinearity with the full block set
-    yr_cols = [c for c in X.columns if c.startswith("yr_")]
-    X = X.drop(columns=yr_cols[:1])
+    # block FE absorbed by within-block demeaning (Frisch-Waugh: the same is_b coefficient as one dummy per block, which
+    # went dense-n x blocks per bootstrap draw and took hours on the Midland WCA_1 / WCB_1 pair; equal to 1e-14, 2026-10-26)
+    X = pd.get_dummies(pd.Series(year[m].astype(str)), dtype=float).iloc[:, 1:]  # one year dummy dropped (collinear with the blocks)
     X["is_b"] = is_b[m].astype(float)
-    beta, *_ = np.linalg.lstsq(X.values, y[m], rcond=None)
+    X["_y"] = y[m]
+    d = X - X.groupby(block[m]).transform("mean")
+    beta, *_ = np.linalg.lstsq(d.drop(columns="_y").values, d["_y"].values, rcond=None)
     return float(beta[-1])
 
 

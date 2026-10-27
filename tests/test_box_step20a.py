@@ -218,3 +218,18 @@ def test_owner_assignment_outranks_the_rule_and_joins_the_family():
     assert o.set_index("api10")["box_bench"].to_dict() == {"1": "WCD", "2": "WCC"}
     r = fq.family_membership(o, MID, frozen={}, seen_ids=set(), excluded_ids=set()).set_index("api10")
     assert r.at["1", "family_role"] == "member" and r.at["1", "family_bench"] == "WCD"
+
+
+def test_fe_contrast_equals_explicit_block_dummies():
+    # within-block demeaning (Frisch-Waugh) must give the dummy-per-block OLS coefficient exactly
+    rng = np.random.default_rng(7)
+    n = 300
+    block = rng.integers(0, 12, n).astype(str)
+    year = rng.integers(2016, 2024, n)
+    is_b = rng.integers(0, 2, n)
+    y = rng.normal(0, 1, n) + 0.25 * is_b + block.astype(int) * 0.1 + (year - 2016) * 0.03
+    X = pd.get_dummies(pd.DataFrame({"blk": block, "yr": year.astype(str)}), dtype=float)
+    X = X.drop(columns=[c for c in X.columns if c.startswith("yr_")][:1])
+    X["is_b"] = is_b.astype(float)
+    ref = np.linalg.lstsq(X.values, y, rcond=None)[0][-1]
+    assert abs(fq.fe_contrast(y, is_b, block, year) - ref) < 1e-10
