@@ -200,6 +200,8 @@ reads or touches another basin's record. The Midland record joins this chain at 
    directory) and then `box_water_run build` (water follows the run's data-through and well sets; no pin to bump). Check:
    universe = the vintage's PUD count; harness equivalence 0.0 on every group; any `not_covered_no_analogs` reported.
    The evidence pack (haircut, disclosure) is the frozen `r2_evidence.json` between annual re-scores (D126: each Q1).
+   Spacing (`wells_enriched.lateral_closer_xy_ft`) is read LIVE at build time (D137): Novi rewrites it nightly, so report in
+   the refresh findings how many pool wells' values changed since the previous refresh (method: 13b FINDINGS §3c).
 3. **Store the base run as record (WRITE, go):** `python -m scripts.box_pud_run store --out runs/<label> --record`. The D73 /
    D83 crosswalk carries locations forward (the log prints carried / new / stopped). Identity checks run before COMMIT.
 4. **Water on it (WRITE, go):** `python -m scripts.box_water_run store --out runs/<label>_water --run-id <base>`.
