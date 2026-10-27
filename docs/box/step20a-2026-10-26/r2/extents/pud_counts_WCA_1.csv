@@ -1,0 +1,8 @@
+formation_blueox,category,status,n,in extent,in drilled core,in step-2 outline,pool
+WCA_1,PUD,conflict,150,123,74,88,WCA_1
+WCA_1,PUD,realized_phantom,313,252,151,179,WCA_1
+WCA_1,PUD,remaining_pud,9784,5079,2712,3700,WCA_1
+WCA_1,RES,remaining_pud,353,2,0,0,WCA_1
+WCA_1,PUD + RES,undrilled (D117),10287,5204,2786,3788,WCA_1
+WCA_1,PUD,undrilled by category,9934,5202,2786,3788,WCA_1
+WCA_1,RES,undrilled by category,353,2,0,0,WCA_1

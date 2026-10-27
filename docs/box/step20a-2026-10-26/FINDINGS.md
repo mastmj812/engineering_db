@@ -160,9 +160,9 @@ defect.
 
 ## 4. Gate 20a: your calls
 
-1. **Cards:** verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
+1. **Cards:** DONE 2026-10-26, applied in r2 (§7). Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
    WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
-2. **Pen loops:** loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
+2. **Pen loops:** DONE 2026-10-26 (WCC + WCD looped, the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
    loops.
 3. **Conflict to resolve (D128 vs D134 B).** D128 sent the WCB_1 ↔ WCB_2 and WCB_2 ↔ WCC swap classes to 20a's cards. D134 B
    cards only "unlike" classes. I followed D134 B (the later decision), so **WCB_1 → WCB_2 (168 flags, alike) is not
@@ -243,6 +243,72 @@ line, so the extents don't plan an extra WCB where only one is developed?
 - **(d) Cards.** If you adopt (b) + (c), the WCB_2 → WCB_1 cards (§1b) mostly answer themselves north of the line; the
   southern WCB_1 ↔ WCB_2 cards still matter.
 
+## 7. r2 regeneration (2026-10-26): your cards + D136 + owner WCD + your loops → `r2/`, `extents/edited/`
+
+One rebuild, read-only, nothing stored. r1 (what you reviewed) is left as it was. Commits 5b5e992 (inputs) and 52a7fb2
+(speed fix, below).
+
+**Card verdicts → a Midland class ledger (D134 B, gate ≥ 0.70 as written).** 36 agree and 14 reject. Each carded class is
+judged on its own Midland cards, which replace the Delaware entry (`box/qc_rule.BASIN_CLASSES`). Every other class keeps the
+Delaware ledger.
+
+| class | Delaware | Midland cards | Midland standing | reassigned r1 → r2 |
+|---|---|---|---|---|
+| WCA → WCB_1 | rejected 0.40 | 7 / 10 = 0.70 | **accepted (at the gate)** | 0 → 192 |
+| WCB_1 → WCA | accepted 0.70 | 5 / 10 = 0.50 | **rejected** | 52 → 5 (your agree cards) |
+| WCB_2 → WCB_1 | uncalibrated | 10 / 10 = 1.00 | accepted | 0 → 104 |
+| WCB_2 → WCC | uncalibrated | 7 / 10 = 0.70 | accepted (at the gate) | 0 → 12 |
+| WCC → WCB_2 | uncalibrated | 7 / 10 = 0.70 | accepted (at the gate) | 0 → 25 |
+
+The sql/23 second vote and the GOR veto still apply inside the accepted classes. Three classes sit exactly at 0.70 on 10
+cards, so one verdict either way flips them. The WCA → WCB_1 class matters most: it moves 192 wells (125 D9 cohort) from
+WCA_1 to WCB_1.
+
+**D136 (c):** 229 more WCB_2-tagged producers north of the line, landing at WCB_1 depth, become WCB_1 (186 cohort). With the
+58 the accepted WCB_2 → WCB_1 class already moved there, that is 287 of the 430 northern WCB_2 tags. 118 have no WCA_1 band
+and keep their tag. (The §6 figure of 266 counted ≥ 2016 laterals with geometry only.)
+
+**Owner assignments** (`owner_benches.csv`, BOX-only, outrank every rule): 6 wells tagged `OTHER` in the warehouse, all
+off-band in the detector, assigned to WCD. Four are Exxon's UNIVERSITY "3-19" (Upton, 2014–15) and two are SM's MARY ROSE
+A 9H / B 10H (Reagan, first production 2025-10). The warehouse tag is unchanged. Carrying them into
+`ref.formation_tag_overrides` is a CASCADE-window job, done only on your go.
+
+| bench | r1 final (cohort) | r2 final (cohort) | pooling contrast vs the bench above, oil / GOR / shape, r1 → r2 |
+|---|---|---|---|
+| WCA_1 | 7,779 (5,536) | 7,540 (5,378) | — |
+| WCB_1 | 6,112 (3,515) | 6,684 (3,927) | 0.970 / 1.284 / 0.978 → 0.962 / 1.294 / 0.979 |
+| WCB_2 | 2,382 (1,477) | 2,062 (1,237) | 0.937 / 0.957 / 1.002 → 0.958 / 0.928 / 0.999 |
+| WCC | 662 (390) | 649 (376) | 0.863 / 1.144 / 1.016 → 0.878 / 1.177 / 1.002 |
+| WCD | 939 (546) | 945 (546) | 1.124 / 1.104 / 1.030 → 1.123 / 1.108 / 1.030 |
+
+The benches stay separable after the moves (D128, no pooling, unaffected).
+
+**Extents, as they would be stored** (undrilled = D117, Novi PUD + RES, ≥ 50 % of the stick inside):
+
+| bench | extent | source | sq mi (r1 generated) | undrilled inside |
+|---|---|---|---|---|
+| WCA_1 | r2 generated, no loop drawn | `r2/extents/extent_WCA_1_v1.geojson` | 5,519 (5,613) | 5,204 |
+| WCB_1 | r2 generated, no loop drawn | `r2/extents/extent_WCB_1_v1.geojson` | 5,220 (5,127) | 5,599 |
+| WCB_2 | r2 generated, D136 clip (2,298 before the clip), no loop drawn | `r2/extents/extent_WCB_2_v1.geojson` | 2,003 (2,041 clipped) | 851 |
+| WCC | **your loop** (slide 4) | `extents/edited/extent_WCC_v1_edited.geojson` | 6,059 (746) | **7,318** (generated: 853) |
+| WCD | **your loop** (slide 5) | `extents/edited/extent_WCD_v1_edited.geojson` | 3,371 (1,627) | 3,598 (generated: 1,747) |
+
+Both loops were read as drawn (`extents/edited/reading_*.png`: your red stroke and the black reading coincide). Inside the
+loops: WCC holds 461 of 464 ≥ 2016 laterals, WCD 771 of 804.
+
+**Flags before storage:**
+- **WCC density.** Your loop adds 6,465 undrilled WCC locations over the generated extent. The north lobe is held by
+  scattered single tests (`extents/edited/visual_WCC_edited.png`). For scale: 7,318 undrilled on 464 modern laterals,
+  against WCB_2's 851 on 1,596. That may be what you intend; it is the largest single swing in 20a's location count.
+- **4246139575** (UNIVERSITY "3-19" 51H, one of your six WCD wells) sits just outside your WCD loop at its south tip
+  (31.26°N). It is pre-2016, so it is not ≥ 2016 evidence. Extend the loop or leave it.
+- **Speed fix (no number moves):** the pooling contrast fitted one dummy column per 5-mi block on every bootstrap draw
+  (18 s a fit on WCA_1 / WCB_1, hours per run). It now absorbs the blocks by within-block demeaning (Frisch–Waugh). The
+  coefficient is identical to 1e-14 (test pinned) and the run takes 88 s.
+
+**Still open at gate 20a:** the storage go (the five rows + extents above); asks 3, 4 and 6 in §4; the unlike-threshold
+confirm (§4.1).
+
 ## 5. How to check
 
 ```
@@ -256,3 +322,13 @@ python -m scripts.box_family_extents --wells <dir> --pool WCA_1 WCB_1 WCB_2 WCC 
 - **WCB split (§6):** `python -m scripts.box_wcb_split --wells docs/box/step20a-2026-10-26` (~30 s, read-only).
 - **Delaware unchanged.** WCC rebuilt through the modified extent code = its step-15 build within 6e-6 sq mi. Delaware
   two-bench family membership code paths are identity-mapped (test). The AVA pooling contrast changes, by design (§1).
+
+**r2 (§7), read-only:**
+```
+python -m scripts.box_family_qc --family MID_WC --out docs/box/step20a-2026-10-26/r2 --verdicts docs/box/step1-2026-10-06/cards_sample.csv \
+    --verdicts docs/box/step20a-2026-10-26/cards_sample.csv --owner-benches docs/box/step20a-2026-10-26/owner_benches.csv     # ~90 s with --cache
+python -m scripts.box_family_extents --wells docs/box/step20a-2026-10-26/r2 --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland --step 20a --visual-bodies 50
+python -m scripts.box_family_extent_edits --pptx docs/box/step20a-2026-10-26/extents/midland_wolfcamp_extents_2026-10-26.pptx \
+    --slide 4=WCC --slide 5=WCD --wells docs/box/step20a-2026-10-26/r2 --ext docs/box/step20a-2026-10-26/extents --basin midland
+```
+The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames are r1's.
