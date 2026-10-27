@@ -554,10 +554,11 @@ were filled in and are kept as written. Michael asked to be told where his calls
    - University 9 2107WC ("already showing WCC") and 2109WC (reject) are on the same pad, 35 ft apart in TVD.
    - Every vote except Enverus says WCC: the operator's "WC" suffix, Novi, the local WCC band (4–55 ft away) and
      sql/23 nearest.
-2. **The drafted sql/16 rule misfires where operators name their landings.**
-   - Ovintiv, Andrews: the operator's suffixes separate cleanly by depth: WA 9,268, WB 9,725, WC 10,195 and WD
-     10,643 ft median TVD. The rule moves 14 of the 15 WC wells to WCB_1 (Enverus WOLFCAMP B UPPER). That is the
-     bench of their own WB wells, 470 ft shallower. Whatever WC is, it is not the WB landing.
+2. **The drafted sql/16 rule misfires where operators name their landings.** The evidence is depth; the names only
+   group the wells (2026-10-27, Michael: a suffix is a clue, depth against neighbours decides; see §8.5).
+   - Ovintiv, Andrews: the operator's suffix groups sit at distinct depths: WA 9,268, WB 9,725, WC 10,195 and WD
+     10,643 ft median TVD. The rule moves 14 of the 15 WC wells to WCB_1 (Enverus WOLFCAMP B UPPER). That puts wells
+     at ~10,195 ft in the same bench as neighbours ~470 ft shallower.
    - Sequitur: 12 "…WC" wells go to WCB_2.
    - In all, 34 of the 258 retagged producers carry a WC landing suffix.
 3. **The what-if WCC flag rate (4.7 %) is partly circular, and is withdrawn as evidence for the rule.**
@@ -596,12 +597,18 @@ The re-run kept every row in place, lost nothing, and drew 0 new cards. **WCB_2 
 BOX bar, fail at the strict bar.**
 
 - **These are calls against the drafted sql/16 rule.** All five are Novi WOLFCAMP C wells the rule retags WCB_2. With
-  Ovintiv's 14 WC → WCB_1 (§8.4 item 2), the rule now misfires on every operator-named WC landing that has been
-  looked at.
-- **One of the 7 agrees looks like a TVD swap.** Mayer 4512WB (20a card, agree → WCC) sits at 7,219 ft. Its WB
-  siblings are at 6,773–6,809 ft (WCB_1). Its WC twin on the same surface location, Mayer 4512WC (0.05 mi), sits at
-  6,812 ft, among WC siblings at 7,060–7,172 ft. The two wells' TVDs look exchanged, and the agree followed the
-  swapped depth. Re-called to its WB siblings' bench (WCB_1), the class falls to 6/10 → reject.
+  Ovintiv's 14 WC → WCB_1 (§8.4 item 2), the rule now misfires on every WC-named well whose depth has been looked at.
+- **Mayer 4512WB / 4512WC: the names are swapped, not the depths.** I first read this pair as a TVD swap. Michael's
+  call (2026-10-27): depth against local offsets wins over the suffix.
+  - 4512WB at 7,219 ft sits with the local WC wells (7,060–7,172 ft) → **WCC**. The 20a agree stands, and the class
+    stays 7/10.
+  - 4512WC at 6,812 ft sits with the local WB wells (6,773–6,809 ft) → **WCB_1**. It is not on any card, so the call is
+    recorded in `tag_screen/well_calls.csv` with Cypert B 221 and Coachwhip 17-20 261.
+  - A plausible story (Michael, conjecture, no data): both were permitted and named for their targets, then one landed
+    shallower after a casing-plan change while drilling.
+  - Both vendors say WOLFCAMP C for 4512WC, likely copied from the permit. So two vendors agreeing on a named well
+    does not confirm its landing. The screen cannot see such a well unless depth flags it: 4512WC sits off band, with
+    no local WCB_1 band to suggest.
 - **The file was saved from Excel.** Excel reformatted dates (m/d/yyyy), booleans (TRUE/FALSE) and float precision.
   The screen reads only api10, verdict and the destination, so nothing is affected. Rows the run regenerates come back
   clean; the 22 carried free-text rows keep Excel's formatting.
