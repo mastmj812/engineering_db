@@ -406,7 +406,11 @@ Options:
 - (b) Keep well-by-well. Cards then pick the classes worth a full review, and you review every well in them.
 - (c) Class acceptance stays BOX-only, as 20a already does. The warehouse gets only the wells you card.
 
-Your call.
+**Decided 2026-10-27 (Michael): (a).** Every well in an accepted class becomes an override row. `was` = the pre-override
+tag; `note` = `class-accepted <class> k/n cards <date>` for wells nobody carded individually, `carded <date>` for the
+ones you did. Rejected classes write nothing; a well you rejected inside an accepted class is left out. The sql/44 header
+and its table COMMENT are amended in the same commit as the first class-accepted rows (the COMMENT reaches the live table
+only when that apply runs).
 
 ## 5. How to check
 
