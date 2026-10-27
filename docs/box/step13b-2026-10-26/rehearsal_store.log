@@ -1,0 +1,120 @@
+Tue Oct 27 06:52:14 UTC 2026
+== 1 store base (CONTAINER)
+target (IPv4Address('172.17.0.2'), 5432, 'postgres')
+locations: 121926 (0 seed, 0 carried) (5 s)
+rows written + analyzed (750 s); checking identity
+    ok   pud_forecast rows 121696 = universe 121696
+    ok   [AVA_0] covered_provisional 607 + no_analogs 0 = in-extent AVA_0 universe 607 (other forecast class 0)
+    ok   [AVA_1] covered_provisional 1365 + no_analogs 0 = in-extent AVA_1 universe 1365 (other forecast class 0)
+    ok   [AVA_2] covered_provisional 2848 + no_analogs 0 = in-extent AVA_2 universe 2848 (other forecast class 0)
+    ok   [BS1_S] covered_provisional 5336 + no_analogs 0 = in-extent BS1_S universe 5336 (other forecast class 0)
+    ok   [BS2_C] covered_provisional 3005 + no_analogs 0 = in-extent BS2_C universe 3005 (other forecast class 0)
+    ok   [BS2_S] covered 7403 + no_analogs 0 = in-extent BS2_S universe 7403 (other forecast class 0)
+    ok   [BS3_C] covered_provisional 7794 + no_analogs 0 = in-extent BS3_C universe 7794 (other forecast class 0)
+    ok   [BS3_S] covered_provisional 9220 + no_analogs 0 = in-extent BS3_S universe 9220 (other forecast class 0)
+    ok   [WCA] covered 1907 + no_analogs 0 = in-extent WCA_1/WCA_2 universe 1907 (other forecast class 0)
+    ok   [WCB_1] covered 4143 + no_analogs 0 = in-extent WCB_1 universe 4143 (other forecast class 0)
+    ok   [WCB_2] covered_provisional 2614 + no_analogs 0 = in-extent WCB_2 universe 2614 (other forecast class 0)
+    ok   [WCC] covered 1993 + no_analogs 0 = in-extent WCC universe 1993 (other forecast class 0)
+    ok   [WCXY_WCA1] covered 3184 + no_analogs 0 = in-extent WCXY universe 3184 (other forecast class 0)
+    ok   covered 18630 + covered_provisional 32789 + no_analogs 0 = in-extent universe of every covered group 51419
+    note no_analogs rows = 0 (D74: reported, never dropped; covered falls short of the universe by this many)
+    ok   oil stream rows 51419 = covered + covered_provisional 51419
+    ok   gas stream rows 51419 = covered + covered_provisional 51419
+    ok   every stream has 600 months summing to its eur within 0.1 % (102838 stream groups, 0 off)
+    ok   every covered location has >= 3 named analogs (min 5, max 20)
+    ok   analog rows cover all 51419 covered + covered_provisional locations (51419)
+stored run_id 24 as RECORD: {'covered': 18630, 'covered_provisional': 32789, 'not_covered_emerging': 13782, 'not_covered_outside_extent': 56495} (755 s)
+base run_id 24
+== 2 store water (CONTAINER)
+target (IPv4Address('172.17.0.2'), 5432, 'postgres')
+rows written (51419 water streams, 842041 water analogs, 0 without water) (405 s); identity
+    ok   oil / gas stream rows unchanged (count + ordered md5 of every row): [('gas', 51419, '0d251c78a758724203b2692cec091694'), ('oil', 51419, '2d7fefa45511248a2c3b806d3f8f19b4')]
+    ok   oil / gas month rows unchanged (61702800 = 61702800)
+    ok   water rows = covered + covered_provisional (51419 = 51419; 0 locations without water)
+    ok   every water stream has 600 months summing to its eur within 0.1 % (51419 groups, 0 off)
+    ok   validated water = WCA + BS2_S covered rows (9310 = 9310); tiers {'provisional': 42109, 'validated': 9310}
+    ok   every water location has >= 3 named water analogs (min 3, max 20, 51419 locations)
+    info calculated-fallback water locations: 49
+stored water on run_id 24: 51419 streams, tiers {'provisional': 42109, 'validated': 9310} (411 s)
+== 3 prox-measure (box rows from CONTAINER, curated read-only from live)
+PUDs 51,419, producers 33,884 (5 s)
+PUD links 331,383 (403 s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\MichaelMast\Projects\engineering_db\.claude\worktrees\box-cohort-review\scripts\box_step16d.py", line 106, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\MichaelMast\Projects\engineering_db\.claude\worktrees\box-cohort-review\scripts\box_step16d.py", line 102, in main
+    return cmd_prox_measure(a) if a.cmd == "prox-measure" else cmd_evidence(a)
+           ~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\MichaelMast\Projects\engineering_db\.claude\worktrees\box-cohort-review\scripts\box_step16d.py", line 76, in cmd_prox_measure
+    r = sdp.run(box, live, a.run_id, a.prec_runs, a.out, a.links_out)
+  File "C:\Users\MichaelMast\Projects\engineering_db\.claude\worktrees\box-cohort-review\scripts\box_step16d_prox.py", line 78, in run
+    with open(prec_runs / "links.pkl", "rb") as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'runs\\prox\\links.pkl'
+rc=1 step3
+Tue Oct 27 07:18:59 UTC 2026
+== 3 prox-measure retry (--prec-runs absolute)
+PUDs 51,419, producers 33,884 (5 s)
+PUD links 331,383 (404 s)
+run 24: 51,419 PUDs, 331,383 links, identity True, outcomes {'as_is_unexposed': 26005, 'haircut': 9889, 'as_is_single_parent': 7033, 'no_forecast_package': 4591, 'no_forecast_precedent': 3901}; oil 28,369.8 -> 22,489.8 MMbbl
+== 4 prox record (CONTAINER) rollback rehearsal
+prepared 51,419 proximity rows, 74,123 parents (2 s); digests {'outcomes': 'f41ae0d2d3b9b3d5209e755035d73ca9bfa270d7c05fe708cadf2f1d5f9c62cd', 'haircut_table': '0a62beb86812eaebeab7c40e7cfc23675cc8154f6503398700363b74828e3c80', 'pud_links': '272f58e5ed040652dabef7e941bca1cffc01e5fb7e396f21af543504b5f2415b'}
+    ok   source run 24 is the record ((24, datetime.date(2026, 8, 1)))
+    ok   proximity universe = run 24 forecast PUDs by identity (51,419 / 51,419 / 51,419)
+run 25 created from run 24 (3 s)
+  pud_forecast + streams (9 s)
+  months (824 s)
+  analogs + proximity + counts (850 s)
+identities
+    ok   pud_forecast coverage counts = source with the no-precedent moves ({'covered': 17858, 'covered_provisional': 25069, 'not_covered_emerging': 13782, 'not_covered_no_precedent': 8492, 'not_covered_outside_extent': 56495})
+    ok   gas stream rows 42,927 = 51,419 - 8,492
+    ok   oil stream rows 42,927 = 51,419 - 8,492
+    ok   water stream rows 42,927 = 51,419 - 8,492
+    ok   oil EUR 22,489.839 MMbbl = source x factor 22,489.839
+    ok   gas stream rows identical to the source (0 differ)
+    ok   water stream rows identical to the source (0 differ)
+    ok   month rows 77,268,600 = source survivors 77,268,600
+    ok   gas / water months + as-is oil months: ordered md5 identical to the source
+    ok   haircut oil months = source x factor (0 rows off)
+    ok   location_analog 617,902 = source survivors 617,902
+    ok   location_water_analog 706,293 = source survivors 706,293
+    ok   pud_proximity outcomes = gate-4 measurement ({'as_is_single_parent': 7033, 'no_forecast_package': 4591, 'as_is_unexposed': 26005, 'haircut': 9889, 'no_forecast_precedent': 3901})
+    ok   74,123 named parents
+    ok   oil prox_factor = pud_proximity.factor on every forecast PUD
+    ok   run 24 untouched
+rehearsal OK — rolled back (pass --commit to store) (1149 s)
+[2026-10-27 07:45 UTC] done
+== 4 prox record (CONTAINER) commit as record
+prepared 51,419 proximity rows, 74,123 parents (2 s); digests {'outcomes': 'f41ae0d2d3b9b3d5209e755035d73ca9bfa270d7c05fe708cadf2f1d5f9c62cd', 'haircut_table': '0a62beb86812eaebeab7c40e7cfc23675cc8154f6503398700363b74828e3c80', 'pud_links': '272f58e5ed040652dabef7e941bca1cffc01e5fb7e396f21af543504b5f2415b'}
+    ok   source run 24 is the record ((24, datetime.date(2026, 8, 1)))
+    ok   proximity universe = run 24 forecast PUDs by identity (51,419 / 51,419 / 51,419)
+run 26 created from run 24 (3 s)
+  pud_forecast + streams (9 s)
+  months (826 s)
+  analogs + proximity + counts (853 s)
+identities
+    ok   pud_forecast coverage counts = source with the no-precedent moves ({'covered': 17858, 'covered_provisional': 25069, 'not_covered_emerging': 13782, 'not_covered_no_precedent': 8492, 'not_covered_outside_extent': 56495})
+    ok   gas stream rows 42,927 = 51,419 - 8,492
+    ok   oil stream rows 42,927 = 51,419 - 8,492
+    ok   water stream rows 42,927 = 51,419 - 8,492
+    ok   oil EUR 22,489.839 MMbbl = source x factor 22,489.839
+    ok   gas stream rows identical to the source (0 differ)
+    ok   water stream rows identical to the source (0 differ)
+    ok   month rows 77,268,600 = source survivors 77,268,600
+    ok   gas / water months + as-is oil months: ordered md5 identical to the source
+    ok   haircut oil months = source x factor (0 rows off)
+    ok   location_analog 617,902 = source survivors 617,902
+    ok   location_water_analog 706,293 = source survivors 706,293
+    ok   pud_proximity outcomes = gate-4 measurement ({'as_is_single_parent': 7033, 'no_forecast_package': 4591, 'as_is_unexposed': 26005, 'haircut': 9889, 'no_forecast_precedent': 3901})
+    ok   74,123 named parents
+    ok   oil prox_factor = pud_proximity.factor on every forecast PUD
+    ok   run 24 untouched
+    ok   run 26 is the one record
+COMMITTED run 26 as RECORD (1191 s)
+[2026-10-27 08:04 UTC] done
+rc=0
+Tue Oct 27 08:04:55 UTC 2026
