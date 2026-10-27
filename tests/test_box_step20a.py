@@ -348,3 +348,23 @@ def test_tag_screen_parked_names_are_class_names():
             m = re.fullmatch(r"(\S+)->(\S+) \(([AB])\)", name)
             assert m and m[1] in codes and m[2] in codes, name
             assert why.startswith("parked 20")
+
+
+def test_wc_rule_depth_call():
+    """Local jury band first; the WCA_1 ladder only where the new tag has no local band; the Novi-WC rung = WC slot."""
+    from scripts.box_wc_rule_depth_check import depth_call
+
+    rung = {"WCA_1": 0.0, "WCB_1": 259.0, "WCB_2": 457.0, "WCD": 1429.0, "WC slot": 768.0}
+
+    def r(verdict, new, off_new, off_wca1):
+        return pd.Series({"verdict": verdict, "new_tag": new, "off_new_ft": off_new, "off_wca1_ft": off_wca1})
+
+    assert depth_call(r("new", "WCB_2", 10.0, 470.0), rung) == ("new tag (local band)", "WCB_2")
+    assert depth_call(r("off band", "WCB_2", np.nan, 450.0), rung) == ("new tag (WCA_1 ladder)", "WCB_2")
+    assert depth_call(r("off band", "WCB_2", 250.0, 760.0), rung) == ("WC slot (stays WCC)", "WC slot")
+    assert depth_call(r("off band", "WCD", -650.0, 790.0), rung) == ("WC slot (stays WCC)", "WC slot")
+    assert depth_call(r("off band", "WCB_2", 300.0, 470.0), rung) == ("contradicted locally, ladder says new", "WCB_2")
+    assert depth_call(r("off band", "WCB_2", 300.0, np.nan), rung) == ("not the new tag (local band)", None)
+    assert depth_call(r("off band", "WCB_2", np.nan, np.nan), rung) == ("undecided", None)
+    assert depth_call(r("no jury", "OTHER", np.nan, np.nan), rung) == ("undecided", None)
+    assert depth_call(r("off band", "WCB_1", np.nan, 440.0), rung) == ("other rung", "WCB_2")

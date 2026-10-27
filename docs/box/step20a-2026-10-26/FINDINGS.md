@@ -655,6 +655,72 @@ longer counts as depth evidence for its neighbours' bands. It is still scored as
   parameterization as "Delaware bit-identical". The class rule is untouched; the detector feeding it changed (91
   Delaware statuses, 5 rule outcomes). Future refreshes in both basins run on v2.2.
 
+### 8.7 Depth-only check of the drafted WOLFCAMP C rule (2026-10-27) → `tag_screen_whatif_wc/depth_check.csv`
+
+**Question.** The drafted sql/16 rule hands every Novi-WOLFCAMP-C-sourced Midland tag to Enverus. Depth alone (no names,
+vendors, GOR or sql/23), does each of the 258 producers it retags sit where its new tag says?
+
+**Jury.** Consensus v2.2 witnesses minus every well Novi calls WOLFCAMP C (538 removed, 26,248 left; a ratified override
+stays in). Neither the live nor the what-if tag can vote for itself, and the jury is the same under both.
+- **Local:** coherent jury bands within 1.5 mi (2, then 3 mi when none). The new tag is confirmed when it is the nearest
+  band within 120 ft, and contradicted when its band exists but sits more than 120 ft away.
+- **Ladder** (regional fallback, only where the new tag has no local band): depth below the local jury WCA_1 band,
+  snapped to the nearest rung. Rungs are the medians over v2.2 witnesses: WCB_1 259 ft, WCB_2 457 ft, **Novi-WC-tagged
+  WCC 768 ft ("WC slot")**, WCD 1,429 ft. The 53 WCC wells NOT tagged by Novi's WOLFCAMP C sit at 470 ft, which is
+  WCB_2 depth.
+
+**Result (as of 2026-09-01).** Depth backs 31 % of the rule's moves and opposes 35 %; a third can't be measured.
+
+| New tag (wells) | Depth backs the move | Sits in the WC slot | Contradicted / other bench | Conflicting | Undecided |
+|---|---|---|---|---|---|
+| WCB_2 (173) | 62 (31 local, 31 ladder) | 29 | 27 | 2 | 53 |
+| WCB_1 (41) | 17 (12 local, 5 ladder) | 3 | 10 | 1 | 10 |
+| WCD (27) | 2 | 13 | 4 | 0 | 8 |
+| WCA_1 (9) | 0 | 2 | 0 | 0 | 7 |
+| MS (3) | 0 | 1 | 2 | 0 | 0 |
+| OTHER (5) | 0 | 0 | 0 | 0 | 5 (OTHER is never a witness) |
+| **All 258** | **81** | **48** | **43** | **3** | **83** |
+| D9 cohort (118) | 36 | 30 | 12 | 1 | 39 |
+
+- **The WCD, WCA_1 and MS destinations are wrong by depth.** The WCD-bound wells sit a median 797 ft below WCA_1, about
+  630 ft above the WCD rung. The WCA_1-bound wells sit about 800 ft below their own WCA_1 band, and the MS-bound wells
+  1,870 ft below MS.
+- **WCB_2 is split.** Where a local jury WCB_2 band exists (72 wells): 31 sit in it, and 40 sit 122–646 ft below it
+  (median 220 ft), deeper than every non-WC neighbour lands.
+- **Novi's WOLFCAMP C marks a real, separate landing.** It sits about 310 ft below WCB_2 and about 660 ft above WCD,
+  and no other label occupies that depth. The rule erases that call for every well, both the ones the depth backs and
+  the ones it doesn't.
+- **The ladder is regional and the bench spacing varies** (D136 north vs south). A ladder call is weaker than a local
+  one.
+
+**Against your cards** (28 of the 258 were carded):
+- 20 have a depth call, and it matches your verdict on 15.
+  - 9 moves you accepted: Brook A-2 8H, North Brook NE45S 19H, Wilde Garner 14WC 3H, the University 8-10 E/W 8WCs,
+    Millie B Leon C 05H, Winchester 73 6-7 H 1W, University Central 0824OH, Marion V. Benge A18 2513CH.
+  - 6 keeps: Muhly C 1612 5AA, Hartgrove 0401 2HU, and the Sequitur 1010WC / 1014WC / 2107WC / 2109WC.
+- They differ on 5:
+  - Bopie 2734 A 301H: depth says WC slot, you said WCB_2.
+  - Bandolero 5-8 H 1W: depth says not WCD, you said WCD.
+  - Chaparral 110 MIPA H110UH: depth says WC slot, you said WCD.
+  - Parks, Roy 316CH: the ladder says WCB_1, you said WCB_2.
+  - University 9 2914WC: local depth is 282 ft below WCB_2, agreeing with your WCC; the ladder says WCB_2.
+- **Your live-basis cards on the same moves** (rule B, 5 each):
+  - WCC → WCA_1: 0/5.
+  - WCC → WCB_1: 4/5.
+  - WCC → WCB_2: 4/5.
+  - WCC → WCD: 4/5.
+
+  Depth and your cards agree that WCA_1 is wrong. They disagree on WCD.
+
+**Recommendation: don't apply the rule; take the WCC moves well by well.**
+- Drop the sql/16 trigger from #202 (the trig CTE, its test pin and the apply-script assertion). Keep this folder as
+  evidence.
+- Return the screen to live tags. WCC → WCA_1 (B) is rejected at 0/5. WCC → WCB_1 / WCB_2 / WCD (B) each sit at 4/5, so
+  the sequential rule draws their round 2 (10 cards each), with this depth call shown on each card as a reference.
+- Classes you judged on the what-if basis carry over only where the same well makes the same move under live tags. The
+  re-run will list which ones do.
+- Your call: this reverses a draft you asked for.
+
 ## 5. How to check
 
 ```
@@ -687,6 +753,11 @@ python -m scripts.box_tag_screen ... --round 2                                 #
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
                                                                                # drafted sql/16 Midland WOLFCAMP C rule, in memory
+```
+Depth-only check of the drafted rule (§8.7), read-only, seconds with both caches:
+```
+python -m scripts.box_wc_rule_depth_check --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc/depth_check.csv \
+    --cache <scored.pkl> --labels-cache <labels.pkl>
 ```
 sql/16 dry run (read-only): evaluate the CREATE body inside `SET TRANSACTION READ ONLY` and diff it against
 `curated.formation_blueox` (§8.2 numbers).
