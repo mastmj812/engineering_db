@@ -1,6 +1,7 @@
-# Step 13b — refresh tooling (2026-10-26). Tooling done; pool CONFIRMED; the container rehearsal waits on a build window.
+# Step 13b — refresh tooling + container rehearsal (2026-10-26/27). AT GATE 13b.
 
-This implements the D126 contract (`docs/box/step13a-2026-10-26/CONTRACT.md`). Nothing has been written to the database.
+This implements the D126 contract (`docs/box/step13a-2026-10-26/CONTRACT.md`). The tooling merged as eng_db #197. The rehearsal
+(§3) stored only into the throwaway `scripts.box_rehearsal` container. **Nothing has been written to the live database.**
 
 ## 1. What changed
 
@@ -62,23 +63,122 @@ changed since the set was judged.
 Under D84 these are not re-decided. They are the drift a 13e tag release would formalize; the counts are recorded in each
 refresh's `refresh.json`.
 
-## 3. The container rehearsal (13b's acceptance), not yet run
+## 3. The container rehearsal (13b's acceptance), run 2026-10-26/27
 
-**What it is:** `box_refresh build --pool docs/box/pool-2026-10-26 --out runs/box13b`, about 8 h read-only. Then the store
-chain in the `scripts.box_rehearsal` container (base → water → proximity measure → proximity record), about 3 h.
+**What ran** (code `ef7c083`, the #197 head; nothing live was written):
 
-**What it must show:**
-- **The method is identical to run 19:** spec labels, rules, evidence-pack digest, haircut tables, and harness equivalence 0.0
-  on every group.
-- **Every per-group change in coverage, EUR and analogs is explained** by the two data movements:
-  - production through 2026-10-01 instead of 2026-07-01;
-  - the 134 new pool wells.
-- **The run notes carry the D126 stamp.**
+| step | where | result |
+|---|---|---|
+| `box_refresh build` (pool-2026-10-26, all 13 groups, 14 workers) | read-only vs live | 8 h 14 min, rc 0 |
+| water build | read-only | 38 min, 51,419 locations, 0 ratio failures |
+| store base `--record` | container | run 24: 18,630 covered + 32,789 provisional (= run 19's 51,419 forecast universe exactly) |
+| store water on run 24 | container | every identity check OK (oil/gas rows md5-unchanged, 600 months per stream summing to EUR) |
+| proximity re-measure (D116) | box rows from the container, curated read-only from live | 331,383 PUD links, identity True |
+| proximity record: rollback rehearsal, then `--commit --record` | container | run 26 = the container's one record; every identity OK |
 
-**Nothing reaches live from the rehearsal.** The live refresh is 13c, on the next vintage.
+Logs: `rehearsal_build.log`, `rehearsal_store.log`. One driver snag: `prox-measure` defaults `--prec-runs runs/prox`, which resolves
+against the working directory, so from a worktree it misses the precedent inputs. I re-ran it with the absolute path. The
+live chain runs from the main checkout, where the default resolves.
 
-## 4. Your calls before the rehearsal
+**Data-through correction.** §2 says the warehouse holds production through 2026-10-01. The build uses the last FULL month
+(rule of record, `box_pud_run` line 13), which is **2026-08-01**. Run 19 used 2026-07-01, so the rehearsal moves production
+by ONE month, not three.
 
-1. **Confirm the 134 added pool wells** (D84 gate). **CONFIRMED by Michael 2026-10-26** ("Confirmed the 134 added pool wells in docs/box/pool-2026-10-26"). The pool directory is committed as proposed; the build refuses an
-   uncommitted pool.
-2. **A window for the ~8 h build** (laptop up and plugged in). The build resumes per group if it is interrupted.
+### 3a. Method: identical to run 19
+
+- **Harness equivalence:** `max_rel_diff` 0.0 on all 13 groups, 24 locations each, production vs `predict_location_v2`.
+- **Run notes:** run 26's notes equal run 19's clause for clause, plus the D126 stamp:
+  "analog pools docs/box/pool-2026-10-26 (D84 / D126); evidence pack 90da3c56cb9d (D120 / D126)".
+- **Spec labels, tiers, haircut tables and the evidence pack are unchanged.** WCA oil keeps its haircut and its gas has none
+  (D122). BS2_S keeps oil + gas. The mean haircut factors per group match (WCA 0.79, BS2_S 0.78, the rest 1.00). The g(48)
+  guard passes, with 0 rows outside on WCA oil and 0.03 % on BS2_S gas.
+- **Coverage:** every covered location forecast, 0 without water, 0 no-analog rows.
+
+Step 19 (D130 / D135, merged during the rehearsal) basin-parameterized this tooling. D135's smoke test proves Delaware
+bit-identical across that change, so 13c runs on post-19 code with the same method.
+
+### 3b. What moved (run 26 vs live run 19)
+
+**Totals, final EUR (after haircut and proximity):**
+- oil 22,623.3 → 22,489.8 MMbbl (**−0.59 %**);
+- gas 136,817 → 136,813 Bcf (−0.00 %);
+- water −0.50 %.
+
+Forecast PUDs 42,970 → 42,927.
+
+| group | forecast 19 → 26 | oil Δ | gas Δ | water Δ | same analog set | raw oil EUR per location, p05 / p95 Δ |
+|---|---|---|---|---|---|---|
+| WCA | 1,877 → 1,877 | +1.47 % | +0.59 % | −1.32 % | 56 % | −5 / +13 % |
+| BS2_S | 7,078 → 7,073 | −0.38 % | +1.11 % | −0.49 % | 40 % | −8 / +8 % |
+| WCXY_WCA1 | 3,149 → 3,149 | −0.37 % | −0.27 % | −0.53 % | 68 % | −5 / +4 % |
+| WCB_1 | 3,991 → 3,991 | −0.55 % | −0.39 % | −0.08 % | 83 % | −5 / +4 % |
+| WCC | 1,773 → 1,768 | −0.44 % | −0.01 % | +0.16 % | 76 % | −5 / +5 % |
+| AVA_0 | 350 → 354 | +2.33 % | +0.02 % | +3.56 % | 40 % | −5 / +9 % |
+| AVA_1 | 951 → 942 | +1.13 % | +0.00 % | +3.28 % | 13 % | −7 / +16 % |
+| AVA_2 | 1,765 → 1,760 | −1.41 % | −2.21 % | −3.96 % | 43 % | −10 / +6 % |
+| BS2_C | 2,148 → 2,140 | −1.77 % | −1.08 % | +1.76 % | 65 % | −10 / +6 % |
+| BS3_S | 5,580 → 5,567 | −1.89 % | −0.25 % | −3.88 % | 61 % | −13 / +7 % |
+| BS3_C | 7,167 → 7,166 | −0.22 % | +1.19 % | +0.55 % | 64 % | −7 / +10 % |
+| WCB_2 | 2,315 → 2,314 | −1.33 % | +0.16 % | −1.23 % | 75 % | −8 / +4 % |
+| BS1_S | 4,826 → 4,826 | −0.18 % | −0.52 % | +1.34 % | 43 % | −20 / +28 % |
+
+No group moves more than ±2.4 % on oil. Machine-readable: `rehearsal_by_group.csv`.
+
+### 3c. Attribution: the −133.5 MMbbl oil, by cause
+
+Each matched location is put in ONE class, in this order.
+
+| cause | locations | oil Δ MMbbl |
+|---|---|---|
+| **production +1 month, analog set unchanged** (per-well refits) | 24,872 | +24.5 |
+| **production +1 month, 184 wells crossed the 6-month analog floor** (`min_months_data` = 6) and entered these sets, pushing the farthest analogs out | 6,946 | −91.0 |
+| **proximity re-measure** (D116, new producers): moved INTO `not_covered_no_precedent` / back out of it | 153 / 110 | −93.6 / +64.3 |
+| **Novi spacing revisions** (below), and the farther analogs they pushed out | 10,999 | −37.6 |
+| total | | −133.5 |
+
+- **The newest producers are weaker than the older, farther wells they replace.** Read that as a signal, not noise.
+- **The 134 added pool wells moved nothing.** 0 of the 134 appear in any analog set:
+  - 128 first produced in 2026-08, so they have 1 month at this data-through, under the 6-month floor;
+  - the other 6 are too far, too old, or under the floor.
+
+  They enter selection about two vintages later. This is the floor of record working as designed, not a defect. Per refresh,
+  added wells move nothing until roughly 6 months after their first production.
+- **A third input moved that the contract does not name: Novi's `lateral_closer_xy_ft`.**
+  - **What it is:** the pool's measured spacing (D119) is read LIVE from `curated.wells_enriched` at build time.
+    `raw_novi."WellSpacing"` is TRUNCATE + COPY every night, so Novi's values replace ours in place.
+  - **How big:** I compared the step-16c tuning views (pulled 2026-10-22/23) with today's values. **1,024 of 10,671 wells
+    (9.6 %) changed in about 4 days:**
+    - 376 went from NULL (standalone) to a value;
+    - 646 changed value (median −140 ft; 10–90 % range −1,261 / +180 ft);
+    - 2 went from a value to NULL.
+  - **Every vintage is touched** (6–13 % of wells per first-production year, 2019–2025). That makes it Novi reprocessing, not
+    co-development neighbours arriving.
+  - **Link to the analog churn:** 60 % of the wells that newly entered analog sets had a revised spacing. The changed-set
+    locations show it directly. Every newly selected well now classes `representative`; 1,752 dropped slots now class
+    `tight` / `standalone`, with the planned spacing unchanged. Evidence: `spacing_revisions.csv`.
+
+**Acceptance against §3's bar.**
+- Method identical: YES.
+- Run notes stamped: YES.
+- Every change explained: YES, by four movements, not the two §3 named:
+  - the production month;
+  - the proximity re-measure;
+  - Novi spacing revisions;
+  - zero from the 134 added wells.
+
+## 4. Your calls (gate 13b)
+
+1. **Novi spacing revisions between refreshes.** D126 freezes the measured-spacing METHOD. It is silent on the VALUES, which
+   Novi rewrites nightly. So a re-build of the same pool a week later selects different analogs (here −37.6 MMbbl,
+   −0.17 %). The options:
+   - **(a) Recommended: snapshot the values in the pool directory.** The pool refresh writes `spacing.csv` (api10 →
+     `lateral_closer_xy_ft`, read with the pull) and the build reads it. Each refresh then takes Novi's then-current values,
+     so corrections still flow in quarterly, and the refresh reports revisions next to re-tags (as with the §2 drift table).
+     The cost is a small tooling PR, plus one test that a build reproduces bit-identically from a committed pool.
+   - **(b) Accept live values.** Builds stay as they are and are not reproducible between refreshes. Record the revision count
+     in the run notes.
+2. **Close gate 13b?** The tooling works end to end in the container. With (a), 13c on the next Novi vintage is the first
+   live refresh, and every store is its own go.
+3. **Remove the rehearsal container?** It holds runs 19 (header only), 24 and 26.
+   `python -m scripts.box_rehearsal down` removes it; I'd keep it until you have read this.
+

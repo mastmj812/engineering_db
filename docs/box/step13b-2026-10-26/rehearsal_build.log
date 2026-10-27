@@ -1,0 +1,79 @@
+Mon Oct 26 21:59:07 UTC 2026
+== build (read-only, ~7 h, resumes per group)
+   python -m scripts.box_pud_run build --selection r2 --wells docs\box\pool-2026-10-26 --benches WCA,BS2_S,WCXY_WCA1,WCB_1,WCC,AVA_0,AVA_1,AVA_2,BS2_C,BS3_S,BS3_C,WCB_2,BS1_S --workers 14 --out C:/Users/MichaelMast/Projects/engineering_db/runs/box13b
+code ef7c083944a6616efd6aa03357a2357a7fad243e; benches ['WCA', 'BS2_S', 'WCXY_WCA1', 'WCB_1', 'WCC', 'AVA_0', 'AVA_1', 'AVA_2', 'BS2_C', 'BS3_S', 'BS3_C', 'WCB_2', 'BS1_S']; wells docs\box\pool-2026-10-26
+universe 121696; in-extent candidates per group {'WCA': 1907, 'BS2_S': 7403, 'WCXY_WCA1': 3184, 'WCB_1': 4143, 'WCC': 1993, 'AVA_0': 607, 'AVA_1': 1365, 'AVA_2': 2848, 'BS2_C': 3005, 'BS3_S': 9220, 'BS3_C': 7794, 'WCB_2': 2614, 'BS1_S': 5336} (16 s)
+[WCA] wells docs\box\pool-2026-10-26; pool 12244 wells at cutoff 2026-09-01 (production through 2026-08-01) (759 s)
+[WCA] fitted 1907 locations (1662 s)
+[WCA] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] haircut guard g(48): {'oil': {'median': 0.6773637130655752, 'min': 0.6291353319219791, 'max': 0.7470278561779451, 'share_outside': 0.0, 'n': 1907}}
+[BS2_S] wells docs\box\pool-2026-10-26; pool 4263 wells at cutoff 2026-09-01 (production through 2026-08-01) (3057 s)
+[BS2_S] fitted 7403 locations (7654 s)
+[BS2_S] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS2_S] haircut guard g(48): {'oil': {'median': 0.6720604061600621, 'min': 0.6351283011113075, 'max': 0.7316298934257368, 'share_outside': 0.0, 'n': 7403}, 'gas': {'median': 1.146543969113962, 'min': 1.1116260213263494, 'max': 1.2012800144582971, 'share_outside': 0.00027016074564365796, 'n': 7403}}
+[WCXY_WCA1] wells docs\box\pool-2026-10-26; pool 7600 wells at cutoff 2026-09-01 (production through 2026-08-01) (8828 s)
+[WCXY_WCA1] fitted 3184 locations (10106 s)
+[WCXY_WCA1] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCB_1] wells docs\box\pool-2026-10-26; pool 1680 wells at cutoff 2026-09-01 (production through 2026-08-01) (10849 s)
+[WCB_1] fitted 4143 locations (12304 s)
+[WCB_1] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCC] wells docs\box\pool-2026-10-26; pool 869 wells at cutoff 2026-09-01 (production through 2026-08-01) (13026 s)
+[WCC] fitted 1993 locations (13674 s)
+[WCC] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[AVA_0] wells docs\box\pool-2026-10-26; pool 253 wells at cutoff 2026-09-01 (production through 2026-08-01) (14215 s)
+[AVA_0] fitted 607 locations (14433 s)
+[AVA_0] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[AVA_1] wells docs\box\pool-2026-10-26; pool 473 wells at cutoff 2026-09-01 (production through 2026-08-01) (14774 s)
+[AVA_1] fitted 1365 locations (15237 s)
+[AVA_1] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[AVA_2] wells docs\box\pool-2026-10-26; pool 366 wells at cutoff 2026-09-01 (production through 2026-08-01) (15676 s)
+[AVA_2] fitted 2848 locations (16575 s)
+[AVA_2] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS2_C] wells docs\box\pool-2026-10-26; pool 558 wells at cutoff 2026-09-01 (production through 2026-08-01) (16970 s)
+[BS2_C] fitted 3005 locations (17993 s)
+[BS2_C] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS3_S] wells docs\box\pool-2026-10-26; pool 2857 wells at cutoff 2026-09-01 (production through 2026-08-01) (18521 s)
+[BS3_S] fitted 9220 locations (21617 s)
+[BS3_S] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS3_C] wells docs\box\pool-2026-10-26; pool 1613 wells at cutoff 2026-09-01 (production through 2026-08-01) (22349 s)
+[BS3_C] fitted 7794 locations (25025 s)
+[BS3_C] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCB_2] wells docs\box\pool-2026-10-26; pool 1012 wells at cutoff 2026-09-01 (production through 2026-08-01) (25739 s)
+[WCB_2] fitted 2614 locations (26655 s)
+[WCB_2] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[BS1_S] wells docs\box\pool-2026-10-26; pool 1067 wells at cutoff 2026-09-01 (production through 2026-08-01) (27367 s)
+[BS1_S] fitted 5336 locations (29003 s)
+[BS1_S] equivalence vs predict_location_v2: {'n': 24, 'max_rel_diff': 0.0}
+[WCA] covered with forecast 1907 / 1907 (in-extent 1907)
+[BS2_S] covered with forecast 7403 / 7403 (in-extent 7403)
+[WCXY_WCA1] covered with forecast 3184 / 3184 (in-extent 3184)
+[WCB_1] covered with forecast 4143 / 4143 (in-extent 4143)
+[WCC] covered with forecast 1993 / 1993 (in-extent 1993)
+[AVA_0] covered with forecast 607 / 607 (in-extent 607)
+[AVA_1] covered with forecast 1365 / 1365 (in-extent 1365)
+[AVA_2] covered with forecast 2848 / 2848 (in-extent 2848)
+[BS2_C] covered with forecast 3005 / 3005 (in-extent 3005)
+[BS3_S] covered with forecast 9220 / 9220 (in-extent 9220)
+[BS3_C] covered with forecast 7794 / 7794 (in-extent 7794)
+[WCB_2] covered with forecast 2614 / 2614 (in-extent 2614)
+[BS1_S] covered with forecast 5336 / 5336 (in-extent 5336)
+wrote C:\Users\MichaelMast\Projects\engineering_db\runs\box13b\run.pkl (29643 s)
+== water build (read-only, ~40 min)
+   python -m scripts.box_water_run build --run-pkl C:/Users/MichaelMast/Projects/engineering_db/runs/box13b/run.pkl --out C:/Users/MichaelMast/Projects/engineering_db/runs/box13b_water --workers 14
+[WCA] 1907 locations, 1829 distinct cohorts, 2747 analogs fitted, 0 ratio failures (179 s)
+[BS2_S] 7403 locations, 6767 distinct cohorts, 1779 analogs fitted, 0 ratio failures (294 s)
+[WCXY_WCA1] 3184 locations, 3023 distinct cohorts, 2306 analogs fitted, 0 ratio failures (184 s)
+[WCB_1] 4143 locations, 3901 distinct cohorts, 794 analogs fitted, 0 ratio failures (191 s)
+[WCB_2] 2614 locations, 2414 distinct cohorts, 560 analogs fitted, 0 ratio failures (143 s)
+[WCC] 1993 locations, 1794 distinct cohorts, 344 analogs fitted, 0 ratio failures (115 s)
+[BS1_S] 5336 locations, 4389 distinct cohorts, 476 analogs fitted, 0 ratio failures (206 s)
+[BS2_C] 3005 locations, 2197 distinct cohorts, 261 analogs fitted, 0 ratio failures (111 s)
+[BS3_S] 9220 locations, 8185 distinct cohorts, 1073 analogs fitted, 0 ratio failures (320 s)
+[BS3_C] 7794 locations, 6431 distinct cohorts, 785 analogs fitted, 0 ratio failures (270 s)
+[AVA_0] 607 locations, 519 distinct cohorts, 95 analogs fitted, 0 ratio failures (59 s)
+[AVA_1] 1365 locations, 1225 distinct cohorts, 257 analogs fitted, 0 ratio failures (84 s)
+[AVA_2] 2848 locations, 2190 distinct cohorts, 186 analogs fitted, 0 ratio failures (111 s)
+wrote C:\Users\MichaelMast\Projects\engineering_db\runs\box13b_water\water.pkl: 51419 locations (2274 s)
+read-only builds done; the stores are next, each on its own go (python -m scripts.box_refresh plan ...)
+rc=0
+Tue Oct 27 06:51:13 UTC 2026

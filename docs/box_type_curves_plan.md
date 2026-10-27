@@ -450,6 +450,10 @@ superseded: that chain predates 13 groups, water, the proximity layer and r2.
   - skill §9 rewritten to the 13-group chain.
   - Rehearsal on the current vintage in the `scripts.box_rehearsal` container: a no-vintage refresh must reproduce run 19's
     method exactly. Only the production month and new pool wells may move; every change is reported per bench.
+  - **REHEARSED 2026-10-27, AT GATE 13b** (`docs/box/step13b-2026-10-26/FINDINGS.md` §3–4): method identical (equivalence
+    0.0 on all 13 groups), oil −0.59 % vs run 19; deltas = production +1 month, proximity re-measure and Novi WellSpacing
+    revisions (9.6 % of wells in 4 days); the 134 added wells moved nothing (under the 6-month floor). Open: snapshot spacing
+    per pool refresh?
 - **13c — live on the next Novi vintage (on go). Gate 13c.**
   - The first live crosswalk (D73 / D83: carried / new / stopped counted).
   - Then the full chain, prune the old record (D123), and Steven re-prices.
