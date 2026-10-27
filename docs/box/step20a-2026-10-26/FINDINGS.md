@@ -586,6 +586,26 @@ were filled in and are kept as written. Michael asked to be told where his calls
      113 ft below 2101WB → WCB_2 at 9,879 ft, 0.53 mi apart.
    - Seeding rule (both bars): a well whose own card says reject is never moved by its class's accept.
 
+### 8.5 Sequitur cards re-called as bench codes (2026-10-27)
+
+Michael rewrote the ambiguous verdicts as bench codes:
+- University 43 1010WC and 1014WC, and University 9 2107WC, 2109WC and 2914WC → **WCC**.
+- University Lucy 0103H → WCB_2. Same meaning as its earlier "reject".
+
+The re-run kept every row in place, lost nothing, and drew 0 new cards. **WCB_2 → WCC (A) is now 7/10: accept at the
+BOX bar, fail at the strict bar.**
+
+- **These are calls against the drafted sql/16 rule.** All five are Novi WOLFCAMP C wells the rule retags WCB_2. With
+  Ovintiv's 14 WC → WCB_1 (§8.4 item 2), the rule now misfires on every operator-named WC landing that has been
+  looked at.
+- **One of the 7 agrees looks like a TVD swap.** Mayer 4512WB (20a card, agree → WCC) sits at 7,219 ft. Its WB
+  siblings are at 6,773–6,809 ft (WCB_1). Its WC twin on the same surface location, Mayer 4512WC (0.05 mi), sits at
+  6,812 ft, among WC siblings at 7,060–7,172 ft. The two wells' TVDs look exchanged, and the agree followed the
+  swapped depth. Re-called to its WB siblings' bench (WCB_1), the class falls to 6/10 → reject.
+- **The file was saved from Excel.** Excel reformatted dates (m/d/yyyy), booleans (TRUE/FALSE) and float precision.
+  The screen reads only api10, verdict and the destination, so nothing is affected. Rows the run regenerates come back
+  clean; the 22 carried free-text rows keep Excel's formatting.
+
 ## 5. How to check
 
 ```
