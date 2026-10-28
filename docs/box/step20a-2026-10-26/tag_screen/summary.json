@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-28T06:48:12-05:00",
- "git_sha": "5c5a2a9+dirty",
+ "built_at": "2026-10-28T07:15:25-05:00",
+ "git_sha": "316624f+dirty",
  "basin": "midland",
  "family": "MID_WC",
  "round": 2,
@@ -50,7 +50,7 @@
    "n": 75,
    "n_cohort": 29,
    "prior_judged": 10,
-   "prior_agree": 5,
+   "prior_agree": 6,
    "state_before": "reject",
    "new_cards": 0
   },
