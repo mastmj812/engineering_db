@@ -393,3 +393,43 @@ def test_tag_screen_reuse_verdict():
     assert ts.reuse_verdict("WCD", "WCB_1", "WCD", known) == "agree"
     assert ts.reuse_verdict("agree", "WCB_2", None, known) == ""  # not flagged now
     assert ts.reuse_verdict("bad tvd", "WCB_2", "WCB_2", known) == ""
+
+
+def test_tag_screen_override_seed():
+    import pandas as pd
+
+    from box import tag_screen as ts
+
+    flags = pd.DataFrame({"api10": list("abcdefg"), "screen_class": ["X (A)"] * 4 + ["Y (B)"] * 3,
+                          "screen_dest": ["WCB_1"] * 4 + ["WCD"] * 3, "formation_blueox": ["WCA_1"] * 4 + ["WCC"] * 3})
+    cards = flags[flags["api10"].isin(list("abef"))].assign(verdict=["agree", "reject", "WCB_2", "hold: thin"],
+                                                            verdict_source="round 1")
+    calls = pd.DataFrame({"api10": ["z", "a"], "live_tag": ["WCC", "WCA_1"], "call": ["WCB_1", "WCB_1"],
+                          "source": ["Michael in chat", "Michael in chat"], "date": ["2026-10-27"] * 2, "note": ["depth", "same"]})
+    states = {"X (A)": {"state_before": "accept", "prior_agree": 1, "prior_judged": 2},
+              "Y (B)": {"state_before": "reject", "prior_agree": 0, "prior_judged": 2}}
+    s = ts.override_seed(flags, cards, calls, states, {"round 1": "2026-10-27"}, "2026-10-28").set_index("api10")
+    # a: carded agree; b: own reject never moved by its accepted class; c, d: uncarded in an accepted class
+    # e: own-bench call in a rejected class lands; f: hold; g: uncarded in a rejected class; z: chat call
+    assert sorted(s.index) == ["a", "c", "d", "e", "z"]
+    assert s.loc["c", "note"].startswith("class-accepted X (A) 1/2 cards 2026-10-28")
+    assert s.loc["a", "note"].startswith("carded 2026-10-27") and s.loc["e", "corrected_code"] == "WCB_2"
+    assert all(n.endswith(ts.SEED_TAG) for n in s["note"])
+    calls.loc[1, "call"] = "WCB_2"
+    import pytest
+
+    with pytest.raises(ValueError):  # a card and a chat call that disagree never land silently
+        ts.override_seed(flags, cards, calls, states, {"round 1": "2026-10-27"}, "2026-10-28")
+
+
+def test_seed_20a_block_matches_the_screen():
+    """The committed seed's 20a block is exactly what the finished screen builds (re-run box_tag_seed --write if not)."""
+    import csv
+
+    from box import tag_screen as ts
+    from scripts.box_tag_seed import SEED, build
+
+    with open(SEED, encoding="utf-8") as fh:
+        block = [r for r in csv.DictReader(fh) if ts.SEED_TAG in r["note"]]
+    new = build(SEED.parent.parent / "docs/box/step20a-2026-10-26/tag_screen", "2026-10-28")
+    assert [tuple(r.values()) for r in block] == list(new.itertuples(index=False, name=None))

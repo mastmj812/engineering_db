@@ -913,7 +913,69 @@ The 8/10 sample would have moved all 18 to WCD. The full review moves 11 and sen
 
 Correction to §8.9's tallies: `well_calls.csv` has 5 rows, but Cypert and Coachwhip are counted once, as own-bench calls.
 
-## 5. How to check
+### 8.11 Override seed built (2026-10-28, Michael: build the seed) → `seeds/formation_tag_overrides.csv`
+
+**Nothing is applied.** The seed and sql/44 are repo changes on #202. The warehouse sees them only on "go apply".
+
+**Builder.** `python -m scripts.box_tag_seed --screen docs/box/step20a-2026-10-26/tag_screen [--write] [--check-live]`
+uses `tag_screen.override_seed`, which applies convention (a) as amended in §8.9–8.10:
+- A card decides its own well, whatever its class did:
+  - "agree" moves it to the card's destination;
+  - a bench code moves it to that bench (nothing when the code is the live tag);
+  - reject, hold or free text leaves it alone.
+- An accepted class moves its uncarded wells to the class destination.
+- Full-review, parked and rejected classes move no uncarded well.
+- `well_calls.csv` rows land as written. A well that also has a card must carry the same call, or the build fails.
+
+Every row's note ends "tag screen step 20a", so a re-run replaces exactly this block. The 98 Delaware rows are untouched:
+the diff is 338 added lines and nothing else.
+
+**The 338 rows:**
+
+| Kind | Rows |
+|---|---|
+| class-accepted (uncarded wells of the 6 accepted classes) | 241 |
+| carded (your own card) | 94 |
+| direct / what-if calls (Mayer, Elwood, Horton) | 3 |
+
+| was → now | DEAN | WCA_1 | WCB_1 | WCB_2 | WCC | WCD | total |
+|---|---|---|---|---|---|---|---|
+| DEAN | | 7 | | | | | 7 |
+| LSSH | | 20 | 6 | | | | 26 |
+| OTHER | | | | | | 47 | 47 |
+| WCA_1 | 5 | | 6 | | | | 11 |
+| WCB_1 | | 4 | | 93 | 1 | | 98 |
+| WCB_2 | | | 104 | | 3 | | 107 |
+| WCC | | | 17 | 14 | | 11 | 42 |
+| total | 5 | 31 | 133 | 107 | 4 | 58 | 338 |
+
+**Live check, read-only (2026-10-28):**
+- All 338 api10s exist in `curated.formation_blueox`.
+- Every row's `was` equals the live tag, so no tag has drifted since the screen's snapshot.
+- None is already a ratified override.
+- The live `ref.formation_tag_overrides` holds 98 rows, the same as the seed outside this block.
+
+**sql/44 amended in the same commit** (convention (a)):
+- The header now names both kinds of ratification, well-by-well and class-accepted, with their note formats, and records
+  Batch 3.
+- The table COMMENT says the same. It reaches the live table only when sql/44 is re-run.
+- `docs/data_dictionary.html` is generated from the live comments, so it is regenerated after the apply.
+
+**Tests:**
+- `test_tag_screen_override_seed` checks the rules on a synthetic screen.
+- `test_seed_20a_block_matches_the_screen` pins the committed block to what the finished screen builds.
+- The existing `test_formation_tag_overrides` checks (unique api10s, crosswalk vocabulary, a real change, a note on every
+  row) pass on all 436 rows.
+
+**Flag for the apply plan (not resolved).** `scripts.apply_formation_tag_overrides` re-runs sql/16 in full, and sql/16
+starts with `DROP MATERIALIZED VIEW ... CASCADE`.
+- That takes down the whole tag-consumer chain, `erebor_locations` included, until the tail rebuilds it. The script's
+  docstring says so and puts it in a chain-rebuild window.
+- But sql/44's own header, and §8 above, say an override is a content change: `REFRESH ... CONCURRENTLY` of
+  formation_blueox, then refreshes downstream, with no DROP and no dark apps.
+- Both paths land the same tags. They differ in downtime and in which steps run. I'll lay out both with timings when you
+  give the go.
+
 
 ```
 python -m pytest -q tests/test_box_step20a.py tests/test_box_family_qc.py tests/test_box_basin.py
@@ -944,6 +1006,7 @@ python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/
 python -m scripts.box_tag_screen ... --round 2                                 # after round-1 verdicts: tops up the mixed classes
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen --round 2     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen_whatif_wc/cards_sample.csv     --depth-check docs/box/step20a-2026-10-26/tag_screen_whatif_wc/depth_check.csv     # §8.8: live tags, every verdict carried
     # §8.9-8.10: add  --label "round 3 (full review)" --review-all "WCC->WCD (B)"   (cards every well of that class)
+python -m scripts.box_tag_seed --screen docs/box/step20a-2026-10-26/tag_screen --check-live      # §8.11: build + read-only live check (add --write to rewrite the block)
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
                                                                                # drafted sql/16 Midland WOLFCAMP C rule, in memory

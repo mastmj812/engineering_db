@@ -220,3 +220,44 @@ def card_target(state: str, n_class: int) -> int:
     if state in ("accept", "reject", "parked"):
         return 0
     return CARDS_PER_CLASS if state == "round 2" else ROUND1
+
+
+SEED_TAG = "tag screen step 20a"  # every row this screen seeds carries it, so a re-seed replaces exactly its own block
+
+
+def override_seed(flags: pd.DataFrame, cards: pd.DataFrame, well_calls: pd.DataFrame, states: dict[str, dict],
+                  card_dates: dict[str, str], date: str) -> pd.DataFrame:
+    """ref.formation_tag_overrides rows (api10, corrected_code, was, note) from a finished screen, convention (a) as
+    amended 2026-10-28 (FINDINGS §8.4 / §8.9 / §8.10):
+      * a card decides its own well, whatever its class did: 'agree' -> the card's destination; a bench code -> that
+        bench (nothing when it is the live tag); reject / hold / free text -> nothing;
+      * an ACCEPTED class moves its uncarded wells to the class destination ('full review' and 'parked' classes move
+        nobody uncarded; rejected classes neither);
+      * well_calls.csv rows (chat / what-if calls) land as written; a well also carded must carry the same call.
+    ``states`` = summary.json classes; ``card_dates`` maps verdict_source -> the date that round was judged."""
+    rows: dict[str, dict] = {}
+    carded = set(cards["api10"])
+    for r in cards.itertuples():
+        v = "" if pd.isna(r.verdict) else str(r.verdict).strip()
+        to = r.screen_dest if v.lower() == "agree" else v if v and v == v.upper() and " " not in v else None
+        if to is None or to == r.formation_blueox:
+            continue
+        rows[r.api10] = {"api10": r.api10, "corrected_code": to, "was": r.formation_blueox,
+                         "note": f"carded {card_dates[r.verdict_source]} ({r.verdict_source} card, {r.screen_class}: {v}); "
+                                 f"ratified by MM; {SEED_TAG}"}
+    for name, s in states.items():
+        if s["state_before"] != "accept":
+            continue
+        g = flags[(flags["screen_class"] == name) & ~flags["api10"].isin(carded)]
+        for r in g.itertuples():
+            rows[r.api10] = {"api10": r.api10, "corrected_code": r.screen_dest, "was": r.formation_blueox,
+                             "note": f"class-accepted {name} {s['prior_agree']}/{s['prior_judged']} cards {date}; "
+                                     f"convention (a); {SEED_TAG}"}
+    for r in well_calls.itertuples():
+        if r.api10 in rows:
+            if rows[r.api10]["corrected_code"] != r.call:
+                raise ValueError(f"{r.api10}: card says {rows[r.api10]['corrected_code']}, well_calls says {r.call}")
+            continue
+        rows[r.api10] = {"api10": r.api10, "corrected_code": r.call, "was": r.live_tag,
+                         "note": f"{r.source} {r.date}: {r.note}; ratified by MM; {SEED_TAG}"}
+    return pd.DataFrame(list(rows.values()), columns=["api10", "corrected_code", "was", "note"]).sort_values("api10", ignore_index=True)
