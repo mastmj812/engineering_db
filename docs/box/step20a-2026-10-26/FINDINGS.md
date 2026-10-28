@@ -766,6 +766,80 @@ did not:
     6 undecided.
 - OTHER → WCD (B) still accepts at 7/10. The Irion Canyon-sand and Diamondback copied-TVD subgroups (§8.4) remain open.
 
+### 8.9 Live round 2 back (2026-10-28): every carded class decided
+
+Your 16 verdicts are stamped `round 2` in `tag_screen/cards_sample.csv`. The re-run draws 0 new cards, so the screen
+is finished.
+
+| Class | Round 2 | Final | State |
+|---|---|---|---|
+| WCC → WCB_1 (B) | 4/5 | **8/10** | **accept** (18 wells, 10 cohort) |
+| WCC → WCD (B) | 4/5 | **8/10** | **accept** (18 wells, 10 cohort) |
+| WCC → WCB_2 (B) | 1/5 | 5/10 | reject (75 wells) |
+| WCB_1 → WCB_2 (A) | 0/1 | 7/10 | accept, exactly at the gate (95 wells) |
+
+Every other class is unchanged from §8.8. Accepted on live tags: WCB_2 → WCB_1 (A) 6/6, WCB_1 → WCB_2 (A) 7/10,
+LSSH → WCA_1 (A) 5/5, LSSH → WCB_1 (A) 5/5, OTHER → WCD (B) 7/10, WCC → WCB_1 (B) 8/10, WCC → WCD (B) 8/10.
+OTHER → WCA_1 (B) stays parked.
+
+How the §8.7 depth-only call read on the 15 WCC cards against yours:
+
+| Class | You moved | Depth backs the move | Depth disagrees | Depth undecided |
+|---|---|---|---|---|
+| WCC → WCD | MB 702H, Knight 140 H140UH, John B 05WD, Conroe 15-22 3H | Conroe (ladder) | **MB, Knight, John B: WC slot (stays WCC)** | — |
+| WCC → WCB_1 | University 8-10E 9WC, 8-4 WF 8WC, 8-4 WE 7WC, Amoco-Holt 2WB | 8-10E (local band) | — | the other 3 |
+| WCC → WCB_2 | Affirmed N405H | — | — | Affirmed |
+
+On the wells you kept WCC:
+- Depth agrees on Mayra 8 16BL, which reads as not WCB_2.
+- University East 4106CH reads WCB_1 on the ladder.
+- Thomas, University West and Ponderosa are undecided by depth or covered below.
+
+**Flag: WCC → WCD passed 8/10, but depth says 3 of your 4 round-2 moves sit in the Novi "WC slot",** the
+~768 ft-below-WCA_1 landing that §8.7 found distinct from WCD (1,429 ft).
+- The WC slot is a depth band, not proof the tag is right. Your cards read the gunbarrel, which the ladder does not.
+- A class accept also moves the 8 wells nobody carded. Depth reads them as:
+
+  | Class (8 uncarded wells each) | Backs the move | WC slot | Not the new tag / other rung | Undecided |
+  |---|---|---|---|---|
+  | WCC → WCD | 0 | 0 | 3 | 5 |
+  | WCC → WCB_1 | 3 | 2 | 2 | 1 |
+
+  Across the 18 wells in each class, depth backs 2 of the WCD moves and 8 of the WCB_1 moves.
+- I have not changed anything. Options for you:
+  - Accept as carded (convention (a)).
+  - Seed only the carded wells of these two classes.
+  - Card the 8 uncarded wells of WCC → WCD.
+
+**Flag: the Ponderosa East pair reads inverted by depth.** These two Crescent wells sit 0.24 mi apart in Upton:
+
+| Well | TVD | Local jury bands (1.5 mi) | Your call |
+|---|---|---|---|
+| Ponderosa East A 7H | 8,698 ft | WCA_1 8,486, WCB_2 8,910 (212 ft from each; the ladder says WCB_1) | **WCB_2** |
+| Ponderosa East C 10H | 8,816 ft | WCB_2 8,955 (139 ft above it) | **WCB_1** |
+
+- The shallower well is called the deeper bench, and vice versa, at a 118 ft TVD difference.
+- If the calls were swapped by accident, each well matches the depth reading.
+- Nothing is written either way until you confirm. The verdicts are recorded exactly as you entered them.
+
+**What "go apply" would seed on live tags (prospective, recomputed at seed time).** Convention (a) applied to
+`cards_sample.csv`:
+- **296 rows from the 7 accepted classes**, out of 312 flagged wells.
+  - 46 carded agrees and 1 carded own-bench call (Ponderosa A → WCB_2).
+  - 249 class-accepted wells nobody carded.
+  - 16 left out: your rejects and holds.
+  - 159 of the 296 are cohort wells.
+- **4 own-bench calls outside the accepted classes:** Cypert → WCD, Coachwhip → WCD, Ponderosa C → WCB_1,
+  Affirmed → WCB_2.
+- **3 chat or what-if calls** in `well_calls.csv`: Mayer, Elwood, Horton.
+
+**Conflict to flag, not resolved.** 40 cards say "agree" inside classes that were rejected, e.g. 6 in
+WCA_1 → WCB_1 (A).
+- Convention (a) says "rejected classes write nothing", which drops them.
+- §8.4 item 6 lands own-bench calls from rejected classes as single-well `carded <date>` rows.
+- An "agree" on a card is the same well-by-well ratification. Whether those 40 wells become overrides is your call
+  before the seed is built.
+
 ## 5. How to check
 
 ```

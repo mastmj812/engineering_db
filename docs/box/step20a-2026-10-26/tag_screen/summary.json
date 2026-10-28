@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-27T18:31:52-05:00",
- "git_sha": "9e74ab6+dirty",
+ "built_at": "2026-10-28T06:48:12-05:00",
+ "git_sha": "5c5a2a9+dirty",
  "basin": "midland",
  "family": "MID_WC",
  "round": 2,
@@ -33,10 +33,10 @@
   "WCB_1->WCB_2 (A)": {
    "n": 95,
    "n_cohort": 56,
-   "prior_judged": 9,
+   "prior_judged": 10,
    "prior_agree": 7,
-   "state_before": "round 2",
-   "new_cards": 1
+   "state_before": "accept",
+   "new_cards": 0
   },
   "WCB_1->WCA_1 (A)": {
    "n": 64,
@@ -49,10 +49,10 @@
   "WCC->WCB_2 (B)": {
    "n": 75,
    "n_cohort": 29,
-   "prior_judged": 5,
-   "prior_agree": 4,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 5,
+   "state_before": "reject",
+   "new_cards": 0
   },
   "DEAN->WCA_1 (B)": {
    "n": 39,
@@ -114,18 +114,18 @@
   "WCC->WCB_1 (B)": {
    "n": 18,
    "n_cohort": 10,
-   "prior_judged": 5,
-   "prior_agree": 4,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 8,
+   "state_before": "accept",
+   "new_cards": 0
   },
   "WCC->WCD (B)": {
    "n": 18,
    "n_cohort": 10,
-   "prior_judged": 5,
-   "prior_agree": 4,
-   "state_before": "round 2",
-   "new_cards": 5
+   "prior_judged": 10,
+   "prior_agree": 8,
+   "state_before": "accept",
+   "new_cards": 0
   },
   "LSSH->WCB_1 (A)": {
    "n": 11,
@@ -184,6 +184,6 @@
    "new_cards": 0
   }
  },
- "n_new_cards": 16,
- "seconds": 10.3
+ "n_new_cards": 0,
+ "seconds": 3.3
 }
