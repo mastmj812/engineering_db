@@ -1046,8 +1046,34 @@ before/after.
   internally consistent.
 - **No DDL** beyond sql/44's idempotent CREATE IF NOT EXISTS and COMMENT. **No definition changes**: the live view
   bodies are reused as they are, so repo drift cannot ride along. No index rebuild either, so no sql/26 re-run is needed.
-- It needs a small code change: a `--refresh` mode on `apply_formation_tag_overrides`, with the steps above, plus fixing
-  that script's docstring tail. That is reversible repo work on #202, with tests. It runs only on "go apply".
+- **Built 2026-10-28 (Michael: write it).** `python -m scripts.apply_formation_tag_overrides --refresh` runs it. The
+  script now requires a mode: `--refresh` or `--rebuild`. With no mode it refuses, so a plain call can no longer
+  DROP CASCADE by accident.
+  - The `--rebuild` docstring tail is fixed: it now includes sql/25 and `apply_intel_forecast_accuracy`.
+  - **Preflight, before any write:**
+    - reads the live `pg_depend` graph;
+    - checks that the 12-matview `CHAIN` is exactly the set below formation_blueox;
+    - checks that the order respects every edge, including edges through plain views;
+    - refuses if any `meta.etl_log` run started in the last 6 h is still `running`.
+  - **Verify, after the refresh:**
+    - 436/436 overrides land with source `ratified_override`;
+    - every PDP tag that moved is an override row (none outside the seed);
+    - stick-tag moves by basin, as was → now;
+    - reconciled_inventory status moves;
+    - row counts before → after for all 12 matviews.
+  - `--refresh --dry-run` runs the preflight and diffs the seed against the live table, inside one read-only
+    transaction.
+  - **Dry run against live, 2026-10-28 ~14:50 UTC:** preflight OK (12 matviews, order valid); seed 436 vs live 98 →
+    add 338, change 0, remove 0. Nothing was written.
+  - Tests: 6 new DB-free tests in `tests/test_formation_tag_overrides.py`:
+    - the CHAIN against the live 2026-10-28 edge list;
+    - seeing through views;
+    - order, missing and extra matviews;
+    - the sql/44 copy split;
+    - the seed diff and tag moves;
+    - the mode is required.
+
+    Full suite: 774 passed, 46 skipped.
 
 **Either path:**
 - Run it outside the nightly. The cron says 11:15 UTC, but the run actually lands ~15:00–17:30 UTC (2026-10-27 refreshes
@@ -1089,6 +1115,7 @@ python -m scripts.box_tag_screen ... --round 2                                 #
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen --round 2     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen_whatif_wc/cards_sample.csv     --depth-check docs/box/step20a-2026-10-26/tag_screen_whatif_wc/depth_check.csv     # §8.8: live tags, every verdict carried
     # §8.9-8.10: add  --label "round 3 (full review)" --review-all "WCC->WCD (B)"   (cards every well of that class)
 python -m scripts.box_tag_seed --screen docs/box/step20a-2026-10-26/tag_screen --check-live      # §8.11: build + read-only live check (add --write to rewrite the block)
+python -m scripts.apply_formation_tag_overrides --refresh --dry-run      # §8.12: preflight + seed diff, read-only (drop --dry-run = the apply, on go only)
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
                                                                                # drafted sql/16 Midland WOLFCAMP C rule, in memory
