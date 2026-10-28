@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-28T07:24:24-05:00",
- "git_sha": "af3a24a+dirty",
+ "built_at": "2026-10-28T07:40:20-05:00",
+ "git_sha": "395ad62+dirty",
  "basin": "midland",
  "family": "MID_WC",
  "round": 2,
@@ -122,10 +122,10 @@
   "WCC->WCD (B)": {
    "n": 18,
    "n_cohort": 10,
-   "prior_judged": 10,
-   "prior_agree": 8,
+   "prior_judged": 16,
+   "prior_agree": 11,
    "state_before": "full review",
-   "new_cards": 8
+   "new_cards": 0
   },
   "LSSH->WCB_1 (A)": {
    "n": 11,
@@ -184,6 +184,6 @@
    "new_cards": 0
   }
  },
- "n_new_cards": 8,
- "seconds": 6.3
+ "n_new_cards": 0,
+ "seconds": 3.2
 }

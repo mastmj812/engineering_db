@@ -849,8 +849,7 @@ move inside classes that were rejected, e.g. 6 in WCA_1 → WCB_1 (A). This incl
 | Own-bench calls outside the accepted classes | 2 |
 | Chat / what-if calls | 3 |
 
-The WCC → WCD (B) depth flag above is resolved by a full review (§8.10). Until those cards are back, the 296 includes
-WCC → WCD's 8 uncarded wells.
+The WCC → WCD (B) depth flag above is resolved by a full review (§8.10), which replaces these totals: the seed is 338.
 
 ### 8.10 WCC → WCD (B): full review (Michael, 2026-10-28) → `tag_screen/` 8 new cards
 
@@ -877,11 +876,42 @@ the §8.7 depth-only line. All 8 are Novi WOLFCAMP C, Enverus WOLFCAMP D:
 | Sugg 8A-1910 1H | Compass, Irion | 7,434 | undecided (no jury within 3 mi) |
 | Red Headed Stranger 1H | ConocoPhillips, Terry | 10,058 | undecided (no jury within 3 mi) |
 
-**Seed effect.** WCC → WCD now contributes only the wells whose own card agrees, plus any bench you write on a card.
-- Today that is the 8 carded agrees: round 1 Bandolero, Mabee DDA L1, Chaparral and Winchester, plus round 2 MB,
-  Knight, John B and Conroe.
-- The 8 uncarded wells wait on these cards.
-- The prospective seed is 334 rows until the 8 are back, and up to 342 after.
+**Back 2026-10-28.** You called 6 of the 8 and left 2 blank. The blanks are recorded as holds in your words:
+"hold: too few wells in the area to infer anything" (`verdict_source` = Michael in chat 2026-10-28). A hold is never
+counted, so those tags stay, and the re-run draws 0 new cards.
+
+| Well | Your call | Depth only |
+|---|---|---|
+| Scharbauer Ranch 302H | WCD | undecided |
+| Mabee J.E. 'B' NCT-2 1507H | WCD | undecided |
+| Sugg 8A-1910 1H | WCD | undecided (no jury) |
+| Scarlet Unit 2 2988NH | **WCB_2** | WCB_2 on the ladder: agrees |
+| Cross Bar Ranch H 3025WD | WCC (stays) | WCB_2 on the ladder; also not WCD |
+| Barracuda 45 2H | WCC (stays) | not WCD: agrees |
+| Devaca 11H | hold | undecided |
+| Red Headed Stranger 1H | hold | undecided (no jury) |
+
+Depth contradicts none of your 8 calls on the WCD question.
+
+**The whole class, card by card (18 wells):**
+- 11 move to WCD: 4 from round 1, 4 from round 2, 3 from this round.
+- 1 moves to WCB_2 (Scarlet).
+- 4 stay WCC: University Orange, University West, Cross Bar, Barracuda.
+- 2 are held.
+
+The 8/10 sample would have moved all 18 to WCD. The full review moves 11 and sends 1 elsewhere.
+
+**Prospective seed on "go apply": 338 rows** (recomputed at seed time):
+
+| Source | Rows |
+|---|---|
+| The 6 accepted classes (WCC → WCD is no longer one) | 280 |
+| WCC → WCD full review: 11 agrees + Scarlet → WCB_2 | 12 |
+| Carded agrees in rejected classes | 41 |
+| Own-bench calls outside the accepted classes (Cypert, Coachwhip) | 2 |
+| Chat / what-if calls (Mayer, Elwood, Horton) | 3 |
+
+Correction to §8.9's tallies: `well_calls.csv` has 5 rows, but Cypert and Coachwhip are counted once, as own-bench calls.
 
 ## 5. How to check
 
