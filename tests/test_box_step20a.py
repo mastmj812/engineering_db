@@ -293,6 +293,15 @@ def test_tag_screen_sequential_decision():
     assert ts.decide(0, 0, 40) == "pending"
 
 
+def test_tag_screen_card_target():
+    from box import tag_screen as ts
+
+    assert ts.card_target("full review", 18) == 18  # every flagged well, whatever the sample said
+    assert [ts.card_target(s, 40) for s in ("accept", "reject", "parked")] == [0, 0, 0]
+    assert ts.card_target("round 2", 40) == ts.CARDS_PER_CLASS
+    assert ts.card_target("pending", 40) == ts.ROUND1
+
+
 def test_tag_screen_whatif_coarse_is_not_in_sql16():
     """The Midland WOLFCAMP C trigger was dropped (FINDINGS §8.7): the live screen assumes sql/16 has no basin trigger."""
     from pathlib import Path

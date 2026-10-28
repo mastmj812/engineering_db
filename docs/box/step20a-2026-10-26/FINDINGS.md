@@ -849,7 +849,39 @@ move inside classes that were rejected, e.g. 6 in WCA_1 → WCB_1 (A). This incl
 | Own-bench calls outside the accepted classes | 2 |
 | Chat / what-if calls | 3 |
 
-The WCC → WCD (B) depth flag above is still open and could reduce the 296.
+The WCC → WCD (B) depth flag above is resolved by a full review (§8.10). Until those cards are back, the 296 includes
+WCC → WCD's 8 uncarded wells.
+
+### 8.10 WCC → WCD (B): full review (Michael, 2026-10-28) → `tag_screen/` 8 new cards
+
+**Michael: card the 8 others.** The class passed its sample at 8/10, but depth puts 3 of the 4 round-2 moves in the Novi
+WC slot (§8.9). The class now gets a full review: every one of its 18 wells is carded, and each card decides only its own
+well. The class acceptance no longer moves anybody.
+
+**Tooling.** `box_tag_screen --review-all "WCC->WCD (B)"` cards every flagged well of the named class, using
+`tag_screen.card_target`. The class shows the state "full review" in `cards.html` and `summary.json`.
+- The re-run is byte-identical on a second pass, and all 184 earlier verdicts are unchanged.
+- The new cards are stamped `round 3 (full review)` once filled.
+
+**The 8 cards** are the rows with a blank verdict in `tag_screen/cards_sample.csv`, Excel rows 186–193. Each carries
+the §8.7 depth-only line. All 8 are Novi WOLFCAMP C, Enverus WOLFCAMP D:
+
+| Well | Operator, county | TVD | Depth only |
+|---|---|---|---|
+| Cross Bar Ranch H 3025WD | ConocoPhillips, Martin | 10,056 | other rung (WCB_2 on the ladder) |
+| Scarlet Unit 2 2988NH | Exxon, Martin | 9,077 | other rung (WCB_2 on the ladder); local WCD band 9,876 |
+| Scharbauer Ranch 302H | Exxon, Martin | 10,638 | undecided |
+| Mabee J.E. 'B' NCT-2 1507H | ConocoPhillips, Martin | 10,659 | undecided |
+| Barracuda 45 2H | Apache, Glasscock | 8,735 | not WCD (the local WCD band is 9,379 ft, 644 ft below the well) |
+| Devaca 11H | Permian Resources, Irion | 7,217 | undecided |
+| Sugg 8A-1910 1H | Compass, Irion | 7,434 | undecided (no jury within 3 mi) |
+| Red Headed Stranger 1H | ConocoPhillips, Terry | 10,058 | undecided (no jury within 3 mi) |
+
+**Seed effect.** WCC → WCD now contributes only the wells whose own card agrees, plus any bench you write on a card.
+- Today that is the 8 carded agrees: round 1 Bandolero, Mabee DDA L1, Chaparral and Winchester, plus round 2 MB,
+  Knight, John B and Conroe.
+- The 8 uncarded wells wait on these cards.
+- The prospective seed is 334 rows until the 8 are back, and up to 342 after.
 
 ## 5. How to check
 
@@ -881,6 +913,7 @@ python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv            # round 1
 python -m scripts.box_tag_screen ... --round 2                                 # after round-1 verdicts: tops up the mixed classes
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen --round 2     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen_whatif_wc/cards_sample.csv     --depth-check docs/box/step20a-2026-10-26/tag_screen_whatif_wc/depth_check.csv     # §8.8: live tags, every verdict carried
+    # §8.9-8.10: add  --label "round 3 (full review)" --review-all "WCC->WCD (B)"   (cards every well of that class)
 python -m scripts.box_tag_screen --basin midland --family MID_WC --out docs/box/step20a-2026-10-26/tag_screen_whatif_wc --whatif \
     --prior-verdicts docs/box/step20a-2026-10-26/cards_sample.csv docs/box/step20a-2026-10-26/tag_screen/cards_sample.csv
                                                                                # drafted sql/16 Midland WOLFCAMP C rule, in memory

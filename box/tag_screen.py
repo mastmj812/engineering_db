@@ -210,3 +210,13 @@ def decide(n_agree: int, n_judged: int, n_class: int, gate: float = 0.70) -> str
             return "reject"
         return "round 2"
     return "pending"
+
+
+def card_target(state: str, n_class: int) -> int:
+    """Total cards a class should hold in its state. 'full review' (Michael's call on a decided class, e.g. when depth
+    disagrees with its sample) cards every flagged well, and each card then decides only its own well."""
+    if state == "full review":
+        return n_class
+    if state in ("accept", "reject", "parked"):
+        return 0
+    return CARDS_PER_CLASS if state == "round 2" else ROUND1

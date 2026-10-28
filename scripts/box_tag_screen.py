@@ -11,7 +11,8 @@ file is carried over verbatim (free-text comments included). --whatif applies th
 (box.tag_screen.NOVI_COARSE_BY_BASIN) to the tags in memory and re-scores before screening. A prior verdict written as
 a bench code is the reviewer's call on the WELL: it answers whatever move the screen now proposes for it (agree when the
 code is the destination, else reject). --depth-check adds the depth-only result (scripts.box_wc_rule_depth_check) to the
-cards of the wells it covers. Nothing is written to the warehouse.
+cards of the wells it covers. --review-all CLASS cards every flagged well of that class; the class is then judged well by
+well (each card decides its own well), never by the sample gate. Nothing is written to the warehouse.
 """
 
 from __future__ import annotations
@@ -91,6 +92,9 @@ def main(argv: list[str] | None = None) -> int:
                     help="scripts.box_wc_rule_depth_check CSV: its depth-only result is printed on the cards of the wells it covers")
     ap.add_argument("--label", default=None,
                     help="verdict_source stamped on this folder's newly filled cards (default: 'round 1' / 'what-if round 1')")
+    ap.add_argument("--review-all", nargs="+", default=[], metavar="CLASS",
+                    help="card EVERY flagged well of these classes (e.g. 'WCC->WCD (B)'): the class is then judged well by well, "
+                         "never wholesale, whatever its sample count says")
     a = ap.parse_args(argv)
     t0 = dt.datetime.now(tz=dt.UTC)
     family = FAMILIES[a.family]
@@ -171,15 +175,17 @@ def main(argv: list[str] | None = None) -> int:
     pos = d["mid_lon"].notna() & d["mid_lat"].notna()
     xy = np.full((len(d), 2), np.nan)
     xy[pos.values] = _project_xy_ft(d.loc[pos, "mid_lon"].values, d.loc[pos, "mid_lat"].values)
+    missing = set(a.review_all) - set(cls.index[cls["carded"]])
+    if missing:
+        raise ValueError(f"--review-all names classes that are not carded: {sorted(missing)}")
     rows, sections, status = [], [], {}
     for name, c in cls[cls["carded"]].iterrows():
         g = flagged[flagged["screen_class"] == name]
         done = g[g["api10"].isin(judged)]
         n_agree = int((done["api10"].map(judged) == "agree").sum())
         parked = ts.PARKED.get(a.basin, {}).get(name)
-        state = "parked" if parked else ts.decide(n_agree, len(done), len(g))
-        target = 0 if state in ("accept", "reject", "parked") else ts.CARDS_PER_CLASS if state == "round 2" else ts.ROUND1
-        need = max(0, min(target, len(g)) - len(done))
+        state = "parked" if parked else "full review" if name in a.review_all else ts.decide(n_agree, len(done), len(g))
+        need = max(0, min(ts.card_target(state, len(g)), len(g)) - len(done))
         new = ts.sample(g[~g["api10"].isin(seen)], need) if need else g.iloc[0:0]
         status[name] = {"n": int(c["n"]), "n_cohort": int(c["n_cohort"]), "prior_judged": len(done), "prior_agree": n_agree, "state_before": state, "new_cards": len(new),
                         **({"parked": parked} if parked else {})}
