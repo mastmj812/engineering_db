@@ -410,7 +410,8 @@ Options:
 
 **Decided 2026-10-27 (Michael): (a).** Every well in an accepted class becomes an override row. `was` = the pre-override
 tag; `note` = `class-accepted <class> k/n cards <date>` for wells nobody carded individually, `carded <date>` for the
-ones you did. Rejected classes write nothing; a well you rejected inside an accepted class is left out. The sql/44 header
+ones you did. Rejected classes write nothing class-wide (amended 2026-10-28, §8.9: a card you agreed with, or an own-bench
+call, still lands as a single-well `carded <date>` row); a well you rejected inside an accepted class is left out. The sql/44 header
 and its table COMMENT are amended in the same commit as the first class-accepted rows (the COMMENT reaches the live table
 only when that apply runs).
 
@@ -830,12 +831,25 @@ On the wells you kept WCC:
 - **2 own-bench calls outside the accepted classes:** Cypert → WCD and Coachwhip → WCD (§8.4 item 6).
 - **3 chat or what-if calls** in `well_calls.csv`: Mayer, Elwood, Horton.
 
-**Conflict to flag, not resolved.** 41 cards agree with the proposed move inside classes that were rejected, e.g. 6 in
-WCA_1 → WCB_1 (A). This includes Affirmed N405H and Ponderosa East C 10H, which are written as bench codes.
-- Convention (a) says "rejected classes write nothing", which drops them.
-- §8.4 item 6 lands own-bench calls from rejected classes as single-well `carded <date>` rows.
-- An "agree" on a card is the same well-by-well ratification. Whether those 41 wells become overrides is your call
-  before the seed is built.
+**Decided 2026-10-28 (Michael): carded agrees in rejected classes ARE corrected.** 41 cards agree with the proposed
+move inside classes that were rejected, e.g. 6 in WCA_1 → WCB_1 (A). This includes Affirmed N405H and Ponderosa East C
+10H, which are written as bench codes.
+- A failed class means its move is not safe for the wells nobody looked at. It does not overturn the wells you did
+  look at.
+- Each of the 41 lands as a single-well `carded <date>` override, the same as the own-bench calls (§8.4 item 6).
+  Their uncarded classmates stay put.
+- Convention (a) is amended to match (§8 above).
+
+**The seed on "go apply" is now 342 rows** (prospective, recomputed at seed time):
+
+| Source | Rows |
+|---|---|
+| Accepted classes | 296 |
+| Carded agrees in rejected classes | 41 |
+| Own-bench calls outside the accepted classes | 2 |
+| Chat / what-if calls | 3 |
+
+The WCC → WCD (B) depth flag above is still open and could reduce the 296.
 
 ## 5. How to check
 
