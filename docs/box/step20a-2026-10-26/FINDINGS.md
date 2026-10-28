@@ -967,14 +967,96 @@ the diff is 338 added lines and nothing else.
 - The existing `test_formation_tag_overrides` checks (unique api10s, crosswalk vocabulary, a real change, a note on every
   row) pass on all 436 rows.
 
-**Flag for the apply plan (not resolved).** `scripts.apply_formation_tag_overrides` re-runs sql/16 in full, and sql/16
-starts with `DROP MATERIALIZED VIEW ... CASCADE`.
-- That takes down the whole tag-consumer chain, `erebor_locations` included, until the tail rebuilds it. The script's
-  docstring says so and puts it in a chain-rebuild window.
-- But sql/44's own header, and §8 above, say an override is a content change: `REFRESH ... CONCURRENTLY` of
-  formation_blueox, then refreshes downstream, with no DROP and no dark apps.
-- Both paths land the same tags. They differ in downtime and in which steps run. I'll lay out both with timings when you
-  give the go.
+### 8.12 The two apply paths (2026-10-28, read-only mapping; nothing applied)
+
+Both paths land the same 436 override rows and the same tags. They differ in downtime, in what SQL runs, and in how much
+can go wrong.
+
+**What depends on `curated.formation_blueox` (live `pg_depend`, 2026-10-28).** 11 matviews and 3 plain views. Every
+matview has a plain-column, non-partial UNIQUE index, so every one can `REFRESH ... CONCURRENTLY`.
+
+| Level | Object | Rows | Refresh time | Source of the time | Nightly? |
+|---|---|---|---|---|---|
+| 0 | formation_blueox | 95,346 | 3–5 s | etl_log, 10 nights | yes |
+| 1 | bench_reference | 38,264 | ~1–2 s | read-only query timing today (0.8 s) | **no** |
+| 1 | producing_reference | 61,171 | 5–6 s | etl_log | yes |
+| 2 | formation_blueox_tvd | 61,128 | 23–24 s | etl_log | yes |
+| 2 | intel_formation_blueox | 322,402 | ~15–30 s | read-only query timing today (12.8 s) | **no** |
+| 3 | codev_context | 64,640 | 98–104 s | etl_log | yes |
+| 3 | reconciled_inventory | 257,397 | ~22 s | live refresh 2026-10-15 | **no** |
+| 3 | net_new_pdp | 0 | ~3 s | read-only query timing today | **no** |
+| 3 | intel_pdp_support | 257,397 | **~50 min** | CONCURRENTLY smoke 2026-09-11 | **no** |
+| 3 | intel_forecast_accuracy_vintage | 110,635 | 54–84 s | etl_log | yes |
+| 4 | erebor_locations | 317,913 | 8–10 s | etl_log | yes |
+| 4 | intel_forecast_accuracy | — | 1–2 s | etl_log | yes |
+| views | wells_enriched, dev_scenario, box_scout_locations | — | live | — | — |
+
+The five rows marked **no** are the quarterly-owned ones: the nightly never refreshes them. So loading the seed and
+waiting for the nightly is not an option. The nightly would move PDP tags while `bench_reference`, the PUD/RES stick tags
+(`intel_formation_blueox`), `reconciled_inventory` and `intel_pdp_support` stayed on the old tags. erebor would then join
+mixed-vintage tags.
+
+**PUD stick tags move too.** `intel_formation_blueox` (sql/19) tags each Novi PUD/RES stick from the TVD-nearest of its
+12 nearest `bench_reference` laterals. `bench_reference` is built from `formation_blueox`, so re-tagging 338 Midland PDP
+wells re-tags some Midland Wolfcamp sticks near them. That is the intended effect: the Highgrade and BOX location
+universe follow corrected offsets. But the count is not knowable without running sql/19. Either path reports it
+before/after.
+
+**Path A — DROP CASCADE rebuild (`apply_formation_tag_overrides` + the quarterly tail).**
+- Steps:
+  1. sql/44 reload.
+  2. sql/16 re-create. Its first statement drops all 11 dependent matviews and 3 views.
+  3. `apply_intel_formation_blueox` (sql/14, sql/18, sql/19).
+  4. `apply_reconciled_inventory` (sql/06, 20, 23, 47, 50, 68).
+  5. sql/25.
+  6. `apply_intel_pdp_support`: 50 min build plus a 50 min CONCURRENTLY smoke.
+  7. `apply_intel_forecast_accuracy` (sql/26, 38, 43).
+  8. `apply_erebor_locations` (sql/22, 69, 31).
+  9. sql/26.
+- **erebor is dark for ~1 h 45 m.** `erebor_locations` is gone from step 2 until step 8; the 2026-09-11 Phase 1
+  precedent was ~1 h 45 m. narvi and the deal-intake runner lose `wells_enriched` and `reconciled_inventory` for most of
+  that time too. Wall clock is ~2–2.5 h.
+- **The tail the script documents is incomplete.** `apply_formation_tag_overrides`'s docstring lists only
+  `apply_intel_formation_blueox -> apply_reconciled_inventory -> apply_intel_pdp_support -> apply_erebor_locations -> sql/26
+  -> sql/31`. It is missing:
+  - sql/25 (`net_new_pdp`). Without it, `apply_erebor_locations` fails, because sql/22 reads `net_new_pdp`.
+  - `apply_intel_forecast_accuracy` (sql/38 + sql/43). Without it, both accuracy matviews stay missing. The nightly
+    lists them as optional, so it would skip them silently.
+
+  The quarterly skill's order has both. The docstring needs fixing either way.
+- It re-creates ~14 objects from the repo files on whichever checkout runs it. Any repo-vs-live drift in any of those
+  files lands with it. The sql/16 SELECT body on this branch is identical to main; the header diff is comments only.
+
+**Path B — content refresh (sql/44 reload + `REFRESH ... CONCURRENTLY` down the chain). Recommended.**
+- Steps:
+  1. Reload sql/44 in **one transaction** (TRUNCATE + COPY + COMMENT). The current script autocommits the TRUNCATE before
+     the COPY, which leaves an empty-table gap.
+  2. Snapshot the before counts of the Midland stick tags.
+  3. Refresh in level order:
+
+     `formation_blueox` → `bench_reference`, `producing_reference` → `formation_blueox_tvd`, `intel_formation_blueox` →
+     `codev_context`, `reconciled_inventory`, `net_new_pdp`, `intel_forecast_accuracy_vintage`, `intel_pdp_support` →
+     `erebor_locations`, `intel_forecast_accuracy`.
+  4. Verify: 436/436 overrides land with source `ratified_override`; row identities hold (`reconciled_inventory` = the
+     mapped stick universe; `erebor_locations` unchanged in count); stick tags before → after.
+- **Nothing goes dark.** CONCURRENTLY keeps every object readable. Wall clock is ~55–60 min, almost all of it
+  `intel_pdp_support`.
+- For that ~55 min, erebor shows a **mixed state**. PDP tags are already new through `wells_enriched`. The location
+  layer (`erebor_locations`) stays old until its 10 s refresh at the end. Ordering erebor last keeps that layer
+  internally consistent.
+- **No DDL** beyond sql/44's idempotent CREATE IF NOT EXISTS and COMMENT. **No definition changes**: the live view
+  bodies are reused as they are, so repo drift cannot ride along. No index rebuild either, so no sql/26 re-run is needed.
+- It needs a small code change: a `--refresh` mode on `apply_formation_tag_overrides`, with the steps above, plus fixing
+  that script's docstring tail. That is reversible repo work on #202, with tests. It runs only on "go apply".
+
+**Either path:**
+- Run it outside the nightly. The cron says 11:15 UTC, but the run actually lands ~15:00–17:30 UTC (2026-10-27 refreshes
+  ran 16:47–17:14 UTC), so ~10:00–12:30 CDT. A refresh colliding with the nightly's CONCURRENTLY refresh of the same
+  matview waits on its lock.
+- Then:
+  1. Regenerate the data dictionary (it picks up the new sql/44 table comment).
+  2. Re-run 20a on the corrected tags.
+  3. Then the storage go.
 
 
 ```
