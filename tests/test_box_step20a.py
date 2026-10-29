@@ -415,6 +415,11 @@ def test_tag_screen_override_seed():
     assert s.loc["c", "note"].startswith("class-accepted X (A) 1/2 cards 2026-10-28")
     assert s.loc["a", "note"].startswith("carded 2026-10-27") and s.loc["e", "corrected_code"] == "WCB_2"
     assert all(n.endswith(ts.SEED_TAG) for n in s["note"])
+    # an inspection call replaces a class-accepted row, even with a different bench
+    c2 = pd.concat([calls, pd.DataFrame({"api10": ["c"], "live_tag": ["WCA_1"], "call": ["WCB_2"],
+                                         "source": ["Michael in anduin"], "date": ["2026-10-29"], "note": ["looked"]})])
+    s2 = ts.override_seed(flags, cards, c2, states, {"round 1": "2026-10-27"}, "2026-10-28").set_index("api10")
+    assert s2.loc["c", "corrected_code"] == "WCB_2" and s2.loc["c", "note"].startswith("Michael in anduin 2026-10-29")
     calls.loc[1, "call"] = "WCB_2"
     import pytest
 

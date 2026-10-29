@@ -236,6 +236,20 @@ def refresh(dry_run: bool) -> None:
             diff = seed_diff(expected, live)
             print(f"    seed {len(expected)} rows vs live {len(live)}: add {len(diff['add'])}, "
                   f"change {len(diff['change'])}, remove {len(diff['remove'])}", flush=True)
+            # Report-only: vendors revise tags in place, so a row's `was` (the tag when MM
+            # ratified it) can drift from the live crosswalk tag before the apply.
+            tags = dict(cur.execute(
+                "SELECT api10, formation_blueox FROM curated.formation_blueox WHERE api10 = ANY(%s)",
+                ([r["api10"] for r in expected],)).fetchall())
+            drift = [r for r in expected if r["api10"] in tags and tags[r["api10"]] != r["was"]
+                     and r["api10"] not in {x[0] for x in live}]
+            agree = sum(tags[r["api10"]] == r["corrected_code"] for r in drift)
+            print(f"    new rows whose `was` != live tag: {len(drift)} ({agree} already carry the corrected "
+                  f"tag, {len(drift) - agree} carry another)", flush=True)
+            for r in drift:
+                if tags[r["api10"]] != r["corrected_code"]:
+                    print(f"      {r['api10']}: was {r['was']}, live {tags[r['api10']]}, "
+                          f"seed {r['corrected_code']}", flush=True)
             if dry_run:
                 print("=== DRY RUN — nothing written. Refresh order: "
                       + " -> ".join(m.split(".")[1] for m in CHAIN) + " ===", flush=True)

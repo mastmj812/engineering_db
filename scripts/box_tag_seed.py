@@ -67,9 +67,10 @@ def main(argv: list[str] | None = None) -> int:
         already = [r for r in new["api10"] if r in live and live[r][1] == "ratified_override"]
         print(f"live check (read-only): {len(live)}/{len(new)} found; `was` = live tag on {len(live) - len(drift)}; "
               f"already overridden {len(already)}; live override table {n_live} rows (seed outside this block {len(kept)})")
+        # Drift is reported, not fatal: vendors revise tags in place, and `was` records the tag MM ratified against.
         for x in drift:
             print(f"  drift {x[0]}: was {x[1]}, live {x[2]}")
-        if missing or drift or already:
+        if missing or already:
             print(f"  missing {missing}; already {already}")
             return 1
     if a.write:

@@ -233,7 +233,8 @@ def override_seed(flags: pd.DataFrame, cards: pd.DataFrame, well_calls: pd.DataF
         bench (nothing when it is the live tag); reject / hold / free text -> nothing;
       * an ACCEPTED class moves its uncarded wells to the class destination ('full review' and 'parked' classes move
         nobody uncarded; rejected classes neither);
-      * well_calls.csv rows (chat / what-if calls) land as written; a well also carded must carry the same call.
+      * well_calls.csv rows (chat / what-if / inspection calls) land as written; a well also carded must carry the
+        same call, and a call REPLACES a class-accepted row (MM looked at that well: 2026-10-29, Mustang Draw 44SH).
     ``states`` = summary.json classes; ``card_dates`` maps verdict_source -> the date that round was judged."""
     rows: dict[str, dict] = {}
     carded = set(cards["api10"])
@@ -254,7 +255,7 @@ def override_seed(flags: pd.DataFrame, cards: pd.DataFrame, well_calls: pd.DataF
                              "note": f"class-accepted {name} {s['prior_agree']}/{s['prior_judged']} cards {date}; "
                                      f"convention (a); {SEED_TAG}"}
     for r in well_calls.itertuples():
-        if r.api10 in rows:
+        if r.api10 in carded and r.api10 in rows:
             if rows[r.api10]["corrected_code"] != r.call:
                 raise ValueError(f"{r.api10}: card says {rows[r.api10]['corrected_code']}, well_calls says {r.call}")
             continue

@@ -97,8 +97,10 @@ api10,corrected_code,was,note
 4247538326,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 41 ft off destination band, jury n=5"
 4247538341,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 33 ft off destination band, jury n=3"
 4247538815,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 75 ft off destination band, jury n=3"
+4200345807,WCA_1,WCD,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,755 ft sits in the lease WCA band; Novi Formation WOLFCAMP D follows the WD suffix while Novi grid and Enverus both say WOLFCAMP A; its class WCD->WCA_1 (A) was too small to card; depth wins over the name; ratified by MM; tag screen step 20a"
 4200345873,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
-4200347061,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4200347042,WCA_1,DEAN,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,659 ft sits in the lease WCA band; Novi Formation and grid say WOLFCAMP A, a coarse value that defers to Enverus, which picks DEAN at the Dean/WCA boundary; its class DEAN->WCA_1 (A) was rejected, the call is well-level; ratified by MM; tag screen step 20a"
+4200347061,WCA_1,LSSH,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,659 ft sits in the lease WCA band (1703AH / 1712AH / 2017WA / 1815H, 9,615-9,767 ft); Novi Formation followed the LS suffix (LOWER SPRABERRY SHALE at screen time, revised to DEAN by 2026-10-29), Novi grid DEAN, Enverus WOLFCAMP A; depth wins over the name; was = screen-time tag; ratified by MM; tag screen step 20a"
 4200347063,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
 4200347490,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
 4200348014,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
@@ -362,7 +364,7 @@ api10,corrected_code,was,note
 4238339928,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
 4238339992,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
 4238339999,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
-4238340017,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4238340017,WCB_1,LSSH,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 7,020 ft sits with the lease NH/SH wells (6,996-7,186 ft) below the AN/AS Wolfcamp A wells (6,800-6,984 ft); SH here is not Spraberry Shale; Novi read it as LOWER SPRABERRY SHALE at screen time and revised to WOLFCAMP B by 2026-10-29 (live already WCB_1, the row locks it); replaces its class-accepted LSSH->WCA_1 (A) row; was = screen-time tag; ratified by MM; tag screen step 20a"
 4238340049,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
 4238340056,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
 4238340272,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"

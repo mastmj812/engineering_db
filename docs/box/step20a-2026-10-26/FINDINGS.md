@@ -1084,6 +1084,65 @@ before/after.
   2. Re-run 20a on the corrected tags.
   3. Then the storage go.
 
+### 8.13 Vendor drift before the apply, and four inspection calls (2026-10-29)
+
+**What the pre-apply check found.** Two nightlies after the screen, the live tags of 15 of the 338 seed wells no longer
+matched their `was` tag. Across all 28,859 scored Midland wells, 191 tags (0.7 %) moved between the 10-27 snapshot and
+10-29.
+- 13 of the 15 now carry exactly the seed's corrected tag: the vendor came round to MM's call. Those rows stay; they lock
+  the tag in.
+- 2 class-accepted wells nobody had carded had moved elsewhere: Cross Bar Ranch H 1722LS and Mustang Draw 44SH.
+
+**Cause: the well-name suffix leaks into Novi `Formation`.**
+- Novi `Formation` copies the name suffix. Novi `GridFormation` and Enverus `ENVInterval` track depth.
+- sql/16 trusts Novi unless its value is a coarse trigger, so a suffix-derived LS / MS / WD label wins outright.
+- A suffix-derived WOLFCAMP A / B defers to Enverus, which on Cross Bar Ranch H picks Dean at the Dean / WCA boundary.
+
+On Cross Bar Ranch H (ConocoPhillips) the lease bands are MS 8,560–8,670 ft, LSSH 9,110–9,390 ft, WCA 9,530–9,770 ft and
+WCB 9,760–9,940 ft.
+
+| Well | TVD (ft) | Novi Formation | Novi grid | Enverus | Live | Cause |
+|---|---|---|---|---|---|---|
+| 1722LS | 9,659 | LOWER SPRABERRY SHALE (10-27), DEAN (10-29) | DEAN | WOLFCAMP A | DEAN | suffix |
+| 1719WA | 9,659 | WOLFCAMP A | WOLFCAMP A | DEAN | DEAN | Enverus at the boundary |
+| 1725H | 9,664 | WOLFCAMP A | WOLFCAMP A | DEAN | DEAN | Enverus at the boundary |
+| 1717WD | 9,755 | WOLFCAMP D | WOLFCAMP A | WOLFCAMP A | WCD | suffix |
+| 1717MS | 9,186 | MIDDLE SPRABERRY | LSSH | LOWER SPRABERRY | MS | suffix |
+| 1724H | 9,908 | WOLFCAMP B | WOLFCAMP B | WOLFCAMP A | WCA_1 | Enverus one bench high |
+
+Mustang Draw (Reagan): AN / AS are Wolfcamp A wells (6,800–6,984 ft) and NH / SH sit at 6,996–7,186 ft. There SH is not
+Spraberry Shale. Novi read both 44SH and 24SH as LOWER SPRABERRY SHALE at screen time and has since revised both to
+WOLFCAMP B. Most of the 191 moves are this kind of Novi correction (34 are LSSH → WCB_1).
+
+The residual is small. Only 176 of 11,572 Midland producers tagged from Novi `Formation` disagree with Novi's own grid
+(1.5 %, mostly JO MILL vs LOWER SPRABERRY SAND). That is not enough for a new warehouse rule; it is noted for the 20b
+Spraberry work.
+
+**MM's calls (2026-10-29, each well and its neighbours inspected in anduin), recorded in `tag_screen/well_calls.csv`:**
+
+| Well | Call | Seed before |
+|---|---|---|
+| Cross Bar Ranch H 1722LS (4200347061) | WCA_1 | WCA_1, class-accepted |
+| Mustang Draw 44SH (4238340017) | WCB_1 | WCA_1, class-accepted |
+| Cross Bar Ranch H 1719WA (4200347042) | WCA_1 | none (class DEAN → WCA_1 (A) rejected) |
+| Cross Bar Ranch H 1717WD (4200345807) | WCA_1 | none (class WCD → WCA_1 (A) too small to card) |
+
+1725H, 1717MS and 1724H look as clear on depth, but MM left them for the next screen.
+
+**Code changes.**
+- `override_seed`: an inspection call now REPLACES a class-accepted row, since MM looked at that well. A call that
+  disagrees with a card still raises. A test covers it.
+- `box_tag_seed --check-live`: `was` drift is now reported, not fatal. Missing wells and already-overridden wells still
+  stop it.
+- `apply_formation_tag_overrides --refresh`: the preflight now reports new rows whose `was` differs from the live tag, and
+  lists any whose live tag is neither `was` nor the corrected code.
+
+**Seed now:** 340 Midland rows (239 class-accepted, 94 carded, 7 calls) + 98 Delaware = 438. sql/44 Batch 3 and the table
+COMMENT are updated to match.
+
+**Dry run (10-29 ~22:15 UTC):** preflight OK; add 340, change 0, remove 0. `was` differs from live on 15 rows: 14 already
+carry the corrected tag; the 15th is 1722LS, where MM's WCA_1 overrides Novi's new DEAN.
+
 
 ```
 python -m pytest -q tests/test_box_step20a.py tests/test_box_family_qc.py tests/test_box_basin.py
