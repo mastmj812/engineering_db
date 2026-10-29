@@ -1140,8 +1140,38 @@ Spraberry work.
 **Seed now:** 340 Midland rows (239 class-accepted, 94 carded, 7 calls) + 98 Delaware = 438. sql/44 Batch 3 and the table
 COMMENT are updated to match.
 
-**Dry run (10-29 ~22:15 UTC):** preflight OK; add 340, change 0, remove 0. `was` differs from live on 15 rows: 14 already
-carry the corrected tag; the 15th is 1722LS, where MM's WCA_1 overrides Novi's new DEAN.
+**Dry run (10-29, before the apply):** preflight OK; add 340, change 0, remove 0. `was` differs from live on 15 rows: 14
+already carry the corrected tag; the 15th is 1722LS, where MM's WCA_1 overrides Novi's new DEAN.
+
+### 8.14 Applied (2026-10-29, MM ran `apply_formation_tag_overrides --refresh`)
+
+MM ran it in his own shell after the 10-29 nightly finished green (17:52 UTC). Path B as in §8.12: one-transaction seed
+reload, then REFRESH CONCURRENTLY down the 12-member CHAIN. Nothing went dark. By the catalog's analyze stamps the chain
+ran from ~22:10 UTC (formation_blueox) to 23:07 UTC (erebor_locations), about 57 min. intel_pdp_support finished at
+23:06, so it was nearly all of that time, as forecast.
+
+**Checked afterwards, read-only, against the live warehouse:**
+
+| Check | Result |
+|---|---|
+| `ref.formation_tag_overrides` rows vs seed | 438 = 438, every `corrected_code` equal to the seed |
+| `curated.formation_blueox` carries the override, source `ratified_override` | 438 / 438 |
+| `curated.erebor_locations` PDP rows for the seed wells (refreshed last) | 438 / 438 on the corrected tag, source `ratified_override` |
+| erebor PDP rows agreeing with `wells_enriched.formation_blueox`, all basins | 60,679 / 60,679 |
+| `reconciled_inventory` vs mapped stick universe (PUD + RES, geometry, non-null blueox) | 257,397 = 257,397, no duplicate stick_id |
+| `erebor_locations` | 318,076 rows = 60,679 PDP + 257,397 sticks |
+
+Reconciliation status now: Midland 85,171 remaining_pud / 1,333 realized_phantom / 678 conflict; Delaware 165,083 /
+3,545 / 1,587.
+
+The script exits non-zero (SystemExit) on any override that did not land or any PDP tag that moved outside the seed. MM
+reported it finished. The per-move tallies (PUD/RES stick tags moved, recon status moves) printed only in his window and
+are not recorded here.
+
+Data dictionary regenerated: `ref.formation_tag_overrides` is now ~438 rows with the Batch 3 COMMENT. Everything else is
+nightly row-count drift.
+
+**Next at gate 20a:** re-run the 20a family QC and extents on the corrected tags, then the storage go.
 
 
 ```
