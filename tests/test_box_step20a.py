@@ -207,6 +207,18 @@ def test_d136_clip_stops_wcb2_at_the_line():
     assert b["stats"]["d136_unclipped_sqmi"] > b["stats"]["extent_sqmi"] > 0
     lat_max = eg.to_lonlat([b["extent"]])[0].bounds[3]
     assert lat_max < 31.86  # the line crosses -102.1..-101.9 between 31.70 and 31.85
+    # edges: the north edge is dropped, the two long sides are trimmed to the line, the south edge stays whole
+    import pandas as pd
+    from shapely.geometry import LineString
+
+    sides = [[(-102.1, 31.4), (-101.9, 31.4)], [(-101.9, 31.4), (-101.9, 32.2)], [(-101.9, 32.2), (-102.1, 32.2)], [(-102.1, 32.2), (-102.1, 31.4)]]
+    lines = eg.to_ft([LineString(s) for s in sides])
+    b = {"extent": gen, "stats": {"extent_sqmi": 0.0, "n_parts": 1}, "edges": pd.DataFrame({"edge_no": [1, 2, 3, 4], "geom": lines})}
+    ws.clip_d136(b)
+    assert list(b["edges"]["edge_no"]) == [1, 2, 4]
+    assert b["stats"]["d136_edges_dropped"] == 1 and b["stats"]["d136_edges_trimmed"] == 2
+    assert all(g.geom_type == "LineString" for g in b["edges"]["geom"])
+    assert abs(b["edges"]["geom"][0].length - lines[0].length) < 1.0
 
 
 def test_owner_assignment_outranks_the_rule_and_joins_the_family():

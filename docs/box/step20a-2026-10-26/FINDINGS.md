@@ -1,4 +1,4 @@
-# BOX step 20a: Midland Wolfcamp bench QC + extents. AT GATE 20a (nothing stored)
+# BOX step 20a: Midland Wolfcamp bench QC + extents. STORED 2026-10-30 (r3, §8.17); rest of gate 20a open
 
 **Scope (plan §5 step 20a, D128 / D131 / D134 A–B / D117):** Midland WCA_1, WCB_1, WCB_2, WCC, WCD. One extent per bench, no
 pooling (D128). The Delaware class rule of record applied as written; cards only for a swap class clearly unlike its Delaware
@@ -164,18 +164,18 @@ defect.
    WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
 2. **Pen loops:** DONE 2026-10-26 (WCD looped; WCC loop drawn then withdrawn, deck re-saved 21:16, WCC = r2 generated; the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
    loops.
-3. **Conflict to resolve (D128 vs D134 B).** D128 sent the WCB_1 ↔ WCB_2 and WCB_2 ↔ WCC swap classes to 20a's cards. D134 B
+3. **ANSWERED 2026-10-30 = D139: card it (§8.18, 10 cards out).** **Conflict to resolve (D128 vs D134 B).** D128 sent the WCB_1 ↔ WCB_2 and WCB_2 ↔ WCC swap classes to 20a's cards. D134 B
    cards only "unlike" classes. I followed D134 B (the later decision), so **WCB_1 → WCB_2 (168 flags, alike) is not
    carded**. Say if you want it carded per D128.
-4. **Spraberry → Wolfcamp flags (DEAN / LSSH → WCA, 65).** The rule's "never Bone Spring → Wolfcamp" names Bone Spring and
+4. **ANSWERED 2026-10-30 = D140: no** (the prefix list stays Bone Spring + Avalon). **Spraberry → Wolfcamp flags (DEAN / LSSH → WCA, 65).** The rule's "never Bone Spring → Wolfcamp" names Bone Spring and
    Avalon only. These classes therefore fall to "uncalibrated, tag kept": the same membership, but the well stays a depth
    witness. Should the prefix list gain the Spraberry benches at 20b?
-5. **Storage, on your go after 1–2** (and after D136 is applied in the same regeneration pass): five `box.bench_scope` rows (basin `midland`, `in_scope` true, `validation`
+5. **DONE 2026-10-30 (§8.17, named WCA_1).** **Storage, on your go after 1–2** (and after D136 is applied in the same regeneration pass): five `box.bench_scope` rows (basin `midland`, `in_scope` true, `validation`
    provisional until step 21, `member_benches` = {bench}) and five `box.extent` records.
 
    Naming: I recommend the row be `WCA_1`, not the Delaware's pooled `WCA` (D128: one bench each; the Midland has no WCA_2 /
    WCXY tags). Note that `box/production.py` resolves sticks through `member_benches`, so either name works there.
-6. **Not this step, but flagged:** `box/production._UNIVERSE_SQL` still filters `il.category = 'PUD'`, while D117 says any
+6. **ANSWERED 2026-10-30: D117 as written** ("every category, BASE_CASE or UPSIDE, as long as it is inside the BOX extent"); the code + rehearsal = D117 step 3, before the first Midland record (step 23). **Not this step, but flagged:** `box/production._UNIVERSE_SQL` still filters `il.category = 'PUD'`, while D117 says any
    category. AUDIT step 3 ("BOX universe drops category = 'PUD'") is not on main at 414dddd. This matters before the first
    Midland record (step 23), and it already applies to the Delaware record.
 
@@ -1274,8 +1274,112 @@ of the 9 not already on their call moved. No seed well now disagrees with BOX. B
 Contrasts move ≤ 0.006. The extents are geometrically identical to pre-call r3 (0.00 sq mi added or removed per bench), so
 the §8.15 extent table stands. The WCD loop is unaffected: no WCD well moved.
 
-**Still open at gate 20a:** the storage go (r3 as regenerated here), asks 3 / 4 / 6 in
-§4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
+### 8.17 Stored (2026-10-30, MM: "go ahead on the r3 store")
+
+`python -m scripts.box_family_extent_store --wells docs/box/step20a-2026-10-26/r3 --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland`
+(dry run first). This writes five `box.bench_scope` rows and six `box.extent` rows: five generated records, plus WCD's
+generated parent and its edited loop as the record. Each row is `in_scope` true, `member_benches = {bench}` (D128), and
+decided 2026-10-30. The reason text says the tier is provisional until step 21 (D131). Rows are named `WCA_1`, not
+`WCA`, per the §4 item 5 recommendation: the Midland has no WCA_2 / WCXY.
+
+**Identity before the write:** every generated extent was rebuilt with the basin's D23 metric (and the D136 clip on
+WCB_2) and matched the reviewed r3 extent within 0.001 sq mi of area and 0.006 sq mi of symmetric difference. The WCD
+record is the reviewed loop geometry exactly.
+
+| bench | extent_id (record) | source | sq mi | edges | undrilled inside, live (PUD / RES) |
+|---|---|---|---|---|---|
+| WCA_1 | 36 | generated | 5,539.31 | 281 | 5,235 (5,233 / 2) |
+| WCB_1 | 37 | generated | 5,187.55 | 282 | 5,595 (5,593 / 2) |
+| WCB_2 | 38 | generated, D136 clip | 2,017.57 | 74 | 856 (856 / 0) |
+| WCC | 39 | generated | 643.82 | 26 | 698 (698 / 0) |
+| WCD | 41 (parent 40, generated 1,655.45) | owner loop | 3,371.00 | — | 3,598 (3,522 / 76) |
+
+The undrilled counts are re-measured live against the stored records (D117 universe, ≥ 50 % of the stick inside). They
+equal r3's exactly. One record per bench on all five.
+
+**Fix made for the store:** `wcb_split.clip_d136` clipped the WCB_2 polygon but kept every boundary edge. 16 of 90 edges
+lay wholly north of the line, and 4 crossed it. It now drops the 16 and trims the 4 to the remaining boundary
+(`box.extent_edge.geom` is a LineString); there is a test. The r3 extent package was regenerated so its WCB_2 edge files
+match what is stored. No geometry moved.
+
+`box_family_extent_store` gained the Midland path: basin-keyed scope rows, the basin's edge metric, the D136 clip, and
+the rule that a bench with no loop takes its generated v1 as the record.
+
+**What changes downstream:**
+- erebor: Midland WCA_1 / WCB_1 / WCB_2 / WCC / WCD sticks without a BOX forecast change class from `bench_not_in_box`
+  to `not_screened` (on a BOX bench, not yet run). Sticks forecast in run 19 keep their class.
+- BOX: the next Midland run (step 21 onward) builds on these records. No forecast was run here, and no record run
+  changed.
+
+**Ask 6 is now concrete:** `box/production._UNIVERSE_SQL` still filters `il.category = 'PUD'`. Inside the stored
+records that leaves out 80 RES sticks, 76 of them in WCD, which D117 counts as undrilled.
+
+**Still open at gate 20a:** asks 3, 4 and 6 in §4, the unlike-threshold confirm (§4 item 1), and the 4246139575 loop-tip
+flag (§7). The 4 seed removals ride the next override batch (§8.16).
+
+### 8.18 Asks 3 / 4 / 6 answered (MM 2026-10-30) → `ask3/cards.html`
+
+- **Ask 3 → D139: card WCB_1 → WCB_2.** The cards are drawn on the r3 scored frame, the state that was stored.
+  - The class now has 87 flags (168 in r1); the tag screen's WCB_1 → WCB_2 (A) overrides absorbed the rest.
+  - 4 wells are left out because MM already judged them: HOGAN 1-24I 4315H and HUTCHISON-TEELE 20 302HB (tag-screen
+    cards, rejected), HUTCHISON-TEELE 30 303HB (tag-screen card, called WCB_1), and 1 ratified override.
+  - 10 cards come from the 83 that remain, a stratified sample by margin. None of the 83 was flagged by the tag screen,
+    which uses a different method.
+  - 3 cards lie north of the D136 line (DYER-KILGORE L 25-34 4412H, NAIL-TILLMAN W1Q 417H, 1 MILE 29 G 4307H), and 28 of
+    the 87 flags do. D136 moves WCB_2 tags at WCB_1 depth north of the line, so a WCB_2 verdict there is a well-level
+    call, like the 5 in §8.16.
+  - Verdicts go in `ask3/cards_sample.csv` (column `verdict`: agree / reject / a bench code / hold).
+  - The Midland class ledger then decides the class at the ≥ 0.70 gate. If accepted, r3 is regenerated and any extent
+    that moves is re-stored on a go. If rejected, nothing moves.
+- **Ask 4 → D140: no.** The prefix list stays Bone Spring + Avalon, so DEAN / LSSH → WCA stay "uncalibrated, tag kept".
+- **Ask 6 → D117 as written:** every reconciled Novi stick inside the BOX extent, BASE_CASE (PUD) or UPSIDE (RES). The code
+  still filters PUD (`box/production.py:95`). The work is D117 step 3 (`docs/box/universe-2026-10-21/AUDIT.md`):
+  - drop the filter;
+  - run a container rehearsal against the record run (run 19): its rows must reproduce exactly, additions only;
+  - report coverage per bench for the added RES locations.
+
+  It must land before the first Midland record (step 23), and the next Delaware record picks it up too. Inside the five
+  stored Midland records it adds 80 RES sticks (76 in WCD). Two other PUD-only spots need a decision in that step:
+  `scripts/box_update_deck.py` refuses non-PUD locations (it compares against Novi BASE_CASE forecasts), and
+  `box/extent_report._PUD_SQL` (the Delaware D1 count on extent pages) still counts PUD only.
+
+**Still open at gate 20a:** the ask-3 card verdicts, the unlike-threshold confirm (§4 item 1), and the 4246139575
+loop-tip flag (§7). D117 step 3 runs separately.
+
+### 8.19 Ask-3 verdicts back (MM 2026-10-30): WCB_1 → WCB_2 = 6 / 10, class rejected
+
+| card | verdict | side of the D136 line |
+|---|---|---|
+| LHS RANCH 1708BH, MARIE 1802BH, ALDWELL K R 40 9H, BULLHEAD 723CN, DRIVER 4C-E 3-46F 106H, WILDCAT EAST I 17-43 4409H | WCB_2 (agree) | south |
+| TOMAHAWK 4810 C 6HM | WCB_1 (reject) | south |
+| DYER-KILGORE L 25-34 4412H, NAIL-TILLMAN W1Q 417H, 1 MILE 29 G 4307H | WCB_1 (reject) | **north** |
+
+**Class:** 0.60, under the 0.70 gate, so it is **rejected**. The uncarded wells in the class keep their tag. That is the
+same membership as before, when the class was uncalibrated. Each card still decides its own well, so the 6 agree wells
+move to WCB_2 in BOX (3 of them cohort).
+
+**DECIDED (MM 2026-10-30): keep the class rejected as carded; no south-only rule.** The split is geographic. North of the D136 line the cards went 0 / 3, which is what D136 predicts:
+one WCB landing there. South they went 6 / 7 (0.86). Accepting the class south of the line only would be a new rule, a
+class split by D136, so it is MM's call. As carded, the gate applies to the whole class. There are 73 uncarded flags; 49
+of them lie south of the line (24 cohort), and 24 north.
+
+**Code:**
+- `qc_rule.load_verdicts` now reads a bench-code verdict: the suggested bench counts as AGREE, the well's own tag as
+  REJECT, and a third bench is ignored. The earlier card files read identically (125 and 50 verdicts).
+- `qc_rule.BASIN_CLASSES` midland gains `WCB_1->WCB_2: 0.60`.
+- Both have a test.
+
+**r3 regenerated:** only the 6 card wells moved. WCB_1 is now 6,646 (cohort 3,897) and WCB_2 2,157 (1,293). Contrasts
+move ≤ 0.003.
+
+**Stored extents vs the rebuild** (read-only against the live records):
+- WCB_2 gains 0.20 sq mi of 2,018 (0.01 %), and its undrilled count is unchanged (856).
+- The other four differ by ≤ 0.003 sq mi, which is coordinate rounding.
+
+The stored records are kept: no location changes coverage. Re-storing WCB_2 would supersede record 38 and needs a go.
+
+**Still open at gate 20a:** the unlike-threshold confirm (§4 item 1), and the
+4246139575 loop-tip flag (§7).
 
 
 ```

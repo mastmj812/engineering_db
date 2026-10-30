@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-29T21:02:54-05:00",
- "git_sha": "ee657c8+dirty",
+ "built_at": "2026-10-30T18:20:16-05:00",
+ "git_sha": "661e138+dirty",
  "basin": "midland",
  "wells_dir": "docs\\box\\step20a-2026-10-26\\r3",
  "version": 1,
@@ -87,35 +87,35 @@
    "evidence_inside": 6776
   },
   "WCB_1": {
-   "pre_envelope_sqmi": 3862.6832759169865,
-   "envelope_raw_sqmi": 4967.279549426913,
+   "pre_envelope_sqmi": 3862.46558257184,
+   "envelope_raw_sqmi": 4967.2799122836705,
    "n_tests_within_reach": 15,
-   "bridged_sqmi": 1341.1691452509338,
+   "bridged_sqmi": 1341.38705239242,
    "updip_limit": null,
    "developed_outside": 32,
    "developed_outside_not_isolated": 0,
    "n_isolated_tests": 34,
-   "bridge_edge_mi": 213.76206290340792,
-   "extent_sqmi": 5187.554244080908,
-   "core_sqmi": 3475.443491729584,
-   "outline_step2_sqmi": 4123.203542902662,
+   "bridge_edge_mi": 213.49691899574685,
+   "extent_sqmi": 5187.553945392962,
+   "core_sqmi": 3475.107129124235,
+   "outline_step2_sqmi": 4122.974066405672,
    "n_parts": 1,
    "n_holes": 0,
-   "perimeter_mi": 376.1442930802687,
+   "perimeter_mi": 376.14429261965205,
    "walked_mi_by_rule": {
-    "gap: k \u00d7 gap": 218.1,
-    "gap: pre-2016 beyond -> floor (D5)": 21.8,
+    "gap: k \u00d7 gap": 218.2,
+    "gap: pre-2016 beyond -> floor (D5)": 21.7,
     "live front -> cap (D22)": 34.0,
-    "pinned: floor": 433.5
+    "pinned: floor": 433.4
    },
    "buffer_ft_median": 1320.0,
-   "buffer_ft_weighted_mean": 2003.14893978824,
+   "buffer_ft_weighted_mean": 2004.0446847538642,
    "fronts": {
     "NE": {
      "ok": 13,
      "rolled": 2,
      "no12": 0,
-     "perf_median": 1.0654731848921328
+     "perf_median": 1.0652883354585976
     }
    },
    "stepout_roles": {
@@ -124,56 +124,56 @@
     "excluded: test (1-well step-out, not development)": 9,
     "excluded: test (2-well step-out, not development)": 6
    },
-   "n_evidence": 4974,
+   "n_evidence": 4968,
    "n_pre2016": 1678,
-   "interior_median_oil12_kft": 15335.523025494123,
-   "flagged_pinned_strong_mi": 62.85916123659618,
+   "interior_median_oil12_kft": 15338.18405410945,
+   "flagged_pinned_strong_mi": 62.85920109864691,
    "n_contours": {},
    "n_bodies_ge_min": 2,
-   "evidence_inside": 4942
+   "evidence_inside": 4936
   },
   "WCB_2": {
-   "pre_envelope_sqmi": 1636.973262349125,
-   "envelope_raw_sqmi": 2216.257593633276,
+   "pre_envelope_sqmi": 1638.6584551992537,
+   "envelope_raw_sqmi": 2216.7157068397387,
    "n_tests_within_reach": 15,
-   "bridged_sqmi": 723.2215633243186,
+   "bridged_sqmi": 721.7254765645201,
    "updip_limit": null,
    "developed_outside": 165,
    "developed_outside_not_isolated": 0,
    "n_isolated_tests": 169,
-   "bridge_edge_mi": 171.81630886048745,
-   "extent_sqmi": 2017.571800320267,
-   "core_sqmi": 1047.368404376715,
-   "outline_step2_sqmi": 1732.9020701586448,
+   "bridge_edge_mi": 170.35896722927964,
+   "extent_sqmi": 2017.7701236179525,
+   "core_sqmi": 1049.6276602426633,
+   "outline_step2_sqmi": 1734.8957562246917,
    "n_parts": 1,
    "n_holes": 0,
-   "perimeter_mi": 249.6384813919429,
+   "perimeter_mi": 249.62096907906684,
    "walked_mi_by_rule": {
-    "gap: k \u00d7 gap": 88.8,
+    "gap: k \u00d7 gap": 88.6,
     "gap: pre-2016 beyond -> floor (D5)": 2.1,
-    "live front -> cap (D22)": 163.7,
-    "pinned: floor": 170.1
+    "live front -> cap (D22)": 163.3,
+    "pinned: floor": 170.4
    },
-   "buffer_ft_median": 2362.4368631794405,
-   "buffer_ft_weighted_mean": 4142.6161375580405,
+   "buffer_ft_median": 2268.7252086450035,
+   "buffer_ft_weighted_mean": 4141.7608711081075,
    "fronts": {
     "N": {
      "ok": 3,
      "rolled": 0,
      "no12": 0,
-     "perf_median": 1.1164261625884688
+     "perf_median": 1.1167748954510082
     },
     "W": {
      "ok": 8,
      "rolled": 0,
      "no12": 3,
-     "perf_median": 1.2633671435975165
+     "perf_median": 1.2637617757327966
     },
     "NW": {
      "ok": 25,
      "rolled": 4,
      "no12": 0,
-     "perf_median": 1.1876044110110409
+     "perf_median": 1.1879753774929227
     }
    },
    "stepout_roles": {
@@ -182,14 +182,16 @@
     "excluded: test (1-well step-out, not development)": 9,
     "excluded: test (2-well step-out, not development)": 6
    },
-   "n_evidence": 1658,
+   "n_evidence": 1664,
    "n_pre2016": 493,
-   "interior_median_oil12_kft": 15347.426914713698,
-   "flagged_pinned_strong_mi": 103.91767731493975,
-   "d136_unclipped_sqmi": 2321.004790244452,
+   "interior_median_oil12_kft": 15342.634407161477,
+   "flagged_pinned_strong_mi": 106.64656189899002,
+   "d136_unclipped_sqmi": 2321.203113542138,
+   "d136_edges_dropped": 16,
+   "d136_edges_trimmed": 9,
    "n_contours": {},
    "n_bodies_ge_min": 2,
-   "evidence_inside": 1425
+   "evidence_inside": 1431
   },
   "WCC": {
    "pre_envelope_sqmi": 214.20375355879372,
@@ -332,33 +334,33 @@
    "pool": "WCB_1",
    "cutoff": "2021-01-01",
    "construction": "pre-D27 buffered",
-   "area_sqmi": 1998.1217204501843,
-   "n_good": 744,
-   "n_rolled": 276,
+   "area_sqmi": 1997.928512015654,
+   "n_good": 739,
+   "n_rolled": 281,
    "hit_good": 101,
    "hit_rolled": 32,
-   "tpr": 0.135752688172043,
-   "fpr": 0.11594202898550725,
-   "j": 0.019810659186535753
+   "tpr": 0.13667117726657646,
+   "fpr": 0.11387900355871886,
+   "j": 0.022792173707857605
   },
   {
    "pool": "WCB_1",
    "cutoff": "2021-01-01",
    "construction": "D27 envelope",
-   "area_sqmi": 3680.7132589175344,
-   "n_good": 744,
-   "n_rolled": 276,
-   "hit_good": 666,
-   "hit_rolled": 191,
-   "tpr": 0.8951612903225806,
-   "fpr": 0.6920289855072463,
-   "j": 0.20313230481533429
+   "area_sqmi": 3680.71325874269,
+   "n_good": 739,
+   "n_rolled": 281,
+   "hit_good": 664,
+   "hit_rolled": 193,
+   "tpr": 0.8985115020297699,
+   "fpr": 0.6868327402135231,
+   "j": 0.21167876181624679
   },
   {
    "pool": "WCB_1",
    "cutoff": "2023-01-01",
    "construction": "pre-D27 buffered",
-   "area_sqmi": 2863.14033541499,
+   "area_sqmi": 2863.1157870012967,
    "n_good": 335,
    "n_rolled": 156,
    "hit_good": 41,
@@ -371,7 +373,7 @@
    "pool": "WCB_1",
    "cutoff": "2023-01-01",
    "construction": "D27 envelope",
-   "area_sqmi": 4656.25430410052,
+   "area_sqmi": 4656.254207779507,
    "n_good": 335,
    "n_rolled": 156,
    "hit_good": 308,
@@ -384,7 +386,7 @@
    "pool": "WCB_2",
    "cutoff": "2021-01-01",
    "construction": "pre-D27 buffered",
-   "area_sqmi": 784.7860114041302,
+   "area_sqmi": 791.8719848850297,
    "n_good": 225,
    "n_rolled": 110,
    "hit_good": 48,
@@ -397,20 +399,20 @@
    "pool": "WCB_2",
    "cutoff": "2021-01-01",
    "construction": "D27 envelope",
-   "area_sqmi": 1357.4602757337723,
+   "area_sqmi": 1367.0056626710505,
    "n_good": 225,
    "n_rolled": 110,
-   "hit_good": 188,
+   "hit_good": 185,
    "hit_rolled": 79,
-   "tpr": 0.8355555555555556,
+   "tpr": 0.8222222222222222,
    "fpr": 0.7181818181818181,
-   "j": 0.11737373737373746
+   "j": 0.10404040404040404
   },
   {
    "pool": "WCB_2",
    "cutoff": "2023-01-01",
    "construction": "pre-D27 buffered",
-   "area_sqmi": 1096.4221239658905,
+   "area_sqmi": 1098.5052500987476,
    "n_good": 122,
    "n_rolled": 61,
    "hit_good": 57,
@@ -423,7 +425,7 @@
    "pool": "WCB_2",
    "cutoff": "2023-01-01",
    "construction": "D27 envelope",
-   "area_sqmi": 1905.0924930977915,
+   "area_sqmi": 1904.980961819262,
    "n_good": 122,
    "n_rolled": 61,
    "hit_good": 113,
@@ -541,14 +543,14 @@
   {
    "extent": "WCA_1",
    "other": "WCB_1",
-   "shared_sqmi": 4630.0345299753235,
-   "share_of_extent": 0.8358497686119715
+   "shared_sqmi": 4630.034378230351,
+   "share_of_extent": 0.8358497412177912
   },
   {
    "extent": "WCA_1",
    "other": "WCB_2",
-   "shared_sqmi": 1842.6720991813838,
-   "share_of_extent": 0.3326534689443675
+   "shared_sqmi": 1842.8405907622164,
+   "share_of_extent": 0.3326838863522594
   },
   {
    "extent": "WCA_1",
@@ -565,50 +567,50 @@
   {
    "extent": "WCB_1",
    "other": "WCA_1",
-   "shared_sqmi": 4630.034529975308,
-   "share_of_extent": 0.8925274439796481
+   "shared_sqmi": 4630.034378230335,
+   "share_of_extent": 0.8925274661176763
   },
   {
    "extent": "WCB_1",
    "other": "WCB_2",
-   "shared_sqmi": 2013.9674745640455,
-   "share_of_extent": 0.3882306342843583
+   "shared_sqmi": 2014.1657978617327,
+   "share_of_extent": 0.38826888723740444
   },
   {
    "extent": "WCB_1",
    "other": "WCC",
-   "shared_sqmi": 643.4744144297574,
-   "share_of_extent": 0.12404196354456885
+   "shared_sqmi": 643.4744150622921,
+   "share_of_extent": 0.1240419708085654
   },
   {
    "extent": "WCB_1",
    "other": "WCD",
-   "shared_sqmi": 1396.0809937506451,
-   "share_of_extent": 0.2691212328706921
+   "shared_sqmi": 1396.0809856010615,
+   "share_of_extent": 0.26912124679511296
   },
   {
    "extent": "WCB_2",
    "other": "WCA_1",
-   "shared_sqmi": 1842.6720991813759,
-   "share_of_extent": 0.9133117834462557
+   "shared_sqmi": 1842.840590762209,
+   "share_of_extent": 0.9133055193908378
   },
   {
    "extent": "WCB_2",
    "other": "WCB_1",
-   "shared_sqmi": 2013.9674745640418,
-   "share_of_extent": 0.9982135328439597
+   "shared_sqmi": 2014.1657978617286,
+   "share_of_extent": 0.9982137084328708
   },
   {
    "extent": "WCB_2",
    "other": "WCC",
-   "shared_sqmi": 642.7214886999842,
-   "share_of_extent": 0.3185618913775259
+   "shared_sqmi": 642.721488699985,
+   "share_of_extent": 0.31853058045460425
   },
   {
    "extent": "WCB_2",
    "other": "WCD",
    "shared_sqmi": 272.84446682887915,
-   "share_of_extent": 0.13523408028679235
+   "share_of_extent": 0.1352207883520729
   },
   {
    "extent": "WCC",
@@ -619,14 +621,14 @@
   {
    "extent": "WCC",
    "other": "WCB_1",
-   "shared_sqmi": 643.4744144297581,
-   "share_of_extent": 0.9994657150030231
+   "shared_sqmi": 643.474415062293,
+   "share_of_extent": 0.9994657159854973
   },
   {
    "extent": "WCC",
    "other": "WCB_2",
-   "shared_sqmi": 642.7214886999843,
-   "share_of_extent": 0.9982962458897571
+   "shared_sqmi": 642.7214886999845,
+   "share_of_extent": 0.9982962458897574
   },
   {
    "extent": "WCC",
@@ -643,8 +645,8 @@
   {
    "extent": "WCD",
    "other": "WCB_1",
-   "shared_sqmi": 1396.0809937506463,
-   "share_of_extent": 0.8433235974878646
+   "shared_sqmi": 1396.0809856010624,
+   "share_of_extent": 0.8433235925649866
   },
   {
    "extent": "WCD",
@@ -676,7 +678,7 @@
    "status": "undrilled (D117)",
    "n": 8607,
    "in extent": 5595,
-   "in drilled core": 2781,
+   "in drilled core": 2780,
    "in step-2 outline": 4207,
    "pool": "WCB_1"
   },
@@ -686,8 +688,8 @@
    "status": "undrilled (D117)",
    "n": 1272,
    "in extent": 856,
-   "in drilled core": 399,
-   "in step-2 outline": 553,
+   "in drilled core": 400,
+   "in step-2 outline": 555,
    "pool": "WCB_2"
   },
   {
