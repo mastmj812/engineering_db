@@ -156,7 +156,7 @@ def index_html(builds: dict[str, dict[str, Any]], ctx: dict[str, Any]) -> str:
         "<h2>Extents</h2>" + egr._table(tab, {"extent sq mi": ",.0f", "drilled core sq mi": ",.0f", "interior median oil12 / kft": ",.0f", "bridged sq mi": ",.0f", "pinned+strong flag mi": ",.1f"}).replace("&lt;a href", "<a href").replace("&gt;", ">").replace("&lt;/a", "</a"),
         f"<img src='{ctx['overview_png']}' style='max-width:100%'>",
         "<h2>Overlap with each other and with the record extents</h2>" + egr._table(ctx["overlap"], {"shared_sqmi": ",.0f", "share_of_extent": ".0%"}),
-        f"<h2>{ctx.get('pud_heading', 'D1 PUD universe inside (read-only count; ≥ 50 % of the stick inside)')}</h2>" + egr._table(ctx["pud_summary"], {}),
+        f"<h2>{ctx.get('pud_heading', 'Undrilled Novi sticks inside (D117: PUD + RES; read-only count; ≥ 50 % of the stick inside)')}</h2>" + egr._table(ctx["pud_summary"], {}),
         "<h2>Envelope backtest on these benches (check, not a re-calibration)</h2><div class=meta>Same test as step 3: the extent rebuilt from laterals online before each cutoff; later wells ≥ 50 % outside the cutoff core and within 3 mi of it, 12-mo known: share of performing (≥ 0.70× interior) vs rolled ones it contains.</div>"
         + egr._table(ctx["env_bt"], {"area_sqmi": ",.0f", "tpr": ".2f", "fpr": ".2f", "j": ".2f", "precision": ".2f"}),
         "<h2>Regression guard: record extents rebuilt with this code</h2>" + (egr._table(reg, {"record_sqmi": ",.2f", "rebuilt_sqmi": ",.2f", "rel_diff": ".2e"}) if len(reg) else "<div class=meta>skipped</div>"),
@@ -169,7 +169,7 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
         bodies_min: int | None = None, basin: str = "delaware", page: dict[str, str] | None = None) -> dict[str, Any]:
     """`basin` (step 19): its D23 edge metric (er.edge_params - refused until set), PUD pull and labels. Outside the Delaware
     (step 20a) the potash area is neither drawn nor packaged (it lies in the Delaware), the Delaware record extents are not
-    overlaid, and the undrilled count is D117's (Novi PUD + RES, by category). `page` = index-page text overrides."""
+    overlaid. The undrilled count is D117's (Novi PUD + RES, by category) in both basins (D117 step 3). `page` = index-page text overrides."""
     edge = er.edge_params(basin)
     delaware = basin == bsn.DELAWARE
     out.mkdir(parents=True, exist_ok=True)
@@ -185,16 +185,13 @@ def run(conn: Any, wells_dir: Path, out: Path, pools: tuple[str, ...], version: 
         ws.clip_d136(builds["WCB_2"])
     env_bt = pd.DataFrame([r for pool in pools for r in er.envelope_backtest(df[df.pool == pool], pool, bp, sopa, None, edge)])
     rec = record_extents() if delaware else {}
-    # D1 PUD universe (read-only); outside the Delaware the D117 undrilled universe (PUD + RES) by category
+    # the D117 undrilled universe (PUD + RES) by category, both basins (D117 step 3; the Delaware counted D1 PUDs before it)
     pud_tabs: dict[str, pd.DataFrame] = {}
     for pool, b in builds.items():
         env = eg.to_lonlat([shapely.box(*b["extent"].bounds).buffer(eg.FT_PER_MI)])[0].bounds
         polys = {"in extent": b["extent"], "in drilled core": b["prep"].core, "in step-2 outline": Polygon(b["prep"].r["body"].exterior)}
-        if delaware:
-            pud_tabs[pool] = er.pud_counts(er.pull_puds(conn, [pool], env, basin), polys)
-        else:
-            pud_tabs[pool] = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys)
-    total = "D1 universe" if delaware else "undrilled (D117)"
+        pud_tabs[pool] = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys)
+    total = "undrilled (D117)"
     pud_summary = pd.concat([t[t.status == total].assign(pool=p) for p, t in pud_tabs.items()], ignore_index=True)
     # geology package (the potash polygon only where it is: the Delaware)
     files: list[Path] = pkg.write_sopa(geo_dir, sopa) if delaware else []
@@ -506,10 +503,8 @@ def run_edits(conn: Any, pptx: Path, slide_pool: dict[int, str], wells_dir: Path
 
         env = eg.to_lonlat([shapely.box(*shapely.union_all([gen, edited]).bounds).buffer(eg.FT_PER_MI)])[0].bounds
         polys = {"in generated": gen, "in edited": edited}
-        if basin == bsn.DELAWARE:
-            pt, total = er.pud_counts(er.pull_puds(conn, [pool], env, basin), polys), "D1 universe"
-        else:  # D117: undrilled = any Novi category (PUD + RES), as in run()
-            pt, total = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys), "undrilled (D117)"
+        # D117: undrilled = any Novi category (PUD + RES), as in run(), both basins
+        pt, total = er.undrilled_counts(er.pull_sticks(conn, [pool], env, basin), polys), "undrilled (D117)"
         (edit_dir / f"diff_{pool}_v{version}.html").write_text(pages.diff_page(pool, version, d, gen, edited, built, f"{pptx.name} slide {k}", pt), encoding="utf-8")
         pt.assign(pool=pool).to_csv(edit_dir / f"pud_counts_{pool}.csv", index=False)
         (edit_dir / f"extent_{pool}_v{version}_edited.geojson").write_text(json.dumps({
