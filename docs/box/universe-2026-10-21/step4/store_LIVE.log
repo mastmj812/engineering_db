@@ -1,0 +1,26 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+locations: 167070 (49301 seed, 0 carried) (23 s)
+rows written + analyzed (1914 s); checking identity
+    ok   pud_forecast rows 166843 = universe 166843
+    ok   [AVA_0] covered_provisional 622 + no_analogs 0 = in-extent AVA_0 universe 622 (other forecast class 0)
+    ok   [AVA_1] covered_provisional 1389 + no_analogs 0 = in-extent AVA_1 universe 1389 (other forecast class 0)
+    ok   [AVA_2] covered_provisional 2868 + no_analogs 0 = in-extent AVA_2 universe 2868 (other forecast class 0)
+    ok   [BS1_S] covered_provisional 5336 + no_analogs 0 = in-extent BS1_S universe 5336 (other forecast class 0)
+    ok   [BS2_C] covered_provisional 3005 + no_analogs 0 = in-extent BS2_C universe 3005 (other forecast class 0)
+    ok   [BS2_S] covered 7403 + no_analogs 0 = in-extent BS2_S universe 7403 (other forecast class 0)
+    ok   [BS3_C] covered_provisional 7831 + no_analogs 0 = in-extent BS3_C universe 7831 (other forecast class 0)
+    ok   [BS3_S] covered_provisional 9715 + no_analogs 0 = in-extent BS3_S universe 9715 (other forecast class 0)
+    ok   [WCA] covered 1907 + no_analogs 0 = in-extent WCA_1/WCA_2 universe 1907 (other forecast class 0)
+    ok   [WCB_1] covered 4150 + no_analogs 0 = in-extent WCB_1 universe 4150 (other forecast class 0)
+    ok   [WCB_2] covered_provisional 2614 + no_analogs 0 = in-extent WCB_2 universe 2614 (other forecast class 0)
+    ok   [WCC] covered 2559 + no_analogs 0 = in-extent WCC universe 2559 (other forecast class 0)
+    ok   [WCXY_WCA1] covered 8239 + no_analogs 0 = in-extent WCXY universe 8239 (other forecast class 0)
+    ok   covered 24258 + covered_provisional 33380 + no_analogs 0 = in-extent universe of every covered group 57638
+    note no_analogs rows = 0 (D74: reported, never dropped; covered falls short of the universe by this many)
+    ok   oil stream rows 57638 = covered + covered_provisional 57638
+    ok   gas stream rows 57638 = covered + covered_provisional 57638
+    ok   every stream has 600 months summing to its eur within 0.1 % (115276 stream groups, 0 off)
+    ok   every covered location has >= 3 named analogs (min 4, max 20)
+    ok   analog rows cover all 57638 covered + covered_provisional locations (57638)
+stored run_id 24 as RECORD: {'covered': 24258, 'covered_provisional': 33380, 'not_covered_emerging': 18480, 'not_covered_outside_extent': 90725} (2052 s)
+rc=0

@@ -1,0 +1,25 @@
+live run 25:
+  pud_forecast: 166,843 rows (4 s)
+  pud_forecast_stream: 146,835 rows (4 s)
+  pud_forecast_month: 146,835 rows (374 s)
+  location_analog: 48,945 rows (7 s)
+  location_water_analog: 48,945 rows (7 s)
+  pud_proximity: 57,638 rows (2 s)
+  pud_proximity_parent: 27,844 rows (1 s)
+container run 25:
+  pud_forecast: 166,843 rows (3 s)
+  pud_forecast_stream: 146,835 rows (3 s)
+  pud_forecast_month: 146,835 rows (67 s)
+  location_analog: 48,945 rows (5 s)
+  location_water_analog: 48,945 rows (6 s)
+  pud_proximity: 57,638 rows (1 s)
+  pud_proximity_parent: 27,844 rows (1 s)
+          pud_forecast: live 166,843 reproduced 166,843 differ 0  missing 0; container-only 0
+   pud_forecast_stream: live 146,835 reproduced 146,835 differ 0  missing 0; container-only 0
+    pud_forecast_month: live 146,835 reproduced 146,835 differ 0  missing 0; container-only 0
+       location_analog: live 48,945 reproduced 48,945 differ 0  missing 0; container-only 0
+ location_water_analog: live 48,945 reproduced 48,945 differ 0  missing 0; container-only 0
+         pud_proximity: live 57,638 reproduced 0 differ 57,638 {'table_ref': 57638} missing 0; container-only 0
+  pud_proximity_parent: live 27,844 reproduced 27,844 differ 0  missing 0; container-only 0
+every live run-25 row reproduced exactly: False (485 s)
+rc=1

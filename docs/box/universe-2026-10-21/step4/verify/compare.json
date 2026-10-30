@@ -1,0 +1,65 @@
+{
+ "live_run": 25,
+ "container_run": 25,
+ "tables": {
+  "pud_forecast": {
+   "live_rows": 166843,
+   "reproduced": 166843,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "pud_forecast_stream": {
+   "live_rows": 146835,
+   "reproduced": 146835,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "pud_forecast_month": {
+   "live_rows": 146835,
+   "reproduced": 146835,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "location_analog": {
+   "live_rows": 48945,
+   "reproduced": 48945,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "location_water_analog": {
+   "live_rows": 48945,
+   "reproduced": 48945,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "pud_proximity": {
+   "live_rows": 57638,
+   "reproduced": 0,
+   "differ": 57638,
+   "differ_columns": {
+    "table_ref": 57638
+   },
+   "missing_in_container": 0,
+   "container_only": 0
+  },
+  "pud_proximity_parent": {
+   "live_rows": 27844,
+   "reproduced": 27844,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 0,
+   "container_only": 0
+  }
+ },
+ "seconds": 485
+}

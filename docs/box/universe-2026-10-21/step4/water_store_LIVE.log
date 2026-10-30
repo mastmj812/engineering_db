@@ -1,0 +1,11 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+rows written (57638 water streams, 937304 water analogs, 0 without water) (1101 s); identity
+    ok   oil / gas stream rows unchanged (count + ordered md5 of every row): [('gas', 57638, '472aafe26b1d537772f659579a570b44'), ('oil', 57638, 'c9d8bd1f5014f4aea33792332b10a4b0')]
+    ok   oil / gas month rows unchanged (69165600 = 69165600)
+    ok   water rows = covered + covered_provisional (57638 = 57638; 0 locations without water)
+    ok   every water stream has 600 months summing to its eur within 0.1 % (57638 groups, 0 off)
+    ok   validated water = WCA + BS2_S covered rows (9310 = 9310); tiers {'validated': 9310, 'provisional': 48328}
+    ok   every water location has >= 3 named water analogs (min 3, max 20, 57638 locations)
+    info calculated-fallback water locations: 49
+stored water on run_id 24: 57638 streams, tiers {'validated': 9310, 'provisional': 48328} (1372 s)
+rc=0

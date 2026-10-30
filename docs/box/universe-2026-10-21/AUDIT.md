@@ -166,3 +166,8 @@ Next = **step 3** (BOX rehearsal) on Michael's go.
 ## Step 3 (built 2026-10-30, at the step-3 gate)
 Run 14 has since been replaced: the record is run 19 (D123), so step 3 rehearsed against run 19. Results and the gate asks:
 `step3/FINDINGS.md`.
+
+## Step 4 (stored live 2026-10-30)
+On Michael's go: the derived record. Run 19's build was carried, the RES rows added, and proximity re-measured. **Live record = run 25**, 25,569.9 MMbbl oil.
+It reproduces container run 25 row for row. Runs 19 and 24 are kept until Michael's prune go.
+`step4/FINDINGS.md`.
