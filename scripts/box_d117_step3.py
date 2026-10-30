@@ -49,6 +49,7 @@ def pull(conn: Any, run_id: int) -> dict[str, pd.DataFrame]:
             t0 = time.time()
             cur.execute("SET TRANSACTION READ ONLY")
             cur.execute("SET LOCAL statement_timeout = '3600s'")
+            cur.execute("SET LOCAL extra_float_digits = 3")  # shortest-exact float text on both servers (live defaults to 15 digits)
             rows = cur.execute(sql, (run_id,)).fetchall()
             conn.rollback()
             out[name] = pd.DataFrame(rows, columns=[*keys, "image"])
@@ -73,10 +74,34 @@ def compare(live: dict[str, pd.DataFrame], box: dict[str, pd.DataFrame]) -> tupl
         for r in bad.itertuples():
             for c in (differing_columns(r.image_live, r.image_box) if name in JSON_TABLES else ["image"]):
                 cols[c] = cols.get(c, 0) + 1
-            diffs.append({"table": name, **{k: getattr(r, k) for k in keys}})
+            diffs.append({"table": name, "kind": "differ", **{k: getattr(r, k) for k in keys}})
+        diffs += [{"table": name, "kind": "missing", **{k: getattr(r, k) for k in keys}} for r in m[m["_merge"] == "left_only"].itertuples()]
         summ[name] = {"live_rows": len(live[name]), "reproduced": int(len(both) - len(bad)), "differ": len(bad), "differ_columns": cols,
                       "missing_in_container": int((m["_merge"] == "left_only").sum()), "container_only": int((m["_merge"] == "right_only").sum())}
-    return summ, pd.DataFrame(diffs)
+    return summ, pd.DataFrame(diffs, columns=["table", "kind", "location_id", "stream"])
+
+
+FORECAST_TABLES = ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog", "location_water_analog")
+PROX_MOVES = ("outcome", "factor")
+
+
+def proximity_moved(before: pd.DataFrame, after: pd.DataFrame) -> set[int]:
+    """Locations whose D116 outcome or factor differs between two proximity measurements (pud_outcomes files)."""
+    m = before.merge(after, on="location_id", suffixes=("_a", "_b"))
+    moved = (m["outcome_a"].astype(str) != m["outcome_b"].astype(str)) | ((m["factor_a"] - m["factor_b"]).abs() > 1e-12)
+    return set(m.loc[moved, "location_id"].astype(int))
+
+
+def attribute(diffs: pd.DataFrame, live_pf: pd.DataFrame, basin: str, moved: set[int]) -> dict[str, dict[str, int]]:
+    """Each forecast-table difference / missing row is on a location whose proximity outcome moved, or a row of another basin
+    (D135); anything else is unexplained."""
+    other = {int(r.location_id) for r in live_pf.itertuples() if json.loads(r.image)["basin"] != basin}
+    out = {}
+    for t in FORECAST_TABLES:
+        ids = set(diffs.loc[diffs["table"] == t, "location_id"].astype(int)) if len(diffs) else set()
+        out[t] = {"locations": len(ids), "proximity_moved": len(ids & moved), "other_basin": len(ids & other - moved),
+                  "unexplained": len(ids - moved - other)}
+    return out
 
 
 def additions(conn: Any, live_pf: pd.DataFrame, box_pf: pd.DataFrame) -> pd.DataFrame:
@@ -108,7 +133,11 @@ def cmd_compare(a: argparse.Namespace) -> int:
         summ, diffs = compare(live, box)
         add = additions(conn, live["pud_forecast"], box["pud_forecast"])
     a.out.mkdir(parents=True, exist_ok=True)
-    res = {"live_run": a.live_run, "container_run": a.run_id, "tables": summ, "seconds": round(time.time() - t0)}
+    res: dict[str, Any] = {"live_run": a.live_run, "container_run": a.run_id, "tables": summ, "seconds": round(time.time() - t0)}
+    if a.prox_before and a.prox_after:
+        moved = proximity_moved(pd.read_csv(a.prox_before), pd.read_csv(a.prox_after))
+        res["attribution"] = {"proximity_moved_locations": len(moved), "basin": a.basin,
+                              "tables": attribute(diffs, live["pud_forecast"], a.basin, moved)}
     (a.out / "compare.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
     add.to_csv(a.out / "additions.csv", index=False)
     if len(diffs):
@@ -118,6 +147,13 @@ def cmd_compare(a: argparse.Namespace) -> int:
               f"missing {s['missing_in_container']:,}; container-only {s['container_only']:,}")
     ok = all(s["differ"] == 0 and s["missing_in_container"] == 0 for s in summ.values())
     print(f"every live run-{a.live_run} row reproduced exactly: {ok} ({time.time() - t0:.0f} s)")
+    if "attribution" in res:
+        at = res["attribution"]
+        for t, x in at["tables"].items():
+            print(f"{t:>22}: {x['locations']:,} locations differ or missing = proximity re-measure {x['proximity_moved']:,} + other basin "
+                  f"{x['other_basin']:,} + unexplained {x['unexplained']:,}")
+        ok = all(x["unexplained"] == 0 for x in at["tables"].values())
+        print(f"every forecast-table difference explained by the D116 re-measure or D135: {ok}")
     return 0 if ok else 1
 
 
@@ -138,6 +174,9 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("compare")
     c.add_argument("--run-id", type=int, required=True, help="the rehearsed record in the container")
     c.add_argument("--live-run", type=int, default=19)
+    c.add_argument("--basin", default="delaware")
+    c.add_argument("--prox-before", type=Path, default=None, help="the live run's proximity outcomes (pud_outcomes.csv.gz)")
+    c.add_argument("--prox-after", type=Path, default=None, help="the rehearsal's re-measured outcomes")
     c.add_argument("--out", type=Path, default=Path("docs") / "box" / "universe-2026-10-21" / "step3")
     m = sub.add_parser("midland")
     m.add_argument("--out", type=Path, default=Path("docs") / "box" / "universe-2026-10-21" / "step3")

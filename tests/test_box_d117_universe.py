@@ -222,4 +222,19 @@ def test_compare_reproduced_differing_missing_and_additions():
     assert pf["differ_columns"] == {"planned_spacing_ft": 1}
     assert summ["pud_forecast_stream"] == {"live_rows": 1, "reproduced": 1, "differ": 0, "differ_columns": {}, "missing_in_container": 0,
                                            "container_only": 1}
-    assert list(diffs["location_id"]) == [2]
+    assert list(zip(diffs["kind"], diffs["location_id"], strict=True)) == [("differ", 2), ("missing", 3)]
+
+
+def test_attribute_differences_to_the_proximity_remeasure():
+    from scripts import box_d117_step3 as s3
+
+    before = pd.DataFrame({"location_id": [1, 2, 3], "outcome": ["haircut", "as_is_unexposed", "haircut"], "factor": [0.9, 1.0, 0.8]})
+    after = pd.DataFrame({"location_id": [1, 2, 3], "outcome": ["haircut", "no_forecast_precedent", "haircut"], "factor": [0.9, 1.0, 0.85]})
+    moved = s3.proximity_moved(before, after)
+    assert moved == {2, 3}
+    live_pf = pd.DataFrame({"location_id": [1, 2, 3, 7], "image": ['{"basin": "delaware"}'] * 3 + ['{"basin": "midland"}']})
+    diffs = pd.DataFrame({"table": ["pud_forecast", "pud_forecast", "pud_forecast_stream", "pud_forecast_stream"], "kind": ["differ", "missing", "differ", "differ"],
+                          "location_id": [2, 7, 3, 1], "stream": [None, None, "oil", "oil"]})
+    at = s3.attribute(diffs, live_pf, "delaware", moved)
+    assert at["pud_forecast"] == {"locations": 2, "proximity_moved": 1, "other_basin": 1, "unexplained": 0}
+    assert at["pud_forecast_stream"] == {"locations": 2, "proximity_moved": 1, "other_basin": 0, "unexplained": 1}
