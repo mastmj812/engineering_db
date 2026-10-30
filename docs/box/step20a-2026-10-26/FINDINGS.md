@@ -1256,8 +1256,9 @@ southern WCB_1 median of 262 ft.
 **Seed:** 336 Midland rows (231 class-accepted, 93 carded, 12 calls) + 98 Delaware = 434. sql/44 Batch 3 and the COMMENT
 are updated. The dry run (read-only, 2026-10-30) gives add 0, change 5 (notes), remove 4. Under the live crosswalk, raw
 WOLFCAMP B UPPER → WCB_1 on 9,201 Midland wells and WOLFCAMP C → WCC on 4,798, so the removals land on MM's calls.
-**Not applied:** it needs a go apply (`--refresh`, ~1 h, nothing dark). It can wait for the next override batch, since
-BOX already honours the calls through the owner benches.
+**Not applied — DECIDED (MM 2026-10-30): it rides the next override batch** (`--refresh`, ~1 h, nothing dark), since
+BOX already honours the calls through the owner benches. Until then live holds 438 rows and the seed 434. The 4 wells keep
+WCB_2 in the warehouse (erebor, narvi, deal-intake read that) but carry the right bench in BOX.
 
 **r3 regenerated with the 9 owner benches** (same cache, live tags unchanged): all 9 land on the call, and only those 6
 of the 9 not already on their call moved. No seed well now disagrees with BOX. Bench finals (cohort):
@@ -1273,7 +1274,7 @@ of the 9 not already on their call moved. No seed well now disagrees with BOX. B
 Contrasts move ≤ 0.006. The extents are geometrically identical to pre-call r3 (0.00 sq mi added or removed per bench), so
 the §8.15 extent table stands. The WCD loop is unaffected: no WCD well moved.
 
-**Still open at gate 20a:** the storage go (r3 as regenerated here), applying the 4-removal seed change, asks 3 / 4 / 6 in
+**Still open at gate 20a:** the storage go (r3 as regenerated here), asks 3 / 4 / 6 in
 §4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
 
 
