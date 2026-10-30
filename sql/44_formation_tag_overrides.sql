@@ -26,10 +26,10 @@
 -- Unit 10-7E 8H — MM drilled it, WCB_2 target). Rejected and held flags are
 -- deliberately NOT here (Merciless 3002547676 held: destination disputed).
 --
--- Batch 3 (2026-10-28, calls added 2026-10-29): 340 Midland Wolfcamp rows from the BOX step-20a tag
+-- Batch 3 (2026-10-28, calls added 2026-10-29 + 2026-10-30): 336 Midland Wolfcamp rows from the BOX step-20a tag
 -- screen (docs/box/step20a-2026-10-26/FINDINGS.md §8; built by
--- scripts/box_tag_seed, every note ends "tag screen step 20a"): 239
--- class-accepted, 94 carded, 7 direct / what-if / inspection calls.
+-- scripts/box_tag_seed, every note ends "tag screen step 20a"): 231
+-- class-accepted, 93 carded, 12 direct / what-if / inspection calls (§8.16: 4 doublecheck calls back to the vendor tag removed their rows).
 --
 -- Consumed by curated.formation_blueox (sql/16): an override wins over the
 -- crosswalk result, and formation_blueox_source becomes 'ratified_override'.
@@ -69,4 +69,4 @@ TRUNCATE ref.formation_tag_overrides;
 
 
 COMMENT ON TABLE ref.formation_tag_overrides IS
-'Human-ratified per-well formation_blueox corrections (api10-keyed), seeded from seeds/formation_tag_overrides.csv. Overrides win over the crosswalk in curated.formation_blueox (source becomes ratified_override). Rows are decisions of record: the 2026-09 Delaware WCB consensus audit (98 wells, ratified well-by-well) and the 2026-10-28 BOX step-20a Midland Wolfcamp tag screen (340 wells: 94 carded well-by-well, 7 direct calls, 239 class-accepted = uncarded wells of a class MM accepted on a 7/10 card sample, note "class-accepted <class> k/n cards <date>"). Detectors propose, MM ratifies; nothing lands here automatically. Edit loop in sql/44 header.';
+'Human-ratified per-well formation_blueox corrections (api10-keyed), seeded from seeds/formation_tag_overrides.csv. Overrides win over the crosswalk in curated.formation_blueox (source becomes ratified_override). Rows are decisions of record: the 2026-09 Delaware WCB consensus audit (98 wells, ratified well-by-well) and the 2026-10-28 BOX step-20a Midland Wolfcamp tag screen (336 wells: 93 carded well-by-well, 12 direct calls, 231 class-accepted = uncarded wells of a class MM accepted on a 7/10 card sample, note "class-accepted <class> k/n cards <date>"). Detectors propose, MM ratifies; nothing lands here automatically. Edit loop in sql/44 header.';

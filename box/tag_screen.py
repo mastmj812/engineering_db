@@ -234,10 +234,14 @@ def override_seed(flags: pd.DataFrame, cards: pd.DataFrame, well_calls: pd.DataF
       * an ACCEPTED class moves its uncarded wells to the class destination ('full review' and 'parked' classes move
         nobody uncarded; rejected classes neither);
       * well_calls.csv rows (chat / what-if / inspection calls) land as written; a well also carded must carry the
-        same call, and a call REPLACES a class-accepted row (MM looked at that well: 2026-10-29, Mustang Draw 44SH).
+        same call, and a call REPLACES a class-accepted row (MM looked at that well: 2026-10-29, Mustang Draw 44SH);
+      * a call dated AFTER the well's card supersedes the card (MM re-inspected it: 2026-10-30, PARKS, ROY 316CH);
+        a call back to the screen-time tag removes the well's row (no override: the vendor tag stands).
     ``states`` = summary.json classes; ``card_dates`` maps verdict_source -> the date that round was judged."""
     rows: dict[str, dict] = {}
     carded = set(cards["api10"])
+    # a source with no round date (e.g. a verdict given in chat) is never superseded: a disagreeing call still raises
+    card_date = {r.api10: card_dates.get(r.verdict_source, "9999-12-31") for r in cards.itertuples()}
     for r in cards.itertuples():
         v = "" if pd.isna(r.verdict) else str(r.verdict).strip()
         to = r.screen_dest if v.lower() == "agree" else v if v and v == v.upper() and " " not in v else None
@@ -254,10 +258,13 @@ def override_seed(flags: pd.DataFrame, cards: pd.DataFrame, well_calls: pd.DataF
             rows[r.api10] = {"api10": r.api10, "corrected_code": r.screen_dest, "was": r.formation_blueox,
                              "note": f"class-accepted {name} {s['prior_agree']}/{s['prior_judged']} cards {date}; "
                                      f"convention (a); {SEED_TAG}"}
-    for r in well_calls.itertuples():
-        if r.api10 in carded and r.api10 in rows:
+    for r in well_calls.sort_values("date", kind="stable").itertuples():
+        if r.api10 in carded and r.api10 in rows and str(r.date) <= card_date[r.api10]:
             if rows[r.api10]["corrected_code"] != r.call:
                 raise ValueError(f"{r.api10}: card says {rows[r.api10]['corrected_code']}, well_calls says {r.call}")
+            continue
+        if r.call == r.live_tag:
+            rows.pop(r.api10, None)
             continue
         rows[r.api10] = {"api10": r.api10, "corrected_code": r.call, "was": r.live_tag,
                          "note": f"{r.source} {r.date}: {r.note}; ratified by MM; {SEED_TAG}"}
