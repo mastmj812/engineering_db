@@ -139,8 +139,18 @@ first pass.
 2. **The analog pools drifted since run 19 (D137).** The RES rows are fitted on pools rebuilt today at run 19's cutoff, and those
    pools are not run 19's:
    - pool sizes: WCC 858 → 862, AVA_1 473 → 474, AVA_2 360 → 363, BS3_C 1,601 → 1,602;
-   - 24 carried rows per group, refitted on the rebuilt pool, differ from run 19 by up to 2.5× in a single month (max relative
-     monthly difference; REFERENCE_RESULT).
+   - 24 carried rows per group were refitted on the rebuilt pool. The augment's own pass reported a max relative difference in a
+     single month of 0.14–2.5 by group.
+   - In EUR terms (`reference_refit.csv`, `refit_reference.py`; WCC, BS3_S and WCXY, which hold 98 % of the RES rows; the
+     full re-run died on a dropped Supabase connection, read-only, nothing written):
+
+     | group | rebuilt / source pool | bit-identical | same analog set | raw oil EUR change: median / range |
+     |---|---|---|---|---|
+     | WCXY_WCA1 | 7,588 / 7,588 | 9 / 24 | 13 / 24 | 0.0 % / −8.8 to +13.6 % |
+     | WCC | 862 / 858 | 16 / 24 | 18 / 24 | 0.0 % / −5.2 to +14.2 % |
+     | BS3_S | 2,844 / 2,844 | 9 / 24 | 17 / 24 | 0.0 % / −19.2 to +7.5 % |
+
+     Overall, 52 of 72 rows land within ±1 % on oil.
    - So the RES rows are on a pool about one week newer than the PUD rows beside them. Same method, same well sets, same
      cutoff; different live spacing and tags.
 3. **Live drift in run 19's own universe (counted, not applied).** Today's live universe differs from run 19's on PUD rows:
