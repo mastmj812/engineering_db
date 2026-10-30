@@ -183,3 +183,21 @@ def test_months_rel_diff():
     del b["streams"]["gas"]
     assert bpr.months_rel_diff(a, b) == np.inf
 
+
+
+def test_water_carry_reuses_only_identical_raw_oil(tmp_path):
+    from scripts import box_water_run as bwr
+
+    src_res = [_fit(100.0, "s1"), _fit(200.0, "s2")]
+    src = {"run": {"code_sha": "379e2ad"}, "locs": [_loc(1, None), _loc(2, None)], "results": src_res}
+    (tmp_path / "oil").mkdir()
+    (tmp_path / "wat").mkdir()
+    with open(tmp_path / "oil" / "run.pkl", "wb") as fh:
+        pickle.dump(src, fh)
+    with open(tmp_path / "wat" / "water.pkl", "wb") as fh:
+        pickle.dump({"meta": {"run_built_from": "379e2ad", "data_through": "2026-07-01"}, "water": {1: {"w": 1}, 2: {"w": 2}}}, fh)
+    A = {"locs": [_loc(1, None), _loc(2, None), _loc(10, None)], "results": [_fit(100.0, "c1"), _fit(250.0, "r2"), _fit(300.0, "n10")]}
+    got = bwr.load_carry(tmp_path / "wat", tmp_path / "oil", A, dt.date(2026, 7, 1))
+    assert got == {1: {"w": 1}}  # stick 2's raw oil moved (a refit): rebuilt; stick 10 is new
+    with pytest.raises(SystemExit, match="through"):
+        bwr.load_carry(tmp_path / "wat", tmp_path / "oil", A, dt.date(2026, 8, 1))
