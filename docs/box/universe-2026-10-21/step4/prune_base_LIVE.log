@@ -1,0 +1,8 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+  run 19 (delaware): record=False superseded_by=24 pud_forecast=121,696 months=77,346,000 priced_rows=687,520
+  run 24 (delaware): record=False superseded_by=25 pud_forecast=166,843 months=103,748,400 priced_rows=0
+  run 25 (delaware): record=True superseded_by=None pud_forecast=166,843 months=88,101,000 priced_rows=0
+held (priced; D123 prunes them with --include-priced): [19]
+record(s) {'delaware': [25]}; prune [24]; keep [19, 25]
+pruned runs [24]; kept [19, 25]; record(s) [25] unchanged; no orphan rows (1411 s)
+rc=0

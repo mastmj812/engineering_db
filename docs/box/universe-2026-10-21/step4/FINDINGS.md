@@ -5,8 +5,8 @@ On Michael's "go apply" (2026-10-30), after his three step-3 gate calls:
 - re-measure proximity on run 19's rows (D116);
 - store the derived record.
 
-**Live Delaware record = run 25.** It is run 19's build plus the D117 RES rows, with proximity re-measured. Run 19 and run 24
-are kept: `is_record = false`, superseded by 24 and 25.
+**Live Delaware record = run 25.** It is run 19's build plus the D117 RES rows, with proximity re-measured. The 16d record (run 19) is kept,
+superseded; the base run (run 24) was pruned.
 
 ## What ran (Supabase, branch `claude/box-d117-step3-universe`)
 
@@ -51,8 +51,11 @@ over unchanged: 0 unexplained differences.
   the view returns 0 rows until he prices it. It showed 42,833 on run 19. Run 19's 687,520 econ rows are untouched.
   - The re-price note must split the change: +2,921.6 MMbbl RES (D117) and +25.0 MMbbl on run 19's PUDs (D116 re-measure,
     parent-tag drift).
-- **Prune (D123, not done):** runs 19 (priced) and 24 (unpriced base) are kept. Pruning deletes rows, and pruning run 19
-  deletes Steven's econ rows (`--include-priced`), so each prune waits on Michael's go.
+- **Prune (D123):** the D117 base run (run 24, unpriced) was PRUNED 2026-10-30 on Michael's go. Checks passed: no orphan rows,
+  kept runs' rows unchanged, the record unchanged (`prune_base_LIVE.log`; a first attempt lost its connection on the opening
+  read, before any delete). The 16d record (run 19) is kept while it carries Steven's 687,520 econ rows. Its `superseded_by`
+  is now NULL, because it pointed at the pruned base. Pruning it (`--include-priced`) waits on Michael's go, after Steven
+  prices the D117 record (run 25).
 - **WCXY co-development disclosure text** (D117): still to write.
 - **Midland:** the 80 RES join the first Midland record (step 23).
 - **erebor:** no code change. RES sticks on BOX benches inside BOX extents now read their BOX class instead of
