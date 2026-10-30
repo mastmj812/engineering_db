@@ -134,8 +134,9 @@ first pass.
    - Where they are: AVA_2 38, WCXY 26, BS3_S 14, WCC 6, AVA_1 4, BS3_C 3, BS2_C 1, WCB_1 1.
    - The rehearsal **carries them verbatim**. The refit is recorded in `gap_changed.csv`: oil EUR median 0.0 %, IQR −1.6 % to
      0.0 %, range −32 % to +27 %. That refit runs on today's pool, so pool drift is mixed in.
-   - `augment --refit-gap-changed` takes the refits instead. **Your call for step 4: carry the 93 (run 19 untouched), or
-     refit them (D64 as written).**
+   - `augment --refit-gap-changed` takes the refits instead.
+   - **DECIDED 2026-10-30 (Michael): carry the 93.** Step 4 runs `augment` without `--refit-gap-changed`, so run 19's rows
+     stay untouched. Their D64 gaps catch up at the next refresh (13c), along with the drift in item 3.
 2. **The analog pools drifted since run 19 (D137).** The RES rows are fitted on pools rebuilt today at run 19's cutoff, and those
    pools are not run 19's:
    - pool sizes: WCC 858 → 862, AVA_1 473 → 474, AVA_2 360 → 363, BS3_C 1,601 → 1,602;
