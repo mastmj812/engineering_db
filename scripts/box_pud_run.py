@@ -653,6 +653,16 @@ def cmd_augment(a: argparse.Namespace) -> int:
     new_ids = set(add["stick_id"].astype(int))
     fitted = {loc["stick_id"]: (loc, r) for b in B for loc, r in zip(B[b]["locs"], B[b]["results"], strict=True)}
     ref_diff = {b: max((months_rel_diff(fitted[s][1], by_stick[s][1]) for s in refs[b]), default=0.0) for b in B}
+    ref_rows = []
+    for b in B:
+        for s in refs[b]:
+            r0, r1 = by_stick[s][1], fitted[s][1]
+            row: dict[str, Any] = {"group": b, "stick_id": s, "months_max_rel_diff": months_rel_diff(r1, r0),
+                                   "same_analogs": sorted(x["api10"] for x in r0.get("analogs", [])) == sorted(x["api10"] for x in r1.get("analogs", []))}
+            for st in pr.STREAMS:
+                e0, e1 = (r.get("streams", {}).get(st, {}).get("eur_raw") for r in (r0, r1))
+                row[f"{st}_eur_raw_rel"] = (e1 / e0 - 1) if e0 and e1 else None
+            ref_rows.append(row)
     gap_eff = []
     for s in sorted(changed):
         (l0, r0), (l1, r1) = by_stick[s], fitted[s]
@@ -692,6 +702,7 @@ def cmd_augment(a: argparse.Namespace) -> int:
     with open(a.out / "run.pkl", "wb") as fh:
         pickle.dump({"run": run, "universe": u, "locs": locs, "results": res, "analog_meta": meta, "analog_cum_kft": cum}, fh)
     pd.DataFrame(gap_eff).to_csv(a.out / "gap_changed.csv", index=False)
+    pd.DataFrame(ref_rows).to_csv(a.out / "reference_refit.csv", index=False)
     summ = {"source": str(a.src), "code_sha": code_sha, "universe": len(u), "res_added": len(add), "res_added_forecast_candidates": len(new_cov),
             "res_added_fitted": n_added, "drift": drift, "gap_changed": len(changed), "gap_changed_replaced": len(replace),
             "reference_refit_max_rel_diff": ref_diff, "seconds": round(time.time() - t0)}
