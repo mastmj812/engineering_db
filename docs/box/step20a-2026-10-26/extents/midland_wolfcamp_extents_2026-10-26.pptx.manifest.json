@@ -1,0 +1,39 @@
+{
+ "slides": {
+  "1": {
+   "bench": "WCA_1",
+   "extents_dir": "docs\\box\\step20a-2026-10-26\\extents",
+   "png": "visual_WCA_1.png",
+   "png_path": "docs\\box\\step20a-2026-10-26\\extents\\visual_WCA_1.png",
+   "png_md5": "f897351e15a851cc3e60611cc0f07a4e"
+  },
+  "2": {
+   "bench": "WCB_1",
+   "extents_dir": "docs\\box\\step20a-2026-10-26\\extents",
+   "png": "visual_WCB_1.png",
+   "png_path": "docs\\box\\step20a-2026-10-26\\extents\\visual_WCB_1.png",
+   "png_md5": "86d93fbf8d9400cdc4a41c2d34d6ed28"
+  },
+  "3": {
+   "bench": "WCB_2",
+   "extents_dir": "docs\\box\\step20a-2026-10-26\\extents",
+   "png": "visual_WCB_2_clipped.png",
+   "png_path": "docs\\box\\step20a-2026-10-26\\wcb_split\\visual_WCB_2_clipped.png",
+   "png_md5": "47b3ad661b573362cc4d8629f93d45bc"
+  },
+  "4": {
+   "bench": "WCC",
+   "extents_dir": "docs\\box\\step20a-2026-10-26\\extents",
+   "png": "visual_WCC.png",
+   "png_path": "docs\\box\\step20a-2026-10-26\\extents\\visual_WCC.png",
+   "png_md5": "5c0ff07e7eb20feff0f6d68b7337a8b4"
+  },
+  "5": {
+   "bench": "WCD",
+   "extents_dir": "docs\\box\\step20a-2026-10-26\\extents",
+   "png": "visual_WCD.png",
+   "png_path": "docs\\box\\step20a-2026-10-26\\extents\\visual_WCD.png",
+   "png_md5": "89d7728a7cb0e216f713f413b0c2e594"
+  }
+ }
+}

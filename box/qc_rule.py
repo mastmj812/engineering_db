@@ -53,6 +53,29 @@ HOLD_CLASSES: dict[str, float] = {
 }
 CLASS_GATE = 0.70
 
+# Per-basin card precision (D134 B): a class carded in another basin because it behaved unlike its Delaware analogue is
+# judged on its own cards there; the entry REPLACES the Delaware one in that basin and the same >= CLASS_GATE applies.
+# Midland: Michael's 50 step-20a cards, 2026-10-26 (docs/box/step20a-2026-10-26/cards_sample.csv), 10 per class.
+BASIN_CLASSES: dict[str, dict[str, float]] = {
+    "midland": {
+        "WCA->WCB_1": 0.70,
+        "WCB_1->WCA": 0.50,
+        "WCB_2->WCB_1": 1.00,
+        "WCB_2->WCC": 0.70,
+        "WCC->WCB_2": 0.70,
+    },
+}
+
+
+def ledger(basin: str | None = None) -> tuple[dict[str, float], dict[str, float]]:
+    """(accepted, rejected) class precisions in ``basin``: the Delaware ledger with that basin's carded classes swapped in."""
+    acc, rej = dict(ACCEPTED_CLASSES), dict(REJECTED_CLASSES)
+    for cls, prec in BASIN_CLASSES.get(basin or "", {}).items():
+        acc.pop(cls, None)
+        rej.pop(cls, None)
+        (acc if prec >= CLASS_GATE else rej)[cls] = prec
+    return acc, rej
+
 _BONE_SPRING = ("BS", "AVA")
 _WOLFCAMP = ("WC",)
 
@@ -61,11 +84,12 @@ def _is_bs_to_wc(from_pool: str, to_pool: str) -> bool:
     return from_pool.startswith(_BONE_SPRING) and to_pool.startswith(_WOLFCAMP)
 
 
-def decide(row: pd.Series, verdicts: dict[str, str] | None = None) -> tuple[str, str, bool, str]:
+def decide(row: pd.Series, verdicts: dict[str, str] | None = None, basin: str | None = None) -> tuple[str, str, bool, str]:
     """(box_bench, box_action, box_depth_witness, box_reason) for one scored well.
 
     ``verdicts`` = Michael's per-card AGREE / REJECT by api10; a card verdict
-    outranks the class rule for that well (he judged it individually)."""
+    outranks the class rule for that well (he judged it individually). ``basin`` picks the class ledger (``ledger``)."""
+    accepted, rejected = ledger(basin)
     tag = str(row["formation_blueox"])
     tag_pool = pool(tag)
     witness = bool(row.get("cons_witness", False))
@@ -89,17 +113,17 @@ def decide(row: pd.Series, verdicts: dict[str, str] | None = None) -> tuple[str,
         return tag_pool, "tvd_suspect", False, f"A-prime: planned survey flagged -> {sug}; tag kept, TVD not evidence"
     if _is_bs_to_wc(tag_pool, sug_pool):
         return tag_pool, "tvd_suspect", False, f"Bone Spring -> Wolfcamp flag ({cls}) never applied; TVD not evidence"
-    if cls in REJECTED_CLASSES:
-        return tag_pool, "keep", witness, f"class {cls} rejected (precision {REJECTED_CLASSES[cls]:.2f})"
+    if cls in rejected:
+        return tag_pool, "keep", witness, f"class {cls} rejected (precision {rejected[cls]:.2f})"
     if cls in HOLD_CLASSES:
         return tag_pool, "keep", witness, f"class {cls} on hold (precision {HOLD_CLASSES[cls]:.2f}; class exhausted, card verdicts decide)"
-    if cls not in ACCEPTED_CLASSES:
+    if cls not in accepted:
         return tag_pool, "keep", witness, f"class {cls} not calibrated; tag kept"
     if row.get("sql23_nearest") != sug:
         return tag_pool, "keep", witness, f"class {cls} accepted but sql/23 nearest ({row.get('sql23_nearest')}) does not concur"
     if row.get("cons_gor_vote") == "own":
         return tag_pool, "keep", witness, f"class {cls} accepted, sql/23 concurs, but GOR says it produces like {tag}"
-    return sug_pool, "reassign", witness, f"class {cls} (precision {ACCEPTED_CLASSES[cls]:.2f}) + sql/23 concurs + GOR {row.get('cons_gor_vote', 'none')}"
+    return sug_pool, "reassign", witness, f"class {cls} (precision {accepted[cls]:.2f}) + sql/23 concurs + GOR {row.get('cons_gor_vote', 'none')}"
 
 
 def load_verdicts(path: Any) -> dict[str, str]:
@@ -116,9 +140,9 @@ def load_verdicts(path: Any) -> dict[str, str]:
     return out
 
 
-def apply_rule(df: pd.DataFrame, verdicts: dict[str, str] | None = None) -> pd.DataFrame:
+def apply_rule(df: pd.DataFrame, verdicts: dict[str, str] | None = None, basin: str | None = None) -> pd.DataFrame:
     out = df.copy()
-    res = [decide(r, verdicts) for _, r in out.iterrows()]
+    res = [decide(r, verdicts, basin) for _, r in out.iterrows()]
     out["box_bench"] = [r[0] for r in res]
     out["box_action"] = [r[1] for r in res]
     out["box_depth_witness"] = [r[2] for r in res]
@@ -171,3 +195,20 @@ def write_final_sets(df: pd.DataFrame, out_dir: Any, pools: tuple[str, ...]) -> 
     for pb in pools:
         g = df[df["box_bench"] == pb].sort_values("api10")
         g[[c for c in FINAL_COLS if c in g.columns]].to_csv(out_dir / f"wells_final_{pb}.csv", index=False)
+
+
+def load_owner_benches(path: Any) -> dict[str, str]:
+    """Michael's per-well bench assignments (api10, bench[, note]); BOX-only, outranks the class rule, the card verdicts
+    and D136 (step 20a: wells the detector cannot flag, e.g. warehouse tag OTHER / off-band)."""
+    d = pd.read_csv(path, dtype={"api10": str, "bench": str})
+    return dict(zip(d["api10"].str.strip(), d["bench"].str.strip()))
+
+
+def apply_owner(ruled: pd.DataFrame, owner: dict[str, str]) -> pd.DataFrame:
+    """Set box_bench (pooled label) for the owner-assigned wells, last, over every rule."""
+    out = ruled.copy()
+    hit = out["api10"].isin(owner)
+    out.loc[hit, "box_bench"] = [pool(owner[a]) for a in out.loc[hit, "api10"]]
+    out.loc[hit, "box_action"] = "reassign"
+    out.loc[hit, "box_reason"] = [f"owner assignment: {owner[a]} (tag {t})" for a, t in zip(out.loc[hit, "api10"], out.loc[hit, "formation_blueox"])]
+    return out

@@ -17,9 +17,14 @@
 --     (ref.formation_tag_overrides is likewise a JOINed table). An override is a
 --     human-ratified re-tag (gunbarrel review); it WINS over the crosswalk and
 --     stamps formation_blueox_source = 'ratified_override'.
---   * Mapping LOGIC change (this file) -> DROP + re-create THIS matview only.
---     Nothing heavy depends on it; only curated.wells_enriched (a plain VIEW)
---     joins it, and that rebuilds for free.
+--   * Mapping LOGIC change (this file) -> DROP ... CASCADE + re-create. NOT cheap
+--     any more: live dependents (pg_depend, 2026-10-27) are bench_reference,
+--     codev_context, intel_formation_blueox, intel_pdp_support,
+--     producing_reference, wells_enriched (view) -> formation_blueox_tvd,
+--     reconciled_inventory, erebor_locations, net_new_pdp,
+--     intel_forecast_accuracy(_vintage), dev_scenario (view) ->
+--     box_scout_locations (view). Apply inside a chain-rebuild window via
+--     scripts/apply_formation_tag_overrides (its header carries the tail order).
 --
 -- Inputs all come from curated.wells columns, whose definitions are byte-identical
 -- to what the old inline `bx` LATERAL read from the raw tables:

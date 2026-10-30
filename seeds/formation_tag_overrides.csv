@@ -97,3 +97,343 @@ api10,corrected_code,was,note
 4247538326,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 41 ft off destination band, jury n=5"
 4247538341,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 33 ft off destination band, jury n=3"
 4247538815,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 75 ft off destination band, jury n=3"
+4200345807,WCA_1,WCD,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,755 ft sits in the lease WCA band; Novi Formation WOLFCAMP D follows the WD suffix while Novi grid and Enverus both say WOLFCAMP A; its class WCD->WCA_1 (A) was too small to card; depth wins over the name; ratified by MM; tag screen step 20a"
+4200345873,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4200347042,WCA_1,DEAN,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,659 ft sits in the lease WCA band; Novi Formation and grid say WOLFCAMP A, a coarse value that defers to Enverus, which picks DEAN at the Dean/WCA boundary; its class DEAN->WCA_1 (A) was rejected, the call is well-level; ratified by MM; tag screen step 20a"
+4200347061,WCA_1,LSSH,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 9,659 ft sits in the lease WCA band (1703AH / 1712AH / 2017WA / 1815H, 9,615-9,767 ft); Novi Formation followed the LS suffix (LOWER SPRABERRY SHALE at screen time, revised to DEAN by 2026-10-29), Novi grid DEAN, Enverus WOLFCAMP A; depth wins over the name; was = screen-time tag; ratified by MM; tag screen step 20a"
+4200347063,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4200347490,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4200348014,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4200348157,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4200348538,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4200348547,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4200348572,WCB_1,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_1 (B): agree); ratified by MM; tag screen step 20a"
+4200348574,WCB_1,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_1 (B): WCB_1); ratified by MM; tag screen step 20a"
+4200348579,WCB_1,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_1 (B): agree); ratified by MM; tag screen step 20a"
+4200348741,WCB_1,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_1 (B): agree); ratified by MM; tag screen step 20a"
+4200348758,WCB_1,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_1 (B): WCB_1); ratified by MM; tag screen step 20a"
+4200348760,WCB_1,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_1 (B): WCB_1); ratified by MM; tag screen step 20a"
+4200348794,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4200348832,WCA_1,DEAN,"carded 2026-10-27 (round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4210539827,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4210540800,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4210541204,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4210541354,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4210541381,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4210541471,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4210541602,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4210541869,WCB_1,LSSH,class-accepted LSSH->WCB_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4210541959,WCC,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCC (A): agree); ratified by MM; tag screen step 20a"
+4210542210,WCC,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCC (A): agree); ratified by MM; tag screen step 20a"
+4210542390,WCC,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCC (A): agree); ratified by MM; tag screen step 20a"
+4213542372,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4213543613,WCB_1,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_1 (B): agree); ratified by MM; tag screen step 20a"
+4213543743,WCA_1,DEAN,"carded 2026-10-27 (round 1 card, DEAN->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
+4213543759,WCB_2,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_2 (B): agree); ratified by MM; tag screen step 20a"
+4213543820,WCA_1,DEAN,"carded 2026-10-27 (what-if round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4217334362,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217334473,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217334582,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217334622,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335137,WCD,OTHER,"carded 2026-10-27 (what-if round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4217335187,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335322,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335382,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335431,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335546,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335585,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335586,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335587,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335588,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335603,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335741,WCD,OTHER,"carded 2026-10-27 (what-if round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4217335886,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217335887,WCD,OTHER,"carded 2026-10-27 (what-if round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4217335924,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217336286,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217336292,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217337057,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217337306,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4217337595,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4217337810,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217337818,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4217338815,WCD,OTHER,"carded 2026-10-27 (round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4222738751,DEAN,WCA_1,"carded 2026-10-27 (what-if round 1 card, WCA_1->DEAN (A): agree); ratified by MM; tag screen step 20a"
+4222738931,DEAN,WCA_1,"what-if round 1 card (WCA_1->DEAN (A)): agree 2026-10-27: not flagged on live tags: TVD 7,763 sits 96 ft from the local DEAN band and 134 ft from WCA_1 (ambiguous); its class was rejected, the call is well-level; ratified by MM; tag screen step 20a"
+4222739533,WCD,WCC,"carded 2026-10-27 (round 1 card, WCC->WCD (B): agree); ratified by MM; tag screen step 20a"
+4222740054,WCD,WCC,"carded 2026-10-27 (round 1 card, WCC->WCD (B): agree); ratified by MM; tag screen step 20a"
+4222740101,WCD,WCC,"carded 2026-10-28 (round 2 card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4222740263,DEAN,WCA_1,"carded 2026-10-27 (round 1 card, WCA_1->DEAN (A): agree); ratified by MM; tag screen step 20a"
+4222740270,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4222740326,WCA_1,DEAN,"carded 2026-10-27 (what-if round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4222740384,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4222740523,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4222740835,WCD,OTHER,"carded 2026-10-27 (round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4222741237,WCA_1,DEAN,"carded 2026-10-27 (what-if round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4222741266,WCD,OTHER,"carded 2026-10-27 (what-if round 2 card, OTHER->WCA_1 (B): WCD); ratified by MM; tag screen step 20a"
+4222742138,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4222742666,WCA_1,DEAN,"carded 2026-10-27 (round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4222742820,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223534974,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535108,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535211,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4223535253,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535254,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535255,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535328,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535415,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535594,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4223535702,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535806,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535845,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535900,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535901,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535902,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223535938,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536165,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4223536167,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4223536195,WCC,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCC (A): agree); ratified by MM; tag screen step 20a"
+4223536196,WCB_1,WCC,"Michael in chat 2026-10-27: not carded; depth sits with the local WB wells (6,773-6,809 ft), not the WC wells (7,060-7,172 ft); both vendors say WOLFCAMP C, likely from the permit; depth wins over the name; ratified by MM; tag screen step 20a"
+4223536245,WCA_1,WCB_1,"carded 2026-10-26 (20a card, WCB_1->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4223536314,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536425,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536426,WCB_2,WCB_1,"carded 2026-10-27 (what-if round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4223536427,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536434,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536539,WCB_2,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4223536553,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536568,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536569,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536623,WCB_2,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_2 (B): WCB_2); ratified by MM; tag screen step 20a"
+4223536664,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536683,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4223536726,WCD,WCC,"carded 2026-10-28 (round 3 (full review) card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4231738448,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231738709,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231739039,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231739276,WCD,WCC,"carded 2026-10-28 (round 3 (full review) card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4231739494,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4231739662,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4231739667,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231739955,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231739957,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4231740127,WCD,WCC,"carded 2026-10-28 (round 3 (full review) card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4231740643,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231740812,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231740927,WCD,OTHER,"carded 2026-10-27 (round 1 card, OTHER->WCB_1 (B): WCD); ratified by MM; tag screen step 20a"
+4231741112,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231741177,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
+4231741194,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231741259,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231741261,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231741335,WCD,WCC,"carded 2026-10-28 (round 2 card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4231741451,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4231741645,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231741859,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231742013,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4231742060,WCD,WCC,"carded 2026-10-27 (round 1 card, WCC->WCD (B): agree); ratified by MM; tag screen step 20a"
+4231742161,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4231742287,DEAN,WCA_1,"carded 2026-10-27 (round 1 card, WCA_1->DEAN (A): agree); ratified by MM; tag screen step 20a"
+4231742633,WCA_1,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4231742708,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4231742714,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4231742942,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743125,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743127,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743129,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743168,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743637,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231743709,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4231743816,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231743870,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231743887,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231744338,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4231744649,WCB_2,WCC,"carded 2026-10-28 (round 3 (full review) card, WCC->WCD (B): WCB_2); ratified by MM; tag screen step 20a"
+4231744976,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744978,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744979,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744980,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744983,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744986,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231744987,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4231745960,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231746026,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231746238,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231746372,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231746641,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4231746715,WCB_1,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_1 (B): WCB_1); ratified by MM; tag screen step 20a"
+4232938372,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232939126,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232939544,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232939615,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4232939681,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232939987,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940071,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940203,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940466,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940479,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940480,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940559,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940560,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940567,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940569,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940570,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232940688,WCB_2,WCB_1,"carded 2026-10-27 (what-if round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4232940808,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4232940809,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232940889,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941092,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941128,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941224,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232941225,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232941326,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941662,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941710,WCB_2,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4232941881,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941930,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232941939,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232942183,WCA_1,WCB_1,"carded 2026-10-26 (20a card, WCB_1->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4232942436,WCB_2,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_2 (B): agree); ratified by MM; tag screen step 20a"
+4232942533,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232942576,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232942893,WCA_1,DEAN,"carded 2026-10-27 (what-if round 1 card, DEAN->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4232942896,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943018,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943112,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943120,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232943269,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4232943271,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4232943289,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232943290,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232943295,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232943352,WCB_2,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_2 (B): agree); ratified by MM; tag screen step 20a"
+4232943591,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943630,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943755,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943778,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232943946,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
+4232943959,WCA_1,LSSH,"carded 2026-10-27 (round 1 card, LSSH->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
+4232943965,WCD,WCC,"carded 2026-10-28 (round 2 card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4232943966,WCD,WCC,"carded 2026-10-27 (round 1 card, WCC->WCD (B): agree); ratified by MM; tag screen step 20a"
+4232944060,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232944305,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232944698,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232945230,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232945298,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232945436,WCA_1,LSSH,class-accepted LSSH->WCA_1 (A) 5/5 cards 2026-10-28; convention (a); tag screen step 20a
+4232945905,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232945947,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946128,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232946131,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232946135,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232946158,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946164,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946234,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946259,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946261,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946532,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4232946837,WCD,WCC,"carded 2026-10-28 (round 2 card, WCC->WCD (B): WCD); ratified by MM; tag screen step 20a"
+4232946941,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232946987,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232947003,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4232947203,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947365,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947616,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947828,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947835,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947840,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4232947926,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238337374,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238338269,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338271,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338273,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338274,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338290,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338295,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238338556,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339195,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339429,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339452,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4238339495,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339516,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4238339614,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339615,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238339651,WCB_2,WCC,"carded 2026-10-27 (round 1 card, WCC->WCB_2 (B): agree); ratified by MM; tag screen step 20a"
+4238339765,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4238339905,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4238339928,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4238339992,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (B): agree); ratified by MM; tag screen step 20a"
+4238339999,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4238340017,WCB_1,LSSH,"Michael in anduin (well + neighbours inspected) 2026-10-29: TVD 7,020 ft sits with the lease NH/SH wells (6,996-7,186 ft) below the AN/AS Wolfcamp A wells (6,800-6,984 ft); SH here is not Spraberry Shale; Novi read it as LOWER SPRABERRY SHALE at screen time and revised to WOLFCAMP B by 2026-10-29 (live already WCB_1, the row locks it); replaces its class-accepted LSSH->WCA_1 (A) row; was = screen-time tag; ratified by MM; tag screen step 20a"
+4238340049,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238340056,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238340272,WCA_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4238340273,WCB_1,LSSH,"carded 2026-10-27 (what-if round 1 card, LSSH->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4238340423,WCB_2,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4238340429,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238340534,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238340754,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238340801,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238340805,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238340847,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4238340972,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238340981,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238341048,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238341163,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238341165,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4238341436,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238341455,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238341571,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238341575,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238341895,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238342028,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238342143,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238342144,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4238342165,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4241332687,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4244532333,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246137960,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246138768,WCD,OTHER,"carded 2026-10-27 (what-if round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"
+4246138792,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246139179,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139182,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139341,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139472,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246139476,WCD,OTHER,class-accepted OTHER->WCD (B) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139525,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139581,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139754,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139770,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246139897,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246140090,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140122,WCB_1,WCC,class-accepted WCC->WCB_1 (B) 8/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246140137,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246140159,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4246140219,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140248,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140253,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140268,WCB_2,WCB_1,"what-if round 1 card (WCB_1->WCB_2 (A)): agree 2026-10-27: not flagged on live tags: TVD 9,813 sits 4 ft from the local WCB_2 band and 63 ft from WCB_1 (ambiguous), so no class carries the call; ratified by MM; tag screen step 20a"
+4246140559,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140584,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246140585,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246140658,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4246140737,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246140762,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4246141076,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246141132,WCB_2,WCB_1,class-accepted WCB_1->WCB_2 (A) 7/10 cards 2026-10-28; convention (a); tag screen step 20a
+4246141531,WCA_1,WCB_1,"carded 2026-10-26 (20a card, WCB_1->WCA_1 (A): agree); ratified by MM; tag screen step 20a"
+4246141548,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246141876,WCB_2,WCB_1,"carded 2026-10-27 (round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4246142091,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246142118,WCB_2,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_1 (B): WCB_2); ratified by MM; tag screen step 20a"
+4246142121,WCB_2,WCC,"carded 2026-10-28 (round 2 card, WCC->WCB_2 (B): WCB_2); ratified by MM; tag screen step 20a"
+4246142260,WCB_2,WCC,"carded 2026-10-26 (20a card, WCC->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4246142379,WCB_2,WCB_1,"carded 2026-10-27 (what-if round 1 card, WCB_1->WCB_2 (A): agree); ratified by MM; tag screen step 20a"
+4246142534,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246142682,DEAN,WCA_1,"carded 2026-10-27 (what-if round 1 card, WCA_1->DEAN (A): agree); ratified by MM; tag screen step 20a"
+4246142683,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246142829,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246143046,WCB_1,WCA_1,"carded 2026-10-26 (20a card, WCA_1->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4246143065,WCB_1,WCB_2,"carded 2026-10-26 (20a card, WCB_2->WCB_1 (A): agree); ratified by MM; tag screen step 20a"
+4246143074,WCB_1,WCB_2,class-accepted WCB_2->WCB_1 (A) 6/6 cards 2026-10-28; convention (a); tag screen step 20a
+4246143527,WCD,OTHER,"carded 2026-10-27 (what-if round 1 card, OTHER->WCD (B): agree); ratified by MM; tag screen step 20a"

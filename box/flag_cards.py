@@ -57,6 +57,8 @@ _BENCH_COLORS = {
     "BS1_S": "#a16207", "BS1_C": "#ca8a04", "BS2_S": "#16a34a", "BS2_C": "#4ade80", "BS3_S": "#0891b2", "BS3_C": "#67e8f9",
     "WCXY": "#7c3aed", "WCA_1": "#2563eb", "WCA_2": "#1e3a8a", "WCB_1": "#dc2626", "WCB_2": "#7f1d1d", "WCC": "#f97316",
     "WCD": "#fb923c", "AVA_0": "#be185d", "AVA_1": "#db2777", "AVA_2": "#f472b6", "OTHER": "#6b7280", "WDFD": "#111827",
+    # Midland Spraberry / Dean (step 20a tag screen; grey before)
+    "US": "#78350f", "MS": "#eab308", "JM": "#84cc16", "LSSH": "#14b8a6", "DEAN": "#a855f7",
 }
 
 

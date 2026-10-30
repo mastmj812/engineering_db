@@ -46,6 +46,7 @@ import pandas as pd
 from box import basin as bsn
 from box import bench_qc as bq
 from box import qc_rule as qr
+from box import wcb_split as ws
 from box.flag_cards import NEVER_INTO, pool
 
 FAMILIES: dict[str, tuple[str, ...]] = {
@@ -56,7 +57,11 @@ FAMILIES: dict[str, tuple[str, ...]] = {
     "BS2C": ("BS2_C",),  # step-14 thin-bench candidates
     "AVA": ("AVA_0", "AVA_1", "AVA_2"),
     "WCD": ("WCD",),
+    # Phase 3 step 20a: Midland Wolfcamp, one bench each (D128: no pooling). WCA_1 is the class rule's pooled label WCA
+    # (flag_cards.pool); the Midland has no WCA_2 / WCXY tags, so the WCA pool is exactly its WCA_1 wells.
+    "MID_WC": ("WCA_1", "WCB_1", "WCB_2", "WCC", "WCD"),
 }
+FAMILY_BASIN: dict[str, str] = {"MID_WC": bsn.MIDLAND}  # every other family is Delaware
 BLOCK_FT = 5 * bq.FT_PER_MI  # location FE grain (step 5c used 5-mi blocks where a bench had no TC areas)
 COLOC_FT = 1.5 * bq.FT_PER_MI  # the detector's neighbourhood radius
 N_BOOT = 400
@@ -101,16 +106,18 @@ def family_membership(
 
     ``ruled`` = box.qc_rule.apply_rule output on the live scored frame. ``family_bench`` = the bench the member
     counts for (its box_bench, or its live tag for old_churn_kept)."""
-    fam = set(family)
-    d = ruled[ruled["formation_blueox"].isin(fam) | ruled["box_bench"].isin(fam)].copy()
+    # the rule's box_bench is a POOLED label (WCA_1 -> WCA); label = pooled label -> the family bench it counts for.
+    # Delaware families hold no WCA-pool bench, so for them label is the identity and nothing changes.
+    label = {pool(b): b for b in family}
+    d = ruled[ruled["formation_blueox"].map(pool).isin(label) | ruled["box_bench"].isin(label)].copy()
     roles, benches = [], []
     for a, tag, bb in zip(d["api10"], d["formation_blueox"], d["box_bench"]):
         if a in excluded_ids:
             roles.append("excluded"); benches.append(None)
         elif a in frozen:
             roles.append("frozen_elsewhere"); benches.append(None)
-        elif bb in fam:
-            roles.append("member"); benches.append(bb)
+        elif bb in label:
+            roles.append("member"); benches.append(label[bb])
         elif a in seen_ids:
             roles.append("old_churn_kept"); benches.append(tag)
         else:
@@ -121,7 +128,25 @@ def family_membership(
     return d.sort_values("api10").reset_index(drop=True)
 
 
-def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...]) -> pd.DataFrame:
+def class_standing(c: str, sug: str, basin: str | None = None) -> str:
+    """How the class rule of record treats a pooled swap class (the basin's card ledger, qc_rule.ledger); same order as
+    qc_rule.decide: a flag into WCXY is never applied (D20) before any class test."""
+    accepted, rejected = qr.ledger(basin)
+    if sug in NEVER_INTO:
+        return "into WCXY band (never applied, D20; witness kept)"
+    if c in accepted:
+        return f"accepted ({accepted[c]:.2f})"
+    if c in rejected:
+        return f"rejected ({rejected[c]:.2f})"
+    if c in qr.HOLD_CLASSES:
+        return f"hold ({qr.HOLD_CLASSES[c]:.2f})"
+    a, b = c.split("->")
+    if qr._is_bs_to_wc(a, b):
+        return "Bone Spring -> Wolfcamp (never applied)"
+    return "uncalibrated (tag kept)"
+
+
+def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...], basin: str | None = None) -> pd.DataFrame:
     """Consensus flags with the tagged or suggested bench in the family, by pooled swap class and rule disposition."""
     fam = set(family)
     f = ruled[(ruled["cons_status"] == "flag") & ruled["cons_suggest"].notna()].copy()
@@ -130,23 +155,7 @@ def flag_ledger(ruled: pd.DataFrame, family: tuple[str, ...]) -> pd.DataFrame:
         return pd.DataFrame(columns=["swap_class", "direction", "standing", "box_action", "n", "n_cohort"])
     f["swap_class"] = f["formation_blueox"].map(pool) + "->" + f["cons_suggest"].map(pool)
     f["direction"] = np.where(f["formation_blueox"].isin(fam), "out of family", "into family")
-
-    def standing(c: str, sug: str) -> str:
-        # same order as qc_rule.decide: a flag into WCXY is never applied (D20) before any class test
-        if sug in NEVER_INTO:
-            return "into WCXY band (never applied, D20; witness kept)"
-        if c in qr.ACCEPTED_CLASSES:
-            return f"accepted ({qr.ACCEPTED_CLASSES[c]:.2f})"
-        if c in qr.REJECTED_CLASSES:
-            return f"rejected ({qr.REJECTED_CLASSES[c]:.2f})"
-        if c in qr.HOLD_CLASSES:
-            return f"hold ({qr.HOLD_CLASSES[c]:.2f})"
-        a, b = c.split("->")
-        if qr._is_bs_to_wc(a, b):
-            return "Bone Spring -> Wolfcamp (never applied)"
-        return "uncalibrated (tag kept)"
-
-    f["standing"] = [standing(c, g) for c, g in zip(f["swap_class"], f["cons_suggest"])]
+    f["standing"] = [class_standing(c, g, basin) for c, g in zip(f["swap_class"], f["cons_suggest"])]
     g = (f.groupby(["swap_class", "direction", "standing", "box_action"])
          .agg(n=("api10", "size"), n_cohort=("cohort", "sum")).reset_index())
     return g.sort_values(["direction", "n"], ascending=[False, False]).reset_index(drop=True)
@@ -185,12 +194,13 @@ def fe_contrast(y: np.ndarray, is_b: np.ndarray, block: np.ndarray, year: np.nda
     m = np.array([b in keep_blocks for b in block])
     if m.sum() < 10 or is_b[m].sum() < 5 or (1 - is_b[m]).sum() < 5:
         return math.nan
-    X = pd.get_dummies(pd.DataFrame({"blk": block[m], "yr": year[m].astype(str)}), drop_first=False, dtype=float)
-    # drop one year dummy to avoid collinearity with the full block set
-    yr_cols = [c for c in X.columns if c.startswith("yr_")]
-    X = X.drop(columns=yr_cols[:1])
+    # block FE absorbed by within-block demeaning (Frisch-Waugh: the same is_b coefficient as one dummy per block, which
+    # went dense-n x blocks per bootstrap draw and took hours on the Midland WCA_1 / WCB_1 pair; equal to 1e-14, 2026-10-26)
+    X = pd.get_dummies(pd.Series(year[m].astype(str)), dtype=float).iloc[:, 1:]  # one year dummy dropped (collinear with the blocks)
     X["is_b"] = is_b[m].astype(float)
-    beta, *_ = np.linalg.lstsq(X.values, y[m], rcond=None)
+    X["_y"] = y[m]
+    d = X - X.groupby(block[m]).transform("mean")
+    beta, *_ = np.linalg.lstsq(d.drop(columns="_y").values, d["_y"].values, rcond=None)
     return float(beta[-1])
 
 
@@ -225,6 +235,10 @@ def pooling_evidence(members: pd.DataFrame, a: str, b: str, xy: np.ndarray) -> d
     with the bench_qc columns; ``xy`` = their projected midpoints, ft (same row order)."""
     from scipy.spatial import cKDTree
 
+    # only the two benches compared: a family of 3+ benches (AVA, the Midland Wolfcamp) must not count its other benches
+    # as `a` (fixed 2026-10-26, step 20a; two-bench families are unchanged)
+    pair = np.isin(members["family_bench"].values, [a, b])
+    members, xy = members[pair].reset_index(drop=True), xy[pair]
     is_b = (members["family_bench"].values == b).astype(int)
     coh = members["cohort"].values.astype(bool)
     year = np.array([fp.year for fp in members["first_production_date"]])
@@ -326,11 +340,11 @@ def block_ratio_map(ctx: pd.DataFrame, members: pd.DataFrame, xy: np.ndarray, a:
 def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: dict[str, Any], imgs: dict[str, str]) -> Path:
     f = bq._fmt
     p: list[str] = [
-        f"<!doctype html><html><head><meta charset=\"utf-8\"><title>BOX 15a — {family_name} bench QC</title><style>{bq._CSS}</style></head><body>",
-        f"<h1>BOX step 15a — {family_name} family ({' + '.join(family)}): bench QC + pooling evidence</h1>",
-        (f"<div class=meta>Grain: Delaware producing horizontals (one row per api10), curated.wells_enriched, TVD-corrected formation_blueox; "
+        f"<!doctype html><html><head><meta charset=\"utf-8\"><title>BOX {s.get('step', '15a')} — {family_name} bench QC</title><style>{bq._CSS}</style></head><body>",
+        f"<h1>BOX step {s.get('step', '15a')} — {family_name} family ({' + '.join(family)}): bench QC + {s.get('pool_word', 'pooling evidence')}</h1>",
+        (f"<div class=meta>Grain: {s.get('basin_label', 'Delaware')} producing horizontals (one row per api10), curated.wells_enriched, TVD-corrected formation_blueox; "
         f"warehouse as-of {_esc(s['asof'])}; built {_esc(s['built_at'])} at {_esc(s['git_sha'])}. Read-only; nothing written to the warehouse. "
-        f"Frozen pools: {_esc(s['pool_dir'])}. Plan: docs/box_type_curves_plan.md §5 step 15 (15a pulled forward by Michael 2026-10-16, in parallel with step 9).</div>"),
+        f"Frozen pools: {_esc(s['pool_dir'])}. Plan: {s.get('plan_note', 'docs/box_type_curves_plan.md §5 step 15 (15a pulled forward by Michael 2026-10-16, in parallel with step 9).')}</div>"),
         "<div class=toc>" + "".join(f"<a href=qc_{b}.html>{b} QC page</a>" for b in family)
         + "<a href=#set>well set</a><a href=#flags>flags</a><a href=#sens>sensitivity</a><a href=#pool>pooling</a><a href=#asks>gate asks</a></div>",
     ]
@@ -389,6 +403,8 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
                            [[lab, f(pe[k]["ratio"], 3), f"{f(pe[k]['ci90'][0], 3)} … {f(pe[k]['ci90'][1], 3)}", f(pe[k]["n_blocks_both"]), f(pe[k]["n_a"]), f(pe[k]["n_b"])]
                             for k, lab in (("oil12_kft", "12-mo oil per 1,000 ft"), ("gor12", "12-mo GOR"), ("cum24_over_cum12", "cum-24 / cum-12 oil (shape)"))]))
         p.append(f"<img src=\"{ratio_img}\" style='max-width:700px'>")
+    # --- extra sections supplied by the caller (step 20a: Delaware-analogue comparison, allocation screen)
+    p.extend(s.get("extra_sections", []))
     # --- asks
     p.append("<h2 id=asks>5. Gate asks</h2><ol>" + "".join(f"<li>{x}</li>" for x in s["asks"]) + "</ol>")
     p.append("</body></html>")
@@ -402,10 +418,12 @@ def render_family_page(out: Path, family_name: str, family: tuple[str, ...], s: 
 
 
 def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path | list[Path], verdicts: dict[str, str],
-          excluded_ids: set[str], meta: dict[str, Any], basin: str = bq.BASIN) -> dict[str, Any]:
+          excluded_ids: set[str], meta: dict[str, Any], basin: str = bq.BASIN, owner: dict[str, str] | None = None) -> dict[str, Any]:
     """Everything after the pull + consensus scoring (pure apart from file writes). `basin` (step 19): the bench pages' state-line
     check and map lines follow it (the Midland has no state line)."""
     family = FAMILIES[family_name]
+    meta = dict(meta)
+    extra_sections = meta.pop("extra_sections", [])  # rendered HTML; kept out of summary.json
     out_dir.mkdir(parents=True, exist_ok=True)
     scored = bq.assign_roles(scored)
     # per-bench step-1 pages, unchanged tooling
@@ -415,11 +433,15 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
         bq.render_bench_page(scored, bs, out_dir / f"qc_{bench}.html")
         scored.loc[scored["formation_blueox"] == bench, bq.WELL_COLS].sort_values("api10").to_csv(out_dir / f"wells_{bench}.csv", index=False)
         bench_summaries[bench] = bs
-    ruled = qr.apply_rule(scored, verdicts)
+    ruled = qr.apply_rule(scored, verdicts, basin)
+    if basin == bsn.MIDLAND and "WCB_2" in family:  # D136: one WCB landing north of the split line
+        ruled = ws.apply_d136(ruled)
+    if owner:  # Michael's per-well assignments outrank every rule
+        ruled = qr.apply_owner(ruled, owner)
     frozen = frozen_pools(pool_dir)
-    udir = next(d for d in ([pool_dir] if isinstance(pool_dir, Path) else pool_dir) if (d / "universe.csv").exists())
-    universe = pd.read_csv(udir / "universe.csv", dtype={"api10": str})
-    seen_ids = set(universe["api10"])
+    # the judged universe (D84); a basin with no frozen pools yet (Midland, step 20) has judged nothing
+    udir = next((d for d in ([pool_dir] if isinstance(pool_dir, Path) else pool_dir) if (d / "universe.csv").exists()), None)
+    seen_ids = set() if udir is None else set(pd.read_csv(udir / "universe.csv", dtype={"api10": str})["api10"])
     roles = family_membership(ruled, family, frozen, seen_ids, excluded_ids)
     roles["frozen_tag"] = roles["api10"].map(frozen_tags(pool_dir))
     final = roles[roles["family_role"].isin(["member", "old_churn_kept"])].copy()
@@ -470,7 +492,7 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
         poolings.append((pe, ps, ratio_png))
         pool_json.append({"pooling": pe, "pair_sep": ps})
     imgs = {"map": family_map(ctx, fam_members, family, bsn.get(basin).state_line_lat)}
-    flags = flag_ledger(ruled, family)
+    flags = flag_ledger(ruled, family, basin)
     unc = flags[flags["standing"].str.startswith("uncalibrated")]
     s: dict[str, Any] = {
         **meta, "family": family_name, "benches": list(family), "pool_dir": str(pool_dir) if isinstance(pool_dir, Path) else [str(d) for d in pool_dir], "set": set_s,
@@ -484,6 +506,7 @@ def build(scored: pd.DataFrame, family_name: str, out_dir: Path, pool_dir: Path 
                             for k, v in bench_summaries.items()},
         "asks": meta.get("asks", []),
     }
-    render_family_page(out_dir / "index.html", family_name, family, {**s, "poolings": poolings}, imgs)
+    page_opts = {k: meta[k] for k in ("step", "pool_word", "basin_label", "plan_note") if k in meta} | {"extra_sections": extra_sections}
+    render_family_page(out_dir / "index.html", family_name, family, {**s, **page_opts, "poolings": poolings}, imgs)
     (out_dir / "summary.json").write_text(json.dumps(s, indent=1, default=str), encoding="utf-8")
     return s

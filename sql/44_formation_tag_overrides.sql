@@ -6,8 +6,18 @@
 -- row is one well whose vendor-derived tag was adjudicated wrong by gunbarrel
 -- review and re-tagged by Michael. Rows are decisions of record, never
 -- algorithm output — the gunbarrel-consensus detector (2026-09 WCB tag audit)
--- only PROPOSES flags; a row lands here only after MM ratifies it well-by-well
--- (supervised rounds, no auto-flips, no cascade).
+-- and the BOX tag screen only PROPOSE flags; nothing lands here without MM's
+-- ratification (supervised rounds, no auto-flips, no cascade). Two kinds of
+-- ratification, each named in `note`:
+--   * well-by-well — MM judged this well's own card / gunbarrel
+--     ("consensus v2 flag ratified by MM ...", "carded <date> ...", or a direct
+--     call quoted with its date);
+--   * class-accepted — AMENDED 2026-10-28 (BOX step 20a, convention (a), MM):
+--     MM judged a sample of a flagged class (same tag -> same destination, same
+--     flag rule) and accepted the class at the 7/10 gate; the class's UNCARDED
+--     wells land with "class-accepted <class> k/n cards <date>". A well MM
+--     rejected or held on its own card is never moved by its class, and a card
+--     MM agreed with lands even when its class was rejected.
 --
 -- Batch 1 (2026-09-16/17): 47 rows from the Delaware WCB audit — 46 ratified
 -- consensus-v2 flags (calibration: 19/20 v1 flags confirmed; detector rules:
@@ -15,6 +25,11 @@
 -- nearest-member complex distance, 2x own-band margin) + 1 gold label (Kesey
 -- Unit 10-7E 8H — MM drilled it, WCB_2 target). Rejected and held flags are
 -- deliberately NOT here (Merciless 3002547676 held: destination disputed).
+--
+-- Batch 3 (2026-10-28, calls added 2026-10-29): 340 Midland Wolfcamp rows from the BOX step-20a tag
+-- screen (docs/box/step20a-2026-10-26/FINDINGS.md §8; built by
+-- scripts/box_tag_seed, every note ends "tag screen step 20a"): 239
+-- class-accepted, 94 carded, 7 direct / what-if / inspection calls.
 --
 -- Consumed by curated.formation_blueox (sql/16): an override wins over the
 -- crosswalk result, and formation_blueox_source becomes 'ratified_override'.
@@ -54,4 +69,4 @@ TRUNCATE ref.formation_tag_overrides;
 
 
 COMMENT ON TABLE ref.formation_tag_overrides IS
-'Human-ratified per-well formation_blueox corrections (api10-keyed), seeded from seeds/formation_tag_overrides.csv. Overrides win over the crosswalk in curated.formation_blueox (source becomes ratified_override). Rows are decisions of record from gunbarrel review (2026-09 WCB consensus audit, batch 1 = 47 wells) — the consensus detector proposes, a human ratifies, nothing lands here automatically. Edit loop in sql/44 header.';
+'Human-ratified per-well formation_blueox corrections (api10-keyed), seeded from seeds/formation_tag_overrides.csv. Overrides win over the crosswalk in curated.formation_blueox (source becomes ratified_override). Rows are decisions of record: the 2026-09 Delaware WCB consensus audit (98 wells, ratified well-by-well) and the 2026-10-28 BOX step-20a Midland Wolfcamp tag screen (340 wells: 94 carded well-by-well, 7 direct calls, 239 class-accepted = uncarded wells of a class MM accepted on a 7/10 card sample, note "class-accepted <class> k/n cards <date>"). Detectors propose, MM ratifies; nothing lands here automatically. Edit loop in sql/44 header.';

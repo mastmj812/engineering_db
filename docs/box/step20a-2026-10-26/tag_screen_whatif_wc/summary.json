@@ -1,0 +1,163 @@
+{
+ "built_at": "2026-10-27T15:15:08-05:00",
+ "git_sha": "6f3a6a7+dirty",
+ "basin": "midland",
+ "family": "MID_WC",
+ "round": 2,
+ "whatif": {
+  "trigger": [
+   "WOLFCAMP C"
+  ],
+  "retagged": 258,
+  "kept_sql23_corrected": 0,
+  "by_move": {
+   "WCC->WCB_2": 173,
+   "WCC->WCB_1": 41,
+   "WCC->WCD": 27,
+   "WCC->WCA_1": 9,
+   "WCC->OTHER": 5,
+   "WCC->MS": 3
+  }
+ },
+ "asof": "2026-09-01",
+ "n_producers": 28859,
+ "n_flagged": 1374,
+ "by_rule": {
+  "A": 861,
+  "B": 513
+ },
+ "n_conflict_agree": 341,
+ "classes": {
+  "WCA_1->WCB_1 (A)": {
+   "n": 256,
+   "n_cohort": 165,
+   "prior_judged": 10,
+   "prior_agree": 6,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "WCB_2->WCB_1 (A)": {
+   "n": 103,
+   "n_cohort": 69,
+   "prior_judged": 5,
+   "prior_agree": 5,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCB_1->WCB_2 (A)": {
+   "n": 94,
+   "n_cohort": 55,
+   "prior_judged": 10,
+   "prior_agree": 8,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCB_1->WCA_1 (A)": {
+   "n": 63,
+   "n_cohort": 46,
+   "prior_judged": 10,
+   "prior_agree": 4,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "DEAN->WCA_1 (B)": {
+   "n": 39,
+   "n_cohort": 23,
+   "prior_judged": 5,
+   "prior_agree": 1,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "DEAN->WCA_1 (A)": {
+   "n": 34,
+   "n_cohort": 20,
+   "prior_judged": 10,
+   "prior_agree": 6,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "WCA_1->DEAN (A)": {
+   "n": 24,
+   "n_cohort": 18,
+   "prior_judged": 10,
+   "prior_agree": 5,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "OTHER->WCA_1 (B)": {
+   "n": 17,
+   "n_cohort": 16,
+   "prior_judged": 2,
+   "prior_agree": 0,
+   "state_before": "parked",
+   "new_cards": 0,
+   "parked": "parked 2026-10-27 (Michael): TVD-defect bucket, not a naming class (median margin 6,225 ft; 8 of 9 verdicts TVD holds); OTHER is outside every cohort"
+  },
+  "LSSH->WCA_1 (A)": {
+   "n": 18,
+   "n_cohort": 13,
+   "prior_judged": 5,
+   "prior_agree": 5,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCC->WCB_2 (A)": {
+   "n": 18,
+   "n_cohort": 12,
+   "prior_judged": 7,
+   "prior_agree": 3,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "LSSH->WCA_1 (B)": {
+   "n": 15,
+   "n_cohort": 12,
+   "prior_judged": 10,
+   "prior_agree": 4,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "LSSH->WCB_1 (A)": {
+   "n": 11,
+   "n_cohort": 10,
+   "prior_judged": 5,
+   "prior_agree": 5,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "OTHER->WCD (B)": {
+   "n": 48,
+   "n_cohort": 7,
+   "prior_judged": 10,
+   "prior_agree": 7,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCB_2->WCC (A)": {
+   "n": 11,
+   "n_cohort": 7,
+   "prior_judged": 10,
+   "prior_agree": 7,
+   "state_before": "accept",
+   "new_cards": 0
+  },
+  "WCD->WCC (B)": {
+   "n": 11,
+   "n_cohort": 6,
+   "prior_judged": 5,
+   "prior_agree": 0,
+   "state_before": "reject",
+   "new_cards": 0
+  },
+  "OTHER->WCB_1 (B)": {
+   "n": 9,
+   "n_cohort": 5,
+   "prior_judged": 5,
+   "prior_agree": 0,
+   "state_before": "reject",
+   "new_cards": 0
+  }
+ },
+ "n_new_cards": 0,
+ "seconds": 19.2
+}

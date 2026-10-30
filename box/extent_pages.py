@@ -205,7 +205,7 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
     front_txt = "; ".join(f"<b>{s}</b>: {v['ok']} performing / {v['rolled']} rolled / {v['no12']} too new step-outs within {bp.stepout_reach_mi:g} mi (performing median {v['perf_median']:.2f}× interior)" for s, v in fr.items()) or "none"
     parts = [
         f"<!doctype html><html><head><meta charset=utf-8><title>BOX step 3 — extent {pool}</title><style>{_CSS}</style></head><body>",
-        f"<h1>BOX step 3 — extent: Delaware {pool} (v{ctx['version']}, generated)</h1>",
+        f"<h1>BOX step {ctx.get('step', '3')} — extent: {ctx.get('basin_label', 'Delaware')} {pool} (v{ctx['version']}, generated)</h1>",
         (f"<div class=meta>Grain: one lateral per api10; gate-1 final set <code>wells_final_{pool}.csv</code>. Evidence = first prod ≥ 2016 (n = {st['n_evidence']:,}); pre-2016 n = {st['n_pre2016']:,} "
         f"(negative evidence only). Extent = drilled core (step-2 outline eroded by r = ½ mi back onto the laterals, D21) + per-segment buffer: k = {bp.k:g}, cap = {bp.cap_ft:,.0f} ft, "
         f"floor {bp.floor_ft:,.0f} / {1.5 * bp.floor_ft:,.0f} / {2 * bp.floor_ft:,.0f} ft (pinned rolled / unknown / strong), perf reference = {bp.perf_ref} interior median "
@@ -223,7 +223,9 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         f"({st['bridged_sqmi']:,.0f} sq mi bridged or filled; {st['bridge_edge_mi']:,.0f} mi of edge placed by a bridge). "
         f"Updip depth limit: {('2BS top ' + format(st['updip_limit'][1], ',.0f') + ' ft') if st['updip_limit'] else 'none'}. "
         f"Edge generalized ({bp.gen_tol_mi:g}-mi simplification, bulges where a developed lateral would fall out, {bp.gen_round_mi:g}-mi rounding): raw envelope {st['envelope_raw_sqmi']:,.0f} sq mi. "
-        f">= 2016 laterals outside the extent: {st['developed_outside']} (all step-out tests: {st['n_isolated_tests']}, of which {st['n_tests_within_reach']} are 1-2-well tests within {bp.bridge_mi:g} mi; other {st['developed_outside_not_isolated']}).</div>"),
+        f">= 2016 laterals outside the extent: {st['developed_outside']} (all step-out tests: {st['n_isolated_tests']}, of which {st['n_tests_within_reach']} are 1-2-well tests within {bp.bridge_mi:g} mi; other {st['developed_outside_not_isolated']}).</div>"
+        + (f"<div class='flag'><b>D136 (Michael 2026-10-26):</b> clipped at the WCB split line (one WCB landing north of it): envelope {st['d136_unclipped_sqmi']:,.0f} sq mi "
+           f"before the clip, {st['extent_sqmi']:,.0f} after.</div>" if "d136_unclipped_sqmi" in st else "")),
         "<h2 id=themap>Map</h2><div class=lg>" + "".join(f"<span style='background:{c}'></span>{r}" for r, c in pkg.RULE_COLOURS.items() if r in set(b['edges'].rule)) + "</div>",
         "<div id=map></div><div class=meta>Edge colour = the clause that set the buffer; click an edge for buffer, gap, performance and the geology flag. Magenta = step-out within the bridging width (developed, in), black = isolated test (out). Violet dashed = updip of the depth limit. Toggle the drilled core and the step-2 measuring outline top-right.</div>",
         f"<details><summary>static overview (the legend PNG shipped to geology)</summary><img src='geology/BOX_{pool}_legend.png'></details>",
@@ -243,9 +245,10 @@ def pool_page(pool: str, b: dict[str, Any], ctx: dict[str, Any]) -> str:
         "<b>D27 (2026-10-09):</b> every other void inside the development envelope is filled too; geology cuts one only for a structural or reservoir reason. "
         "Backtest note: holes open at T were later infilled with wells that performed like the interior.</div>"
         + _table(holes, {"area_sqmi": ",.1f", "sopa_share": ".0%", "legacy_cover": ".0%", "lon": ".4f", "lat": ".4f"}, max_rows=40),
-        "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
-        "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "
-        "Columns compare the generated extent with the drilled core and the step-2 measuring outline. WCXY PUDs are listed apart (D20: WCXY is WCA evidence one-way; PUD membership is a step-7 call).</div>"
+        (ctx.get("pud_section") or (
+            "<h2 id=puds>D1 PUD universe inside (read-only count)</h2>"
+            "<div class=meta>Novi PUD category sticks (no RES/UPSIDE), mapped formation_blueox; inside = ≥ 50 % of the stick length (co-extent overlap, rule 9). D1 universe = remaining_pud ∪ conflict ∪ not-yet-reconciled. "
+            "Columns compare the generated extent with the drilled core and the step-2 measuring outline. WCXY PUDs are listed apart (D20: WCXY is WCA evidence one-way; PUD membership is a step-7 call).</div>"))
         + (_table(puds, {}) if len(puds) else "<div class=meta>not pulled</div>"),
         _MAP_JS.replace("__DATA__", data),
         "</body></html>",
@@ -292,7 +295,7 @@ def diff_page(pool: str, version: int, d: dict[str, Any], gen_ft: Any, edi_ft: A
         "<div id=dmap style='height:700px;border:1px solid #d1d5db;margin:8px 0'></div>",
         "<h2>By side</h2>" + (_table(by_side, {c: ",.2f" for c in by_side.columns if c != "side"}) if len(pieces) else "<div class=meta>no change</div>"),
         "<h2>Pieces</h2>" + (_table(pieces.sort_values("area_sqmi", ascending=False), {"area_sqmi": ",.2f"}, max_rows=200) if len(pieces) else "<div class=meta>no change</div>"),
-        ("<h2>D1 PUD universe: generated vs edited (read-only)</h2>" + _table(puds, {}) if puds is not None and len(puds) else ""),
+        ("<h2>Undrilled universe (D1 PUD in the Delaware; D117 PUD + RES elsewhere): generated vs edited (read-only)</h2>" + _table(puds, {}) if puds is not None and len(puds) else ""),
         _DIFF_JS.replace("__DATA__", json.dumps(data, separators=(",", ":"))),
         "</body></html>",
     ])

@@ -127,3 +127,18 @@ def test_score_consensus_end_to_end_flags_mis_tag():
     assert d["cons_status"].iloc[-1] == "flag"
     assert d["cons_suggest"].iloc[-1] == "WCA_2"
     assert d["cons_status"].iloc[0] == "agree"
+
+
+def test_score_consensus_shallow_tvd_is_not_a_witness():
+    # v2.2: two TVD-defect wells (841 / 845 ft) used to blow the WCB_1 band's IQR past the cap and drop it (Mayer 4512WC)
+    base = _frame(9, 0, 50, 50)
+    base["planned"] = False
+    base["formation_blueox"] = ["WCB_1"] * 8 + ["WCC"]
+    base["tvd_ft"] = [6_773, 6_794, 6_804, 6_805, 6_809, 6_674, 841, 845, 6_812]
+    base["mid_lon"] = -101.0
+    base["mid_lat"] = 31.2
+    d = q.score_consensus(q.prepare(base))
+    assert not d["cons_witness"].iloc[6] and not d["cons_witness"].iloc[7]
+    assert d["cons_status"].iloc[6] != "no_position"  # still scored as a subject
+    assert d["cons_status"].iloc[-1] == "flag" and d["cons_suggest"].iloc[-1] == "WCB_1"
+

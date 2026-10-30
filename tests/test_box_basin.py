@@ -107,8 +107,22 @@ def test_no_record_reader_assumes_one_record():
     assert not bad, bad
 
 
-def test_a_basin_without_grids_never_borrows_the_delaware_ones():
+def test_a_basin_without_grids_never_borrows_the_delaware_ones(tmp_path, monkeypatch):
+    # step 19 refused the visual check outside the Delaware; step 20a draws it grid-free. Either way the Midland WCC map
+    # must never read the Delaware WCC grid.
+    import datetime as dt
+
+    import pandas as pd
+    from shapely.geometry import LineString, Polygon
+
     from box import family_extent as fe
 
-    with pytest.raises(ValueError, match="no structure grids"):
-        fe.visual_check_png("WCC", None, None, None, Path("x.png"), basin="midland")  # Midland WCC must not draw the Delaware WCC grid
+    def no_grid(*a, **k):
+        raise AssertionError("a Midland map read a structure grid")
+
+    monkeypatch.setattr(pkg, "require_grid", no_grid)
+    wells = pd.DataFrame({"geom": [LineString([(0, 0), (0, 10000)]), LineString([(3000, 0), (3000, 10000)])], "evidence": [True, False],
+                          "oil12_kft": [20000.0, None], "first_production_date": [dt.date(2020, 1, 1), dt.date(2012, 1, 1)]})
+    ext = Polygon([(-2000, -2000), (5000, -2000), (5000, 12000), (-2000, 12000)])
+    v = fe.visual_check_png("WCC", wells, ext, ext, tmp_path / "x.png", basin="midland")
+    assert (tmp_path / "x.png").exists() and v["n_inside"] == 1
