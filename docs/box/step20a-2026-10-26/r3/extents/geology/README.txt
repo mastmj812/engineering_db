@@ -1,4 +1,4 @@
-BOX extents for geology review — 2026-10-29T21:02:54-05:00
+BOX extents for geology review — 2026-10-29T21:22:44-05:00
 ================================================================
 
 What this is

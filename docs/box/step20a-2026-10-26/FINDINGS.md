@@ -1,4 +1,4 @@
-# BOX step 20a: Midland Wolfcamp bench QC + extents. AT GATE 20a (nothing stored)
+# BOX step 20a: Midland Wolfcamp bench QC + extents. STORED 2026-10-30 (r3, §8.17); rest of gate 20a open
 
 **Scope (plan §5 step 20a, D128 / D131 / D134 A–B / D117):** Midland WCA_1, WCB_1, WCB_2, WCC, WCD. One extent per bench, no
 pooling (D128). The Delaware class rule of record applied as written; cards only for a swap class clearly unlike its Delaware
@@ -1274,8 +1274,48 @@ of the 9 not already on their call moved. No seed well now disagrees with BOX. B
 Contrasts move ≤ 0.006. The extents are geometrically identical to pre-call r3 (0.00 sq mi added or removed per bench), so
 the §8.15 extent table stands. The WCD loop is unaffected: no WCD well moved.
 
-**Still open at gate 20a:** the storage go (r3 as regenerated here), asks 3 / 4 / 6 in
-§4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
+### 8.17 Stored (2026-10-30, MM: "go ahead on the r3 store")
+
+`python -m scripts.box_family_extent_store --wells docs/box/step20a-2026-10-26/r3 --pool WCA_1 WCB_1 WCB_2 WCC WCD --basin midland`
+(dry run first). This writes five `box.bench_scope` rows and six `box.extent` rows: five generated records, plus WCD's
+generated parent and its edited loop as the record. Each row is `in_scope` true, `member_benches = {bench}` (D128), and
+decided 2026-10-30. The reason text says the tier is provisional until step 21 (D131). Rows are named `WCA_1`, not
+`WCA`, per the §4 item 5 recommendation: the Midland has no WCA_2 / WCXY.
+
+**Identity before the write:** every generated extent was rebuilt with the basin's D23 metric (and the D136 clip on
+WCB_2) and matched the reviewed r3 extent within 0.001 sq mi of area and 0.006 sq mi of symmetric difference. The WCD
+record is the reviewed loop geometry exactly.
+
+| bench | extent_id (record) | source | sq mi | edges | undrilled inside, live (PUD / RES) |
+|---|---|---|---|---|---|
+| WCA_1 | 36 | generated | 5,539.31 | 281 | 5,235 (5,233 / 2) |
+| WCB_1 | 37 | generated | 5,187.55 | 282 | 5,595 (5,593 / 2) |
+| WCB_2 | 38 | generated, D136 clip | 2,017.57 | 74 | 856 (856 / 0) |
+| WCC | 39 | generated | 643.82 | 26 | 698 (698 / 0) |
+| WCD | 41 (parent 40, generated 1,655.45) | owner loop | 3,371.00 | — | 3,598 (3,522 / 76) |
+
+The undrilled counts are re-measured live against the stored records (D117 universe, ≥ 50 % of the stick inside). They
+equal r3's exactly. One record per bench on all five.
+
+**Fix made for the store:** `wcb_split.clip_d136` clipped the WCB_2 polygon but kept every boundary edge. 16 of 90 edges
+lay wholly north of the line, and 4 crossed it. It now drops the 16 and trims the 4 to the remaining boundary
+(`box.extent_edge.geom` is a LineString); there is a test. The r3 extent package was regenerated so its WCB_2 edge files
+match what is stored. No geometry moved.
+
+`box_family_extent_store` gained the Midland path: basin-keyed scope rows, the basin's edge metric, the D136 clip, and
+the rule that a bench with no loop takes its generated v1 as the record.
+
+**What changes downstream:**
+- erebor: Midland WCA_1 / WCB_1 / WCB_2 / WCC / WCD sticks without a BOX forecast change class from `bench_not_in_box`
+  to `not_screened` (on a BOX bench, not yet run). Sticks forecast in run 19 keep their class.
+- BOX: the next Midland run (step 21 onward) builds on these records. No forecast was run here, and no record run
+  changed.
+
+**Ask 6 is now concrete:** `box/production._UNIVERSE_SQL` still filters `il.category = 'PUD'`. Inside the stored
+records that leaves out 80 RES sticks, 76 of them in WCD, which D117 counts as undrilled.
+
+**Still open at gate 20a:** asks 3, 4 and 6 in §4, the unlike-threshold confirm (§4 item 1), and the 4246139575 loop-tip
+flag (§7). The 4 seed removals ride the next override batch (§8.16).
 
 
 ```

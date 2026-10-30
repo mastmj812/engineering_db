@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-29T21:02:54-05:00",
- "git_sha": "ee657c8+dirty",
+ "built_at": "2026-10-29T21:22:44-05:00",
+ "git_sha": "ac71028+dirty",
  "basin": "midland",
  "wells_dir": "docs\\box\\step20a-2026-10-26\\r3",
  "version": 1,
@@ -187,6 +187,8 @@
    "interior_median_oil12_kft": 15347.426914713698,
    "flagged_pinned_strong_mi": 103.91767731493975,
    "d136_unclipped_sqmi": 2321.004790244452,
+   "d136_edges_dropped": 16,
+   "d136_edges_trimmed": 9,
    "n_contours": {},
    "n_bodies_ge_min": 2,
    "evidence_inside": 1425
