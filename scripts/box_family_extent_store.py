@@ -20,6 +20,7 @@ import json
 import sys
 from pathlib import Path
 
+from shapely import wkt
 from shapely.geometry import shape
 
 from box import basin as bsn
@@ -104,8 +105,48 @@ def _store_emerging(benches: list[str], dref: str, dry_run: bool, basin: str = B
     return 0
 
 
+def _store_revision(pool: str, path: Path, version: int, parent_version: int, basin: str, dry_run: bool) -> int:
+    """A revised owner edit of a stored generated extent: edited v<version> (parent = generated v<parent_version>) becomes
+    the version of record and supersedes the current record. Refuses unless the bench has exactly one record and no edited
+    v<version> yet. Step 20a WCD (Michael 2026-10-30): the slide-5 loop extended to take in 4246139575."""
+    edited = _extent_geojson(path)
+    note = json.loads(path.read_text(encoding="utf-8"))["features"][0]["properties"].get("source", "")
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            recs = cur.execute("SELECT extent_id, source, version, area_sqmi FROM box.extent WHERE basin = %s AND bench = %s AND is_record",
+                               (basin, pool)).fetchall()
+            taken = cur.execute("SELECT count(*) FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'geology_edited'",
+                                (basin, pool, version)).fetchone()[0]
+            gen = cur.execute("SELECT extent_id, extensions.ST_AsText(geom) FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'generated'",
+                              (basin, pool, parent_version)).fetchone()
+        conn.rollback()
+        if len(recs) != 1 or taken or gen is None:
+            print(f"REFUSED: records {recs}, edited v{version} rows {taken}, generated v{parent_version} {'missing' if gen is None else gen[0]}")
+            return 2
+        generated = ex.as_multi(eg.to_ft([wkt.loads(gen[1])])[0])
+        diff = ex.diff(generated, edited, generated.centroid)
+        dstats = {k: v for k, v in diff.items() if k != "pieces"} | {"source": note}
+        print(f"{pool}: record now extent {recs[0][0]} ({recs[0][1]} v{recs[0][2]}, {float(recs[0][3]):,.2f} sq mi) -> edited v{version} "
+              f"{edited.area / eg.FT_PER_MI**2:,.2f} sq mi, parent generated v{parent_version} (extent {gen[0]})")
+        if dry_run:
+            print("dry run: nothing written")
+            return 0
+        eid = store_edited(conn, pool, version, edited, dstats, make_record=True, basin=basin, parent_version=parent_version)
+        with conn.cursor() as cur:
+            cur.execute("SET TRANSACTION READ ONLY")
+            for r in cur.execute("SELECT extent_id, source, version, is_record, round(area_sqmi::numeric, 2), parent_extent_id, superseded_by "
+                                 "FROM box.extent WHERE basin = %s AND bench = %s ORDER BY extent_id", (basin, pool)).fetchall():
+                print("  live:", r)
+        conn.rollback()
+        print(f"stored {pool}: edited v{version} extent_id {eid} = version of record")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--revise", nargs=2, metavar=("POOL", "GEOJSON"), default=None,
+                    help="store a revised owner edit (edited v<--version>, parent generated v<--parent-version>) as the record")
+    ap.add_argument("--parent-version", type=int, default=1)
     ap.add_argument("--wells", type=Path, default=None)
     ap.add_argument("--pool", nargs="*", default=[], choices=sorted(set(SCOPE_ROW) | set(MIDLAND_SCOPE_ROW)))
     ap.add_argument("--emerging", nargs="*", default=[], help="benches recorded as D2 emerging: bench_scope row in_scope = false, NO extent (like WDFD)")
@@ -115,6 +156,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--decision-ref", default=None)
     ap.add_argument("--basin", default=BASIN, help="the basin the rows are stored under (step 19)")
     a = ap.parse_args(argv)
+    if a.revise:
+        return _store_revision(a.revise[0], Path(a.revise[1]), a.version, a.parent_version, a.basin, a.dry_run)
     if a.emerging:
         return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run, a.basin)
     if not a.pool or a.wells is None:
