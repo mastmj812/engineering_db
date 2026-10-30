@@ -1346,6 +1346,41 @@ flag (§7). The 4 seed removals ride the next override batch (§8.16).
 **Still open at gate 20a:** the ask-3 card verdicts, the unlike-threshold confirm (§4 item 1), and the 4246139575
 loop-tip flag (§7). D117 step 3 runs separately.
 
+### 8.19 Ask-3 verdicts back (MM 2026-10-30): WCB_1 → WCB_2 = 6 / 10, class rejected
+
+| card | verdict | side of the D136 line |
+|---|---|---|
+| LHS RANCH 1708BH, MARIE 1802BH, ALDWELL K R 40 9H, BULLHEAD 723CN, DRIVER 4C-E 3-46F 106H, WILDCAT EAST I 17-43 4409H | WCB_2 (agree) | south |
+| TOMAHAWK 4810 C 6HM | WCB_1 (reject) | south |
+| DYER-KILGORE L 25-34 4412H, NAIL-TILLMAN W1Q 417H, 1 MILE 29 G 4307H | WCB_1 (reject) | **north** |
+
+**Class:** 0.60, under the 0.70 gate, so it is **rejected**. The uncarded wells in the class keep their tag. That is the
+same membership as before, when the class was uncalibrated. Each card still decides its own well, so the 6 agree wells
+move to WCB_2 in BOX (3 of them cohort).
+
+**Flag, not resolved:** the split is geographic. North of the D136 line the cards went 0 / 3, which is what D136 predicts:
+one WCB landing there. South they went 6 / 7 (0.86). Accepting the class south of the line only would be a new rule, a
+class split by D136, so it is MM's call. As carded, the gate applies to the whole class. There are 73 uncarded flags; 49
+of them lie south of the line (24 cohort), and 24 north.
+
+**Code:**
+- `qc_rule.load_verdicts` now reads a bench-code verdict: the suggested bench counts as AGREE, the well's own tag as
+  REJECT, and a third bench is ignored. The earlier card files read identically (125 and 50 verdicts).
+- `qc_rule.BASIN_CLASSES` midland gains `WCB_1->WCB_2: 0.60`.
+- Both have a test.
+
+**r3 regenerated:** only the 6 card wells moved. WCB_1 is now 6,646 (cohort 3,897) and WCB_2 2,157 (1,293). Contrasts
+move ≤ 0.003.
+
+**Stored extents vs the rebuild** (read-only against the live records):
+- WCB_2 gains 0.20 sq mi of 2,018 (0.01 %), and its undrilled count is unchanged (856).
+- The other four differ by ≤ 0.003 sq mi, which is coordinate rounding.
+
+The stored records are kept: no location changes coverage. Re-storing WCB_2 would supersede record 38 and needs a go.
+
+**Still open at gate 20a:** the south-only question above, the unlike-threshold confirm (§4 item 1), and the
+4246139575 loop-tip flag (§7).
+
 
 ```
 python -m pytest -q tests/test_box_step20a.py tests/test_box_family_qc.py tests/test_box_basin.py

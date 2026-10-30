@@ -224,7 +224,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200348981,MABEE 14-9 4307H,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (291 ft below WCA_1),member,WCB_1,,,2025-03-01,True
 4200348986,MABEE 14-9 4311H,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (262 ft below WCA_1),member,WCB_1,,,2025-03-01,True
 4200349008,FEE 'AR' 2005WA,Fasken Oil,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-12-17,False
-4200349009,FEE 'AR' 2006WB,Fasken Oil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2025-12-18,False
+4200349009,FEE 'AR' 2006WB,Fasken Oil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2025-12-18,False
 4200349014,FEE 'AR' 2011WA,Fasken Oil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-01-21,False
 4200349015,FEE 'AR' 2012WB,Fasken Oil,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (258 ft below WCA_1),member,WCB_1,,,2026-01-21,False
 4200349016,FEE 'AR' 2013WD,Fasken Oil,42,WCD,WCD,keep,,member,WCD,,,2026-01-24,False
@@ -236,7 +236,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200349034,UL DEDHAM 31-45 D 2WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-04-01,True
 4200349035,UL DEDHAM 31-45 E 3WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-03-31,True
 4200349039,MABEE 14-9 4214H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-03-01,True
-4200349040,MABEE 14-9 4315H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2025-03-01,True
+4200349040,MABEE 14-9 4315H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2025-03-01,True
 4200349043,FEE 'AO' 410WB,Fasken Oil,42,WCB_2,WCB_1,reassign,class WCB_2->WCB_1 (precision 1.00) + sql/23 concurs + GOR none,member,WCB_1,,,2025-07-22,True
 4200349044,FEE 'AO' 411WB,Fasken Oil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-07-24,True
 4200349045,FEE 'AO' 412WB,Fasken Oil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-08-02,True
@@ -267,7 +267,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200349232,UL MONTY WEST 46-39 G 1WD,Diamondback,42,WCD,WCD,keep,,member,WCD,,,2026-05-17,False
 4200349233,UL MONTY WEST 46-39 H 2WD,Diamondback,42,WCD,WCD,keep,,member,WCD,,,2026-05-18,False
 4200349246,CASSELMAN 32 5HC,Apache,42,WCD,WCD,keep,,member,WCD,,,2026-07-15,False
-4200349247,CASSELMAN 32 6H,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-07-01,False
+4200349247,CASSELMAN 32 6H,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-07-01,False
 4200349248,CASSELMAN 32 7HC,Apache,42,WCD,WCD,keep,,member,WCD,,,2026-07-01,False
 4200349255,CASSELMAN 32 U 16H,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-07-29,False
 4200349286,ULDESERT ROSE 12-13 B 1WB,Sabalo II Operating,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2026-07-15,False
@@ -558,7 +558,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4210541353,UNIVERSITY SOUTH 0601H,EP Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-04-15,False
 4210541354,UNIVERSITY 45 2402H,Zarvona Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2012-07-01,False
 4210541355,UNIVERSITY 45 2403H,Zarvona Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2012-07-03,False
-4210541357,UNIVERSITY SOUTH 2401H,Rushmore Resource Partners,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2012-10-19,False
+4210541357,UNIVERSITY SOUTH 2401H,Rushmore Resource Partners,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2012-10-19,False
 4210541359,SHANNON ESTATE 01-36 3H,Devon,42,WCA_1,WCA,keep,,member,WCA_1,,,2013-09-05,False
 4210541361,UNIVERSITY STONEGATE 3822AH,Rushmore Resource Partners,42,WCB_1,WCB_1,keep,class WCB_1->WCA rejected (precision 0.50),member,WCB_1,,,2012-07-24,False
 4210541362,UNIVERSITY 42 101H,Zarvona Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2012-08-02,False
@@ -1697,7 +1697,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337338,CHEATHAM HOUSTON A 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-02-10,True
 4217337339,CHEATHAM HOUSTON A 7H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-07-20,True
 4217337340,CHEATHAM HOUSTON A 8H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-07-21,True
-4217337343,CURRIE-NEAL 47 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-08-10,False
+4217337343,CURRIE-NEAL 47 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-08-10,False
 4217337344,CURRIE-NEAL 47 4403H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-07-01,False
 4217337345,CURRIE-NEAL 47 4405H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-08-09,False
 4217337346,HALFMANN OU 47-15 (ALLOC-A) 1SU,Crescent Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-06-17,True
@@ -1766,7 +1766,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337458,CALVERLEY 22-27 101H,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-05-11,True
 4217337459,CALVERLEY 22-27 102H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-05-17,True
 4217337460,CALVERLEY 22-27 103H,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-05-14,True
-4217337461,CALVERLEY 22-27 104H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2017-05-14,True
+4217337461,CALVERLEY 22-27 104H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2017-05-14,True
 4217337462,HARRIS-HUTCHISON UNIT 107HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-05-20,True
 4217337464,BRUNSON 5A 1HL,Ovintiv,42,WCA_1,WCA,keep,class WCA->WCB_1 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2016-12-26,True
 4217337465,BARBEE B 2-1 (ALLOC-F) 6SC,Crescent Energy,42,WCD,WCD,keep,,member,WCD,,,2017-03-15,True
@@ -1809,7 +1809,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337522,TARGET E 3902WB,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-08-09,True
 4217337526,TOM-CORSON 41B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-10-23,True
 4217337527,TOM-CORSON 41A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-10-21,True
-4217337528,GOODSPEED X-CAL 1H,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2017-06-13,True
+4217337528,GOODSPEED X-CAL 1H,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2017-06-13,True
 4217337530,MATTHEW PSA D 0703HA,Lake Crystal,42,WCD,WCD,keep,,member,WCD,,,2018-01-15,True
 4217337534,BOONE-COFFEE 60 106HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2017-08-10,True
 4217337538,ZANT 4711AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-01-19,True
@@ -1912,7 +1912,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337681,CALVERLEY 22-27 302H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-05-13,True
 4217337682,BRUNSON 42-43 4301H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-04-20,True
 4217337684,BRUNSON 42-43 4201H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-04-20,True
-4217337685,CALVERLEY 22-27 304H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-05-14,True
+4217337685,CALVERLEY 22-27 304H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-05-14,True
 4217337686,SEM SN 35-26 03 203H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-02-02,True
 4217337690,TARGET O 3902WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-04-12,True
 4217337691,TARGET P 3903WB,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-04-09,True
@@ -1994,10 +1994,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337811,CALVERLEY B-REED 10 101HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-08-27,True
 4217337812,CALVERLEY B-REED 10 101HB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-08-27,True
 4217337818,HARRIS-COOK 50 305HB,SM Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2018-10-26,True
-4217337819,HARRIS-COOK 80 308HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-09-21,True
+4217337819,HARRIS-COOK 80 308HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-09-21,True
 4217337820,GOTHA 1HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-06-16,True
 4217337821,GOTHA C 2HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-06-12,True
-4217337823,HARRIS-COOK 60 306HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-10-18,True
+4217337823,HARRIS-COOK 60 306HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-10-18,True
 4217337825,JIM TOM E42H 108H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-11-23,True
 4217337826,JIM TOM E42I 109H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-12-04,True
 4217337827,JIM TOM E42J 110H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-12-06,True
@@ -2066,10 +2066,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337933,SEM WEST 14-23 B 102WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-03-11,True
 4217337934,SEM WEST 14-23 C 1102WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-03-11,True
 4217337942,WOODY 4 6H,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-02-14,False
-4217337944,HUTCHISON-TEELE 10 301HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-04-01,True
+4217337944,HUTCHISON-TEELE 10 301HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-04-01,True
 4217337945,HUTCHISON-TEELE 10 101HB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-06-10,True
 4217337946,HUTCHISON-TEELE 10 101HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-04-01,True
-4217337947,HUTCHISON-TEELE 20 302HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-06-11,True
+4217337947,HUTCHISON-TEELE 20 302HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-06-11,True
 4217337948,HUTCHISON-TEELE 20 102HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-07-13,True
 4217337952,FURQUERON 1DR,Occidental,42,WCD,WCD,keep,,member,WCD,,,2019-02-18,True
 4217337954,JERSEY 38-47-H 4415H,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-08-14,True
@@ -2081,7 +2081,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337964,JIM TOM W41I 209H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-08-16,True
 4217337967,JERSEY 38-47-D 4407H,Crescent Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-08-15,True
 4217337968,JERSEY 38-47-F 4411H,Crescent Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-08-14,True
-4217337972,HUTCHISON-TEELE 30 303HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-04-01,True
+4217337972,HUTCHISON-TEELE 30 303HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-04-01,True
 4217337973,HUTCHISON-TEELE 30 103HB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-08-15,True
 4217337974,HUTCHISON-TEELE 30 103HA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-08-08,True
 4217337975,TETRIS SN 1-48 A 101WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-08-18,True
@@ -2572,9 +2572,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217338763,DRIVER 4C-E 3-46A 101H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-03,False
 4217338764,DRIVER 4C-E 3-46B 102H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-06-03,False
 4217338765,DRIVER 4C-E 3-46C 103H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-03,False
-4217338766,DRIVER 4C-E 3-46D 104H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-06-04,False
+4217338766,DRIVER 4C-E 3-46D 104H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-06-04,False
 4217338767,DRIVER 4C-E 3-46E 105H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-04,False
-4217338768,DRIVER 4C-E 3-46F 106H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-06-06,False
+4217338768,DRIVER 4C-E 3-46F 106H,Exxon Mobil,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2023-06-06,False
 4217338769,POWELL 1580CP 1H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2022-10-18,True
 4217338770,POWELL 1582CP 2H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2022-10-18,True
 4217338771,POWELL 1584CP 3H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2022-10-20,True
@@ -2748,7 +2748,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217339034,BODINE T 17-29 5 5H,Hannathon Petroleum II,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-04-29,True
 4217339035,SARATOGA F 14HD,Occidental,42,WCD,WCD,keep,,member,WCD,,,2025-03-01,True
 4217339036,SARATOGA F 15HB,Occidental,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-03-02,True
-4217339039,SARATOGA G 18BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2025-03-05,True
+4217339039,SARATOGA G 18BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2025-03-05,True
 4217339042,SARATOGA G 20HA,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-03-18,True
 4217339044,BRUNSON-ARNETT 36B 202H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-08-05,False
 4217339045,BRUNSON-ARNETT 36C 203H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-08-06,False
@@ -2845,7 +2845,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217339184,MOLLIE 44-41 03 3H,Hannathon Petroleum II,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-11-15,False
 4217339185,YORKTOWN H 13HD,Occidental,42,WCD,WCD,keep,,member,WCD,,,2025-10-06,False
 4217339187,YORKTOWN H 15HA,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-10-13,False
-4217339188,YORKTOWN H 16BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2025-10-19,False
+4217339188,YORKTOWN H 16BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2025-10-19,False
 4217339195,CALVERLEY B-REED 20 101HD,SM Energy,42,WCD,WCD,keep,,member,WCD,,,2025-06-15,True
 4217339196,CALVERLEY B-REED 30 102HD,SM Energy,42,WCD,WCD,keep,,member,WCD,,,2025-05-31,True
 4217339197,CALVERLEY B-REED 50 103HD,SM Energy,42,WCD,WCD,keep,,member,WCD,,,2025-06-01,True
@@ -2891,7 +2891,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217339258,ATHENA LOMAX 1780CP 3H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2025-10-28,False
 4217339260,ATHENA LOMAX 1782CP 5H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2025-11-07,False
 4217339263,ATHENA LOMAX 1784CP 8H,Occidental,42,WCD,WCD,keep,,member,WCD,,,2025-10-28,False
-4217339266,TRENTON E 9BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-07-01,False
+4217339266,TRENTON E 9BB,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-07-01,False
 4217339267,TRENTON E 10HD,Occidental,42,WCD,WCD,keep,,member,WCD,,,2026-07-01,False
 4217339268,TRENTON F 11HA,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-07-01,False
 4217339273,TRENTON G 16HD,Occidental,42,WCD,WCD,keep,,member,WCD,,,2026-07-01,False
@@ -2912,7 +2912,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217339290,DRIVER B37 10-15L 312H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-12-12,False
 4217339300,WEYMAN-WOODY 22B 2H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2026-02-07,False
 4217339301,WEYMAN-WOODY 22C 3H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-05,False
-4217339304,WEYMAN-WOODY 22G 7H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-02-05,False
+4217339304,WEYMAN-WOODY 22G 7H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-02-05,False
 4217339305,WEYMAN-WOODY 22H 8H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2026-02-05,False
 4217339306,WEYMAN-WOODY 22I 9H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-04,False
 4217339307,WEYMAN-WOODY 22D 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-02-07,False
@@ -5547,7 +5547,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4223535889,DEVACA 25H,Permian Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-11-03,False
 4223535890,SSH UNIT H 54M,Apache,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-05-20,False
 4223535891,FARMAR A S111HU,Triple Crown Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-11-23,False
-4223535892,"CORONADO (SA) ""A"" 4H",Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-10-14,False
+4223535892,"CORONADO (SA) ""A"" 4H",Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-10-14,False
 4223535895,TUCKER 166 2HB,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-09-30,False
 4223535898,FARMAR C S732HM,Triple Crown Resources,42,WCC,WCC,keep,,member,WCC,,,2015-01-03,False
 4223535899,FARMAR C S733HM,Triple Crown Resources,42,WCC,WCC,keep,,member,WCC,,,2015-01-17,False
@@ -5735,7 +5735,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4223536257,UNIVERSITY 38-40 0112WC,Sequitur Energy,42,WCC,WCC,keep,,member,WCC,,,2019-02-15,True
 4223536258,UNIVERSITY 38-40 0201WC,Sequitur Energy,42,WCC,WCC,keep,,member,WCC,,,2019-02-15,True
 4223536259,LINTHICUM C 13WC,Sequitur Energy,42,WCC,WCC,keep,,member,WCC,,,2018-10-23,True
-4223536260,LINTHICUM C 15WB,Sequitur Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-10-21,True
+4223536260,LINTHICUM C 15WB,Sequitur Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-10-21,True
 4223536261,MAYER 4502WC,Sequitur Energy,42,WCC,WCC,keep,,member,WCC,,,2018-09-28,True
 4223536262,MAYER 4502WB,Sequitur Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-10-03,True
 4223536263,UNIVERSITY 38-40 0104WB,Sequitur Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-12-05,True
@@ -5931,7 +5931,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4223536527,SHEEN 8A-11 1H,Compass Production Partners,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2022-11-15,True
 4223536528,BARNHART 77S75 A 1BL,Permian Resources,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-07-10,False
 4223536529,BARNHART 77S75 B 3BU,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-07-10,False
-4223536530,BARNHART 77S75 C 5BL,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-07-10,False
+4223536530,BARNHART 77S75 C 5BL,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-07-10,False
 4223536531,BARNHART 77N79 A 2BU,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-08-06,True
 4223536532,BARNHART 77N79 B 4BL,Permian Resources,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-07-09,True
 4223536538,POWERS D UNIT A N147H,Triple Crown Resources,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2022-10-10,True
@@ -6100,7 +6100,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231738706,MABEE OH X2 2BH,ConocoPhillips,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2013-10-11,False
 4231738709,SOUTH CURTIS RANCH 2116H,Occidental,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-12-25,False
 4231738714,SOUTH CURTIS RANCH 3518H,Occidental,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (206 ft below WCA_1),member,WCB_1,,,2013-12-14,False
-4231738752,MABEE 'K' 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2013-11-30,False
+4231738752,MABEE 'K' 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2013-11-30,False
 4231738765,MABEE 'K' 5H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2014-07-14,False
 4231738777,MABEE OH X3 3BH,ConocoPhillips,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2013-11-14,False
 4231738790,MABEE OH X1 1BH,ConocoPhillips,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2014-01-22,False
@@ -6306,7 +6306,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231740163,WILBANKS SN 16-15 03 103H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-08-01,False
 4231740168,KITTA BELLE 102H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-07-01,False
 4231740170,KITTA BELLE 201H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-17,False
-4231740171,KITTA BELLE 203H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-05-18,False
+4231740171,KITTA BELLE 203H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-05-18,False
 4231740176,NAIL UNIT 1 3112BH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-11-01,False
 4231740177,NAIL UNIT 1 3103AH,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-12-11,False
 4231740184,WHITAKER 22-27 UNIT 1H,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-09-25,False
@@ -6620,7 +6620,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741141,KINGSFIELD D 08WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-05-28,True
 4231741142,KINGSFIELD D 09BL,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (296 ft below WCA_1),member,WCB_1,,,2018-05-28,True
 4231741145,POE A 10WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-05-31,True
-4231741146,POE B 11BU,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-06-12,True
+4231741146,POE B 11BU,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-06-12,True
 4231741149,POE C 12WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-06-12,True
 4231741150,POE C 14BL,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (315 ft below WCA_1),member,WCB_1,,,2018-06-12,True
 4231741152,POE D 15WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-06-16,True
@@ -6664,7 +6664,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741247,UL COMANCHE 2829 1,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-07-02,True
 4231741250,THELMA B 15WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-09-17,True
 4231741253,THELMA B 16WD,Diamondback,42,WCD,WCD,keep,,member,WCD,,,2018-09-17,True
-4231741258,NIMITZ 7 404,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-02-15,True
+4231741258,NIMITZ 7 404,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-02-15,True
 4231741259,HAYDEN 14-23B-E 4309H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-09-04,True
 4231741260,HAYDEN 14-23B-E 4210H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-09-04,True
 4231741261,HAYDEN 14-23B-F 4311H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-09-04,True
@@ -7056,11 +7056,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742180,CYPERT 57-51 UNIT 2 251,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-10-13,True
 4231742181,CYPERT 57-51 UNIT 2 261,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-10-13,True
 4231742188,ARNOLD 2 103,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-12-26,True
-4231742207,DYER-KILGORE L 25-34 4412H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-10-13,True
+4231742207,DYER-KILGORE L 25-34 4412H,Exxon Mobil,42,WCB_1,WCB_1,keep,card verdict REJECT (WCB_1->WCB_2),member,WCB_1,,,2019-10-13,True
 4231742208,DYER-KILGORE L 25-34 4212H,Exxon Mobil,42,WCA_1,WCA,keep,class WCA->WCB_1 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2019-10-02,True
 4231742209,DYER-KILGORE K 25-34 4311H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-10-04,True
 4231742210,DYER-KILGORE I 25-34 4209H,Exxon Mobil,42,WCA_1,WCA,keep,class WCA->WCB_1 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2019-10-04,True
-4231742211,DYER-KILGORE I 25-34 4409H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-10-04,True
+4231742211,DYER-KILGORE I 25-34 4409H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-10-04,True
 4231742215,SLYDELL C 2545WA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-01-07,True
 4231742217,SLYDELL D 2546WA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-01-08,True
 4231742219,VLT MAUSER MAGNUM UNIT 0041WA,Chevron,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-21,True
@@ -7278,7 +7278,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742833,SOTO 43-7 (ALLOC-1SH) 2LA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-03-26,True
 4231742834,SOTO 43-7 (ALLOC-3SH) 3LB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCA rejected (precision 0.50),member,WCB_1,,,2021-03-01,True
 4231742835,SOTO 43-7 (ALLOC-4SH) 5LB,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-03-08,True
-4231742844,SOUTH CURTIS RANCH 3405AP 5H,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2021-03-16,True
+4231742844,SOUTH CURTIS RANCH 3405AP 5H,Occidental,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2021-03-16,True
 4231742849,SOUTH CURTIS RANCH 3407AP 7H,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-03-10,True
 4231742851,SOUTH CURTIS RANCH 3409AP 9H,Occidental,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-03-10,True
 4231742855,FISHERMAN-BRISTOW 23A 1H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-04-08,True
@@ -7823,8 +7823,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744340,HYDRA 45-4 UNIT 2 282,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-03-01,True
 4231744348,MATCHLESS 28 6002H,FourPoint Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2022-11-06,False
 4231744349,MATCHLESS 28 5003H,FourPoint Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-11-06,False
-4231744352,T Y RANCH WEST 2WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2024-01-02,True
-4231744353,T Y RANCH WEST 1WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2024-01-02,True
+4231744352,T Y RANCH WEST 2WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2024-01-02,True
+4231744353,T Y RANCH WEST 1WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2024-01-02,True
 4231744355,MATCHLESS 28 6005H,FourPoint Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2022-11-16,False
 4231744356,WASHINGTON 2 204,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-01-19,True
 4231744358,T-BONE D 2AH,Hibernia Resources IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-10-27,True
@@ -7931,7 +7931,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744684,TREATY OAK W UNIT A 1WA,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-12,True
 4231744687,TREATY OAK W UNIT C 2WA,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-12,True
 4231744689,TREATY OAK W UNIT D 3WA,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-12,True
-4231744692,T Y RANCH WEST 3WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-12-22,True
+4231744692,T Y RANCH WEST 3WB,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-12-22,True
 4231744695,CROSS BAR RANCH H 1803AH,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-07-26,True
 4231744702,SCHENECKER A5 1803AH,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-09-15,False
 4231744722,HIGHTOWER 10G 107H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-08-04,False
@@ -8606,7 +8606,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746689,BRICK FOLEY A 1591WD,SM Energy,42,WCD,WCD,keep,,member,WCD,,,2025-08-10,False
 4231746690,BRICK FOLEY D 1592WD,SM Energy,42,WCD,WCD,keep,,member,WCD,,,2025-08-10,False
 4231746691,NAIL-TILLMAN E1K 511H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-05-22,False
-4231746693,NAIL-TILLMAN E1I 509H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-05-22,False
+4231746693,NAIL-TILLMAN E1I 509H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-05-22,False
 4231746698,NAIL-TILLMAN E1D 504H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-05-31,False
 4231746705,INTEGRITY SOUTH 1WB,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-08-20,False
 4231746706,INTEGRITY SOUTH 1WD,Diamondback,42,WCD,WCD,keep,,member,WCD,,,2025-08-21,False
@@ -8634,7 +8634,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746763,ALPINE 258T 114HJ,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-10-05,False
 4231746764,ALPINE 258U 117HM,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-10-04,False
 4231746772,NAIL-TILLMAN W1N 414H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-05-15,False
-4231746775,NAIL-TILLMAN W1Q 417H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-05-18,False
+4231746775,NAIL-TILLMAN W1Q 417H,Exxon Mobil,42,WCB_1,WCB_1,keep,card verdict REJECT (WCB_1->WCB_2),member,WCB_1,,,2026-05-18,False
 4231746777,NAIL-TILLMAN W1J 410H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-05-19,False
 4231746789,NAIL-BURLEY 6I 609H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-06-20,False
 4231746792,GEORGE HOLT GLASS WEST H 13-1 4308H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-10-01,False
@@ -8714,8 +8714,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231747094,UNIVERSITY 7-14FF 206H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-07-12,False
 4231747118,SCHARBAUER RANCH 19D 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-08-15,False
 4231747120,SCHARBAUER RANCH 19G 7H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-08-01,False
-4231747135,SCHARBAUER RANCH 18H 1808H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-08-17,False
-4231747136,SCHARBAUER RANCH 18I 1809H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-08-15,False
+4231747135,SCHARBAUER RANCH 18H 1808H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-08-17,False
+4231747136,SCHARBAUER RANCH 18I 1809H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-08-15,False
 4231747216,MERLOT 95-66 D 1WB,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-08-01,False
 4231747221,DR ORSON Q 77H,Hibernia Resources IV,42,WCD,WCD,keep,,member,WCD,,,2026-07-27,False
 4231747222,DR ORSON R 79H,Hibernia Resources IV,42,WCD,WCD,keep,,member,WCD,,,2026-07-27,False
@@ -8905,7 +8905,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232939422,KENDRA - ANNIE 4 1484H,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-11-01,False
 4232939431,PARKS FIELD UNIT 2 1454H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-02-15,False
 4232939438,PARKS FIELD UNIT 2 1921H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-12-05,False
-4232939441,BOONE-COFFEE 10 201HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2015-01-15,False
+4232939441,BOONE-COFFEE 10 201HB,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2015-01-15,False
 4232939449,"PARKS, ROY 99H",ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-03-15,False
 4232939465,ST 4107H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-02-14,False
 4232939466,ST 4108H,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (229 ft below WCA_1),member,WCB_1,,,2015-02-15,False
@@ -9009,7 +9009,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232939952,TXL 11 UNIT 1 0213AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-08-07,False
 4232939962,SPANISH TRAIL 48 HZ UNIT 4820WA,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-06-16,False
 4232939977,O BRIEN B 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-07-18,False
-4232939979,O BRIEN B 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2015-07-18,False
+4232939979,O BRIEN B 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2015-07-18,False
 4232939980,"HUTT, DONALD L. FEE 1504H",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-07-16,False
 4232939982,"HUTT, DONALD L. FEE 1505H",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-07-25,False
 4232939983,"HUTT, DONALD L. FEE 1506H",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-07-25,False
@@ -9135,7 +9135,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940268,PRESTON 5 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-12-08,False
 4232940269,PRESTON 5 4H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-12-07,False
 4232940270,PRESTON 5 5H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-11-25,False
-4232940271,PRESTON 5 6H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2015-11-27,False
+4232940271,PRESTON 5 6H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2015-11-27,False
 4232940272,PRESTON 5 7H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-08-21,True
 4232940273,PRESTON 5 8H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-08-19,True
 4232940274,PRESTON 5 9H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-08-22,True
@@ -9243,7 +9243,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940472,ABBIE LAINE 39 H301M,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-12-19,False
 4232940473,ABBIE LAINE 39 H302M,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-12-19,False
 4232940475,DAVIDSON 37X 1H,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-02-15,True
-4232940478,SHACKELFORD 3403H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-07-20,True
+4232940478,SHACKELFORD 3403H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-07-20,True
 4232940479,SHACKELFORD 3405H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-07-18,True
 4232940480,SHACKELFORD 3407H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-07-22,True
 4232940481,SHACKELFORD 3318H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-08-06,True
@@ -9974,7 +9974,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941890,GBG 41/38 UNIT 0033WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-07-15,True
 4232941892,GBG 41/38 UNIT 0035WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-07-15,True
 4232941899,HAMMAN 45 6HM,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-05-14,True
-4232941903,HOGAN 1-24I 4315H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2018-08-21,True
+4232941903,HOGAN 1-24I 4315H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2018-08-21,True
 4232941906,HOGAN 1-24-F 4311H,Exxon Mobil,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (238 ft below WCA_1),member,WCB_1,,,2019-07-01,True
 4232941910,HOGAN 1-24-F 4211H,Exxon Mobil,42,WCA_1,WCB_2,reassign,class WCA->WCB_2 (precision 1.00) + sql/23 concurs + GOR none,member,WCB_2,,,2019-07-01,True
 4232941913,HOGAN 1-24I 4215H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-08-21,True
@@ -10710,7 +10710,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943345,MIDKIFF 43-06 0627 0617AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-16,True
 4232943346,BOONE-DIXON E42B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-01-17,True
 4232943347,MAURER-DIXON E42A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-01-20,True
-4232943348,BOONE-DIXON E42C 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-01-21,True
+4232943348,BOONE-DIXON E42C 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-01-21,True
 4232943350,"PARKS, ROY 307BH",ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-05-15,True
 4232943352,"PARKS, ROY 316CH",ConocoPhillips,42,WCB_2,WCC,reassign,owner assignment: WCC (tag WCB_2),member,WCC,,,2020-05-08,True
 4232943354,"PARKS, ROY 306BH",ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-05-08,True
@@ -11272,7 +11272,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944598,SHACKELFORD 39L 12H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-05-27,True
 4232944602,ORGANIC D 102DR,Occidental,42,WCD,WCD,keep,,member,WCD,,,2021-03-27,True
 4232944603,IBIS WEST G 17-32 6207H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2021-10-26,True
-4232944604,IBIS WEST G 17-32 4307H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2021-10-27,True
+4232944604,IBIS WEST G 17-32 4307H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2021-10-27,True
 4232944605,IBIS WEST G 17-32 4207H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-10-27,True
 4232944610,BLACKFOOT EAST E 706WB,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (340 ft below WCA_1),member,WCB_1,,,2021-10-07,True
 4232944611,TXL HOLZGRAF Z5 2304BH,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-08-28,True
@@ -11380,7 +11380,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944894,SOUTH CURTIS RANCH 0463BP,Occidental,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (228 ft below WCA_1),member,WCB_1,,,2021-10-15,True
 4232944895,SOUTH CURTIS RANCH 0455AP,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-10-05,True
 4232944897,SOUTH CURTIS RANCH 0457AP,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-10-04,True
-4232944898,1 MILE 29 G 4307H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2021-10-01,False
+4232944898,1 MILE 29 G 4307H,Exxon Mobil,42,WCB_1,WCB_1,keep,card verdict REJECT (WCB_1->WCB_2),member,WCB_1,,,2021-10-01,False
 4232944918,PARKS 1200 UNIT 2 1206BR,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-12-28,True
 4232944919,MIDKIFF 34-27 2711 2711AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-03-20,True
 4232944920,MIDKIFF 34-27 2701 2701BH,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2022-03-10,True
@@ -11611,9 +11611,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945481,SHACKELFORD 3-38B 2H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2022-10-12,True
 4232945482,SHACKELFORD 3-38C 3H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2022-10-13,True
 4232945487,PRESTON-FREEMAN 15A 101H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-21,False
-4232945488,PRESTON-FREEMAN 15B 102H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-02-16,False
+4232945488,PRESTON-FREEMAN 15B 102H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-02-16,False
 4232945489,PRESTON-FREEMAN 15C 103H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-15,False
-4232945490,PRESTON-FREEMAN 15D 104H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-02-19,False
+4232945490,PRESTON-FREEMAN 15D 104H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-02-19,False
 4232945491,PRESTON-FREEMAN 15E 105H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-21,False
 4232945492,PRESTON-FREEMAN 15F 106H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2023-02-16,True
 4232945493,PRESTON-FREEMAN 15G 107H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-19,False
@@ -11621,7 +11621,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945495,PRESTON-FREEMAN 15I 109H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-10,False
 4232945497,PRESTON-FREEMAN 15J 110H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-02-10,False
 4232945498,PRESTON-FREEMAN 15K 111H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-02-19,False
-4232945499,PRESTON-FREEMAN 15L 112H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-02-11,False
+4232945499,PRESTON-FREEMAN 15L 112H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-02-11,False
 4232945500,SOUTH CURTIS RANCH 1186CP,Occidental,42,WCD,WCD,keep,,member,WCD,,,2022-08-27,True
 4232945502,LUPIN 3748 D 301H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-01-04,True
 4232945504,LUPIN 3748 C 201H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-01-03,True
@@ -11713,7 +11713,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945737,DRIVER 4C-W 3-46A 1H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-05-30,False
 4232945738,DRIVER 4C-W 3-46B 2H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-05-30,False
 4232945739,DRIVER 4C-W 3-46C 3H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-05-31,False
-4232945740,DRIVER 4C-W 3-46D 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-05-31,False
+4232945740,DRIVER 4C-W 3-46D 4H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-05-31,False
 4232945741,DRIVER 4C-W 3-46E 5H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-06-01,False
 4232945742,DRIVER 4C-W 3-46F 6H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-06-01,False
 4232945749,TURNER W41B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-04-09,False
@@ -11895,7 +11895,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946087,BRADFORD TRUST A UNIT 1 0311AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-03-29,True
 4232946089,TXL 9 UNIT 2 0438 0408BX,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2024-03-20,False
 4232946093,KNIGHT 140 MIPA UNIT H140WX,Permian Deep Rock,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (287 ft below WCA_1),member,WCB_1,,,2026-03-20,False
-4232946096,KNIGHT 150 MIPA UNIT H150WB,Permian Deep Rock,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-01-20,False
+4232946096,KNIGHT 150 MIPA UNIT H150WB,Permian Deep Rock,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-01-20,False
 4232946099,KNIGHT 155 MIPA UNIT H155WA,Permian Deep Rock,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-03-20,False
 4232946102,KNIGHT 160 MIPA UNIT H160WB,Permian Deep Rock,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (258 ft below WCA_1),member,WCB_1,,,2026-02-18,False
 4232946103,MCCLINTIC N11G 107H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2023-10-13,True
@@ -12362,7 +12362,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947224,CMC PORTERHOUSE D 1066WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-06-27,True
 4232947228,CMC PORTERHOUSE F 1073WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-07-29,True
 4232947230,CMC PORTERHOUSE H 1076WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-08-15,False
-4232947233,CHAPARRAL 110 MIPA UNIT H110WB,Permian Deep Rock,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-03-21,False
+4232947233,CHAPARRAL 110 MIPA UNIT H110WB,Permian Deep Rock,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-03-21,False
 4232947241,CHAPARRAL 115 MIPA UNIT H115WA,Permian Deep Rock,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-03-24,False
 4232947253,GERMANIA W41I 9H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2025-02-10,True
 4232947255,GERMANIA W41K 11H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2025-02-12,True
@@ -12425,10 +12425,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947394,SHACKELFORD 39-27E 105H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-07-25,True
 4232947395,MARION EAST I 36-25 4209H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-06-27,False
 4232947397,MARION EAST J 36-25 4310H,Diamondback,42,WCA_1,WCA,keep,class WCA->WCB_2 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2026-06-30,False
-4232947399,MARION EAST K 36-25 4411H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-06-30,False
+4232947399,MARION EAST K 36-25 4411H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-06-30,False
 4232947400,MARION EAST K 36-25 4211H,Diamondback,42,WCA_1,WCA,keep,class WCA->WCB_1 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2026-06-30,False
 4232947402,MARION EAST M 36-25 4313H,Diamondback,42,WCA_1,WCA,keep,class WCA->WCB_2 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2026-06-24,False
-4232947404,MARION EAST N 36-25 4414H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-06-16,False
+4232947404,MARION EAST N 36-25 4414H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-06-16,False
 4232947405,MARION EAST N 36-25 4214H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-06-16,False
 4232947407,MARION EAST O 36-25 4315H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-06-22,False
 4232947410,CMC RIBEYE 34/35 C 1121WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-08-26,False
@@ -12504,7 +12504,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947635,RAY-SWEENEY 43H 8H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-03-07,False
 4232947639,RAY-SWEENEY 43I 9H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-03-01,False
 4232947640,RAY-SWEENEY 43K 11H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2026-03-03,False
-4232947641,RAY-SWEENEY 43M 13H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-03-06,False
+4232947641,RAY-SWEENEY 43M 13H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-03-06,False
 4232947642,RAY-SWEENEY 43N 14H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-03-06,False
 4232947643,BRADFORD 24-33 AL3 1HB,Langford & Brigham Operating,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-09-22,False
 4232947646,SALLY E26G 107H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2026-01-05,False
@@ -13096,7 +13096,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238338727,TSRH UNIT 28N 3HM,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-11-20,False
 4238338730,SUGG E 208-207 (ALLOC-D) 4NU,Crescent Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-11-27,False
 4238338731,SUGG E 208-207 (ALLOC-D) 4NM,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-11-25,False
-4238338732,UNIVERSITY 48-11 4H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-10-04,False
+4238338732,UNIVERSITY 48-11 4H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-10-04,False
 4238338733,UNIVERSITY 48-11 3H,Permian Resources,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2014-10-04,False
 4238338738,UNIVERSITY CENTRAL 1115FH,Rushmore Resource Partners,42,WCC,WCC,keep,,member,WCC,,,2014-09-01,False
 4238338739,UNIVERSITY CENTRAL 1115GH,Rushmore Resource Partners,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-09-04,False
@@ -13368,7 +13368,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238339405,NUNN 5-44 1HB,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-12-15,False
 4238339407,TUCKER RE 1 194 02HA,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-08-22,False
 4238339408,RINGO 8-9 4404H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-08-04,False
-4238339409,LONE WOLF 12 1HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2015-10-17,False
+4238339409,LONE WOLF 12 1HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2015-10-17,False
 4238339410,SUGG-B- 1092SM,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-07-09,False
 4238339413,TAYLOR 45-33 4404H,Exxon Mobil,42,WCC,WCC,keep,,member,WCC,,,2015-09-15,False
 4238339414,SRH A 9-8 (PSA-M) 13SM,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-10-20,False
@@ -13460,7 +13460,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238339550,HOLT C 132-133 (ALLOC-D) 4SM,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-04,True
 4238339551,SUGG-A- 1438SM,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-20,True
 4238339552,PETTIT '8A-8' 4401H,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-03-18,False
-4238339553,RINGO 10 AND 7 4405H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2017-02-03,True
+4238339553,RINGO 10 AND 7 4405H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2017-02-03,True
 4238339554,MERCHANT 1410A,Occidental,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-10-12,True
 4238339555,BLOXOM B RE 1 193 12HA,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-06-25,True
 4238339556,MERCHANT 141 1412BA,Occidental,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-10-16,True
@@ -13483,7 +13483,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238339577,POLO 1603B 3H,Occidental,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-03-22,True
 4238339579,HALFMANN 1214 E 53HD,Permian Resources,42,WCC,WCC,keep,,member,WCC,,,2016-08-06,True
 4238339580,HALFMANN 1214 SE 52HD,Permian Resources,42,WCC,WCC,keep,,member,WCC,,,2016-08-05,True
-4238339581,BATES 31-30 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-05-15,True
+4238339581,BATES 31-30 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-05-15,True
 4238339582,BATES '31-30' 4403H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-05-06,True
 4238339585,KATHRYN 43-42 4401H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-06-21,True
 4238339586,CORMAC 17-20 4415H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-05-18,True
@@ -14011,8 +14011,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238340240,ROCKER B 20-21 51HD,Permian Resources,42,WCC,WCC,keep,,member,WCC,,,2019-02-21,True
 4238340244,ROCKER B 20-21 54HD,Permian Resources,42,WCC,WCC,keep,,member,WCC,,,2019-03-04,True
 4238340245,ALDWELL K R 40 7H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-09-20,True
-4238340248,ALDWELL K R 40 8H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-09-22,True
-4238340250,ALDWELL K R 40 9H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-09-24,True
+4238340248,ALDWELL K R 40 8H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-09-22,True
+4238340250,ALDWELL K R 40 9H,Exxon Mobil,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2019-09-24,True
 4238340254,EAGLEHEAD 'C' A4 6LH,Sequitur Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2018-09-06,True
 4238340255,EAGLEHEAD 'C' A4 36AH,Sequitur Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-09-08,True
 4238340256,ALDWELL K R 40 204H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2024-07-15,True
@@ -14140,7 +14140,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238340431,BULLHEAD 722LN,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-03-19,True
 4238340432,BULLHEAD 722NH,Discovery Natural Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-03-18,True
 4238340433,BULLHEAD 723AN,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-03-16,True
-4238340434,BULLHEAD 723CN,Discovery Natural Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-03-18,True
+4238340434,BULLHEAD 723CN,Discovery Natural Resources,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2020-03-18,True
 4238340442,COOL WATER NORTH I 13-7 4409H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-10-23,True
 4238340443,COOL WATER NORTH I 13-7 4209H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2019-11-01,True
 4238340446,COOL WATER NORTH J 13-7 4310H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-10-23,True
@@ -14282,7 +14282,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238340662,BULLHEAD 723NH,Discovery Natural Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-11-04,True
 4238340663,BULLHEAD 725LN,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-01-20,True
 4238340666,BULLHEAD 724LN,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-11-05,True
-4238340667,BULLHEAD 724CN,Discovery Natural Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-11-04,True
+4238340667,BULLHEAD 724CN,Discovery Natural Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-11-04,True
 4238340668,BULLHEAD 724NH,Discovery Natural Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-01-19,True
 4238340669,BULLHEAD 724UN,Discovery Natural Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-01-18,True
 4238340670,UNIVERSITY 09 10-15 ALLOC 12 12HA,Permian Resources,42,WCA_1,WCB_1,reassign,class WCA->WCB_1 (precision 0.70) + sql/23 concurs + GOR suggest,member,WCB_1,,,2021-07-07,True
@@ -14388,7 +14388,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238340802,ADAMS WEST B 23-26 4402H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2020-07-17,True
 4238340803,ADAMS WEST B 23-26 4202H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-07-07,True
 4238340804,ADAMS WEST A 23-26 4301H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-07-18,True
-4238340805,BANDIT 7H,Circle-S Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-10-14,True
+4238340805,BANDIT 7H,Circle-S Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-10-14,True
 4238340806,BANDIT 8H,Circle-S Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2020-10-14,True
 4238340807,BANDIT 9H,Circle-S Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2020-10-14,True
 4238340808,HARTGROVE 0304 A 1HU,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-04-12,True
@@ -14932,7 +14932,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238341430,PRIME WEST G 19-22 4307H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-05-30,True
 4238341431,BULLHEAD 1002UC,Discovery Natural Resources,42,WCD,WCD,keep,,member,WCD,,,2024-04-01,True
 4238341432,TEXAS TEA 15-10 1007 1007BH,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-01-30,True
-4238341433,TEXAS TEA 15-10 1006 1006BH,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2025-03-06,True
+4238341433,TEXAS TEA 15-10 1006 1006BH,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2025-03-06,True
 4238341434,TEXAS TEA 15-10 1016 1016AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-03-08,True
 4238341435,TEXAS TEA 15-10 1004 1004BH,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-03-04,True
 4238341436,TEXAS TEA 15-10 1003 1003BH,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2025-01-11,True
@@ -15192,8 +15192,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238341733,ELLY MAY 20-32 3203 3203BH,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2025-06-15,False
 4238341734,ELLY MAY 20-32 3201 3201BH,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2025-06-15,False
 4238341735,UL WTG 3-233 A 331H,Permian Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-09-18,False
-4238341736,UL WTG 3-233 B 442H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2024-09-18,False
-4238341737,UL WTG 3-233 D 443H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2024-09-22,True
+4238341736,UL WTG 3-233 B 442H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2024-09-18,False
+4238341737,UL WTG 3-233 D 443H,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2024-09-22,True
 4238341738,ULANDS 48 3-13 A 331H,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-09-18,True
 4238341739,ULANDS 48 3-13 B 441H,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-09-18,True
 4238341740,ULANDS 48 3-13 C 443H,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-09-20,True
@@ -15476,7 +15476,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238342064,HELLCAT EAST I 1-12 4409H,Double Eagle Energy IV,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2026-02-01,False
 4238342065,HELLCAT EAST I 1-12 4209H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-01,False
 4238342066,HELLCAT EAST K 1-12 4311H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-02-01,False
-4238342067,HELLCAT EAST M 1-12 4413H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-02-01,False
+4238342067,HELLCAT EAST M 1-12 4413H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-02-01,False
 4238342068,HELLCAT EAST M 1-12 4213H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-01,False
 4238342069,HELLCAT EAST O 1-12 4315H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-02-01,False
 4238342070,HELLCAT WEST A 1-12 6201H,Double Eagle Energy IV,42,WCD,WCD,keep,,member,WCD,,,2026-01-12,False
@@ -15520,10 +15520,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4238342121,WILDCAT WEST A 17-6 4401H,Double Eagle Energy IV,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2026-02-12,False
 4238342122,WILDCAT WEST A 17-6 4201H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-12,False
 4238342123,WILDCAT WEST C 17-6 4303H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-12,False
-4238342124,WILDCAT WEST E 17-6 4405H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-02-12,False
+4238342124,WILDCAT WEST E 17-6 4405H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2026-02-12,False
 4238342125,WILDCAT WEST E 17-6 4205H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-12,False
 4238342126,WILDCAT WEST G 17-6 4307H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-02-12,False
-4238342127,WILDCAT EAST I 17-43 4409H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2026-01-02,False
+4238342127,WILDCAT EAST I 17-43 4409H,Double Eagle Energy IV,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2026-01-02,False
 4238342128,WILDCAT EAST I 17-43 4209H,Double Eagle Energy IV,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-01-02,False
 4238342129,WILDCAT EAST K 17-43 4311H,Double Eagle Energy IV,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2026-01-02,False
 4238342130,WILDCAT EAST M 17-43 4413H,Double Eagle Energy IV,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2026-01-02,False
@@ -15666,7 +15666,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246138519,XBC GIDDINGS ESTATE 3069H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2013-10-06,False
 4246138525,MEREDITH 21H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-02-21,False
 4246138551,KENDRA A UNIT 1H,Saxum Opco,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-04-19,False
-4246138579,AMACKER48 9H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2013-06-26,False
+4246138579,AMACKER48 9H,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2013-06-26,False
 4246138591,DORCUS 3035H,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-06-19,False
 4246138629,JACEE A UNIT 1H,Saxum Opco,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-05-23,False
 4246138643,XBC GIDDINGS ESTATE 3070H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2013-10-01,False
@@ -15767,7 +15767,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139107,MILLER 36 7HM,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-10-26,False
 4246139113,"SHACKELFORD ""7"" 2HB",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-03-01,False
 4246139116,"SHACKELFORD ""7"" 1HB",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-03-12,False
-4246139122,CVX 4136H,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-02-14,False
+4246139122,CVX 4136H,SM Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-02-14,False
 4246139124,XBC GIDDINGS ESTATE R40 4092H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2014-09-24,False
 4246139125,XBC GIDDINGS ESTATE R40 4093H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-09-29,False
 4246139130,MARIE 31H,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-03-28,False
@@ -15781,7 +15781,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139157,"UNIVERSITY ""3-19"" 47H",Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-08-26,False
 4246139160,CC 3628HM,Apache,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2014-11-04,False
 4246139161,CC 3629HU,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-11-08,False
-4246139163,CC 3630HM,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-10-21,False
+4246139163,CC 3630HM,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-10-21,False
 4246139164,CC 3631HU,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-10-25,False
 4246139165,CC 3632HM,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-10-18,False
 4246139166,CC 3633HU,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-10-14,False
@@ -15828,7 +15828,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139312,XBC GIDDINGS ESTATE J 22H,Exxon Mobil,42,WCD,WCD,keep,,member,WCD,,,2014-08-14,False
 4246139314,DORCUS JANEY (SA) M 1831H,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-08-06,False
 4246139316,AMACKER 8418H,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-08-21,False
-4246139324,SKAGGS 8 2HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-06-18,False
+4246139324,SKAGGS 8 2HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-06-18,False
 4246139327,NEAL RANCH '44' B UNIT 31H,ConocoPhillips,42,WCA_1,WCA,keep,class WCA->WCB_1 accepted but sql/23 nearest (WCA_1) does not concur,member,WCA_1,,,2015-03-12,False
 4246139330,NEAL 611H,Saxum Opco,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-08-20,False
 4246139331,NEAL 612H,Saxum Opco,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-08-21,False
@@ -15871,7 +15871,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139452,UNIVERSITY 178B 15H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-03-04,False
 4246139454,UNIVERSITY 178B 16H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-03-02,False
 4246139457,JACEE E UNIT 5H,Saxum Opco,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-01-03,True
-4246139460,ELWOOD 16-21 1HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2014-09-15,False
+4246139460,ELWOOD 16-21 1HB,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2014-09-15,False
 4246139461,NEAL RANCH '77' A UNIT 28H,ConocoPhillips,42,WCA_1,WCB_1,reassign,class WCA->WCB_1 (precision 0.70) + sql/23 concurs + GOR none,member,WCB_1,,,2015-01-21,False
 4246139465,XBC GIDDINGS ESTATE 1178H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2014-12-19,False
 4246139468,XBC GIDDINGS ESTATE 1180H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2014-12-18,False
@@ -15957,7 +15957,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139765,LHS RANCH 1614AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-09-03,False
 4246139766,LHS RANCH 1715AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-10-31,True
 4246139767,LHS RANCH 1717AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-09-10,False
-4246139768,LHS RANCH 1708BH,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-09-19,True
+4246139768,LHS RANCH 1708BH,Exxon Mobil,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2016-09-19,True
 4246139769,LHS RANCH 1718AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-10-12,True
 4246139770,MELINDA 252WB,Ovintiv,42,WCB_2,WCB_1,reassign,owner assignment: WCB_1 (tag WCB_2),member,WCB_1,,,2015-06-08,False
 4246139771,MELINDA 254WB,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-06-18,False
@@ -16078,7 +16078,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140130,ATKINS 10-10B-D 4407H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-10-14,False
 4246140132,COUNCIL-MORGAN 27 4404H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2015-08-15,False
 4246140134,HALFF 2 4412H,Exxon Mobil,42,WCC,WCC,keep,,member,WCC,,,2015-08-23,False
-4246140135,BROOK N-11A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-01-16,False
+4246140135,BROOK N-11A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-01-16,False
 4246140137,ROBBIE 17 AND 8 4405H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-11-25,True
 4246140139,BROOK N-11B 2H,Exxon Mobil,42,WCC,WCC,keep,,member,WCC,,,2016-01-17,True
 4246140140,ROBBIE '17-8' 4204H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-11-15,False
@@ -16089,8 +16089,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140150,LATZEL 34 8HM,Apache,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-01-17,False
 4246140151,JOYCE UNIT 8232BH,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-02-24,True
 4246140152,JOYCE UNIT 8232AH,ConocoPhillips,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-02-24,True
-4246140154,BROOK M-1A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-03-01,True
-4246140155,BROOK M-1B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-03-03,True
+4246140154,BROOK M-1A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-03-01,True
+4246140155,BROOK M-1B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-03-03,True
 4246140156,BROOK M-1C 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-03-10,True
 4246140157,BROOK N-20A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-18,True
 4246140158,BROOK N-20B 2H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-04-18,True
@@ -16108,7 +16108,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140179,MARIE 1801BH,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-04-07,False
 4246140180,MARIE 6018AH,ConocoPhillips,42,WCA_1,WCB_1,reassign,class WCA->WCB_1 (precision 0.70) + sql/23 concurs + GOR none,member,WCB_1,,,2016-04-07,False
 4246140181,MARIE 6018CH,ConocoPhillips,42,WCC,WCC,keep,,member,WCC,,,2016-04-07,False
-4246140182,MARIE 1802BH,ConocoPhillips,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-04-08,False
+4246140182,MARIE 1802BH,ConocoPhillips,42,WCB_1,WCB_2,reassign,card verdict AGREE (WCB_1->WCB_2),member,WCB_2,,,2016-04-08,False
 4246140185,BROOK D-29S 119H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-09-19,True
 4246140186,BROOK D-29W 123H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2021-09-24,True
 4246140190,BROOK Y-6E 5H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-03,True
@@ -16152,7 +16152,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140242,PEMBROOK X-1F 6H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-06-22,True
 4246140243,BROOK B-17C 3H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-06-28,True
 4246140244,BROOK K-2C 3H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-07-14,True
-4246140245,ELWOOD '16-21' 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-06-04,True
+4246140245,ELWOOD '16-21' 4401H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2016-06-04,True
 4246140246,BROOK K-2E 5H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-07-25,True
 4246140247,BROOK K-2D 4H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2016-07-13,True
 4246140248,NEAL RANCH 42 UNIT 4232BH,ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2016-05-12,True
@@ -16396,7 +16396,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140577,XBC GIDDINGS ESTATE 4117H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-01-28,True
 4246140578,XBC GIDDINGS ESTATE 4118H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2018-11-15,True
 4246140579,XBC GIDDINGS ESTATE 4119H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-01-22,True
-4246140580,XBC GIDDINGS ESTATE 4120H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2019-10-10,True
+4246140580,XBC GIDDINGS ESTATE 4120H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2019-10-10,True
 4246140581,UNIVERSITY 3-35 104HB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-12-15,True
 4246140582,UNIVERSITY 3-35 103HB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2017-11-16,True
 4246140583,XBC GIDDINGS ESTATE 4121H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-10-10,True
@@ -16823,7 +16823,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141219,WARHEAD 0405 C 3HA,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-24,True
 4246141220,WARHEAD 0405 D 11HL,Apache,42,WCC,WCC,keep,,member,WCC,,,2020-04-13,True
 4246141221,WARHEAD 0405 D 4HA,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-19,True
-4246141222,WARHEAD 0405 D 8HM,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-04-16,True
+4246141222,WARHEAD 0405 D 8HM,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-04-16,True
 4246141223,HANS GRUBER B 1003HU,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-12-12,False
 4246141224,HANS GRUBER A 1003HL,Diamondback,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2019-12-10,False
 4246141225,HANS GRUBER A 1002HU,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2019-12-09,False
@@ -16980,7 +16980,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141461,DAVIDSON UNIT 2 3616AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-04-01,True
 4246141463,BANDIT-WEST WN III 3H,Circle-S Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2020-09-26,True
 4246141464,BANDIT-WEST WN II 2H,Circle-S Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2020-09-26,True
-4246141465,BANDIT-WEST WN I 1H,Circle-S Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-09-26,True
+4246141465,BANDIT-WEST WN I 1H,Circle-S Energy,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2020-09-26,True
 4246141466,SEBASTIAN 19-18-D 4308H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-04-12,True
 4246141467,SEBASTIAN 19-18-D 4108H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-04-15,True
 4246141468,SEBASTIAN 19-18-F 4311VH,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-02-09,True
@@ -17160,7 +17160,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141753,PEARL 11-30 I 32BU,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-11-19,True
 4246141754,PEARL 11-30 J 33BL,Crescent Energy,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2021-11-17,True
 4246141758,NEAL 34E 3HL,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2022-01-01,False
-4246141761,NEAL 34F 5HM,Ovintiv,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2022-01-01,False
+4246141761,NEAL 34F 5HM,Ovintiv,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2022-01-01,False
 4246141763,NEAL 34F 7HJ,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-02-16,False
 4246141765,NEAL 34G 9HL,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2022-02-16,True
 4246141769,NEAL 34X 13HJ,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-02-17,True
@@ -17239,7 +17239,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141869,DAISY 12 24WA,FireBird Energy II,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-08-07,True
 4246141871,DAISY 14 28BU,FireBird Energy II,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-08-12,True
 4246141874,JRS FARMS 22-27-J 10H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-03-12,True
-4246141875,JRS FARMS 22-27-K 11H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2022-03-13,True
+4246141875,JRS FARMS 22-27-K 11H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2022-03-13,True
 4246141876,JRS FARMS 22-27-M 13H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2022-03-11,True
 4246141877,JRS FARMS 22-27-L 12H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-03-12,True
 4246141878,JRS FARMS 22-27-N 14H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-03-11,True
@@ -17468,7 +17468,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142263,BROOK B-2E 205H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-04-15,False
 4246142264,WILDE GARNER 14WD 4H,Exxon Mobil,42,WCD,WCA,reassign,class WCD->WCA (precision 1.00) + sql/23 concurs + GOR none,member,WCA_1,,,2023-08-02,True
 4246142265,WILDE GARNER 14WE 5H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2023-08-03,True
-4246142266,BENEDUM 3 EAST A 1BL,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-04-11,True
+4246142266,BENEDUM 3 EAST A 1BL,Permian Resources,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2023-04-11,True
 4246142267,BENEDUM 3 EAST A 2A,Permian Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-04-11,True
 4246142268,BENEDUM 3 EAST B 3C,Permian Resources,42,WCC,WCC,keep,,member,WCC,,,2023-04-11,True
 4246142269,BENEDUM 3 EAST B 4BU,Permian Resources,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-04-11,True
@@ -17545,7 +17545,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142371,TOMAHAWK 4810 A 5HU,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-11-29,True
 4246142372,TOMAHAWK 4810 B 7HA,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-12-15,True
 4246142373,TOMAHAWK 4810 B 8HU,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-12-06,True
-4246142374,TOMAHAWK 4810 C 6HM,Apache,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2023-12-06,True
+4246142374,TOMAHAWK 4810 C 6HM,Apache,42,WCB_1,WCB_1,keep,card verdict REJECT (WCB_1->WCB_2),member,WCB_1,,,2023-12-06,True
 4246142377,MAYRA 4 08WA,FireBird Energy II,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-05-01,True
 4246142379,MAYRA 1 02BU,FireBird Energy II,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2024-05-02,True
 4246142386,ELLA 39-15 C 21BU,Crescent Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-08-15,True
@@ -17674,7 +17674,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142648,NEFF WEST D 9-4 4404H,Diamondback,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2024-12-22,True
 4246142649,NEFF WEST D 9-4 4204H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-02-09,True
 4246142650,NEFF WEST E 9-4 4305H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2024-12-13,True
-4246142651,NEFF WEST F 9-4 4406H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2024-12-10,True
+4246142651,NEFF WEST F 9-4 4406H,Diamondback,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 rejected (precision 0.60),member,WCB_1,,,2024-12-10,True
 4246142652,NEFF WEST F 9-4 4206H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2024-12-13,True
 4246142655,NEFF EAST J 9-45 4410H,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2025-07-12,False
 4246142656,NEFF EAST J 9-45 4210H,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-07-14,False
