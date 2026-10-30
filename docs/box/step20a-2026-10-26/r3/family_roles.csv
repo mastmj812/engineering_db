@@ -5024,7 +5024,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222742803,SAM BASS UNIT 36-37 1HA,Langford & Brigham Operating,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-06-01,False
 4222742818,FREDERICK LINDSEY C 3AH,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-08-01,False
 4222742819,FREDERICK LINDSEY D 4AH,Apache,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-08-01,False
-4222742820,FREDERICK LINDSEY E 5H,Apache,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (151 ft below WCA_1),member,WCB_1,,,2026-08-01,False
+4222742820,FREDERICK LINDSEY E 5H,Apache,42,WCB_2,WCB_2,reassign,owner assignment: WCB_2 (tag WCB_2),member,WCB_2,,,2026-08-01,False
 4222742823,BULL 28-45 UNIT 1WB,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-08-04,False
 4222742824,BULL 28-45 UNIT 2WB,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-08-04,False
 4222742829,BULL 28-45 UNIT 2WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-08-04,False
@@ -6607,7 +6607,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741107,KINGSFIELD C 05WA,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-05-12,True
 4231741109,UL COMANCHE UNIT A4144 5,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-05-23,True
 4231741110,UL COMANCHE UNIT A4144 6,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-05-23,True
-4231741112,T Y RANCH 65S,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (304 ft below WCA_1),member,WCB_1,,,2018-03-06,True
+4231741112,T Y RANCH 65S,Diamondback,42,WCB_2,WCB_2,reassign,owner assignment: WCB_2 (tag WCB_2),member,WCB_2,,,2018-03-06,True
 4231741113,BERLINDA ANN 2343WA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-08-17,True
 4231741114,BERLINDA ANN 2344WA,SM Energy,42,WCA_1,WCA,keep,,member,WCA_1,,,2018-08-20,True
 4231741116,BERLINDA ANN 2362WB,SM Energy,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2018-08-17,True
@@ -7638,7 +7638,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743861,HUGHES 43-47 UNIT 1 233,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-10-19,True
 4231743862,DESERT DOOR 18-6 A 1WA,Birch Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-06-20,False
 4231743866,DESERT DOOR 18-6 D 10WA,Birch Resources,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-06-13,False
-4231743870,SXSW E UNIT B 1WB,Ovintiv,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (314 ft below WCA_1),member,WCB_1,,,2022-09-20,False
+4231743870,SXSW E UNIT B 1WB,Ovintiv,42,WCB_2,WCB_2,reassign,owner assignment: WCB_2 (tag WCB_2),member,WCB_2,,,2022-09-20,False
 4231743871,SXSW E UNIT B 2WA,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-09-20,False
 4231743872,SXSW E UNIT A 1WA,Ovintiv,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-09-22,False
 4231743874,BRADLEY 6 202,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2022-12-06,True
@@ -10590,7 +10590,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943116,CMC PEONY D 0065WA,Chevron,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-01-29,True
 4232943117,CMC PEONY E 0066WB,Chevron,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-01-30,True
 4232943118,CMC PEONY F 0067WA,Chevron,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-02-07,True
-4232943120,MASSEY A UNIT 4309H,Exxon Mobil,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (222 ft below WCA_1),member,WCB_1,,,2020-03-21,True
+4232943120,MASSEY A UNIT 4309H,Exxon Mobil,42,WCB_2,WCB_2,reassign,owner assignment: WCB_2 (tag WCB_2),member,WCB_2,,,2020-03-21,True
 4232943122,BAUMANN E16M 113H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-20,True
 4232943123,BAUMANN E16N 114H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-10,True
 4232943124,BAUMANN E16O 115H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2020-04-20,True
@@ -10712,7 +10712,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943347,MAURER-DIXON E42A 1H,Exxon Mobil,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-01-20,True
 4232943348,BOONE-DIXON E42C 3H,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2020-01-21,True
 4232943350,"PARKS, ROY 307BH",ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-05-15,True
-4232943352,"PARKS, ROY 316CH",ConocoPhillips,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (280 ft below WCA_1),member,WCB_1,,,2020-05-08,True
+4232943352,"PARKS, ROY 316CH",ConocoPhillips,42,WCB_2,WCC,reassign,owner assignment: WCC (tag WCB_2),member,WCC,,,2020-05-08,True
 4232943354,"PARKS, ROY 306BH",ConocoPhillips,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-05-08,True
 4232943357,RIO WICHITA 15-10 B 221,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-04-30,True
 4232943358,RIO WICHITA 15-10 C 231,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2020-04-30,True
@@ -11295,7 +11295,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944695,SHACKELFORD 39D 4H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-12-28,True
 4232944696,SHACKELFORD 39E 5H,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2021-12-29,True
 4232944697,SHACKELFORD 39F 6H,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-12-29,True
-4232944698,PEGGY 9 301,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (362 ft below WCA_1),member,WCB_1,,,2021-08-10,True
+4232944698,PEGGY 9 301,Diamondback,42,WCB_2,WCB_2,reassign,owner assignment: WCB_2 (tag WCB_2),member,WCB_2,,,2021-08-10,True
 4232944699,PEGGY 10 302,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (369 ft below WCA_1),member,WCB_1,,,2021-08-10,True
 4232944700,PEGGY 11 303,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2021-12-18,True
 4232944705,JW B 471WB,Discovery Operating,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2021-10-14,True
@@ -11797,7 +11797,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945897,RIO SAN JACINTO 38-43 UNIT 2 266,Diamondback,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2023-07-05,True
 4232945898,VALENCE E 104HD,Occidental,42,WCD,WCD,keep,,member,WCD,,,2023-11-03,True
 4232945904,STEPHENS 6-31 E 254,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-11-27,True
-4232945905,STEPHENS 6-31 E 255,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (272 ft below WCA_1),member,WCB_1,,,2023-11-27,True
+4232945905,STEPHENS 6-31 E 255,Diamondback,42,WCB_2,WCB_1,reassign,owner assignment: WCB_1 (tag WCB_2),member,WCB_1,,,2023-11-27,True
 4232945907,STEPHENS 6-31 F 162,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (242 ft below WCA_1),member,WCB_1,,,2023-11-30,True
 4232945910,STEPHENS 6-31 G 272,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-11-30,True
 4232945913,STEPHENS 6-31 H 284,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2023-12-04,True
@@ -12262,7 +12262,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946979,STEPHENS 6-31 A 214R,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (226 ft below WCA_1),member,WCB_1,,,2025-12-15,False
 4232946983,STEPHENS 6-31 J 235,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2026-01-01,False
 4232946985,STEPHENS 6-31 D 243,Diamondback,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-12-15,False
-4232946987,STEPHENS 6-31 D 244,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (254 ft below WCA_1),member,WCB_1,,,2025-12-15,False
+4232946987,STEPHENS 6-31 D 244,Diamondback,42,WCB_2,WCB_1,reassign,owner assignment: WCB_1 (tag WCB_2),member,WCB_1,,,2025-12-15,False
 4232946996,STEPHENS 6-31 B 224,Diamondback,42,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (246 ft below WCA_1),member,WCB_1,,,2025-12-11,False
 4232947003,TXL 27 UNIT 3 2202BH,Exxon Mobil,42,WCB_2,WCB_2,keep,,member,WCB_2,,,2025-07-11,False
 4232947005,TXL 27 UNIT 3 2211AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2025-07-14,False
@@ -15959,7 +15959,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246139767,LHS RANCH 1717AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-09-10,False
 4246139768,LHS RANCH 1708BH,Exxon Mobil,42,WCB_1,WCB_1,keep,class WCB_1->WCB_2 not calibrated; tag kept,member,WCB_1,,,2016-09-19,True
 4246139769,LHS RANCH 1718AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2016-10-12,True
-4246139770,MELINDA 252WB,Ovintiv,42,WCB_2,WCB_1,reassign,class WCB_2->WCB_1 (precision 1.00) + sql/23 concurs + GOR none,member,WCB_1,,,2015-06-08,False
+4246139770,MELINDA 252WB,Ovintiv,42,WCB_2,WCB_1,reassign,owner assignment: WCB_1 (tag WCB_2),member,WCB_1,,,2015-06-08,False
 4246139771,MELINDA 254WB,Ovintiv,42,WCB_1,WCB_1,keep,,member,WCB_1,,,2015-06-18,False
 4246139787,LILLIE MIDKIFF 5 4413AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-09-21,False
 4246139788,LILLIE MIDKIFF 5 4415AH,Exxon Mobil,42,WCA_1,WCA,keep,,member,WCA_1,,,2015-07-21,False

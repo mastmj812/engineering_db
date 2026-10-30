@@ -1229,8 +1229,52 @@ Options:
 - (b) Owner-bench them to WCB_2 (BOX-only).
 - (c) Correct the 8 north ones to WCB_1 in the next override batch. This is warehouse-first, and consistent with D136.
 
-**Still open at gate 20a:** the storage go (now on r3: the five rows + extents above), the 9-well conflict, asks 3 / 4 / 6
-in §4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
+### 8.16 The 9-well conflict: MM's doublecheck calls (2026-10-30) → `r3/ratified_moved_by_box_qc.csv` column `doublecheck`
+
+MM re-inspected each well and its neighbours.
+
+| call | wells | r3 BOX before | warehouse now | done |
+|---|---|---|---|---|
+| **WCB_2** | FREDERICK LINDSEY E 5H, T Y RANCH 65S, SXSW E UNIT B 1WB, MASSEY A UNIT 4309H, PEGGY 9 301 | WCB_1 (D136) | WCB_2 | owner bench WCB_2; seed row kept, note → the call |
+| **WCC** | PARKS, ROY 316CH | WCB_1 (D136) | WCB_2 (round-1 card) | owner bench WCC; seed row REMOVED (vendor WOLFCAMP C → WCC) |
+| **WCB_1** | STEPHENS 6-31 E 255, STEPHENS 6-31 D 244, MELINDA 252WB | WCB_1 | WCB_2 (class-accepted) | owner bench WCB_1; seed rows REMOVED (vendor WOLFCAMP B UPPER → WCB_1) |
+
+**Flag, not resolved:** the 5 WCB_2 calls are per-well exceptions to D136. All 5 lie north of the line at 151–362 ft below
+the local WCA_1 band, under D136's 392-ft WCB_2 threshold. The vendor raw tag on all 5 is WOLFCAMP B UPPER. Owner benches
+outrank every rule by design, so D136 itself is unchanged. If more northern wells turn out to be real WCB_2, the line or
+the threshold is the thing to revisit. FREDERICK LINDSEY E 5H is the shallowest, at 151 ft below WCA_1, above the
+southern WCB_1 median of 262 ft.
+
+**Code (repo only):**
+- `tag_screen.override_seed`: a call dated after the well's card supersedes the card. A card with no round date never
+  is, so a disagreeing call there still raises. A call back to the screen-time tag removes the row, since an override
+  equal to its `was` is forbidden by the seed test. Covered by a test.
+- `apply_formation_tag_overrides --refresh`: removed rows count as expected moves. Without this, the verify step would
+  have failed on them as stray. The verify now checks each removed well is back on the crosswalk, and the dry run lists
+  the removals.
+
+**Seed:** 336 Midland rows (231 class-accepted, 93 carded, 12 calls) + 98 Delaware = 434. sql/44 Batch 3 and the COMMENT
+are updated. The dry run (read-only, 2026-10-30) gives add 0, change 5 (notes), remove 4. Under the live crosswalk, raw
+WOLFCAMP B UPPER → WCB_1 on 9,201 Midland wells and WOLFCAMP C → WCC on 4,798, so the removals land on MM's calls.
+**Not applied:** it needs a go apply (`--refresh`, ~1 h, nothing dark). It can wait for the next override batch, since
+BOX already honours the calls through the owner benches.
+
+**r3 regenerated with the 9 owner benches** (same cache, live tags unchanged): all 9 land on the call, and only those 6
+of the 9 not already on their call moved. No seed well now disagrees with BOX. Bench finals (cohort):
+
+| bench | final (cohort) |
+|---|---|
+| WCA_1 | 7,575 (5,410) |
+| WCB_1 | 6,652 (3,900) |
+| WCB_2 | 2,151 (1,290) |
+| WCC | 614 (355) |
+| WCD | 996 (559) |
+
+Contrasts move ≤ 0.006. The extents are geometrically identical to pre-call r3 (0.00 sq mi added or removed per bench), so
+the §8.15 extent table stands. The WCD loop is unaffected: no WCD well moved.
+
+**Still open at gate 20a:** the storage go (r3 as regenerated here), applying the 4-removal seed change, asks 3 / 4 / 6 in
+§4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
 
 
 ```
