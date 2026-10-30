@@ -167,6 +167,9 @@ first pass.
    - D116 says re-measure on every record run. The step-4 record therefore changes these run-19 rows **because of D116, not
      D117**. The alternative is to carry run 19's committed outcomes for its own rows; that needs a small change to
      `box_prox_record` and is not built.
+   - **DECIDED 2026-10-30 (Michael): re-measure per D116.** Step 4 runs `box_prox_record` as rehearsed (run 25): all
+     run-19 rows are re-measured on today's parent tags. That is 601 outcome moves and +25.0 MMbbl on run 19's rows
+     (22,623.3 → 22,648.3). The step-4 provenance and Steven's note must attribute this to D116, not D117. No code change.
 5. **Step 4 shape (your call):**
    - **(a) the derived record rehearsed here:** run 19 + RES, about 2 h of build plus about 2 h of store;
    - **(b) a full 13c-style refresh** at the current data-through: about 8 h build. It absorbs items 1–4 and moves every
