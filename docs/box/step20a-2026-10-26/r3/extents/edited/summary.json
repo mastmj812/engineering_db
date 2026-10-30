@@ -1,0 +1,37 @@
+{
+ "built_at": "2026-10-29T19:05:30-05:00",
+ "git_sha": "cd1bda8",
+ "source": "docs\\box\\step20a-2026-10-26\\extents\\midland_wolfcamp_extents_2026-10-26.pptx",
+ "pools": {
+  "WCD": {
+   "slide": 5,
+   "n_freeforms": 0,
+   "n_ink_strokes": 1,
+   "stroke_kinds": [
+    "owner_outline"
+   ],
+   "generated_sqmi": 1626.5588633110767,
+   "edited_sqmi": 3371.0031015471977,
+   "added_sqmi": 1744.4442382361253,
+   "removed_sqmi": 0.0,
+   "n_parts": 1,
+   "n_evidence": 823,
+   "inside_generated": 676,
+   "inside_edited": 785,
+   "outside_edited": 38,
+   "d1_in_generated": 1747,
+   "d1_in_edited": 3598,
+   "outside_by_county": {
+    "Glasscock": 12,
+    "Reagan": 10,
+    "Howard": 4,
+    "Irion": 4,
+    "Upton": 4,
+    "Andrews": 1,
+    "Martin": 1,
+    "Midland": 1
+   },
+   "visual": "WCD"
+  }
+ }
+}

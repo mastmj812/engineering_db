@@ -1,0 +1,996 @@
+{
+ "built_at": "2026-10-29T19:03:04-05:00",
+ "git_sha": "cd1bda8",
+ "asof": "2026-09-01",
+ "n_midland_prod_hz": 28867,
+ "n_witness": 26836,
+ "verdicts": {
+  "agree": 120,
+  "reject": 55
+ },
+ "asks": [],
+ "step": "20a",
+ "basin_label": "Midland",
+ "pool_word": "D128 context (not pooled)",
+ "plan_note": "docs/box_type_curves_plan.md \u00a75 step 20a; D128 (one bench each, no pooling), D134 A / B (the Delaware class rule as written; Delaware D23 r / c and D27 constants), D117 (undrilled = any Novi category).",
+ "owner_benches": {
+  "4246139976": "WCD",
+  "4246139971": "WCD",
+  "4246139575": "WCD",
+  "4246139019": "WCD",
+  "4238342143": "WCD",
+  "4238342144": "WCD"
+ },
+ "family": "MID_WC",
+ "benches": [
+  "WCA_1",
+  "WCB_1",
+  "WCB_2",
+  "WCC",
+  "WCD"
+ ],
+ "pool_dir": [],
+ "set": {
+  "WCA_1": {
+   "tagged_live": 7761,
+   "member": 7575,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 0,
+   "frozen_to": {},
+   "frozen_retagged_since": 0,
+   "frozen_retagged_from": {},
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 7,
+   "final": 7575,
+   "final_fp_ge_2016": 6838,
+   "final_cohort": 5410,
+   "final_tvd_suspect": 0,
+   "final_witness": 7257,
+   "final_tx": 7575,
+   "final_nm": 0
+  },
+  "WCB_1": {
+   "tagged_live": 6212,
+   "member": 6658,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 0,
+   "frozen_to": {},
+   "frozen_retagged_since": 0,
+   "frozen_retagged_from": {},
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 447,
+   "final": 6658,
+   "final_fp_ge_2016": 4980,
+   "final_cohort": 3904,
+   "final_tvd_suspect": 0,
+   "final_witness": 6415,
+   "final_tx": 6658,
+   "final_nm": 0
+  },
+  "WCB_2": {
+   "tagged_live": 2395,
+   "member": 2146,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 0,
+   "frozen_to": {},
+   "frozen_retagged_since": 0,
+   "frozen_retagged_from": {},
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 21,
+   "final": 2146,
+   "final_fp_ge_2016": 1653,
+   "final_cohort": 1287,
+   "final_tvd_suspect": 0,
+   "final_witness": 2053,
+   "final_tx": 2146,
+   "final_nm": 0
+  },
+  "WCC": {
+   "tagged_live": 622,
+   "member": 613,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 0,
+   "frozen_to": {},
+   "frozen_retagged_since": 0,
+   "frozen_retagged_from": {},
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 9,
+   "final": 613,
+   "final_fp_ge_2016": 437,
+   "final_cohort": 354,
+   "final_tvd_suspect": 0,
+   "final_witness": 587,
+   "final_tx": 613,
+   "final_nm": 0
+  },
+  "WCD": {
+   "tagged_live": 994,
+   "member": 996,
+   "old_churn_kept": 0,
+   "frozen_elsewhere": 0,
+   "frozen_to": {},
+   "frozen_retagged_since": 0,
+   "frozen_retagged_from": {},
+   "new_ruled_out": 0,
+   "new_ruled_out_to": {},
+   "excluded": 0,
+   "joined_from_other_tags": 4,
+   "final": 996,
+   "final_fp_ge_2016": 823,
+   "final_cohort": 559,
+   "final_tvd_suspect": 0,
+   "final_witness": 925,
+   "final_tx": 996,
+   "final_nm": 0
+  }
+ },
+ "pooled_final": 17988,
+ "pooled_fp_ge_2016": 14731,
+ "pooled_cohort": 11514,
+ "flags": [
+  {
+   "swap_class": "WCA->WCB_1",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 190,
+   "n_cohort": 120
+  },
+  {
+   "swap_class": "WCA->WCB_1",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 143,
+   "n_cohort": 93
+  },
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "rejected (0.50)",
+   "box_action": "keep",
+   "n": 88,
+   "n_cohort": 60
+  },
+  {
+   "swap_class": "WCB_1->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 87,
+   "n_cohort": 43
+  },
+  {
+   "swap_class": "WCA->DEAN",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 54,
+   "n_cohort": 36
+  },
+  {
+   "swap_class": "WCB_2->WCB_1",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "keep",
+   "n": 32,
+   "n_cohort": 16
+  },
+  {
+   "swap_class": "WCB_2->WCB_1",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 22,
+   "n_cohort": 14
+  },
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 18,
+   "n_cohort": 14
+  },
+  {
+   "swap_class": "WCC->WCB_2",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 10,
+   "n_cohort": 5
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 9,
+   "n_cohort": 7
+  },
+  {
+   "swap_class": "WCB_2->WCC",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 9,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCC->WCB_1",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 7,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCA->WCB_2",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "keep",
+   "n": 4,
+   "n_cohort": 2
+  },
+  {
+   "swap_class": "WCB_1->WCC",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 4,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCB_2->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "reassign",
+   "n": 4,
+   "n_cohort": 4
+  },
+  {
+   "swap_class": "WCA->LSSH",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "WCA->WCB_2",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 3,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->STRN",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCD->WCA",
+   "direction": "out of family",
+   "standing": "accepted (1.00)",
+   "box_action": "reassign",
+   "n": 2,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_1->WCA",
+   "direction": "out of family",
+   "standing": "rejected (0.50)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCB_2->JM",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_2->JM",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "reassign",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCB_2->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.70)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "WCC->WCA",
+   "direction": "out of family",
+   "standing": "accepted (0.78)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "WCD->WCB_2",
+   "direction": "out of family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 1
+  },
+  {
+   "swap_class": "DEAN->WCA",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 38,
+   "n_cohort": 17
+  },
+  {
+   "swap_class": "OTHER->WCD",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 22,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "OTHER->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 5,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "STRN->WCD",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 5,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "LSSH->WCA",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 3,
+   "n_cohort": 3
+  },
+  {
+   "swap_class": "BRNT->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "JM->WCA",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  },
+  {
+   "swap_class": "MS->WCB_1",
+   "direction": "into family",
+   "standing": "uncalibrated (tag kept)",
+   "box_action": "keep",
+   "n": 1,
+   "n_cohort": 0
+  }
+ ],
+ "lith": {
+  "WCA_1": {
+   "n": 0,
+   "to": {}
+  },
+  "WCB_1": {
+   "n": 0,
+   "to": {}
+  },
+  "WCB_2": {
+   "n": 0,
+   "to": {}
+  },
+  "WCC": {
+   "n": 0,
+   "to": {}
+  },
+  "WCD": {
+   "n": 0,
+   "to": {}
+  }
+ },
+ "sensitivity": [
+  {
+   "bench": "WCA_1",
+   "n_tags": 5526,
+   "med_tags": 15472.024851570912,
+   "n_all_flags": 5357,
+   "med_all_flags": 15533.555521890623,
+   "rel_change": 0.003976898363982739
+  },
+  {
+   "bench": "WCB_1",
+   "n_tags": 3584,
+   "med_tags": 14424.079443856786,
+   "n_all_flags": 3724,
+   "med_all_flags": 14442.602049625195,
+   "rel_change": 0.001284144741472426
+  },
+  {
+   "bench": "WCB_2",
+   "n_tags": 1479,
+   "med_tags": 13895.931997571342,
+   "n_all_flags": 1499,
+   "med_all_flags": 13919.10866910867,
+   "rel_change": 0.0016678745651157456
+  },
+  {
+   "bench": "WCC",
+   "n_tags": 365,
+   "med_tags": 10382.61296660118,
+   "n_all_flags": 355,
+   "med_all_flags": 10199.669248846723,
+   "rel_change": -0.01762020007323306
+  },
+  {
+   "bench": "WCD",
+   "n_tags": 560,
+   "med_tags": 13184.239699819482,
+   "n_all_flags": 558,
+   "med_all_flags": 13159.664698317181,
+   "rel_change": -0.0018639680453198526
+  }
+ ],
+ "pairs": [
+  {
+   "pooling": {
+    "a": "WCA_1",
+    "b": "WCB_1",
+    "coloc_WCA_1": {
+     "n": 5410,
+     "share_within_1p5mi": 0.8208872458410351,
+     "median_nn_mi": 0.1443415394273983
+    },
+    "coloc_WCB_1": {
+     "n": 3904,
+     "share_within_1p5mi": 0.8801229508196722,
+     "median_nn_mi": 0.08666446292186215
+    },
+    "oil12_kft": {
+     "coef": -0.03526756538760138,
+     "ratio": 0.9653470882314559,
+     "ci90": [
+      0.9260072694844205,
+      1.0038366994629673
+     ],
+     "n_blocks_both": 205,
+     "n_a": 4980,
+     "n_b": 3744,
+     "n_boot_ok": 400
+    },
+    "gor12": {
+     "coef": 0.25475623861815117,
+     "ratio": 1.290147094501212,
+     "ci90": [
+      1.2520714343278951,
+      1.3319382477878776
+     ],
+     "n_blocks_both": 205,
+     "n_a": 4980,
+     "n_b": 3744,
+     "n_boot_ok": 400
+    },
+    "cum24_over_cum12": {
+     "coef": -0.020478836664304598,
+     "ratio": 0.9797294305979458,
+     "ci90": [
+      0.9734888167841408,
+      0.9856595907825951
+     ],
+     "n_blocks_both": 198,
+     "n_a": 4611,
+     "n_b": 3428,
+     "n_boot_ok": 400
+    },
+    "raw": {
+     "WCA_1": {
+      "n_cohort": 5410,
+      "med_oil12_kft": 15542.693292025633,
+      "med_gor12": 1365.23305677926,
+      "med_tvd_ft": 8493.0,
+      "med_lateral_ft": 9981.0,
+      "share_nm": 0.0
+     },
+     "WCB_1": {
+      "n_cohort": 3904,
+      "med_oil12_kft": 14340.302654204279,
+      "med_gor12": 2053.7036008630257,
+      "med_tvd_ft": 9128.0,
+      "med_lateral_ft": 10010.0,
+      "share_nm": 0.0
+     }
+    },
+    "n_ratio_blocks": 170
+   },
+   "pair_sep": {
+    "other": "WCB_1",
+    "n_hoods": 4195,
+    "med_sep_ft": 260.0,
+    "p25_sep_ft": 211.0,
+    "p75_sep_ft": 305.0,
+    "share_within_100ft": 0.025506555423122766,
+    "share_inverted": 0.004290822407628129,
+    "n_tx": 4195,
+    "med_sep_ft_tx": 260.0,
+    "share_within_100ft_tx": 0.025506555423122766,
+    "n_nm": 0,
+    "med_sep_ft_nm": NaN,
+    "share_within_100ft_nm": NaN
+   }
+  },
+  {
+   "pooling": {
+    "a": "WCB_1",
+    "b": "WCB_2",
+    "coloc_WCB_1": {
+     "n": 3904,
+     "share_within_1p5mi": 0.38089139344262296,
+     "median_nn_mi": 2.055312579461393
+    },
+    "coloc_WCB_2": {
+     "n": 1287,
+     "share_within_1p5mi": 0.885003885003885,
+     "median_nn_mi": 0.22667047535229706
+    },
+    "oil12_kft": {
+     "coef": -0.04675740594485072,
+     "ratio": 0.9543188815983062,
+     "ci90": [
+      0.9143045538985618,
+      0.9944877324869533
+     ],
+     "n_blocks_both": 127,
+     "n_a": 2412,
+     "n_b": 1262,
+     "n_boot_ok": 400
+    },
+    "gor12": {
+     "coef": -0.0635568262491339,
+     "ratio": 0.9384207908517971,
+     "ci90": [
+      0.9016604583444436,
+      0.977415251437138
+     ],
+     "n_blocks_both": 127,
+     "n_a": 2412,
+     "n_b": 1262,
+     "n_boot_ok": 400
+    },
+    "cum24_over_cum12": {
+     "coef": -0.0004987485693494151,
+     "ratio": 0.9995013757850436,
+     "ci90": [
+      0.9891163690859133,
+      1.0103295347131658
+     ],
+     "n_blocks_both": 122,
+     "n_a": 2188,
+     "n_b": 1175,
+     "n_boot_ok": 400
+    },
+    "raw": {
+     "WCB_1": {
+      "n_cohort": 3904,
+      "med_oil12_kft": 14340.302654204279,
+      "med_gor12": 2053.7036008630257,
+      "med_tvd_ft": 9128.0,
+      "med_lateral_ft": 10010.0,
+      "share_nm": 0.0
+     },
+     "WCB_2": {
+      "n_cohort": 1287,
+      "med_oil12_kft": 13933.897975077882,
+      "med_gor12": 2090.5291727386984,
+      "med_tvd_ft": 9106.0,
+      "med_lateral_ft": 9981.0,
+      "share_nm": 0.0
+     }
+    },
+    "n_ratio_blocks": 90
+   },
+   "pair_sep": {
+    "other": "WCB_2",
+    "n_hoods": 1909,
+    "med_sep_ft": 227.0,
+    "p25_sep_ft": 140.0,
+    "p75_sep_ft": 307.0,
+    "share_within_100ft": 0.17286537454164483,
+    "share_inverted": 0.02776322682032478,
+    "n_tx": 1909,
+    "med_sep_ft_tx": 227.0,
+    "share_within_100ft_tx": 0.17286537454164483,
+    "n_nm": 0,
+    "med_sep_ft_nm": NaN,
+    "share_within_100ft_nm": NaN
+   }
+  },
+  {
+   "pooling": {
+    "a": "WCB_2",
+    "b": "WCC",
+    "coloc_WCB_2": {
+     "n": 1287,
+     "share_within_1p5mi": 0.29914529914529914,
+     "median_nn_mi": 2.1551192563842587
+    },
+    "coloc_WCC": {
+     "n": 354,
+     "share_within_1p5mi": 0.5451977401129944,
+     "median_nn_mi": 1.2787952030228815
+    },
+    "oil12_kft": {
+     "coef": -0.1420691075268856,
+     "ratio": 0.8675612993983718,
+     "ci90": [
+      0.7957219626839233,
+      0.9443484236661807
+     ],
+     "n_blocks_both": 63,
+     "n_a": 816,
+     "n_b": 289,
+     "n_boot_ok": 400
+    },
+    "gor12": {
+     "coef": 0.16506626933851498,
+     "ratio": 1.1794712789030002,
+     "ci90": [
+      1.0779218025226514,
+      1.2776094553329906
+     ],
+     "n_blocks_both": 63,
+     "n_a": 816,
+     "n_b": 289,
+     "n_boot_ok": 400
+    },
+    "cum24_over_cum12": {
+     "coef": 0.0049214074222126945,
+     "ratio": 1.0049335374384742,
+     "ci90": [
+      0.9890369186046124,
+      1.0248329788377664
+     ],
+     "n_blocks_both": 59,
+     "n_a": 733,
+     "n_b": 270,
+     "n_boot_ok": 400
+    },
+    "raw": {
+     "WCB_2": {
+      "n_cohort": 1287,
+      "med_oil12_kft": 13933.897975077882,
+      "med_gor12": 2090.5291727386984,
+      "med_tvd_ft": 9106.0,
+      "med_lateral_ft": 9981.0,
+      "share_nm": 0.0
+     },
+     "WCC": {
+      "n_cohort": 354,
+      "med_oil12_kft": 10194.27539212687,
+      "med_gor12": 2204.319229729465,
+      "med_tvd_ft": 9092.5,
+      "med_lateral_ft": 9835.5,
+      "share_nm": 0.0
+     }
+    },
+    "n_ratio_blocks": 29
+   },
+   "pair_sep": {
+    "other": "WCC",
+    "n_hoods": 198,
+    "med_sep_ft": 179.5,
+    "p25_sep_ft": 89.25,
+    "p75_sep_ft": 460.0,
+    "share_within_100ft": 0.2777777777777778,
+    "share_inverted": 0.025252525252525252,
+    "n_tx": 198,
+    "med_sep_ft_tx": 179.5,
+    "share_within_100ft_tx": 0.2777777777777778,
+    "n_nm": 0,
+    "med_sep_ft_nm": NaN,
+    "share_within_100ft_nm": NaN
+   }
+  },
+  {
+   "pooling": {
+    "a": "WCC",
+    "b": "WCD",
+    "coloc_WCC": {
+     "n": 354,
+     "share_within_1p5mi": 0.1751412429378531,
+     "median_nn_mi": 4.8481103394230445
+    },
+    "coloc_WCD": {
+     "n": 559,
+     "share_within_1p5mi": 0.16636851520572452,
+     "median_nn_mi": 4.125107740656711
+    },
+    "oil12_kft": {
+     "coef": 0.11170579889352872,
+     "ratio": 1.1181838413251382,
+     "ci90": [
+      0.9259208546100156,
+      1.3782311844654311
+     ],
+     "n_blocks_both": 33,
+     "n_a": 100,
+     "n_b": 192,
+     "n_boot_ok": 400
+    },
+    "gor12": {
+     "coef": 0.05378730253583855,
+     "ratio": 1.0552601271302207,
+     "ci90": [
+      0.8616501252176854,
+      1.2396273729851615
+     ],
+     "n_blocks_both": 33,
+     "n_a": 100,
+     "n_b": 192,
+     "n_boot_ok": 400
+    },
+    "cum24_over_cum12": {
+     "coef": 0.023865828158342216,
+     "ratio": 1.0241528961915454,
+     "ci90": [
+      0.9813761164448415,
+      1.0703837084884833
+     ],
+     "n_blocks_both": 26,
+     "n_a": 83,
+     "n_b": 132,
+     "n_boot_ok": 400
+    },
+    "raw": {
+     "WCC": {
+      "n_cohort": 354,
+      "med_oil12_kft": 10194.27539212687,
+      "med_gor12": 2204.319229729465,
+      "med_tvd_ft": 9092.5,
+      "med_lateral_ft": 9835.5,
+      "share_nm": 0.0
+     },
+     "WCD": {
+      "n_cohort": 559,
+      "med_oil12_kft": 13160.887838192803,
+      "med_gor12": 2303.7155847771046,
+      "med_tvd_ft": 10136.0,
+      "med_lateral_ft": 10120.0,
+      "share_nm": 0.0
+     }
+    },
+    "n_ratio_blocks": 6
+   },
+   "pair_sep": null
+  }
+ ],
+ "pooling": {
+  "a": "WCA_1",
+  "b": "WCB_1",
+  "coloc_WCA_1": {
+   "n": 5410,
+   "share_within_1p5mi": 0.8208872458410351,
+   "median_nn_mi": 0.1443415394273983
+  },
+  "coloc_WCB_1": {
+   "n": 3904,
+   "share_within_1p5mi": 0.8801229508196722,
+   "median_nn_mi": 0.08666446292186215
+  },
+  "oil12_kft": {
+   "coef": -0.03526756538760138,
+   "ratio": 0.9653470882314559,
+   "ci90": [
+    0.9260072694844205,
+    1.0038366994629673
+   ],
+   "n_blocks_both": 205,
+   "n_a": 4980,
+   "n_b": 3744,
+   "n_boot_ok": 400
+  },
+  "gor12": {
+   "coef": 0.25475623861815117,
+   "ratio": 1.290147094501212,
+   "ci90": [
+    1.2520714343278951,
+    1.3319382477878776
+   ],
+   "n_blocks_both": 205,
+   "n_a": 4980,
+   "n_b": 3744,
+   "n_boot_ok": 400
+  },
+  "cum24_over_cum12": {
+   "coef": -0.020478836664304598,
+   "ratio": 0.9797294305979458,
+   "ci90": [
+    0.9734888167841408,
+    0.9856595907825951
+   ],
+   "n_blocks_both": 198,
+   "n_a": 4611,
+   "n_b": 3428,
+   "n_boot_ok": 400
+  },
+  "raw": {
+   "WCA_1": {
+    "n_cohort": 5410,
+    "med_oil12_kft": 15542.693292025633,
+    "med_gor12": 1365.23305677926,
+    "med_tvd_ft": 8493.0,
+    "med_lateral_ft": 9981.0,
+    "share_nm": 0.0
+   },
+   "WCB_1": {
+    "n_cohort": 3904,
+    "med_oil12_kft": 14340.302654204279,
+    "med_gor12": 2053.7036008630257,
+    "med_tvd_ft": 9128.0,
+    "med_lateral_ft": 10010.0,
+    "share_nm": 0.0
+   }
+  },
+  "n_ratio_blocks": 170
+ },
+ "pair_sep": {
+  "other": "WCB_1",
+  "n_hoods": 4195,
+  "med_sep_ft": 260.0,
+  "p25_sep_ft": 211.0,
+  "p75_sep_ft": 305.0,
+  "share_within_100ft": 0.025506555423122766,
+  "share_inverted": 0.004290822407628129,
+  "n_tx": 4195,
+  "med_sep_ft_tx": 260.0,
+  "share_within_100ft_tx": 0.025506555423122766,
+  "n_nm": 0,
+  "med_sep_ft_nm": NaN,
+  "share_within_100ft_nm": NaN
+ },
+ "n_ratio_blocks": 170,
+ "uncalibrated_flags": 237,
+ "uncalibrated_classes": [
+  "BRNT->WCB_1",
+  "DEAN->WCA",
+  "JM->WCA",
+  "LSSH->WCA",
+  "MS->WCB_1",
+  "OTHER->WCB_1",
+  "OTHER->WCD",
+  "STRN->WCD",
+  "WCA->DEAN",
+  "WCA->LSSH",
+  "WCB_1->WCB_2",
+  "WCB_1->WCC",
+  "WCB_2->JM",
+  "WCC->WCB_1",
+  "WCD->STRN",
+  "WCD->WCB_2"
+ ],
+ "bench_summaries": {
+  "WCA_1": {
+   "n_prod_hz": 7761,
+   "n_tx": 7761,
+   "n_nm": 0,
+   "n_cohort": 5526,
+   "planned_share": 0.0007730962504831851,
+   "planned_share_nm": NaN,
+   "round_tvd_share": 0.010179100631361938,
+   "sql23_disagree_share": 0.09341579693338488,
+   "cons_flag_n": 397,
+   "cons_flag_share": 0.05115320190697075,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 15472.024851570912,
+   "border_step": {
+    "verdict": "not_applicable",
+    "reason": "no state line in the midland basin"
+   }
+  },
+  "WCB_1": {
+   "n_prod_hz": 6212,
+   "n_tx": 6212,
+   "n_nm": 0,
+   "n_cohort": 3584,
+   "planned_share": 0.0003219575016097875,
+   "planned_share_nm": NaN,
+   "round_tvd_share": 0.011107533805537669,
+   "sql23_disagree_share": 0.10206052801030265,
+   "cons_flag_n": 180,
+   "cons_flag_share": 0.028976175144880875,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 14424.079443856786,
+   "border_step": {
+    "verdict": "not_applicable",
+    "reason": "no state line in the midland basin"
+   }
+  },
+  "WCB_2": {
+   "n_prod_hz": 2395,
+   "n_tx": 2395,
+   "n_nm": 0,
+   "n_cohort": 1479,
+   "planned_share": 0.0,
+   "planned_share_nm": NaN,
+   "round_tvd_share": 0.012108559498956159,
+   "sql23_disagree_share": 0.11064718162839249,
+   "cons_flag_n": 79,
+   "cons_flag_share": 0.03298538622129436,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 13895.931997571342,
+   "border_step": {
+    "verdict": "not_applicable",
+    "reason": "no state line in the midland basin"
+   }
+  },
+  "WCC": {
+   "n_prod_hz": 622,
+   "n_tx": 622,
+   "n_nm": 0,
+   "n_cohort": 365,
+   "planned_share": 0.0,
+   "planned_share_nm": NaN,
+   "round_tvd_share": 0.024115755627009645,
+   "sql23_disagree_share": 0.15594855305466238,
+   "cons_flag_n": 36,
+   "cons_flag_share": 0.05787781350482315,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 10382.61296660118,
+   "border_step": {
+    "verdict": "not_applicable",
+    "reason": "no state line in the midland basin"
+   }
+  },
+  "WCD": {
+   "n_prod_hz": 994,
+   "n_tx": 994,
+   "n_nm": 0,
+   "n_cohort": 560,
+   "planned_share": 0.0030181086519114686,
+   "planned_share_nm": NaN,
+   "round_tvd_share": 0.012072434607645875,
+   "sql23_disagree_share": 0.03420523138832998,
+   "cons_flag_n": 6,
+   "cons_flag_share": 0.006036217303822937,
+   "cons_lith_n": 0,
+   "cohort_med_oil12_kft": 13184.239699819482,
+   "border_step": {
+    "verdict": "not_applicable",
+    "reason": "no state line in the midland basin"
+   }
+  }
+ }
+}

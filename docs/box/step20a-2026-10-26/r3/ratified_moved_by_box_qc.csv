@@ -1,0 +1,10 @@
+api10,well_name,formation_blueox,final,box_action,box_reason,tvd_ft,cohort
+4222742820,FREDERICK LINDSEY E 5H,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (151 ft below WCA_1),8603,False
+4231741112,T Y RANCH 65S,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (304 ft below WCA_1),9634,True
+4231743870,SXSW E UNIT B 1WB,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (314 ft below WCA_1),9641,False
+4232943120,MASSEY A UNIT 4309H,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (222 ft below WCA_1),9750,True
+4232943352,"PARKS, ROY 316CH",WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (280 ft below WCA_1),9973,True
+4232944698,PEGGY 9 301,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (362 ft below WCA_1),9294,True
+4232945905,STEPHENS 6-31 E 255,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (272 ft below WCA_1),9790,True
+4232946987,STEPHENS 6-31 D 244,WCB_2,WCB_1,reassign,D136: north of the WCB split line at WCB_1 depth (254 ft below WCA_1),9771,False
+4246139770,MELINDA 252WB,WCB_2,WCB_1,reassign,class WCB_2->WCB_1 (precision 1.00) + sql/23 concurs + GOR none,9596,False
