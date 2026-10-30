@@ -201,3 +201,25 @@ def test_water_carry_reuses_only_identical_raw_oil(tmp_path):
     assert got == {1: {"w": 1}}  # stick 2's raw oil moved (a refit): rebuilt; stick 10 is new
     with pytest.raises(SystemExit, match="through"):
         bwr.load_carry(tmp_path / "wat", tmp_path / "oil", A, dt.date(2026, 8, 1))
+
+
+def test_compare_reproduced_differing_missing_and_additions():
+    from scripts import box_d117_step3 as s3
+
+    def frames(pf, st):
+        out = {n: pd.DataFrame(columns=[*k, "image"]) for n, (_, k) in s3.TABLES.items()}
+        out["pud_forecast"] = pd.DataFrame(pf, columns=["location_id", "image"])
+        out["pud_forecast_stream"] = pd.DataFrame(st, columns=["location_id", "stream", "image"])
+        return out
+
+    live = frames([(1, '{"coverage": "covered", "planned_spacing_ft": 880.0}'), (2, '{"coverage": "covered", "planned_spacing_ft": 1300.0}'),
+                   (3, '{"coverage": "covered"}')], [(1, "oil", '{"eur": 1.0}')])
+    box = frames([(1, '{"coverage": "covered", "planned_spacing_ft": 880.0}'), (2, '{"coverage": "covered", "planned_spacing_ft": 650.0}'),
+                   (9, '{"coverage": "covered"}')], [(1, "oil", '{"eur": 1.0}'), (9, "oil", '{"eur": 2.0}')])
+    summ, diffs = s3.compare(live, box)
+    pf = summ["pud_forecast"]
+    assert (pf["reproduced"], pf["differ"], pf["missing_in_container"], pf["container_only"]) == (1, 1, 1, 1)
+    assert pf["differ_columns"] == {"planned_spacing_ft": 1}
+    assert summ["pud_forecast_stream"] == {"live_rows": 1, "reproduced": 1, "differ": 0, "differ_columns": {}, "missing_in_container": 0,
+                                           "container_only": 1}
+    assert list(diffs["location_id"]) == [2]
