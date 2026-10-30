@@ -106,14 +106,25 @@ def pool_spacing(conn: Any, cb: dict[str, Any], sp: pd.Series, measured: bool) -
     return br.spacing(conn, sorted({str(a) for a in cb["frame"]["api10"]})) if measured else sp
 
 
-def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "WCA", measured: bool = False) -> dict[str, Any]:
+def last_month(conn: Any, pin: dt.date | None = None) -> dt.date:
+    """The last full production month (rule of record), or `pin` (augment: the source run's data-through) when it is not later."""
+    live = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
+    if pin is None:
+        return live
+    if pin > live:
+        raise SystemExit(f"data-through pin {pin} is later than the warehouse's last full month {live}")
+    return pin
+
+
+def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "WCA", measured: bool = False,
+               last: dt.date | None = None) -> dict[str, Any]:
     """The harness's pool at a production cutoff (run_fold lines: areas -> curves -> factors -> trn / sp / t_act; then
     add_analog_predictions_v2: f_oil, build_pool, U-turn legs, completed laterals). Non-WCA benches: build_pool_analog.
-    `measured` = the D119 spacing (pool_spacing)."""
+    `measured` = the D119 spacing (pool_spacing); `last` pins the last full month (default: the live one)."""
     if bench != "WCA":
-        return build_pool_analog(conn, workers, wells_dir, bench, measured)
+        return build_pool_analog(conn, workers, wells_dir, bench, measured, last)
     wells, excluded = exclusions.drop(egr.load_final_sets(wells_dir, ("WCA",)))
-    last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
+    last = last_month(conn, last)
     cutoff = br._add_months(last, 1)
     asof = br._prev_month(cutoff)
     ar = hr.rebuild_areas(conn, wells, asof)
@@ -138,13 +149,14 @@ def build_pool(conn: Any, workers: int, wells_dir: Path = WELLS, bench: str = "W
             "ut": ut, "pool": pool, "pool2": pool2, "k_areas": len(ar["geoms"]), "label": "WCA", "extent_id": None, "basin": ac.spec_basin("WCA")}
 
 
-def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, measured: bool = False) -> dict[str, Any]:
+def build_pool_analog(conn: Any, workers: int, wells_dir: Path, bench: str, measured: bool = False,
+                      last: dt.date | None = None) -> dict[str, Any]:
     """Step 9c: the pool the 9a / 9b harness scored `bench` with (box.backtest_report.run_fold_analog's lines up to its scored
     wells, then add_analog_predictions_v2's pool lines), at the production cutoff: BENCH_SPECS well set + tags, per-well fits of
     every pre-cutoff well inside the bench's extent of record, the D9 12-mo training cohort (F(k) sample), f_oil = 1."""
     spec = ac.BENCH_SPECS[bench]
     wells, excluded, _ = ac.bench_wells(wells_dir, bench)
-    last = rep.last_full_month(rep._read(conn, rep._MONTHS_SQL))
+    last = last_month(conn, last)
     cutoff = br._add_months(last, 1)
     asof = br._prev_month(cutoff)
     ext = tar.pull_extent(conn, spec["extent"], spec["basin"])
@@ -311,9 +323,12 @@ def build_bench(conn: Any, a: argparse.Namespace, u: pd.DataFrame, bench: str, c
         if bad:
             raise SystemExit(f"[{bench}] 9c haircut guard REFUSES the D62 table: {bad}")
     wells_dir = p9r.wells_dir(bench, a.wells)
-    P = build_pool(conn, a.workers, wells_dir, bench, measured=r2)
+    P = build_pool(conn, a.workers, wells_dir, bench, measured=r2, last=getattr(a, "data_through", None))
     print(f"[{bench}] wells {wells_dir}; pool {len(P['pool']['api10'])} wells at cutoff {P['cutoff']} (production through {P['asof']}) ({time.time() - t0:.0f} s)", flush=True)
     locs = locations(u, conn, bench)
+    only = getattr(a, "only", None)
+    if only is not None:  # augment: only these sticks are fitted (the rest of the run is carried from its source build)
+        locs = [x for x in locs if x["stick_id"] in only]
     if a.limit:  # smoke only: the identity check refuses to store a limited build
         locs = locs[: a.limit]
     if bench == "BS2_S":  # D101: edge region of each covered BS2_S location vs the extent of record (workup text, no spec change)
@@ -545,6 +560,148 @@ def cmd_rehaircut(a: argparse.Namespace) -> int:
 
 
 # ----------------------------------------------------------------------------
+# augment (D117 step 3)
+# ----------------------------------------------------------------------------
+
+N_REFERENCE = 24  # carried rows per group refitted on the rebuilt pool: how far the pool moved since the source build
+
+
+def same_gap(a: float | None, b: float | None) -> bool:
+    return (a is None and b is None) or (a is not None and b is not None and abs(float(a) - float(b)) <= 1e-6)
+
+
+def months_rel_diff(x: dict[str, Any], y: dict[str, Any]) -> float:
+    """Max relative difference of the raw months of two fits over the streams either carries (inf when only one has a stream)."""
+    worst = 0.0
+    for s in pr.STREAMS:
+        p, q = x.get("streams", {}).get(s), y.get("streams", {}).get(s)
+        if p is None or q is None:
+            worst = max(worst, 0.0 if p is None and q is None else np.inf)
+            continue
+        pm, qm = np.asarray(p["months_raw"], float), np.asarray(q["months_raw"], float)
+        worst = max(worst, float(np.max(np.abs(pm - qm) / np.maximum(np.abs(qm), 1e-9))))
+    return worst
+
+
+def augment_universe(src: pd.DataFrame, live: pd.DataFrame, basin: str) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int]]:
+    """D117 step 3: the source run's universe (its basin only, D135) + the live universe's RES rows it does not hold. PUD drift
+    since the source build (live PUD rows it lacks, source rows gone or re-classed live) is counted, never applied."""
+    s = src[src["basin"] == basin].copy()
+    if "category" not in s:
+        s["category"] = "PUD"  # every universe before D117 step 3 was Novi PUD only
+    add = live[(live["category"] == "RES") & ~live["stick_id"].isin(s["stick_id"])]
+    lp = live[live["category"] == "PUD"]
+    m = s.merge(lp, on="stick_id", how="inner", suffixes=("", "_live"))
+    moved = pd.Series(False, index=m.index)
+    for c in ("bench", "formation_blueox", "recon_status", "coverage", "prod_bench"):
+        moved |= m[c].astype("string").fillna("") != m[f"{c}_live"].astype("string").fillna("")
+    drift = {"source_other_basin_dropped": int((src["basin"] != basin).sum()),
+             "source_rows_gone_live": int((~s["stick_id"].isin(lp["stick_id"])).sum()),
+             "live_pud_not_in_source": int((~lp["stick_id"].isin(s["stick_id"])).sum()),
+             "source_rows_reclassed_live": int(moved.sum()),
+             "res_already_in_source": int(((live["category"] == "RES") & live["stick_id"].isin(s["stick_id"])).sum())}
+    return pd.concat([s, add[s.columns]], ignore_index=True), add.reset_index(drop=True), drift
+
+
+def cmd_augment(a: argparse.Namespace) -> int:
+    """D117 step 3 / 4: a build = the source build's rows VERBATIM + the RES rows the D117 universe adds, fitted on each group's pool
+    rebuilt at the source's data-through (same well sets, selection and evidence pack). Per group, N_REFERENCE carried rows whose
+    planned spacing is unchanged are refitted too and compared to the source: the pool's drift since the source build (D137),
+    reported, never applied. Carried rows whose D64 gap a new RES neighbour narrows are refitted for the record of the effect; they
+    replace the source rows only with --refit-gap-changed."""
+    t0 = time.time()
+    code_sha = _git_sha()
+    S = _load(a.src)
+    run_s = S["run"]
+    basin = run_s.get("basin", "delaware")  # artifacts before step 19 carry no basin; they were all Delaware runs
+    benches = list(run_s["benches"])
+    sel = run_s.get("selection") or {}
+    a.selection, a.wells, a.limit, a.data_through = sel.get("name", "v2"), Path(run_s["wells_dir"]), 0, run_s["data_through"]
+    a.pack, a.pack_sha256 = load_evidence(Path(sel["evidence"])) if a.selection == "r2" else (None, None)
+    if a.selection == "r2" and a.pack_sha256 != sel["evidence_sha256"]:
+        raise SystemExit(f"evidence pack {a.pack_sha256} != the source build's {sel['evidence_sha256']}")
+    print(f"code {code_sha}; source {a.src} (code {run_s['code_sha'][:7]}, data through {a.data_through}, cutoff {run_s['cutoff']}); "
+          f"selection {a.selection}; wells {a.wells}", flush=True)
+    cfg = di_config.load()
+    by_stick = {loc["stick_id"]: (loc, r) for loc, r in zip(S["locs"], S["results"], strict=True)}
+    with get_connection() as conn:
+        u, add, drift = augment_universe(S["universe"], pr.universe(conn, benches), basin)
+        print(f"universe: source {len(u) - len(add)} + RES added {len(add)} = {len(u)}; drift since the source (counted, not applied) {drift}",
+              flush=True)
+        src_cov = u[u["coverage"].isin(pr.COVERED) & ~u["stick_id"].isin(add["stick_id"])]
+        near = nearest_by_stick(conn, u, src_cov)
+        near0 = nearest_by_stick(conn, u[u["category"] == "PUD"], src_cov)  # same live PDP: a RES neighbour is the only difference
+        gap = {s: (None if v is None else v[0]) for s, v in near.items()}
+        changed = {s for s in gap if not same_gap(gap[s], None if near0[s] is None else near0[s][0])}
+        stable = {s for s in gap if s not in changed and same_gap(gap[s], by_stick[s][0]["spacing_ft"])}
+        print(f"D64: {len(changed)} carried rows get a narrower gap from a RES neighbour; {len(gap) - len(changed) - len(stable)} differ from "
+              "the source on live PDP drift alone (carried as built)", flush=True)
+        rng = np.random.default_rng(20261030)
+        new_cov = add[add["coverage"].isin(pr.COVERED)]
+        B: dict[str, dict[str, Any]] = {}
+        refs: dict[str, list[int]] = {}
+        for b in benches:
+            mine = set(new_cov.loc[new_cov["prod_bench"] == b, "stick_id"].astype(int)) | {s for s in changed if by_stick[s][0]["prod_bench"] == b}
+            if not mine:
+                continue
+            cand = sorted(s for s in stable if by_stick[s][0]["prod_bench"] == b)
+            refs[b] = sorted(int(x) for x in rng.choice(cand, size=min(N_REFERENCE, len(cand)), replace=False))
+            a.only = mine | set(refs[b])
+            B[b] = build_bench(conn, a, u, b, cfg, t0)
+            if (B[b]["P"]["cutoff"], B[b]["P"]["asof"]) != (run_s["cutoff"], run_s["data_through"]):
+                raise SystemExit(f"[{b}] rebuilt pool at {B[b]['P']} != the source cutoff {run_s['cutoff']}")
+    new_ids = set(add["stick_id"].astype(int))
+    fitted = {loc["stick_id"]: (loc, r) for b in B for loc, r in zip(B[b]["locs"], B[b]["results"], strict=True)}
+    ref_diff = {b: max((months_rel_diff(fitted[s][1], by_stick[s][1]) for s in refs[b]), default=0.0) for b in B}
+    gap_eff = []
+    for s in sorted(changed):
+        (l0, r0), (l1, r1) = by_stick[s], fitted[s]
+        e0, e1 = (r.get("streams", {}).get("oil", {}).get("eur") for r in (r0, r1))
+        gap_eff.append({"stick_id": s, "prod_bench": l0["prod_bench"], "gap_source_ft": l0["spacing_ft"], "gap_with_res_ft": l1["spacing_ft"],
+                        "nearest_with_res": l1["nearest"], "oil_eur_source": e0, "oil_eur_refit": e1, "oil_rel": (e1 / e0 - 1) if e0 and e1 else None})
+    replace = changed if a.refit_gap_changed else set()
+    keep = set(u["stick_id"].astype(int))
+    pairs = [fitted[loc["stick_id"]] if loc["stick_id"] in replace else (loc, r)
+             for loc, r in zip(S["locs"], S["results"], strict=True) if loc["stick_id"] in keep]
+    pairs += [fitted[s] for b in benches for s in sorted(new_ids) if s in fitted and fitted[s][0]["prod_bench"] == b]
+    locs, res = [p[0] for p in pairs], [p[1] for p in pairs]
+    by_bench = {}
+    for b in benches:
+        rec = dict(run_s["by_bench"][b])
+        mine_r = [r for loc, r in pairs if loc["prod_bench"] == b]
+        if b in B:
+            hcut = p16.haircut_from_pack(a.pack["groups"][b]) if a.selection == "r2" else p9.haircut_for(b)
+            rec["haircut"] = haircut_record(hcut, mine_r, p16.haircut_method_none(b) if a.selection == "r2" else p9r.haircut_method_none(b))
+            nb, fit_ids = B[b]["record"], [loc["stick_id"] for loc in B[b]["locs"]]
+            rec["d117_augment"] = {"res_added": sum(s in new_ids for s in fit_ids), "gap_changed": sum(s in changed for s in fit_ids),
+                                   "gap_changed_replaced": bool(a.refit_gap_changed), "n_pool_rebuilt": nb["n_pool"], "n_pool_source": rec["n_pool"],
+                                   "equivalence": nb["equivalence"], "guard": nb["guard"], "reference_refit_n": len(refs[b]),
+                                   "reference_refit_max_rel_diff": ref_diff[b]}
+        rec["n_locations"] = len(mine_r)
+        rec["n_forecast"] = sum("oil" in r.get("streams", {}) for r in mine_r)
+        by_bench[b] = rec
+    meta = pd.concat([S["analog_meta"], *[B[b]["meta"] for b in B]], ignore_index=True).drop_duplicates("api10").reset_index(drop=True)
+    cum = {s: {**{k: v for b in B for k, v in B[b]["cum"][s].items()}, **S["analog_cum_kft"][s]} for s in pr.STREAMS}  # the source's wins
+    n_added = len(new_ids & set(fitted))
+    run = {**run_s, "built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "basin": basin, "code_sha": code_sha,
+           "engine_sha": boxfit_sha(), "report_version": sorted(set(u["report_version"])), "haircut": by_bench[benches[0]]["haircut"],
+           "by_bench": by_bench,
+           "augmented_from": {"artifact": str(a.src), "code_sha": run_s["code_sha"], "built_at": run_s["built_at"], "decision": "D117 step 3",
+                              "res_added": n_added, "gap_changed_replaced": len(replace), "drift": drift}}
+    a.out.mkdir(parents=True, exist_ok=True)
+    with open(a.out / "run.pkl", "wb") as fh:
+        pickle.dump({"run": run, "universe": u, "locs": locs, "results": res, "analog_meta": meta, "analog_cum_kft": cum}, fh)
+    pd.DataFrame(gap_eff).to_csv(a.out / "gap_changed.csv", index=False)
+    summ = {"source": str(a.src), "code_sha": code_sha, "universe": len(u), "res_added": len(add), "res_added_forecast_candidates": len(new_cov),
+            "res_added_fitted": n_added, "drift": drift, "gap_changed": len(changed), "gap_changed_replaced": len(replace),
+            "reference_refit_max_rel_diff": ref_diff, "seconds": round(time.time() - t0)}
+    (a.out / "augment.json").write_text(json.dumps(summ, indent=1, default=str), encoding="utf-8")
+    print(f"wrote {a.out / 'run.pkl'}: {len(locs)} forecast locations ({n_added} RES added); reference refit max rel diff {ref_diff} "
+          f"({time.time() - t0:.0f} s)", flush=True)
+    return 0
+
+
+# ----------------------------------------------------------------------------
 # store
 # ----------------------------------------------------------------------------
 
@@ -726,6 +883,10 @@ def provenance_clause(run: dict[str, Any]) -> str:
         out += f"; analog pools {', '.join(dirs)} (D84 / D126)"
     if shas:
         out += f"; evidence pack {', '.join(shas)} (D120 / D126)"
+    aug = run.get("augmented_from")
+    if aug:  # D117 step 3: the RES rows added to an existing build at its data-through; its own rows carried
+        out += (f"; D117 universe (Novi PUD + RES): {aug['res_added']} RES rows added to build {aug['code_sha'][:7]} at its data-through, "
+                f"its rows carried verbatim" + (f" except {aug['gap_changed_replaced']} refitted on a RES-narrowed D64 gap" if aug.get("gap_changed_replaced") else ""))
     return out
     return (("uptime-free volumes x D62 haircut factors applied by the D92 C1 rate shape" if "method" in run["haircut"]
              else "uptime-free volumes x D62 haircut")
@@ -788,7 +949,7 @@ def identity(q: Any, rid: int, u: pd.DataFrame) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("build", "annotate", "store", "render", "rehaircut", "radius"):
+    for name in ("build", "annotate", "store", "render", "rehaircut", "radius", "augment"):
         p = sub.add_parser(name)
         p.add_argument("--out", type=Path, default=Path("runs") / "box7c")
         p.add_argument("--workers", type=int, default=7)
@@ -801,8 +962,11 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--selection", choices=("r2", "v2"), default="r2",
                        help="r2 = the D121 selection of record (measured spacing, r2 rules, the evidence pack); v2 = the pre-D121 build")
         p.add_argument("--evidence", type=Path, default=p16.EVIDENCE, help="r2: the frozen evidence pack (scripts.box_step16d evidence)")
-        if name == "rehaircut":
+        if name in ("rehaircut", "augment"):
             p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
+        if name == "augment":
+            p.add_argument("--refit-gap-changed", action="store_true",
+                           help="carried rows whose D64 gap a new RES neighbour narrows take the refit (default: carried verbatim)")
         if name == "radius":
             p.add_argument("--views", type=Path, required=True, help="9a tuning views dir (view_*.csv.gz)")
             p.add_argument("--bench", required=True, help="BENCH_SPECS key (BS2_S | WCXY_WCA1)")
@@ -822,6 +986,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_annotate(a)
     if a.cmd == "rehaircut":
         return cmd_rehaircut(a)
+    if a.cmd == "augment":
+        return cmd_augment(a)
     from box import production_pages as pp
 
     return pp.render(_load(a.out), a.out, a.docs)
