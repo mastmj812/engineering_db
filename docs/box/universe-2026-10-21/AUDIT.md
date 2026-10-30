@@ -162,3 +162,7 @@ Post-apply tail:
 - the workspace CLAUDE.md identity + narvi rule 11.
 
 Next = **step 3** (BOX rehearsal) on Michael's go.
+
+## Step 3 (built 2026-10-30, at the step-3 gate)
+Run 14 has since been replaced: the record is run 19 (D123), so step 3 rehearsed against run 19. Results and the gate asks:
+`step3/FINDINGS.md`.
