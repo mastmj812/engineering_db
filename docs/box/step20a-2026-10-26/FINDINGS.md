@@ -1358,7 +1358,7 @@ loop-tip flag (§7). D117 step 3 runs separately.
 same membership as before, when the class was uncalibrated. Each card still decides its own well, so the 6 agree wells
 move to WCB_2 in BOX (3 of them cohort).
 
-**Flag, not resolved:** the split is geographic. North of the D136 line the cards went 0 / 3, which is what D136 predicts:
+**DECIDED (MM 2026-10-30): keep the class rejected as carded; no south-only rule.** The split is geographic. North of the D136 line the cards went 0 / 3, which is what D136 predicts:
 one WCB landing there. South they went 6 / 7 (0.86). Accepting the class south of the line only would be a new rule, a
 class split by D136, so it is MM's call. As carded, the gate applies to the whole class. There are 73 uncarded flags; 49
 of them lie south of the line (24 cohort), and 24 north.
@@ -1378,7 +1378,7 @@ move ≤ 0.003.
 
 The stored records are kept: no location changes coverage. Re-storing WCB_2 would supersede record 38 and needs a go.
 
-**Still open at gate 20a:** the south-only question above, the unlike-threshold confirm (§4 item 1), and the
+**Still open at gate 20a:** the unlike-threshold confirm (§4 item 1), and the
 4246139575 loop-tip flag (§7).
 
 
