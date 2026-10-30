@@ -236,6 +236,10 @@ def refresh(dry_run: bool) -> None:
             diff = seed_diff(expected, live)
             print(f"    seed {len(expected)} rows vs live {len(live)}: add {len(diff['add'])}, "
                   f"change {len(diff['change'])}, remove {len(diff['remove'])}", flush=True)
+            # A removed row hands the well back to the crosswalk (vendor) tag: an expected move.
+            for r in live:
+                if r[0] in diff["remove"]:
+                    print(f"      remove {r[0]}: override {r[1]} -> crosswalk tag (was {r[2]})", flush=True)
             # Report-only: vendors revise tags in place, so a row's `was` (the tag when MM
             # ratified it) can drift from the live crosswalk tag before the apply.
             tags = dict(cur.execute(
@@ -273,7 +277,16 @@ def refresh(dry_run: bool) -> None:
             print("[5/5] verify", flush=True)
             n_bad = _verify_overrides(cur)
             after = _snapshot(cur)
-            ovr = {r["api10"] for r in expected}
+            removed = cur.execute(
+                "SELECT api10, formation_blueox, formation_blueox_source FROM curated.formation_blueox "
+                "WHERE api10 = ANY(%s)", (diff["remove"],)).fetchall()
+            still = [r for r in removed if r[2] == "ratified_override"]
+            print(f"    removed rows back on the crosswalk: {len(removed) - len(still)}/{len(diff['remove'])}"
+                  f"  [{'OK' if not still and len(removed) == len(diff['remove']) else 'MISMATCH'}]", flush=True)
+            for a, tag, src in removed:
+                print(f"      {a}: {tag} (source {src})", flush=True)
+            n_bad += len(still) + len(diff["remove"]) - len(removed)
+            ovr = {r["api10"] for r in expected} | set(diff["remove"])
             pdp_moved = {k for k in before["pdp"].keys() & after["pdp"].keys()
                          if before["pdp"][k] != after["pdp"][k]}
             stray = sorted(pdp_moved - ovr)

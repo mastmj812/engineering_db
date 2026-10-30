@@ -420,6 +420,12 @@ def test_tag_screen_override_seed():
                                          "source": ["Michael in anduin"], "date": ["2026-10-29"], "note": ["looked"]})])
     s2 = ts.override_seed(flags, cards, c2, states, {"round 1": "2026-10-27"}, "2026-10-28").set_index("api10")
     assert s2.loc["c", "corrected_code"] == "WCB_2" and s2.loc["c", "note"].startswith("Michael in anduin 2026-10-29")
+    # a later re-inspection supersedes the card; a call back to the screen-time tag removes the row
+    c3 = pd.concat([calls, pd.DataFrame({"api10": ["a", "d"], "live_tag": ["WCA_1", "WCA_1"], "call": ["WCC", "WCA_1"],
+                                         "source": ["Michael doublecheck"] * 2, "date": ["2026-10-30"] * 2, "note": ["x"] * 2})])
+    s3 = ts.override_seed(flags, cards, c3, states, {"round 1": "2026-10-27"}, "2026-10-28").set_index("api10")
+    assert s3.loc["a", "corrected_code"] == "WCC" and s3.loc["a", "note"].startswith("Michael doublecheck 2026-10-30")
+    assert "d" not in s3.index
     calls.loc[1, "call"] = "WCB_2"
     import pytest
 

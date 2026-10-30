@@ -1173,6 +1173,110 @@ nightly row-count drift.
 
 **Next at gate 20a:** re-run the 20a family QC and extents on the corrected tags, then the storage go.
 
+### 8.15 r3: 20a re-run on the corrected tags (2026-10-30) → `r3/`, `r3/extents/`
+
+This is the r2 recipe (§7) unchanged: the same card verdicts, D136, owner WCD and WCD loop. The only difference is the
+live tags, which now carry the 438 overrides. It is read-only and nothing is stored. Production as-of is unchanged
+(2026-09-01), so the moves below come from tags alone. r2 is left as it was.
+
+| bench | r2 final (cohort) | r3 final (cohort) | pooling contrast vs bench above, oil / GOR / shape, r2 → r3 |
+|---|---|---|---|
+| WCA_1 | 7,540 (5,378) | 7,575 (5,410) | — |
+| WCB_1 | 6,684 (3,927) | 6,658 (3,904) | 0.962 / 1.294 / 0.979 → 0.965 / 1.290 / 0.980 |
+| WCB_2 | 2,062 (1,237) | 2,146 (1,287) | 0.958 / 0.928 / 0.999 → 0.954 / 0.938 / 1.000 |
+| WCC | 649 (376) | 613 (354) | 0.878 / 1.177 / 1.002 → 0.868 / 1.179 / 1.005 |
+| WCD | 945 (546) | 996 (559) | 1.123 / 1.108 / 1.030 → 1.118 / 1.055 / 1.024 |
+
+- **Wells:** 17,861 in both runs; 184 changed final bench (110 cohort). The largest flow is WCB_1 → WCB_2 (88), the class
+  WCB_1 → WCB_2 (A) you accepted in the tag screen. Next come WCC → WCB_1 (18) and WCB_2 → WCB_1 (17). Then WCC → WCD (12), from
+  §8.10, and WCC → WCB_2 (11).
+- **Family membership:** 127 wells joined (79 are override wells: OTHER → WCD 45, LSSH → WCA_1 19, LSSH → WCB_1 7,
+  DEAN → WCA_1 8; the other 48 are vendor re-tags) and 19 left. Uncalibrated flags fell from 349 to 237.
+- **Separability (D128, no pooling, unaffected):** GOR and shape still separate every pair. The WCB_1 / WCA_1 oil ratio's
+  90 % CI now just touches 1.0 ([0.926, 1.004]; r2 [0.923, 0.998]). That reads the same as before: the two benches differ
+  on GOR (+29 %) and shape, not 12-month oil.
+
+**Extents** (same construction; undrilled = D117, Novi PUD + RES, ≥ 50 % of the stick inside):
+
+| bench | r2 sq mi / undrilled | r3 sq mi / undrilled | footprint vs r2 (sq mi added / removed) |
+|---|---|---|---|
+| WCA_1 | 5,519 / 5,204 | 5,539 / 5,235 | +38 / −18 |
+| WCB_1 | 5,220 / 5,599 | 5,188 / 5,595 | +40 / −72 |
+| WCB_2 (D136 clip) | 2,003 / 851 | 2,018 / 856 | +22 / −8 |
+| WCC (generated) | 652 / 699 | 644 / 698 | +9 / −17 |
+| WCD **your loop** | 3,371 / 3,598 | 3,371 / 3,598 | loop geometry byte-identical |
+
+For reference, WCD as generated without your loop: 1,627 / 1,747 in r2, 1,655 / 1,770 in r3. Inside the loop, 785 of
+823 ≥ 2016 WCD laterals now fall inside (r2: 771 of 804). Two WCD sticks inside moved from `conflict` to `remaining_pud`
+after the reconciliation refresh; the undrilled total is unchanged. Every extent keeps ≥ 97 % of its r2 footprint.
+
+The loop was read against r1's pixel frames, as in r2. It was written via a scratch copy so r2's `extents/edited/` stays
+as it was; the r3 copy is `r3/extents/edited/`.
+
+**Conflict to decide (not resolved here): 9 ratified wells (5 cohort) that BOX QC moves off their ratified tag.**
+`r3/ratified_moved_by_box_qc.csv`. All 9 are ratified WCB_2 and BOX puts them in WCB_1.
+- 8 by D136: north of the WCB split line at WCB_1 depth (151–362 ft below WCA_1). 7 come from the tag-screen class
+  WCB_1 → WCB_2 (A) (convention (a)); 1 is PARKS, ROY 316CH, your round-1 card WCC → WCB_2.
+- 1 by the BOX class WCB_2 → WCB_1 (precision 1.00, sql/23 concurs): MELINDA 252WB.
+
+The two decisions disagree. The tag screen judged each well against its neighbours, and in the north those neighbours
+are the WCB_2 tags D136 calls WCB_1. D136 says there is one WCB landing in the north. BOX QC does not exempt
+`ratified_override` wells from its rules, in the Delaware either.
+
+Options:
+- (a) Leave BOX's D136 result, so these 9 are WCB_1 for BOX while the warehouse says WCB_2. 5 cohort wells, no visible
+  effect on the contrasts.
+- (b) Owner-bench them to WCB_2 (BOX-only).
+- (c) Correct the 8 north ones to WCB_1 in the next override batch. This is warehouse-first, and consistent with D136.
+
+### 8.16 The 9-well conflict: MM's doublecheck calls (2026-10-30) → `r3/ratified_moved_by_box_qc.csv` column `doublecheck`
+
+MM re-inspected each well and its neighbours.
+
+| call | wells | r3 BOX before | warehouse now | done |
+|---|---|---|---|---|
+| **WCB_2** | FREDERICK LINDSEY E 5H, T Y RANCH 65S, SXSW E UNIT B 1WB, MASSEY A UNIT 4309H, PEGGY 9 301 | WCB_1 (D136) | WCB_2 | owner bench WCB_2; seed row kept, note → the call |
+| **WCC** | PARKS, ROY 316CH | WCB_1 (D136) | WCB_2 (round-1 card) | owner bench WCC; seed row REMOVED (vendor WOLFCAMP C → WCC) |
+| **WCB_1** | STEPHENS 6-31 E 255, STEPHENS 6-31 D 244, MELINDA 252WB | WCB_1 | WCB_2 (class-accepted) | owner bench WCB_1; seed rows REMOVED (vendor WOLFCAMP B UPPER → WCB_1) |
+
+**Flag, not resolved:** the 5 WCB_2 calls are per-well exceptions to D136. All 5 lie north of the line at 151–362 ft below
+the local WCA_1 band, under D136's 392-ft WCB_2 threshold. The vendor raw tag on all 5 is WOLFCAMP B UPPER. Owner benches
+outrank every rule by design, so D136 itself is unchanged. If more northern wells turn out to be real WCB_2, the line or
+the threshold is the thing to revisit. FREDERICK LINDSEY E 5H is the shallowest, at 151 ft below WCA_1, above the
+southern WCB_1 median of 262 ft.
+
+**Code (repo only):**
+- `tag_screen.override_seed`: a call dated after the well's card supersedes the card. A card with no round date never
+  is, so a disagreeing call there still raises. A call back to the screen-time tag removes the row, since an override
+  equal to its `was` is forbidden by the seed test. Covered by a test.
+- `apply_formation_tag_overrides --refresh`: removed rows count as expected moves. Without this, the verify step would
+  have failed on them as stray. The verify now checks each removed well is back on the crosswalk, and the dry run lists
+  the removals.
+
+**Seed:** 336 Midland rows (231 class-accepted, 93 carded, 12 calls) + 98 Delaware = 434. sql/44 Batch 3 and the COMMENT
+are updated. The dry run (read-only, 2026-10-30) gives add 0, change 5 (notes), remove 4. Under the live crosswalk, raw
+WOLFCAMP B UPPER → WCB_1 on 9,201 Midland wells and WOLFCAMP C → WCC on 4,798, so the removals land on MM's calls.
+**Not applied — DECIDED (MM 2026-10-30): it rides the next override batch** (`--refresh`, ~1 h, nothing dark), since
+BOX already honours the calls through the owner benches. Until then live holds 438 rows and the seed 434. The 4 wells keep
+WCB_2 in the warehouse (erebor, narvi, deal-intake read that) but carry the right bench in BOX.
+
+**r3 regenerated with the 9 owner benches** (same cache, live tags unchanged): all 9 land on the call, and only those 6
+of the 9 not already on their call moved. No seed well now disagrees with BOX. Bench finals (cohort):
+
+| bench | final (cohort) |
+|---|---|
+| WCA_1 | 7,575 (5,410) |
+| WCB_1 | 6,652 (3,900) |
+| WCB_2 | 2,151 (1,290) |
+| WCC | 614 (355) |
+| WCD | 996 (559) |
+
+Contrasts move ≤ 0.006. The extents are geometrically identical to pre-call r3 (0.00 sq mi added or removed per bench), so
+the §8.15 extent table stands. The WCD loop is unaffected: no WCD well moved.
+
+**Still open at gate 20a:** the storage go (r3 as regenerated here), asks 3 / 4 / 6 in
+§4, the unlike-threshold confirm (§4.1), and the 4246139575 loop-tip flag (§7).
+
 
 ```
 python -m pytest -q tests/test_box_step20a.py tests/test_box_family_qc.py tests/test_box_basin.py
@@ -1195,6 +1299,10 @@ python -m scripts.box_family_extent_edits --pptx docs/box/step20a-2026-10-26/ext
     --slide 5=WCD --wells docs/box/step20a-2026-10-26/r2 --ext docs/box/step20a-2026-10-26/extents --basin midland
 ```
 The loop ingest reads the r1 extents folder on purpose: the deck's pixel frames are r1's.
+
+**r3 (§8.15), read-only:** the r2 commands with `--out .../r3` / `--wells .../r3` (QC 108 s uncached, extents ~11 min).
+For the loop, point `--ext` at a copy of `extents/` so r2's `extents/edited/` is not overwritten, then copy `edited/`
+into `r3/extents/`.
 
 **Tag screen (§8), read-only (~70 s with --cache):**
 ```
