@@ -176,6 +176,8 @@ first pass.
      group by about ±2 % (13b).
    - Recommendation: **(a)**. It isolates D117, keeps Steven's price on run 19's rows meaningful row for row, and leaves
      the drift to 13c, where the refresh tooling reports it.
+   - **DECIDED 2026-10-30 (Michael): (a), the derived record.** With items 1 and 4, step 4 repeats the rehearsed chain
+     (augment, store, water carry, proximity record) against live. The storing waits on Michael's explicit "go apply".
 
 ## 5. The two other PUD-only spots (decided; say if you want either reverted)
 
