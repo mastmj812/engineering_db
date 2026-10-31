@@ -19,7 +19,7 @@ SQL69 = (ROOT / "sql" / "69_box_scout_locations.sql").read_text(encoding="utf-8"
 BODY = app.view_body(SQL69)
 
 COLUMNS = [
-    "stick_id", "location_name", "basin", "bench", "pad_name", "geom", "lateral_ft",
+    "stick_id", "location_name", "basin", "bench", "pad_name", "geom", "lateral_ft", "tvd_ft",
     "box_tier", "oil_eur_bbl", "oil_eur_bbl_per_ft", "gas_eur_mcf", "gas_eur_mcf_per_ft",
     "water_eur_bbl", "water_eur_bbl_per_ft",
     "pv10_mm", "pv20_mm", "irr_pct", "breakeven_wti_pv20", "capex_mm",

@@ -12,8 +12,8 @@ refresh, always current with the record run and Steven's latest push.
      1. sql/69  DROP VIEW IF EXISTS + CREATE VIEW + GRANT analyst_ro + COMMENTs.
      2. validate (same checks, on the view): rows == the record run's priced forecast
         locations on the map minus realized, unique stick_id, no blank EUR / PV10, one
-        deck label, oil EUR tie-out, the per-ft lateral basis, tier tally, analyst_ro
-        SELECT, bbox plan + timings.
+        deck label, oil EUR tie-out, the per-ft lateral basis, tier tally, tvd_ft blank /
+        permit-round counts, analyst_ro SELECT, bbox plan + timings.
 
 `recreate(cur)` is the hook for every script that executes sql/22: that DROP ... CASCADE of
 curated.erebor_locations drops this view too (tests/test_box_scout_locations.py enforces
@@ -106,6 +106,9 @@ def checks(src: str) -> list[tuple[str, str]]:
           f"count(*) FROM {src} v")),
         ("tier tally", f"SELECT v.basin, v.box_tier, count(*) FROM {src} v GROUP BY 1, 2 ORDER BY 1, 2"),
         ("irr blank (informational)", f"SELECT count(*) FILTER (WHERE v.irr_pct IS NULL) FROM {src} v"),
+        ("tvd_ft blank / permit-round (multiple of 100) / min / max (informational)",
+         (f"SELECT count(*) FILTER (WHERE v.tvd_ft IS NULL), count(*) FILTER (WHERE v.tvd_ft::numeric % 100 = 0), "
+          f"min(v.tvd_ft), max(v.tvd_ft) FROM {src} v")),
     ]
 
 
