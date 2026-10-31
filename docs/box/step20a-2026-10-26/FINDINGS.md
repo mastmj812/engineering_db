@@ -1,4 +1,4 @@
-# BOX step 20a: Midland Wolfcamp bench QC + extents. STORED 2026-10-30 (r3, §8.17); rest of gate 20a open
+# BOX step 20a: Midland Wolfcamp bench QC + extents. GATE 20a CLOSED 2026-10-30 (D141; stored records 36 / 37 / 38 / 39 / 42)
 
 **Scope (plan §5 step 20a, D128 / D131 / D134 A–B / D117):** Midland WCA_1, WCB_1, WCB_2, WCC, WCD. One extent per bench, no
 pooling (D128). The Delaware class rule of record applied as written; cards only for a swap class clearly unlike its Delaware
@@ -160,7 +160,7 @@ defect.
 
 ## 4. Gate 20a: your calls
 
-1. **Cards:** DONE 2026-10-26, applied in r2 (§7). Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
+1. **Cards:** DONE 2026-10-26, applied in r2 (§7). **Thresholds CONFIRMED as written 2026-10-30 = D141 (§8.21).** Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
    WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
 2. **Pen loops:** DONE 2026-10-26 (WCD looped; WCC loop drawn then withdrawn, deck re-saved 21:16, WCC = r2 generated; the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
    loops.
@@ -1440,6 +1440,20 @@ Options for 20b:
 
 My lean is (a): "tag kept" by default means BOX QC does nothing for the Spraberry. The tag screen already corrected many
 DEAN / LSSH tags well by well.
+
+### 8.22 Gate 20a CLOSED (MM 2026-10-30): the unlike test confirmed as written = D141
+
+Stored and live: Midland `box.bench_scope` WCA_1 / WCB_1 / WCB_2 / WCC / WCD, records 36 / 37 / 38 / 39 / 42 (§8.17,
+§8.20). Every §4 ask is answered: D139, D140, D141, and ask 6 = D117, done in run 25 by its own session.
+
+**Carried forward (not gate-20a items, still open):**
+- the 4 seed removals ride the next override batch (§8.16);
+- the Discovery LS/SH operator × area call, and the OTHER → WCD Irion Canyon-sand and Diamondback copied-TVD subgroups
+  (§8.4);
+- the next-screen wells 1725H, 1717MS, 1724H and Mustang Draw 24NH (§8.13);
+- the no-analogue Spraberry classes, decided at gate 20b (§8.21).
+
+**Next:** step 20b, Spraberry (US / MS / JM / LSSH / DEAN), on Michael's go.
 
 
 ```
