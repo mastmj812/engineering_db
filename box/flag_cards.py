@@ -26,6 +26,7 @@ import datetime as _dt
 import io
 import json
 import math
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -47,10 +48,18 @@ from box.bench_qc import (
     _table,
     local_bands,
 )
+from dealintake.geo import positive_offset_bearing
 
 WCA_POOL: frozenset[str] = frozenset({"WCA_1", "WCA_2", "WCXY"})  # D19 + D20
 NEVER_INTO: frozenset[str] = frozenset({"WCXY"})  # D20: nothing is promoted into WCXY
 CARDS_PER_CLASS = 10
+# Strike section (Michael 2026-10-31): he judges a card on a strike line through the subject, orthogonal to its lateral,
+# not on a radius. The section keeps wells whose lateral crosses that line within SECTION_HALF_WIDTH_FT of the subject;
+# the dashed bands stay the detector's 1.5-mi radius bands, because that is what the flag was scored on.
+SECTION_COLS: tuple[str, ...] = ("surface_lon", "surface_lat", "bhl_lon", "bhl_lat")
+SECTION_HALF_WIDTH_FT = 1.5 * 5280.0
+SECTION_PREFILTER_FT = 3.0 * 5280.0  # midpoint radius that holds every lateral crossing the line within the half-width
+_FT_PER_DEG_LAT = 111_320.0 * 3.280839895
 MIN_CLASS_FOR_SAMPLING = 12  # smaller classes: card every well
 
 _BENCH_COLORS = {
@@ -103,6 +112,66 @@ def _neighbourhood(df: pd.DataFrame, xy: np.ndarray, i: int, p: ConsensusParams)
     return nb
 
 
+def _local_ft(lon: Any, lat: Any, lon0: float, lat0: float) -> np.ndarray:
+    """Local true-north frame in ft about (lon0, lat0); exact enough inside a few miles."""
+    lon = np.asarray(lon, dtype=float)
+    lat = np.asarray(lat, dtype=float)
+    return np.column_stack([(lon - lon0) * _FT_PER_DEG_LAT * math.cos(math.radians(lat0)), (lat - lat0) * _FT_PER_DEG_LAT])
+
+
+def strike_section(subj: pd.Series, nb: pd.DataFrame, half_width_ft: float = SECTION_HALF_WIDTH_FT) -> tuple[pd.DataFrame, dict[str, Any]] | None:
+    """Wells whose lateral crosses the strike line through the subject's midpoint (orthogonal to its lateral), within
+    ``half_width_ft`` of it, with ``cx_ft`` = signed offset along the line. + follows gunbarrel sign rule v2
+    (dealintake.geo.positive_offset_bearing): W -> E for N-S-ish laterals, S -> N for E-W-ish. A neighbour without
+    endpoints crosses when its midpoint is within half the subject's lateral of the line. None when the subject has no
+    lateral geometry (the card then falls back to the radius view)."""
+    if any(c not in subj.index for c in SECTION_COLS) or pd.isna(subj[list(SECTION_COLS)]).any():
+        return None
+    lon0, lat0 = float(subj["mid_lon"]), float(subj["mid_lat"])
+    ends = _local_ft([subj["surface_lon"], subj["bhl_lon"]], [subj["surface_lat"], subj["bhl_lat"]], lon0, lat0)
+    d = ends[1] - ends[0]
+    length = float(np.hypot(d[0], d[1]))
+    if length < 1000.0:
+        return None
+    az = math.degrees(math.atan2(d[0], d[1])) % 180.0
+    plus = positive_offset_bearing(az)
+    u = np.array([math.sin(math.radians(az)), math.cos(math.radians(az))])
+    n = np.array([math.sin(math.radians(plus)), math.cos(math.radians(plus))])
+    mid = _local_ft(nb["mid_lon"], nb["mid_lat"], lon0, lat0)
+    cross = mid @ n
+    if all(c in nb for c in SECTION_COLS):
+        has_ends = nb[list(SECTION_COLS)].notna().all(axis=1).to_numpy()
+    else:
+        has_ends = np.zeros(len(nb), dtype=bool)
+    crosses = np.abs(mid @ u) <= length / 2.0
+    if has_ends.any():
+        e = nb.loc[has_ends]
+        a1 = _local_ft(e["surface_lon"], e["surface_lat"], lon0, lat0) @ u
+        a2 = _local_ft(e["bhl_lon"], e["bhl_lat"], lon0, lat0) @ u
+        crosses[has_ends] = (np.minimum(a1, a2) <= 0.0) & (np.maximum(a1, a2) >= 0.0)
+    keep = crosses & (np.abs(cross) <= half_width_ft)
+    sec = nb.loc[keep].copy()
+    sec["cx_ft"] = cross[keep]
+    reads = "W → E" if 45.0 <= plus <= 135.0 else "S → N"
+    return sec, {"azimuth_deg": az, "plus_bearing_deg": plus, "reads": reads, "lateral_ft": length,
+                 "n_no_geometry": int((~has_ends & keep).sum()), "ends_ft": ends}
+
+
+def shown_benches(tag: str, dest: str | None, tvd: float, bands: dict[str, tuple[float, int, float]]) -> set[str]:
+    """The tags a card plots (Michael 2026-10-31): the subject's own tag, the proposed bench, and the local bands directly
+    above and below the subject (by local band median; its own band when it has one, else its TVD). Everything else in
+    the neighbourhood is hidden so it cannot stretch the depth axis."""
+    keep = {tag} | ({dest} if isinstance(dest, str) else set())
+    order = sorted(bands, key=lambda b: bands[b][0])
+    if tag in bands:
+        k = order.index(tag)
+        keep |= set(order[max(k - 1, 0):k + 2])
+    elif order and not math.isnan(float(tvd)):
+        k = int(np.searchsorted([bands[b][0] for b in order], float(tvd)))
+        keep |= set(order[max(k - 1, 0):k + 1])
+    return keep
+
+
 def _png(fig: Any, dpi: int = 85) -> str:
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=dpi, bbox_inches="tight")
@@ -110,35 +179,73 @@ def _png(fig: Any, dpi: int = 85) -> str:
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
 
 
-def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams) -> tuple[str, dict[str, Any]]:
+def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams, *, dest: str | None = None,
+                section: tuple[pd.DataFrame, dict[str, Any]] | None = None) -> tuple[str, dict[str, Any]]:
+    """``nb`` = the detector's radius neighbourhood (bands, performance, GOR); ``section`` = ``strike_section`` output,
+    plotted in place of the radius scatter when given. ``dest`` = the proposed bench (default: the consensus suggestion)."""
+    dest = dest if dest is not None else subj.get("cons_suggest")
     wit = nb[nb["cons_witness"]]
     bands = local_bands({b: g["tvd_ft"].values for b, g in wit.groupby("formation_blueox")}, p)
-    fig = plt.figure(figsize=(11.5, 4.6))
+    tag = str(subj["formation_blueox"])
+    show = shown_benches(tag, dest, float(subj["tvd_ft"]), bands)
+    fig = plt.figure(figsize=(11.5, 4.9))
     gs = fig.add_gridspec(1, 4, width_ratios=[2.2, 1.0, 1.0, 1.0], wspace=0.4)
     ax = fig.add_subplot(gs[0, 0])
-    for b, g in nb.groupby("formation_blueox"):
+    if section is not None:
+        sec_pts, sm = section
+        pts = sec_pts.assign(x_ft=sec_pts["cx_ft"])
+        half = SECTION_HALF_WIDTH_FT
+        xlabel = f"offset along the strike, ft ({sm['reads']}; lateral az {sm['azimuth_deg']:.0f}°)"
+    else:
+        pts = nb.assign(x_ft=nb["dx_ft"])
+        half = p.radius_ft
+        xlabel = "east-west offset, ft (radius view: no lateral geometry)"
+    vis = pts[pts["formation_blueox"].isin(show)]
+    n_hidden = len(pts) - len(vis)
+    for b, g in vis.groupby("formation_blueox"):
         c = _BENCH_COLORS.get(str(b), "#9ca3af")
         clean = g[g["cons_witness"]]
         dirty = g[~g["cons_witness"]]
-        ax.scatter(clean["dx_ft"], clean["tvd_ft"], s=16, c=c, label=f"{b} (n={len(g)})", linewidths=0)
-        ax.scatter(dirty["dx_ft"], dirty["tvd_ft"], s=16, facecolors="none", edgecolors=c, linewidths=0.8)
-    for b, (med, n, iqr) in sorted(bands.items(), key=lambda kv: kv[1][0]):
+        ax.scatter(clean["x_ft"], clean["tvd_ft"], s=18, c=c, label=f"{b} (n={len(g)})", linewidths=0)
+        ax.scatter(dirty["x_ft"], dirty["tvd_ft"], s=18, facecolors="none", edgecolors=c, linewidths=0.8)
+    shown_bands = {b: v for b, v in bands.items() if b in show}
+    for b, (med, n, iqr) in sorted(shown_bands.items(), key=lambda kv: kv[1][0]):
         ax.axhline(med, color=_BENCH_COLORS.get(b, "#9ca3af"), ls="--", lw=0.8)
-        ax.text(p.radius_ft * 1.02, med, f"{b} {med:,.0f} (n={n}, IQR {iqr:.0f})", fontsize=7, va="center")
-    ax.scatter([0], [subj["tvd_ft"]], s=140, marker="*", c=_BENCH_COLORS.get(subj["formation_blueox"], "#000"), edgecolors="k", linewidths=0.8, zorder=5)
-    ax.set_xlim(-p.radius_ft, p.radius_ft)
-    ax.invert_yaxis()
-    ax.set_xlabel("east-west offset from subject, ft (hollow = not clean evidence)")
+        ax.text(half * 1.02, med, f"{b} {med:,.0f} (n={n}, IQR {iqr:.0f})", fontsize=7, va="center")
+    ax.scatter([0], [subj["tvd_ft"]], s=150, marker="*", c=_BENCH_COLORS.get(tag, "#000"), edgecolors="k", linewidths=0.8, zorder=5)
+    ys = [float(subj["tvd_ft"]), *vis["tvd_ft"].dropna().astype(float), *(v[0] for v in shown_bands.values())]
+    lo, hi = min(ys), max(ys)
+    pad = max(60.0, 0.08 * (hi - lo))
+    ax.set_ylim(hi + pad, lo - pad)  # depth down
+    ax.set_xlim(-half, half)
+    hidden = f"; {n_hidden} wells in other benches hidden" if n_hidden else ""
+    ax.set_xlabel(f"{xlabel}{hidden}; hollow = not clean evidence", fontsize=7)
     ax.set_ylabel("TVD, ft")
     ax.grid(alpha=0.25)
-    ax.legend(fontsize=6, loc="lower left", ncol=2)
-    # plan view
+    if len(vis):  # above the plot, never over the landings
+        ax.legend(fontsize=7, loc="lower left", bbox_to_anchor=(0.0, 1.01), ncol=max(1, len(show)), frameon=False,
+                  borderaxespad=0.0, handletextpad=0.2, columnspacing=0.9)
+    # plan view: radius neighbourhood in grey, section wells coloured, the subject's lateral and the strike line
     ax2 = fig.add_subplot(gs[0, 1])
-    for b, g in nb.groupby("formation_blueox"):
-        ax2.scatter(g["dx_ft"], g["dy_ft"], s=8, c=_BENCH_COLORS.get(str(b), "#9ca3af"), linewidths=0)
-    ax2.scatter([0], [0], s=90, marker="*", c=_BENCH_COLORS.get(subj["formation_blueox"], "#000"), edgecolors="k", linewidths=0.8, zorder=5)
+    ax2.scatter(nb["dx_ft"], nb["dy_ft"], s=5, c="#d1d5db", linewidths=0)
+    if section is not None:
+        sec_pts, sm = section
+        sec_xy = _local_ft(sec_pts["mid_lon"], sec_pts["mid_lat"], float(subj["mid_lon"]), float(subj["mid_lat"]))
+        for b in sorted(set(sec_pts["formation_blueox"])):
+            m = (sec_pts["formation_blueox"] == b).to_numpy()
+            ax2.scatter(sec_xy[m, 0], sec_xy[m, 1], s=9, c=_BENCH_COLORS.get(str(b), "#9ca3af") if b in show else "#9ca3af", linewidths=0)
+        e = sm["ends_ft"]
+        ax2.plot(e[:, 0], e[:, 1], color="k", lw=1.2)
+        pb = math.radians(sm["plus_bearing_deg"])
+        tip = (half * math.sin(pb), half * math.cos(pb))
+        ax2.plot([-tip[0], tip[0]], [-tip[1], tip[1]], color="k", ls=":", lw=0.9)
+        ax2.annotate("+", tip, fontsize=8, ha="center", va="center")
+    else:
+        for b, g in nb.groupby("formation_blueox"):
+            ax2.scatter(g["dx_ft"], g["dy_ft"], s=8, c=_BENCH_COLORS.get(str(b), "#9ca3af"), linewidths=0)
+    ax2.scatter([0], [0], s=90, marker="*", c=_BENCH_COLORS.get(tag, "#000"), edgecolors="k", linewidths=0.8, zorder=5)
     ax2.set_aspect("equal")
-    ax2.set_title("plan, ft", fontsize=8)
+    ax2.set_title("plan, ft (dotted = strike line)" if section is not None else "plan, ft", fontsize=8)
     ax2.tick_params(labelsize=6)
     # performance by bench among cohort witnesses
     ax3 = fig.add_subplot(gs[0, 2])
@@ -174,7 +281,8 @@ def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams) -> tuple[
         ax4.axvline(sg, color="k", ls="--", lw=0.9)
     ax4.set_title("12-mo GOR, scf/bbl\n(cohort witnesses; dashed = subject)", fontsize=7)
     ax4.tick_params(labelsize=6)
-    meta = {"bands": {b: {"med": v[0], "n": v[1], "iqr": v[2]} for b, v in bands.items()}, "perf": perf, "gors": gors, "n_nb": len(nb), "n_wit": len(wit)}
+    meta = {"bands": {b: {"med": v[0], "n": v[1], "iqr": v[2]} for b, v in bands.items()}, "perf": perf, "gors": gors, "n_nb": len(nb), "n_wit": len(wit),
+            "shown": sorted(show), "n_section": None if section is None else len(section[0])}
     return _png(fig), meta
 
 
@@ -262,7 +370,9 @@ def build(
         for _, subj in s.iterrows():
             i = int(df.index[df["api10"] == subj["api10"]][0])
             nb = _neighbourhood(df, xy, i, p)
-            png, meta = card_figure(subj, nb, p)
+            sec = strike_section(subj, _neighbourhood(df, xy, i, replace(p, radius_ft=SECTION_PREFILTER_FT)))
+            png, meta = card_figure(subj, nb, p, section=sec)
+            view = "radius view (no lateral geometry)" if meta["n_section"] is None else f"strike section {meta['n_section']} wells"
             own = meta["bands"].get(subj["formation_blueox"])
             sug = meta["bands"].get(subj["cons_suggest"])
             kv = (
@@ -271,7 +381,7 @@ def build(
                 f"{' · <b>planned survey</b>' if subj['planned'] else ''}{' · <b>permit-round TVD</b>' if subj['tvd_round'] else ''}<br>"
                 f"tag <b>{_esc(subj['formation_blueox'])}</b> (source {_esc(subj['formation_blueox_source'])}; own band {_fmt(own['med'] if own else None, 0)}, n={_fmt(own['n'] if own else 0)}, Δ {_fmt(subj['cons_own_delta'], 0)} ft) → "
                 f"suggest <b>{_esc(subj['cons_suggest'])}</b> (band {_fmt(sug['med'] if sug else None, 0)}, n={_fmt(sug['n'] if sug else 0)}, Δ {_fmt(subj['cons_nearest_delta'], 0)} ft) · "
-                f"margin ratio {('∞' if math.isinf(subj['margin_ratio']) else _fmt(subj['margin_ratio'], 1))} · witnesses {meta['n_wit']} of {meta['n_nb']} wells in 1.5 mi · "
+                f"margin ratio {('∞' if math.isinf(subj['margin_ratio']) else _fmt(subj['margin_ratio'], 1))} · witnesses {meta['n_wit']} of {meta['n_nb']} wells in 1.5 mi · {view} · "
                 f"sql/23 nearest {_esc(subj['sql23_nearest'])} · 12-mo oil {_fmt(subj['oil12_kft'], 0)} bbl/kft{'' if subj['cohort'] else ' (not cohort)'} · "
                 f"GOR {_fmt(subj.get('gor12'), 0)} scf/bbl vs own {_fmt(subj.get('cons_gor_own_med'), 0)} / suggested {_fmt(subj.get('cons_gor_sug_med'), 0)} → GOR vote <b>{_esc(subj.get('cons_gor_vote', 'none'))}</b>"
             )
@@ -297,7 +407,9 @@ def build(
         f"<div class=meta>Built {built}, read-only. Classes are pooled per D19/D20 (WCA_1 + WCA_2 + WCXY = WCA; nothing is promoted into WCXY). "
         + f"Sample = {CARDS_PER_CLASS} wells per class at evenly spaced quantiles of the margin ratio (own-band Δ ÷ suggested-band Δ; ∞ = own band absent), weakest flags first; classes of ≤ {MIN_CLASS_FOR_SAMPLING} are carded in full. "
         + "Mark each card agree / reject (reply in chat by api10, or fill <code>cards_sample.csv</code> column <code>verdict</code>); a class is accepted or rejected wholesale on its precision. "
-        + "Star = subject; dots = wells within 1.5 mi coloured by tag, hollow = not clean evidence (planned survey, round TVD, &lt; 6 mo, unmapped); dashed = coherent local band medians.</div>",
+        + "Star = subject. Cross-section = wells whose lateral crosses the strike line through the subject, orthogonal to its lateral, within 1.5 mi (sign rule v2: W → E for N-S laterals, S → N for E-W); "
+        + "only the subject's tag, the proposed bench and the local bands directly above and below are drawn. Hollow = not clean evidence (planned survey, round TVD, &lt; 6 mo, unmapped); "
+        + "dashed = the detector's local band medians (1.5-mi radius, what the flag was scored on).</div>",
         "<div class=toc>" + "".join(f"<a href=\"#c{_esc(c)}\">{_esc(c)} ({n})</a>" for c, n in classes.items()) + "</div>",
         "<h2>Sensitivity — what applying every carded flag (option A, pooled) does to the pilot evidence sets</h2>",
         _table(["pool", "set", "producing hz", "D9 cohort", "cohort median 12-mo oil, bbl/1,000 ft", "IQR", "TVD IQR, ft (all wells)"], sens),

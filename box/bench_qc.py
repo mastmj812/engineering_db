@@ -273,6 +273,7 @@ SELECT
     w.directional_survey_is_planned AS planned,
     w.tvd_ft, w.lateral_length_ft, w.first_production_date, w.last_reported_month,
     w.cum_12m_oil_bbl, w.cum_24m_oil_bbl, w.cum_12m_gas_mcf, w.has_production_sharing,
+    w.surface_lon, w.surface_lat, w.bhl_lon, w.bhl_lat,                     -- card strike sections (flag_cards)
     COALESCE(w.midpoint_lon,
              CASE WHEN ST_GeometryType(w.wellstick_geom) = 'ST_LineString'
                   THEN ST_X(ST_LineInterpolatePoint(w.wellstick_geom, 0.5)) END,

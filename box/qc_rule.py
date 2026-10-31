@@ -66,6 +66,12 @@ BASIN_CLASSES: dict[str, dict[str, float]] = {
         # D139 (ask 3, 2026-10-30): 6 / 10 on the r3 frame (docs/box/step20a-2026-10-26/ask3/cards_sample.csv). All 3 cards
         # north of the D136 line were rejected, 6 / 7 south agreed; the gate is applied to the class as carded.
         "WCB_1->WCB_2": 0.60,
+        # Step 20b (2026-10-31): the four Spraberry-internal classes with no Delaware analogue, carded on Michael's go
+        # (docs/box/step20b-2026-10-30/cards/cards_sample.csv), 10 per class.
+        "LSSH->JM": 0.80,
+        "JM->MS": 0.60,
+        "LSSH->DEAN": 0.40,
+        "DEAN->LSSH": 0.30,
     },
 }
 
@@ -132,7 +138,8 @@ def decide(row: pd.Series, verdicts: dict[str, str] | None = None, basin: str | 
 def load_verdicts(path: Any) -> dict[str, str]:
     """AGREE / REJECT by api10 from a cards_sample.csv; a comment starting with
     REJECT counts as REJECT. A bench code (2026-10-30, ask 3) is AGREE when it is the card's suggested bench and REJECT
-    when it is the well's own tag; anything else (blank, inconclusive, a third bench) is ignored."""
+    when it is the well's own tag; anything else (blank, inconclusive, a third bench) is ignored. ACCEPT (step 20b,
+    2026-10-31) reads as AGREE."""
     d = pd.read_csv(path, dtype={"api10": str})
     v = d["verdict"].fillna("").astype(str).str.strip()
     sug = d["cons_suggest"].astype(str) if "cons_suggest" in d else pd.Series([""] * len(d))
@@ -140,7 +147,7 @@ def load_verdicts(path: Any) -> dict[str, str]:
     out: dict[str, str] = {}
     for api, s, sg, ow in zip(d["api10"], v, sug, own):
         u = s.upper()
-        if u == "AGREE" or (s and s == sg):
+        if u in ("AGREE", "ACCEPT") or (s and s == sg):
             out[api] = "AGREE"
         elif u.startswith("REJECT") or (s and s == ow):
             out[api] = "REJECT"

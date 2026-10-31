@@ -75,6 +75,12 @@ def test_load_verdicts(tmp_path):
                   "verdict": ["WCB_2", "WCB_1", "WCC"]}).to_csv(q, index=False)
     assert r.load_verdicts(q) == {"5": "AGREE", "6": "REJECT"}
     assert r.ledger("midland")[1]["WCB_1->WCB_2"] == 0.60  # D139: 6 / 10, under the gate
+    # step 20b cards say accept / reject in lower case; accept was once silently dropped
+    a = tmp_path / "cards_accept.csv"
+    pd.DataFrame({"api10": ["8", "9"], "verdict": ["accept", "reject"]}).to_csv(a, index=False)
+    assert r.load_verdicts(a) == {"8": "AGREE", "9": "REJECT"}
+    acc, rej = r.ledger("midland")
+    assert acc["LSSH->JM"] == 0.80 and {"JM->MS", "LSSH->DEAN", "DEAN->LSSH"} <= set(rej)
 
 
 def test_unflagged_well_keeps_pool_and_witness_status():
