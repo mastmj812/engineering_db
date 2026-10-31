@@ -1,4 +1,13 @@
-# BOX step 20b: Midland Spraberry bench QC + extents. AT GATE 20b (nothing stored)
+# BOX step 20b: Midland Spraberry bench QC + extents. GATE 20b CLOSED 2026-10-31 (D142, D143), STORED
+
+**Stored 2026-10-31 on Michael's go** (`scripts.box_family_extent_store --step 20b --decided-on 2026-10-31 --loop-date 2026-10-31`):
+`box.extent` 43–49. Records: MS 44 (owner loop, 2,882.90 sq mi), JM 45 (generated, 2,771.93), LSSH 47 (owner loop, 4,431.70),
+DEAN 49 (owner loop, 3,535.23); the generated v1 of each looped bench is kept as non-record (43 / 46 / 48). `box.bench_scope`: four
+in-scope rows dated 2026-10-31 plus US `in_scope` false (D127, decided 2026-10-26). Verified live: one record per Midland bench.
+The first store wrote the pre-verdict producer counts into the four reasons (1,615 / 1,612 / 5,498 / 908); they were corrected in
+place to the stored sets (1,621 / 1,682 / 5,421 / 909), and the store script now carries the right numbers.
+Michael's DEAN expectation (D143) goes to 21a: most of the loop's added DEAN sticks sit under developed LSSH and / or over
+developed WCA_1 with no drilled precedent, so the area gain should not become as many forecast locations.
 
 **Scope (plan §5 step 20b, D127 / D128 / D131 / D134 A–B / D140 / D141 / D117):** Midland MS, JM, LSSH, DEAN: one bench QC and
 one D27 extent each, no pooling (D128). US is D2 emerging (D127): no QC set, no extent; it gets an `in_scope = false` scope

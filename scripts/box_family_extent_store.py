@@ -69,10 +69,10 @@ STEP20A = {"decided_on": dt.date(2026, 10, 30), "loop_date": "2026-10-26",
 # first production 2016+. "{extent}" is filled at store time from the reviewed deck (owner loop or generated v1). decided_on = the
 # store go's date (--decided-on); loop_date = the date of the deck the loops were read from (--loop-date).
 MIDLAND_SCOPE_ROW_20B = {
-    "MS": ("{MS}", "Midland Middle Spraberry: 1,615 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
-    "JM": ("{JM}", "Midland Jo Mill: 1,612 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
-    "LSSH": ("{LSSH}", "Midland Lower Spraberry Shale: 5,498 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
-    "DEAN": ("{DEAN}", "Midland Dean: 908 modern producers; step 20b (not pooled, D128); {extent}; tier from step 21's counts (D131)"),
+    "MS": ("{MS}", "Midland Middle Spraberry: 1,621 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "JM": ("{JM}", "Midland Jo Mill: 1,682 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "LSSH": ("{LSSH}", "Midland Lower Spraberry Shale: 5,421 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "DEAN": ("{DEAN}", "Midland Dean: 909 modern producers; step 20b (not pooled, D128); {extent}; tier from step 21's counts (D131)"),
 }
 STEP20B_REF = "gate 20b store (docs/box/step20b-2026-10-30/FINDINGS.md; D127, D128, D131, D134, D141)"
 # D127 (gate 18, 2026-10-26): Midland US is D2 emerging - a scope row with in_scope = false and no extent, stored at step 20b
