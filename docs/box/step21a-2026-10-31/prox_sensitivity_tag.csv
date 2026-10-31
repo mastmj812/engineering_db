@@ -1,0 +1,6 @@
+outcome,as_is_single_parent,as_is_unexposed,haircut,no_forecast_package,no_forecast_precedent
+as_is_single_parent,3453,0,0,0,0
+as_is_unexposed,3,15630,0,0,0
+haircut,0,0,12355,38,14
+no_forecast_package,0,0,0,12,0
+no_forecast_precedent,0,0,27,2,1482

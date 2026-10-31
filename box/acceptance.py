@@ -47,6 +47,7 @@ from box import hindcast as hc
 from box import spacing3d as s3
 from box import spacing3d_report as s3r
 from box import step16 as s16
+from box import step21 as st21
 from box import tc_area_report as tar
 from box import tc_curve_report as rep
 from box.edge_gap_report import _CSS, _table
@@ -122,6 +123,16 @@ BENCH_SPECS: dict[str, dict[str, Any]] = {
     "WCXY_on_WCA": {"wells": "WCA", "pool_tags": None, "target_tags": ("WCXY",), "extent": "WCA", "label": "WCXY",
                     "desc": "SENSITIVITY: WCXY targets, analogs from the whole WCA pool (WCA_1 + WCA_2 + WCXY) - contradicts D20 as written"},
 }
+
+# PRE-REGISTERED 2026-10-31 (step 21a, before any Midland score; box/step21.DEFINITION, docs/box/step21a-2026-10-31): the nine
+# Midland groups (D128 one pool + one extent per bench; D135 MID_<bench> keys). Pool = the step-20 set of record copied into
+# box/step21.POOL_DIR (run with --wells <that folder>); membership = box_bench, so no tag filter (D136 / card reassignments). The
+# harness's own verdict (record box_v2) is not the Midland verdict: 21b scores box/step21's treatments (mid_r2 / mid_r2p /
+# mid_r2p_wf) from the --step16 views, and tiers come from 21c (D131).
+for _g, (_b, _e, _src) in st21.GROUPS.items():
+    BENCH_SPECS[_g] = {"wells": _b, "pool_tags": None, "target_tags": None, "extent": _b, "label": _b, "record": "box_v2",
+                       "basin": bsn.MIDLAND, "step21": True,
+                       "desc": f"Midland {_b} (step-20 set of record; extent of record {_e}) - step 21 pre-registration, tier from 21c"}
 
 
 # step 19: every entry above is Delaware; a Midland group (step 21a) names "basin": "midland" in its entry
@@ -254,12 +265,14 @@ WF_LOG: list[dict[str, Any]] = []
 
 def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], cutoff: dt.date, workers: int | None,
                               bench: str = an.BENCH, keep: dict[str, Any] | None = None, step16: bool = False,
-                              basin: str = an.BASIN) -> pd.DataFrame:
+                              basin: str = an.BASIN, variants16: Mapping[str, tuple[str, an.Rules]] | None = None,
+                              twins16: tuple[str, ...] | None = None) -> pd.DataFrame:
     """D57 run: di_p50 (raw laterals) and box_v2 (D56 completed laterals, D55 strike edges, short-lateral Cui translation),
     each calibrated by its own F(k) on a seeded training sample with as-of, leave-self-out cohorts. `bench` = the deal-intake
     bench label; `keep`, when given, receives the uptime-free box_v2 months per location and its F(k) per stream (step 9a).
     `step16` adds the pre-registered box/step16.VARIANTS (measured spacing for every pool well, D119) and each scored well's
-    local evidence (n_local, local_y1_kft); di_p50 / box_v2 are computed exactly as without it."""
+    local evidence (n_local, local_y1_kft); di_p50 / box_v2 are computed exactly as without it. `variants16` / `twins16` replace
+    box/step16's set (step 21a: a Midland group predicts box/step21.HARNESS_VARIANTS, the r2 rules without the lateral cap)."""
     cb, trn, t_act = f["cb"], f["trn"], f["t_act"]
     f_oil = dict(zip(trn["api10"], trn["f_oil"], strict=True))
     pool = an.build_pool(cb["frame"], cb["fits"], f["sp"], f_oil)
@@ -272,7 +285,9 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
     if step16:
         sp_all = br.spacing(conn, sorted({str(a) for a in pool["api10"]}))
         extra = {s16.MEASURED: s16.measured_pool(pool2, {str(k_): v_ for k_, v_ in sp_all.items()})}
-        v16, variants = s16.VARIANTS, (*an.VARIANTS_V2, *s16.SCORED)
+        v16 = dict(variants16) if variants16 is not None else s16.VARIANTS
+        tw = twins16 if twins16 is not None else s16.LINEAR_TWINS
+        variants = (*an.VARIANTS_V2, *v16, *(f"{v}_lin" for v in tw))
     xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
     xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
 
@@ -283,7 +298,7 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
 
     rng = np.random.default_rng(SEED)
     ti = np.sort(rng.choice(len(trn), size=min(F_SAMPLE, len(trn)), replace=False))
-    twins = s16.LINEAR_TWINS if step16 else ()
+    twins = (twins16 if twins16 is not None else s16.LINEAR_TWINS) if step16 else ()
     pv = an.predict_many_v2(locs(view, xy_v), pool, pool2, cutoff, K_MONTHS, workers, bench=bench, extra_pools=extra, variants16=v16,
                             linear_twins=twins, basin=basin)
     pt = an.predict_many_v2(locs(trn.iloc[ti].reset_index(drop=True), xy_t[ti]), pool, pool2, cutoff, K_MONTHS, workers, bench=bench,
@@ -387,6 +402,9 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
     if fold == "analog" and mode != "v2":
         raise ValueError("fold='analog' produces the v2 variants only")
     spec = BENCH_SPECS[bench]
+    # step 21a: a Midland group's --step16 set is box/step21's (mid_r2 + its linear twin), walk-forward on mid_r2
+    v16_set, v16_twins, v16_scored, v16_base = ((st21.HARNESS_VARIANTS, st21.HARNESS_TWINS, st21.HARNESS_SCORED, st21.RAW)
+                                                if spec.get("step21") else (None, None, s16.SCORED, s16.BASE))
     variants = (REPORTED_V2 if fold == "full" else REPORTED_ANALOG) if mode == "v2" else REPORTED
     record = spec.get("record", RECORD_V2) if mode == "v2" else RECORD  # D97: WCXY's record variant is raw box_v2
     out.mkdir(parents=True, exist_ok=True)
@@ -412,9 +430,9 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
         if mode == "v2":
             kept[str(c)] = {}
             aprov = add_analog_predictions_v2(conn, view, f, c, workers, bench=spec["label"], keep=kept[str(c)], step16=step16,
-                                              basin=spec["basin"])
+                                              basin=spec["basin"], variants16=v16_set, twins16=v16_twins)
             base_vs = NON_WF_V2 if fold == "full" else VARIANTS_ANALOG_BASE
-            cells.append(score_fold(view, str(c), (*base_vs, *s16.SCORED) if step16 else base_vs))
+            cells.append(score_fold(view, str(c), (*base_vs, *v16_scored) if step16 else base_vs))
             views[str(c)] = view
         else:
             aprov = add_analog_predictions(view, f, c, workers)
@@ -437,8 +455,8 @@ def run(conn: Any, wells_dir: Path, out: Path, engine_sha: str, workers: int | N
             history = history[history.variant.isin(NON_WF_V2)]
         cells = pd.concat([cells, *apply_walk_forward(cells, views, history)], ignore_index=True)
         if step16:
-            cells = pd.concat([cells, *apply_walk_forward(cells, views, None, log=[], bases=(s16.BASE,))], ignore_index=True)
-            variants = (*variants, *s16.SCORED, f"{s16.BASE}_wf")
+            cells = pd.concat([cells, *apply_walk_forward(cells, views, None, log=[], bases=(v16_base,))], ignore_index=True)
+            variants = (*variants, *v16_scored, f"{v16_base}_wf")
         if wca_history_path is not None:
             wh = pd.read_csv(wca_history_path)
             cells = pd.concat([cells, *apply_walk_forward(cells, views, wh[wh.variant.isin(NON_WF_V2)], suffix=WCA_WF, log=wf_wca_log)], ignore_index=True)

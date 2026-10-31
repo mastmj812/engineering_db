@@ -1,0 +1,278 @@
+{
+ "built_at": "2026-10-31T11:44:00-05:00",
+ "code_sha": "be98adf9edb6f456a6b1dada4120dde65631a5af+dirty",
+ "definition_digest": "3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de",
+ "actuals_through": "2026-08-01",
+ "live_last_full_month": "2026-08-01",
+ "holdout_salt": "box-holdout-2026-10-13",
+ "holdout_share": 0.2,
+ "min_packages": 30,
+ "seconds": 932,
+ "extents": {
+  "MID_WCA_1": {
+   "extent_id": 36,
+   "version": 1,
+   "area_sqmi": 5539.31
+  },
+  "MID_WCB_1": {
+   "extent_id": 37,
+   "version": 1,
+   "area_sqmi": 5187.55
+  },
+  "MID_WCB_2": {
+   "extent_id": 38,
+   "version": 1,
+   "area_sqmi": 2017.57
+  },
+  "MID_WCC": {
+   "extent_id": 39,
+   "version": 1,
+   "area_sqmi": 643.82
+  },
+  "MID_WCD": {
+   "extent_id": 42,
+   "version": 2,
+   "area_sqmi": 3372.61
+  },
+  "MID_MS": {
+   "extent_id": 44,
+   "version": 1,
+   "area_sqmi": 2882.9
+  },
+  "MID_JM": {
+   "extent_id": 45,
+   "version": 1,
+   "area_sqmi": 2771.93
+  },
+  "MID_LSSH": {
+   "extent_id": 47,
+   "version": 1,
+   "area_sqmi": 4431.7
+  },
+  "MID_DEAN": {
+   "extent_id": 49,
+   "version": 1,
+   "area_sqmi": 3535.23
+  }
+ },
+ "pools": {
+  "MID_WCA_1": 7575,
+  "MID_WCB_1": 6646,
+  "MID_WCB_2": 2157,
+  "MID_WCC": 614,
+  "MID_WCD": 996,
+  "MID_MS": 1681,
+  "MID_JM": 1702,
+  "MID_LSSH": 5680,
+  "MID_DEAN": 929
+ },
+ "route": {
+  "MID_WCA_1": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24,
+    36
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 261,
+    "24": 215,
+    "36": 130,
+    "48": 32
+   },
+   "pooled_holdout_wf": {
+    "12": 173,
+    "24": 127,
+    "36": 34,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_WCB_1": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 223,
+    "24": 181,
+    "36": 110,
+    "48": 33
+   },
+   "pooled_holdout_wf": {
+    "12": 147,
+    "24": 105,
+    "36": 23,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_WCB_2": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 59,
+    "24": 48,
+    "36": 28,
+    "48": 6
+   },
+   "pooled_holdout_wf": {
+    "12": 41,
+    "24": 30,
+    "36": 11,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_WCC": {
+   "record_treatment": "mid_r2p",
+   "d99_horizons": [],
+   "tier_route": "provisional",
+   "pooled_holdout_raw": {
+    "12": 7,
+    "24": 6,
+    "36": 5,
+    "48": 2
+   },
+   "pooled_holdout_wf": {
+    "12": 0,
+    "24": 0,
+    "36": 0,
+    "48": 0
+   },
+   "verdict_class_step14": "not judgeable under any rule of record"
+  },
+  "MID_WCD": {
+   "record_treatment": "mid_r2p",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 47,
+    "24": 37,
+    "36": 19,
+    "48": 3
+   },
+   "pooled_holdout_wf": {
+    "12": 20,
+    "24": 10,
+    "36": 0,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable only as a raw box_v2 record (no walk-forward haircut, D97 pattern)"
+  },
+  "MID_MS": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 121,
+    "24": 86,
+    "36": 45,
+    "48": 10
+   },
+   "pooled_holdout_wf": {
+    "12": 93,
+    "24": 58,
+    "36": 15,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_JM": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 117,
+    "24": 86,
+    "36": 52,
+    "48": 11
+   },
+   "pooled_holdout_wf": {
+    "12": 83,
+    "24": 52,
+    "36": 11,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_LSSH": {
+   "record_treatment": "mid_r2p_wf",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 221,
+    "24": 181,
+    "36": 116,
+    "48": 28
+   },
+   "pooled_holdout_wf": {
+    "12": 138,
+    "24": 98,
+    "36": 26,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable as BS2_S was (box_v2_wf, D99 cum-12 + cum-24)"
+  },
+  "MID_DEAN": {
+   "record_treatment": "mid_r2p",
+   "d99_horizons": [
+    12,
+    24
+   ],
+   "tier_route": "holdout",
+   "pooled_holdout_raw": {
+    "12": 52,
+    "24": 37,
+    "36": 23,
+    "48": 5
+   },
+   "pooled_holdout_wf": {
+    "12": 35,
+    "24": 20,
+    "36": 8,
+    "48": 0
+   },
+   "verdict_class_step14": "judgeable only as a raw box_v2 record (no walk-forward haircut, D97 pattern)"
+  }
+ },
+ "prox": {
+  "n_universe": 31051,
+  "n_children": 24729,
+  "n_child_links": 301890,
+  "n_stick_links": 273693,
+  "n_sticks": 33016,
+  "box_bench_relabels": 580,
+  "n_precedent_pairs": 60,
+  "seconds": 733,
+  "haircut_table": "docs\\box\\prox-2026-10-19\\haircut_table_candidate.csv",
+  "haircut_table_sha256": "382d2e086a50cd84f2ce2817d5a12c4e3d6beb4c96ba64e8ac7854ca299b7fd0",
+  "reference_date": "2026-08-01"
+ },
+ "labels": {
+  "calculated": 19671,
+  "measured": 6991,
+  "insufficient": 1029,
+  "indeterminate": 184,
+  "(none)": 105
+ }
+}

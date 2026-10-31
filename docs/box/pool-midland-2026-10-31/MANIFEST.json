@@ -1,0 +1,99 @@
+{
+ "built_at": "2026-10-31T11:28:03-05:00",
+ "code_sha": "be98adf9edb6f456a6b1dada4120dde65631a5af+dirty",
+ "basin": "midland",
+ "rule": "the step-20 sets of record (20a r3 + ask-3 verdicts; 20b post-verdict), members only, exclusions.csv applied by the harness; frozen as copies in pool_dir with a sha256 manifest",
+ "files": [
+  {
+   "group": "MID_WCA_1",
+   "bench": "WCA_1",
+   "extent_id": 36,
+   "source": "docs/box/step20a-2026-10-26/r3/wells_final_WCA_1.csv",
+   "source_commit": "ee657c8b9c904fb1b7ed2c49b56875631ffca5d6",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_WCA_1.csv",
+   "sha256_lf": "7d4ba62a30a2c117a9cc3b86dd9d7f2d935a915cef431c8799e9011f5c048a5d",
+   "rows": 7575
+  },
+  {
+   "group": "MID_WCB_1",
+   "bench": "WCB_1",
+   "extent_id": 37,
+   "source": "docs/box/step20a-2026-10-26/r3/wells_final_WCB_1.csv",
+   "source_commit": "046b852d81e4a95fbf4ee16b37a1ec7841b443ba",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_WCB_1.csv",
+   "sha256_lf": "7e640429906b4cb08dfea2512d2840c0a63e91bd9ac70b346885c008bfe84564",
+   "rows": 6646
+  },
+  {
+   "group": "MID_WCB_2",
+   "bench": "WCB_2",
+   "extent_id": 38,
+   "source": "docs/box/step20a-2026-10-26/r3/wells_final_WCB_2.csv",
+   "source_commit": "046b852d81e4a95fbf4ee16b37a1ec7841b443ba",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_WCB_2.csv",
+   "sha256_lf": "aedec2d943ffe7e0d86713d8734c97fe35f8e574ec1065b7831b62bb14f2637f",
+   "rows": 2157
+  },
+  {
+   "group": "MID_WCC",
+   "bench": "WCC",
+   "extent_id": 39,
+   "source": "docs/box/step20a-2026-10-26/r3/wells_final_WCC.csv",
+   "source_commit": "0c0267813ef4f43ff1022a4dc669821dfa7e7424",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_WCC.csv",
+   "sha256_lf": "4ae1ec3393e21e45fdc07b88db3c00546ab9268654794e433a0d187a440c9e40",
+   "rows": 614
+  },
+  {
+   "group": "MID_WCD",
+   "bench": "WCD",
+   "extent_id": 42,
+   "source": "docs/box/step20a-2026-10-26/r3/wells_final_WCD.csv",
+   "source_commit": "ee657c8b9c904fb1b7ed2c49b56875631ffca5d6",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_WCD.csv",
+   "sha256_lf": "4716d45dcd994f4851df01d2c4a6d398287904d59b03b182f9198aad534d0e26",
+   "rows": 996
+  },
+  {
+   "group": "MID_MS",
+   "bench": "MS",
+   "extent_id": 44,
+   "source": "docs/box/step20b-2026-10-30/wells_final_MS.csv",
+   "source_commit": "144f94f8b33481532b7ca9cc2c73e9c3cfd61e5d",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_MS.csv",
+   "sha256_lf": "e767a948ae5f46f3d4fc9ad7c276fdbd9401809749b60ee11f9e534c43f4ed0f",
+   "rows": 1681
+  },
+  {
+   "group": "MID_JM",
+   "bench": "JM",
+   "extent_id": 45,
+   "source": "docs/box/step20b-2026-10-30/wells_final_JM.csv",
+   "source_commit": "144f94f8b33481532b7ca9cc2c73e9c3cfd61e5d",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_JM.csv",
+   "sha256_lf": "a02f5b14fc8c46d3390b36b878570dd09d37a84bcd86ff167fc6be4a0fdb2a5d",
+   "rows": 1702
+  },
+  {
+   "group": "MID_LSSH",
+   "bench": "LSSH",
+   "extent_id": 47,
+   "source": "docs/box/step20b-2026-10-30/wells_final_LSSH.csv",
+   "source_commit": "144f94f8b33481532b7ca9cc2c73e9c3cfd61e5d",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_LSSH.csv",
+   "sha256_lf": "d1de807369ce59bc773b2819fb4167250c3bde8f738e097f833c1e6218b83bea",
+   "rows": 5680
+  },
+  {
+   "group": "MID_DEAN",
+   "bench": "DEAN",
+   "extent_id": 49,
+   "source": "docs/box/step20b-2026-10-30/wells_final_DEAN.csv",
+   "source_commit": "144f94f8b33481532b7ca9cc2c73e9c3cfd61e5d",
+   "file": "docs/box/pool-midland-2026-10-31/wells_final_DEAN.csv",
+   "sha256_lf": "d0316e10d119d1d113ac2f6095f0d788b6842dffd53a55d19fb9e9701f8b727f",
+   "rows": 929
+  }
+ ],
+ "n_wells": 27980
+}
