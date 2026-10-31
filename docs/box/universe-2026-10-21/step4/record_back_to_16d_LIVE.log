@@ -1,0 +1,4 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+before [(19, 'delaware', False, None), (25, 'delaware', True, None)]
+box_scout_locations inside the transaction: 42833
+COMMITTED: Delaware record = run 19; run 25 kept, not record

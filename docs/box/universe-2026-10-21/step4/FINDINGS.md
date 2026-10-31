@@ -1,5 +1,17 @@
 # D117 step 4: the derived record stored live (2026-10-30)
 
+> **RECORD FLAG REVERTED 2026-10-30 (Michael's go): the Delaware record is the 16d record (run 19) again.** The D117 record
+> (run 25) stays stored, verified and un-priced, with `is_record = false`.
+> - **Why:** making it the record blanked erebor's econ screen and `curated.box_scout_locations` (42,833 → 0). Both show econ
+>   for the record run only, and Steven had not priced run 25. That should have been a stop-and-ask before the flip, not a note.
+> - **Michael's framing:** this work is BOX for the Midland. D117 applies to the Delaware too, but whether and when the Delaware
+>   record takes it is open.
+> - **Done in one transaction:** run 25 `is_record` false, then run 19 true. The view was checked at 42,833 rows before
+>   COMMIT (`record_back_to_16d_LIVE.log`). Steven's 687,520 econ rows were never touched.
+> - **To make the D117 record current later:** flip the flag (two updates), ideally once Steven has priced run 25 so the
+>   screens don't blank.
+> - Everything below describes the store as it happened.
+
 On Michael's "go apply" (2026-10-30), after his three step-3 gate calls:
 - carry the 93 D64-gap rows;
 - re-measure proximity on run 19's rows (D116);
@@ -55,7 +67,7 @@ over unchanged: 0 unexplained differences.
   kept runs' rows unchanged, the record unchanged (`prune_base_LIVE.log`; a first attempt lost its connection on the opening
   read, before any delete). The 16d record (run 19) is kept while it carries Steven's 687,520 econ rows. Its `superseded_by`
   is now NULL, because it pointed at the pruned base. Pruning it (`--include-priced`) waits on Michael's go, after Steven
-  prices the D117 record (run 25).
+  prices the D117 record (run 25) and it becomes the record.
 - **WCXY co-development disclosure text** (D117): still to write.
 - **Midland:** the 80 RES join the first Midland record (step 23).
 - **erebor:** no code change. RES sticks on BOX benches inside BOX extents now read their BOX class instead of

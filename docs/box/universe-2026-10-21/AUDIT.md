@@ -168,6 +168,6 @@ Run 14 has since been replaced: the record is run 19 (D123), so step 3 rehearsed
 `step3/FINDINGS.md`.
 
 ## Step 4 (stored live 2026-10-30)
-On Michael's go: the derived record. Run 19's build was carried, the RES rows added, and proximity re-measured. **Live record = run 25**, 25,569.9 MMbbl oil.
+On Michael's go: the derived record. Run 19's build was carried, the RES rows added, and proximity re-measured. The D117 record (run 25, 25,569.9 MMbbl oil) is stored, but the record flag was REVERTED the same day to the 16d record (run 19), on Michael's go. Steven's econ is shown again.
 It reproduces container run 25 row for row. The base run 24 has been pruned. The 16d record (run 19, priced) is kept.
 `step4/FINDINGS.md`.
