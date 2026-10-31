@@ -60,8 +60,11 @@ FAMILIES: dict[str, tuple[str, ...]] = {
     # Phase 3 step 20a: Midland Wolfcamp, one bench each (D128: no pooling). WCA_1 is the class rule's pooled label WCA
     # (flag_cards.pool); the Midland has no WCA_2 / WCXY tags, so the WCA pool is exactly its WCA_1 wells.
     "MID_WC": ("WCA_1", "WCB_1", "WCB_2", "WCC", "WCD"),
+    # Phase 3 step 20b: Midland Spraberry + Dean, one bench each (D128), in stack order. US is D2 emerging (D127): no QC set,
+    # no extent; its flags still show where they touch MS.
+    "MID_SPR": ("MS", "JM", "LSSH", "DEAN"),
 }
-FAMILY_BASIN: dict[str, str] = {"MID_WC": bsn.MIDLAND}  # every other family is Delaware
+FAMILY_BASIN: dict[str, str] = {"MID_WC": bsn.MIDLAND, "MID_SPR": bsn.MIDLAND}  # every other family is Delaware
 BLOCK_FT = 5 * bq.FT_PER_MI  # location FE grain (step 5c used 5-mi blocks where a bench had no TC areas)
 COLOC_FT = 1.5 * bq.FT_PER_MI  # the detector's neighbourhood radius
 N_BOOT = 400

@@ -1,0 +1,125 @@
+{
+ "built_at": "2026-10-31T10:04:00-05:00",
+ "git_sha": "144f94f+dirty",
+ "source": "docs\\box\\step20b-2026-10-30\\extents\\midland_spraberry_extents_2026-10-30.pptx",
+ "pools": {
+  "MS": {
+   "slide": 1,
+   "n_freeforms": 0,
+   "n_ink_strokes": 1,
+   "stroke_kinds": [
+    "owner_outline"
+   ],
+   "generated_sqmi": 2389.0795267695758,
+   "edited_sqmi": 2882.8984154574637,
+   "added_sqmi": 507.8796291442233,
+   "removed_sqmi": 14.060740456334198,
+   "n_parts": 1,
+   "n_evidence": 1621,
+   "inside_generated": 1579,
+   "inside_edited": 1600,
+   "outside_edited": 21,
+   "d1_in_generated": 3418,
+   "d1_in_edited": 4191,
+   "outside_by_county": {
+    "Dawson": 5,
+    "Ector": 4,
+    "Martin": 3,
+    "Upton": 3,
+    "Borden": 1,
+    "Crane": 1,
+    "Gaines": 1,
+    "Glasscock": 1
+   },
+   "visual": "MS"
+  },
+  "JM": {
+   "slide": 2,
+   "n_freeforms": 0,
+   "n_ink_strokes": 0,
+   "stroke_kinds": [],
+   "generated_sqmi": 2771.9334165075634,
+   "edited_sqmi": 2771.9334165075634,
+   "added_sqmi": 0.0,
+   "removed_sqmi": 0.0,
+   "n_parts": 1,
+   "n_evidence": 1682,
+   "inside_generated": 1658,
+   "inside_edited": 1658,
+   "outside_edited": 24,
+   "d1_in_generated": 4161,
+   "d1_in_edited": 4161,
+   "outside_by_county": {
+    "Upton": 7,
+    "Borden": 6,
+    "Dawson": 3,
+    "Howard": 2,
+    "Andrews": 1,
+    "Gaines": 1,
+    "Irion": 1,
+    "Martin": 1
+   },
+   "visual": "JM"
+  },
+  "LSSH": {
+   "slide": 3,
+   "n_freeforms": 0,
+   "n_ink_strokes": 1,
+   "stroke_kinds": [
+    "owner_outline"
+   ],
+   "generated_sqmi": 4054.835551985099,
+   "edited_sqmi": 4431.701399904005,
+   "added_sqmi": 425.0425254915748,
+   "removed_sqmi": 48.17667757264994,
+   "n_parts": 1,
+   "n_evidence": 5421,
+   "inside_generated": 5388,
+   "inside_edited": 5390,
+   "outside_edited": 31,
+   "d1_in_generated": 6378,
+   "d1_in_edited": 7314,
+   "outside_by_county": {
+    "Reagan": 8,
+    "Irion": 7,
+    "Mitchell": 6,
+    "Ector": 2,
+    "Glasscock": 2,
+    "Upton": 2,
+    "Andrews": 1,
+    "Dawson": 1
+   },
+   "visual": "LSSH"
+  },
+  "DEAN": {
+   "slide": 4,
+   "n_freeforms": 0,
+   "n_ink_strokes": 1,
+   "stroke_kinds": [
+    "owner_outline"
+   ],
+   "generated_sqmi": 1151.0156984380144,
+   "edited_sqmi": 3535.228395599118,
+   "added_sqmi": 2384.232540053345,
+   "removed_sqmi": 0.019842892241995563,
+   "n_parts": 1,
+   "n_evidence": 909,
+   "inside_generated": 623,
+   "inside_edited": 875,
+   "outside_edited": 34,
+   "d1_in_generated": 286,
+   "d1_in_edited": 1366,
+   "outside_by_county": {
+    "Mitchell": 17,
+    "Glasscock": 6,
+    "Reagan": 4,
+    "Upton": 3,
+    "Borden": 1,
+    "Gaines": 1,
+    "Howard": 1,
+    "Scurry": 1
+   },
+   "visual": "DEAN"
+  }
+ }
+}

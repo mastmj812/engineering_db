@@ -1,0 +1,320 @@
+dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,cohort,formation_blueox,perf_ratio,role,class
+22.075022896226432,SW,4200347068,CROSS BAR RANCH H 1725H,ConocoPhillips,Andrews,2018-02-03,16355.539464156407,True,DEAN,0.8988966081638166,"excluded: isolated test (tested, not developed)",ok
+16.46014030789122,W,4200348130,UL 1125 W2 09DN,Diamondback,Andrews,2020-11-08,23175.841584158417,True,DEAN,1.273738811061372,"excluded: isolated test (tested, not developed)",ok
+16.81439657328478,W,4200348142,UL 1125 W12 15DN,Diamondback,Andrews,2020-12-21,18937.338115162383,True,DEAN,1.0407916557369778,"excluded: isolated test (tested, not developed)",ok
+16.27207698940726,W,4200348145,UL 2539 E9 04DN,Diamondback,Andrews,2021-03-24,16236.023869346736,True,DEAN,0.892328059139033,"excluded: isolated test (tested, not developed)",ok
+16.412867610081094,W,4200348174,UL 2539 E15 07DN,Diamondback,Andrews,2021-04-15,14893.808098314164,True,DEAN,0.818560195556834,"excluded: isolated test (tested, not developed)",ok
+16.803510340194574,W,4200348229,UL 2539 W6 13DN,Diamondback,Andrews,2021-07-15,14819.335781574326,True,DEAN,0.8144672145172145,"excluded: isolated test (tested, not developed)",ok
+16.61596891645951,W,4200348235,UL 2539 W12 10DN,Diamondback,Andrews,2021-05-03,14905.369612328435,True,DEAN,0.8191956136520575,"excluded: isolated test (tested, not developed)",ok
+17.003216022754202,W,4200348261,UL 1933 E1 01DN,Diamondback,Andrews,2021-07-01,22097.700643115146,True,DEAN,1.2144844381224524,"excluded: isolated test (tested, not developed)",ok
+17.1906736862669,W,4200348276,UL 1933 E8 04DN,Diamondback,Andrews,2021-07-23,25906.149430286165,True,DEAN,1.4237958891238764,"excluded: isolated test (tested, not developed)",ok
+17.317483773463323,W,4200348281,UL 1933 E13 07DN,Diamondback,Andrews,2021-07-15,27494.84896106164,True,DEAN,1.5111104422595398,"excluded: isolated test (tested, not developed)",ok
+23.799354226145052,SW,4200348451,"FEE ""BM"" 1612DN",Fasken Oil,Andrews,2022-07-16,16601.979572496577,True,DEAN,0.9124408986464373,"excluded: isolated test (tested, not developed)",ok
+22.20145342179366,W,4200348644,MABEE DDA F58 3805AH,ConocoPhillips,Andrews,2024-05-15,15878.685150432835,False,DEAN,0.8726888070617016,"excluded: isolated test (tested, not developed)",ok
+22.451782583164047,W,4200348650,MABEE DDA F64 3808AH,ConocoPhillips,Andrews,2024-06-19,14773.94166236448,False,DEAN,0.8119723643853836,"excluded: isolated test (tested, not developed)",ok
+24.347261474548446,SW,4200348826,"FEE ""BM"" 1509DN",Fasken Oil,Andrews,2023-12-21,14423.763140129233,True,DEAN,0.7927266350360755,"excluded: isolated test (tested, not developed)",ok
+25.97054945922109,SW,4200348869,FEE 'BP' 1418DN,Fasken Oil,Andrews,2025-01-08,9434.456207892204,True,DEAN,0.5185154976838168,"excluded: isolated test (tested, not developed)",rolled
+25.591702650165132,SW,4200348877,FEE 'BP' 1410DN,Fasken Oil,Andrews,2025-01-25,18550.207388829946,True,DEAN,1.019515041928008,"excluded: isolated test (tested, not developed)",ok
+25.159250088613142,SW,4200348884,FEE 'BP' 1403WA,Fasken Oil,Andrews,2025-01-25,15851.61974546857,True,DEAN,0.8712012987606592,"excluded: isolated test (tested, not developed)",ok
+22.250893941830473,W,4200349007,FEE 'AR' 2004DN,Fasken Oil,Andrews,2025-12-17,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+27.294950455434133,SW,4200349063,FEE 'BP' 504DN,Fasken Oil,Andrews,2025-09-13,16995.659722222223,False,DEAN,0.934077467227091,"excluded: isolated test (tested, not developed)",ok
+17.2014265317855,W,4200349067,UL CARLA 2 04DN,Summit Petroleum,Andrews,2025-03-19,5510.9851873943735,True,DEAN,0.302882451749527,"excluded: isolated test (tested, not developed)",rolled
+24.77035220858827,W,4200349094,FEE 'BV' 4613WA,Fasken Oil,Andrews,2025-10-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+15.972038138028447,W,4200349213,UL MONTY EAST 46-32 E 5WA,Diamondback,Andrews,2026-06-16,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+16.639483505587606,W,4200349225,UL MONTY WEST 46-32 B 1WA,Diamondback,Andrews,2026-05-31,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+16.315628321746246,W,4200349231,UL MONTY WEST 46-39 A 3WA,Diamondback,Andrews,2026-06-04,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+4.5061611890030795,NE,4203332741,LIL EL C 4DN,Crescent Energy,Borden,2025-06-02,9660.490817487404,True,DEAN,0.5309383067472558,"excluded: test (2-well step-out, not development)",rolled
+2.877712256917338,NW,4211534134,MONSTER MANSION A 1WA,Lithos Resources II,Dawson,2026-08-01,,False,DEAN,,"excluded: test (1-well step-out, not development)",no12
+32.35933932170873,SW,4213543451,PARKS BELL HZ UNIT 3924H,ConocoPhillips,Ector,2017-02-17,23113.14382212215,True,DEAN,1.2702929567832315,"excluded: isolated test (tested, not developed)",ok
+41.497040460876626,SW,4213543729,AVERITT 1522 A 201H,Diamondback,Ector,2020-06-08,9134.473576403114,True,DEAN,0.5020285227023707,"excluded: isolated test (tested, not developed)",rolled
+42.244901129780395,SW,4213543793,TATIA 202H,Diamondback,Ector,2021-10-22,6079.899864399707,True,DEAN,0.33414986879898867,"excluded: isolated test (tested, not developed)",rolled
+41.93217823675758,SW,4213543794,TATIA 201H,Diamondback,Ector,2021-10-22,7134.357398873528,True,DEAN,0.39210260727444723,"excluded: isolated test (tested, not developed)",rolled
+36.01736492010908,SW,4213543800,HEADLEE 2920 B 201H,Diamondback,Ector,2021-09-07,17471.471784708458,True,DEAN,0.9602279864459546,"excluded: isolated test (tested, not developed)",ok
+41.61831356219695,SW,4213543811,AUNT BEE 1003 A 201H,Diamondback,Ector,2021-12-15,13720.776699029127,True,DEAN,0.7540906653161596,"excluded: isolated test (tested, not developed)",ok
+40.4482086275773,SW,4213543876,LUPIN 3748 G 202H,Diamondback,Ector,2023-01-03,16996.687412166233,True,DEAN,0.9341339488250804,"excluded: isolated test (tested, not developed)",ok
+43.54437827582469,SW,4213543885,NAKEISHA-MAYBERRY 3220 B 201H,Diamondback,Ector,2022-10-20,13684.95235574378,False,DEAN,0.7521217678218601,"excluded: isolated test (tested, not developed)",ok
+39.234640631188455,SW,4213543896,SALLIE B 1213 B 201H,Diamondback,Ector,2022-11-07,12057.994579945798,False,DEAN,0.6627045505239784,"excluded: isolated test (tested, not developed)",rolled
+36.23366851200133,SW,4213543911,HEADLEE 2920 F 202H,Diamondback,Ector,2026-03-12,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+36.43274188425286,SW,4213543914,HEADLEE 2920 I 203H,Diamondback,Ector,2026-03-13,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+34.73557407582527,SW,4213544018,HEADLEE 5G 101HG,Ovintiv,Ector,2024-08-06,13103.753333766994,False,DEAN,0.7201792060575113,"excluded: isolated test (tested, not developed)",ok
+34.68100573541715,SW,4213544021,HEADLEE 5X 104HG,Ovintiv,Ector,2024-08-07,17452.693437806072,False,DEAN,0.9591959329099359,"excluded: isolated test (tested, not developed)",ok
+12.663679838790419,NW,4216538799,NORTH WIND UNIT 1H,CGS Operating,Gaines,2020-04-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+28.40098691874323,SE,4217337159,BARBEE 37 44AN,Discovery Natural Resources,Glasscock,2016-08-13,10180.982504695068,True,DEAN,0.5595444076486524,"excluded: isolated test (tested, not developed)",rolled
+27.263592522534463,SE,4217337194,GLASS TXL FEE 3901HA,Burk Royalty,Glasscock,2016-01-21,12817.649707339036,False,DEAN,0.7044550179350058,"excluded: isolated test (tested, not developed)",ok
+27.36163821655199,SE,4217337196,GLASS TXL FEE 3903HA,Burk Royalty,Glasscock,2016-02-15,11019.810895992796,False,DEAN,0.6056462190515408,"excluded: isolated test (tested, not developed)",rolled
+27.302505865407422,SE,4217337197,GLASS TXL FEE 3902HA,Burk Royalty,Glasscock,2016-01-23,9999.5497523638,False,DEAN,0.5495729061865443,"excluded: isolated test (tested, not developed)",rolled
+2.916961012473576,S,4217338399,"POWELL, E.L. 0846DP",Occidental,Glasscock,2021-06-30,9270.222314998437,True,DEAN,0.5094892414975699,island,rolled
+4.5089123208672435,S,4217338405,POWELL 08 UNIT 0843DP,Occidental,Glasscock,2021-01-15,12971.390184146052,True,DEAN,0.7129045584373032,island,ok
+4.7301307942732365,S,4217338417,POWELL 0845DP 6H,Occidental,Glasscock,2021-06-29,13615.940594059406,True,DEAN,0.7483288976057817,island,ok
+14.631686164612706,S,4217338705,ARROW 22-27 A 5WB,Diamondback,Glasscock,2022-12-29,17419.332196931715,True,DEAN,0.9573624069457317,"excluded: isolated test (tested, not developed)",ok
+8.607539448018793,S,4217338941,PALMITO RANCH G 9DN,SM Energy,Glasscock,2024-02-26,11004.205378973104,True,DEAN,0.6047885435007964,"excluded: isolated test (tested, not developed)",rolled
+8.124954108173931,S,4217338949,FT SUMTER 14DN,SM Energy,Glasscock,2024-02-09,11463.66051891216,True,DEAN,0.6300400900975782,"excluded: isolated test (tested, not developed)",rolled
+5.54749402370208,S,4217339004,BRUNSON 3140DP 3H,Occidental,Glasscock,2024-05-15,19840.77761334589,False,DEAN,1.0904444784016236,island,ok
+5.1007103301500285,S,4217339008,BRUNSON 3046DP 14H,Occidental,Glasscock,2024-03-15,25432.070955934112,False,DEAN,1.3977406475017673,island,ok
+5.189382648183006,S,4217339010,BRUNSON 3144DP 10H,Occidental,Glasscock,2024-05-15,19989.86994314097,False,DEAN,1.0986385578356737,island,ok
+5.288654644546968,S,4217339011,BRUNSON 3142DPA 6H,Occidental,Glasscock,2024-04-15,19953.51750510978,False,DEAN,1.0966406363781556,island,ok
+9.697988174081447,S,4217339012,SARATOGA 1HA,Occidental,Glasscock,2025-02-10,17383.71067333137,True,DEAN,0.9554046563736917,"excluded: isolated test (tested, not developed)",ok
+9.887139920016699,S,4217339037,SARATOGA F 16DN,Occidental,Glasscock,2025-03-04,15978.235522736106,True,DEAN,0.8781600721459848,"excluded: isolated test (tested, not developed)",ok
+20.1184413512544,S,4217339086,BRAZOS 17-8 11 11H,Hannathon Petroleum II,Glasscock,2024-02-11,1264.8127666297992,True,DEAN,0.0695138126368405,"excluded: isolated test (tested, not developed)",rolled
+8.707831746237073,S,4217339119,HAWKEN G 18DN,Occidental,Glasscock,2025-06-19,16038.562779678865,True,DEAN,0.8814756440208542,"excluded: isolated test (tested, not developed)",ok
+13.153374228559441,S,4217339136,BRANDYWINE 2DN,Occidental,Glasscock,2025-07-07,15486.842105263158,True,DEAN,0.8511532053160351,"excluded: isolated test (tested, not developed)",ok
+11.0866288419204,S,4217339166,YORKTOWN 1DN,Occidental,Glasscock,2025-10-02,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.18746809889928,S,4217339175,YORKTOWN G 10DN,Occidental,Glasscock,2025-11-24,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.695988853905389,S,4217339219,FLINTLOCK 2DN,Occidental,Glasscock,2026-05-04,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.608879431377895,S,4217339225,FLINTLOCK E 9DN,Occidental,Glasscock,2026-04-28,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.55940819704944,S,4217339231,FLINTLOCK F 15DN,Occidental,Glasscock,2026-05-23,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+10.276970441932546,S,4217339240,TRENTON 1DN,Occidental,Glasscock,2026-07-05,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+10.142469080727661,S,4217339265,TRENTON E 8DN,Occidental,Glasscock,2026-07-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+10.035187376861202,S,4217339271,TRENTON G 14DN,Occidental,Glasscock,2026-07-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+3.189610511530317,NE,4222740799,LUNA UNIT 1HJ,Ovintiv,Howard,2021-04-22,30463.46077260056,True,DEAN,1.674264650299905,island,ok
+3.32628426694133,NE,4222740801,LUNA UNIT 3HJ,Ovintiv,Howard,2021-04-22,21967.927713236026,True,DEAN,1.2073521483709913,island,ok
+3.4768994770630317,NE,4222740804,HAMLIN UNIT 5HJ,Ovintiv,Howard,2021-04-23,25363.74501992032,True,DEAN,1.393985470103491,island,ok
+2.9381797350540886,E,4222740970,BIGHORN HORIZONTAL UNIT 1HJ,Ovintiv,Howard,2021-07-09,6852.883992222943,True,DEAN,0.37663289494358737,island,rolled
+2.1880530468494404,E,4222740972,BIGHORN 33E 2HJ,Ovintiv,Howard,2021-07-09,13433.854661712609,True,DEAN,0.7383214975234069,island,ok
+2.213172549848147,E,4222740973,BIGHORN 33G 3HJ,Ovintiv,Howard,2021-07-09,14285.505124450952,True,DEAN,0.785128006961653,island,ok
+4.977809578603233,NE,4222742374,MR. DYNAMITE 41-44 2DN,Crescent Energy,Howard,2024-12-15,10688.137412775091,True,DEAN,0.5874175223010818,island,rolled
+5.047743177989571,NE,4222742375,MR. DYNAMITE 41-44 4DN,Crescent Energy,Howard,2024-12-15,8603.763219338003,True,DEAN,0.4728608061052685,island,rolled
+5.127835335492561,NE,4222742378,MR. DYNAMITE 41-44 7DN,Crescent Energy,Howard,2024-12-15,,False,DEAN,,island,no12
+2.193062258069362,E,4222742528,FLASH WEST B 29-20 4102H,Diamondback,Howard,2024-10-21,12625.949994492785,True,DEAN,0.6939192467339939,"excluded: test (2-well step-out, not development)",rolled
+2.2958080508200425,E,4222742530,FLASH WEST F 29-20 4106H,Diamondback,Howard,2024-10-21,12734.235721360184,True,DEAN,0.6998706048537903,"excluded: test (2-well step-out, not development)",rolled
+3.8753126787382928,NE,4222742587,THE COLONEL 25-36 5DN,Crescent Energy,Howard,2025-05-19,13338.070511068598,True,DEAN,0.7330572230970914,"excluded: test (2-well step-out, not development)",ok
+8.122227591426363,E,4222742711,NIRVANA 13-24 H 2W,Bayswater,Howard,2026-01-15,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+9.85193323971754,SW,4231740385,RAYMOND GLASSCOCK 5E 5H,Exxon Mobil,Martin,2016-11-21,13907.323127844436,True,DEAN,0.7643432132369813,"excluded: isolated test (tested, not developed)",ok
+9.753921869573595,SW,4231740388,RAYMOND GLASSCOCK 5G 7H,Exxon Mobil,Martin,2016-11-23,15709.196692865164,True,DEAN,0.8633737612349112,"excluded: isolated test (tested, not developed)",ok
+14.805262286447443,SW,4231740788,G.W. GLASS B 1002H,ConocoPhillips,Martin,2018-06-02,21400.08090614887,True,DEAN,1.1761434212014639,"excluded: isolated test (tested, not developed)",ok
+2.8855970942723603,W,4231740863,ACT E 05DN,Diamondback,Martin,2018-02-11,10247.391631709152,True,DEAN,0.5631942376744307,island,rolled
+11.277232884397245,W,4231740938,NORTHEAST SCHARBAUER 1215H,Exxon Mobil,Martin,2018-02-21,12715.809284818068,True,DEAN,0.6988578922285325,"excluded: isolated test (tested, not developed)",rolled
+3.5087642853845336,W,4231740979,PEELER C 14DN,Diamondback,Martin,2018-04-07,19897.233201581028,True,DEAN,1.0935472642735096,island,ok
+4.469648840479456,W,4231741355,FLO B 14DN,Diamondback,Martin,2019-02-24,12358.29346092504,True,DEAN,0.679208906503138,island,rolled
+4.31665351929173,W,4231741360,FLO D 11DN,Diamondback,Martin,2019-03-18,21412.755621719032,True,DEAN,1.176840020592785,island,ok
+16.92287544437836,SW,4231741525,"JOHNSON, TED 101H",ConocoPhillips,Martin,2019-06-18,10364.620208354405,True,DEAN,0.5696370927179605,"excluded: isolated test (tested, not developed)",rolled
+16.789593263774492,SW,4231741532,"JOHNSON, TED 202H",ConocoPhillips,Martin,2019-07-16,11203.393253888104,True,DEAN,0.6157358623306548,"excluded: isolated test (tested, not developed)",rolled
+16.70491091041725,SW,4231741550,"JOHNSON, TED 304H",ConocoPhillips,Martin,2019-07-11,12598.492406606809,True,DEAN,0.6924101841516709,"excluded: isolated test (tested, not developed)",rolled
+4.045314399646051,W,4231741596,FORTRESS B1 07DN,Diamondback,Martin,2019-04-22,13009.886159376872,True,DEAN,0.7150202881959442,island,ok
+3.8954941836921333,W,4231741602,FORTRESS C1 04DN,Diamondback,Martin,2019-05-07,13339.696143358004,True,DEAN,0.7331465674659684,island,ok
+3.7205244458749998,W,4231741609,FORTRESS D3 02DN,Diamondback,Martin,2019-06-05,14966.01844426624,True,DEAN,0.8225288592131388,island,ok
+3.550914759405432,W,4231741672,DUPREE A 15DN,Diamondback,Martin,2019-06-29,16287.573845999796,True,DEAN,0.8951612337503572,island,ok
+3.3708267773008505,W,4231741678,DUPREE C 13DN,Diamondback,Martin,2019-07-12,11333.333333333334,True,DEAN,0.6228773385830175,island,rolled
+3.2158887746523988,W,4231741687,DUPREE E 10DN,Diamondback,Martin,2019-08-03,12963.448631905008,True,DEAN,0.7124680925910574,island,ok
+16.071744860691073,W,4231742339,UL 1125 E3 04DN,Diamondback,Martin,2020-05-02,21640.882638215324,True,DEAN,1.1893778278481462,"excluded: isolated test (tested, not developed)",ok
+15.791132596997572,W,4231742368,UL 2631 W7 13DN,Diamondback,Martin,2021-01-29,15337.644277569185,True,DEAN,0.842953327742236,"excluded: isolated test (tested, not developed)",ok
+16.09429303751094,W,4231742487,UL 2539 E3 02DN,Diamondback,Martin,2021-03-10,12645.666798575388,True,DEAN,0.6950028776562587,"excluded: isolated test (tested, not developed)",rolled
+19.049657629820025,SW,4231742780,SOUTH CURTIS RANCH 3403DP 3H,Occidental,Martin,2021-03-19,12457.602339181289,True,DEAN,0.6846668991313071,"excluded: isolated test (tested, not developed)",rolled
+18.837344185153665,SW,4231742843,SOUTH CURTIS RANCH 3405DP 5H,Occidental,Martin,2021-03-15,10309.537684537683,True,DEAN,0.5666097701440727,"excluded: isolated test (tested, not developed)",rolled
+18.47438903119445,SW,4231742850,SOUTH CURTIS RANCH 3409DP 9H,Occidental,Martin,2021-03-10,11218.434343434345,True,DEAN,0.6165625170800034,"excluded: isolated test (tested, not developed)",rolled
+2.6334872957573983,S,4231743042,ROSIE THE ELEPHANT 35-23 B 3DN,Birch Resources,Martin,2021-01-28,25985.55533866875,True,DEAN,1.4281600192016217,"excluded: test (2-well step-out, not development)",ok
+2.3845650313148052,S,4231743050,ROSIE THE ELEPHANT 35-23 E 7DN,Birch Resources,Martin,2021-03-01,20639.62300816168,True,DEAN,1.1343488337071084,"excluded: test (2-well step-out, not development)",ok
+13.02757575681417,W,4231743212,HSC 320B 515HG,Ovintiv,Martin,2021-02-22,7790.482187837351,True,DEAN,0.4281630715975176,"excluded: isolated test (tested, not developed)",rolled
+11.61671237138736,SW,4231743224,HAMMER F 8DN,Occidental,Martin,2022-02-09,13165.447439623207,True,DEAN,0.7235698996276857,"excluded: isolated test (tested, not developed)",ok
+2.6182111028895516,S,4231743842,PETERS 1102D 7L,SM Energy,Martin,2022-05-16,18617.873960525,True,DEAN,1.0232339808181654,island,ok
+13.332147302152956,W,4231743903,HOLT 319Q 213HF,Ovintiv,Martin,2022-05-09,13450.454348766769,False,DEAN,0.739233812425784,"excluded: isolated test (tested, not developed)",ok
+3.100993059941643,S,4231744023,FREDDY THE FALCON 2-11 D 5DN,Birch Resources,Martin,2022-09-10,17253.683906385435,True,DEAN,0.948258415796647,island,ok
+3.286701088836337,S,4231744030,FREDDY THE FALCON 2-11 B 3DN,Birch Resources,Martin,2022-09-14,17102.705848123365,True,DEAN,0.9399606971688785,island,ok
+17.318788905884386,SW,4231744207,SOUTH CURTIS RANCH 3549DP,Occidental,Martin,2022-11-24,5461.8525338243535,True,DEAN,0.30018213264718446,"excluded: isolated test (tested, not developed)",rolled
+17.627343993789193,SW,4231744212,SOUTH CURTIS RANCH 3547DP,Occidental,Martin,2022-12-12,4363.636363636363,True,DEAN,0.23982442982875535,"excluded: isolated test (tested, not developed)",rolled
+12.42658400238499,W,4231744309,HC 320X 13HG,Ovintiv,Martin,2022-08-19,12310.70121294768,False,DEAN,0.6765932477304332,"excluded: isolated test (tested, not developed)",rolled
+8.453144036008206,SW,4231744458,MAMBA 6-35 UNIT 2A 161,Diamondback,Martin,2023-02-24,17117.009421537838,True,DEAN,0.9407468182048168,"excluded: isolated test (tested, not developed)",ok
+11.894382043831408,W,4231744595,HRN 249F 1702HG,Ovintiv,Martin,2023-01-18,15920.80618892508,True,DEAN,0.8750037694459135,"excluded: isolated test (tested, not developed)",ok
+11.713460802440686,W,4231744598,HRN 249X 1705HG,Ovintiv,Martin,2023-01-13,18450.79881957871,True,DEAN,1.0140515703061648,"excluded: isolated test (tested, not developed)",ok
+14.709704599102418,W,4231744706,MABEE 30F 3HG,Ovintiv,Martin,2023-05-15,17331.813943851652,True,DEAN,0.9525524243084426,"excluded: isolated test (tested, not developed)",ok
+13.64244372966481,W,4231744830,HOLT 319O 304HG,Ovintiv,Martin,2023-04-16,11168.58401664423,False,DEAN,0.6138227548260163,"excluded: isolated test (tested, not developed)",rolled
+18.32813899574188,SW,4231744938,SOUTH CURTIS RANCH 2243DP,Occidental,Martin,2023-08-13,7329.133218168885,True,DEAN,0.4028074405635371,"excluded: isolated test (tested, not developed)",rolled
+18.203107751674008,SW,4231744939,SOUTH CURTIS RANCH 2245DP,Occidental,Martin,2023-08-21,2137.3131373131373,True,DEAN,0.11746622811954056,"excluded: isolated test (tested, not developed)",rolled
+17.88711150079811,SW,4231744947,SOUTH CURTIS RANCH 2247DP,Occidental,Martin,2023-08-27,10061.442307692309,True,DEAN,0.552974506493114,"excluded: isolated test (tested, not developed)",rolled
+12.07822686990136,W,4231745182,HOLT RANCH NORTH 1802HG,Ovintiv,Martin,2023-11-28,1089.0282968499737,True,DEAN,0.05985273945736835,"excluded: isolated test (tested, not developed)",rolled
+9.09704367110846,SW,4231745284,CHEST THUMPER 1-5 UNIT 1 125,Diamondback,Martin,2024-04-12,16029.523735529485,True,DEAN,0.8809788602770512,"excluded: isolated test (tested, not developed)",ok
+9.229343544040027,SW,4231745288,CHEST THUMPER 1-5 UNIT 1 135,Diamondback,Martin,2024-04-12,16587.375206351702,True,DEAN,0.9116382461126716,"excluded: isolated test (tested, not developed)",ok
+15.484352144834052,W,4231745355,FOLSOM 102HG,Ovintiv,Martin,2023-11-25,14577.555555555557,True,DEAN,0.8011790300726934,"excluded: isolated test (tested, not developed)",ok
+15.360052227866074,W,4231745362,FOLSOM 107HG,Ovintiv,Martin,2023-11-15,13539.021164021164,True,DEAN,0.7441014237939396,"excluded: isolated test (tested, not developed)",ok
+13.881763935590273,W,4231745676,HOLT 319M 406HG,Ovintiv,Martin,2024-02-22,13441.230341691404,False,DEAN,0.7387268631630038,"excluded: isolated test (tested, not developed)",ok
+7.900130538341345,W,4231745809,PIER 22-23 UNIT 1 122,Diamondback,Martin,2024-12-15,8186.723880111826,False,DEAN,0.4499404219551254,"excluded: test (1-well step-out, not development)",rolled
+10.179936775170596,W,4231745847,CORRETTO 97-9 F 2DN,Diamondback,Martin,2024-10-11,22825.86814292904,True,DEAN,1.2545043529159874,"excluded: isolated test (tested, not developed)",ok
+10.484129166558324,W,4231745851,CORRETTO 98-8 G 1DN,Diamondback,Martin,2024-10-10,14935.566372411517,True,DEAN,0.820855220495091,"excluded: isolated test (tested, not developed)",ok
+17.991254221347777,SW,4231745938,SOUTH CURTIS RANCH 2740DP,Occidental,Martin,2024-07-01,27326.363758209354,True,DEAN,1.5018505350763116,"excluded: isolated test (tested, not developed)",ok
+8.053041781943664,W,4231745973,PIER 22-23 UNIT 1 132,Diamondback,Martin,2025-06-03,8355.25715403168,False,DEAN,0.4592029711129385,"excluded: isolated test (tested, not developed)",rolled
+12.939732859500058,W,4231745985,HR DALTON EAST 248B 102HG,Ovintiv,Martin,2024-07-31,7392.214028468531,True,DEAN,0.4062743470842816,"excluded: isolated test (tested, not developed)",rolled
+11.185201402407499,W,4231746068,HR BANE 249LL 105HG,Ovintiv,Martin,2024-10-05,17944.308744504153,True,DEAN,0.9862149947195924,"excluded: isolated test (tested, not developed)",ok
+8.763917212451343,SW,4231746147,BEAL-GRAHAM E26B 102H,Exxon Mobil,Martin,2026-01-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+8.467735977834492,SW,4231746155,BEAL-GRAHAM E26I 109H,Exxon Mobil,Martin,2025-12-29,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+7.964599716779048,SW,4231746215,EL DORADO 41-32 A 211,Diamondback,Martin,2025-10-23,,False,DEAN,,"excluded: test (1-well step-out, not development)",no12
+8.22791780078628,SW,4231746223,EL DORADO 41-32 C 233,Diamondback,Martin,2025-10-21,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+9.933712396338077,SW,4231746278,BUTCH CASSIDY 43-7 UNIT 1 112DN,Diamondback,Martin,2025-08-05,23021.26459927507,False,DEAN,1.2652432962716376,"excluded: isolated test (tested, not developed)",ok
+10.084255562392674,SW,4231746285,BUTCH CASSIDY 43-7 UNIT 1 231WA,Diamondback,Martin,2025-08-18,16924.52981192477,False,DEAN,0.9301681840606446,"excluded: isolated test (tested, not developed)",ok
+9.375911300288237,W,4231746301,PALOMA 95-15 C 1DN,Diamondback,Martin,2025-07-02,14509.307657038056,True,DEAN,0.7974281415968878,"excluded: isolated test (tested, not developed)",ok
+9.078147487245547,W,4231746304,PALOMA 95-15 F 3DN,Diamondback,Martin,2025-07-05,12519.39477303989,True,DEAN,0.6880629967854024,"excluded: isolated test (tested, not developed)",rolled
+9.756010856776507,W,4231746365,VINEYARD HZ F UNIT 9702DN,Diamondback,Martin,2025-07-01,15353.888942169368,True,DEAN,0.8438461306939127,"excluded: isolated test (tested, not developed)",ok
+14.13550000889598,W,4231746375,MABEE 29X 102HG,Ovintiv,Martin,2025-08-12,17356.9027106535,False,DEAN,0.9539312970402541,"excluded: isolated test (tested, not developed)",ok
+14.046662496958225,W,4231746379,MABEE 29J 106HG,Ovintiv,Martin,2025-08-15,22736.353077816493,False,DEAN,1.249584625958306,"excluded: isolated test (tested, not developed)",ok
+14.01763351151502,W,4231746382,MABEE 29K 109HG,Ovintiv,Martin,2025-08-17,13323.78953680108,False,DEAN,0.7322723441049628,"excluded: isolated test (tested, not developed)",ok
+10.325576220507324,SW,4231746394,SUNDANCE KID 43-7 UNIT 2 261WA,Diamondback,Martin,2025-08-16,14785.790843668658,False,DEAN,0.8126235926073072,"excluded: isolated test (tested, not developed)",ok
+10.453370927135978,SW,4231746404,SUNDANCE KID 43-7 UNIT 2 271WA,Diamondback,Martin,2025-08-22,14942.207593386403,False,DEAN,0.8212202204403068,"excluded: isolated test (tested, not developed)",ok
+10.53775044793682,SW,4231746410,SUNDANCE KID 43-7 UNIT 2 281WA,Diamondback,Martin,2025-08-27,15010.946111451316,False,DEAN,0.8249980732512256,"excluded: isolated test (tested, not developed)",ok
+9.59288253212697,W,4231746476,PINOT 65 G 3DN,Diamondback,Martin,2026-08-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+8.179150199476936,W,4231746486,GUARDIAN EAST 250 D 1DN,Diamondback,Martin,2025-06-26,20364.194236926363,False,DEAN,1.1192113331192044,"excluded: isolated test (tested, not developed)",ok
+7.8979749987933285,W,4231746492,GUARDIAN EAST 250 K 2DN,Diamondback,Martin,2025-06-26,17423.485405116557,False,DEAN,0.957590666292269,"excluded: test (2-well step-out, not development)",ok
+7.579284127297295,W,4231746498,GUARDIAN EAST 250 Q 3DN,Diamondback,Martin,2025-06-09,22954.231259647004,False,DEAN,1.2615591596671791,"excluded: test (2-well step-out, not development)",ok
+13.247397813746948,W,4231746519,UL KANSAS 14-1 E 2DN,Diamondback,Martin,2026-01-02,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+10.205962178691896,SW,4231746637,BUTCH CASSIDY 43-7 UNIT 1 R241WA,Diamondback,Martin,2025-08-22,15435.47218420417,False,DEAN,0.8483299265178785,"excluded: isolated test (tested, not developed)",ok
+11.453410458551689,SW,4231746656,FINISHING NAIL W E 6DN,Occidental,Martin,2025-12-23,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.226417007075058,SW,4231746662,FINISHING NAIL W H 12DN,Occidental,Martin,2026-01-09,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+4.958924086045069,W,4231746702,INTEGRITY SOUTH 1DN,Diamondback,Martin,2025-08-25,20310.644579301297,False,DEAN,1.1162682565112454,"excluded: test (1-well step-out, not development)",ok
+15.618543708907994,SW,4231746711,NAIL-BURLEY 6P 716H,Exxon Mobil,Martin,2026-07-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+15.882621168079211,SW,4231746719,NAIL-BURLEY 6V 722H,Exxon Mobil,Martin,2026-07-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+16.150857166092493,SW,4231746782,NAIL-BURLEY 6D 604H,Exxon Mobil,Martin,2026-06-23,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+16.417073586707563,SW,4231746785,NAIL-BURLEY 6G 607H,Exxon Mobil,Martin,2026-06-16,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.950332201851424,W,4231746834,MABEE 318B 203HG,Ovintiv,Martin,2026-01-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.765475709032282,W,4231746840,MABEE 318E 207HG,Ovintiv,Martin,2026-01-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.720711214883863,W,4231746897,HNC MULLIGAN 248E 2HG,Ovintiv,Martin,2025-12-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.018432228721643,W,4231747102,HR VENOM 320J 6HG,Ovintiv,Martin,2026-06-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.861970902855438,W,4231747104,HR VENOM 320L 10HG,Ovintiv,Martin,2026-06-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.708126936328144,W,4231747105,HR VENOM 320M 13HG,Ovintiv,Martin,2026-06-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+15.597975138050076,SW,4231747144,GLASS-NAIL 24D 4H,Exxon Mobil,Martin,2026-08-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+9.205569614779215,W,4231747220,MERLOT 95-66 I 2DN,Diamondback,Martin,2026-08-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+28.488391783314658,SW,4232940939,SPANISH TRAIL 3-10 A5 3441H,ConocoPhillips,Midland,2016-12-31,41094.19394688079,True,DEAN,2.2585272491335986,"excluded: isolated test (tested, not developed)",ok
+34.955397000398314,SW,4232940940,PEGASUS FIELD UNIT 3 109AH,ConocoPhillips,Midland,2017-01-10,11761.791967044284,True,DEAN,0.6464253244764404,"excluded: isolated test (tested, not developed)",rolled
+32.5047059983207,SW,4232941130,ABBIE LAINE 30G 10H,Ovintiv,Midland,2017-02-08,25817.429022082026,True,DEAN,1.4189198363232713,"excluded: isolated test (tested, not developed)",ok
+18.588081199546117,SW,4232941286,MCC HZ UNIT 1106H,ConocoPhillips,Midland,2019-03-03,9964.984227129336,True,DEAN,0.5476731930367119,"excluded: isolated test (tested, not developed)",rolled
+33.33738873830486,SW,4232941374,KEYSTONE 1007H,ConocoPhillips,Midland,2017-08-05,20007.320048800324,True,DEAN,1.0995976115448876,"excluded: isolated test (tested, not developed)",ok
+18.045307499103654,SW,4232941405,ISBELL HORIZONTAL UNIT 115H,Winn Operating,Midland,2018-11-14,17347.67836919592,False,DEAN,0.9534243293999061,"excluded: isolated test (tested, not developed)",ok
+33.368397521782576,SW,4232941515,KEYSTONE 1010H,ConocoPhillips,Midland,2018-04-27,19895.88158292216,True,DEAN,1.09347297962942,"excluded: isolated test (tested, not developed)",ok
+25.923046290375247,SW,4232941666,SPANISH TRAIL 48 HZ UNIT 4825LS,ConocoPhillips,Midland,2018-03-26,11867.703724846582,True,LSSH,0.6522462098139001,"excluded: isolated test (tested, not developed)",rolled
+25.957918926469574,SW,4232941742,SOA SCHARBAUER SE 0026LS,Chevron,Midland,2018-06-15,37861.16428330143,True,LSSH,2.0808406980385756,"excluded: isolated test (tested, not developed)",ok
+27.231081463894174,SW,4232942506,RIO SAN GABRIEL 28-29 UNIT 2 162,Diamondback,Midland,2019-03-12,17432.884931771994,True,DEAN,0.9581072620699524,"excluded: isolated test (tested, not developed)",ok
+21.524183046654286,SW,4232942526,BOZEMAN UNIT 803WA,Diamondback,Midland,2020-03-03,15719.697554201066,True,DEAN,0.8639508861080055,"excluded: isolated test (tested, not developed)",ok
+28.978332620474806,SW,4232942713,NOBLES 3112AH,Exxon Mobil,Midland,2019-10-06,14049.397236107028,True,DEAN,0.7721515728637012,"excluded: isolated test (tested, not developed)",ok
+27.19765784988475,S,4232943320,MIDKIFF 43-06 0655 0665DH,Exxon Mobil,Midland,2020-07-23,14574.625927323024,True,DEAN,0.8010180183930007,"excluded: isolated test (tested, not developed)",ok
+27.10473143401465,S,4232943334,MIDKIFF 43-06 0666 0666DH,Exxon Mobil,Midland,2020-05-12,16690.030753459767,True,DEAN,0.9172801708750353,"excluded: isolated test (tested, not developed)",ok
+26.984230569985314,S,4232943339,MIDKIFF 43-06 0667 0667DH,Exxon Mobil,Midland,2020-08-08,7895.243977764052,True,DEAN,0.4339207549705826,"excluded: isolated test (tested, not developed)",rolled
+29.697452932212652,SW,4232943454,PEARL JAM 2A,Permian Resources,Midland,2021-09-08,8567.935318477617,False,DEAN,0.4708917130874803,"excluded: isolated test (tested, not developed)",rolled
+29.556600231326726,SW,4232943457,PEARL JAM 4A,Permian Resources,Midland,2021-09-08,14570.04735595896,False,DEAN,0.8007663811860218,"excluded: isolated test (tested, not developed)",ok
+26.907625125522127,S,4232943478,MIDKIFF 43-06 0668 0668DH,Exxon Mobil,Midland,2020-08-12,7461.187214611872,True,DEAN,0.4100650971976835,"excluded: isolated test (tested, not developed)",rolled
+23.262473459947905,S,4232943593,CHARLES MIDKIFF 38-47 4713 4763DH,Exxon Mobil,Midland,2020-09-14,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+23.498023293367808,S,4232943670,CHARLES MIDKIFF 38-47 4711 4761DH,Exxon Mobil,Midland,2020-08-12,11287.157567515058,True,DEAN,0.6203395293371422,"excluded: isolated test (tested, not developed)",rolled
+23.50945840563204,S,4232943671,CHARLES MIDKIFF 38-47 4712 4762DH,Exxon Mobil,Midland,2020-07-24,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+20.358766297584804,SW,4232943678,SOUTH CURTIS RANCH 0401DP,Occidental,Midland,2019-12-31,2178.917779339424,True,DEAN,0.11975280947524933,"excluded: isolated test (tested, not developed)",rolled
+11.500405101860286,S,4232944097,HALOGEN G 10DN,Occidental,Midland,2021-05-13,19616.81178289527,True,DEAN,1.0781353689541575,"excluded: isolated test (tested, not developed)",ok
+34.70764492222118,SW,4232944435,HEADLEE 2821 C 201H,Diamondback,Midland,2022-09-22,15590.715852989577,False,DEAN,0.8568620820983124,"excluded: isolated test (tested, not developed)",ok
+21.810499907044516,SW,4232944609,BLACKFOOT EAST D 706WA,Diamondback,Midland,2021-09-11,13764.724140606811,True,DEAN,0.7565060063850514,"excluded: isolated test (tested, not developed)",ok
+19.454428066913213,SW,4232944889,SOUTH CURTIS RANCH 0443DP,Occidental,Midland,2021-10-19,3555.737281570113,True,DEAN,0.19542248599807105,"excluded: isolated test (tested, not developed)",rolled
+19.306323886897548,SW,4232944892,SOUTH CURTIS RANCH 0445DP,Occidental,Midland,2021-10-22,4235.430834122407,True,DEAN,0.2327782840332895,"excluded: isolated test (tested, not developed)",rolled
+13.443888257914056,SW,4232944942,COMMON NAIL 2DN,Occidental,Midland,2022-11-05,14078.000979911809,True,DEAN,0.7737236279061688,"excluded: isolated test (tested, not developed)",ok
+20.09001362929926,SW,4232945341,SOUTH CURTIS RANCH 0444DP,Occidental,Midland,2022-08-20,33193.84164222874,True,DEAN,1.824325741716845,"excluded: isolated test (tested, not developed)",ok
+19.847319657835428,SW,4232945342,SOUTH CURTIS RANCH 0446DP,Occidental,Midland,2022-08-11,3115.652577798421,True,DEAN,0.17123553402427044,"excluded: isolated test (tested, not developed)",rolled
+39.80872555254672,SW,4232945353,COLLINGSWORTH 3625 C 201H,Diamondback,Midland,2022-07-05,15505.882352941177,True,DEAN,0.8521996528571802,"excluded: isolated test (tested, not developed)",ok
+40.0122935699531,SW,4232945356,COLLINGSWORTH 3625 A 202H,Diamondback,Midland,2022-07-05,15048.852701702444,True,DEAN,0.8270814105497886,"excluded: isolated test (tested, not developed)",ok
+34.879608194909686,SW,4232945361,HEADLEE 2821 E 202H,Diamondback,Midland,2022-09-22,18648.915989159894,False,DEAN,1.0249400434223113,"excluded: isolated test (tested, not developed)",ok
+30.68035444573238,S,4232945827,DAVIDSON 42A 3HG,Ovintiv,Midland,2023-02-20,14864.933859364122,True,DEAN,0.8169732741647036,"excluded: isolated test (tested, not developed)",ok
+30.558668391614304,S,4232945829,DAVIDSON 42B 5HG,Ovintiv,Midland,2023-02-18,16330.554268951675,True,DEAN,0.8975234277026606,"excluded: isolated test (tested, not developed)",ok
+26.731934098220663,SW,4232945881,RIO SABINE 39-42 UNIT 1 133,Diamondback,Midland,2023-07-05,13412.393381975133,True,DEAN,0.7371419906288071,"excluded: isolated test (tested, not developed)",ok
+39.54252905353687,SW,4232946059,LUPIN DORA 3143 B 2WA,Diamondback,Midland,2023-09-18,14146.076046600949,False,DEAN,0.777465017585274,"excluded: isolated test (tested, not developed)",ok
+26.36387965120947,S,4232946091,TXL 9 UNIT 2 0469 0469DH,Exxon Mobil,Midland,2024-03-20,11311.006609049313,False,DEAN,0.6216502670593727,"excluded: isolated test (tested, not developed)",rolled
+11.483762609289082,S,4232946152,MIDWAY 2-35 C2 135,Diamondback,Midland,2023-10-09,26697.245045915904,True,DEAN,1.4672743183851835,"excluded: isolated test (tested, not developed)",ok
+25.126103217594274,SW,4232946187,LELA 7-18 C 132,Diamondback,Midland,2024-05-20,19983.37506259389,True,DEAN,1.0982816007260048,"excluded: isolated test (tested, not developed)",ok
+25.002571327059783,SW,4232946190,LELA 18-7 A 113,Diamondback,Midland,2024-05-03,17450.83525057517,True,DEAN,0.9590938073760854,"excluded: isolated test (tested, not developed)",ok
+25.198112739756855,SW,4232946195,LELA 7-18 D 142,Diamondback,Midland,2024-05-20,23325.13861282561,True,DEAN,1.281944140697364,"excluded: isolated test (tested, not developed)",ok
+28.442749309747242,S,4232946235,TXL 20 UNIT 2 2969DH,Exxon Mobil,Midland,2024-04-27,11517.583582233356,True,DEAN,0.633003688994909,"excluded: isolated test (tested, not developed)",rolled
+30.392690161541864,S,4232946271,DAVIDSON 42D 2HG,Ovintiv,Midland,2023-10-19,15695.74615919092,True,DEAN,0.8626345230627758,"excluded: isolated test (tested, not developed)",ok
+30.963208960275104,SW,4232946324,TXL 25-40 UNIT 1 2562DH,Exxon Mobil,Midland,2023-10-13,14633.170169881949,True,DEAN,0.8042355962160415,"excluded: isolated test (tested, not developed)",ok
+12.433452203806626,S,4232946346,TRIPLE HOP 12DN,Occidental,Midland,2024-06-16,25989.627195234672,True,DEAN,1.428383807482287,"excluded: isolated test (tested, not developed)",ok
+25.553383885630407,SW,4232946371,RIO SAN JACINTO 38-43 UNIT 1 123,Diamondback,Midland,2024-08-12,11404.98502560139,True,DEAN,0.6268152987640377,"excluded: isolated test (tested, not developed)",rolled
+25.72144739068113,SW,4232946469,RIO SAN JACINTO 38-43 UNIT 1 133,Diamondback,Midland,2024-08-12,10670.730508307935,True,DEAN,0.5864608429192462,"excluded: isolated test (tested, not developed)",rolled
+15.0692217930491,SW,4232946517,NE CITY 35-47 UNIT 2B 162,Diamondback,Midland,2024-07-13,13042.122890635064,False,DEAN,0.7167920113757135,"excluded: isolated test (tested, not developed)",ok
+15.318188474156408,SW,4232946522,NE CITY 35-47 UNIT 2B 182,Diamondback,Midland,2024-07-13,14154.93047991286,False,DEAN,0.777951655160802,"excluded: isolated test (tested, not developed)",ok
+11.81940644791437,S,4232946810,KING 18-35 UNIT 1 165,Diamondback,Midland,2026-04-04,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.976984387314136,S,4232946818,KING 18-35 UNIT 1 174,Diamondback,Midland,2026-04-02,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+25.501305548872843,SW,4232946925,LELA 18-6 G 172,Diamondback,Midland,2025-12-17,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+25.399762328896042,SW,4232946927,LELA 18-6 F1 164,Diamondback,Midland,2026-01-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+25.668183776241904,SW,4232946934,LELA 18-6 H 182,Diamondback,Midland,2025-12-17,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+25.343963614892935,SW,4232946954,LELA 18-6 E 152,Diamondback,Midland,2026-01-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+21.05100986850598,SW,4232946995,STEPHENS 6-31 B 123,Diamondback,Midland,2025-12-15,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.076689045120151,S,4232947011,FREDERICKSBURG E 3DN,Occidental,Midland,2025-04-01,13118.720565149137,True,DEAN,0.7210018015795052,"excluded: isolated test (tested, not developed)",ok
+12.951196460978506,S,4232947017,FREDERICKSBURG F 9DN,Occidental,Midland,2025-04-18,16015.390609779855,True,DEAN,0.8802021070047463,"excluded: isolated test (tested, not developed)",ok
+10.424705251331153,S,4232947020,FASKEN-STEPHENS 53K 11H,Exxon Mobil,Midland,2025-04-07,25531.395694871542,True,DEAN,1.4031995118292497,"excluded: isolated test (tested, not developed)",ok
+16.413415221631517,SW,4232947026,HULK SMASH A 2DH,Petroplex Energy,Midland,2025-02-17,22207.520891364904,True,DEAN,1.2205201331770703,"excluded: isolated test (tested, not developed)",ok
+10.712019250366113,S,4232947027,FASKEN-STEPHENS 53B 2H,Exxon Mobil,Midland,2025-04-06,24659.656780081343,True,DEAN,1.355288945783623,"excluded: isolated test (tested, not developed)",ok
+10.570669136163037,S,4232947038,FASKEN-STEPHENS 53G 7H,Exxon Mobil,Midland,2025-04-09,19918.758059716296,True,DEAN,1.094730265421922,"excluded: isolated test (tested, not developed)",ok
+18.93841228428512,SW,4232947069,MCC HZ UNIT 1109AH,ConocoPhillips,Midland,2026-06-03,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+30.15949037993737,S,4232947290,DAVIDSON 42F 2HG,Ovintiv,Midland,2025-03-09,12243.917462272866,True,DEAN,0.6729228284762343,"excluded: isolated test (tested, not developed)",rolled
+33.83680333991821,S,4232947452,DAVIDSON B 34D 202HG,Ovintiv,Midland,2025-08-21,16287.732247391194,False,DEAN,0.8951699394536309,"excluded: isolated test (tested, not developed)",ok
+17.425525702279156,SW,4232947460,STIMSON-ATRELLE 20B 2H,Exxon Mobil,Midland,2025-08-29,17606.94484972279,False,DEAN,0.9676735542858792,"excluded: isolated test (tested, not developed)",ok
+12.119420884257961,S,4232947528,TRIPLE HOP 21DN,Occidental,Midland,2026-01-15,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+11.964987560092968,S,4232947534,TRIPLE HOP 26DN,Occidental,Midland,2026-01-18,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+14.125721262632272,S,4232947537,ANTIETAM E 5DN,Occidental,Midland,2026-02-19,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.94761796524776,S,4232947542,ANTIETAM F 10DN,Occidental,Midland,2026-03-12,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.933314146841173,S,4232947546,ANTIETAM G 14DN,Occidental,Midland,2026-03-09,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+17.211109030721303,SW,4232947549,POPPY-ATRELLE 20L 12H,Exxon Mobil,Midland,2025-08-23,26147.47678191787,False,DEAN,1.4370591836984334,"excluded: isolated test (tested, not developed)",ok
+16.704726007044517,SW,4232947550,POPPY-ATRELLE 21G 7H,Exxon Mobil,Midland,2025-08-27,18172.719391195453,False,DEAN,0.9987683902238662,"excluded: isolated test (tested, not developed)",ok
+16.713448207619535,SW,4232947552,POPPY-ATRELLE 21D 4H,Exxon Mobil,Midland,2025-08-27,21893.26654464888,False,DEAN,1.203248788078192,"excluded: isolated test (tested, not developed)",ok
+11.80593015708769,S,4232947559,TRIPLE HOP 31DN,Occidental,Midland,2026-02-08,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+32.85829648901426,SW,4232947924,EVERGLADES 5A 301H,Exxon Mobil,Midland,2026-06-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+32.69159707265802,SW,4232947927,EVERGLADES 5D 304H,Exxon Mobil,Midland,2026-06-16,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+32.5246402969375,SW,4232947928,EVERGLADES 5E 305H,Exxon Mobil,Midland,2026-06-10,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+32.36073289583356,SW,4232947951,EVERGLADES 5I 309H,Exxon Mobil,Midland,2026-06-17,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+32.19871631565887,SW,4232947954,EVERGLADES 5L 312H,Exxon Mobil,Midland,2026-06-17,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.306322841364022,E,4233536022,OASIS 9-16-33-40 H 4W,Bayswater,Mitchell,2022-11-11,9848.38587162932,False,DEAN,0.5412649747993289,"excluded: isolated test (tested, not developed)",rolled
+12.85368161052321,E,4233536025,LUXOR 9-3-60 H 4W,Bayswater,Mitchell,2023-03-01,12063.016870658286,True,DEAN,0.6629805744421476,"excluded: isolated test (tested, not developed)",rolled
+14.816444038091808,E,4233536034,MOSES 7-1-62 H 3W,Bayswater,Mitchell,2024-12-02,12351.956723861043,True,DEAN,0.6788606409221625,"excluded: isolated test (tested, not developed)",rolled
+11.15776271231324,E,4233536047,JAVA 16-21 H 4W,Bayswater,Mitchell,2024-06-01,6396.010844306738,True,DEAN,0.35152325402205,"excluded: isolated test (tested, not developed)",rolled
+11.251164505651479,E,4233536053,SUEZ 10-15-34-40 H 4W,Bayswater,Mitchell,2024-08-30,11492.288830096148,False,DEAN,0.6316134953574377,"excluded: isolated test (tested, not developed)",rolled
+14.085875164587502,E,4233536055,OSIRIS 7-1-62 H 1W,Bayswater,Mitchell,2024-12-01,12389.92145578972,True,DEAN,0.6809471736736699,"excluded: isolated test (tested, not developed)",rolled
+13.341449402757416,E,4233536057,SPHINX 8-17-32 H 4W,Bayswater,Mitchell,2025-03-15,11194.88188976378,True,DEAN,0.6152680797571133,"excluded: isolated test (tested, not developed)",rolled
+13.978904082854148,E,4233536058,CLEOPATRA 8-2-61 H 4W,Bayswater,Mitchell,2024-12-01,14726.352905105014,False,DEAN,0.8093568974617146,"excluded: isolated test (tested, not developed)",ok
+13.597755884164073,E,4233536062,DELTA 7-18-31 H 2W,Bayswater,Mitchell,2025-03-02,14163.6089469716,True,DEAN,0.7784286216723781,"excluded: isolated test (tested, not developed)",ok
+11.919140214319597,E,4233536080,GOLDEN SAND 10-3 H 3W,Bayswater,Mitchell,2025-10-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+15.479949259089542,E,4233536082,KING MENES 6-73 H 4W,Bayswater,Mitchell,2026-03-04,,False,LSSH,,"excluded: isolated test (tested, not developed)",no12
+12.238197803751504,E,4233536087,ENDLESS DUNE 10-3 H 1W,Bayswater,Mitchell,2025-09-25,13221.116109888006,False,DEAN,0.7266294366727145,"excluded: isolated test (tested, not developed)",ok
+13.299364841856853,E,4233536089,KING TUT 8-2-61 H 2W,Bayswater,Mitchell,2026-05-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.303213334256666,E,4233536090,KING TUT 8-2-61 H 3W,Bayswater,Mitchell,2026-05-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.691983892257916,E,4233536091,CLEOPATRA 8-2-61 H 2W,Bayswater,Mitchell,2026-06-05,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+13.624069928307849,E,4233536092,CLEOPATRA 8-2-61 H 1W,Bayswater,Mitchell,2026-06-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+12.504977795691723,E,4233536103,ENDLESS DUNE 10-3 H 3W,Bayswater,Mitchell,2026-04-18,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+55.705997110042375,S,4238339654,UNIVERSITY CENTRAL 0824QH,Rushmore Resource Partners,Reagan,2016-11-21,14491.102323282254,True,DEAN,0.7964275807288439,"excluded: isolated test (tested, not developed)",ok
+51.77857545801611,S,4238339908,UNIVERSITY 9-31 10H,Permian Resources,Reagan,2017-12-18,5996.360204906983,True,DEAN,0.32955854873096285,"excluded: isolated test (tested, not developed)",rolled
+35.99482722229481,S,4238340039,KATHRYN 43 AND 42 4203H,Exxon Mobil,Reagan,2018-09-15,3584.2346471127407,True,DEAN,0.1969886945162316,"excluded: isolated test (tested, not developed)",rolled
+48.76146745123228,S,4238340149,UNIVERSITY 09C 0105WB,Sequitur Energy,Reagan,2018-08-18,12082.522419385614,True,DEAN,0.6640525948196958,"excluded: isolated test (tested, not developed)",rolled
+14.779536816958801,E,4241535736,VIRGINIA 76-64 B UNIT A A 7H,Highpeak Energy,Scurry,2025-05-15,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+43.33250468526517,SW,4246142191,BRENDA KATHRYN (SA) C 4850DN,SM Energy,Upton,2023-05-16,10945.824461793234,True,DEAN,0.6015799420022346,"excluded: isolated test (tested, not developed)",rolled
+44.42941476576777,SW,4246142316,LOIS C 08DN,FireBird Energy II,Upton,2023-07-06,11792.666538683048,True,DEAN,0.6481221836834031,"excluded: isolated test (tested, not developed)",rolled
+43.994733411323054,S,4246142347,POLARIS 4750 B 12HA,Apache,Upton,2024-01-08,14015.609059375638,True,DEAN,0.7702945826050523,"excluded: isolated test (tested, not developed)",ok
+41.36524295215867,SW,4246142353,BRITAIN CINDY KAY (SA) H 4357DN,SM Energy,Upton,2023-10-28,13893.170888105162,False,DEAN,0.7635654094642942,"excluded: isolated test (tested, not developed)",ok
+40.49702012092357,SW,4246142369,JAMIE SARAH CHAN B 0450DN,SM Energy,Upton,2023-12-01,18161.723344413196,False,DEAN,0.998164050074925,"excluded: isolated test (tested, not developed)",ok
+40.35734516122972,SW,4246142425,JAMIE SARAH CHAN D 0451DN,SM Energy,Upton,2024-01-12,15038.56450790413,False,DEAN,0.8265159738346192,"excluded: isolated test (tested, not developed)",ok
+40.473627329099685,SW,4246142551,DORCUS JANEY (SA) C 1854DN,SM Energy,Upton,2024-06-07,13352.16116282035,False,DEAN,0.7338316420084471,"excluded: isolated test (tested, not developed)",ok
+40.22967468247377,SW,4246142558,DORCUS JANEY (SA) E 1856DN,SM Energy,Upton,2024-07-05,15357.133749840625,False,DEAN,0.8440244645615438,"excluded: isolated test (tested, not developed)",ok
+57.767432823939714,S,4246142629,UNIVERSITY 23-26 B 7L,SM Energy,Upton,2024-08-12,3626.097132826214,True,DEAN,0.19928944690043846,"excluded: isolated test (tested, not developed)",rolled
+44.46445819929593,SW,4246142682,CINDY 2413A 701H,FireBird Energy II,Upton,2024-11-06,12019.52969310482,True,DEAN,0.6605905293759426,"excluded: isolated test (tested, not developed)",rolled
+44.57225474851283,SW,4246142697,SUSAN CR KIRA (SA) D 4652DN,SM Energy,Upton,2024-10-22,13055.914256198348,False,DEAN,0.7175499815884326,"excluded: isolated test (tested, not developed)",ok
+48.42975871952105,S,4246142700,HERBERT 102C 3HG,Ovintiv,Upton,2024-06-02,18385.20451102508,True,DEAN,1.0104465225116284,"excluded: isolated test (tested, not developed)",ok
+46.77873178141682,SW,4246142716,LINDSEY 4405 A 401H,FireBird Energy II,Upton,2024-11-28,9810.33434650456,True,DEAN,0.5391736719141464,"excluded: isolated test (tested, not developed)",rolled
+53.302884462833795,S,4246142728,TAYLOR 1 01DN,Summit Petroleum,Upton,2024-09-17,8687.2354644687,True,DEAN,0.47744842109578833,"excluded: isolated test (tested, not developed)",rolled
+41.43598020991702,SW,4246142749,JUDY JULIBETH K 1355DN,SM Energy,Upton,2025-02-28,13835.076530612245,False,DEAN,0.7603725572188342,"excluded: isolated test (tested, not developed)",ok
+41.200407120048204,SW,4246142751,JUDY JULIBETH M 1357DN,SM Energy,Upton,2025-02-28,11569.6170266998,False,DEAN,0.6358634348837237,"excluded: isolated test (tested, not developed)",rolled
+44.69839922237789,SW,4246142766,LOIS 1102 C 402H,FireBird Energy II,Upton,2025-01-08,10064.564848027185,True,DEAN,0.5531461205766498,"excluded: isolated test (tested, not developed)",rolled
+44.92597182509412,SW,4246142769,LOIS 1102 D 403H,FireBird Energy II,Upton,2025-01-07,9600.567375886523,True,DEAN,0.5276449284687478,"excluded: isolated test (tested, not developed)",rolled
+45.879062019043175,SW,4246142784,BONNIE 9 17DN,Summit Petroleum,Upton,2025-11-13,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+41.90722600741236,SW,4246142787,JUDY JULIBETH D 1351DN,SM Energy,Upton,2025-03-28,11140.339675648063,False,DEAN,0.6122704524775113,"excluded: isolated test (tested, not developed)",rolled
+41.670781293038175,SW,4246142790,JUDY JULIBETH G 1353DN,SM Energy,Upton,2025-03-26,13509.823934677212,False,DEAN,0.742496750925608,"excluded: isolated test (tested, not developed)",ok
+45.9373974174406,SW,4246142818,BONNIE 13 25DN,Summit Petroleum,Upton,2025-11-21,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+45.94929955085926,SW,4246142823,BONNIE 17 33DN,Summit Petroleum,Upton,2025-12-04,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+45.7667571868952,SW,4246142863,BIG BERTHA 0310 B 403H,FireBird Energy II,Upton,2025-03-19,9567.046362909672,True,DEAN,0.52580262146731,"excluded: isolated test (tested, not developed)",rolled
+42.437175227463676,SW,4246142906,DORCUS CINDY KAY (SA) A 4250DN,SM Energy,Upton,2025-09-05,15709.517186568646,False,DEAN,0.8633913754935927,"excluded: isolated test (tested, not developed)",ok
+41.4245442603925,SW,4246142910,DORCUS CINDY KAY (SA) C 3052DN,SM Energy,Upton,2025-09-04,13743.263902159371,False,DEAN,0.7553265567195074,"excluded: isolated test (tested, not developed)",ok
+41.62216931700072,SW,4246142915,BRITAIN CINDY KAY (SA) E 3155DN,SM Energy,Upton,2025-08-20,14837.987745888424,False,DEAN,0.8154923220958595,"excluded: isolated test (tested, not developed)",ok
+41.44358054771344,SW,4246142935,BRITAIN DORCUS (SA) F 3151DN,SM Energy,Upton,2025-05-14,13832.09704836965,True,DEAN,0.7602088055744557,"excluded: isolated test (tested, not developed)",ok
+44.6860455931992,SW,4246142936,CINDY 2413A 402H,FireBird Energy II,Upton,2025-11-20,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+44.89420072744301,SW,4246142940,CINDY 2413A 403H,FireBird Energy II,Upton,2025-11-26,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+47.35688811473119,S,4246142961,HERBERT P 102B 203HG,Ovintiv,Upton,2025-03-21,15188.472550728246,True,DEAN,0.8347548846651903,"excluded: isolated test (tested, not developed)",ok
+45.40635695006668,SW,4246143008,BIG BERTHA 0310 F 401H,FireBird Energy II,Upton,2026-01-14,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+45.10201345976719,SW,4246143062,CINDY 2413 H 404H,FireBird Energy II,Upton,2025-12-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+61.42623590651062,S,4246143084,WHIRLAWAY N104H,Triple Crown Resources,Upton,2025-09-09,7130.117779024116,False,DEAN,0.3918695987631174,"excluded: isolated test (tested, not developed)",rolled
+47.540553992240866,S,4246143095,KYLIE 5 10DN,Summit Petroleum,Upton,2026-05-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+47.68270845492678,S,4246143099,KYLIE 9 18DN,Summit Petroleum,Upton,2026-05-18,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+47.847376450531065,S,4246143103,KYLIE 12 24DN,Summit Petroleum,Upton,2026-05-20,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+45.19322250162089,SW,4246143133,LOIS 1102 E 404H,FireBird Energy II,Upton,2026-01-16,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+48.51244496919279,S,4246143153,BARBARA 136 B 301H,FireBird Energy II,Upton,2025-09-24,8527.376065677297,False,DEAN,0.46866258607814093,"excluded: isolated test (tested, not developed)",rolled
+49.40892886902385,S,4246143227,ALLIE 15 29DN,Summit Petroleum,Upton,2026-08-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+43.76221906146759,SW,4246143256,ELIZABETH 1201 G 402H,FireBird Energy II,Upton,2026-03-06,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+43.98042745462494,SW,4246143257,ELIZABETH 1201 D 403H,FireBird Energy II,Upton,2026-03-15,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+44.205163776844685,SW,4246143259,ELIZABETH 1201 E 404H,FireBird Energy II,Upton,2026-03-16,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+47.17030739465609,S,4246143286,HERBERT 101D 302HG,Ovintiv,Upton,2026-04-08,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+46.268149532035466,S,4246143442,CALLIE 7 13DN,Summit Petroleum,Upton,2026-07-03,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12

@@ -1,0 +1,16 @@
+bench,category,undrilled,inside,outside,share_inside,extent
+MS,PUD + RES,8553,3418,5135,0.39962586227054836,D27 extent (proposed)
+MS,PUD,5700,3418,2282,0.5996491228070175,D27 extent (proposed)
+MS,RES,2853,0,2853,0.0,D27 extent (proposed)
+JM,PUD + RES,8029,4161,3868,0.5182463569560344,D27 extent (proposed)
+JM,PUD,5802,4156,1646,0.7163047225094795,D27 extent (proposed)
+JM,RES,2227,5,2222,0.00224517287831163,D27 extent (proposed)
+LSSH,PUD + RES,11703,6378,5325,0.544988464496283,D27 extent (proposed)
+LSSH,PUD,8099,6295,1804,0.7772564514137548,D27 extent (proposed)
+LSSH,RES,3604,83,3521,0.023029966703662596,D27 extent (proposed)
+DEAN,PUD + RES,1882,286,1596,0.15196599362380447,D27 extent (proposed)
+DEAN,PUD,1789,270,1519,0.1509223029625489,D27 extent (proposed)
+DEAN,RES,93,16,77,0.17204301075268819,D27 extent (proposed)
+US,PUD + RES,3756,0,3756,0.0,"none: D2 emerging, not covered"
+US,PUD,991,0,991,0.0,"none: D2 emerging, not covered"
+US,RES,2765,0,2765,0.0,"none: D2 emerging, not covered"

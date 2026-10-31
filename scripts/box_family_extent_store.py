@@ -1,6 +1,9 @@
 """BOX step 15 — STORE a family's extents: bench_scope rows, generated v1, and the owner-edited v1 as the version of record.
 
     python -m scripts.box_family_extent_store --wells docs/box/step15a-2026-10-16 --pool BS3_S BS3_C [--dry-run]
+    python -m scripts.box_family_extent_store --wells docs/box/step20b-2026-10-30 --pool MS JM LSSH DEAN --basin midland --step 20b \
+        --decided-on <go date> [--loop-date <deck date>] [--dry-run]                    # step 20b, on Michael's go only
+    python -m scripts.box_family_extent_store --emerging US --basin midland --step 20b [--dry-run]   # D127: in_scope false, no extent
 
 WAREHOUSE WRITES (box.* is app-owned; no DDL). Needs Michael's explicit go-apply (step 20a Midland r3: "go ahead on the r3 store",
 2026-10-30, `--wells docs/box/step20a-2026-10-26/r3 --basin midland`; given 2026-10-16 for BS3_S + BS3_C:
@@ -62,6 +65,21 @@ MIDLAND_SCOPE_ROW = {
 }
 STEP20A = {"decided_on": dt.date(2026, 10, 30), "loop_date": "2026-10-26",
            "decision_ref": "gate 20a store (docs/box/step20a-2026-10-26/FINDINGS.md §4 item 5, §7, §8.15-8.16; D128, D131, D134, D136)"}
+# Step 20b (Midland Spraberry + Dean): same shape as 20a. Counts = the step-20b final sets (docs/box/step20b-2026-10-30), modern =
+# first production 2016+. "{extent}" is filled at store time from the reviewed deck (owner loop or generated v1). decided_on = the
+# store go's date (--decided-on); loop_date = the date of the deck the loops were read from (--loop-date).
+MIDLAND_SCOPE_ROW_20B = {
+    "MS": ("{MS}", "Midland Middle Spraberry: 1,621 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "JM": ("{JM}", "Midland Jo Mill: 1,682 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "LSSH": ("{LSSH}", "Midland Lower Spraberry Shale: 5,421 modern producers; step 20b (not pooled, D128); {extent}; tier provisional until step 21 (D131)"),
+    "DEAN": ("{DEAN}", "Midland Dean: 909 modern producers; step 20b (not pooled, D128); {extent}; tier from step 21's counts (D131)"),
+}
+STEP20B_REF = "gate 20b store (docs/box/step20b-2026-10-30/FINDINGS.md; D127, D128, D131, D134, D141)"
+# D127 (gate 18, 2026-10-26): Midland US is D2 emerging - a scope row with in_scope = false and no extent, stored at step 20b
+EMERGING_REASON = {
+    "midland": (("emerging bench (D2 / D127): Midland Upper Spraberry, 70 modern producers at gate 18, two operators 90 %; hand-worked "
+                 "per deal; shown as not covered, never zero"), dt.date(2026, 10, 26)),
+}
 
 
 def _extent_geojson(path: Path) -> object:
@@ -82,8 +100,11 @@ def _store_emerging(benches: list[str], dref: str, dry_run: bool, basin: str = B
         if clash:
             print(f"REFUSED: scope row or extent already exists for {clash}")
             return 2
+        reason, decided = EMERGING_REASON.get(basin, (
+            "emerging bench: too little development history for the BOX workflow; hand-worked per deal; shown as not covered, never zero (D2)",
+            dt.date(2026, 10, 16)))
         for b in benches:
-            print(f"{b}: bench_scope in_scope=false, reason 'emerging bench (D2)', no extent")
+            print(f"{basin} {b}: bench_scope in_scope=false, no extent, decided_on {decided}, reason {reason!r}")
         if dry_run:
             print("dry run: nothing written")
             return 0
@@ -92,8 +113,7 @@ def _store_emerging(benches: list[str], dref: str, dry_run: bool, basin: str = B
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
                        VALUES (%s, %s, false, %s, %s, %s, %s)""",
-                    (basin, b, "{" + b + "}", "emerging bench: too little development history for the BOX workflow; hand-worked per deal; shown as not covered, never zero (D2)",
-                     dt.date(2026, 10, 16), dref),
+                    (basin, b, "{" + b + "}", reason, decided, dref),
                 )
         conn.commit()
         with conn.cursor() as cur:
@@ -148,31 +168,41 @@ def main(argv: list[str] | None = None) -> int:
                     help="store a revised owner edit (edited v<--version>, parent generated v<--parent-version>) as the record")
     ap.add_argument("--parent-version", type=int, default=1)
     ap.add_argument("--wells", type=Path, default=None)
-    ap.add_argument("--pool", nargs="*", default=[], choices=sorted(set(SCOPE_ROW) | set(MIDLAND_SCOPE_ROW)))
+    ap.add_argument("--pool", nargs="*", default=[], choices=sorted(set(SCOPE_ROW) | set(MIDLAND_SCOPE_ROW) | set(MIDLAND_SCOPE_ROW_20B)))
     ap.add_argument("--emerging", nargs="*", default=[], help="benches recorded as D2 emerging: bench_scope row in_scope = false, NO extent (like WDFD)")
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--out-of-scope", nargs="*", default=[], help="benches whose bench_scope row is in_scope = false (extent stored for reference; D2 / step 14 pending)")
     ap.add_argument("--decision-ref", default=None)
     ap.add_argument("--basin", default=BASIN, help="the basin the rows are stored under (step 19)")
+    ap.add_argument("--step", default="20a", choices=["20a", "20b"], help="Midland only: which step-20 family's scope rows and decision text")
+    ap.add_argument("--decided-on", type=dt.date.fromisoformat, default=None, help="step 20b: the store go's date (required there)")
+    ap.add_argument("--loop-date", default=None, help="step 20b: the date of the reviewed deck the owner loops came from")
     a = ap.parse_args(argv)
     if a.revise:
         return _store_revision(a.revise[0], Path(a.revise[1]), a.version, a.parent_version, a.basin, a.dry_run)
     if a.emerging:
-        return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run, a.basin)
+        dref_e = a.decision_ref or (STEP20B_REF if a.basin == bsn.MIDLAND and a.step == "20b" else DECISION_REF_15)
+        return _store_emerging(a.emerging, dref_e, a.dry_run, a.basin)
     if not a.pool or a.wells is None:
         ap.error("--wells and --pool are required unless --emerging is given")
     ext_dir = a.wells / "extents"
     bp = fe.record_params()
     midland = a.basin == bsn.MIDLAND
-    scope_rows = MIDLAND_SCOPE_ROW if midland else SCOPE_ROW
+    step20b = midland and a.step == "20b"
+    if step20b and a.decided_on is None:
+        ap.error("--step 20b needs --decided-on (the store go's date)")
+    scope_rows = MIDLAND_SCOPE_ROW_20B if step20b else MIDLAND_SCOPE_ROW if midland else SCOPE_ROW
     if missing := sorted(set(a.pool) - set(scope_rows)):
         ap.error(f"no {a.basin} bench_scope row defined for {missing}")
-    decided_on = STEP20A["decided_on"] if midland else dt.date(2026, 10, 16)
+    decided_on = a.decided_on if step20b else STEP20A["decided_on"] if midland else dt.date(2026, 10, 16)
+    loop_date = (a.loop_date or "") if step20b else STEP20A["loop_date"] if midland else "2026-10-16"
     edge = er.edge_params(a.basin)  # the basin's D23 metric, as the reviewed extents were built (family_extent.run)
-    run_id = f"step{'20a r3' if midland else '15'} {decided_on} {_git_sha()}"
-    eds = json.loads((ext_dir / "edited" / "summary.json").read_text(encoding="utf-8"))
-    dref = a.decision_ref or (STEP20A["decision_ref"] if midland else DECISION_REF if set(a.pool) <= {"BS3_S", "BS3_C"} else DECISION_REF_15)
+    run_id = f"step{'20b' if step20b else '20a r3' if midland else '15'} {decided_on} {_git_sha()}"
+    # no edited/ folder = no deck came back with loops (step 20b may accept every bench as generated)
+    eds_path = ext_dir / "edited" / "summary.json"
+    eds = json.loads(eds_path.read_text(encoding="utf-8")) if eds_path.exists() or not midland else {"pools": {}, "source": ""}
+    dref = a.decision_ref or (STEP20B_REF if step20b else STEP20A["decision_ref"] if midland else DECISION_REF if set(a.pool) <= {"BS3_S", "BS3_C"} else DECISION_REF_15)
     with get_connection() as conn:
         # --- identity, read-only
         with conn.cursor() as cur:
@@ -208,7 +238,7 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             diff = ex.diff(b["extent"], edited, b["extent"].centroid)
             plan[pool] = (b, edited, {k: v for k, v in diff.items() if k != "pieces"}
-                          | {"source": f"owner hand edit ({Path(eds['source']).name}, Michael {STEP20A['loop_date'] if midland else '2026-10-16'})"})
+                          | {"source": f"owner hand edit ({Path(eds['source']).name}, Michael {loop_date})"})
         if a.dry_run:
             print("dry run: nothing written")
             return 0
@@ -216,6 +246,8 @@ def main(argv: list[str] | None = None) -> int:
         with conn.cursor() as cur:
             for pool in a.pool:
                 members, reason = scope_rows[pool]
+                if step20b:
+                    reason = reason.format(extent="extent = owner pen loop" if plan[pool][1] is not None else "generated v1 accepted")
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
                        VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (basin, bench) DO NOTHING""",

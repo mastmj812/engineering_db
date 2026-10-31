@@ -1,0 +1,10 @@
+formation_blueox,category,status,n,in generated,in edited,pool
+JM,PUD,conflict,76,73,73,JM
+JM,RES,conflict,2,0,0,JM
+JM,PUD,realized_phantom,190,183,183,JM
+JM,RES,realized_phantom,1,0,0,JM
+JM,PUD,remaining_pud,5708,4083,4083,JM
+JM,RES,remaining_pud,1024,5,5,JM
+JM,PUD + RES,undrilled (D117),6810,4161,4161,JM
+JM,PUD,undrilled by category,5784,4156,4156,JM
+JM,RES,undrilled by category,1026,5,5,JM

@@ -140,7 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     label = bsn.get(basin).label
     if basin != bsn.DELAWARE:
         meta |= {"step": step, "basin_label": label, "pool_word": "D128 context (not pooled)",
-                 "plan_note": "docs/box_type_curves_plan.md §5 step 20a; D128 (one bench each, no pooling), D134 A / B (the Delaware class rule "
+                 "plan_note": f"docs/box_type_curves_plan.md §5 step {step}; D128 (one bench each, no pooling), D134 A / B (the Delaware class rule "
                               "as written; Delaware D23 r / c and D27 constants), D117 (undrilled = any Novi category)."}
     out.mkdir(parents=True, exist_ok=True)
     extra: list[str] = []

@@ -22,6 +22,7 @@ import datetime as dt
 import json
 import math
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -49,7 +50,9 @@ _COLS = ["screen_class", "screen_rule", "api10", "well_name", "operator", "count
 
 def _card(df: pd.DataFrame, xy: np.ndarray, subj: pd.Series, depth: dict[str, dict] | None = None) -> str:
     i = int(df.index[df["api10"] == subj["api10"]][0])
-    png, meta = fc.card_figure(subj, fc._neighbourhood(df, xy, i, DEFAULT_PARAMS), DEFAULT_PARAMS)
+    wide = fc._neighbourhood(df, xy, i, replace(DEFAULT_PARAMS, radius_ft=fc.SECTION_PREFILTER_FT))
+    png, meta = fc.card_figure(subj, fc._neighbourhood(df, xy, i, DEFAULT_PARAMS), DEFAULT_PARAMS, dest=subj["screen_dest"],
+                               section=fc.strike_section(subj, wide))
     own = meta["bands"].get(subj["formation_blueox"])
     dst = meta["bands"].get(subj["screen_dest"])
     votes = [n for n, k in (("other vendor", "vote_vendor"), ("sql/23", "vote_sql23"), ("GOR", "vote_gor")) if bool(subj.get(k))]
