@@ -118,3 +118,16 @@ def clip_d136(build: dict) -> None:
     build["stats"]["d136_unclipped_sqmi"] = gen.area / eg.FT_PER_MI**2
     build["stats"]["extent_sqmi"] = build["extent"].area / eg.FT_PER_MI**2
     build["stats"]["n_parts"] = len(build["extent"].geoms)
+    if "edges" in build:  # edges explain the boundary that remains: trim to it (box.extent_edge.geom is a LineString)
+        edges = build["edges"]
+        band = build["extent"].boundary.buffer(1.0)
+        geoms = []
+        for g in edges["geom"]:
+            on = shapely.line_merge(g.intersection(band)) if g.intersects(band) else None
+            if on is not None and on.geom_type == "MultiLineString":
+                on = max(on.geoms, key=lambda p: p.length)
+            geoms.append(on if on is not None and on.geom_type == "LineString" and on.length > 1.0 else None)
+        keep = [x is not None for x in geoms]
+        build["stats"]["d136_edges_dropped"] = len(keep) - sum(keep)
+        build["stats"]["d136_edges_trimmed"] = sum(1 for g, n in zip(edges["geom"], geoms) if n is not None and abs(n.length - g.length) > 1.0)
+        build["edges"] = edges.assign(geom=geoms)[keep].reset_index(drop=True)

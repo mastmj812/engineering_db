@@ -63,6 +63,9 @@ BASIN_CLASSES: dict[str, dict[str, float]] = {
         "WCB_2->WCB_1": 1.00,
         "WCB_2->WCC": 0.70,
         "WCC->WCB_2": 0.70,
+        # D139 (ask 3, 2026-10-30): 6 / 10 on the r3 frame (docs/box/step20a-2026-10-26/ask3/cards_sample.csv). All 3 cards
+        # north of the D136 line were rejected, 6 / 7 south agreed; the gate is applied to the class as carded.
+        "WCB_1->WCB_2": 0.60,
     },
 }
 
@@ -128,14 +131,18 @@ def decide(row: pd.Series, verdicts: dict[str, str] | None = None, basin: str | 
 
 def load_verdicts(path: Any) -> dict[str, str]:
     """AGREE / REJECT by api10 from a cards_sample.csv; a comment starting with
-    REJECT counts as REJECT, anything else (blank, inconclusive) is ignored."""
+    REJECT counts as REJECT. A bench code (2026-10-30, ask 3) is AGREE when it is the card's suggested bench and REJECT
+    when it is the well's own tag; anything else (blank, inconclusive, a third bench) is ignored."""
     d = pd.read_csv(path, dtype={"api10": str})
-    v = d["verdict"].fillna("").astype(str).str.strip().str.upper()
+    v = d["verdict"].fillna("").astype(str).str.strip()
+    sug = d["cons_suggest"].astype(str) if "cons_suggest" in d else pd.Series([""] * len(d))
+    own = d["formation_blueox"].astype(str) if "formation_blueox" in d else pd.Series([""] * len(d))
     out: dict[str, str] = {}
-    for api, s in zip(d["api10"], v):
-        if s == "AGREE":
+    for api, s, sg, ow in zip(d["api10"], v, sug, own):
+        u = s.upper()
+        if u == "AGREE" or (s and s == sg):
             out[api] = "AGREE"
-        elif s.startswith("REJECT"):
+        elif u.startswith("REJECT") or (s and s == ow):
             out[api] = "REJECT"
     return out
 

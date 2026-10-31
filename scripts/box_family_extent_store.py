@@ -2,7 +2,8 @@
 
     python -m scripts.box_family_extent_store --wells docs/box/step15a-2026-10-16 --pool BS3_S BS3_C [--dry-run]
 
-WAREHOUSE WRITES (box.* is app-owned; no DDL). Needs Michael's explicit go-apply (given 2026-10-16 for BS3_S + BS3_C:
+WAREHOUSE WRITES (box.* is app-owned; no DDL). Needs Michael's explicit go-apply (step 20a Midland r3: "go ahead on the r3 store",
+2026-10-30, `--wells docs/box/step20a-2026-10-26/r3 --basin midland`; given 2026-10-16 for BS3_S + BS3_C:
 "go apply: add BS3_S + BS3_C to box.bench_scope, store generated v1, then store the edited v1 as the version of record").
 
 Identity before any write: the generated extent is rebuilt with the record parameters and must equal the reviewed
@@ -19,13 +20,16 @@ import json
 import sys
 from pathlib import Path
 
+from shapely import wkt
 from shapely.geometry import shape
 
+from box import basin as bsn
 from box import edge_gap as eg
 from box import edge_gap_report as egr
 from box import extent as ex
 from box import extent_report as er
 from box import family_extent as fe
+from box import wcb_split as ws
 from box.extent_store import BASIN, store_edited, store_generated
 from etl.db import get_connection
 from scripts.box_family_extents import _git_sha
@@ -46,6 +50,18 @@ SCOPE_ROW = {
 }
 DECISION_REF = "step 15a gates (docs/box/step15a-2026-10-16/FINDINGS.md §5, §8)"
 DECISION_REF_15 = "step 15 extent pass (docs/box/step15-extents-2026-10-16/FINDINGS.md §4)"
+
+# Step 20a (Midland Wolfcamp, r3 on the corrected tags; store go 2026-10-30): one row per bench (D128), in scope with the
+# tier provisional until step 21's counts (D131). Counts = r3 final sets, modern = first production 2016+.
+MIDLAND_SCOPE_ROW = {
+    "WCA_1": ("{WCA_1}", "Midland Wolfcamp A: 6,838 modern producers; step 20a r3 (not pooled, D128); generated v1 accepted; tier provisional until step 21 (D131)"),
+    "WCB_1": ("{WCB_1}", "Midland Wolfcamp B1: 4,974 modern producers; step 20a r3 (D128; D136 one WCB landing north of the split line); generated v1 accepted; tier provisional until step 21 (D131)"),
+    "WCB_2": ("{WCB_2}", "Midland Wolfcamp B2: 1,658 modern producers; step 20a r3 (D128); generated v1 clipped at the D136 WCB split line; tier provisional until step 21 (D131)"),
+    "WCC": ("{WCC}", "Midland Wolfcamp C: 438 modern producers; step 20a r3 (D128); generated v1 (owner loop withdrawn); provisional target (D131)"),
+    "WCD": ("{WCD}", "Midland Wolfcamp D: 823 modern producers; step 20a r3 (D128); extent = owner pen loop (deck slide 5); provisional target (D131)"),
+}
+STEP20A = {"decided_on": dt.date(2026, 10, 30), "loop_date": "2026-10-26",
+           "decision_ref": "gate 20a store (docs/box/step20a-2026-10-26/FINDINGS.md §4 item 5, §7, §8.15-8.16; D128, D131, D134, D136)"}
 
 
 def _extent_geojson(path: Path) -> object:
@@ -89,10 +105,50 @@ def _store_emerging(benches: list[str], dref: str, dry_run: bool, basin: str = B
     return 0
 
 
+def _store_revision(pool: str, path: Path, version: int, parent_version: int, basin: str, dry_run: bool) -> int:
+    """A revised owner edit of a stored generated extent: edited v<version> (parent = generated v<parent_version>) becomes
+    the version of record and supersedes the current record. Refuses unless the bench has exactly one record and no edited
+    v<version> yet. Step 20a WCD (Michael 2026-10-30): the slide-5 loop extended to take in 4246139575."""
+    edited = _extent_geojson(path)
+    note = json.loads(path.read_text(encoding="utf-8"))["features"][0]["properties"].get("source", "")
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            recs = cur.execute("SELECT extent_id, source, version, area_sqmi FROM box.extent WHERE basin = %s AND bench = %s AND is_record",
+                               (basin, pool)).fetchall()
+            taken = cur.execute("SELECT count(*) FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'geology_edited'",
+                                (basin, pool, version)).fetchone()[0]
+            gen = cur.execute("SELECT extent_id, extensions.ST_AsText(geom) FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'generated'",
+                              (basin, pool, parent_version)).fetchone()
+        conn.rollback()
+        if len(recs) != 1 or taken or gen is None:
+            print(f"REFUSED: records {recs}, edited v{version} rows {taken}, generated v{parent_version} {'missing' if gen is None else gen[0]}")
+            return 2
+        generated = ex.as_multi(eg.to_ft([wkt.loads(gen[1])])[0])
+        diff = ex.diff(generated, edited, generated.centroid)
+        dstats = {k: v for k, v in diff.items() if k != "pieces"} | {"source": note}
+        print(f"{pool}: record now extent {recs[0][0]} ({recs[0][1]} v{recs[0][2]}, {float(recs[0][3]):,.2f} sq mi) -> edited v{version} "
+              f"{edited.area / eg.FT_PER_MI**2:,.2f} sq mi, parent generated v{parent_version} (extent {gen[0]})")
+        if dry_run:
+            print("dry run: nothing written")
+            return 0
+        eid = store_edited(conn, pool, version, edited, dstats, make_record=True, basin=basin, parent_version=parent_version)
+        with conn.cursor() as cur:
+            cur.execute("SET TRANSACTION READ ONLY")
+            for r in cur.execute("SELECT extent_id, source, version, is_record, round(area_sqmi::numeric, 2), parent_extent_id, superseded_by "
+                                 "FROM box.extent WHERE basin = %s AND bench = %s ORDER BY extent_id", (basin, pool)).fetchall():
+                print("  live:", r)
+        conn.rollback()
+        print(f"stored {pool}: edited v{version} extent_id {eid} = version of record")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--revise", nargs=2, metavar=("POOL", "GEOJSON"), default=None,
+                    help="store a revised owner edit (edited v<--version>, parent generated v<--parent-version>) as the record")
+    ap.add_argument("--parent-version", type=int, default=1)
     ap.add_argument("--wells", type=Path, default=None)
-    ap.add_argument("--pool", nargs="*", default=[], choices=sorted(SCOPE_ROW))
+    ap.add_argument("--pool", nargs="*", default=[], choices=sorted(set(SCOPE_ROW) | set(MIDLAND_SCOPE_ROW)))
     ap.add_argument("--emerging", nargs="*", default=[], help="benches recorded as D2 emerging: bench_scope row in_scope = false, NO extent (like WDFD)")
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--dry-run", action="store_true")
@@ -100,15 +156,23 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--decision-ref", default=None)
     ap.add_argument("--basin", default=BASIN, help="the basin the rows are stored under (step 19)")
     a = ap.parse_args(argv)
+    if a.revise:
+        return _store_revision(a.revise[0], Path(a.revise[1]), a.version, a.parent_version, a.basin, a.dry_run)
     if a.emerging:
         return _store_emerging(a.emerging, a.decision_ref or DECISION_REF_15, a.dry_run, a.basin)
     if not a.pool or a.wells is None:
         ap.error("--wells and --pool are required unless --emerging is given")
     ext_dir = a.wells / "extents"
     bp = fe.record_params()
-    run_id = f"step15 {dt.date(2026, 10, 16)} {_git_sha()}"
+    midland = a.basin == bsn.MIDLAND
+    scope_rows = MIDLAND_SCOPE_ROW if midland else SCOPE_ROW
+    if missing := sorted(set(a.pool) - set(scope_rows)):
+        ap.error(f"no {a.basin} bench_scope row defined for {missing}")
+    decided_on = STEP20A["decided_on"] if midland else dt.date(2026, 10, 16)
+    edge = er.edge_params(a.basin)  # the basin's D23 metric, as the reviewed extents were built (family_extent.run)
+    run_id = f"step{'20a r3' if midland else '15'} {decided_on} {_git_sha()}"
     eds = json.loads((ext_dir / "edited" / "summary.json").read_text(encoding="utf-8"))
-    dref = a.decision_ref or (DECISION_REF if set(a.pool) <= {"BS3_S", "BS3_C"} else DECISION_REF_15)
+    dref = a.decision_ref or (STEP20A["decision_ref"] if midland else DECISION_REF if set(a.pool) <= {"BS3_S", "BS3_C"} else DECISION_REF_15)
     with get_connection() as conn:
         # --- identity, read-only
         with conn.cursor() as cur:
@@ -124,10 +188,12 @@ def main(argv: list[str] | None = None) -> int:
         plan = {}
         for pool in a.pool:
             reviewed = _extent_geojson(ext_dir / f"extent_{pool}_v{a.version}.geojson")
-            ep = eds["pools"][pool]
-            owner_marks = int(ep.get("n_freeforms", 1)) + int(ep.get("n_ink_strokes", 0))
+            ep = eds["pools"].get(pool) if midland else eds["pools"][pool]  # step 20a: only looped benches are listed
+            owner_marks = 0 if ep is None else int(ep.get("n_freeforms", 1)) + int(ep.get("n_ink_strokes", 0))
             edited = _extent_geojson(ext_dir / "edited" / f"extent_{pool}_v{a.version}_edited.geojson") if owner_marks else None
-            b = er.build_pool(df[df.pool == pool], pool, bp, sopa, None)
+            b = er.build_pool(df[df.pool == pool], pool, bp, sopa, None, edge)
+            if midland and pool == "WCB_2":  # D136: the Midland WCB_2 extent stops at the WCB split line
+                ws.clip_d136(b)
             d_area = abs(b["extent"].area - reviewed.area) / eg.FT_PER_MI**2
             d_sym = b["extent"].symmetric_difference(reviewed).area / eg.FT_PER_MI**2
             print(f"{pool}: rebuilt generated {b['stats']['extent_sqmi']:,.2f} vs reviewed {reviewed.area / eg.FT_PER_MI**2:,.2f} sq mi "
@@ -141,20 +207,21 @@ def main(argv: list[str] | None = None) -> int:
                 plan[pool] = (b, None, {})
                 continue
             diff = ex.diff(b["extent"], edited, b["extent"].centroid)
-            plan[pool] = (b, edited, {k: v for k, v in diff.items() if k != "pieces"} | {"source": f"owner hand edit ({Path(eds['source']).name}, Michael 2026-10-16)"})
+            plan[pool] = (b, edited, {k: v for k, v in diff.items() if k != "pieces"}
+                          | {"source": f"owner hand edit ({Path(eds['source']).name}, Michael {STEP20A['loop_date'] if midland else '2026-10-16'})"})
         if a.dry_run:
             print("dry run: nothing written")
             return 0
         # --- writes
         with conn.cursor() as cur:
             for pool in a.pool:
-                members, reason = SCOPE_ROW[pool]
+                members, reason = scope_rows[pool]
                 cur.execute(
                     """INSERT INTO box.bench_scope (basin, bench, in_scope, member_benches, reason, decided_on, decision_ref)
                        VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (basin, bench) DO NOTHING""",
                     (a.basin, pool, pool not in a.out_of_scope, members,
                      reason + ("; IN_SCOPE FALSE pending the step-14 D2 decision (extent stored for reference)" if pool in a.out_of_scope else ""),
-                     dt.date(2026, 10, 16), dref),
+                     decided_on, dref),
                 )
         conn.commit()
         for pool, (b, edited, dstats) in plan.items():

@@ -60,14 +60,17 @@ def store_generated(conn: Any, pool: str, version: int, b: dict[str, Any], bp: A
     return eid
 
 
-def store_edited(conn: Any, pool: str, version: int, edited_ft13: Any, diff_stats: dict[str, Any], make_record: bool, basin: str = BASIN) -> int:
-    """Store geology's edit of generated v<version> (must already be stored); optionally make it the
-    version of record (the previous record, if any, is marked superseded)."""
+def store_edited(conn: Any, pool: str, version: int, edited_ft13: Any, diff_stats: dict[str, Any], make_record: bool, basin: str = BASIN,
+                 parent_version: int | None = None) -> int:
+    """Store geology's edit of generated v<parent_version> (default: the same version; must already be stored) as edited
+    v<version>; optionally make it the version of record (the previous record, if any, is marked superseded). A revised
+    owner edit of the same generated extent is edited v2 with parent_version 1 (step 20a WCD, 2026-10-30)."""
+    pv = version if parent_version is None else parent_version
     with conn.cursor() as cur:
-        cur.execute("SELECT extent_id FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'generated'", (basin, pool, version))
+        cur.execute("SELECT extent_id FROM box.extent WHERE basin = %s AND bench = %s AND version = %s AND source = 'generated'", (basin, pool, pv))
         row = cur.fetchone()
         if row is None:
-            raise RuntimeError(f"generated {pool} v{version} is not stored yet — run box_extents_export --store first")
+            raise RuntimeError(f"generated {pool} v{pv} is not stored yet — run box_extents_export --store first")
         parent = int(row[0])
         cur.execute(
             """INSERT INTO box.extent (basin, bench, version, source, geom, area_sqmi, parent_extent_id, diff_stats)

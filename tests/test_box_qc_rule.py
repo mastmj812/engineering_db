@@ -69,6 +69,12 @@ def test_load_verdicts(tmp_path):
     p = tmp_path / "cards_sample.csv"
     pd.DataFrame({"api10": ["1", "2", "3", "4"], "verdict": ["AGREE", "REJECT. TVD wrong", "no conviction", None]}).to_csv(p, index=False)
     assert r.load_verdicts(p) == {"1": "AGREE", "2": "REJECT"}
+    # bench-code verdicts (ask 3): the suggested bench = AGREE, the own tag = REJECT, a third bench is ignored
+    q = tmp_path / "cards_bench.csv"
+    pd.DataFrame({"api10": ["5", "6", "7"], "formation_blueox": ["WCB_1"] * 3, "cons_suggest": ["WCB_2"] * 3,
+                  "verdict": ["WCB_2", "WCB_1", "WCC"]}).to_csv(q, index=False)
+    assert r.load_verdicts(q) == {"5": "AGREE", "6": "REJECT"}
+    assert r.ledger("midland")[1]["WCB_1->WCB_2"] == 0.60  # D139: 6 / 10, under the gate
 
 
 def test_unflagged_well_keeps_pool_and_witness_status():
