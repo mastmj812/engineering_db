@@ -10,6 +10,8 @@
 >   COMMIT (`record_back_to_16d_LIVE.log`). Steven's 687,520 econ rows were never touched.
 > - **To make the D117 record current later:** flip the flag (two updates), ideally once Steven has priced run 25 so the
 >   screens don't blank.
+> - **D144 (Michael 2026-10-31): the Delaware stays on the 16d record (run 19) until the Midland record is ready to price.**
+>   Then the Delaware's D117 move is decided, so Steven prices both together. Run 19 is not pruned while it is the record.
 > - Everything below describes the store as it happened.
 
 On Michael's "go apply" (2026-10-30), after his three step-3 gate calls:
