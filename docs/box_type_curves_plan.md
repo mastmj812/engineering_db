@@ -652,7 +652,7 @@ verdicts move membership, the extent regenerates from the ratified set before an
   clearly unlike its Delaware analogue, never per well; allocation-well screen into `docs/box/exclusions.csv`). **Edge metric =
   the Delaware D23 r / c and D27 constants (D134 A, `box/basin.py`) — no step-2 repeat**; D27 envelopes per pool, judged on the
   rendered maps + owner loops (a visible failure, e.g. WCA_1 not one body, reopens it).
-- **20b Spraberry** (US / MS / JM / LSSH / DEAN per step 18), same rule and edge metric. **BUILT 2026-10-30, at gate 20b** (`docs/box/step20b-2026-10-30/`). Card verdicts back 2026-10-31 (FINDINGS §1d): LSSH → JM accepted 0.80 (78 wells to JM), JM → MS / LSSH → DEAN / DEAN → LSSH rejected; extents moved ≤ 3 sq mi; cards now drawn on a strike section.
+- **20b Spraberry** (US / MS / JM / LSSH / DEAN per step 18), same rule and edge metric. **BUILT 2026-10-30, at gate 20b** (`docs/box/step20b-2026-10-30/`). Card verdicts back 2026-10-31 (FINDINGS §1d): LSSH → JM accepted 0.80 (78 wells to JM), JM → MS / LSSH → DEAN / DEAN → LSSH rejected; extents moved ≤ 3 sq mi; cards now drawn on a strike section. Loops back 2026-10-31 (§2b): MS 2,883, JM 2,772 (generated), LSSH 4,432, DEAN 3,535 sq mi; awaiting storage go.
 - Deliverable per family: FINDINGS, QC pages (+ cards only where D134 B calls for them), interactive extent maps, undrilled sticks inside vs outside per bench
   (expected to cut WCC / WCD hardest — rule 11), the geology shapefile package (context, D28).
 - Store on go: Midland `box.bench_scope` rows + `box.extent` records (`basin = 'midland'`). **Gate 20a / Gate 20b.**

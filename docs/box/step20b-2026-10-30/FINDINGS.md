@@ -191,6 +191,45 @@ The basin totals reproduce the plan's gate-18 table: JM 8,029 and DEAN 1,882 exa
   beside it). Checked: the untouched deck reads back through `box_family_extent_edits` as "no marks" on all four benches,
   generated = edited to 0.0 sq mi.
 
+### 2b. Your pen loops (deck saved 2026-10-31 09:47) → `extents/edited/`
+
+One red stroke per slide, read as the owner outline: the loop IS the extent (as at 20a). The BOX reading tracks every
+stroke (`edited/reading_<bench>.png`); JM has no stroke, so the generated v1 is its record.
+
+| Bench | Generated → your loop, sq mi | Added / removed | ≥ 2016 laterals inside | Undrilled (D117) inside |
+|---|---|---|---|---|
+| MS | 2,389 → **2,883** | +508 / −14 | 1,579 → 1,600 of 1,621 | 3,418 → **4,191** |
+| JM | 2,772 (no loop) | — | 1,658 of 1,682 | 4,161 |
+| LSSH | 4,055 → **4,432** | +425 / −48 | 5,388 → 5,390 of 5,421 | 6,378 → **7,314** |
+| DEAN | 1,151 → **3,535** | +2,384 / −0.02 | 623 → 875 of 909 | 286 → **1,366** |
+
+What each added area holds (≥ 2016 laterals by midpoint; oil = median 12-mo bbl / 1,000 ft; flag = consensus flag rate):
+
+| Bench | Zone | Laterals | Oil | Flag rate | sql/23 disagrees |
+|---|---|---:|---:|---:|---:|
+| MS | generated body | 1,578 | 12,799 | 1 % | 1.6 % |
+| MS | **your addition** | 27 | 12,667 | 0 % | 3.7 % |
+| LSSH | generated body | 5,388 | 14,671 | 1.5 % | 2.8 % |
+| LSSH | **your addition** | 9 | 4,757 | 0 % | 11 % |
+| DEAN | generated body | 623 | 17,179 | 3.4 % | 7.1 % |
+| DEAN | **your addition** | 252 | 14,803 | **14.3 %** | 8.4 % |
+
+- **MS:** takes in the south Upton program as recommended: Summit's LILIAN / RACHEAL / ADELY / VERA wells and
+  Diamondback's DAVY JONES / PENNYWISE. They perform like the body (median 12,667 vs 12,799).
+- **LSSH:** extends south through the old 4.5-sq-mi island to one body, and trims 48 sq mi off the east lobe without
+  losing a lateral. The south extension adds little evidence: 9 modern laterals at 4,757 bbl / 1,000 ft, a third of the
+  body's level. The undrilled count, though, rises by 936. **No Discovery well enters.** The one Reagan well added is
+  Exxon's Spraberry Driver Unit 2802H, so the carried Discovery LS/SH call still doesn't touch the extent.
+- **DEAN:** takes body 2 and the whole SW trend, tripling the area; 96 % of modern DEAN laterals are now inside. The added
+  ground is the low-trust DEAN from §2: flags at 14 % against 3.4 % in the body, and oil 14 % lower. Undrilled inside rises
+  from 286 to 1,366. This is your call to make, as WCC was at 20a; the numbers are here so it's made knowingly. The added
+  laterals stay in the DEAN evidence either way. Only the coverage claim (which undrilled sticks get a DEAN forecast)
+  moves with the loop.
+
+Store dry run with the loops (2026-10-31, nothing written): every generated extent rebuilds within 0.0005 sq mi of the
+reviewed one. The records would be MS 2,882.90, JM 2,771.93 (generated), LSSH 4,431.70 and DEAN 3,535.23 sq mi. The US
+emerging row is also dry-run clean.
+
 ## 3. Allocation-well screen (plan Phase 3, difference 6) → `alloc_twin_pairs.csv`
 
 **Twin laterals** touching the family: 4 same-bench twins, 4 stacked pairs and 5 re-drills. **None of the 4 twins shows the
@@ -229,7 +268,9 @@ Spraberry cohort.
      - (a) the four internal classes (recommended; drawn);
      - (a+) all six, including the crossings (a one-minute draw, 9 already-judged wells left out);
      - (b) none: every Spraberry tag stays, and the tag screen is the only fix, warehouse-first.
-2. **Pen loops** (deck `extents/midland_spraberry_extents_2026-10-30.pptx`):
+2. **ANSWERED 2026-10-31: loops drawn (§2b).** MS takes the Summit south program, LSSH goes south and trims its east lobe,
+   DEAN goes SW and triples, and JM is as generated. The original asks, for the record. **Pen loops** (deck
+   `extents/midland_spraberry_extents_2026-10-30.pptx`):
    - **DEAN: needs a loop** (fails one-body; slide 4). The outside DEAN is the low-trust ground (§2), so this is the WCC
      choice again: trusted body only, or reach SW for body 2 / the S trend. Card exposure: 24 LSSH → DEAN flags lie
      outside the body. If you card that class, draw the DEAN loop after the verdicts (I regenerate first, as at 20a r2).
@@ -294,6 +335,6 @@ PYTHONPATH=<python-pptx install> python -m scripts.box_extent_pptx --out <ext>/m
 python -m scripts.box_family_extent_edits --pptx <deck> --slide 1=MS --slide 2=JM --slide 3=LSSH --slide 4=DEAN \
     --wells docs/box/step20b-2026-10-30 --ext docs/box/step20b-2026-10-30/extents --basin midland
 # store, ON YOUR GO ONLY (dry runs clean 2026-10-30):
-python -m scripts.box_family_extent_store --wells docs/box/step20b-2026-10-30 --pool MS JM LSSH DEAN --basin midland --step 20b --decided-on <go date> [--loop-date <deck date>]
+python -m scripts.box_family_extent_store --wells docs/box/step20b-2026-10-30 --pool MS JM LSSH DEAN --basin midland --step 20b --decided-on <go date> --loop-date 2026-10-31
 python -m scripts.box_family_extent_store --emerging US --basin midland --step 20b
 ```
