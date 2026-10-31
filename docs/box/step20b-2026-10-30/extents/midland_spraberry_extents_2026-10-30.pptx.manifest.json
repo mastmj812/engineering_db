@@ -1,0 +1,32 @@
+{
+ "slides": {
+  "1": {
+   "bench": "MS",
+   "extents_dir": "docs\\box\\step20b-2026-10-30\\extents",
+   "png": "visual_MS.png",
+   "png_path": "docs\\box\\step20b-2026-10-30\\extents\\visual_MS.png",
+   "png_md5": "1032bd9dc2c9fbc3851bfa8bc1e1fc5b"
+  },
+  "2": {
+   "bench": "JM",
+   "extents_dir": "docs\\box\\step20b-2026-10-30\\extents",
+   "png": "visual_JM.png",
+   "png_path": "docs\\box\\step20b-2026-10-30\\extents\\visual_JM.png",
+   "png_md5": "2c2d8c547b5dafab61cb88eb880cc777"
+  },
+  "3": {
+   "bench": "LSSH",
+   "extents_dir": "docs\\box\\step20b-2026-10-30\\extents",
+   "png": "visual_LSSH.png",
+   "png_path": "docs\\box\\step20b-2026-10-30\\extents\\visual_LSSH.png",
+   "png_md5": "1aaef51f4b519e4c22e942cf7e345a98"
+  },
+  "4": {
+   "bench": "DEAN",
+   "extents_dir": "docs\\box\\step20b-2026-10-30\\extents",
+   "png": "visual_DEAN.png",
+   "png_path": "docs\\box\\step20b-2026-10-30\\extents\\visual_DEAN.png",
+   "png_md5": "2ae2025c306f938f16a904ef3c7a89ee"
+  }
+ }
+}
