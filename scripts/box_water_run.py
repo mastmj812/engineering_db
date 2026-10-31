@@ -4,6 +4,8 @@
         READ-ONLY vs the warehouse: for every forecast location of the run artifact, the measured-water cohort (box/water11 selection
         as of the run's data-through), its WOR ratio, and 600 water months on the location's RAW box_v2 oil (run.pkl months_raw);
         writes <out>/water.pkl.
+        --carry runs/box16d_water --carry-run runs/box16d (D117 step 3, an augmented run): a location whose raw oil months equal
+        the carried build's oil run exactly takes its water row verbatim; only the rest are built.
     python -m scripts.box_water_run store --out runs/box12b [--run-id N]
         Writes the water to the DB the DB_* env points at (default: the record run): pud_forecast_stream water rows (tier per D110),
         pud_forecast_month (COPY), location_water_analog (COPY), forecast_run.disclosure -> 'water' + notes, in ONE transaction with
@@ -57,12 +59,19 @@ def cmd_build(a: argparse.Namespace) -> int:
     cov = dict(zip(A["universe"]["stick_id"].astype(int), A["universe"]["coverage"], strict=True))
     out: dict[int, dict[str, Any]] = {}
     groups = tuple(a.groups.split(",")) if a.groups else w.GROUPS
+    carried = load_carry(a.carry, a.carry_run, A, asof) if getattr(a, "carry", None) else {}
     conn = get_connection()
     try:
         vdr = bw.pull_vdr(conn)
         for g in groups:
             t1 = time.time()
             pairs = [(loc, r) for loc, r in zip(A["locs"], A["results"], strict=True) if loc["prod_bench"] == g and "oil" in r.get("streams", {})]
+            kept = {int(loc["stick_id"]): carried[int(loc["stick_id"])] for loc, _ in pairs if int(loc["stick_id"]) in carried}
+            out.update(kept)
+            pairs = [(loc, r) for loc, r in pairs if int(loc["stick_id"]) not in kept]
+            if not pairs:
+                print(f"[{g}] {len(kept)} carried, none to build", flush=True)
+                continue
             wells = bw.group_frame(conn, g, run_wells.get(g))  # the oil run's set for the group (D126)
             cls = bw.pull_cls(conn, list(wells["api10"]))
             labels = w.labels_asof(wells, cls, asof, w.vdr_months_asof(vdr, asof))
@@ -92,18 +101,41 @@ def cmd_build(a: argparse.Namespace) -> int:
                     rec.update({"months": m, "params": wp.params(c["ratio"], s), "flags": wp.flags(s),
                                 "row": wp.stream_row(m, float(loc["lateral_ft"]), float(r["lateral_mult"])), "tier": wp.water_tier(g, cov[stick])})
                 out[stick] = rec
-            print(f"[{g}] {len(pairs)} locations, {len(uniq)} distinct cohorts, {len(need)} analogs fitted, {n_fail} ratio failures "
+            print(f"[{g}] {len(kept)} carried; {len(pairs)} locations built, {len(uniq)} distinct cohorts, {len(need)} analogs fitted, {n_fail} ratio failures "
                   f"({time.time() - t1:.0f} s)", flush=True)
     finally:
         conn.close()
     a.out.mkdir(parents=True, exist_ok=True)
     meta = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": _git_sha(), "run_built_from": run["code_sha"], "basin": basin,
-            "data_through": str(asof), "groups": list(groups), "n": len(out),
+            "data_through": str(asof), "groups": list(groups), "n": len(out), "n_carried": len(set(out) & set(carried)),
+            "carry": str(a.carry) if getattr(a, "carry", None) else None,
             "wells_dirs": {g: str(run_wells.get(g) or w.GROUP_WELLS[g]) for g in groups}}
     with open(a.out / "water.pkl", "wb") as fh:
         pickle.dump({"meta": meta, "water": out}, fh)
     print(f"wrote {a.out / 'water.pkl'}: {len(out)} locations ({time.time() - t0:.0f} s)", flush=True)
     return 0
+
+
+def load_carry(carry: Path, carry_run: Path, A: dict[str, Any], asof: Any) -> dict[int, dict[str, Any]]:
+    """Water rows of an earlier build to reuse (D117 step 3): those of locations whose raw oil months in this run equal, exactly, the
+    raw oil months of the run the carried water was built on (water rides on raw oil, D108). Refused across data-throughs."""
+    with open(carry / "water.pkl", "rb") as fh:
+        C = pickle.load(fh)
+    with open(carry_run / "run.pkl", "rb") as fh:
+        R = pickle.load(fh)
+    if C["meta"]["run_built_from"] != R["run"]["code_sha"]:
+        raise SystemExit(f"{carry} was built on oil run {C['meta']['run_built_from'][:7]}, not {carry_run} ({R['run']['code_sha'][:7]})")
+    if str(C["meta"]["data_through"]) != str(asof):
+        raise SystemExit(f"carried water is through {C['meta']['data_through']}, this run through {asof}")
+    src = {int(loc["stick_id"]): r for loc, r in zip(R["locs"], R["results"], strict=True) if "oil" in r.get("streams", {})}
+    out = {}
+    for loc, r in zip(A["locs"], A["results"], strict=True):
+        s = int(loc["stick_id"])
+        if s in C["water"] and s in src and "oil" in r.get("streams", {}) and np.array_equal(
+                np.asarray(r["streams"]["oil"]["months_raw"], float), np.asarray(src[s]["streams"]["oil"]["months_raw"], float)):
+            out[s] = C["water"][s]
+    print(f"carry: {len(out)} of {len(C['water'])} water rows reusable from {carry} (raw oil identical)", flush=True)
+    return out
 
 
 def disclosure_json() -> dict[str, Any]:
@@ -237,10 +269,14 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--out", type=Path, default=Path("runs") / "box12b")
     b.add_argument("--groups", default=None)
     b.add_argument("--workers", type=int, default=None)
+    b.add_argument("--carry", type=Path, default=None, help="an earlier water build dir to reuse rows from (with --carry-run)")
+    b.add_argument("--carry-run", type=Path, default=None, help="the oil build dir the --carry water was built on")
     s = sub.add_parser("store")
     s.add_argument("--out", type=Path, default=Path("runs") / "box12b")
     s.add_argument("--run-id", type=int, default=None)
     a = ap.parse_args(argv)
+    if a.cmd == "build" and (a.carry is None) != (a.carry_run is None):
+        ap.error("--carry and --carry-run go together")
     return cmd_build(a) if a.cmd == "build" else cmd_store(a)
 
 

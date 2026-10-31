@@ -1,0 +1,15 @@
+PUDs 57,638, producers 33,890 (10 s)
+  PUD pairs: 5,000/57,638, 22,745 links, 28 s
+  PUD pairs: 10,000/57,638, 46,023 links, 56 s
+  PUD pairs: 15,000/57,638, 75,488 links, 92 s
+  PUD pairs: 20,000/57,638, 109,783 links, 133 s
+  PUD pairs: 25,000/57,638, 144,320 links, 174 s
+  PUD pairs: 30,000/57,638, 179,649 links, 216 s
+  PUD pairs: 35,000/57,638, 214,586 links, 258 s
+  PUD pairs: 40,000/57,638, 250,151 links, 300 s
+  PUD pairs: 45,000/57,638, 285,769 links, 342 s
+  PUD pairs: 50,000/57,638, 321,159 links, 384 s
+  PUD pairs: 55,000/57,638, 341,881 links, 409 s
+PUD links 349,571 (431 s)
+run 24: 57,638 PUDs, 349,571 links, identity True, outcomes {'as_is_unexposed': 29794, 'haircut': 11025, 'as_is_single_parent': 8126, 'no_forecast_package': 4567, 'no_forecast_precedent': 4126}; oil 31,673.5 -> 25,569.9 MMbbl
+rc=0

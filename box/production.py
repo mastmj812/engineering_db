@@ -2,8 +2,10 @@
 
 Pieces (pure unless they take `conn`):
 
-  universe(conn)            D67: Novi PUD category (no RES) x reconciled remaining_pud / conflict / not-yet-reconciled, on every
-                            box.bench_scope bench; the share of each stick inside its bench's record extent (step 3's >= 50 % rule).
+  universe(conn)            D67 / D117: every Novi stick category BOX forecasts (PUD = BASE_CASE, RES = UPSIDE; never PDP) x reconciled
+                            remaining_pud / conflict / not-yet-reconciled, on every box.bench_scope bench; the share of each stick inside
+                            its bench's record extent (step 3's >= 50 % rule). Novi's tag does not decide coverage: the extent, the
+                            coverage classes and the proximity layer do (D117, AUDIT step 3).
   classify(row, covered)    coverage class with the D67 precedence: emerging -> wcxy (D61) -> unvalidated (D60) -> outside_extent;
                             the rest are candidates (covered, or no_analogs when selection finds < 3 analogs at the 20-mi cap);
                             a provisional group's candidates are `covered_provisional` (D105, run 9).
@@ -77,7 +79,7 @@ RING_MI = an.RADII_MI[0]
 # ----------------------------------------------------------------------------
 
 _UNIVERSE_SQL = """
-SELECT il.stick_id, il.report_version, bs.basin, bs.bench, bs.in_scope, fb.formation_blueox,
+SELECT il.stick_id, il.report_version, il.category, bs.basin, bs.bench, bs.in_scope, fb.formation_blueox,
        COALESCE(ri.status, 'not_reconciled') AS recon_status, il.pad_name, il.ll_ft,
        extensions.ST_AsText(il.wellstick_geom) AS wkt,
        extensions.ST_X(extensions.ST_LineInterpolatePoint(il.wellstick_geom, 0.5)) AS mid_lon,
@@ -92,7 +94,7 @@ JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
 JOIN box.bench_scope bs ON bs.basin = il.basin AND fb.formation_blueox = ANY (bs.member_benches)
 LEFT JOIN box.extent e ON e.is_record AND e.basin = bs.basin AND e.bench = bs.bench
 LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
-WHERE il.category = 'PUD'
+WHERE il.category IN ('PUD', 'RES')  -- D117: BASE_CASE + UPSIDE; never PDP
   AND COALESCE(ri.status, 'not_reconciled') IN ('remaining_pud', 'conflict', 'not_reconciled')
   AND il.wellstick_geom IS NOT NULL
   AND il.basin = ANY (%(basins)s)

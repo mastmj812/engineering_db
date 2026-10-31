@@ -1,0 +1,131 @@
+{
+ "live_run": 19,
+ "container_run": 25,
+ "tables": {
+  "pud_forecast": {
+   "live_rows": 121696,
+   "reproduced": 117305,
+   "differ": 237,
+   "differ_columns": {
+    "coverage": 237
+   },
+   "missing_in_container": 4154,
+   "container_only": 49301
+  },
+  "pud_forecast_stream": {
+   "live_rows": 128910,
+   "reproduced": 128230,
+   "differ": 383,
+   "differ_columns": {
+    "cum12": 383,
+    "cum24": 383,
+    "eur": 383,
+    "eur_per_kft": 383,
+    "prox_factor": 383
+   },
+   "missing_in_container": 297,
+   "container_only": 18222
+  },
+  "pud_forecast_month": {
+   "live_rows": 128910,
+   "reproduced": 128230,
+   "differ": 383,
+   "differ_columns": {
+    "image": 383
+   },
+   "missing_in_container": 297,
+   "container_only": 18222
+  },
+  "location_analog": {
+   "live_rows": 42970,
+   "reproduced": 42871,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 99,
+   "container_only": 6074
+  },
+  "location_water_analog": {
+   "live_rows": 42970,
+   "reproduced": 42871,
+   "differ": 0,
+   "differ_columns": {},
+   "missing_in_container": 99,
+   "container_only": 6074
+  },
+  "pud_proximity": {
+   "live_rows": 51419,
+   "reproduced": 0,
+   "differ": 51419,
+   "differ_columns": {
+    "table_ref": 51419,
+    "n_same": 549,
+    "n_topfill": 886,
+    "n_recent_producers": 557,
+    "n_permit_parents": 103,
+    "flanked_same": 145,
+    "n_parents_total": 1503,
+    "config_class": 491,
+    "outcome": 601,
+    "flanked_topfill": 191,
+    "factor": 792,
+    "haircut_key": 792,
+    "flanked_underfill": 160,
+    "n_underfill": 601,
+    "label": 286,
+    "pair_key": 458,
+    "prec_multi": 457,
+    "prec_package": 450,
+    "coverage": 237
+   },
+   "missing_in_container": 0,
+   "container_only": 6219
+  },
+  "pud_proximity_parent": {
+   "live_rows": 25230,
+   "reproduced": 20414,
+   "differ": 4722,
+   "differ_columns": {
+    "image": 4722
+   },
+   "missing_in_container": 94,
+   "container_only": 2708
+  }
+ },
+ "seconds": 425,
+ "attribution": {
+  "proximity_moved_locations": 1007,
+  "basin": "delaware",
+  "tables": {
+   "pud_forecast": {
+    "locations": 4391,
+    "proximity_moved": 237,
+    "other_basin": 4154,
+    "unexplained": 0
+   },
+   "pud_forecast_stream": {
+    "locations": 482,
+    "proximity_moved": 482,
+    "other_basin": 0,
+    "unexplained": 0
+   },
+   "pud_forecast_month": {
+    "locations": 482,
+    "proximity_moved": 482,
+    "other_basin": 0,
+    "unexplained": 0
+   },
+   "location_analog": {
+    "locations": 99,
+    "proximity_moved": 99,
+    "other_basin": 0,
+    "unexplained": 0
+   },
+   "location_water_analog": {
+    "locations": 99,
+    "proximity_moved": 99,
+    "other_basin": 0,
+    "unexplained": 0
+   }
+  }
+ }
+}

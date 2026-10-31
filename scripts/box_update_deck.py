@@ -5,12 +5,13 @@
     python -m scripts.box_update_deck maps  --out runs/box9_deck                          4 + 1 maps per bench (PNG)
     python -m scripts.box_update_deck deck  --out runs/box9_deck --pptx <file.pptx>      the deck
 
-frame: one row per BOX-forecast location (covered + covered_provisional) with the Novi BASE_CASE forecast of the SAME stick
+frame: one row per BOX-forecast location (covered + covered_provisional) with the Novi forecast of the SAME stick (BASE_CASE for a
+PUD, UPSIDE for a RES since D117 step 3; the category rides in frame.csv)
 (curated.intel_locations + raw_intel.production_forecast, latest report): oil EUR per ft of lateral on a 30-YEAR basis for both
 (Novi BASE_CASE runs 359 months; BOX months 1-360 of the stored record, whose own EUR is the raw 50-yr integral — stated on every
 slide), and 12-month cumulative GOR (scf/bbl = 1,000 x cum-12 gas Mcf / cum-12 oil bbl; Novi volumes = rate x 30 d per 30-day step,
-the sql/43 convention). novi-all: the same Novi numbers for EVERY run-9 universe PUD on the bench (inside the BOX extent or not;
-remaining_pud / conflict / not_reconciled, no RES, no realized sticks), so the Novi maps show Novi's full bench footprint against
+the sql/43 convention). novi-all: the same Novi numbers for EVERY universe stick on the bench (inside the BOX extent or not;
+remaining_pud / conflict / not_reconciled, PUD + RES from D117 step 3, no realized sticks), so the Novi maps show Novi's full bench footprint against
 the tighter BOX extent. Extents of record + the TX/NM survey blocks (anduin infra/basemap) are context layers.
 No database writes; no economics.
 """
@@ -37,6 +38,7 @@ TEMPLATE = ANDUIN / "backend" / "app" / "exports" / "templates" / "deal_slide.pp
 BLOCKS = ANDUIN / "infra" / "basemap" / "blocks_tx_nm.geojson"
 EXTENT_OF = {g: ("WCA" if g == "WCXY_WCA1" else g) for g in p9r.GROUPS}
 LABEL = {"WCXY_WCA1": "WCXY"}
+UNIVERSE_CATEGORIES = {"PUD", "RES"}  # D117: the BOX universe's Novi categories (box.production._UNIVERSE_SQL); never PDP
 
 _NOVI_SQL = """
 SELECT il.stick_id, il.oil_eur, il.gas_eur, il.ll_ft, il.category,
@@ -85,8 +87,8 @@ def cmd_frame(a: argparse.Namespace) -> int:
             conn.rollback()
         n.to_csv(nv, index=False)
     f = f.merge(n[["stick_id", "oil_eur", "ll_ft", "category", "oil12", "gas12", "last_day"]], on="stick_id", how="left", validate="1:1")
-    if f["oil_eur"].isna().any() or set(f["category"]) != {"PUD"}:
-        raise SystemExit(f"{int(f['oil_eur'].isna().sum())} BOX locations without a Novi BASE_CASE forecast; categories {set(f['category'])}")
+    if f["oil_eur"].isna().any() or not set(f["category"]) <= UNIVERSE_CATEGORIES:
+        raise SystemExit(f"{int(f['oil_eur'].isna().sum())} BOX locations without a Novi forecast; categories {set(f['category'])}")
     f = f.rename(columns={"oil_eur": "novi_oil30", "oil12": "novi_oil12", "gas12": "novi_gas12"})
     L = f["lateral_ft"].astype(float)
     f["box_eur_ft"], f["novi_eur_ft"] = f["box_oil30"] / L, f["novi_oil30"] / L
@@ -105,7 +107,7 @@ def cmd_frame(a: argparse.Namespace) -> int:
 
 
 def bench_universe(A: dict[str, Any], g: str) -> pd.DataFrame:
-    """Every run-9 universe PUD on group g's bench + formations, whatever its coverage class (the Novi bench footprint)."""
+    """Every universe stick on group g's bench + formations, whatever its coverage class (the Novi bench footprint)."""
     u = A["universe"]
     basin, bench, forms = pr.PRODUCTION_BENCHES[g]
     return u[(u["basin"] == basin) & (u["bench"] == bench) & u["formation_blueox"].isin(forms)]
@@ -139,8 +141,8 @@ def cmd_novi_all(a: argparse.Namespace) -> int:
     n["stick_id"] = n["stick_id"].astype(int)
     m = u.merge(n, on="stick_id", how="left", validate="1:1")
     lost = m["oil_eur"].isna()
-    if (m.loc[~lost, "category"] != "PUD").any():
-        raise SystemExit(f"non-PUD categories {set(m['category'])}")
+    if not m.loc[~lost, "category"].isin(UNIVERSE_CATEGORIES).all():
+        raise SystemExit(f"categories outside the BOX universe {set(m['category'])}")
     m = m[~lost].copy()
     L = m["ll_ft"].astype(float)
     m["novi_eur_ft"] = m["oil_eur"].astype(float) / L
