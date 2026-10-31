@@ -17,6 +17,11 @@
 -- Novi supplies geometry + names only: no Novi tag, tier or NPV. Steven's screen_pass / rejection_step
 -- stay out (his screen includes Novi's Tier-4 cut, which conflicts with BOX D90 — pending with him).
 --
+-- v3 (land team ask, 2026-10-30): + tvd_ft, the stick's planned landing TVD (ft) — Novi's own TVD for the stick
+-- (erebor_locations.tvd = raw_intel tvd_td). BOX stores no TVD of its own: its proximity study (sql/65) reads this
+-- same column, so this is the depth BOX's forecast was screened at. It is NOT an offset-well median (rule 10 governs
+-- how WE derive a landing TVD for a new location; this column reports the depth of Novi's planned stick as-is).
+--
 -- BOX: the record runs (box.forecast_run.is_record — one PER BASIN since D130 / sql/70; each stick's row comes from its
 -- own basin's record, and the econ case is picked per record run). EUR = raw 50-yr technical integral incl. the bench
 -- haircut and the D113 proximity oil factor. box_tier keeps validated and PROVISIONAL apart (D105).
@@ -57,6 +62,7 @@ SELECT
     el.pad_name,
     el.wellstick_geom                                  AS geom,
     bp.lateral_ft,
+    el.tvd                                             AS tvd_ft,
     -- BOX forecast (record run)
     CASE bp.coverage WHEN 'covered' THEN 'validated' ELSE 'provisional' END AS box_tier,
     bso.eur                                            AS oil_eur_bbl,
@@ -106,6 +112,7 @@ COMMENT ON COLUMN curated.box_scout_locations.bench IS 'Landing bench (Blue Ox c
 COMMENT ON COLUMN curated.box_scout_locations.pad_name IS 'Novi DSU / pad name the stick belongs to.';
 COMMENT ON COLUMN curated.box_scout_locations.geom IS 'Stick linestring, EPSG 4326 (in QGIS: LineString / EPSG:4326).';
 COMMENT ON COLUMN curated.box_scout_locations.lateral_ft IS 'Lateral length BOX forecast on, ft.';
+COMMENT ON COLUMN curated.box_scout_locations.tvd_ft IS 'Planned landing TVD of the stick, ft (Novi''s stick TVD; the depth BOX screened it at). A planned depth, not an offset-well median: check it against local producers before relying on it.';
 COMMENT ON COLUMN curated.box_scout_locations.box_tier IS 'validated = bench passed BOX''s out-of-time test; provisional = not yet (D105). Keep the two apart in any total.';
 COMMENT ON COLUMN curated.box_scout_locations.oil_eur_bbl IS 'BOX oil EUR, bbl (50-yr technical, no economic limit).';
 COMMENT ON COLUMN curated.box_scout_locations.oil_eur_bbl_per_ft IS 'BOX oil EUR per lateral foot, bbl/ft. To total a group: SUM(oil_eur_bbl) / SUM(lateral_ft), not an average of this column.';
