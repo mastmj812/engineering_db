@@ -1393,11 +1393,11 @@ a pinned well.
   leave.
 - Picture: `wcd_tip_v2.png`. Geometry: `extent_WCD_v2_edited.geojson`.
 
-**Store, on a go:**
+**STORED 2026-10-30 (MM: "Go: store it"):** extent 42 = WCD record (edited v2, parent generated 40); 41 kept, `superseded_by` 42. Live check: one record per Midland bench (36 / 37 / 38 / 39 / 42); undrilled WCD inside 3,600 (3,524 PUD / 76 RES); 1551636 and 1563510 inside (100 % / 81 % of the stick). Command:
 `python -m scripts.box_family_extent_store --revise WCD docs/box/step20a-2026-10-26/r3/extents/edited_v2/extent_WCD_v2_edited.geojson --version 2 --parent-version 1 --basin midland`.
 - It writes edited v2 with generated v1 (extent 40) as its parent. That becomes the record and supersedes 41, which is
   kept with `superseded_by` set.
-- Dry run 2026-10-30, read-only: clean.
+- Dry run 2026-10-30, read-only: clean; then stored on the go.
 - Code: `extent_store.store_edited` gains `parent_version` (a revised edit of the same generated extent), and the store
   script gains `--revise`. It refuses unless the bench has exactly one record and no edited v2 yet.
 
