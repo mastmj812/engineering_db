@@ -13,7 +13,8 @@ day.
 Pages (serve `python -m http.server 8766 --directory docs/box`, open `step20b-2026-10-30/`):
 - `index.html`: family page (well sets, flag ledger, sensitivity, D128 context, §4b analogue test, allocation screen)
 - `qc_<bench>.html`: per-bench QC pages
-- `cards/cards.html`: **40 cards, drawn for your gate-20b choice** (§1c; verdicts in `cards/cards_sample.csv`)
+- `cards/cards.html`: the 40 cards you judged (§1c; verdicts in `cards/cards_sample.csv`, back 2026-10-31, §1d)
+- `cards/cards_strike.html`: **the same 40 cards in the new strike-section layout** (2026-10-31, §1d), for comparison
 - `extents/index.html`, `extents/extent_<bench>.html`: interactive maps
 - `extents/midland_spraberry_extents_2026-10-30.pptx`: **the visual-check maps for your pen loops**, one slide per bench
 - `extents/geology/`: NAD83 UTM 14N US-ft shapefiles. Context only (D28); no Midland structure grids exist.
@@ -28,7 +29,7 @@ Pages (serve `python -m http.server 8766 --directory docs/box`, open `step20b-20
 | LSSH | 5,759 | 5,498 | 4,266 | none | 4.1 % | 3.0 % | 5.4 % |
 | DEAN | 928 | 908 | 510 | none | **8.4 %** | **6.8 %** | **25.9 %** |
 
-- **The rule moves nothing.** Every flag touching the family (336) sits in a class the ledger has never calibrated, so every
+- **As built 10-30 (superseded by §1d once your verdicts came back):** the rule moves nothing. Every flag touching the family (336) sits in a class the ledger has never calibrated, so every
   tag is kept (D134 B as written; D141). The final sets are the live tags.
 - No exclusion applies. Planned surveys are 0.0–0.2 %, permit-round TVDs 0.9–1.4 %, and no well is `tvd_suspect`.
 - No api10 sits in two Spraberry sets, and **none sits in a stored 20a r3 Wolfcamp set** (checked against
@@ -104,6 +105,53 @@ The cards are drawn so that option (a) costs no extra round. Nothing reads them 
 - Verdict column: agree / reject / a bench code / hold, as before. The Midland class ledger then decides each class at
   ≥ 0.70 (`qc_rule.BASIN_CLASSES`).
 
+### 1d. Card verdicts back (2026-10-31) → the sets and extents regenerated
+
+Your verdicts, judged on the Midland ledger at ≥ 0.70 (`qc_rule.BASIN_CLASSES["midland"]`; this is the D134 B amendment for
+no-analogue classes from §4 item 1):
+
+| Class | Accept / 10 | Class | Wells moved | of which by your card | by the class rule (sql/23 concurs, GOR not "own") |
+|---|---:|---|---:|---:|---:|
+| LSSH → JM | 8 | **accepted (0.80)** | 78 | 8 | 70 |
+| JM → MS | 6 | rejected (0.60) | 6 | 6 | 0 |
+| LSSH → DEAN | 4 | rejected (0.40) | 4 | 4 | 0 |
+| DEAN → LSSH | 3 | rejected (0.30) | 3 | 3 | 0 |
+
+In a rejected class, only the wells you accepted on a card move; every other flag in the class keeps its tag. In
+LSSH → JM, 54 of the 132 flags stay LSSH: your 2 rejects plus the flags where sql/23 doesn't concur or the GOR votes for
+LSSH.
+
+| Bench | Final set (was) | D9 cohort (was) | Extent, sq mi (was) | ≥ 2016 laterals inside | Undrilled inside / basin (was) |
+|---|---:|---:|---:|---|---|
+| MS | 1,681 (1,675) | 1,184 (1,180) | 2,389 (2,389) | 1,579 of 1,621 (97 %) | 3,418 / 8,553 (unchanged) |
+| JM | 1,702 (1,630) | 1,111 (1,073) | 2,772 (2,769): +2.9 / −0.2 | 1,658 of 1,682 (99 %) | 4,161 / 8,029 (4,154) |
+| LSSH | 5,680 (5,759) | 4,223 (4,266) | 4,055 (4,055): +0.2 / −0.3 | 5,388 of 5,421 (99 %) | 6,378 / 11,703 (unchanged) |
+| DEAN | 929 (928) | 511 (510) | 1,151 (1,151): +2.7 / −3.1 | **623 of 909 (69 %), still 2 bodies** | 286 / 1,882 (287) |
+
+- **The verdicts don't move any edge you'd draw.** The rendered frames are byte-identical to the deck's, so loops drawn on
+  the 10-30 deck georeference unchanged. The deck file itself was not regenerated (you have it open).
+- The bench levels barely move: JM / MS oil per 1,000 ft 1.338 (was 1.332), LSSH / JM 0.941 (0.945), DEAN / LSSH 1.264
+  (1.263).
+- Uncalibrated flags fall from 336 to 123. Those left are the Wolfcamp crossings and the small classes, all tag-kept.
+- One intermediate changed: DEAN's dense core went from 533 to 32 sq mi. Adding one well and dropping another broke a
+  link inside the core. The extent didn't move (1,151 sq mi) and DEAN needs your loop either way.
+- **A loader bug, fixed:** your verdict column says `accept`, and `qc_rule.load_verdicts` only read `AGREE`. The first
+  re-run silently ignored your accepts, which showed up as 2 accepted LSSH → JM wells staying LSSH. `ACCEPT` now reads as
+  AGREE (a test pins it), and the numbers above are from the corrected run.
+
+**The card layout you asked for** (`box/flag_cards.py`; the 40 cards re-rendered in `cards/cards_strike.html`):
+- **Strike section, not a radius.** The cross-section shows wells whose lateral crosses a line through the subject's
+  midpoint, orthogonal to its lateral, out to ±1.5 mi. It reads per sign rule v2: W → E for N-S laterals, S → N for E-W.
+  The plan inset draws the lateral and the strike line.
+- **Depth axis held to the benches in play:** the subject's tag, the proposed bench, and the local bands directly above and
+  below. Everything else is hidden and the count noted, so no BRNT under a DEAN card.
+- **The legend sits above the plot,** never over the landings.
+- The dashed band medians are still the detector's 1.5-mi radius bands, because that's what the flag was scored on. The
+  detector itself is unchanged (D138). Scoring on a strike instead of a radius would be a method change, and that's your
+  call.
+- The pull (`bench_qc._SQL`) now carries the lateral endpoints. Without them, a card falls back to the radius view and
+  says so.
+
 ## 2. Extents (D27 one-body envelopes; Delaware r / c and D27 constants per D134 A) → `extents/`
 
 Built on the §1 final sets (the rule as written). Undrilled = D117 (Novi PUD + RES; remaining_pud / conflict / not yet
@@ -163,7 +211,9 @@ Spraberry cohort.
 
 ## 4. Gate 20b: your calls (recommendation first)
 
-1. **The no-analogue classes (the known D134 B gap, D141).** Recommend **card the four Spraberry-internal classes and keep
+1. **ANSWERED 2026-10-31: you carded the four (§1d).** LSSH → JM accepted (0.80); JM → MS, LSSH → DEAN and DEAN → LSSH
+   rejected. This stands as the D134 B amendment for no-analogue classes, and the two Wolfcamp crossings stay tag-kept.
+   The original recommendation, for the record: recommend **card the four Spraberry-internal classes and keep
    the two Wolfcamp crossings tag-kept.**
    - Internal classes: LSSH → JM 132, LSSH → DEAN 35, DEAN → LSSH 25, JM → MS 21. The 40 cards are drawn
      (`cards/cards.html`); fill `cards/cards_sample.csv`. Each class is then judged on the Midland ledger at ≥ 0.70, and
@@ -215,7 +265,7 @@ Spraberry cohort.
 - **Identity:**
   - basin undrilled totals = the plan's gate-18 table (JM, DEAN exact; others within live drift);
   - in-extent counts from `undrilled_split.csv` = the extent build's own;
-  - store dry run: each rebuilt extent = the reviewed one within 0.0003 sq mi of area and 0.0042 sq mi of symmetric
+  - store dry run (re-run 2026-10-31 on the regenerated extents, still clean, nothing written): each rebuilt extent = the reviewed one within 0.0005 sq mi of area and 0.0042 sq mi of symmetric
     difference;
   - deck round-trip: generated = edited 0.0 sq mi;
   - no api10 in two Spraberry sets or in a stored 20a Wolfcamp set;
@@ -231,7 +281,8 @@ Spraberry cohort.
 ```
 python -m scripts.box_family_qc --family MID_SPR --out docs/box/step20b-2026-10-30 --step 20b --analogue --cards --alloc \
     --verdicts docs/box/step1-2026-10-06/cards_sample.csv --verdicts docs/box/step20a-2026-10-26/cards_sample.csv \
-    --verdicts docs/box/step20a-2026-10-26/ask3/cards_sample.csv --owner-benches docs/box/step20a-2026-10-26/owner_benches.csv   # ~3 min
+    --verdicts docs/box/step20a-2026-10-26/ask3/cards_sample.csv --verdicts docs/box/step20b-2026-10-30/cards/cards_sample.csv \
+    --owner-benches docs/box/step20a-2026-10-26/owner_benches.csv   # ~3 min
 python -m scripts.box_noanalogue_cards --cache <mid_scored.pkl> --cmp docs/box/step20b-2026-10-30/swap_classes_vs_delaware.csv \
     --family MID_SPR --within-family --out docs/box/step20b-2026-10-30/cards --judged <20a cards, ask3, tag_screen cards,
     well_calls, owner_benches, seeds/formation_tag_overrides.csv>

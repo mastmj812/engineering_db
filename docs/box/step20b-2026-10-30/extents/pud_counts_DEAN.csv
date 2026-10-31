@@ -1,8 +1,8 @@
 formation_blueox,category,status,n,in extent,in drilled core,in step-2 outline,pool
-DEAN,PUD,conflict,12,6,1,3,DEAN
-DEAN,PUD,realized_phantom,9,7,5,6,DEAN
-DEAN,PUD,remaining_pud,380,264,100,137,DEAN
-DEAN,RES,remaining_pud,32,17,0,0,DEAN
-DEAN,PUD + RES,undrilled (D117),424,287,101,140,DEAN
-DEAN,PUD,undrilled by category,392,270,101,140,DEAN
-DEAN,RES,undrilled by category,32,17,0,0,DEAN
+DEAN,PUD,conflict,12,6,0,3,DEAN
+DEAN,PUD,realized_phantom,9,7,2,6,DEAN
+DEAN,PUD,remaining_pud,380,264,1,137,DEAN
+DEAN,RES,remaining_pud,32,16,0,0,DEAN
+DEAN,PUD + RES,undrilled (D117),424,286,1,140,DEAN
+DEAN,PUD,undrilled by category,392,270,1,140,DEAN
+DEAN,RES,undrilled by category,32,16,0,0,DEAN

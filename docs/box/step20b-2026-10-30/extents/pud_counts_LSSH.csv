@@ -1,10 +1,10 @@
 formation_blueox,category,status,n,in extent,in drilled core,in step-2 outline,pool
-LSSH,PUD,conflict,77,73,44,55,LSSH
+LSSH,PUD,conflict,77,73,44,54,LSSH
 LSSH,RES,conflict,9,2,2,2,LSSH
-LSSH,PUD,realized_phantom,111,107,78,85,LSSH
+LSSH,PUD,realized_phantom,111,107,76,83,LSSH
 LSSH,RES,realized_phantom,12,0,0,0,LSSH
-LSSH,PUD,remaining_pud,7993,6222,3221,4553,LSSH
+LSSH,PUD,remaining_pud,7993,6222,3175,4370,LSSH
 LSSH,RES,remaining_pud,3152,81,3,12,LSSH
-LSSH,PUD + RES,undrilled (D117),11231,6378,3270,4622,LSSH
-LSSH,PUD,undrilled by category,8070,6295,3265,4608,LSSH
+LSSH,PUD + RES,undrilled (D117),11231,6378,3224,4438,LSSH
+LSSH,PUD,undrilled by category,8070,6295,3219,4424,LSSH
 LSSH,RES,undrilled by category,3161,83,5,14,LSSH

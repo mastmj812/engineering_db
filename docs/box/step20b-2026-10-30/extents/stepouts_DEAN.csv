@@ -172,13 +172,13 @@ dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,coh
 9.205569614779215,W,4231747220,MERLOT 95-66 I 2DN,Diamondback,Martin,2026-08-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
 28.488391783314658,SW,4232940939,SPANISH TRAIL 3-10 A5 3441H,ConocoPhillips,Midland,2016-12-31,41094.19394688079,True,DEAN,2.2585272491335986,"excluded: isolated test (tested, not developed)",ok
 34.955397000398314,SW,4232940940,PEGASUS FIELD UNIT 3 109AH,ConocoPhillips,Midland,2017-01-10,11761.791967044284,True,DEAN,0.6464253244764404,"excluded: isolated test (tested, not developed)",rolled
-32.42618243679727,SW,4232941126,ABBIE LAINE 30XX 6H,Ovintiv,Midland,2017-02-10,25541.827370660994,True,DEAN,1.4037728342809581,"excluded: isolated test (tested, not developed)",ok
 32.5047059983207,SW,4232941130,ABBIE LAINE 30G 10H,Ovintiv,Midland,2017-02-08,25817.429022082026,True,DEAN,1.4189198363232713,"excluded: isolated test (tested, not developed)",ok
 18.588081199546117,SW,4232941286,MCC HZ UNIT 1106H,ConocoPhillips,Midland,2019-03-03,9964.984227129336,True,DEAN,0.5476731930367119,"excluded: isolated test (tested, not developed)",rolled
 33.33738873830486,SW,4232941374,KEYSTONE 1007H,ConocoPhillips,Midland,2017-08-05,20007.320048800324,True,DEAN,1.0995976115448876,"excluded: isolated test (tested, not developed)",ok
 18.045307499103654,SW,4232941405,ISBELL HORIZONTAL UNIT 115H,Winn Operating,Midland,2018-11-14,17347.67836919592,False,DEAN,0.9534243293999061,"excluded: isolated test (tested, not developed)",ok
 33.368397521782576,SW,4232941515,KEYSTONE 1010H,ConocoPhillips,Midland,2018-04-27,19895.88158292216,True,DEAN,1.09347297962942,"excluded: isolated test (tested, not developed)",ok
-27.21323098571904,SW,4232942499,RIO SAN GABRIEL 28-29 UNIT 1 141,Diamondback,Midland,2019-03-12,26493.586652521943,True,DEAN,1.4560813009095372,"excluded: isolated test (tested, not developed)",ok
+25.923046290375247,SW,4232941666,SPANISH TRAIL 48 HZ UNIT 4825LS,ConocoPhillips,Midland,2018-03-26,11867.703724846582,True,LSSH,0.6522462098139001,"excluded: isolated test (tested, not developed)",rolled
+25.957918926469574,SW,4232941742,SOA SCHARBAUER SE 0026LS,Chevron,Midland,2018-06-15,37861.16428330143,True,LSSH,2.0808406980385756,"excluded: isolated test (tested, not developed)",ok
 27.231081463894174,SW,4232942506,RIO SAN GABRIEL 28-29 UNIT 2 162,Diamondback,Midland,2019-03-12,17432.884931771994,True,DEAN,0.9581072620699524,"excluded: isolated test (tested, not developed)",ok
 21.524183046654286,SW,4232942526,BOZEMAN UNIT 803WA,Diamondback,Midland,2020-03-03,15719.697554201066,True,DEAN,0.8639508861080055,"excluded: isolated test (tested, not developed)",ok
 28.978332620474806,SW,4232942713,NOBLES 3112AH,Exxon Mobil,Midland,2019-10-06,14049.397236107028,True,DEAN,0.7721515728637012,"excluded: isolated test (tested, not developed)",ok
@@ -261,6 +261,7 @@ dist_mi,side,api10,well_name,operator,county,first_production_date,oil12_kft,coh
 13.978904082854148,E,4233536058,CLEOPATRA 8-2-61 H 4W,Bayswater,Mitchell,2024-12-01,14726.352905105014,False,DEAN,0.8093568974617146,"excluded: isolated test (tested, not developed)",ok
 13.597755884164073,E,4233536062,DELTA 7-18-31 H 2W,Bayswater,Mitchell,2025-03-02,14163.6089469716,True,DEAN,0.7784286216723781,"excluded: isolated test (tested, not developed)",ok
 11.919140214319597,E,4233536080,GOLDEN SAND 10-3 H 3W,Bayswater,Mitchell,2025-10-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
+15.479949259089542,E,4233536082,KING MENES 6-73 H 4W,Bayswater,Mitchell,2026-03-04,,False,LSSH,,"excluded: isolated test (tested, not developed)",no12
 12.238197803751504,E,4233536087,ENDLESS DUNE 10-3 H 1W,Bayswater,Mitchell,2025-09-25,13221.116109888006,False,DEAN,0.7266294366727145,"excluded: isolated test (tested, not developed)",ok
 13.299364841856853,E,4233536089,KING TUT 8-2-61 H 2W,Bayswater,Mitchell,2026-05-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12
 13.303213334256666,E,4233536090,KING TUT 8-2-61 H 3W,Bayswater,Mitchell,2026-05-01,,False,DEAN,,"excluded: isolated test (tested, not developed)",no12

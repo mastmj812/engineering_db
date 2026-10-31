@@ -15,7 +15,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200346315,UL MASON UNIT 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-01-24,False
 4200346324,UL TAWNY UNIT 8-12 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2014-11-01,False
 4200346351,"UNIVERSITY ""7-43"" 21H",Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2015-06-01,False
-4200346352,"UNIVERSITY ""7-43"" 22H",Exxon Mobil,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2016-02-22,True
+4200346352,"UNIVERSITY ""7-43"" 22H",Exxon Mobil,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2016-02-22,True
 4200346361,UL TAWNY UNIT 8-12 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-08-09,False
 4200346363,UL TAWNY UNIT 8-12 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-08-09,False
 4200346410,"UNIVERSITY ""7-43"" 25H",Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2015-03-01,False
@@ -152,7 +152,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200347880,FEE 'AO' 403LS,Fasken Oil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-11-06,True
 4200347939,MABEE DDA D9 2906MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2019-09-25,True
 4200347941,MABEE DDA D11 2906SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-25,True
-4200347942,MABEE DDA D5 2903JH,ConocoPhillips,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2019-09-26,True
+4200347942,MABEE DDA D5 2903JH,ConocoPhillips,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2019-09-26,True
 4200347944,MABEE DDA D7 2904MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2019-09-27,True
 4200347945,MABEE DDA D8 2904SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-29,True
 4200347946,MABEE DDA D1 2902JH,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2019-09-23,True
@@ -386,7 +386,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200348444,MABEE DDA F46 3903SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-12-05,True
 4200348446,MABEE DDA F48 3904MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2022-12-26,True
 4200348448,MABEE DDA F50 3904LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-12-06,True
-4200348451,"FEE ""BM"" 1612DN",Fasken Oil,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2022-07-16,True
+4200348451,"FEE ""BM"" 1612DN",Fasken Oil,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2022-07-16,True
 4200348453,UNIVERSITY 8-4A N H 1MS,Ovintiv,42,MS,MS,keep,,member,MS,,,2022-07-15,True
 4200348454,UNIVERSITY 8-4B N H 2MS,Ovintiv,42,MS,MS,keep,,member,MS,,,2022-07-15,True
 4200348455,UNIVERSITY 8-4C N H 3MS,Ovintiv,42,MS,MS,keep,,member,MS,,,2022-06-09,True
@@ -559,7 +559,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200348797,UL CHEESMAN 5E 2HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-05,True
 4200348798,UL CHEESMAN 5E 1HC,Ovintiv,42,MS,MS,keep,,member,MS,,,2024-01-05,True
 4200348799,UL GOLDEN 8D 15HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-09-19,True
-4200348800,UL GOLDEN 8C 14HD,Ovintiv,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2024-09-18,True
+4200348800,UL GOLDEN 8C 14HD,Ovintiv,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2024-09-18,True
 4200348805,UL GOLDEN 8C 13HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-09-18,True
 4200348807,MABEE WL 24-17 A 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2024-04-22,True
 4200348808,MABEE WL 24-17 A 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-04-08,True
@@ -730,7 +730,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4200349227,UL MONTY WEST 46-32 D 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-06-14,False
 4200349230,UL MONTY WEST 46-32 F 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-06-18,False
 4200349231,UL MONTY WEST 46-39 A 3WA,Diamondback,42,DEAN,DEAN,keep,class DEAN->WCA not calibrated; tag kept,member,DEAN,,,2026-06-04,False
-4200349256,CASSELMAN 32 U 17MJ U 17 M,Apache,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-07-01,False
+4200349256,CASSELMAN 32 U 17MJ U 17 M,Apache,42,JM,JM,keep,card verdict REJECT (JM->MS),member,JM,,,2026-07-01,False
 4200349284,ULDESERT ROSE 12-13 A 1MS,Sabalo II Operating,42,MS,MS,keep,,member,MS,,,2026-07-15,False
 4200349285,ULDESERT ROSE 12-13 B 1LS,Sabalo II Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2026-07-15,False
 4200349287,ULDESERT ROSE 12-13 C 1JM,Sabalo II Operating,42,JM,JM,keep,,member,JM,,,2026-07-15,False
@@ -738,9 +738,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4203331672,JO-MILL UNIT LP 2520H,Jo Mill Oil,42,DEAN,DEAN,keep,,member,DEAN,,,2008-10-02,False
 4203331794,JO-MILL UNIT LP 5225H,Jo Mill Oil,42,LSSH,LSSH,keep,,member,LSSH,,,2012-05-29,False
 4203331811,JO-MILL UNIT LP 5220H,Jo Mill Oil,42,LSSH,LSSH,keep,,member,LSSH,,,2011-08-15,False
-4203331894,JO-MILL UNIT LP 7335H,Jo Mill Oil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2010-03-17,False
+4203331894,JO-MILL UNIT LP 7335H,Jo Mill Oil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2010-03-17,False
 4203331908,JO-MILL UNIT LP 7317H,Jo Mill Oil,42,LSSH,LSSH,keep,,member,LSSH,,,2011-08-27,False
-4203331931,JO-MILL UNIT LP 7325H,Jo Mill Oil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2010-03-01,False
+4203331931,JO-MILL UNIT LP 7325H,Jo Mill Oil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2010-03-01,False
 4203331941,JO-MILL UNIT LP 6348H,Jo Mill Oil,42,JM,JM,keep,class JM->LSSH not calibrated; tag kept,member,JM,,,2011-08-19,False
 4203331944,JO-MILL UNIT LP 5216H,Jo Mill Oil,42,JM,JM,keep,,member,JM,,,2011-07-17,False
 4203331997,JO-MILL UNIT LP 7219H,Jo Mill Oil,42,JM,JM,keep,class JM->LSSH not calibrated; tag kept,member,JM,,,2010-02-17,False
@@ -785,7 +785,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4203332712,JOLENE 69-81 A UNIT L 1H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-12,True
 4203332738,NELLIE 83-107 A UNIT L 1H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-27,False
 4203332740,NELLIE 83-107 A UNIT L 2H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-06,False
-4203332741,LIL EL C 4DN,Crescent Energy,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-06-02,True
+4203332741,LIL EL C 4DN,Crescent Energy,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2025-06-02,True
 4203332743,BLEDSOE GRIFFIN 65-51 M 3H,Highpeak Energy,42,MS,MS,keep,,member,MS,,,2025-01-15,False
 4203332744,TAMI JO HILL 31-9 A UNIT L 1H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-29,False
 4203332747,SHAFER 32-12 B UNIT L 6H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-24,False
@@ -1025,7 +1025,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4213542733,FENDLEY 404MS,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2014-03-12,False
 4213542915,RATLIFF E 2702LS,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2014-11-08,False
 4213542916,RATLIFF A HZ 2904LS,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2014-05-22,False
-4213543044,FENDLEY 4-02E 405LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2014-12-07,False
+4213543044,FENDLEY 4-02E 405LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2014-12-07,False
 4213543045,FENDLEY 4-02C 405MS,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2014-12-17,False
 4213543050,HEADLEE 3911MS,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2014-09-29,False
 4213543224,SALLIE 'D' 4621H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-04-15,False
@@ -1176,7 +1176,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4213544173,SOCO 1907 B 401H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-01,False
 4213544174,SOCO 1907 C 201H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-21,False
 4213544197,RATLIFF C5 1801LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2026-08-14,False
-4213544199,RATLIFF C7 1801JH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-08-17,False
+4213544199,RATLIFF C7 1801JH,ConocoPhillips,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-08-17,False
 4216538203,UNIVERSITY 6-2 UNIT 4H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-02-20,False
 4216538799,NORTH WIND UNIT 1H,CGS Operating,42,DEAN,DEAN,keep,,member,DEAN,,,2020-04-01,False
 4216538800,NORTH WIND UNIT 2H,CGS Operating,42,MS,MS,keep,,member,MS,,,2020-07-15,False
@@ -1203,7 +1203,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4217337191,FLANAGAN 14-LLOYD B 11H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2016-02-11,True
 4217337192,CALVERLEY 9-4 3H,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2016-02-24,True
 4217337194,GLASS TXL FEE 3901HA,Burk Royalty,42,DEAN,DEAN,keep,,member,DEAN,,,2016-01-21,False
-4217337195,GLASS TXL FEE 3904HA,Burk Royalty,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2016-02-15,False
+4217337195,GLASS TXL FEE 3904HA,Burk Royalty,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2016-02-15,False
 4217337196,GLASS TXL FEE 3903HA,Burk Royalty,42,DEAN,DEAN,keep,,member,DEAN,,,2016-02-15,False
 4217337197,GLASS TXL FEE 3902HA,Burk Royalty,42,DEAN,DEAN,keep,,member,DEAN,,,2016-01-23,False
 4217337205,SAXON A 1101LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2016-01-16,True
@@ -1588,7 +1588,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222738483,GUNSLINGER UNIT L 4H,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2015-07-03,False
 4222738486,WRIGHT UNIT 41-32 1SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-08-22,False
 4222738536,BARNETT DEEP 2128 1WA,Occidental,42,DEAN,DEAN,keep,class DEAN->WCA not calibrated; tag kept,member,DEAN,,,2015-09-15,False
-4222738541,TUBB 39G 3908I,Surge Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2015-08-23,False
+4222738541,TUBB 39G 3908I,Surge Energy,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2015-08-23,False
 4222738547,WOLFE-MCCANN UNIT 10-15 2SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2016-01-07,True
 4222738549,ELROD-ANTELL UNIT A 11-02 4SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-24,False
 4222738557,FRYAR UNIT B 13-12 5SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2015-10-31,False
@@ -1753,7 +1753,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222739524,OLD TOM UNIT A 21-28 2SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2018-07-05,True
 4222739527,TOP GUN 0829LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-20,True
 4222739530,TOP GUN 0836LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-20,True
-4222739537,TOP GUN 0830LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2019-05-18,True
+4222739537,TOP GUN 0830LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2019-05-18,True
 4222739538,TOP GUN 0831LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-18,True
 4222739546,MIDDLE KNOTT UNIT 21 4LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-11-02,True
 4222739547,MIDDLE KNOTT UNIT 21 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-10-15,False
@@ -1779,7 +1779,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222739618,THUMPER 14-23 D 4SH,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2021-11-15,True
 4222739626,GARDNER UNIT 15-10 2SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2018-08-04,True
 4222739644,MIKE THE TIGER 18-7 A 1LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-07,True
-4222739647,MIKE THE TIGER 18-7 C 3LS,Birch Resources,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2019-03-16,True
+4222739647,MIKE THE TIGER 18-7 C 3LS,Birch Resources,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2019-03-16,True
 4222739657,MIKE THE TIGER 18-7 E 5LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-28,True
 4222739660,MIKE THE TIGER 18-7 F 7LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-24,True
 4222739663,SCATTER 15-10 2SH,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2018-12-03,True
@@ -1907,8 +1907,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222740116,RAY KINSELLA 1321LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-12,True
 4222740119,GARON 27-22 2SH,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-23,True
 4222740121,TRAVELER 18-30 A 1LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2020-02-03,True
-4222740124,TRAVELER 18-30 C 3LS,Birch Resources,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2020-02-10,True
-4222740127,TRAVELER 18-30 F 5LS,Birch Resources,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2020-03-05,True
+4222740124,TRAVELER 18-30 C 3LS,Birch Resources,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2020-02-10,True
+4222740127,TRAVELER 18-30 F 5LS,Birch Resources,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2020-03-05,True
 4222740131,TRAVELER 18-30 G 7LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2020-05-28,True
 4222740135,COUGAR A 0321LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-10,False
 4222740136,COUGAR A 0322LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-11,False
@@ -2135,7 +2135,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222740795,MR. HOBBS 11-14-23 H 1LS,Bayswater,42,LSSH,LSSH,keep,,member,LSSH,,,2021-03-01,True
 4222740797,CLARICE STARLING JESSUP A 1421LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-12,False
 4222740798,CLARICE STARLING SUNDOWN B 4521LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-12,False
-4222740799,LUNA UNIT 1HJ,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2021-04-22,True
+4222740799,LUNA UNIT 1HJ,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2021-04-22,True
 4222740801,LUNA UNIT 3HJ,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2021-04-22,True
 4222740804,HAMLIN UNIT 5HJ,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2021-04-23,True
 4222740809,HANEY 44-53 A UNIT L 1H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2021-02-15,True
@@ -2383,7 +2383,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222741355,NICHOLS WEST B 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-09-10,True
 4222741357,NICHOLS WEST C 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-09-10,True
 4222741377,GUARDIAN A 12-22 6SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-04-15,False
-4222741380,ROCKET 3529SP 2H,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-07-15,False
+4222741380,ROCKET 3529SP 2H,Occidental,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-07-15,False
 4222741381,WALKER 32-48 B UNIT L 6H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-26,True
 4222741382,ROCKET 3527SP 1H,Occidental,42,JM,JM,keep,,member,JM,,,2022-07-15,False
 4222741384,FIRE EYES 47-38 1NS,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-07-14,True
@@ -2393,7 +2393,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222741389,ROCKET 3537LP 3H,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2022-08-15,False
 4222741394,LAITALA UNIT B 21-24 5SH,Surge Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-11-01,True
 4222741396,GAMORA 3545DP 3H,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2022-07-15,True
-4222741397,GAMORA 3525SP 2H,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-07-15,True
+4222741397,GAMORA 3525SP 2H,Occidental,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-07-15,True
 4222741398,GAMORA 3543DP 1H,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2022-07-15,True
 4222741400,FLAMING STAR 02-11 1SS,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-08-15,True
 4222741401,FLAMING STAR 02-11 2SS,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-07-20,True
@@ -2906,7 +2906,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222742520,GIBSON 8E 8HJ,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2024-11-16,True
 4222742525,GIBSON 8D 5HJ,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2024-11-24,False
 4222742526,GIBSON 8D 7HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-21,False
-4222742528,FLASH WEST B 29-20 4102H,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2024-10-21,True
+4222742528,FLASH WEST B 29-20 4102H,Diamondback,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2024-10-21,True
 4222742530,FLASH WEST F 29-20 4106H,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2024-10-21,True
 4222742533,SIDEOATS 1LL,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-15,True
 4222742535,SIDEOATS E 3DN,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-15,True
@@ -2966,8 +2966,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222742642,STEAMBOAT SPRINGS 1641DP 1H,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-15,False
 4222742644,STEAMBOAT SPRINGS 1643DP 3H,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-26,False
 4222742646,STEAMBOAT SPRINGS 1645DP 5H,Occidental,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-26,False
-4222742649,RED HULK UNIT A 40-33 2AH,Surge Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2025-09-19,False
-4222742651,RED HULK UNIT A 40-33 4AH,Surge Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2025-08-29,False
+4222742649,RED HULK UNIT A 40-33 2AH,Surge Energy,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2025-09-19,False
+4222742651,RED HULK UNIT A 40-33 4AH,Surge Energy,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2025-08-29,False
 4222742653,MIYAGI A 38-35 4AH,Surge Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-04,True
 4222742654,MIYAGI B 38-35 5AH,Surge Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2025-06-04,True
 4222742657,RED HULK UNIT B 40-33 7AH,Surge Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2025-08-21,False
@@ -3029,7 +3029,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4222742808,MORGAN CHEVRON 36-48 D UNIT L 7H,Highpeak Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-18,False
 4222742810,BULL 33-45 UNIT 4LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-08-12,False
 4222742812,BULL 33-45 UNIT 5WA,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2026-08-12,False
-4222742816,FREDERICK LINDSEY A 1DN,Apache,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2026-08-01,False
+4222742816,FREDERICK LINDSEY A 1DN,Apache,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2026-08-01,False
 4222742817,FREDERICK LINDSEY B 2DN,Apache,42,DEAN,DEAN,keep,,member,DEAN,,,2026-08-01,False
 4222742825,BULL 28-45 UNIT 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-08-04,False
 4222742828,BULL 28-45 UNIT 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-08-04,False
@@ -3432,7 +3432,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231740876,ACT G 01MA,Diamondback,42,MS,MS,keep,,member,MS,,,2018-01-15,True
 4231740878,ACT G 01SC,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-01-15,True
 4231740881,VINEYARD HZ B UNIT 0601MS,Diamondback,42,MS,MS,keep,,member,MS,,,2017-11-03,True
-4231740882,WOODY 6-35 UNIT 1 211,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2017-09-15,True
+4231740882,WOODY 6-35 UNIT 1 211,Diamondback,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2017-09-15,True
 4231740886,MABEE J.E. 'A' NCT-1 X6 3106LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-17,True
 4231740887,MABEE J.E. 'A' NCT-1 X5 3107LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-17,True
 4231740889,TEXACO-MCMURRY B 50 205HL,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2018-01-26,True
@@ -3481,7 +3481,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741000,VINEYARD HZ O UNIT 1701MS,Diamondback,42,MS,MS,keep,,member,MS,,,2018-03-26,True
 4231741001,VINEYARD HZ O UNIT 1701LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-03-26,True
 4231741004,STRAIN 20 UNIT 2 2028SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-05-05,True
-4231741005,STRAIN 20 UNIT 2 2048SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2018-05-04,True
+4231741005,STRAIN 20 UNIT 2 2048SH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2018-05-04,True
 4231741007,STRAIN RANCH 24-25 2815H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-05-15,True
 4231741016,SHAKE AND BAKE UNIT 74-69 5H,High Noon Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2018-04-04,True
 4231741021,WALKER 14-11 (ALLOC-2NH) 4LR,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-04-20,True
@@ -3531,7 +3531,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741134,NORTHEAST SCHARBAUER 1116H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-07-22,True
 4231741135,NORTHEAST SCHARBAUER 1118H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-07-18,True
 4231741136,NORTHEAST SCHARBAUER 1125H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2018-07-19,True
-4231741137,NORTHEAST SCHARBAUER 1126H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2018-07-15,True
+4231741137,NORTHEAST SCHARBAUER 1126H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2018-07-15,True
 4231741138,NORTHEAST SCHARBAUER 1127H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2018-07-17,True
 4231741140,KINGSFIELD D 08SA,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-05-28,True
 4231741144,POE A 10SC,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-05-31,True
@@ -3673,8 +3673,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741525,"JOHNSON, TED 101H",ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->WCA not calibrated; tag kept,member,DEAN,,,2019-06-18,True
 4231741527,"JOHNSON, TED 102H",ConocoPhillips,42,MS,MS,keep,,member,MS,,,2019-06-18,True
 4231741528,"JOHNSON, TED 103H",ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2019-06-18,True
-4231741530,"JOHNSON, TED 104H",ConocoPhillips,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2019-06-18,True
-4231741532,"JOHNSON, TED 202H",ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2019-07-16,True
+4231741530,"JOHNSON, TED 104H",ConocoPhillips,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2019-06-18,True
+4231741532,"JOHNSON, TED 202H",ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2019-07-16,True
 4231741533,"JOHNSON, TED 203H",ConocoPhillips,42,MS,MS,keep,,member,MS,,,2019-07-16,True
 4231741538,PARKER FARMS NS 25-28 01 501H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-02-17,True
 4231741540,PARKER FARMS NS 25-28 02 502H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-02-22,True
@@ -3754,7 +3754,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231741705,SHARK 14-23 (ALLOC-2SH) 10MM,Diamondback,42,MS,MS,keep,,member,MS,,,2019-05-16,True
 4231741708,AGGIE THE BULLDOG 39-46 E 7LS,Birch Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2019-08-19,True
 4231741712,AGGIE THE BULLDOG 39-46 E 6DN,Birch Resources,42,DEAN,DEAN,keep,,member,DEAN,,,2019-09-03,True
-4231741714,VINEYARD HZ L UNIT 9702JM,Diamondback,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2019-04-15,True
+4231741714,VINEYARD HZ L UNIT 9702JM,Diamondback,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2019-04-15,True
 4231741715,VINEYARD HZ L UNIT 9702LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-04-15,True
 4231741718,VINEYARD HZ L UNIT 9703MS,Diamondback,42,MS,MS,keep,,member,MS,,,2019-04-11,True
 4231741719,VINEYARD HZ L UNIT 9703LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-04-01,True
@@ -3886,7 +3886,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742085,BUCK (AK) 8UL,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-12,True
 4231742087,SHORTES 40 UNIT 4LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-02-28,True
 4231742093,VINEYARD HZ A 9801LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-01-07,True
-4231742095,VINEYARD HZ C 9801JM,Diamondback,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2020-01-11,True
+4231742095,VINEYARD HZ C 9801JM,Diamondback,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2020-01-11,True
 4231742096,VINEYARD HZ D 9802LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-01-07,True
 4231742098,VINEYARD HZ F 9802MS,Diamondback,42,MS,MS,keep,,member,MS,,,2020-01-12,True
 4231742101,CYPERT 57-51 UNIT 2 163,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-10-12,True
@@ -3901,7 +3901,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742123,CASSIDY UNIT 1&2 ALLOCATION 3065DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2020-07-30,True
 4231742124,CASSIDY UNIT 1&2 ALLOCATION 3075JH,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2020-09-23,True
 4231742125,CASSIDY UNIT 2 3025SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-24,True
-4231742127,CASSIDY UNIT 2 3076JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2020-09-22,True
+4231742127,CASSIDY UNIT 2 3076JH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2020-09-22,True
 4231742128,CASSIDY UNIT 2 3066DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2020-09-19,True
 4231742131,CASSIDY UNIT 2 3027SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-07-18,True
 4231742133,CASSIDY UNIT 2 3077JH,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2020-09-17,True
@@ -4219,7 +4219,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742794,KNOX 2 104,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-05-15,True
 4231742796,MABEE BREEDLOVE T 4010LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-26,True
 4231742797,MABEE BREEDLOVE U 4010MS,Diamondback,42,MS,MS,keep,,member,MS,,,2021-04-17,True
-4231742798,MABEE BREEDLOVE V 4008JM,Diamondback,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2021-04-22,True
+4231742798,MABEE BREEDLOVE V 4008JM,Diamondback,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2021-04-22,True
 4231742800,SOUTH CURTIS RANCH 3401MP 1H,Occidental,42,MS,MS,keep,,member,MS,,,2021-03-19,True
 4231742801,SOUTH CURTIS RANCH 3401SP 1H,Occidental,42,JM,JM,keep,,member,JM,,,2021-03-19,True
 4231742802,SOUTH CURTIS RANCH 3401LP 1H,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2021-03-19,True
@@ -4262,7 +4262,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742870,BABY FACE NELSON UNIT 17-8 1SH,High Noon Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2021-02-04,True
 4231742872,DOOLITTLE 404,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-06-12,True
 4231742875,FRANCES 12-1-F 2712H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-09,True
-4231742876,FRANCES 12-1-B 2704H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2020-09-09,True
+4231742876,FRANCES 12-1-B 2704H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2020-09-09,True
 4231742881,CROSS BAR RANCH H 1801SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2023-07-28,True
 4231742883,CROSS BAR RANCH H 1803JH,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2023-07-24,True
 4231742888,UL COTTONFLAT A 4101MS,Diamondback,42,MS,MS,keep,,member,MS,,,2021-01-16,True
@@ -4279,7 +4279,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231742916,SCHARBAUER RANCH 20B 2H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2021-06-22,True
 4231742917,SCHARBAUER RANCH 20C 3H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2021-06-24,True
 4231742921,SHAKE AND BAKE UNIT 74-69 8LS,High Noon Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2020-08-15,True
-4231742924,EL RANCHO E UNIT B 2LS,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2023-04-15,True
+4231742924,EL RANCHO E UNIT B 2LS,Ovintiv,42,LSSH,DEAN,reassign,card verdict AGREE (LSSH->DEAN),member,DEAN,,,2023-04-15,True
 4231742925,BROUGHTON D 7-8 2804H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-07,True
 4231742928,BROUGHTON E 7-8 2805H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-02,True
 4231742936,MABEE BREEDLOVE P 2407LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-20,True
@@ -4408,7 +4408,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743182,LASSARD CALLAHAN 3212JM,SM Energy,42,JM,JM,keep,,member,JM,,,2021-05-10,True
 4231743188,CERBERUS 11-23 UNIT 2 181,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-12-31,False
 4231743191,SPAULDING A 2115JM,SM Energy,42,JM,JM,keep,,member,JM,,,2021-06-29,True
-4231743193,SPAULDING A 2126LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-06-25,True
+4231743193,SPAULDING A 2126LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2021-06-25,True
 4231743195,YOU JANE 20-25 UNIT 1 112,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-28,True
 4231743197,YOU JANE 20-25 UNIT 1 122,Diamondback,42,JM,JM,keep,,member,JM,,,2021-04-27,True
 4231743199,YOU JANE 20-25 UNIT 1 124,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-28,True
@@ -4432,7 +4432,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743232,HAMMER 1LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-01,True
 4231743234,HAMMER E 4LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-09,True
 4231743238,BRAD NAIL 104JM,Occidental,42,JM,JM,keep,,member,JM,,,2022-02-01,True
-4231743240,JOHNSON RANCH 402JH,ConocoPhillips,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2022-07-28,False
+4231743240,JOHNSON RANCH 402JH,ConocoPhillips,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2022-07-28,False
 4231743241,JOHNSON RANCH 403LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-08-10,False
 4231743244,JOHNSON RANCH 404JH,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2022-09-20,False
 4231743245,JOHNSON RANCH 405LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-25,False
@@ -4453,7 +4453,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743270,MABEE 30C 507HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-02,True
 4231743271,MABEE 30D 508HC,Ovintiv,42,MS,MS,keep,,member,MS,,,2021-04-02,True
 4231743272,MABEE 30D 509HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2021-04-02,True
-4231743273,MABEE 30D 510HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-04-02,True
+4231743273,MABEE 30D 510HF,Ovintiv,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2021-04-02,True
 4231743280,KRAKEN 10-3 UNIT 2 181,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2021-07-08,True
 4231743282,KRAKEN 10-3 UNIT 2 183,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-08,True
 4231743285,BLAGRAVE K 31-43 2811H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-09-01,False
@@ -4534,9 +4534,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743469,SMITH JALONICK 16-21 E 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2022-05-17,True
 4231743471,SMITH JALONICK 16-21 E 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-05-18,True
 4231743479,FOREMAN-JONES 40D 306H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-02-16,True
-4231743480,FOREMAN-JONES 40D 307H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-01-24,True
+4231743480,FOREMAN-JONES 40D 307H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-01-24,True
 4231743481,FOREMAN-JONES 40E 308H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-04-09,True
-4231743482,FOREMAN-JONES 40F 309H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-01-24,True
+4231743482,FOREMAN-JONES 40F 309H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-01-24,True
 4231743483,BLACK LAGOON 2-3 UNIT 2 152,Diamondback,42,JM,JM,keep,,member,JM,,,2022-01-04,True
 4231743485,BLACK LAGOON 2-3 UNIT 2 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-02,True
 4231743486,BLACK LAGOON 2-3 UNIT 2 163,Diamondback,42,MS,MS,keep,,member,MS,,,2022-01-06,True
@@ -4551,7 +4551,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743506,WOODY 31CC 103H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-08-03,True
 4231743507,WOODY 31DD 104H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2022-07-27,True
 4231743508,WOODY 31EE 105H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-07-28,True
-4231743509,WOODY 31FF 106H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-07-27,True
+4231743509,WOODY 31FF 106H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-07-27,True
 4231743515,ARES 27-26 UNIT 2 152,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-11-18,True
 4231743518,ARES 27-26 UNIT 2 171,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-11-18,True
 4231743521,ARES 27-26 UNIT 2 182,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2021-11-19,True
@@ -4608,7 +4608,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743606,STRAIN 19 UNIT 1 1932SH,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-07-16,True
 4231743607,STRAIN 19 UNIT 1 1922SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-07-09,True
 4231743610,STRAIN 19 UNIT 1 1961DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2022-07-17,True
-4231743611,STRAIN 19 UNIT 1 1971JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-07-15,True
+4231743611,STRAIN 19 UNIT 1 1971JH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR suggest,member,JM,,,2022-07-15,True
 4231743613,AMOCO-BLANCHE 2-28 UNIT 2 151,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-07,True
 4231743616,AMOCO-BLANCHE 2-28 UNIT 2 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-07,True
 4231743619,AMOCO-BLANCHE 2-28 UNIT 2 181,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-07,True
@@ -4714,8 +4714,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231743817,SCHARBAUER-DOVE 7E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-10-06,True
 4231743818,SCHARBAUER-DOVE 7F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-06,True
 4231743819,EISENHOWER 4 105,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-23,False
-4231743823,PETERS 1102E 10L,SM Energy,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-05-16,True
-4231743825,PETERS 1102A 1L,SM Energy,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-05-24,True
+4231743823,PETERS 1102E 10L,SM Energy,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-05-16,True
+4231743825,PETERS 1102A 1L,SM Energy,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-05-24,True
 4231743828,PETERS 1102C 4L,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-05-20,True
 4231743836,DAWKINS-JONES 40D 306H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-02-12,True
 4231743837,DAWKINS-JONES 40D 307H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-02-12,True
@@ -4823,7 +4823,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744036,HOLT RANCH 2-9 D 18MS,Diamondback,42,MS,MS,keep,,member,MS,,,2022-10-30,False
 4231744037,HOLT RANCH 2-9 E 19LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-22,False
 4231744039,HOLT RANCH 2-8 G 21JM,Diamondback,42,JM,JM,keep,,member,JM,,,2022-10-30,False
-4231744040,CAFFEY-CHIEFTAIN 3229A 1HL,SM Energy,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-07-24,True
+4231744040,CAFFEY-CHIEFTAIN 3229A 1HL,SM Energy,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2022-07-24,True
 4231744041,CAFFEY-CHIEFTAIN 3229B 2HD,SM Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2022-07-24,True
 4231744042,CAFFEY-CHIEFTAIN 3229C 3HL,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-07-26,True
 4231744043,CAFFEY-CHIEFTAIN 3229D 4HL,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2022-07-25,True
@@ -5130,13 +5130,13 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744626,MABEE DH 10-11 A 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2024-01-27,True
 4231744627,MABEE DH 10-11 B 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2024-02-06,True
 4231744628,MABEE DH 10-11 C 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2024-01-08,True
-4231744630,SCARLET UNIT 1 2972JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-01-28,False
+4231744630,SCARLET UNIT 1 2972JH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-01-28,False
 4231744632,SCARLET UNIT 1 2923SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-29,False
 4231744637,MABEE DH 10-11 D 4LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-01,True
 4231744638,MABEE DH 10-11 E 5LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-05,True
 4231744639,MABEE DH 10-11 F 6LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-16,True
 4231744642,SCARLET UNIT 2 2925SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-03,False
-4231744645,SCARLET UNIT 2 2976JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-01-01,False
+4231744645,SCARLET UNIT 2 2976JH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-01-01,False
 4231744647,SCARLET UNIT 2 2927SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-09,False
 4231744653,SMITH JALONICK 16-21 V 102H,Diamondback,42,JM,JM,keep,,member,JM,,,2025-10-02,False
 4231744654,SMITH JALONICK 16-21 X 202H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-02,False
@@ -5229,16 +5229,16 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744829,HOLT 319O 303HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2023-04-08,False
 4231744830,HOLT 319O 304HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2023-04-16,False
 4231744831,HOLT 319O 305HD,Ovintiv,42,MS,MS,keep,,member,MS,,,2023-04-08,False
-4231744838,MABEE A 4-3 2601H,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-10-21,True
+4231744838,MABEE A 4-3 2601H,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-10-21,True
 4231744839,PINKERTON-LOUDER 10B 2H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-08,True
-4231744841,PINKERTON-LOUDER 10D 4H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-02-06,True
+4231744841,PINKERTON-LOUDER 10D 4H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2024-02-06,True
 4231744842,PINKERTON-LOUDER 10K 11H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-02-05,True
 4231744846,PINKERTON-LOUDER 10F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-06,True
 4231744850,MABEE B 4-3 2802H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-10-21,True
 4231744851,MABEE D 4-3 2604H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-10-21,True
 4231744853,MABEE E 4-3 2805H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-10-25,True
 4231744854,MABEE E 4-3 2505H,Diamondback,42,JM,JM,keep,,member,JM,,,2023-10-25,True
-4231744856,MABEE F 4-3 2606H,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-10-25,True
+4231744856,MABEE F 4-3 2606H,Diamondback,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2023-10-25,True
 4231744857,MABEE H 4-3 2408H,Diamondback,42,MS,MS,keep,,member,MS,,,2023-10-25,True
 4231744859,DOVE-SCHARBAUER E10E 105H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-06-17,True
 4231744860,DOVE-SCHARBAUER E10F 106H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-06-18,True
@@ -5256,7 +5256,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744877,GRANTHAM WEST 50-48 UNIT 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-04-01,True
 4231744878,MABEE 7A 1H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-02,True
 4231744879,MABEE 7B 2H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-01-31,True
-4231744881,MABEE 7D 4H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-02-01,True
+4231744881,MABEE 7D 4H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-02-01,True
 4231744882,MABEE 7E 5H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-02-01,True
 4231744883,MABEE 7L 12H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-01-29,True
 4231744884,MABEE 7M 13H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-01-30,True
@@ -5284,12 +5284,12 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231744921,MABEE KELTON F 4-1 2406H,Diamondback,42,MS,MS,keep,,member,MS,,,2023-08-03,True
 4231744922,MABEE KELTON D 4-1 2604H,Diamondback,42,JM,JM,keep,,member,JM,,,2023-07-31,True
 4231744923,DR ORSON M 2MH,Hibernia Resources IV,42,MS,MS,keep,,member,MS,,,2023-08-25,True
-4231744924,DR ORSON N 3JH,Hibernia Resources IV,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-09-01,True
+4231744924,DR ORSON N 3JH,Hibernia Resources IV,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2023-09-01,True
 4231744925,DR ORSON O 4MH,Hibernia Resources IV,42,MS,MS,keep,,member,MS,,,2023-08-23,True
 4231744926,DR ORSON P 5JH,Hibernia Resources IV,42,JM,JM,keep,,member,JM,,,2023-08-19,True
 4231744928,SOUTH CURTIS RANCH 2221SP,Occidental,42,JM,JM,keep,,member,JM,,,2023-09-13,True
 4231744929,SOUTH CURTIS RANCH 2225JP,Occidental,42,JM,JM,keep,,member,JM,,,2023-08-21,True
-4231744930,SOUTH CURTIS RANCH 2225SP,Occidental,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2023-08-19,True
+4231744930,SOUTH CURTIS RANCH 2225SP,Occidental,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2023-08-19,True
 4231744931,SOUTH CURTIS RANCH 2223JP,Occidental,42,JM,JM,keep,,member,JM,,,2023-08-16,True
 4231744932,SOUTH CURTIS RANCH 2227SP,Occidental,42,JM,JM,keep,,member,JM,,,2023-08-28,True
 4231744933,SOUTH CURTIS RANCH 2229SP,Occidental,42,JM,JM,keep,,member,JM,,,2023-08-24,True
@@ -5454,7 +5454,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231745289,CHEST THUMPER 1-5 UNIT 1 136,Diamondback,42,JM,JM,keep,,member,JM,,,2024-04-12,True
 4231745290,CHEST THUMPER 1-5 UNIT 1 142,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-04-12,True
 4231745310,MEEK-LINDSAY 6A 1H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-18,False
-4231745312,MEEK-LINDSAY 6C 3H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-07-19,False
+4231745312,MEEK-LINDSAY 6C 3H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-07-19,False
 4231745314,MEEK-LINDSAY 6E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-07-24,False
 4231745315,MEEK-LINDSAY 6F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-24,False
 4231745316,MEEK-LINDSAY 6H 8H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-08-08,False
@@ -5570,7 +5570,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231745551,RHAEGAL UNIT 1 4664DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2024-07-16,False
 4231745553,RHAEGAL UNIT 1 4672JH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-24,False
 4231745554,RHAEGAL UNIT 1 4662DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2024-07-31,False
-4231745556,RHAEGAL UNIT 1 4671JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-07-30,False
+4231745556,RHAEGAL UNIT 1 4671JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2024-07-30,False
 4231745559,SIMMS 30-18 B 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-01,False
 4231745562,HILL UNIT 1 2564DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-01-30,True
 4231745564,HILL UNIT 1 2574JH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-04,True
@@ -5639,12 +5639,12 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231745678,SMUGGLER 3 3009H,FourPoint Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2024-08-08,False
 4231745679,SMUGGLER 3 2008H,FourPoint Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2024-08-15,False
 4231745683,SMUGGLER 3 3011H,FourPoint Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2024-08-05,False
-4231745684,KATHLEEN-FLANAGAN 10A 101H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-08-13,False
+4231745684,KATHLEEN-FLANAGAN 10A 101H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2025-08-13,False
 4231745686,KATHLEEN-FLANAGAN 10B 102H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-12,False
 4231745687,KATHLEEN-FLANAGAN 10H 108H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-12,False
 4231745688,KATHLEEN-FLANAGAN 10I 109H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-08-11,False
 4231745689,KATHLEEN-FLANAGAN 10K 111H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-08-09,False
-4231745692,KATHLEEN-FLANAGAN 10F 106H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-08-08,False
+4231745692,KATHLEEN-FLANAGAN 10F 106H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-08-08,False
 4231745700,UL DAVIS CREEK 15-29 C 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-08-01,False
 4231745701,UL DAVIS CREEK 15-29 B 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-08-01,False
 4231745704,UL MARSHALLDALE 15-28 B 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-01-01,False
@@ -5780,9 +5780,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231745985,HR DALTON EAST 248B 102HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2024-07-31,True
 4231745986,HR DALTON EAST 248C 103HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-31,True
 4231745987,HR DALTON EAST 248C 104HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2024-07-31,True
-4231745989,BRUNER-WEBB 16B 2H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-10,False
+4231745989,BRUNER-WEBB 16B 2H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-04-10,False
 4231745990,BRUNER-WEBB 16C 3H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-30,False
-4231745994,BRUNER-WEBB 16G 7H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-29,False
+4231745994,BRUNER-WEBB 16G 7H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-03-29,False
 4231745996,BRUNER-WEBB 16I 9H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-28,False
 4231745999,BRUNER-WEBB 16L 12H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-03-27,False
 4231746007,RIPPLE UNIT 1 3761DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-15,False
@@ -5823,11 +5823,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746070,HR BANE 249M 107HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2024-10-08,True
 4231746073,EL RANCHO W 86A 1HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-01-26,True
 4231746075,EL RANCHO W 86B 3HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2025-01-27,True
-4231746077,EL RANCHO W 86D 5HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-01-29,True
+4231746077,EL RANCHO W 86D 5HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-01-29,True
 4231746080,EL RANCHO W 86E 7HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-02,True
 4231746085,MEEK-LINDSAY 6L 12H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-18,False
 4231746086,MEEK-LINDSAY 6M 13H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-02-17,False
-4231746087,MEEK-LINDSAY 6N 14H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-02-17,False
+4231746087,MEEK-LINDSAY 6N 14H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-02-17,False
 4231746089,MEEK-LINDSAY 6P 16H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-02-07,False
 4231746090,MEEK-LINDSAY 6Q 17H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-08,False
 4231746093,MEEK-LINDSAY 6T 20H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-02-07,False
@@ -5849,22 +5849,22 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746122,WILLIAMS-NAIL 5E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-01-17,False
 4231746123,WILLIAMS-NAIL 5F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-01-17,False
 4231746125,SHIMANO 28-40 E 5JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-03-14,True
-4231746126,WILLIAMS-NAIL 5H 8H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-01-18,False
+4231746126,WILLIAMS-NAIL 5H 8H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-01-18,False
 4231746131,SHIMANO 28-40 E 11LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-19,True
 4231746133,SHIMANO 28-40 J 10LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-19,True
 4231746140,KING MINOS 15-25 UNIT 2 183,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-15,False
 4231746141,KING MINOS 15-25 UNIT 2 184,Diamondback,42,MS,MS,keep,,member,MS,,,2025-12-15,False
 4231746146,MCLINTOCK 15-27 L 6LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-11,False
 4231746147,BEAL-GRAHAM E26B 102H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
-4231746148,BEAL-GRAHAM E26C 103H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-12-31,False
+4231746148,BEAL-GRAHAM E26C 103H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-12-31,False
 4231746150,BEAL-GRAHAM E26D 104H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-12-28,False
-4231746152,BEAL-GRAHAM E26G 107H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-12-30,False
+4231746152,BEAL-GRAHAM E26G 107H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-12-30,False
 4231746153,MCLINTOCK 15-27 L 23JM,Diamondback,42,JM,JM,keep,,member,JM,,,2024-12-18,False
 4231746154,BEAL-GRAHAM E26H 108H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-01-01,False
 4231746155,BEAL-GRAHAM E26I 109H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-12-29,False
-4231746156,BEAL-GRAHAM E26J 110H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-01-01,False
+4231746156,BEAL-GRAHAM E26J 110H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-01-01,False
 4231746169,LADY BIRD W 22 2HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-10-23,True
-4231746171,LADY BIRD 22-14 4HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2024-10-21,True
+4231746171,LADY BIRD 22-14 4HG,Ovintiv,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2024-10-21,True
 4231746173,LADY BIRD 22-14 6HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2024-10-27,True
 4231746176,HAZLEWOOD 41-32 UNIT 2 152,Diamondback,42,JM,JM,keep,,member,JM,,,2025-05-15,True
 4231746178,HAZLEWOOD 41-32 UNIT 2 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-21,False
@@ -5918,15 +5918,15 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746302,PALOMA 95-15 D 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-04,True
 4231746303,PALOMA 95-15 E 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-07-06,True
 4231746304,PALOMA 95-15 F 3DN,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2025-07-05,True
-4231746309,LOUDER-WOODY 33H 8H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-10-26,False
+4231746309,LOUDER-WOODY 33H 8H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-10-26,False
 4231746311,LOUDER-WOODY 33J 10H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-10-24,False
 4231746313,LOUDER-WOODY 33L 12H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-23,False
-4231746314,LOUDER-WOODY 33M 13H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-10-22,False
+4231746314,LOUDER-WOODY 33M 13H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-10-22,False
 4231746316,LOUDER-WOODY 33B 2H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-10-19,False
 4231746317,OLD FASHIONED 96-11 A 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-02,True
 4231746318,OLD FASHIONED 96-11 B 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-07-09,True
 4231746323,LOUDER-WOODY 33E 5H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-20,False
-4231746324,LOUDER-WOODY 33F 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-10-21,False
+4231746324,LOUDER-WOODY 33F 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-10-21,False
 4231746329,DICKENSON-JACKSON 19I 9H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-05-24,False
 4231746330,DICKENSON-JACKSON 19J 10H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-05-26,False
 4231746331,DICKENSON-JACKSON 19L 12H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-05-26,False
@@ -5961,7 +5961,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746389,BLAGRAVE D 42-43 2804H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-19,True
 4231746393,SUNDANCE KID 43-7 UNIT 2 153JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-08-22,False
 4231746394,SUNDANCE KID 43-7 UNIT 2 261WA,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2025-08-16,False
-4231746395,BLAGRAVE F 42-43 3006H,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-03-19,True
+4231746395,BLAGRAVE F 42-43 3006H,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-03-19,True
 4231746397,SUNDANCE KID 43-7 UNIT 2 162LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-19,False
 4231746403,SUNDANCE KID 43-7 UNIT 2 165MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-08-24,False
 4231746404,SUNDANCE KID 43-7 UNIT 2 271WA,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2025-08-22,False
@@ -5987,10 +5987,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746435,ANNIE OAKLEY SB 4231C 13MS,SM Energy,42,MS,MS,keep,,member,MS,,,2025-05-15,True
 4231746438,BLOCKER-FLANAGAN 10A 201H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-07-18,True
 4231746440,BLOCKER-FLANAGAN 10D 204H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-07-17,True
-4231746442,BLOCKER-FLANAGAN 10F 206H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-18,True
-4231746444,BLOCKER-FLANAGAN 10H 208H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-31,True
+4231746442,BLOCKER-FLANAGAN 10F 206H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2025-07-18,True
+4231746444,BLOCKER-FLANAGAN 10H 208H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-07-31,True
 4231746445,BLOCKER-FLANAGAN 10I 209H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-07-31,True
-4231746447,BLOCKER-BOHANAN 10K 211H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-31,True
+4231746447,BLOCKER-BOHANAN 10K 211H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-07-31,True
 4231746448,KATHLEEN-FLANAGAN 10D 104H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-08-11,False
 4231746453,PINOT 65 D 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-08-01,False
 4231746454,PINOT 65 A 1US,Diamondback,42,MS,MS,keep,,member,MS,,,2026-08-01,False
@@ -6008,15 +6008,15 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746480,EL DORADO 41-32 D 142R,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-21,False
 4231746483,GUARDIAN EAST 250 A 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-26,False
 4231746484,GUARDIAN EAST 250 B 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-06-19,False
-4231746486,GUARDIAN EAST 250 D 1DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-06-26,False
+4231746486,GUARDIAN EAST 250 D 1DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-06-26,False
 4231746487,GUARDIAN EAST 250 F 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-06-23,False
 4231746489,GUARDIAN EAST 250 H 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-25,False
 4231746490,GUARDIAN EAST 250 I 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-06-19,False
-4231746492,GUARDIAN EAST 250 K 2DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-06-26,False
+4231746492,GUARDIAN EAST 250 K 2DN,Diamondback,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2025-06-26,False
 4231746494,GUARDIAN EAST 250 M 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-06-23,False
 4231746495,GUARDIAN EAST 250 N 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-26,False
 4231746497,GUARDIAN EAST 250 P 3MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-06-10,False
-4231746498,GUARDIAN EAST 250 Q 3DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-06-09,False
+4231746498,GUARDIAN EAST 250 Q 3DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-06-09,False
 4231746500,GUARDIAN EAST 250 S 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-06-10,False
 4231746502,VALENTINE 254A 101HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2025-05-12,True
 4231746504,VALENTINE 254A 103HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-05-13,True
@@ -6075,9 +6075,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746610,SALE-LOUDER 33D 4H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-09-24,False
 4231746611,SALE-LOUDER 33F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-09-24,False
 4231746612,SALE-LOUDER 33G 7H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-09-25,False
-4231746614,SALE-LOUDER 33I 9H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-09-26,False
+4231746614,SALE-LOUDER 33I 9H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-09-26,False
 4231746616,SALE-YARBROUGH 33B 102H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-09-25,False
-4231746617,SALE-YARBROUGH 33C 103H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-09-25,False
+4231746617,SALE-YARBROUGH 33C 103H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-09-25,False
 4231746619,CAMPBELL 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-10-15,False
 4231746620,CAMPBELL 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-10-14,False
 4231746622,SALE-YARBROUGH 33E 105H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-10-15,False
@@ -6128,7 +6128,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746699,NAIL-TILLMAN E1C 503H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-30,False
 4231746700,NAIL-TILLMAN E1B 502H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-05-31,False
 4231746701,AMOCO-HOLT 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-07-28,True
-4231746702,INTEGRITY SOUTH 1DN,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-08-25,False
+4231746702,INTEGRITY SOUTH 1DN,Diamondback,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2025-08-25,False
 4231746704,INTEGRITY SOUTH 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-08-21,False
 4231746707,NAIL-BURLEY 6L 712H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2026-07-01,False
 4231746709,NAIL-BURLEY 6N 714H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-07-01,False
@@ -6145,7 +6145,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746728,REDINGTON 43-18 I 9LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-11-15,False
 4231746730,REDINGTON 43-18 K 11MS,Diamondback,42,MS,MS,keep,,member,MS,,,2025-11-17,False
 4231746733,DAVIS-FORTUNE 44B 302H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-01,False
-4231746735,DAVIS-FORTUNE 44D 304H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-10-01,False
+4231746735,DAVIS-FORTUNE 44D 304H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-10-01,False
 4231746737,DAVIS-FORTUNE 44F 306H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-01,False
 4231746739,DAVIS-FORTUNE 44H 308H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-12-10,False
 4231746741,GEORGE HOLT GLASS WEST A 13-1 2801H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-08,False
@@ -6180,9 +6180,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746790,NAIL-BURLEY 6J 610H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-16,False
 4231746791,NAIL-BURLEY 6K 611H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-06-18,False
 4231746801,TRUE GRIT 16-17 B 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2025-09-10,False
-4231746803,SOUTH CURTIS RANCH 3524LP,Occidental,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-01-16,False
+4231746803,SOUTH CURTIS RANCH 3524LP,Occidental,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2026-01-16,False
 4231746807,DOVE-SCHARBAUER W9E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-12-30,False
-4231746808,DOVE-SCHARBAUER W9F 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-12-29,False
+4231746808,DOVE-SCHARBAUER W9F 6H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-12-29,False
 4231746809,DOVE-SCHARBAUER W9G 7H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-30,False
 4231746810,DOVE-SCHARBAUER W9H 8H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-12-29,False
 4231746811,LAUREN A 1H,Hibernia Resources IV,42,DEAN,DEAN,keep,,member,DEAN,,,2025-12-07,False
@@ -6204,7 +6204,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746828,SPAATZ 38-47 F 3DN,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2026-03-10,False
 4231746829,SPAATZ 38-47 G 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-03-10,False
 4231746830,NICKEL CITY 21E 1HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->WCA not calibrated; tag kept,member,DEAN,,,2025-11-01,False
-4231746831,NICKEL CITY 21F 2HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-11-01,False
+4231746831,NICKEL CITY 21F 2HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-11-01,False
 4231746832,NICKEL CITY 21X 3HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->WCA not calibrated; tag kept,member,DEAN,,,2025-11-01,False
 4231746834,MABEE 318B 203HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
 4231746835,MABEE 318B 201HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2026-01-01,False
@@ -6215,7 +6215,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746840,MABEE 318E 207HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
 4231746841,MABEE 318E 208HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2026-01-01,False
 4231746842,MABEE 318E 209HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2026-01-01,False
-4231746843,LADY BIRD W 22A 4HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-11-01,False
+4231746843,LADY BIRD W 22A 4HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-11-01,False
 4231746846,HEIDELBERG 30-31 A 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-01-20,False
 4231746847,HEIDELBERG 30-31 B 1LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-01-17,False
 4231746848,HEIDELBERG 30-31 E 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-01-29,False
@@ -6245,21 +6245,21 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746895,GREYSTOKE 1-5 A 1MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-03-09,False
 4231746897,HNC MULLIGAN 248E 2HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2025-12-01,False
 4231746898,GREYSTOKE 1-5 B 1JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-03-08,False
-4231746900,DROGON UNIT 1 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-04-07,False
+4231746900,DROGON UNIT 1 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-04-07,False
 4231746901,HNC MULLIGAN 248E 3HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-01,False
 4231746902,GREYSTOKE 1-5 C 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-08,False
 4231746904,HNC MULLIGAN 248E 4HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-12-01,False
 4231746906,GREYSTOKE 1-5 D 2JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-03-09,False
 4231746910,GREYSTOKE 1-5 E 3LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-09,False
 4231746911,DROGON UNIT 1 2H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2026-04-06,False
-4231746912,DROGON UNIT 1 3H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-04-06,False
+4231746912,DROGON UNIT 1 3H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-04-06,False
 4231746913,GREYSTOKE 1-5 E 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-03-08,False
 4231746915,DROGON U1-MERAXES 38A 5H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2026-03-30,False
-4231746916,DROGON U1-MERAXES 38B 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-03-30,False
+4231746916,DROGON U1-MERAXES 38B 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-03-30,False
 4231746917,GREYSTOKE 1-5 E 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-03-08,False
-4231746920,DROGON U2-VHAGAR 38D 8H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-03-30,False
+4231746920,DROGON U2-VHAGAR 38D 8H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-03-30,False
 4231746921,DROGON U2-VHAGAR 38E 9H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2026-03-06,False
-4231746923,DROGON U2-VHAGAR 38G 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-03-06,False
+4231746923,DROGON U2-VHAGAR 38G 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-03-06,False
 4231746924,DROGON U2-VHAGAR 38H 12H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2026-03-06,False
 4231746925,PIRANHA 6-3 D 2MS,Diamondback,42,MS,MS,keep,,member,MS,,,2026-03-09,False
 4231746926,STERLING C 3H,Hibernia Resources IV,42,DEAN,DEAN,keep,,member,DEAN,,,2025-12-19,False
@@ -6286,14 +6286,14 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4231746991,MOHAWK 71G 6HC,Ovintiv,42,MS,MS,keep,,member,MS,,,2026-05-01,False
 4231746994,MOHAWK 71X 11HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2026-05-01,False
 4231746995,FREETAIL 20C 101HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
-4231746996,FREETAIL 20X 104HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2026-01-01,False
+4231746996,FREETAIL 20X 104HG,Ovintiv,42,DEAN,LSSH,reassign,card verdict AGREE (DEAN->LSSH),member,LSSH,,,2026-01-01,False
 4231746997,FREETAIL 21B 105HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
-4231746998,FREETAIL 21C 106HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2026-01-01,False
-4231746999,FREETAIL 20E 102HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2026-01-01,False
+4231746998,FREETAIL 21C 106HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2026-01-01,False
+4231746999,FREETAIL 20E 102HG,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2026-01-01,False
 4231747000,FREETAIL 20F 103HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
-4231747005,HAZELWOOD-CROSS 11B 2H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-05-22,False
+4231747005,HAZELWOOD-CROSS 11B 2H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-05-22,False
 4231747008,HAZELWOOD-CROSS 11E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-05-23,False
-4231747009,CROSS-HAZELWOOD 35F 106H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-05-19,False
+4231747009,CROSS-HAZELWOOD 35F 106H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-05-19,False
 4231747012,CROSS-HAZELWOOD 35I 109H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-20,False
 4231747014,CROSS-HULL 35B 102H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-05-11,False
 4231747016,CROSS-HULL 35D 104H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-11,False
@@ -6382,7 +6382,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232939371,TURNER H R40 3903H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2015-04-17,False
 4232939408,TEXAS TEN Y PU 17H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2014-12-14,False
 4232939409,TEXAS TEN Y PU 18H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2014-12-22,False
-4232939410,TEXAS TEN Y PU 19H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2014-12-16,False
+4232939410,TEXAS TEN Y PU 19H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2014-12-16,False
 4232939418,KENDRA - ANNIE 3 1483H,Apache,42,DEAN,DEAN,keep,,member,DEAN,,,2014-12-01,False
 4232939428,KENDRA - ANNIE 3 15SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2014-11-14,False
 4232939430,ST S-ST RR F 502LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-19,False
@@ -6410,7 +6410,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232939726,SPANISH TRAIL 48 HZ UNIT 4818LS,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2015-04-08,False
 4232939757,ST 4506LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-06-04,False
 4232939758,ST 4507LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-06-04,False
-4232939800,LYNCH A HZ 2HS,Apache,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2016-11-29,True
+4232939800,LYNCH A HZ 2HS,Apache,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2016-11-29,True
 4232939804,LYNCH A HZ 11HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2016-12-03,True
 4232939815,LYNCH A HZ 12HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2016-11-27,True
 4232939824,LYNCH A HZ 9HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-19,False
@@ -6420,7 +6420,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232939880,PECAN ACRES 23 PSA 1 2SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2015-11-01,False
 4232939884,SOUTH CURTIS RANCH 421MH,Occidental,42,MS,MS,keep,,member,MS,,,2015-07-27,False
 4232939887,SOUTH CURTIS RANCH 423SH,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2015-07-23,False
-4232939905,SPANISH TRAIL 48 HZ UNIT 4827LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2015-05-24,False
+4232939905,SPANISH TRAIL 48 HZ UNIT 4827LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2015-05-24,False
 4232939908,PEGASUS FIELD UNIT 3 8182H,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2015-04-02,False
 4232939910,PARKS FIELD UNIT 2 2329LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2015-11-13,False
 4232939935,DORA ROBERTS RANCH UNIT 4034H,Continental Resources,42,MS,MS,keep,,member,MS,,,2015-04-16,False
@@ -6451,7 +6451,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940144,ST 4405LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-10-17,False
 4232940145,ST 4406LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-10-28,False
 4232940152,ST NW 2505LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-09-10,False
-4232940157,SPANISH TRAIL 48 HZ UNIT 4826LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2017-07-18,True
+4232940157,SPANISH TRAIL 48 HZ UNIT 4826LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2017-07-18,True
 4232940158,SPANISH TRAIL 48 HZ UNIT 4826MS,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2017-07-17,True
 4232940170,ST NW 2506LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-09-01,False
 4232940172,ST W 705LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2015-09-13,False
@@ -6478,7 +6478,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940308,KEMMER 4220H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2016-11-18,False
 4232940309,KEMMER 4221H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2016-07-07,False
 4232940330,LYNCH A HZ 13HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-14,False
-4232940331,LYNCH A HZ 14HS,Apache,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2016-01-08,False
+4232940331,LYNCH A HZ 14HS,Apache,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2016-01-08,False
 4232940334,CASSELMAN 8 PSA 1 14LS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-10-23,False
 4232940335,NOBLES 3121SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2016-04-19,True
 4232940338,KENDRA-ANNIE 9 18LL,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-23,True
@@ -6496,7 +6496,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940387,CASSELMAN 8 PSA 1 22MS,Apache,42,MS,MS,keep,,member,MS,,,2015-10-30,False
 4232940398,GRIDIRON S001MS,Diamondback,42,MS,MS,keep,,member,MS,,,2016-11-11,True
 4232940448,BOHANNON38 7SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2016-08-12,False
-4232940474,ABBIE LAINE 39 H303M,ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2015-12-18,False
+4232940474,ABBIE LAINE 39 H303M,ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2015-12-18,False
 4232940476,KENDRA-AMANDA PSA 2 29SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-16,False
 4232940477,KENDRA-AMANDA PSA 2 30SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2015-12-15,False
 4232940486,ST W 4308LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2016-11-24,True
@@ -6533,7 +6533,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232940694,MASK HZ UNIT 1005H,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2016-10-25,True
 4232940702,JOHN BRAUN A UNIT 2 0127SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-03-19,True
 4232940703,JOHN BRAUN A UNIT 2 0128SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2016-05-15,True
-4232940704,JOHN BRAUN A UNIT 2 0146SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2018-03-08,True
+4232940704,JOHN BRAUN A UNIT 2 0146SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2018-03-08,True
 4232940716,BUTTE UNIT 804LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-04-15,True
 4232940718,BUTTE UNIT R804LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2016-12-13,True
 4232940719,KENDRA-ANNIE 10 21SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2016-04-20,True
@@ -6616,9 +6616,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941067,NOBLES 3227SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2017-01-03,True
 4232941116,ST E UNIT 3803LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-06-07,True
 4232941118,ST E UNIT 3804LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-06-07,True
-4232941121,ABBIE LAINE 30X 1H,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2017-02-16,True
+4232941121,ABBIE LAINE 30X 1H,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2017-02-16,True
 4232941125,ABBIE LAINE 30XX 5H,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2017-02-10,True
-4232941126,ABBIE LAINE 30XX 6H,Ovintiv,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2017-02-10,True
+4232941126,ABBIE LAINE 30XX 6H,Ovintiv,42,DEAN,LSSH,reassign,card verdict AGREE (DEAN->LSSH),member,LSSH,,,2017-02-10,True
 4232941130,ABBIE LAINE 30G 10H,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2017-02-08,True
 4232941133,BOMBARDIER A UNIT 408LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-09-10,True
 4232941135,BOMBARDIER A UNIT 407LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-09-29,True
@@ -6642,7 +6642,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941244,PEGASUS FIELD UNIT 3 119LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2017-05-02,True
 4232941247,PEGASUS FIELD UNIT 3 1007LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2017-06-23,True
 4232941285,MCC HZ UNIT 1105H,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2019-03-03,True
-4232941286,MCC HZ UNIT 1106H,ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2019-03-03,True
+4232941286,MCC HZ UNIT 1106H,ConocoPhillips,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2019-03-03,True
 4232941287,MCC HZ UNIT 1107H,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2019-03-03,True
 4232941289,BLACKFOOT WEST UNIT 701LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-08-26,True
 4232941291,BLACKFOOT WEST UNIT 702LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-08-29,True
@@ -6767,24 +6767,24 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941660,RIO ROJO 27-30 UNIT 1 123,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2017-11-02,True
 4232941663,GRIDIRON S018MS,Diamondback,42,MS,MS,keep,,member,MS,,,2018-01-22,True
 4232941665,LINE DRIVE L 4LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-11-11,True
-4232941666,SPANISH TRAIL 48 HZ UNIT 4825LS,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-03-26,True
+4232941666,SPANISH TRAIL 48 HZ UNIT 4825LS,ConocoPhillips,42,LSSH,DEAN,reassign,card verdict AGREE (LSSH->DEAN),member,DEAN,,,2018-03-26,True
 4232941690,NOBLES 3245SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-03-01,True
 4232941691,NOBLES 3246SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-03-01,True
 4232941703,BOONE-COFFEE 10 201HL,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2017-09-12,True
 4232941704,BRADFORD 3001H,Langford & Brigham Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2017-11-18,False
 4232941713,BOONE-COFFEE 20 202HL,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2017-09-11,True
 4232941724,SOA SCHARBAUER SE 0012LS,Chevron,42,LSSH,LSSH,keep,,member,LSSH,,,2018-07-15,True
-4232941726,SOA SCHARBAUER SE 0014LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-06-22,True
-4232941728,SOA SCHARBAUER SE 0016LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-07-15,True
-4232941730,SOA SCHARBAUER SE 0022LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-06-15,True
+4232941726,SOA SCHARBAUER SE 0014LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2018-06-22,True
+4232941728,SOA SCHARBAUER SE 0016LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2018-07-15,True
+4232941730,SOA SCHARBAUER SE 0022LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2018-06-15,True
 4232941732,ST-ST S G 4402LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-01-26,True
 4232941733,ST-ST S H 4403LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-01-23,True
 4232941736,ST E UNIT 3801LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-16,True
 4232941737,ST E UNIT 3802LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-20,True
 4232941740,PARKS FIELD UNIT 2 1807LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-26,True
 4232941741,PARKS FIELD UNIT 2 1806LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-24,True
-4232941742,SOA SCHARBAUER SE 0026LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-06-15,True
-4232941747,SOA SCHARBAUER SE 0024LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-06-15,True
+4232941742,SOA SCHARBAUER SE 0026LS,Chevron,42,LSSH,DEAN,reassign,card verdict AGREE (LSSH->DEAN),member,DEAN,,,2018-06-15,True
+4232941747,SOA SCHARBAUER SE 0024LS,Chevron,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2018-06-15,True
 4232941754,HAAG HZ UNIT 13LS,Permian Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-17,True
 4232941755,HAAG HZ UNIT 14LS,Permian Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-17,True
 4232941763,MCC HZ UNIT 1115H,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2017-11-26,True
@@ -6792,7 +6792,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941765,BUTTE UNIT 815MS,Diamondback,42,MS,MS,keep,,member,MS,,,2018-08-06,False
 4232941770,HAAG HZ UNIT 15LS,Permian Resources,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-17,True
 4232941771,"HUTT, DONALD L.'C' 3674H",Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-04-21,True
-4232941772,WAFFLE IRON H235SS,Permian Deep Rock,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2017-11-17,True
+4232941772,WAFFLE IRON H235SS,Permian Deep Rock,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2017-11-17,True
 4232941773,"HUTT, DONALD L.'C' 3675H",Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-04-19,True
 4232941774,"HUTT, DONALD L.'C' 3676H",Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-04-21,True
 4232941776,ELKINS-ATRELLE 31-42 141,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-07-09,True
@@ -6840,12 +6840,12 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232941937,HOGAN 1-13-D 2808H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-01-15,True
 4232941938,HOGAN 1-13-C 2806H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-01-15,True
 4232941941,DAVIDSON 36B 3HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-13,True
-4232941942,DAVIDSON 36B 4HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-02-13,True
+4232941942,DAVIDSON 36B 4HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2018-02-13,True
 4232941943,MIDLAND 'AC/AF' FEE 11B 0161LS,Chevron,42,LSSH,LSSH,keep,,member,LSSH,,,2018-05-01,True
 4232941949,MASSEY UNIT 2813H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-12-22,True
 4232941951,HOGAN 1-25B 2803H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-21,True
 4232941953,DAVIDSON 36A 1HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-02-13,True
-4232941954,DAVIDSON 36A 2HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2018-02-13,True
+4232941954,DAVIDSON 36A 2HF,Ovintiv,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2018-02-13,True
 4232941958,RIO SAN MARCOS 36-45 UNIT 1 242,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-09-15,True
 4232941965,BLACKFOOT WEST UNIT 704LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2018-11-02,True
 4232941979,BOMBARDIER C UNIT 404LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-07-14,True
@@ -6882,7 +6882,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232942080,RIO LAVACA 17-48 UNIT 2 151,Diamondback,42,MS,MS,keep,,member,MS,,,2018-04-18,True
 4232942088,WINDHAM TXL C8 5206LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2018-10-09,True
 4232942114,WAFFLE IRON H110MS,Permian Deep Rock,42,MS,MS,keep,,member,MS,,,2019-05-25,True
-4232942115,WAFFLE IRON H115SS,Permian Deep Rock,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-05-25,True
+4232942115,WAFFLE IRON H115SS,Permian Deep Rock,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2019-05-25,True
 4232942117,WAFFLE IRON H125SS,Permian Deep Rock,42,JM,JM,keep,,member,JM,,,2019-05-25,True
 4232942118,WINDHAM 33E 1HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-06-02,True
 4232942119,WINDHAM 33E 2HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-06-02,True
@@ -7016,9 +7016,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232942478,RANCHLAND C UNIT 2805H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-21,True
 4232942487,BRYANT-WHITEFIELD A 42-43 2801H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-12-05,True
 4232942490,BRYANT-WHITEFIELD B 42-43 2802H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-12-15,True
-4232942499,RIO SAN GABRIEL 28-29 UNIT 1 141,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2019-03-12,True
+4232942499,RIO SAN GABRIEL 28-29 UNIT 1 141,Diamondback,42,DEAN,LSSH,reassign,card verdict AGREE (DEAN->LSSH),member,LSSH,,,2019-03-12,True
 4232942502,RIO SAN GABRIEL 28-29 UNIT 2 152,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-12,True
-4232942506,RIO SAN GABRIEL 28-29 UNIT 2 162,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2019-03-12,True
+4232942506,RIO SAN GABRIEL 28-29 UNIT 2 162,Diamondback,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2019-03-12,True
 4232942510,RIO SAN GABRIEL 28-29 UNIT 2 171,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-22,True
 4232942513,RIO SAN GABRIEL 28-29 UNIT 2 182,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-22,True
 4232942517,LYNCH A HZ 24HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2019-01-16,True
@@ -7075,9 +7075,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232942714,NOBLES 3132SH,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2019-10-07,True
 4232942717,TXL 9 UNIT 1 0441SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-08-14,True
 4232942720,TXL 9 UNIT 1 0422SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-04-24,True
-4232942721,TXL 9 UNIT 1 0443SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-04-23,True
+4232942721,TXL 9 UNIT 1 0443SH,Exxon Mobil,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->JM),member,LSSH,,,2019-04-23,True
 4232942725,TXL 9 UNIT 1 0423SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-04-24,True
-4232942727,TXL 9 UNIT 1 0444SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-05-01,True
+4232942727,TXL 9 UNIT 1 0444SH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2019-05-01,True
 4232942746,BANAY 26LS,Summit Petroleum,42,LSSH,LSSH,keep,,member,LSSH,,,2019-12-13,True
 4232942750,NOBLES 3142SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-05-15,True
 4232942753,KYLA C 21LB,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-25,True
@@ -7102,7 +7102,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232942794,ARTEMIS 42/06 D 0045LS,Chevron,42,LSSH,LSSH,keep,,member,LSSH,,,2019-06-20,True
 4232942795,ARTEMIS 42/06 X 0046LS,Chevron,42,LSSH,LSSH,keep,,member,LSSH,,,2019-11-15,True
 4232942808,TXL 9 UNIT 2 0425SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-04-17,True
-4232942809,GERMANIA SPRABERRY UNIT 4201H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-03-09,True
+4232942809,GERMANIA SPRABERRY UNIT 4201H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2019-03-09,True
 4232942811,GERMANIA 42 13H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2019-03-07,True
 4232942821,DAVIDSON 23A 3HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2019-02-20,True
 4232942822,DAVIDSON 23A 4HC,Ovintiv,42,MS,MS,keep,,member,MS,,,2019-02-20,True
@@ -7158,7 +7158,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943001,"HUTT, DONALD L.'C' 3678H",Exxon Mobil,42,JM,JM,keep,,member,JM,,,2019-10-23,True
 4232943003,BRADFORD TRUST A UNIT 2 0328SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-02-08,True
 4232943008,CARMANITA 12LS,Summit Petroleum,42,LSSH,LSSH,keep,,member,LSSH,,,2020-02-15,True
-4232943009,"HUTT, DONALD L.'C' 3679H",Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-10-24,True
+4232943009,"HUTT, DONALD L.'C' 3679H",Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2019-10-24,True
 4232943019,BRADFORD TRUST A UNIT 1 0344SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-02-08,True
 4232943035,DAVIDSON 36G 1HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2019-09-21,True
 4232943036,DAVIDSON 36G 2H,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2019-09-21,True
@@ -7306,7 +7306,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943478,MIDKIFF 43-06 0668 0668DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2020-08-12,True
 4232943497,WINDOWPANE 4-33 UNIT 1 112,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-10-26,True
 4232943499,WINDOWPANE 4-33 UNIT 1 132,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-10-26,True
-4232943514,TXL 11 UNIT 4 1418 1448SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-08-17,True
+4232943514,TXL 11 UNIT 4 1418 1448SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-08-17,True
 4232943521,BAUMANN E16G 107H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-04-20,True
 4232943522,BAUMANN E16I 109H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-04-08,True
 4232943523,BAUMANN E16K 111H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-04-20,True
@@ -7329,7 +7329,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943568,SHADY OAKS N 48-37 2814H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-05-23,True
 4232943571,MANOR PARK EAST UNIT 7H,Fasken Oil,42,MS,MS,keep,,member,MS,,,2020-09-04,True
 4232943593,CHARLES MIDKIFF 38-47 4713 4763DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2020-09-14,False
-4232943595,JOHN BRAUN B UNIT 1 4141SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2020-10-29,True
+4232943595,JOHN BRAUN B UNIT 1 4141SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2020-10-29,True
 4232943596,CUMBERLAND WEST A 3401MS,Diamondback,42,MS,MS,keep,,member,MS,,,2020-05-18,False
 4232943597,CUMBERLAND WEST E 3401LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-05-19,False
 4232943604,CUMBERLAND WEST B 3402MS,Diamondback,42,MS,MS,keep,,member,MS,,,2020-05-29,False
@@ -7344,7 +7344,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943638,JOHN BRAUN B UNIT 2 4126SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-08-15,False
 4232943644,TXL 36 UNIT 3643SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-05-28,True
 4232943646,TXL 36 UNIT 3622SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-08,True
-4232943649,TXL 36 UNIT 3641SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-07-02,True
+4232943649,TXL 36 UNIT 3641SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-07-02,True
 4232943652,JOHN BRAUN B UNIT 2 4147SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-08-15,True
 4232943655,JOHN BRAUN B UNIT 2 4128SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-08-15,True
 4232943670,CHARLES MIDKIFF 38-47 4711 4761DH,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2020-08-12,True
@@ -7425,11 +7425,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943891,ABBIE LAINE 30G 13HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2020-11-12,True
 4232943892,ABBIE LAINE 30XX 14HC,Ovintiv,42,MS,MS,keep,,member,MS,,,2020-11-12,True
 4232943893,ABBIE LAINE 30E 15HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2020-11-11,True
-4232943894,ABBIE LAINE 30E 16HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2020-11-11,True
+4232943894,ABBIE LAINE 30E 16HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2020-11-11,True
 4232943896,ABBIE LAINE 30F 18HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2020-11-11,True
-4232943900,TXL 11 UNIT 4 1446SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-06-16,True
+4232943900,TXL 11 UNIT 4 1446SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-06-16,True
 4232943903,TXL 11 UNIT 4 1426SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-09,True
-4232943907,TXL 11 UNIT 4 1445SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-06-22,True
+4232943907,TXL 11 UNIT 4 1445SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-06-22,True
 4232943912,GRIDIRON S017JM,Diamondback,42,JM,JM,keep,,member,JM,,,2021-12-11,True
 4232943913,GRIDIRON S015LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-12-04,True
 4232943915,LINE DRIVE P 4MS,Diamondback,42,MS,MS,keep,,member,MS,,,2021-12-03,True
@@ -7439,14 +7439,14 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232943921,CASSELMAN 16 17SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2021-11-10,False
 4232943922,CASSELMAN 16 18SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2021-11-09,False
 4232943935,TXL 11 UNIT 3 1421SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-06-17,True
-4232943940,TXL 11 UNIT 3 1442SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-06-19,True
+4232943940,TXL 11 UNIT 3 1442SH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2021-06-19,True
 4232943948,RIO GRANDE 25-20SL UNIT 1 133,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-15,True
 4232943950,RIO GRANDE 25-20SL UNIT 1 143,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-15,True
 4232943951,RIO GRANDE 25-20SL UNIT 2 153,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-15,True
 4232943953,ATKINS 47-02 UNIT 1 0223SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-03-05,True
 4232943954,ATKINS 47-02 UNIT 1 0243SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-03-04,True
 4232943956,ATKINS 47-02 UNIT 1 0222SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-20,True
-4232943958,TXL 11 UNIT 3 1443SH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-06-19,True
+4232943958,TXL 11 UNIT 3 1443SH,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2021-06-19,True
 4232943960,RIO GRANDE 25-20SL UNIT 2 163,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2020-09-15,True
 4232943961,ATKINS 47-02 UNIT 1 0242SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-04-23,True
 4232943964,TXL 11 UNIT 3 1424SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-06-23,True
@@ -7525,13 +7525,13 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944233,MB 4H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-07,True
 4232944252,HOGAN 1-13-D 2407H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2021-11-23,True
 4232944253,HOGAN 1-24-F 2411H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2021-11-23,True
-4232944269,FRASER TXL A1 501LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-10-10,False
+4232944269,FRASER TXL A1 501LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2021-10-10,False
 4232944270,FRASER TXL A2 502MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2021-10-16,True
-4232944271,FRASER TXL A3 512LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-10-16,True
+4232944271,FRASER TXL A3 512LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2021-10-16,True
 4232944273,FRASER TXL A5 503MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2021-10-12,True
-4232944274,FRASER TXL A6 503LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-10-06,True
+4232944274,FRASER TXL A6 503LH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2021-10-06,True
 4232944276,FRASER TXL A8 504MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2021-10-16,True
-4232944277,BLACKFOOT EAST B 705JM,Diamondback,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2021-03-15,True
+4232944277,BLACKFOOT EAST B 705JM,Diamondback,42,JM,JM,keep,card verdict REJECT (JM->MS),member,JM,,,2021-03-15,True
 4232944278,BLACKFOOT EAST C 705LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2021-03-21,True
 4232944285,FRASER TXL A9 514LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2021-10-10,True
 4232944286,MISSOULA UNIT 816MS,Diamondback,42,MS,MS,keep,,member,MS,,,2022-04-19,True
@@ -7544,8 +7544,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944309,TEXAS TEN 'AA' 67H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-12-05,True
 4232944310,TEXAS TEN 'AA' 68H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-12-05,True
 4232944311,TEXAS TEN 'AA' 69H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-12-07,True
-4232944312,TEXAS TEN 'AA' 612H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-12-08,True
-4232944313,TEXAS TEN 'AA' 613H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-12-12,True
+4232944312,TEXAS TEN 'AA' 612H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-12-08,True
+4232944313,TEXAS TEN 'AA' 613H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-12-12,True
 4232944326,PINTAIL L 31-30 2812H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-11-17,True
 4232944328,PINTAIL M 31-30 2813H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2020-11-17,True
 4232944329,COLONIAL O 1-12 2815H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-01-07,True
@@ -7565,7 +7565,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944365,TEXAS TEN 'AA' 617H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-05,True
 4232944366,TEXAS TEN 'AA' 618H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2022-01-08,True
 4232944368,TEXAS TEN 'AA' 619H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-11,True
-4232944369,TEXAS TEN 'AA' 620H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-01-13,True
+4232944369,TEXAS TEN 'AA' 620H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2022-01-13,True
 4232944370,ELKIN-CRAWFORD 34AA 101H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2021-05-12,True
 4232944371,ELKIN-CRAWFORD 34BB 102H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-05-06,True
 4232944372,ELKIN-CRAWFORD 34CC 103H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2021-05-07,True
@@ -7717,7 +7717,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944708,JW B 421MS,Discovery Operating,42,MS,MS,keep,,member,MS,,,2021-10-09,True
 4232944712,MB 6H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-07,True
 4232944714,A.B. HARRINGTON H3 608MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2022-03-14,False
-4232944716,BROOKS-LEONARD 48M 13H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-12-13,True
+4232944716,BROOKS-LEONARD 48M 13H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-12-13,True
 4232944718,A.B. HARRINGTON H2 608LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-18,False
 4232944720,A.B. HARRINGTON H8 606MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2022-03-07,False
 4232944721,A.B. HARRINGTON H9 605LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-05,False
@@ -7725,7 +7725,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944725,A.B. HARRINGTON H6 606LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-09,False
 4232944727,A.B. HARRINGTON H4 607LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-11,False
 4232944736,BROOKS-LEONARD 48O 15H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-12-13,True
-4232944740,BROOKS-LEONARD 48R 18H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2021-12-13,True
+4232944740,BROOKS-LEONARD 48R 18H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2021-12-13,True
 4232944751,BANKHEAD 4-33 UNIT 2A 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-24,True
 4232944752,BANKHEAD 4-33 UNIT 2A 173,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-24,True
 4232944753,BANKHEAD 4-33 UNIT 2A 182,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-24,True
@@ -7769,7 +7769,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944837,RIO SAN GABRIEL 28-29 UNIT 1 131,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-21,True
 4232944839,RIO SAN GABRIEL 28-29 UNIT 1 143,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-21,True
 4232944841,DIAMOND RIO 9-16M 2813H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-14,True
-4232944842,DIAMOND RIO 9-16N 2815H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-01-13,True
+4232944842,DIAMOND RIO 9-16N 2815H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2022-01-13,True
 4232944857,PARKS 1200 UNIT 1 1221SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-15,True
 4232944859,PARKS 1200 UNIT 1 1224SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-11,True
 4232944860,PARKS 1200 UNIT 1 1222SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-01-11,True
@@ -7824,7 +7824,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944952,MUSTANG 160 MIPA UNIT H160LS,Permian Deep Rock,42,LSSH,LSSH,keep,,member,LSSH,,,2022-08-01,True
 4232944954,HILL 30-19 E 151,Diamondback,42,MS,MS,keep,,member,MS,,,2022-03-21,True
 4232944955,HILL 30-19 E 152,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-22,True
-4232944956,HILL 30-19 F 161,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-03-22,True
+4232944956,HILL 30-19 F 161,Diamondback,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-03-22,True
 4232944958,HILL 30-19 F 163,Diamondback,42,MS,MS,keep,,member,MS,,,2022-03-21,True
 4232944959,HILL 30-19 F 164,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-03-21,True
 4232944962,COMMON NAIL E 6JM,Occidental,42,JM,JM,keep,,member,JM,,,2022-10-24,True
@@ -7840,7 +7840,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232944990,KATIE STATE A6 1106JH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2023-01-13,True
 4232944991,KATIE STATE A5 1105SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2023-01-16,True
 4232944993,KATIE STATE A2 1103SH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2023-01-09,True
-4232944994,KATIE STATE A3 1104JH,ConocoPhillips,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2023-01-11,True
+4232944994,KATIE STATE A3 1104JH,ConocoPhillips,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2023-01-11,True
 4232944995,KATIE STATE A1 1102MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2023-01-06,True
 4232944997,MB 9H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2024-05-01,True
 4232944999,MB 11H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2024-05-01,True
@@ -7879,11 +7879,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945069,ELKIN-ESTES 34L 12H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-05-09,False
 4232945073,RIO GUADALUPE 22-23 F 161,Diamondback,42,MS,MS,keep,,member,MS,,,2022-02-11,True
 4232945074,RIO GUADALUPE 22-23 F 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-02-11,True
-4232945082,BOB MIDKIFF 37-48 WEST UNIT 4874JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-05-15,True
+4232945082,BOB MIDKIFF 37-48 WEST UNIT 4874JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2022-05-15,True
 4232945085,CB HALEY F3 707MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2023-02-21,True
-4232945087,BOB MIDKIFF 37-48 WEST UNIT 4875JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-05-05,True
+4232945087,BOB MIDKIFF 37-48 WEST UNIT 4875JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2022-05-05,True
 4232945090,CB HALEY F2 707LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2023-02-08,True
-4232945091,BOB MIDKIFF 37-48 WEST UNIT 4876JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-05-05,True
+4232945091,BOB MIDKIFF 37-48 WEST UNIT 4876JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2022-05-05,True
 4232945105,GAULT 5-41 A 112,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-05-27,True
 4232945106,GAULT 5-41 A 113,Diamondback,42,JM,JM,keep,,member,JM,,,2022-05-27,True
 4232945107,GAULT 5-41 A 114,Diamondback,42,MS,MS,keep,,member,MS,,,2022-06-02,True
@@ -8074,12 +8074,12 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945444,STIMSON-NAIL W17L 12H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-08,True
 4232945445,STIMSON-NAIL W17M 13H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-12-05,True
 4232945447,STIMSON-NAIL W17P 16H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-12-09,True
-4232945449,STIMSON-NAIL W17S 19H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-12-05,True
+4232945449,STIMSON-NAIL W17S 19H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR suggest,member,JM,,,2023-12-05,True
 4232945451,STIMSON-NAIL W17Q 17H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-07,True
 4232945452,STIMSON-NAIL W17O 15H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-12-09,True
 4232945453,TUBB-VAUGHN 21A 101H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2022-11-07,True
 4232945454,TUBB-VAUGHN 21C 103H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2022-11-05,True
-4232945455,TUBB-VAUGHN 21E 105H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2022-11-06,True
+4232945455,TUBB-VAUGHN 21E 105H,Exxon Mobil,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->DEAN),member,LSSH,,,2022-11-06,True
 4232945457,TUBB-VAUGHN 21G 107H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-10-26,True
 4232945458,STANLEY-VAUGHN 16U UNIT 108H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-10-25,True
 4232945459,TUBB-VAUGHN 21I 109H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2022-10-26,True
@@ -8148,9 +8148,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945605,TEXAS TEN-MILES 37O 15H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-03-24,True
 4232945606,ORGANIC CC 13LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-05-30,True
 4232945607,ORGANIC D 14LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-05-23,True
-4232945609,FR UNOBTANIUM 1411 102LS,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-05-28,True
-4232945610,FR UNOBTANIUM 1411 H 103LS,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-05-20,True
-4232945612,FR UNOBTANIUM 1411 E 105LS,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-05-31,True
+4232945609,FR UNOBTANIUM 1411 102LS,Occidental,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-05-28,True
+4232945610,FR UNOBTANIUM 1411 H 103LS,Occidental,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-05-20,True
+4232945612,FR UNOBTANIUM 1411 E 105LS,Occidental,42,LSSH,LSSH,keep,card verdict REJECT (LSSH->JM),member,LSSH,,,2023-05-31,True
 4232945615,REBEL 115 MIPA UNIT H120MS,Permian Deep Rock,42,MS,MS,keep,,member,MS,,,2024-04-02,True
 4232945616,REBEL 130 MIPA UNIT H130SS,Permian Deep Rock,42,LSSH,LSSH,keep,,member,LSSH,,,2024-04-15,True
 4232945617,MUSTANG 120 MIPA UNIT H120MX,Permian Deep Rock,42,MS,MS,keep,,member,MS,,,2025-03-16,True
@@ -8192,7 +8192,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945674,WTH 21-16 C 132,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-03-29,True
 4232945677,COWDEN 39-03 WEST UNIT 0322SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-11-22,False
 4232945680,WTH 21-16 F 162,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-03-21,True
-4232945681,TEX-HARVEY SPRABERRY 2123,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-03-29,False
+4232945681,TEX-HARVEY SPRABERRY 2123,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-03-29,False
 4232945683,TEX-HARVEY SPRABERRY 2144,Diamondback,42,JM,JM,keep,,member,JM,,,2023-03-29,False
 4232945684,WTH 21-16 H 282,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-10-28,True
 4232945686,COWDEN 39-03 WEST UNIT 0323SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-10-13,False
@@ -8219,11 +8219,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945727,FASKEN 9-16-21 UNIT 1 172,Diamondback,42,JM,JM,keep,,member,JM,,,2022-12-15,True
 4232945728,FASKEN 9-16-21 UNIT 1 184,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2022-12-15,True
 4232945736,VIBRANIUM 12LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-06-01,True
-4232945743,VIBRANIUM E 13LM,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-06-02,True
+4232945743,VIBRANIUM E 13LM,Occidental,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-06-02,True
 4232945744,VIBRANIUM E 15LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-06-03,True
 4232945745,MITHRIL E 16LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-06-15,True
 4232945746,MITHRIL 11LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2023-06-15,True
-4232945747,MITHRIL C 14LM,Occidental,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-06-15,True
+4232945747,MITHRIL C 14LM,Occidental,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-06-15,True
 4232945748,TURNER W41A 1H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-04-10,False
 4232945750,TURNER W41C 3H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-04-10,False
 4232945752,TURNER W41E 5H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-04-08,False
@@ -8238,7 +8238,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945771,LOCKLAR-HOLIMAN 28E 105H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-03-07,True
 4232945772,LOCKLAR-HOLIMAN 28F 106H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-03-05,True
 4232945773,LOCKLAR-HOLIMAN 28G 107H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-03-02,True
-4232945774,LOCKLAR-HOLIMAN 28H 108H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2022-12-01,True
+4232945774,LOCKLAR-HOLIMAN 28H 108H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2022-12-01,True
 4232945775,LOCKLAR-HOLIMAN 28I 109H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-03-04,True
 4232945776,LOCKLAR-HOLIMAN 28J 110H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-02-28,True
 4232945777,LOCKLAR-HOLIMAN 28K 111H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-03-06,True
@@ -8294,10 +8294,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945912,STEPHENS 6-31 H 183,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-04,True
 4232945921,CASS-COUNTISS 20G 7H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-13,True
 4232945926,CASS-COUNTISS 20C 3H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-26,True
-4232945928,CASS-COUNTISS 20E 5H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-12-27,True
+4232945928,CASS-COUNTISS 20E 5H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2023-12-27,True
 4232945929,CASS-COUNTISS 20F 6H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-12-29,True
-4232945930,CASS-COUNTISS 20I 9H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-12-13,True
-4232945932,CASS-COUNTISS 20K 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-01-12,True
+4232945930,CASS-COUNTISS 20I 9H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2023-12-13,True
+4232945932,CASS-COUNTISS 20K 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2024-01-12,True
 4232945934,CASS-COUNTISS 20M 13H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-01-11,True
 4232945935,CASS-COUNTISS 20N 14H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-01-12,True
 4232945936,BUTTER CRUNCH J 4LS,Discovery Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-14,True
@@ -8306,7 +8306,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232945939,BUTTER CRUNCH K 3MS,Discovery Operating,42,MS,MS,keep,,member,MS,,,2023-10-05,True
 4232945941,BUTTER CRUNCH L 4MS,Discovery Operating,42,MS,MS,keep,,member,MS,,,2023-09-14,True
 4232945954,STEPHENS 6-31 H 182,Diamondback,42,JM,JM,keep,,member,JM,,,2023-12-04,True
-4232945956,FRANK 11B 102H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2023-10-12,False
+4232945956,FRANK 11B 102H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2023-10-12,False
 4232945958,FRANK 11D 104H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2023-10-11,False
 4232945959,FRANK 11E 105H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-10-13,False
 4232945961,FRANK 11G 107H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-10-17,False
@@ -8349,7 +8349,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946082,CASS-ERNEST E20L 12H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-10-29,True
 4232946083,CASS-ERNEST E20T 20H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-11-05,True
 4232946084,CASS-ERNEST E20U 21H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2023-11-04,True
-4232946085,CASS-ERNEST E20V 22H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2023-11-03,True
+4232946085,CASS-ERNEST E20V 22H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2023-11-03,True
 4232946086,CASS-ERNEST E20W 23H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2023-11-05,True
 4232946088,BRADFORD TRUST A UNIT 1 0341SH,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-03-27,True
 4232946090,TXL 9 UNIT 2 0438 0438SX,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-03-21,False
@@ -8383,14 +8383,14 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946179,HAPPY TRACKS T 4LS,Discovery Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2026-02-12,False
 4232946181,HAPPY TRACKS U 2MS,Discovery Operating,42,MS,MS,keep,,member,MS,,,2025-05-10,True
 4232946183,HAPPY TRACKS U 3LS,Discovery Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2026-02-25,False
-4232946186,LELA 7-18 B 121,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-05-20,True
+4232946186,LELA 7-18 B 121,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2024-05-20,True
 4232946187,LELA 7-18 C 132,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2024-05-20,True
 4232946189,LELA 18-7 A 111,Diamondback,42,MS,MS,keep,,member,MS,,,2024-05-03,True
 4232946190,LELA 18-7 A 113,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2024-05-03,True
 4232946194,LELA 7-18 C 131,Diamondback,42,MS,MS,keep,,member,MS,,,2024-05-20,True
 4232946195,LELA 7-18 D 142,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2024-05-20,True
 4232946196,LELA 7-18 D 244,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-05-20,True
-4232946200,LELA 18-7 A 112,Diamondback,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-05-03,True
+4232946200,LELA 18-7 A 112,Diamondback,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR suggest,member,JM,,,2024-05-03,True
 4232946204,ONEAL-ANNIE 15K 12H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-03-02,True
 4232946205,ONEAL-ANNIE 15M 14H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-03-06,True
 4232946207,ONEAL-ANNIE 15J 10H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-03-01,True
@@ -8427,11 +8427,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946271,DAVIDSON 42D 2HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2023-10-19,True
 4232946274,DAVIDSON 42C 5HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2023-10-31,True
 4232946275,DAVIDSON 42D 6HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2023-10-27,True
-4232946276,DAVIDSON 42E 7HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2023-10-26,True
+4232946276,DAVIDSON 42E 7HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2023-10-26,True
 4232946277,DAVIDSON 42E 8HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2023-10-26,True
 4232946284,GUY COWDEN UNIT 1 2575JH,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-05-18,True
 4232946287,GUY COWDEN UNIT 1 2573JH,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-05-15,True
-4232946289,GUY COWDEN UNIT 1 2571JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-05-22,True
+4232946289,GUY COWDEN UNIT 1 2571JH,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2024-05-22,True
 4232946293,STEPHENS 6-31 H1 181R,Diamondback,42,MS,MS,keep,,member,MS,,,2023-12-04,True
 4232946299,KENDRA PSA 3 201MS,Apache,42,MS,MS,keep,,member,MS,,,2023-12-07,True
 4232946301,KENDRA PSA 6 211SH,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2023-12-08,True
@@ -8490,7 +8490,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946420,RIO SAN JACINTO 38-43 UNIT 2 151,Diamondback,42,MS,MS,keep,,member,MS,,,2024-10-22,True
 4232946421,RIO SAN JACINTO 38-43 UNIT 2 153,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-09-01,True
 4232946422,RIO SAN JACINTO 38-43 UNIT 2 152,Diamondback,42,JM,JM,keep,,member,JM,,,2024-09-01,True
-4232946425,SHULL-MIDKIFF 15G 7H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-05-15,True
+4232946425,SHULL-MIDKIFF 15G 7H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2024-05-15,True
 4232946428,SHULL-MIDKIFF 15HH 108H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-05-17,True
 4232946429,SHULL-MIDKIFF 15I 9H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-05-14,True
 4232946431,SHULL-MIDKIFF 15J 10H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-05-15,True
@@ -8558,7 +8558,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946527,CRAWFORD-WELCHEST 27G 7H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-10-11,False
 4232946530,CRAWFORD-WELCHEST 27P 16H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-09-08,False
 4232946531,CRAWFORD-WELCHEST 27Q 17H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-09-08,False
-4232946533,CRAWFORD-WELCHEST 27E 5H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-10-07,False
+4232946533,CRAWFORD-WELCHEST 27E 5H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-10-07,False
 4232946535,CRAWFORD-WELCHEST 27I 9H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-10-10,False
 4232946536,CRAWFORD-WELCHEST 27J 10H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-10-10,False
 4232946537,CRAWFORD-WELCHEST 27L 12H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-10-12,False
@@ -8579,9 +8579,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946586,DONALD L HUTT FEE W20H 8H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-05-13,True
 4232946587,DONALD L HUTT FEE W20I 9H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-05-12,True
 4232946588,DONALD L HUTT FEE W20J 10H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-05-15,True
-4232946589,DONALD L HUTT FEE W20K 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-05-13,True
+4232946589,DONALD L HUTT FEE W20K 11H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-05-13,True
 4232946590,DONALD L HUTT FEE W20L 12H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-05-12,True
-4232946599,BROOKS-CRESPI 30K 11H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-10-03,True
+4232946599,BROOKS-CRESPI 30K 11H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-10-03,True
 4232946600,BROOKS-CRESPI 30A 1H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-09-29,True
 4232946601,BROOKS-CRESPI 30C 3H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-10-02,True
 4232946602,BROOKS-CRESPI 30D 4H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-09-30,True
@@ -8611,7 +8611,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946663,DONOVAN-WILLIS W32J 110H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-30,False
 4232946665,DONOVAN-WILLIS W32O 115H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-09,False
 4232946669,DONOVAN-WILLIS E32E 205H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-20,False
-4232946672,DONOVAN-WILLIS E32I 209H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-12-24,False
+4232946672,DONOVAN-WILLIS E32I 209H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-12-24,False
 4232946674,DONOVAN-WILLIS E32Q 217H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-07,False
 4232946676,DONOVAN-WILLIS E32S 219H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-07,False
 4232946678,DONOVAN-WILLIS E32C 203H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-12-20,False
@@ -8630,14 +8630,14 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946713,DONOVAN 2C 103H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-08,True
 4232946714,DONOVAN 2D 104H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-11-08,True
 4232946717,DONOVAN 2L 112H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-11,True
-4232946718,DONOVAN 2M 113H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-11-12,True
+4232946718,DONOVAN 2M 113H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-11-12,True
 4232946720,DONOVAN 2J 110H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-11-12,True
 4232946721,GUNS UP 2W 223H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-11-10,True
 4232946727,ERWIN-TODD 39B 2H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-07-30,False
 4232946728,ERWIN-TODD 39C 3H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-07-28,False
 4232946730,ERWIN-TODD 39E 5H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-08-10,False
 4232946732,ERWIN-TODD 39G 7H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-08-10,False
-4232946734,BUCHANAN W17B 2H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2024-10-11,True
+4232946734,BUCHANAN W17B 2H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2024-10-11,True
 4232946736,BUCHANAN W17D 4H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2024-10-10,True
 4232946737,BUCHANAN W17E 5H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2024-10-11,True
 4232946738,BUCHANAN C17F 6H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2024-10-04,True
@@ -8658,9 +8658,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946759,TIMMERMAN A2 413JH,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2024-10-10,True
 4232946778,STOUT-HUNTER 25E 205H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-03-07,False
 4232946779,STOUT-HUNTER 25F 206H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-03-06,False
-4232946780,STOUT-HUNTER 25G 207H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-07,False
+4232946780,STOUT-HUNTER 25G 207H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-03-07,False
 4232946781,STOUT-HUNTER 25H 208H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-03-06,False
-4232946782,STOUT-HUNTER 25I 209H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-07,False
+4232946782,STOUT-HUNTER 25I 209H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-03-07,False
 4232946783,RIO LAVACA 28-48 A 114,Diamondback,42,MS,MS,keep,,member,MS,,,2024-09-24,True
 4232946784,RIO SAN GABRIEL 28-29 UNIT 1 123,Diamondback,42,MS,MS,keep,,member,MS,,,2024-09-24,True
 4232946785,RIO LAVACA 28-48 B 124,Diamondback,42,JM,JM,keep,,member,JM,,,2024-09-24,True
@@ -8725,11 +8725,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232946943,SILVER BULLET 11HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-05-05,True
 4232946944,SILVER BULLET 20HS,Apache,42,MS,MS,keep,,member,MS,,,2025-05-05,True
 4232946945,SILVER BULLET 10HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-28,True
-4232946947,DWIGHT-MIDKIFF 25A 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-18,True
+4232946947,DWIGHT-MIDKIFF 25A 1H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2025-03-18,True
 4232946948,DWIGHT-MIDKIFF 25B 2H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-03-26,True
-4232946949,DWIGHT-MIDKIFF 25C 3H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-17,True
+4232946949,DWIGHT-MIDKIFF 25C 3H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2025-03-17,True
 4232946950,DWIGHT-MIDKIFF 25D 4H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-03-16,True
-4232946951,DWIGHT-MIDKIFF 25E 5H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-03-18,True
+4232946951,DWIGHT-MIDKIFF 25E 5H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2025-03-18,True
 4232946952,DWIGHT-MIDKIFF 25F 6H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-03-17,True
 4232946954,LELA 18-6 E 152,Diamondback,42,DEAN,DEAN,keep,,member,DEAN,,,2026-01-01,False
 4232946956,LELA 18-6 E 151,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-16,False
@@ -8766,18 +8766,18 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947019,FASKEN-STEPHENS 53L 12H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-06,True
 4232947020,FASKEN-STEPHENS 53K 11H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-04-07,True
 4232947023,HULK SMASH A 1JM,Petroplex Energy,42,JM,JM,keep,,member,JM,,,2025-02-17,True
-4232947025,FASKEN-STEPHENS 53A 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-04,True
+4232947025,FASKEN-STEPHENS 53A 1H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-04-04,True
 4232947026,HULK SMASH A 2DH,Petroplex Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2025-02-17,True
 4232947027,FASKEN-STEPHENS 53B 2H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-04-06,True
 4232947028,HULK SMASH B 3LS,Petroplex Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-18,True
 4232947032,HULK SMASH B 5JM,Petroplex Energy,42,JM,JM,keep,,member,JM,,,2025-02-17,True
-4232947033,FASKEN-STEPHENS 53FF 106H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-07,True
+4232947033,FASKEN-STEPHENS 53FF 106H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-04-07,True
 4232947037,HULK SMASH D 7JM,Petroplex Energy,42,JM,JM,keep,,member,JM,,,2025-02-17,True
 4232947038,FASKEN-STEPHENS 53G 7H,Exxon Mobil,42,DEAN,DEAN,keep,,member,DEAN,,,2025-04-09,True
 4232947039,FREDERICKSBURG G 11LM,Occidental,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-20,True
 4232947041,HULK SMASH D 8LS,Petroplex Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-17,True
 4232947043,HULK SMASH E 10MS,Petroplex Energy,42,MS,MS,keep,,member,MS,,,2025-02-17,True
-4232947048,FASKEN-EVANS 11C 3H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-06,False
+4232947048,FASKEN-EVANS 11C 3H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-04-06,False
 4232947049,FASKEN-EVANS 11D 4H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-04-07,False
 4232947050,FASKEN-EVANS 11E 5H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-08,False
 4232947052,FASKEN-EVANS 11G 7H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-23,False
@@ -8853,7 +8853,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947196,TXL 33 UNIT 2 4075JH,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-08-08,False
 4232947198,PRATT-VAUGHN 21A 101H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-04-27,True
 4232947200,PRATT-VAUGHN 21C 103H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-26,True
-4232947202,PRATT-VAUGHN 15I 109H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-05-07,True
+4232947202,PRATT-VAUGHN 15I 109H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR suggest,member,JM,,,2025-05-07,True
 4232947204,PRATT-VAUGHN 15K 111H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-05-07,True
 4232947208,PRATT-VAUGHN 21F 106H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-04-26,True
 4232947211,PRATT-VAUGHN 15N 114H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-05-02,True
@@ -8872,7 +8872,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947231,YELLOW BELLY 3HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-07,True
 4232947232,YELLOW BELLY 12HS,Apache,42,MS,MS,keep,,member,MS,,,2025-07-17,True
 4232947234,CHAPARRAL 110 MIPA UNIT H110LS,Permian Deep Rock,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-21,False
-4232947235,YELLOW BELLY 13HJ,Apache,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-17,True
+4232947235,YELLOW BELLY 13HJ,Apache,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2025-07-17,True
 4232947236,YELLOW BELLY 4HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-07,True
 4232947237,CHAPARRAL 110 MIPA UNIT H110SS,Permian Deep Rock,42,JM,JM,keep,,member,JM,,,2026-03-19,False
 4232947238,YELLOW BELLY 14HS,Apache,42,MS,MS,keep,,member,MS,,,2025-07-17,True
@@ -8890,7 +8890,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947271,SOA SCHARBAUER SE 2034US,Chevron,42,MS,MS,keep,,member,MS,,,2025-05-13,True
 4232947272,SOA SCHARBAUER SE 2035US,Chevron,42,MS,MS,keep,,member,MS,,,2025-05-14,True
 4232947273,SOA SCHARBAUER SE 2036US,Chevron,42,MS,MS,keep,,member,MS,,,2025-05-13,True
-4232947279,SHULL-HANKS 15F 206H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-30,True
+4232947279,SHULL-HANKS 15F 206H,Exxon Mobil,42,LSSH,LSSH,keep,"class LSSH->JM accepted, sql/23 concurs, but GOR says it produces like LSSH",member,LSSH,,,2025-04-30,True
 4232947280,SHULL-HANKS 15G 207H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-27,True
 4232947282,SHULL-HANKS 15J 210H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-05-15,True
 4232947283,SHULL-HANKS 15A 201H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-29,True
@@ -8901,12 +8901,12 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947290,DAVIDSON 42F 2HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-09,True
 4232947293,DAVIDSON 42F 5HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-03-11,True
 4232947294,DAVIDSON 42GG 6HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-03-10,True
-4232947295,DAVIDSON 42G 7HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2025-03-10,True
+4232947295,DAVIDSON 42G 7HF,Ovintiv,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2025-03-10,True
 4232947296,DAVIDSON 42X 8HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-03-10,True
 4232947298,TEXAS TEN-ONEAL 39H 209H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-06-06,False
-4232947300,TEXAS TEN-ONEAL 39I 210H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-06-06,False
+4232947300,TEXAS TEN-ONEAL 39I 210H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-06-06,False
 4232947301,TEXAS TEN-ONEAL 39O 215H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-06-05,False
-4232947304,TEXAS TEN-ONEAL 39Q 218H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-06-04,False
+4232947304,TEXAS TEN-ONEAL 39Q 218H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-06-04,False
 4232947307,ONEAL-DAVIS 15C 304H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-05-29,True
 4232947310,ERWIN-MURRAY 45L 112H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-09-27,False
 4232947311,ERWIN-MURRAY 45N 114H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-09-28,False
@@ -8916,7 +8916,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947321,BABB 25Q 17H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-04-04,True
 4232947322,BABB 25N 14H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-04-04,True
 4232947323,BABB 25O 15H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-04,True
-4232947324,BABB 25P 16H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-05,True
+4232947324,BABB 25P 16H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-04-05,True
 4232947326,TEX Q 302H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-15,False
 4232947327,TEX Q 301HU,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-04,False
 4232947328,TEX Q 101H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2025-08-05,False
@@ -8928,7 +8928,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947343,YELLOW BELLY 10HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-21,True
 4232947344,YELLOW BELLY 20HS,Apache,42,MS,MS,keep,,member,MS,,,2025-07-17,True
 4232947345,YELLOW BELLY 11HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-21,True
-4232947346,YELLOW BELLY 21HJ,Apache,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-17,True
+4232947346,YELLOW BELLY 21HJ,Apache,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-07-17,True
 4232947353,SHACKELFORD SPRABERRY UNIT 301H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-11,False
 4232947354,SHACKELFORD SPRABERRY UNIT 304H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-07-11,False
 4232947355,SHACKELFORD SPRABERRY UNIT 307H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-25,False
@@ -8981,7 +8981,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947474,TURNER C41A 1H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-06-13,False
 4232947477,TURNER C41D 4H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-13,False
 4232947479,TURNER E41B 2H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-06-22,False
-4232947481,TURNER E41D 4H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-06-22,False
+4232947481,TURNER E41D 4H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR suggest,member,JM,,,2025-06-22,False
 4232947482,TREDAWAY-ELKIN 21H 8H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-08-15,False
 4232947483,TREDAWAY-ELKIN 21I 9H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2025-08-16,False
 4232947484,TREDAWAY-ELKIN 21J 10H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-08-15,False
@@ -9076,7 +9076,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947667,OVERLORD 21-56 C 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-11-26,False
 4232947674,8 MILE A 1S,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-10,False
 4232947675,8 MILE C 3J,Crescent Energy,42,JM,JM,keep,,member,JM,,,2025-10-13,False
-4232947676,8 MILE F 6J,Crescent Energy,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-10-13,False
+4232947676,8 MILE F 6J,Crescent Energy,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2025-10-13,False
 4232947677,8 MILE J 9S,Crescent Energy,42,MS,MS,keep,,member,MS,,,2025-10-14,False
 4232947678,8 MILE K 10J,Crescent Energy,42,JM,JM,keep,,member,JM,,,2025-10-08,False
 4232947679,8 MILE N 13S,Crescent Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-10-08,False
@@ -9086,8 +9086,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947693,RIO CONCHO 35-46 UNIT 2 2LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-09,False
 4232947696,RIO CONCHO 35-46 UNIT 2 3JM,Diamondback,42,JM,JM,keep,,member,JM,,,2026-03-11,False
 4232947701,JCF-DAVIDSON 11E 5H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-12-30,False
-4232947704,JCF-DAVIDSON 11O 15H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-01-06,False
-4232947708,JCF-DAVIDSON 11S 19H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-01-06,False
+4232947704,JCF-DAVIDSON 11O 15H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2026-01-06,False
+4232947708,JCF-DAVIDSON 11S 19H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-01-06,False
 4232947718,JW F 446LS,Discovery Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2025-11-05,False
 4232947721,JW G 424MS,Discovery Operating,42,MS,MS,keep,,member,MS,,,2025-11-05,False
 4232947722,JW G 447LS,Discovery Operating,42,LSSH,LSSH,keep,,member,LSSH,,,2026-02-04,False
@@ -9098,10 +9098,10 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947739,JAVAID CENTRAL 40G 7H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2026-02-06,False
 4232947741,JAVAID CENTRAL 40I 9H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-02-06,False
 4232947742,JAVAID CENTRAL 40J 10H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-02-06,False
-4232947746,JAVAID CENTRAL 40A 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-02-25,False
+4232947746,JAVAID CENTRAL 40A 1H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2026-02-25,False
 4232947748,JAVAID CENTRAL 40C 3H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-02-25,False
 4232947749,JAVAID CENTRAL 40D 4H,Exxon Mobil,42,MS,MS,keep,,member,MS,,,2026-02-24,False
-4232947751,JAVAID CENTRAL 40F 6H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-02-24,False
+4232947751,JAVAID CENTRAL 40F 6H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2026-02-24,False
 4232947774,SPRABERRY DRIVER UNIT 304H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-10,False
 4232947782,ICEMAN 4HS,Apache,42,MS,MS,keep,,member,MS,,,2026-04-02,False
 4232947786,MAVERICK A U 2HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-04-06,False
@@ -9109,15 +9109,15 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947788,MIDNIGHT BOURBON EAST C 28HS,Apache,42,MS,MS,keep,,member,MS,,,2026-04-06,False
 4232947789,MIDNIGHT BOURBON EAST C 27HJ,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-04-13,False
 4232947790,MIDNIGHT BOURBON EAST C 16HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-04-07,False
-4232947795,PIGG-CRESPI 33M 113H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-03-22,False
+4232947795,PIGG-CRESPI 33M 113H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-03-22,False
 4232947801,MIDNIGHT BOURBON EAST A 13HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-08,False
 4232947802,MIDNIGHT BOURBON EAST A 24HS,Apache,42,MS,MS,keep,,member,MS,,,2026-05-01,False
 4232947803,MIDNIGHT BOURBON EAST B 14HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-08,False
 4232947804,MIDNIGHT BOURBON EAST B 15HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-04,False
 4232947805,MIDNIGHT BOURBON EAST B 25HJ,Apache,42,JM,JM,keep,,member,JM,,,2026-05-01,False
 4232947806,MIDNIGHT BOURBON EAST B 26HS,Apache,42,JM,JM,keep,,member,JM,,,2026-05-02,False
-4232947807,PIGG-CRESPI 33I 109H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-04-11,False
-4232947808,PIGG-CRESPI 33R 118H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-03-28,False
+4232947807,PIGG-CRESPI 33I 109H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-04-11,False
+4232947808,PIGG-CRESPI 33R 118H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-03-28,False
 4232947809,MASK HZ UNIT 1007LR,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-13,False
 4232947810,MIDNIGHT BOURBON EAST A 12HS,Apache,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-10,False
 4232947811,MIDNIGHT BOURBON EAST A 23HJ,Apache,42,JM,JM,keep,,member,JM,,,2026-06-08,False
@@ -9152,9 +9152,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4232947864,GBG HERCULES 37-16 E 2095US,Chevron,42,MS,MS,keep,,member,MS,,,2026-08-01,False
 4232947865,GBG HERCULES 37-16 F 2096US,Chevron,42,MS,MS,keep,,member,MS,,,2026-08-01,False
 4232947874,FRASER 7HJ,Apache,42,JM,JM,keep,,member,JM,,,2026-08-01,False
-4232947896,ALLEDER-WELCH 33P 216H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-04-11,False
-4232947899,ALLEDER-WELCH 33M 213H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-04-11,False
-4232947902,ALLEDER-WELCH 33I 209H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-05-11,False
+4232947896,ALLEDER-WELCH 33P 216H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-04-11,False
+4232947899,ALLEDER-WELCH 33M 213H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-04-11,False
+4232947902,ALLEDER-WELCH 33I 209H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-05-11,False
 4232947904,MAVERICK C 4HJ,Apache,42,JM,JM,keep,,member,JM,,,2026-04-01,False
 4232947905,REBECCA 37-5 B 4J,Crescent Energy,42,JM,JM,keep,,member,JM,,,2026-04-15,False
 4232947906,REBECCA 37-5 C 5MS,Crescent Energy,42,MS,MS,keep,,member,MS,,,2026-04-15,False
@@ -9207,7 +9207,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4233536061,SPHINX 8-17-32 H 3W,Bayswater,42,LSSH,LSSH,keep,,member,LSSH,,,2025-02-28,True
 4233536062,DELTA 7-18-31 H 2W,Bayswater,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-02,True
 4233536080,GOLDEN SAND 10-3 H 3W,Bayswater,42,DEAN,DEAN,keep,,member,DEAN,,,2025-10-01,False
-4233536082,KING MENES 6-73 H 4W,Bayswater,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2026-03-04,False
+4233536082,KING MENES 6-73 H 4W,Bayswater,42,LSSH,DEAN,reassign,card verdict AGREE (LSSH->DEAN),member,DEAN,,,2026-03-04,False
 4233536083,RAMESSES 6-73 H 1W,Bayswater,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-14,False
 4233536087,ENDLESS DUNE 10-3 H 1W,Bayswater,42,DEAN,DEAN,keep,,member,DEAN,,,2025-09-25,False
 4233536089,KING TUT 8-2-61 H 2W,Bayswater,42,DEAN,DEAN,keep,,member,DEAN,,,2026-05-01,False
@@ -9331,7 +9331,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246140806,CARLA EAST B 6223LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2018-12-04,True
 4246140812,ATKINS 23-14-A 2801H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-09-01,True
 4246140813,ATKINS 23-14-B 2804H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2018-09-01,True
-4246140827,MELINDA 251LA,Ovintiv,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-03-19,False
+4246140827,MELINDA 251LA,Ovintiv,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2019-03-19,False
 4246140861,POWELL 33A 1HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-10-21,True
 4246140864,POWELL 33A 4HF,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-10-20,True
 4246140867,POWELL 33B 7HE,Ovintiv,42,LSSH,LSSH,keep,,member,LSSH,,,2018-10-14,True
@@ -9375,11 +9375,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141032,XBC GIDDINGS ESTATE 1303H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2019-05-15,True
 4246141033,XBC GIDDINGS ESTATE 1306H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2019-05-03,True
 4246141035,XBC GIDDINGS ESTATE 1304H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2019-05-05,True
-4246141040,XBC GIDDINGS ESTATE 1403H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-06-15,True
+4246141040,XBC GIDDINGS ESTATE 1403H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2019-06-15,True
 4246141063,PEMBROOK UNIT 1426H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2020-01-17,True
 4246141064,PEMBROOK UNIT 1427H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2020-01-17,True
 4246141065,PEMBROOK UNIT 1428H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2019-10-01,True
-4246141066,PEMBROOK UNIT 1429H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2019-10-01,True
+4246141066,PEMBROOK UNIT 1429H,Exxon Mobil,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2019-10-01,True
 4246141088,CVX KATIE (SA) U 4444LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2020-03-11,True
 4246141089,CVX KATIE (SA) U 4443LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2020-03-09,True
 4246141090,CVX KATIE (SA) V 4421MS,SM Energy,42,MS,MS,keep,,member,MS,,,2020-03-16,True
@@ -9465,7 +9465,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246141553,PEMBROOK UNIT 320H,Exxon Mobil,42,JM,JM,keep,class JM->LSSH not calibrated; tag kept,member,JM,,,2021-07-01,True
 4246141554,PEMBROOK UNIT 321H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-07-01,True
 4246141555,DORCUS BRENDA KATHRYN (SA) D 4844LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2021-05-24,False
-4246141556,DORCUS BRENDA (SA) A 3745LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN not calibrated; tag kept,member,LSSH,,,2021-05-16,True
+4246141556,DORCUS BRENDA (SA) A 3745LS,SM Energy,42,LSSH,LSSH,keep,class LSSH->DEAN rejected (precision 0.40),member,LSSH,,,2021-05-16,True
 4246141557,PEMBROOK UNIT 501H,Exxon Mobil,42,JM,JM,keep,class JM->LSSH not calibrated; tag kept,member,JM,,,2021-06-25,True
 4246141558,PEMBROOK UNIT 502H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2021-06-25,True
 4246141559,DORCUS BRENDA (SA) A 3723MS,SM Energy,42,MS,MS,keep,,member,MS,,,2021-05-16,True
@@ -9737,7 +9737,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142682,CINDY 2413A 701H,FireBird Energy II,42,DEAN,DEAN,keep,,member,DEAN,,,2024-11-06,True
 4246142684,CINDY 2413A 101H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2024-11-04,True
 4246142685,CINDY 2413A 301H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-07,True
-4246142691,CINDY 2413A 201H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2024-11-09,True
+4246142691,CINDY 2413A 201H,FireBird Energy II,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2024-11-09,True
 4246142692,CINDY 2413A 302H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-10,True
 4246142694,SUSAN CR KIRA (SA) C 4641LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2024-10-22,False
 4246142696,SUSAN CR KIRA (SA) D 4621MS,SM Energy,42,MS,MS,keep,,member,MS,,,2024-10-22,False
@@ -9781,7 +9781,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142781,BONNIE 6 11MS,Summit Petroleum,42,MS,MS,keep,,member,MS,,,2025-10-23,False
 4246142782,BONNIE 7 13JM,Summit Petroleum,42,JM,JM,keep,,member,JM,,,2025-10-25,False
 4246142783,BONNIE 2 03MS,Summit Petroleum,42,MS,MS,keep,,member,MS,,,2025-09-19,False
-4246142784,BONNIE 9 17DN,Summit Petroleum,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-11-13,False
+4246142784,BONNIE 9 17DN,Summit Petroleum,42,DEAN,DEAN,keep,class DEAN->LSSH rejected (precision 0.30),member,DEAN,,,2025-11-13,False
 4246142785,JUDY JULIBETH B 1340LS,SM Energy,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-29,False
 4246142786,JUDY JULIBETH D 1320MS,SM Energy,42,MS,MS,keep,,member,MS,,,2025-04-12,False
 4246142787,JUDY JULIBETH D 1351DN,SM Energy,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-28,False
@@ -9799,7 +9799,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142811,BOSS EAST M 40-45 2613H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-13,True
 4246142813,BOSS EAST I 40-45 2809H,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2024-11-06,True
 4246142814,BOSS EAST I 40-45 2509H,Diamondback,42,JM,JM,keep,,member,JM,,,2024-11-05,True
-4246142818,BONNIE 13 25DN,Summit Petroleum,42,DEAN,DEAN,keep,class DEAN->LSSH not calibrated; tag kept,member,DEAN,,,2025-11-21,False
+4246142818,BONNIE 13 25DN,Summit Petroleum,42,DEAN,DEAN,keep,card verdict REJECT (DEAN->LSSH),member,DEAN,,,2025-11-21,False
 4246142819,BONNIE 14 27MS,Summit Petroleum,42,MS,MS,keep,,member,MS,,,2025-11-26,False
 4246142820,CRICKET TXL A1 901LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-17,False
 4246142821,CRICKET TXL A2 901MH,ConocoPhillips,42,MS,MS,keep,,member,MS,,,2025-03-17,False
@@ -9823,11 +9823,11 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142845,PEMBROOK UNIT 1714H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-04-16,False
 4246142847,HUMPERDINCK A 1452LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-01-25,True
 4246142851,HUMPERDINCK C 1451LS,Diamondback,42,LSSH,LSSH,keep,,member,LSSH,,,2025-01-28,True
-4246142860,BIG BERTHA 0310 A 104H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2025-03-26,True
+4246142860,BIG BERTHA 0310 A 104H,FireBird Energy II,42,JM,MS,reassign,card verdict AGREE (JM->MS),member,MS,,,2025-03-26,True
 4246142861,BIG BERTHA 0310 C 303H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-03-22,True
 4246142863,BIG BERTHA 0310 B 403H,FireBird Energy II,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-19,True
-4246142865,BIG BERTHA 0310 B 103H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2025-03-21,True
-4246142866,MAYRA 1705 B 201H,FireBird Energy II,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-04-22,True
+4246142865,BIG BERTHA 0310 B 103H,FireBird Energy II,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2025-03-21,True
+4246142866,MAYRA 1705 B 201H,FireBird Energy II,42,LSSH,LSSH,keep,class LSSH->JM accepted but sql/23 nearest (LSSH) does not concur,member,LSSH,,,2025-04-22,True
 4246142867,MAYRA 1705 A 301H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-24,True
 4246142869,MAYRA 1705 C 101H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2025-04-24,True
 4246142870,MAYRA 1705 C 302H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-04-22,True
@@ -9866,7 +9866,7 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142937,CINDY 2413A 102H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2025-11-21,False
 4246142939,CINDY 2413A 303H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2025-11-21,False
 4246142940,CINDY 2413A 403H,FireBird Energy II,42,DEAN,DEAN,keep,,member,DEAN,,,2025-11-26,False
-4246142942,CINDY 2413A 202H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2025-11-10,False
+4246142942,CINDY 2413A 202H,FireBird Energy II,42,JM,JM,keep,card verdict REJECT (JM->MS),member,JM,,,2025-11-10,False
 4246142961,HERBERT P 102B 203HG,Ovintiv,42,DEAN,DEAN,keep,,member,DEAN,,,2025-03-21,True
 4246142962,RWT BUFFALO BAYOU 16-4 1501US,Chevron,42,MS,MS,keep,,member,MS,,,2025-12-04,False
 4246142965,HERBERT P 102A 202HD,Ovintiv,42,JM,JM,keep,,member,JM,,,2025-03-21,True
@@ -9877,8 +9877,8 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246142979,BROOK N-13WA 201H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-07-03,True
 4246142980,PEMBROOK N-13L 212H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-06-19,True
 4246142982,PEMBROOK N-13O 215H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-06-23,True
-4246142986,BROOK N-13WF 206H,Exxon Mobil,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2025-07-06,True
-4246142989,DRILLY IDOL A7 5502JH,ConocoPhillips,42,LSSH,LSSH,keep,class LSSH->JM not calibrated; tag kept,member,LSSH,,,2026-02-02,False
+4246142986,BROOK N-13WF 206H,Exxon Mobil,42,LSSH,JM,reassign,card verdict AGREE (LSSH->JM),member,JM,,,2025-07-06,True
+4246142989,DRILLY IDOL A7 5502JH,ConocoPhillips,42,LSSH,JM,reassign,class LSSH->JM (precision 0.80) + sql/23 concurs + GOR none,member,JM,,,2026-02-02,False
 4246142991,DRILLY IDOL B1 5503LH,ConocoPhillips,42,LSSH,LSSH,keep,,member,LSSH,,,2025-12-15,False
 4246142993,DRILLY IDOL B3 5503JH,ConocoPhillips,42,JM,JM,keep,,member,JM,,,2025-12-15,False
 4246143002,PEMBROOK N-13I 209H,Exxon Mobil,42,JM,JM,keep,,member,JM,,,2025-06-19,True
@@ -9948,9 +9948,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246143227,ALLIE 15 29DN,Summit Petroleum,42,DEAN,DEAN,keep,,member,DEAN,,,2026-08-01,False
 4246143228,ALLIE 16 31MS,Summit Petroleum,42,MS,MS,keep,,member,MS,,,2026-08-01,False
 4246143233,VICTOR 24 1026H,FourPoint Energy,42,MS,MS,keep,,member,MS,,,2026-01-11,False
-4246143235,ELIZABETH 1201 D 202H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-03-12,False
+4246143235,ELIZABETH 1201 D 202H,FireBird Energy II,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2026-03-12,False
 4246143237,ELIZABETH 1201 A 101H,FireBird Energy II,42,MS,MS,keep,,member,MS,,,2026-03-19,False
-4246143247,ELIZABETH 1201 B 201H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-03-16,False
+4246143247,ELIZABETH 1201 B 201H,FireBird Energy II,42,JM,JM,keep,card verdict REJECT (JM->MS),member,JM,,,2026-03-16,False
 4246143248,ELIZABETH 1201 C 301H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-19,False
 4246143255,ELIZABETH 1201 F 302H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-03-15,False
 4246143256,ELIZABETH 1201 G 402H,FireBird Energy II,42,DEAN,DEAN,keep,,member,DEAN,,,2026-03-06,False
@@ -9966,9 +9966,9 @@ api10,well_name,operator,state_code,formation_blueox,box_bench,box_action,box_re
 4246143307,GIDDINGS-MORGAN 4B 2H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-15,False
 4246143309,GIDDINGS-MORGAN 4D 4H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-15,False
 4246143311,GIDDINGS-MORGAN 4F 6H,Exxon Mobil,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-15,False
-4246143316,TXL W 3542 A 101H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-06-24,False
+4246143316,TXL W 3542 A 101H,FireBird Energy II,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2026-06-24,False
 4246143317,TXL W 3542 F 302H,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-06-26,False
-4246143318,TXL W 3542 B 102H,FireBird Energy II,42,JM,JM,keep,class JM->MS not calibrated; tag kept,member,JM,,,2026-06-26,False
+4246143318,TXL W 3542 B 102H,FireBird Energy II,42,JM,JM,keep,class JM->MS rejected (precision 0.60),member,JM,,,2026-06-26,False
 4246143332,HANKS 01 D 201HU,FireBird Energy II,42,JM,JM,keep,,member,JM,,,2026-05-11,False
 4246143333,HANKS 01 E 602HU,FireBird Energy II,42,LSSH,LSSH,keep,,member,LSSH,,,2026-05-11,False
 4246143334,HANKS 01 G 202HU,FireBird Energy II,42,JM,JM,keep,,member,JM,,,2026-05-11,False
