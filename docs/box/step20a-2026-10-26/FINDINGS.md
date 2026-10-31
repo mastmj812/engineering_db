@@ -1,4 +1,4 @@
-# BOX step 20a: Midland Wolfcamp bench QC + extents. STORED 2026-10-30 (r3, §8.17); rest of gate 20a open
+# BOX step 20a: Midland Wolfcamp bench QC + extents. GATE 20a CLOSED 2026-10-30 (D141; stored records 36 / 37 / 38 / 39 / 42)
 
 **Scope (plan §5 step 20a, D128 / D131 / D134 A–B / D117):** Midland WCA_1, WCB_1, WCB_2, WCC, WCD. One extent per bench, no
 pooling (D128). The Delaware class rule of record applied as written; cards only for a swap class clearly unlike its Delaware
@@ -160,7 +160,7 @@ defect.
 
 ## 4. Gate 20a: your calls
 
-1. **Cards:** DONE 2026-10-26, applied in r2 (§7). Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
+1. **Cards:** DONE 2026-10-26, applied in r2 (§7). **Thresholds CONFIRMED as written 2026-10-30 = D141 (§8.21).** Verdicts on the 50 cards. Also confirm (or replace) the "unlike" thresholds, and say whether the borderline
    WCB_2 → WCB_1 class (TVD 0.66× against a 0.667 cut) needs cards at all. Then I regenerate any extent your verdicts move.
 2. **Pen loops:** DONE 2026-10-26 (WCD looped; WCC loop drawn then withdrawn, deck re-saved 21:16, WCC = r2 generated; the rest accepted as generated; §7). Loops for WCB_2, WCC and WCD (they fail one-body). For WCA_1 and WCB_1, accept them as generated or draw
    loops.
@@ -1380,6 +1380,80 @@ The stored records are kept: no location changes coverage. Re-storing WCB_2 woul
 
 **Still open at gate 20a:** the unlike-threshold confirm (§4 item 1), and the
 4246139575 loop-tip flag (§7).
+
+### 8.20 WCD loop extended to UNIVERSITY "3-19" 51H (MM 2026-10-30) → `r3/extents/edited_v2/`
+
+UNIVERSITY "3-19" 51H (4246139575; 2015-05, TVD 10,166 ft, warehouse tag OTHER, owner-benched WCD) runs N–S for 10,223
+ft. Only 38 % of it was inside the stored loop (record 41); the southern ~4,200 ft crossed its south edge at 31.254° N.
+
+**Extension:** the slide-5 loop ∪ the lateral buffered by the D23 pin radius r = 2,640 ft, the reach the extent rule gives
+a pinned well.
+- 3,371.00 → 3,372.61 sq mi (+1.61), still one part, with the well 100 % inside.
+- Undrilled WCD sticks inside (D117, ≥ 50 % of the stick): 3,598 → 3,600. Two PUDs come in (1551636 and 1563510) and none
+  leave.
+- Picture: `wcd_tip_v2.png`. Geometry: `extent_WCD_v2_edited.geojson`.
+
+**STORED 2026-10-30 (MM: "Go: store it"):** extent 42 = WCD record (edited v2, parent generated 40); 41 kept, `superseded_by` 42. Live check: one record per Midland bench (36 / 37 / 38 / 39 / 42); undrilled WCD inside 3,600 (3,524 PUD / 76 RES); 1551636 and 1563510 inside (100 % / 81 % of the stick). Command:
+`python -m scripts.box_family_extent_store --revise WCD docs/box/step20a-2026-10-26/r3/extents/edited_v2/extent_WCD_v2_edited.geojson --version 2 --parent-version 1 --basin midland`.
+- It writes edited v2 with generated v1 (extent 40) as its parent. That becomes the record and supersedes 41, which is
+  kept with `superseded_by` set.
+- Dry run 2026-10-30, read-only: clean; then stored on the go.
+- Code: `extent_store.store_edited` gains `parent_version` (a revised edit of the same generated extent), and the store
+  script gains `--revise`. It refuses unless the bench has exactly one record and no edited v2 yet.
+
+### 8.21 The "unlike" test (§1b, §4 item 1): what confirming or replacing it does
+
+**What it is.** D134 B carries the Delaware class rule to the Midland unchanged. Cards are drawn only for a swap class that
+behaves unlike its Delaware analogue. "Unlike" was a test I wrote before any card was drawn. A class qualifies with ≥ 20
+Midland and ≥ 10 Delaware flags, then needs any one of:
+- flag rate ≥ 2× or ≤ ½× the Delaware's;
+- sql/23 concurrence or GOR own-vote share ≥ 25 points apart;
+- median own-band TVD offset ≥ 1.5× or ≤ ⅔×.
+
+**How it did on the Wolfcamp.** Every class it called was settled the way it predicted.
+- All 5 "unlike" classes changed their Delaware standing once carded:
+  - WCA → WCB_1: rejected → accepted (0.70);
+  - WCB_1 → WCA: accepted → rejected (0.50);
+  - WCB_2 → WCB_1: uncalibrated → accepted (1.00);
+  - WCB_2 → WCC and WCC → WCB_2: uncalibrated → accepted (0.70).
+- The one "alike" class, WCB_1 → WCB_2, kept its standing (tag kept) when D139 carded it anyway (0.60).
+- Its one close call, WCB_2 → WCB_1 at a TVD ratio of 0.66 against a 0.667 cut, scored 10 / 10 and moves 104 wells.
+
+**Confirm vs replace changes nothing in the Midland Wolfcamp.** Every Wolfcamp class with ≥ 20 flags has now been carded,
+so cards decide each one, not the test. Replacing the thresholds would move no well, extent or stored record. The choice
+matters only for later steps:
+- **20b Spraberry.** The test needs a Delaware analogue: the same class name with ≥ 10 Delaware flags. The Delaware has no
+  Spraberry benches, so no Spraberry-internal class has one (LSSH → JM, LSSH ↔ DEAN, JM → MS). Classes reaching into the
+  Wolfcamp (LSSH → WCA, DEAN → WCA, WCA → DEAN) have none either, since DEAN and LSSH are Midland-only. Under any thresholds,
+  every Spraberry class falls to "no analogue → rule default, tag kept": nothing carded, nothing moved.
+  - On the 10-27 snapshot (before the overrides) that is 7 classes with ≥ 20 flags and 328 flags in all. LSSH → JM (133)
+    is the largest.
+- **Any later basin transfer** (Phase 4 or a re-run) would reuse the test as written.
+- **Replacing it** (looser or tighter cuts) would re-open D134 B's pre-registration. Done after the cards, it would be
+  tuned on the cards it was meant to predict.
+
+**Recommendation: confirm the test as written,** and record the 20b gap as the real decision at gate 20b, not here.
+Options for 20b:
+- (a) card every no-analogue Spraberry class with ≥ 20 flags (10 each; about 7 classes, roughly 70 cards on the old
+  snapshot);
+- (b) leave them "tag kept" and rely on the tag screen, warehouse-first.
+
+My lean is (a): "tag kept" by default means BOX QC does nothing for the Spraberry. The tag screen already corrected many
+DEAN / LSSH tags well by well.
+
+### 8.22 Gate 20a CLOSED (MM 2026-10-30): the unlike test confirmed as written = D141
+
+Stored and live: Midland `box.bench_scope` WCA_1 / WCB_1 / WCB_2 / WCC / WCD, records 36 / 37 / 38 / 39 / 42 (§8.17,
+§8.20). Every §4 ask is answered: D139, D140, D141, and ask 6 = D117, done in run 25 by its own session.
+
+**Carried forward (not gate-20a items, still open):**
+- the 4 seed removals ride the next override batch (§8.16);
+- the Discovery LS/SH operator × area call, and the OTHER → WCD Irion Canyon-sand and Diamondback copied-TVD subgroups
+  (§8.4);
+- the next-screen wells 1725H, 1717MS, 1724H and Mustang Draw 24NH (§8.13);
+- the no-analogue Spraberry classes, decided at gate 20b (§8.21).
+
+**Next:** step 20b, Spraberry (US / MS / JM / LSSH / DEAN), on Michael's go.
 
 
 ```
