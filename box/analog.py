@@ -333,6 +333,7 @@ class Rules:
 RECORD_RULES = Rules()
 LATERAL_RELAXED = "lateral relaxed (Cui translation)"
 LATERAL_TRANSLATED = "lateral translated (Cui, range)"
+CUI_DE_TWIN = lat_eff.CUI_DE_TWIN
 
 
 def _level_only(pool: dict[str, Any], cands: list[dict[str, Any]], min_months: int, post_peak: float) -> int:
@@ -457,7 +458,7 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
     if len(idx2) >= 3:
         m2 = _p50_months(idx2, pool2, k, basin)
         if m2:
-            mult = lateral_multiplier(float(loc2["lateral_ft"]), [pool2["lateral"][i] for i in idx2], ())
+            mult = lateral_multiplier(float(loc2["lateral_ft"]), [pool2["lateral"][i] for i in idx2], (), basin)
             out["box_v2"] = {s: m2[s] * mult for s in STREAMS}
     for name, (pool_key, rules) in (_STATE.get("variants16") or {}).items():  # step 16, pre-registered in box/step16.py
         p16 = _STATE[pool_key]
@@ -467,20 +468,23 @@ def predict_location_v2(loc: dict[str, Any]) -> dict[str, Any]:
             m16 = _p50_months(i16, p16, k, basin)
             if m16:
                 L16, lats16 = float(loc2["lateral_ft"]), [p16["lateral"][i] for i in i16]
-                mult16 = lateral_multiplier(L16, lats16, f16)
+                mult16 = lateral_multiplier(L16, lats16, f16, basin)
                 out[name] = {s: m16[s] * mult16 for s in STREAMS}
                 out[f"{name}_lat_ratio"] = L16 / float(np.mean(lats16))
                 if name in (_STATE.get("linear_twins") or ()):  # step 16 Cui-vs-linear check: same cohort, linear per-ft
                     out[f"{name}_lin"] = {s: m16[s] * L16 / 1000.0 for s in STREAMS}
+                    if basin != bsn.DELAWARE:  # step 21a revision 7: the Delaware panel as a twin of a non-Delaware run
+                        out[f"{name}{CUI_DE_TWIN}"] = {s: m16[s] * lateral_multiplier(L16, lats16, f16, bsn.DELAWARE) for s in STREAMS}
     return out
 
 
-def lateral_multiplier(lateral_ft: float, member_laterals: Sequence[float], flags: Sequence[str]) -> float:
+def lateral_multiplier(lateral_ft: float, member_laterals: Sequence[float], flags: Sequence[str], basin: str = BASIN) -> float:
     """box_v2's lateral scaling: the per-1,000-ft curve x L / 1,000, with the Cui & Cross translation (D50) when the location's
-    completed lateral is short or (step 16) its cohort came from the relaxed band or the translate rule."""
+    completed lateral is short or (step 16) its cohort came from the relaxed band or the translate rule. The translation uses
+    the basin's own panel of the paper (step 21a revision 7; the Delaware panel is the default and unchanged)."""
     L = float(lateral_ft)
     translate = L < SHORT_LAT_FT or LATERAL_RELAXED in flags or LATERAL_TRANSLATED in flags
-    return L / 1000.0 * (lat_eff.relative(L, member_laterals) if translate else 1.0)
+    return L / 1000.0 * (lat_eff.relative(L, member_laterals, basin=basin) if translate else 1.0)
 
 
 def predict_many_v2(locs: list[dict[str, Any]], pool: dict[str, Any], pool2: dict[str, Any], cutoff: dt.date, k: int,

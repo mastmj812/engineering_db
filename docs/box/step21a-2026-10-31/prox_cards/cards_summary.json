@@ -1,0 +1,17 @@
+{
+ "n": 46,
+ "seed": 20261031,
+ "by_why": {
+  "outcome: haircut": 10,
+  "outcome: no_forecast_precedent": 8,
+  "outcome: as_is_unexposed": 4,
+  "outcome: as_is_single_parent": 4,
+  "D143: DEAN loop addition via DEAN>mixed": 4,
+  "envelope edge: a parent within 150 ft (gap) / 60 ft (vertical) of a limit": 4,
+  "outcome: no_forecast_package": 3,
+  "bench label: outcome changes with the warehouse tag": 3,
+  "D143: DEAN loop addition, no precedent": 2,
+  "D143: DEAN generated body": 2,
+  "WCC: 46 % no precedent": 2
+ }
+}

@@ -305,7 +305,7 @@ def fit_location(loc: dict[str, Any]) -> dict[str, Any]:
     if not fits["oil"]:
         out["flags"].append("oil P50 fit failed")
         return out
-    mult = an.lateral_multiplier(float(loc["lateral_ft"]), [pool2["lateral"][i] for i in idx], flags)
+    mult = an.lateral_multiplier(float(loc["lateral_ft"]), [pool2["lateral"][i] for i in idx], flags, basin)
     out.update({"lateral_mult": mult, "analogs": _analog_rows(pool2, idx, loc, mode), "streams": {}})
     for s in STREAMS:
         if fits[s]:
