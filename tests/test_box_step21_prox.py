@@ -79,3 +79,18 @@ def test_every_existing_producer_is_a_parent_of_a_stick():
     out = sp.existing_as_parents(L)
     assert list(out["rel"]) == ["parent"] * 3 and list(out["rel_asof"]) == ["parent", "young", "codev"]
     assert list(L["rel"]) == ["parent", "young", "codev"]  # input untouched
+
+
+def test_spacing_floor_overrides_every_outcome():
+    # card 42: a WCB_1 stick 201 ft from a same-bench producer (revision 5)
+    L = pd.DataFrame({"child": ["42", "42", "far", "old"], "rel": ["parent", "parent", "parent", "parent"], "overlap": [0.94, 0.93, 0.9, 0.2],
+                      "cls": ["same", "same", "same", "same"], "dh_ft": [200.5, 694.0, 401.0, 50.0]})
+    near = sp.nearest_same_ft(L)
+    assert near.to_dict() == {"42": 200.5, "far": 401.0}  # < 30 % alongside never counts
+    cfg = pd.DataFrame([_cfg(3, 0, 0, flanked=True, bench="WCB_1"), _cfg(1, 0, 0, bench="WCB_1"), _cfg(1, 0, 0, bench="WCB_1")],
+                       index=["42", "far", "single"])
+    d = sp.decide_all(cfg, HAIR, {"WCB_1>same": {"multi": 125, "package": 58}}, {"WCB_1|both sides": {"multi": 42, "package": 0}},
+                      pd.Series({"42": 200.5, "far": 401.0, "single": 380.0}))
+    assert d.at["42", "outcome"] == "no_forecast_spacing" and d.at["single", "outcome"] == "no_forecast_spacing"
+    assert d.at["far", "outcome"] == "as_is_single_parent"
+    assert set(sp.NO_FORECAST) <= set(sp.OUTCOMES)

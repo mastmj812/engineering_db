@@ -347,7 +347,7 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
     def outcomes(links: pd.DataFrame, prec_: dict[str, dict[str, int]], prec_pat_: dict[str, dict[str, int]]) -> pd.DataFrame:
         cfg = pdz.configuration(ids, links.assign(permit=False)).set_index("api10")
         cfg["bench"] = p.set_index("location_id")["formation_blueox"].reindex(cfg.index)
-        return cfg.join(sp.decide_all(cfg, hair, prec_, prec_pat_))
+        return cfg.join(sp.decide_all(cfg, hair, prec_, prec_pat_, sp.nearest_same_ft(links)))
 
     d = outcomes(Lp, prec, prec_pat)
     s = s.drop(columns=["geom", "wkt"]).assign(location_id=s["stick_id"].astype(str)).merge(d.drop(columns="bench"), left_on="location_id", right_index=True, how="left")
@@ -389,12 +389,12 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
 
 def prox_tables(s: pd.DataFrame) -> dict[str, pd.DataFrame]:
     out = {}
-    nf = ["no_forecast_precedent", "no_forecast_package", "no_forecast_pattern"]
+    nf = list(sp.NO_FORECAST)
     t = pd.crosstab(s["group"], s["outcome"]).reindex(columns=list(sp.OUTCOMES), fill_value=0)
     t["sticks"] = t.sum(axis=1)
     t.loc["ALL"] = t.sum(numeric_only=True)
     t["no_forecast_pct"] = (100 * t[nf].sum(axis=1) / t["sticks"]).round(1)
-    t["multi_parent_pct"] = (100 * (t["haircut"] + t[nf].sum(axis=1)) / t["sticks"]).round(1)
+    t["multi_parent_pct"] = (100 * (t["haircut"] + t[nf[:3]].sum(axis=1)) / t["sticks"]).round(1)  # spacing-floor sticks may be single
     out["by_group"] = t.reset_index()
     cc = pd.crosstab(s["group"], s["config_class"].fillna("unexposed"))
     out["config"] = cc.reset_index()
@@ -432,7 +432,7 @@ def dean_png(geom: tuple[Any, Any, pd.DataFrame], s: pd.DataFrame, path: Path) -
     body, dg, dean = geom
     o = dict(zip(s["stick_id"], s["outcome"], strict=False))
     colors = {"as_is_unexposed": "#2a9d8f", "as_is_single_parent": "#8ab17d", "haircut": "#e9c46a", "no_forecast_precedent": "#e76f51",
-              "no_forecast_package": "#9b2226", "no_forecast_pattern": "#6d597a"}
+              "no_forecast_package": "#9b2226", "no_forecast_pattern": "#6d597a", "no_forecast_spacing": "#264653"}
     fig, ax = plt.subplots(figsize=(9, 9), dpi=110)
     for part in getattr(body, "geoms", [body]):
         x, y = part.exterior.xy
@@ -599,7 +599,8 @@ def render() -> str:
           "bench × neighbour class, or its bench for a mixed configuration; ≥ 30 packages where "
           "the factor ≤ 0.80) AND (b) ≥ 30 drilled Midland wells of its bench, also with 2+ neighbours, sit in the SAME neighbour "
           "pattern (same-bench on one side / both sides / none, + above, + below; its package count reported, not gated) — else "
-          "<b>no_forecast_pattern</b>. Single-neighbour sticks stay as-is. The DELAWARE D113 factor table is an interim stand-in "
+          "<b>no_forecast_pattern</b>. Revision 5: a stick with a same-bench producer ≤ 400 ft sideways (≥ 30 % alongside) gets no "
+          "forecast in any bench (<b>no_forecast_spacing</b>; 0.6 % of drilled Midland wells sit that close). Single-neighbour sticks stay as-is. The DELAWARE D113 factor table is an interim stand-in "
           "(it decides only whether the package tier applies). Sticks, not forecasts: no BOX volume exists yet.</p>"), _table(byg),
          *([("<h3>Revision 1: outcome as registered (rows) → after revision 1 (columns), sticks</h3>"), _table(rev1, max_rows=80)] if rev1 is not None else []),
          "<h3>Neighbour patterns of the multi-neighbour sticks, with their drilled-pattern precedent</h3>", _table(pats, max_rows=120),

@@ -14,6 +14,11 @@ close together and the tags can't be trusted to tell them apart):
                         its months on: by the time a BOX well is acquired, drilled and completed (>= 12 months), it is one
                         (Michael, card 8). The drilled-well side (precedents, factors, packages) keeps the >= 12-month parent
                         and the 180-day co-development window: that is what happened to the children measured.
+  spacing floor         (revision 5) a stick with a same-bench producer (by depth, above) <= 400 ft sideways and >= 30 %
+                        alongside gets NO forecast, in every bench, whatever else it would get. Drilled Midland wells sit that
+                        close to a same-bench parent 142 times in 24,729 (0.6 %): operators don't drill it ("they choose not to
+                        do that for a reason", Michael, card 42 — a WCB_1 stick 201 ft from a producer that slipped through
+                        reconciliation). Precedent and factor do not see distance; this floor does.
   tag-free precedent    (revision 3) D114's bench-pair key drops the neighbour's tag: `<bench>><class>` / `<bench>>mixed`.
                         The stick's own BOX bench still picks its curve, its precedent pool and its pattern key.
   neighbour pattern     a stick with 2+ neighbours is forecast only when >= 30 drilled Midland wells of ITS bench, also with 2+
@@ -39,7 +44,9 @@ from box import prox_study as ps
 
 SAME_DV_MAX_FT = 150.0
 PATTERN_FLOOR = pp.PRECEDENT_FLOOR
-OUTCOMES = (*pp.OUTCOMES, "no_forecast_pattern")
+SPACING_FLOOR_FT = 400.0
+OUTCOMES = (*pp.OUTCOMES, "no_forecast_pattern", "no_forecast_spacing")
+NO_FORECAST = ("no_forecast_precedent", "no_forecast_package", "no_forecast_pattern", "no_forecast_spacing")
 SIDES = ("none beside", "one side", "both sides")
 
 
@@ -56,6 +63,12 @@ def existing_as_parents(links: pd.DataFrame) -> pd.DataFrame:
     x["rel_asof"] = x["rel"]
     x["rel"] = "parent"
     return x
+
+
+def nearest_same_ft(links: pd.DataFrame) -> pd.Series:
+    """Per stick: sideways gap (ft) to its nearest counting same-bench producer (parent, >= 30 % alongside, same class)."""
+    q = links[(links["rel"] == "parent") & (links["overlap"] >= ps.MIN_OVERLAP) & (links["cls"] == "same")]
+    return q.groupby("child")["dh_ft"].min()
 
 
 def pair_key(cfg_class: str, bench: str, pb: str | None = None) -> str:
@@ -99,9 +112,10 @@ def pattern_precedent(children_cfg: pd.DataFrame, sib: pd.Series) -> dict[str, d
 
 
 def decide_all(cfg: pd.DataFrame, hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]],
-               prec_pattern: Mapping[str, Mapping[str, int]]) -> pd.DataFrame:
-    """box/prox_pud.decide_all (D114 on the tag-free key), then the pattern test on every multi-neighbour stick D114 still forecasts.
-    `cfg` = configuration rows + `bench`. Adds pattern, pattern_key, pattern_multi, pattern_package."""
+               prec_pattern: Mapping[str, Mapping[str, int]], near_same: pd.Series | None = None) -> pd.DataFrame:
+    """box/prox_pud.decide_all (D114 on the tag-free key), then the pattern test on every multi-neighbour stick D114 still forecasts,
+    then the spacing floor (`near_same` = nearest_same_ft of the stick links; None skips it). `cfg` = configuration rows + `bench`.
+    Adds pattern, pattern_key, pattern_multi, pattern_package, near_same_ft."""
     d = pp.decide_all(cfg, hair, prec, pair_key)
     pat = pattern(cfg)
     multi = is_multi(cfg)
@@ -115,4 +129,6 @@ def decide_all(cfg: pd.DataFrame, hair: Mapping[str, float], prec: Mapping[str, 
         rows.append({"pattern": pat[i], "pattern_key": k, "pattern_multi": p["multi"], "pattern_package": p["package"]})
     out = d.join(pd.DataFrame(rows, index=cfg.index))
     out.loc[(out["outcome"] == "haircut") & (out["pattern_multi"].fillna(0) < PATTERN_FLOOR), "outcome"] = "no_forecast_pattern"
+    out["near_same_ft"] = np.nan if near_same is None else near_same.reindex(cfg.index).to_numpy()
+    out.loc[out["near_same_ft"] <= SPACING_FLOOR_FT, "outcome"] = "no_forecast_spacing"
     return out

@@ -53,7 +53,8 @@ OUTCOME_TXT = {"as_is_unexposed": "forecast as-is (no depleting parent in an env
                "haircut": "forecast × proximity factor (multi-parent, precedent met)",
                "no_forecast_precedent": "NO FORECAST — < 30 drilled multi-parent wells of this bench pair (D114)",
                "no_forecast_package": "NO FORECAST — factor ≤ 0.80 and < 30 drilled packages (D114 tier 2)",
-               "no_forecast_pattern": "NO FORECAST — < 30 drilled Midland wells of this bench in the same neighbour pattern (revision 1)"}
+               "no_forecast_pattern": "NO FORECAST — < 30 drilled Midland wells of this bench in the same neighbour pattern (revision 1)",
+               "no_forecast_spacing": "NO FORECAST — a same-bench producer within 400 ft sideways (revision 5; operators almost never drill that close)"}
 
 
 def plus_bearing(az: float) -> float:
@@ -288,7 +289,7 @@ def main(argv: list[str] | None = None) -> int:
             ".card{border-top:2px solid #9ca3af;margin-top:24px} img{max-width:100%} table{display:block;overflow-x:auto;max-width:100%}</style></head><body>"
             f"<h1>BOX step 21a — Midland proximity examples ({len(rows)} cards, seed {a.seed})</h1>"
             f"<div class=meta>built {dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec='seconds')} · reference date {REF} · in-extent undrilled "
-            "sticks (D117; conflict sticks excluded, D145) · revisions 1-4 · a counting neighbour = any producer at the data date (revision 4), ≥ 30 % alongside, within 1,400 ft sideways, and "
+            "sticks (D117; conflict sticks excluded, D145) · revisions 1-5 · a counting neighbour = any producer at the data date (revision 4), ≥ 30 % alongside, within 1,400 ft sideways, and "
             "same bench (within 150 ft vertically, any tag), below (deeper, 150-800 ft) or above (shallower, 150-500 ft); permit TVDs counted, flagged · "
             "precedent = Midland drilled wells: D114 on bench × class (no neighbour tag) AND the same neighbour pattern, ≥ 30 each · "
             "factor = Delaware D113 table (INTERIM until 21b) · read-only</div>"

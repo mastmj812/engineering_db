@@ -14,7 +14,7 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 817 passed / 46 skipped; step-21 tests 25 passed (digest pinned at revision 4).
+- Tests: eng_db suite 818 passed / 46 skipped; step-21 tests 26 passed (digest pinned at revision 5).
 - **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
@@ -193,6 +193,10 @@ Cards changed: #2 (LSSH) and #4 (WCA_1) unexposed → single neighbour (still as
 
 Found while measuring (reported, nothing changed): 619 sticks have a same-bench producer ≤ 330 ft sideways and ≥ 50 % alongside (184 of them under 12 months on); 83 within 200 ft. Drilled wells sit that close to a same-bench neighbour 4.4 % (330 ft) / 1.4 % (200 ft) of the time — the 200-ft group looks like already-drilled slots the reconciliation missed.
 
+### 3.10 Revision 5 (Michael, 2026-11-01, card 42): no forecast within 400 ft of a same-bench producer
+
+Neither the precedent nor the factor sees distance. Drilled Midland wells with a same-bench (≤ 150 ft vertical) parent ≤ 400 ft sideways and ≥ 30 % alongside: 142 of 24,729 (0.6 %; ≤ 300 ft: 69). Sticks: 913 (≤ 300 ft: 529). All 913 now read `no_forecast_spacing`; **315 of them lose a forecast** (275 haircut, 40 single neighbour), the other 598 already had none (pattern 556, precedent 34, package 8). No forecast 3,417 → **3,732 (11.5 %)**; haircut 11,134; as-is 17,675. Spacing sticks by group: WCB_1 205, JM 199, WCA_1 195, LSSH 98, DEAN 81 (already no forecast; D143 shares unchanged at 65.9 / 80.0 %), MS 74, WCB_2 29, WCC 16, WCD 16. Card #42 → no forecast (Michael's reject); no other card moves.
+
 ## 4. Water reach (D107 / D133)
 
 Measured = `curated.water_data_quality` `measured`; reach = the 10th nearest measured-water producer (circle) from each
@@ -220,6 +224,7 @@ in-extent stick (`reach_water.csv`).
 1. **Proximity factor source — rec: Midland TUNING children only** (`PREREGISTRATION.md` §4). 1,884 multi-parent tuning children
    fill the class rungs; the holdout stays unread; the Delaware table is reported as a sensitivity. Alternative: carry the Delaware
    D113 table over unchanged (D134's "transfer, don't re-derive" read literally).
+   **Card evidence (Michael, 2026-11-01): the interim haircuts read TOO LIGHT** — cards #9 (0.748), #11 (0.940), #12 (0.856), #33 (0.777) and #45 (0.923): "I would expect the PUD to perform much worse than the haircut factor suggested." The table ignores distance (the Delaware single-pair dose for same pool: 0.80 / 0.86 / 0.90 / 0.98 at 0–400 / 400–800 / 800–1,400 / 1,400–2,000 ft, cum-24). 21b should fit the Midland table with a nearest-gap rung where ≥ 30 children support it, and report these five cards' factors before and after.
 2. **Proximity bench label — rec: BOX membership** (580 producers relabelled; 84 stick outcomes move). Alternative: warehouse tags,
    as the Delaware study read them.
 3. **Record-treatment rule (§5) — rec: confirm as written.** Expected: `mid_r2p_wf` WCA_1 / WCB_1 / LSSH / JM / MS (WCB_2
