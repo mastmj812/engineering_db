@@ -2,7 +2,9 @@
 (docs/box/step21a-2026-10-31/PREREGISTRATION.md, box/step21.DEFINITION digest 505439b9, frozen SHA 501d799).
 
     python -m scripts.box_step21b runs  --out runs/step21b [--lanes 3] [--workers 6] [--groups MID_WCA_1,MID_MS]
-    python -m scripts.box_step21b prox  --out runs/step21b            # drilled-child + stick proximity links (read-only, cached)
+    python -m scripts.box_step21b prox  --out runs/step21b            # 21a links -> configurations (DB-free; identity vs 21a)
+    python -m scripts.box_step21b water --out runs/step21b [--workers 14]   # §7 D107 water on the §10 views (read-only)
+    python -m scripts.box_step21b pad   --out runs/step21b [--workers 14]   # Pad C 233 named check (read-only; after `score`)
     python -m scripts.box_step21b score --out runs/step21b --docs docs/box/step21b-2026-11-01
 
 `runs`: PREREGISTRATION §10 exactly — one `scripts.box_acceptance --fold analog --bench MID_<bench> --step16 --wells
@@ -120,23 +122,125 @@ def cmd_runs(a: argparse.Namespace) -> int:
     return 0 if all(m["returncode"] == 0 for m in res) else 1
 
 
+# ----------------------------------------------------------------------------
+# prox (§4 inputs): the 21a links, unchanged
+# ----------------------------------------------------------------------------
+
+PROX_CACHE_21A = Path(".claude") / "worktrees" / "box-step21a" / "runs" / "step21a"  # relative to the main checkout
+
+
+def _cache_dir() -> Path:
+    """The 21a evidence run's link caches (git-ignored, built 2026-10-31 / 11-01 on the frozen pool; the revision-7 re-run read
+    them and changed 0 of 32,541 outcomes). 21b reads the same links so that the factor table is the only thing that moves."""
+    main = Path(_git("rev-parse", "--path-format=absolute", "--git-common-dir")).parent
+    return main / PROX_CACHE_21A
+
+
+def cmd_prox(a: argparse.Namespace) -> int:
+    import hashlib
+    import pickle
+
+    import pandas as pd
+
+    from box import prox_dose as pdz
+    from box import prox_pud as pp
+    from box import prox_pud_report as ppr
+    from box import step21_prox as sp
+
+    guard(need_idle=False)
+    src = _cache_dir()
+    files = {n: src / n for n in ("children.pkl", "links.pkl", "pud_links.pkl")}
+    digests = {n: hashlib.sha256(p.read_bytes()).hexdigest() for n, p in files.items()}
+    kids = pd.read_pickle(files["children.pkl"])
+    L = sp.by_depth(pd.read_pickle(files["links.pkl"]))
+    kc = pdz.configuration(list(kids["api10"]), L).merge(kids[["api10", "bench", "fp"]], on="api10", how="left").set_index("api10")
+    sib = pp.siblings(L)
+    kc_r = kc.reset_index()
+    prec, prec_pat = sp.precedent(kc_r, sib), sp.pattern_precedent(kc_r, sib)
+    sticks = pd.read_csv(st.DOCS / "sticks.csv.gz")
+    Lp = sp.existing_as_parents(sp.by_depth(pd.read_pickle(files["pud_links.pkl"])))
+    ids = [str(x) for x in sticks["stick_id"]]
+    cfg = pdz.configuration(ids, Lp.assign(permit=False)).set_index("api10")
+    cfg["bench"] = sticks.assign(location_id=sticks["stick_id"].astype(str)).set_index("location_id")["bench"].reindex(cfg.index)
+    near = sp.nearest_same_ft(Lp)
+    hair = pp.haircut_lookup(pd.read_csv(ppr.HAIRCUT_TABLE))
+    d = sp.decide_all(cfg, hair, prec, prec_pat, near)
+    # identity: the 21a revision-7 outcomes, re-derived from the same links with the interim (Delaware) table
+    was = sticks.set_index(sticks["stick_id"].astype(str))["outcome"].reindex(d.index)
+    diff = int((was != d["outcome"]).sum())
+    print(f"[prox] {len(kids):,} drilled children, {len(cfg):,} sticks; interim re-derivation vs 21a sticks.csv.gz: {diff} outcome differences", flush=True)
+    if diff:
+        raise SystemExit("the 21a stick outcomes do not reproduce from the cached links — stop")
+    out = {"kc": kc, "sib": sib, "prec": prec, "prec_pat": prec_pat, "cfg": cfg, "near_same": near, "interim": d,
+           "meta": {"cache_dir": str(src), "sha256": digests, "n_children": len(kids), "n_sticks": len(cfg), "identity_diffs": diff,
+                    "built_utc": dt.datetime.now(dt.UTC).isoformat(timespec="seconds")}}
+    with open(a.out / "prox.pkl", "wb") as fh:
+        pickle.dump(out, fh)
+    (a.out / "prox_meta.json").write_text(json.dumps(out["meta"], indent=2), encoding="utf-8")
+    print(f"[prox] wrote {a.out / 'prox.pkl'}", flush=True)
+    return 0
+
+
+def cmd_score(a: argparse.Namespace) -> int:
+    from etl.db import get_connection
+    from scripts import box_step21b_score as sc
+
+    guard(need_idle=False)
+    for g in a.groups or list(ORDER):
+        m = json.loads((a.out / g / "run.json").read_text(encoding="utf-8"))
+        if m.get("returncode") != 0 or not m["frozen_check"]["identical"] or not m.get("frozen_check_at_end", {}).get("identical"):
+            raise SystemExit(f"{g}: run not complete on the frozen files — not a score")
+    with get_connection() as conn:
+        res = sc.run_score(a.out, a.docs, a.groups, conn)
+    print(res["summary"].to_string())
+    print(json.dumps({k: res["meta"][k] for k in ("frozen_d99_sha256", "proof", "n_children_multi")}, indent=1, default=str))
+    return 0
+
+
+def cmd_water(a: argparse.Namespace) -> int:
+    from etl.db import get_connection
+    from scripts import box_step21b_water as bw
+
+    guard(need_idle=True)
+    with get_connection() as conn:
+        bw.run(conn, a.out, a.groups or list(ORDER), a.workers)
+    return 0
+
+
+def cmd_pad(a: argparse.Namespace) -> int:
+    import pandas as pd
+
+    from etl.db import get_connection
+    from scripts import box_step21b_pad as bp
+
+    guard(need_idle=True)
+    sm = pd.read_csv(a.docs / "sticks_midland_table.csv.gz")
+    with get_connection() as conn:
+        t = bp.run(conn, sm, a.workers)
+    t.to_csv(a.docs / "pad_c233.csv", index=False)
+    print(t.to_string())
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("runs", "prox", "score"):
+    for name in ("runs", "prox", "score", "water", "pad"):
         p = sub.add_parser(name)
         p.add_argument("--out", type=Path, default=Path("runs") / "step21b")
         p.add_argument("--groups", type=lambda v: [x.strip() for x in v.split(",") if x.strip()], default=None)
         if name == "runs":
             p.add_argument("--lanes", type=int, default=3)
             p.add_argument("--workers", type=int, default=6)
-        if name == "score":
+        if name in ("water", "pad"):
+            p.add_argument("--workers", type=int, default=14)
+        if name in ("score", "pad"):
             p.add_argument("--docs", type=Path, default=Path("docs") / "box" / "step21b-2026-11-01")
     a = ap.parse_args(argv)
     a.out.mkdir(parents=True, exist_ok=True)
     if a.cmd == "runs":
         return cmd_runs(a)
-    raise SystemExit(f"{a.cmd}: not written yet")
+    return {"prox": cmd_prox, "score": cmd_score, "water": cmd_water, "pad": cmd_pad}[a.cmd](a)
 
 
 if __name__ == "__main__":
