@@ -264,7 +264,7 @@ in-extent stick (`reach_water.csv`).
 2. **Proximity bench label — rec: BOX membership — ANSWERED yes (Michael 2026-11-01).** (580 producers relabelled; 84 stick outcomes move
    at registration; 818 / 87 at the revision-7 re-run, §3.12). Alternative: warehouse tags,
    as the Delaware study read them.
-3. **Record-treatment rule (§5) — rec: confirm as written.** Expected: `mid_r2p_wf` WCA_1 / WCB_1 / LSSH / JM / MS (WCB_2
+3. **Record-treatment rule (§5) — rec: confirm as written — ANSWERED yes (Michael 2026-11-01).** Expected: `mid_r2p_wf` WCA_1 / WCB_1 / LSSH / JM / MS (WCB_2
    marginal); `mid_r2p` DEAN / WCD; WCC provisional by construction.
 4. **Actuals pin 2026-08-01 — rec: confirm — ANSWERED yes (Michael 2026-11-01).**
 5. **Lateral translation on the Midland — ANSWERED (Michael 2026-11-01): Cui, on the paper's MIDLAND panel = revision 7.**
@@ -285,4 +285,5 @@ reported) — the pre-registration follows D134 C. Every Midland `box.bench_scop
 default) though no Midland tier exists; step 23 writes it from 21c. The 13d table-hash convention (§3).
 
 **Gate 21a** = your answers to 1–5 (6–7 inform), any revision committed with its row in the table, then the digest stamped and
-the SHA frozen in `PREREGISTRATION.md` §11.
+the SHA frozen in `PREREGISTRATION.md` §11. **CLOSED 2026-11-01:** answers 1–4 yes, 5 = revision 7; frozen SHA `501d799`, digest
+`505439b9` (plan D146, D147). Next: 21b on Michael's go.

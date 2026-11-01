@@ -189,8 +189,8 @@ Questions for Michael (`FINDINGS.md` §5 has the evidence and a recommendation f
 bench label, (3) the record-treatment rule as stated, (4) the actuals pin, (5) the lateral translation on the Midland (Cui as
 D129 / D134 C decided, or the linear-per-ft twin as record — the 21a evidence shows Midland per-ft oil flat within ~2 % to
 17,500 ft). **Answered 2026-11-01:** (1) yes, Midland tuning children; (2) yes, BOX membership; (4) yes, 2026-08-01; (5) Cui on
-the paper's Midland panel (revision 7); (3) open. Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
+the paper's Midland panel (revision 7); (3) yes, as written. **GATE 21a CLOSED 2026-11-01** (plan D146, D147). Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
 commit.
 
 **Definition digest (revision 7):** `505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900` (revision 6: `91ed9d26510d6de634a43019e121979e85f208f39cbcd54bff5e23b83419b85b`; revision 5: `415957a9dfedac55fbe062234143917b016961e40e4ca191673bd972d0a08776`; revision 4: `f1045738a6e785a54cdc4b9612cfe26053ea06b1a89a5aa3e2655db4d0d7f9a1`; revision 3: `f6c30aab5d70508c764ce3501e86d760ff7bdbd45d0c4175cce6234ab804849f`; revision 2: `ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5`; revision 1: `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9`; as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
-**Frozen SHA:** _stamped at the gate_.
+**Frozen SHA:** `501d79910b2537ee7579cbbc43352666fda2ef82` (commit 501d799, branch `claude/box-step21a-prereg`; definition digest revision 7 `505439b9`). A 21b / 21c run whose `box/`, `scripts/` or `dealintake/` files differ from this commit is not a score.
