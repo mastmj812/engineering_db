@@ -10,6 +10,10 @@ close together and the tags can't be trusted to tell them apart):
                         (800 ft below / 500 ft above). Applied to drilled wells and sticks alike. 150 ft sits between Michael's
                         reads (card 14: LSSH 89-98 ft above a DEAN = same; card 18: wells 217-232 ft above a WCB_1 = above);
                         drilled same-tag pairs: median 48 ft, p90 170 ft. (Revision 1 was same BOX bench AND <= 300 ft.)
+  existing = parent     (revision 4) on the STICK side every producer existing at the data date counts as a parent, whatever
+                        its months on: by the time a BOX well is acquired, drilled and completed (>= 12 months), it is one
+                        (Michael, card 8). The drilled-well side (precedents, factors, packages) keeps the >= 12-month parent
+                        and the 180-day co-development window: that is what happened to the children measured.
   tag-free precedent    (revision 3) D114's bench-pair key drops the neighbour's tag: `<bench>><class>` / `<bench>>mixed`.
                         The stick's own BOX bench still picks its curve, its precedent pool and its pattern key.
   neighbour pattern     a stick with 2+ neighbours is forecast only when >= 30 drilled Midland wells of ITS bench, also with 2+
@@ -43,6 +47,14 @@ def by_depth(links: pd.DataFrame, dv_max: float = SAME_DV_MAX_FT) -> pd.DataFram
     """Class every link by depth alone: same within `dv_max` vertically, else below (topfill, parent deeper: dz > 0) or above."""
     x = links.copy()
     x["cls"] = np.where(x["dv_ft"] <= dv_max, "same", np.where(x["dz_ft"] > 0, "topfill", "underfill"))
+    return x
+
+
+def existing_as_parents(links: pd.DataFrame) -> pd.DataFrame:
+    """Stick-side links: every producer counts as a parent (`rel` -> 'parent'); its age class today is kept in `rel_asof`."""
+    x = links.copy()
+    x["rel_asof"] = x["rel"]
+    x["rel"] = "parent"
     return x
 
 

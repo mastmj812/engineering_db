@@ -339,6 +339,8 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         Lp.to_pickle(lp)
     print(f"[prox] stick links {len(Lp):,} ({time.time() - t0:.0f} s)", flush=True)
     Lp = sp.by_depth(Lp)
+    recent = ppr.recent_flags(Lp)  # producers < 12 months on today, counted as parents from revision 4
+    Lp = sp.existing_as_parents(Lp)
     ids = list(p["location_id"])
     hair = pp.haircut_lookup(pd.read_csv(ppr.HAIRCUT_TABLE))
 
@@ -349,7 +351,7 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
 
     d = outcomes(Lp, prec, prec_pat)
     s = s.drop(columns=["geom", "wkt"]).assign(location_id=s["stick_id"].astype(str)).merge(d.drop(columns="bench"), left_on="location_id", right_index=True, how="left")
-    s["recent_producers"] = s["location_id"].map(ppr.recent_flags(Lp)).fillna(0).astype(int)
+    s["recent_producers"] = s["location_id"].map(recent).fillna(0).astype(int)
     s["permit_parents"] = s["location_id"].map(ppr.permit_flags(Lp)).fillna(0).astype(int)
 
     # sensitivity: the warehouse tag as the bench label (classes recomputed from the stored dz; shielding not re-stamped)
@@ -590,8 +592,8 @@ def render() -> str:
           f"child links {px['n_child_links']:,} · stick links {px['n_stick_links']:,} · BOX-membership relabels {px['box_bench_relabels']:,} · "
           f"bench pairs with precedent {px['n_precedent_pairs']:,} · bench × neighbour patterns {px.get('n_precedent_patterns', 0):,} · "
           f"same bench ≤ {px.get('same_dv_max_ft', 1000):,.0f} ft vertical · reference date {px['reference_date']}</div>"),
-         ("<p>Revisions 1-3 (Michael 2026-10-31 / 11-01, cards 13, 14, 18). A <b>neighbour</b> = a producer ≥ 12 months on, ≥ 30 % "
-          "alongside, within 1,400 ft sideways; <b>same bench</b> = within 150 ft vertically WHATEVER its tag; <b>below</b> = a deeper "
+         ("<p>Revisions 1-4 (Michael 2026-10-31 / 11-01, cards 13, 14, 18, 8). A <b>neighbour</b> of a stick = ANY producer at the "
+          "data date (revision 4; drilled-well precedents still use ≥ 12-month parents), ≥ 30 % alongside, within 1,400 ft sideways; <b>same bench</b> = within 150 ft vertically WHATEVER its tag; <b>below</b> = a deeper "
           "neighbour 150-800 ft down, <b>above</b> = a shallower one 150-500 ft up. A stick with 2+ "
           "neighbours is forecast only when BOTH (a) D114 holds on the tag-free key (≥ 30 drilled multi-parent wells of the stick's "
           "bench × neighbour class, or its bench for a mixed configuration; ≥ 30 packages where "

@@ -162,6 +162,7 @@ DEFINITION: dict[str, Any] = {
         "pair_metric": "D112 child-relative (box/prox_study): overlap share of the child, median gap over the shared span, "
                        "dz = parent TVD - child TVD",
         "depleting_parent_months": 12,
+        "depleting_parent_scope": "drilled children only (precedents, factors, packages); sticks: revision 4 (puds)",
         "envelopes_ft": {"same": [150.0, 1400.0], "topfill": [800.0, 1400.0], "underfill": [500.0, 1400.0]},
         "same_bench": "revision 3 (replaces revision 1's same tag AND <= 300 ft): DEPTH alone — a producer within 150 ft "
                       "vertically is same bench whatever its tag; farther off it is topfill when deeper, underfill when "
@@ -186,10 +187,12 @@ DEFINITION: dict[str, Any] = {
                                  "sides, flanked; + a parent above; + a parent below); else no forecast (no_forecast_pattern). "
                                  "The pattern's package count is reported, not gated (D114's own package tier still applies). "
                                  "Single-parent and unexposed PUDs unchanged (box/step21_prox.decide_all)"},
-        "delaware": "revisions 1 and 3 are Midland-only; the Delaware record keeps D114 / the tag classes / the 1,000-ft same cap until it is revised from "
+        "delaware": "revisions 1, 3 and 4 are Midland-only; the Delaware record keeps D114 / the tag classes / the 1,000-ft same cap until it is revised from "
                     "the Midland results (Michael 2026-10-31; D144 hold)",
-        "puds": "every producer >= 12 months at the data date counts; no shielding exemption (D115); permit-round TVDs counted, "
-                "flagged",
+        "puds": "revision 4: EVERY producer existing at the data date counts as a parent of a stick, whatever its months on "
+                "(box/step21_prox.existing_as_parents; assumes >= 12 months from the data date to a BOX well's first "
+                "production); drilled-but-not-producing wells are not counted; no shielding exemption (D115); permit-round "
+                "TVDs counted, flagged",
         "production": "derived from the Midland base run by scripts.box_prox_record (D116), configuration re-measured per run",
     },
     "haircut": {
@@ -259,7 +262,7 @@ DEFINITION: dict[str, Any] = {
     ],
 }
 
-DIGEST = "f6c30aab5d70508c764ce3501e86d760ff7bdbd45d0c4175cce6234ab804849f"  # revision 3 (2026-11-01, Michael, cards 14/18: same bench by depth <= 150 ft, tag-free D114 key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
+DIGEST = "f1045738a6e785a54cdc4b9612cfe26053ea06b1a89a5aa3e2655db4d0d7f9a1"  # revision 4 (2026-11-01, Michael, card 8: every existing producer is a stick's parent); r3 f6c30aab (depth <= 150 ft, tag-free key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
 
 
 def canonical() -> str:

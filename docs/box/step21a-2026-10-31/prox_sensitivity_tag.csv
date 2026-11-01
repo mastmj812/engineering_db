@@ -1,7 +1,7 @@
 outcome,as_is_single_parent,as_is_unexposed,haircut,no_forecast_package,no_forecast_pattern,no_forecast_precedent
-as_is_single_parent,3417,0,0,0,0,0
-as_is_unexposed,0,15579,0,0,0,0
-haircut,0,0,10782,0,0,0
-no_forecast_package,0,0,0,6,0,0
-no_forecast_pattern,0,0,0,0,2173,0
-no_forecast_precedent,0,0,0,0,0,584
+as_is_single_parent,3444,0,0,0,0,0
+as_is_unexposed,0,14271,0,0,0,0
+haircut,0,0,11409,0,0,0
+no_forecast_package,0,0,0,10,0,0
+no_forecast_pattern,0,0,0,0,2777,0
+no_forecast_precedent,0,0,0,0,0,630

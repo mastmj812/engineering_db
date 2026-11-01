@@ -210,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--resample", action="store_true", help="draw a fresh sample instead of re-rendering the as-registered cards")
     a = ap.parse_args(argv)
     s = pd.read_csv(st.DOCS / "sticks.csv.gz")
-    Lp = sp.by_depth(pd.read_pickle(RUNS / "pud_links.pkl"))
+    Lp = sp.existing_as_parents(sp.by_depth(pd.read_pickle(RUNS / "pud_links.pkl")))
     Lp["counts"] = counting(Lp)
     was = pd.read_csv(R0) if R0.exists() else None
     if was is None or a.resample:
@@ -259,7 +259,7 @@ def main(argv: list[str] | None = None) -> int:
             f"<td>{names.at[p.parent, 'operator'] if p.parent in names.index else ''}</td><td>{p.parent_bench}</td><td>{tag.get(p.parent, '')}</td>"
             f"<td>{fp.get(p.parent, '')}</td><td class=num>{(REF - fp[p.parent]).days // 30 if p.parent in fp else ''}</td><td>{PLAIN.get(p.cls, p.cls)}</td>"
             f"<td class=num>{p.dz_ft:+.0f}</td><td class=num>{p.dh_ft:.0f}</td><td class=num>{p.overlap:.0%}</td>"
-            f"<td>{('counts' + (' (permit TVD)' if p.permit else '')) if p.counts else ('young/codev' if p.rel != 'parent' else ('< 30 % alongside' if p.overlap < ps.MIN_OVERLAP else 'outside envelope'))}</td></tr>"
+            f"<td>{('counts' + (' (< 12 months today)' if p.rel_asof != 'parent' else '') + (' (permit TVD)' if p.permit else '')) if p.counts else ('young/codev' if p.rel != 'parent' else ('< 30 % alongside' if p.overlap < ps.MIN_OVERLAP else 'outside envelope'))}</td></tr>"
             for p in L.itertuples())
         prec = "" if pd.isna(r.pair_key) else f"D114 key <b>{r.pair_key}</b>: {int(r.prec_multi)} drilled multi-parent wells, {int(r.prec_package)} packages (floor 30)"
         if isinstance(r.pattern_key, str):
@@ -274,7 +274,7 @@ def main(argv: list[str] | None = None) -> int:
             f"<div class=meta>{r.why} · stick TVD {t:,.0f} ft · length {r.length_ft:,.0f} ft · Novi status {r.recon_status}{part}</div>"
             f"{was_txt}<p><b>{OUTCOME_TXT.get(r.outcome, r.outcome)}</b>. Counting neighbours: same bench {int(r.n_same)}, "
             f"below {int(r.n_topfill)}, above {int(r.n_underfill)}{fac}. {prec}. "
-            f"Warehouse-tag reading: {r.outcome_wh_tag}. Producers &lt; 12 months nearby: {int(r.recent_producers)}; permit-TVD parents: {int(r.permit_parents)}.</p>"
+            f"Warehouse-tag reading: {r.outcome_wh_tag}. Producers &lt; 12 months on today (counted as parents, revision 4): {int(r.recent_producers)}; permit-TVD parents: {int(r.permit_parents)}.</p>"
             f"<img src='data:image/png;base64,{png}' alt='card {n}'>"
             "<table><tr><th>api10</th><th>well</th><th>operator</th><th>BOX bench</th><th>tag</th><th>first prod</th><th>months on</th><th>where</th>"
             f"<th>dz ft (+ parent deeper)</th><th>gap ft</th><th>alongside</th><th>status</th></tr>{tab}</table>"
@@ -288,17 +288,28 @@ def main(argv: list[str] | None = None) -> int:
             ".card{border-top:2px solid #9ca3af;margin-top:24px} img{max-width:100%} table{display:block;overflow-x:auto;max-width:100%}</style></head><body>"
             f"<h1>BOX step 21a — Midland proximity examples ({len(rows)} cards, seed {a.seed})</h1>"
             f"<div class=meta>built {dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec='seconds')} · reference date {REF} · in-extent undrilled "
-            "sticks (D117; conflict sticks excluded, D145) · revisions 1-3 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
+            "sticks (D117; conflict sticks excluded, D145) · revisions 1-4 · a counting neighbour = any producer at the data date (revision 4), ≥ 30 % alongside, within 1,400 ft sideways, and "
             "same bench (within 150 ft vertically, any tag), below (deeper, 150-800 ft) or above (shallower, 150-500 ft); permit TVDs counted, flagged · "
             "precedent = Midland drilled wells: D114 on bench × class (no neighbour tag) AND the same neighbour pattern, ≥ 30 each · "
             "factor = Delaware D113 table (INTERIM until 21b) · read-only</div>"
             "<p>Verdicts go in <code>cards_sample.csv</code> (<b>accept</b> = the outcome feels right for this location; <b>reject</b> = it doesn't; "
             "a note on why helps). Open the api10s in anduin for the gunbarrel you normally draw.</p>")
     (OUT / "cards.html").write_text(head + "\n".join(cards) + "</body></html>", encoding="utf-8")
-    pd.DataFrame(rows).to_csv(OUT / "cards_sample.csv", index=False)
+    out = pd.DataFrame(rows)
+    cur = OUT / "cards_sample.csv"
+    if cur.exists():  # verdicts / notes already entered survive a re-render (matched by stick)
+        old = pd.read_csv(cur, dtype={"verdict": str, "note": str}).set_index("stick_id")
+        for c in ("verdict", "note"):
+            out[c] = out["stick_id"].map(old[c]).fillna("") if c in old else ""
+    try:
+        out.to_csv(cur, index=False)
+    except PermissionError:  # open in Excel while verdicts are being entered: never clobber it; re-run once it is closed
+        side = OUT / "cards_sample_rerender.csv"
+        out.to_csv(side, index=False)
+        print(f"[cards] {cur} is locked (open elsewhere) - wrote {side}; re-run after closing it to merge the verdicts")
     (OUT / "cards_summary.json").write_text(json.dumps({"n": len(rows), "seed": a.seed, "by_why": pd.DataFrame(rows)["why"].value_counts().to_dict()}, indent=1),
                                            encoding="utf-8")
-    print(pd.DataFrame(rows)[["card", "group", "why", "outcome_r0", "outcome", "pattern", "pattern_multi"]].to_string(index=False))
+    print(out[["card", "group", "why", "outcome_r0", "outcome", "pattern", "pattern_multi"]].to_string(index=False))
     return 0
 
 

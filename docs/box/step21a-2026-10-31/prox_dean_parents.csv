@@ -1,9 +1,9 @@
 part,config_class,as_is_single_parent,haircut,no_forecast_pattern,no_forecast_precedent
-addition,mixed,0,158,208,0
-addition,same,14,0,0,7
-addition,topfill,54,0,0,48
-addition,underfill,50,0,0,59
-body,mixed,0,12,26,0
-body,same,22,0,0,6
-body,topfill,21,0,0,6
+addition,mixed,0,179,259,0
+addition,same,19,0,0,7
+addition,topfill,47,0,0,38
+addition,underfill,49,0,0,53
+body,mixed,0,12,34,0
+body,same,25,0,0,14
+body,topfill,22,0,0,6
 body,underfill,5,0,0,2

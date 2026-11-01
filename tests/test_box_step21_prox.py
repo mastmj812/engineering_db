@@ -71,3 +71,11 @@ def test_never_forecasts_what_d114_refused_and_leaves_single_and_unexposed_alone
     d = sp.decide_all(cfg, HAIR, {"MS>mixed": {"multi": 5, "package": 5}}, big)
     assert list(d["outcome"]) == ["no_forecast_precedent", "as_is_single_parent", "as_is_unexposed"]
     assert pd.isna(d.at["single", "pattern_key"]) and pd.isna(d.at["none", "pattern"])
+
+
+def test_every_existing_producer_is_a_parent_of_a_stick():
+    # card 8: wells ~140 days on today are depleted parents by the time a BOX well is drilled (revision 4)
+    L = pd.DataFrame({"rel": ["parent", "young", "codev"], "cls": ["same"] * 3})
+    out = sp.existing_as_parents(L)
+    assert list(out["rel"]) == ["parent"] * 3 and list(out["rel_asof"]) == ["parent", "young", "codev"]
+    assert list(L["rel"]) == ["parent", "young", "codev"]  # input untouched
