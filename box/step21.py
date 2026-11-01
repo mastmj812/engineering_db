@@ -162,10 +162,11 @@ DEFINITION: dict[str, Any] = {
         "pair_metric": "D112 child-relative (box/prox_study): overlap share of the child, median gap over the shared span, "
                        "dz = parent TVD - child TVD",
         "depleting_parent_months": 12,
-        "envelopes_ft": {"same": [300.0, 1400.0], "topfill": [800.0, 1400.0], "underfill": [500.0, 1400.0]},
-        "same_bench": "revision 1: the child's bench (bench_label) AND <= 300 ft vertically; a same-bench producer farther off is "
-                      "classed by depth (topfill when deeper, underfill when shallower) and needs that envelope "
-                      "(box/step21_prox.reclass_same; drilled children and PUDs alike)",
+        "envelopes_ft": {"same": [150.0, 1400.0], "topfill": [800.0, 1400.0], "underfill": [500.0, 1400.0]},
+        "same_bench": "revision 3 (replaces revision 1's same tag AND <= 300 ft): DEPTH alone — a producer within 150 ft "
+                      "vertically is same bench whatever its tag; farther off it is topfill when deeper, underfill when "
+                      "shallower, and needs that envelope (box/step21_prox.by_depth; drilled children and PUDs alike, so "
+                      "co-developed package siblings follow it too)",
         "pools": "one per Midland bench (D128); no WCA-style pooling",
         "bench_label": "BOX membership (box_bench) for a producer in a Midland set of record, else its formation_blueox tag "
                        "(gate-21a question 2; the warehouse-tag reading is reported as a sensitivity)",
@@ -177,13 +178,15 @@ DEFINITION: dict[str, Any] = {
                                    "(gate-21a question 1; the Delaware D113 table is reported as a sensitivity)",
                          "gas_water": "untouched (D113)"},
         "precedent": {"multi_parent_floor": 30, "severe_factor": 0.80, "package_floor": 30,
-                      "counted_on": "Midland drilled children (first production >= 2016), the PUD's own bench pair (D114)",
+                      "counted_on": "Midland drilled children (first production >= 2016), the PUD's own bench x neighbour class, or its "
+                                    "bench for a mixed configuration (D114 key WITHOUT the neighbour's tag, revision 3; "
+                                    "box/step21_prox.pair_key)",
                       "pattern": "revision 1, ON TOP of D114 (both must hold): >= 30 drilled Midland children of the PUD's bench "
                                  "with 2+ parents in the SAME neighbour pattern (same-bench parents on none / one side / both "
                                  "sides, flanked; + a parent above; + a parent below); else no forecast (no_forecast_pattern). "
                                  "The pattern's package count is reported, not gated (D114's own package tier still applies). "
                                  "Single-parent and unexposed PUDs unchanged (box/step21_prox.decide_all)"},
-        "delaware": "revision 1 is Midland-only; the Delaware record keeps D114 / the 1,000-ft same cap until it is revised from "
+        "delaware": "revisions 1 and 3 are Midland-only; the Delaware record keeps D114 / the tag classes / the 1,000-ft same cap until it is revised from "
                     "the Midland results (Michael 2026-10-31; D144 hold)",
         "puds": "every producer >= 12 months at the data date counts; no shielding exemption (D115); permit-round TVDs counted, "
                 "flagged",
@@ -256,7 +259,7 @@ DEFINITION: dict[str, Any] = {
     ],
 }
 
-DIGEST = "ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5"  # revision 2 (2026-11-01, Michael: conflict sticks not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
+DIGEST = "f6c30aab5d70508c764ce3501e86d760ff7bdbd45d0c4175cce6234ab804849f"  # revision 3 (2026-11-01, Michael, cards 14/18: same bench by depth <= 150 ft, tag-free D114 key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
 
 
 def canonical() -> str:

@@ -15,7 +15,7 @@ The PUD is a "child" whose first production is the reference date, so the step-1
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import asdict, replace
 from typing import Any
 
@@ -56,7 +56,7 @@ def pair_key(cfg_class: str, bench: str, pb: str | None) -> str:
     return f"{ps.pool(bench)}>mixed" if cfg_class == "mixed" else f"{ps.pool(bench)}>{cfg_class}>{ps.pool(pb)}"
 
 
-def precedent(children_cfg: pd.DataFrame, sib: pd.Series) -> dict[str, dict[str, int]]:
+def precedent(children_cfg: pd.DataFrame, sib: pd.Series, key: Callable[[str, str, str | None], str] = pair_key) -> dict[str, dict[str, int]]:
     """Per bench-pair key: drilled multi-parent wells and, of those, packages (>= 2 siblings). `children_cfg` =
     prox_dose.configuration for every drilled child + its `bench`."""
     out: dict[str, dict[str, int]] = {}
@@ -66,8 +66,8 @@ def precedent(children_cfg: pd.DataFrame, sib: pd.Series) -> dict[str, dict[str,
             continue
         if cc != "mixed" and int(r[f"n_{cc}"]) < 2:
             continue
-        key = pair_key(cc, r["bench"], None if cc == "mixed" else r[f"pb_{cc}"])
-        d = out.setdefault(key, {"multi": 0, "package": 0})
+        k = key(cc, r["bench"], None if cc == "mixed" else r[f"pb_{cc}"])
+        d = out.setdefault(k, {"multi": 0, "package": 0})
         d["multi"] += 1
         d["package"] += int(sib.get(r["api10"], 0) >= 2)
     return out
@@ -78,8 +78,9 @@ def haircut_lookup(table: pd.DataFrame) -> dict[str, float]:
     return {f"{r.rung}:{r.key}": float(r.factor) for r in t.itertuples()}
 
 
-def decide(r: Mapping[str, Any], hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]]) -> dict[str, Any]:
-    """One PUD's outcome from its configuration row (prox_dose.configuration + bench)."""
+def decide(r: Mapping[str, Any], hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]],
+           pkey: Callable[[str, str, str | None], str] = pair_key) -> dict[str, Any]:
+    """One PUD's outcome from its configuration row (prox_dose.configuration + bench). `pkey` = the precedent key (default D114's)."""
     cc = r["config_class"]
     if not isinstance(cc, str):
         return {"outcome": "as_is_unexposed", "factor": 1.0, "haircut_key": None, "pair_key": None, "prec_multi": None, "prec_package": None}
@@ -89,12 +90,12 @@ def decide(r: Mapping[str, Any], hair: Mapping[str, float], prec: Mapping[str, M
         t = int(r["n_parents_total"])
         nb = "4+" if t >= 4 else str(t)
         ladder = [f"k2:mixed|{nb}", f"k3:mixed|{nb}", "k4:mixed"]
-        pk = pair_key(cc, r["bench"], None)
+        pk = pkey(cc, r["bench"], None)
     else:
         n = pdz.npar_bin(int(r[f"n_{cc}"]))
         fl = "F" if bool(r[f"flanked_{cc}"]) else "S"
         ladder = [f"k2:{cc}|{n}|{fl}", f"k3:{cc}|{n}", f"k4:{cc}"]
-        pk = pair_key(cc, r["bench"], r[f"pb_{cc}"])
+        pk = pkey(cc, r["bench"], r[f"pb_{cc}"])
     key = next(k for k in ladder if k in hair)
     f = hair[key]
     p = prec.get(pk, {"multi": 0, "package": 0})
@@ -107,8 +108,9 @@ def decide(r: Mapping[str, Any], hair: Mapping[str, float], prec: Mapping[str, M
     return {"outcome": out, "factor": f, "haircut_key": key, "pair_key": pk, "prec_multi": p["multi"], "prec_package": p["package"]}
 
 
-def decide_all(cfg: pd.DataFrame, hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]]) -> pd.DataFrame:
-    rows = [decide(r, hair, prec) for _, r in cfg.iterrows()]
+def decide_all(cfg: pd.DataFrame, hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]],
+               pkey: Callable[[str, str, str | None], str] = pair_key) -> pd.DataFrame:
+    rows = [decide(r, hair, prec, pkey) for _, r in cfg.iterrows()]
     return pd.DataFrame(rows, index=cfg.index)
 
 

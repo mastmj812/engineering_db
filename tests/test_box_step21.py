@@ -71,7 +71,7 @@ def test_folds_holdout_grain_match_the_harness():
 def test_proximity_constants_are_the_delaware_ones_but_the_same_bench_cap():
     p = st.DEFINITION["proximity"]
     env = {k: tuple(v) for k, v in p["envelopes_ft"].items()}
-    # revision 1: same bench <= 300 ft vertically (step21_prox.reclass_same, applied before prox_dose.configuration)
+    # revision 3: same bench = within 150 ft vertically, any tag (step21_prox.by_depth, applied before prox_dose.configuration)
     assert env == {**pdz.ENVELOPE, "same": (sp.SAME_DV_MAX_FT, pdz.ENVELOPE["same"][1])}
     assert sp.SAME_DV_MAX_FT < pdz.ENVELOPE["same"][0]  # the cap binds before the shared envelope does
     assert (p["precedent"]["multi_parent_floor"], p["precedent"]["severe_factor"]) == (pp.PRECEDENT_FLOOR, pp.SEVERE)

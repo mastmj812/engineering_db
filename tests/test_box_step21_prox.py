@@ -1,4 +1,4 @@
-"""Step 21a revision 1: the Midland same-bench depth cap and the neighbour-pattern precedent (DB-free)."""
+"""Step 21a revisions 1 + 3: same bench by depth, the tag-free D114 key and the neighbour-pattern precedent (DB-free)."""
 
 import pandas as pd
 
@@ -16,11 +16,21 @@ def _cfg(n_same=0, n_top=0, n_under=0, flanked=False, bench="MS", pb_top="JM", p
             "pb_same": bench if n_same else None, "pb_topfill": pb_top if n_top else None, "pb_underfill": pb_under if n_under else None}
 
 
-def test_same_tag_beyond_300_ft_is_classed_by_depth():
-    L = pd.DataFrame({"cls": ["same", "same", "same", "topfill"], "dv_ft": [300.0, 301.0, 450.0, 120.0], "dz_ft": [-300.0, 301.0, -450.0, 120.0]})
-    out = sp.reclass_same(L)
-    assert list(out["cls"]) == ["same", "topfill", "underfill", "topfill"]  # + dz = parent deeper = below the stick
-    assert list(L["cls"]) == ["same", "same", "same", "topfill"]  # input untouched
+def test_class_is_depth_not_tag():
+    # card 14: LSSH-tagged wells 98 / 89 ft above a DEAN stick are same bench; card 18: a WCB_1-tagged well 217 ft above a WCB_1 is above
+    L = pd.DataFrame({"cls": ["underfill", "underfill", "same", "same", "topfill"], "dv_ft": [98.0, 150.0, 217.0, 151.0, 120.0],
+                      "dz_ft": [-98.0, 150.0, -217.0, 151.0, 120.0]})
+    out = sp.by_depth(L)
+    assert list(out["cls"]) == ["same", "same", "underfill", "topfill", "same"]  # + dz = parent deeper = below the stick
+    assert list(L["cls"]) == ["underfill", "underfill", "same", "same", "topfill"]  # input untouched
+
+
+def test_d114_key_drops_the_neighbour_tag():
+    assert sp.pair_key("topfill", "JM", "WCB_1") == sp.pair_key("topfill", "JM", "WCA_1") == "JM>topfill"
+    assert sp.pair_key("mixed", "WCA_1", None) == pp.pair_key("mixed", "WCA_1", None) == "WCA>mixed"
+    kids = pd.DataFrame([_cfg(0, 2, 0, api10="a", pb_top="WCB_1"), _cfg(0, 2, 0, api10="b", pb_top="WCA_1")])
+    assert sp.precedent(kids, pd.Series(dtype=float)) == {"MS>topfill": {"multi": 2, "package": 0}}
+    assert set(pp.precedent(kids, pd.Series(dtype=float))) == {"MS>topfill>WCB_1", "MS>topfill>WCA"}  # Delaware path unchanged
 
 
 def test_pattern_labels():

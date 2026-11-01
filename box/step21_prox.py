@@ -1,13 +1,17 @@
 """BOX step 21a revision 1 — the Midland proximity rules (pure, no DB). The Delaware record (run 19) keeps box/prox_pud as is
 (D144: the Delaware is revised later from what the Midland teaches; Michael 2026-10-31).
 
-Two rules on top of D112-D116, from Michael's card-13 review (an MS stick between two producing MS wells, a JM 120 ft below and a
-US above — "a stick that will never be drilled, and shouldn't be forecasted"):
+Rules on top of D112-D116, from Michael's card reviews (card 13: an MS stick between two producing MS wells, a JM 120 ft below
+and a US above — "a stick that will never be drilled, and shouldn't be forecasted"; cards 14 / 18: DEAN, LSSH and WCA_1 land
+close together and the tags can't be trusted to tell them apart):
 
-  same-bench depth cap  a neighbour is SAME bench only when it carries the stick's BOX bench AND sits within 300 ft vertically;
-                        a same-tag well farther off is classed by its depth — below (topfill) when deeper, above (underfill)
-                        when shallower — and then needs that class's envelope (800 ft below / 500 ft above). The 1,000-ft
-                        same-bench cap was a leftover of the exposure screen (drilled same-tag pairs: median 48 ft, p99 334 ft).
+  same bench by DEPTH   (revision 3) a neighbour within 150 ft vertically is SAME bench whatever its tag; farther off it is
+                        below (topfill) when deeper or above (underfill) when shallower, and needs that class's envelope
+                        (800 ft below / 500 ft above). Applied to drilled wells and sticks alike. 150 ft sits between Michael's
+                        reads (card 14: LSSH 89-98 ft above a DEAN = same; card 18: wells 217-232 ft above a WCB_1 = above);
+                        drilled same-tag pairs: median 48 ft, p90 170 ft. (Revision 1 was same BOX bench AND <= 300 ft.)
+  tag-free precedent    (revision 3) D114's bench-pair key drops the neighbour's tag: `<bench>><class>` / `<bench>>mixed`.
+                        The stick's own BOX bench still picks its curve, its precedent pool and its pattern key.
   neighbour pattern     a stick with 2+ neighbours is forecast only when >= 30 drilled Midland wells of ITS bench, also with 2+
                         neighbours, were drilled into the SAME pattern: same-bench neighbours on one side / both sides / none,
                         plus whether a neighbour sits above and whether one sits below. Added ON TOP of D114 (the bench-pair
@@ -29,18 +33,27 @@ import pandas as pd
 from box import prox_pud as pp
 from box import prox_study as ps
 
-SAME_DV_MAX_FT = 300.0
+SAME_DV_MAX_FT = 150.0
 PATTERN_FLOOR = pp.PRECEDENT_FLOOR
 OUTCOMES = (*pp.OUTCOMES, "no_forecast_pattern")
 SIDES = ("none beside", "one side", "both sides")
 
 
-def reclass_same(links: pd.DataFrame, dv_max: float = SAME_DV_MAX_FT) -> pd.DataFrame:
-    """Same-tag links more than `dv_max` apart vertically become below (topfill, parent deeper: dz > 0) or above (underfill)."""
+def by_depth(links: pd.DataFrame, dv_max: float = SAME_DV_MAX_FT) -> pd.DataFrame:
+    """Class every link by depth alone: same within `dv_max` vertically, else below (topfill, parent deeper: dz > 0) or above."""
     x = links.copy()
-    far = (x["cls"] == "same") & (x["dv_ft"] > dv_max)
-    x.loc[far, "cls"] = np.where(x.loc[far, "dz_ft"] > 0, "topfill", "underfill")
+    x["cls"] = np.where(x["dv_ft"] <= dv_max, "same", np.where(x["dz_ft"] > 0, "topfill", "underfill"))
     return x
+
+
+def pair_key(cfg_class: str, bench: str, pb: str | None = None) -> str:
+    """D114's key without the neighbour's tag (`pb` ignored): the stick's bench x class, or its bench for a mixed configuration."""
+    return f"{ps.pool(bench)}>{cfg_class}"
+
+
+def precedent(children_cfg: pd.DataFrame, sib: pd.Series) -> dict[str, dict[str, int]]:
+    """box/prox_pud.precedent (D114 counts and package tier) on the tag-free key."""
+    return pp.precedent(children_cfg, sib, key=pair_key)
 
 
 def is_multi(cfg: pd.DataFrame) -> pd.Series:
@@ -75,9 +88,9 @@ def pattern_precedent(children_cfg: pd.DataFrame, sib: pd.Series) -> dict[str, d
 
 def decide_all(cfg: pd.DataFrame, hair: Mapping[str, float], prec: Mapping[str, Mapping[str, int]],
                prec_pattern: Mapping[str, Mapping[str, int]]) -> pd.DataFrame:
-    """box/prox_pud.decide_all (D114, unchanged), then the pattern test on every multi-neighbour stick D114 still forecasts.
+    """box/prox_pud.decide_all (D114 on the tag-free key), then the pattern test on every multi-neighbour stick D114 still forecasts.
     `cfg` = configuration rows + `bench`. Adds pattern, pattern_key, pattern_multi, pattern_package."""
-    d = pp.decide_all(cfg, hair, prec)
+    d = pp.decide_all(cfg, hair, prec, pair_key)
     pat = pattern(cfg)
     multi = is_multi(cfg)
     rows: list[dict[str, Any]] = []

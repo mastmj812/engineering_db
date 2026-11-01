@@ -13,7 +13,7 @@ Counting parent = >= 12 months on production at the reference date, >= 30 % alon
 TVD is counted and flagged (D115; box/prox_pud_report passes permit=False to configuration, no shielding exemption).
 Writes prox_cards/cards.html + cards_sample.csv (verdict column for accept / reject). Revision 1: by default the cards are the SAME
 sticks as the as-registered set (prox_cards/cards_sample_r0.csv), each showing its outcome as registered and after revision 1;
---resample draws a fresh seeded sample instead. Links are re-classed by box/step21_prox.reclass_same (same bench <= 300 ft).
+--resample draws a fresh seeded sample instead. Links are re-classed by box/step21_prox.by_depth (same bench = within 150 ft vertically, any tag).
 """
 
 from __future__ import annotations
@@ -144,7 +144,7 @@ def card_png(stick: Any, tvd: float, links: pd.DataFrame, geoms: dict[str, Any],
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.6), dpi=100, gridspec_kw={"width_ratios": [1.35, 1]})
     # strike section
     ax1.axhspan(tvd - 1_100, tvd + 1_100, color="none")
-    same = (sp.SAME_DV_MAX_FT, pdz.ENVELOPE["same"][1])  # revision 1: same bench <= 300 ft vertically
+    same = (sp.SAME_DV_MAX_FT, pdz.ENVELOPE["same"][1])  # revision 3: same bench = within 150 ft vertically, any tag
     for c, (vmax, hmax), top, bot in (("same", same, tvd - same[0], tvd + same[0]),
                                       ("topfill", pdz.ENVELOPE["topfill"], tvd, tvd + pdz.ENVELOPE["topfill"][0]),
                                       ("underfill", pdz.ENVELOPE["underfill"], tvd - pdz.ENVELOPE["underfill"][0], tvd)):
@@ -210,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--resample", action="store_true", help="draw a fresh sample instead of re-rendering the as-registered cards")
     a = ap.parse_args(argv)
     s = pd.read_csv(st.DOCS / "sticks.csv.gz")
-    Lp = sp.reclass_same(pd.read_pickle(RUNS / "pud_links.pkl"))
+    Lp = sp.by_depth(pd.read_pickle(RUNS / "pud_links.pkl"))
     Lp["counts"] = counting(Lp)
     was = pd.read_csv(R0) if R0.exists() else None
     if was is None or a.resample:
@@ -261,7 +261,7 @@ def main(argv: list[str] | None = None) -> int:
             f"<td class=num>{p.dz_ft:+.0f}</td><td class=num>{p.dh_ft:.0f}</td><td class=num>{p.overlap:.0%}</td>"
             f"<td>{('counts' + (' (permit TVD)' if p.permit else '')) if p.counts else ('young/codev' if p.rel != 'parent' else ('< 30 % alongside' if p.overlap < ps.MIN_OVERLAP else 'outside envelope'))}</td></tr>"
             for p in L.itertuples())
-        prec = "" if pd.isna(r.pair_key) else f"bench pair <b>{r.pair_key}</b>: {int(r.prec_multi)} drilled multi-parent wells, {int(r.prec_package)} packages (floor 30)"
+        prec = "" if pd.isna(r.pair_key) else f"D114 key <b>{r.pair_key}</b>: {int(r.prec_multi)} drilled multi-parent wells, {int(r.prec_package)} packages (floor 30)"
         if isinstance(r.pattern_key, str):
             prec += (f"; neighbour pattern <b>{r.pattern}</b>: {int(r.pattern_multi)} drilled {r.bench} wells with 2+ neighbours in it, "
                      f"{int(r.pattern_package)} packages (floor 30)")
@@ -288,9 +288,9 @@ def main(argv: list[str] | None = None) -> int:
             ".card{border-top:2px solid #9ca3af;margin-top:24px} img{max-width:100%} table{display:block;overflow-x:auto;max-width:100%}</style></head><body>"
             f"<h1>BOX step 21a — Midland proximity examples ({len(rows)} cards, seed {a.seed})</h1>"
             f"<div class=meta>built {dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec='seconds')} · reference date {REF} · in-extent undrilled "
-            "sticks (D117; conflict sticks excluded, D145) · revisions 1-2 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
-            "same bench (same BOX bench, ≤ 300 ft vertically), below (deeper, ≤ 800 ft) or above (shallower, ≤ 500 ft); permit TVDs counted, flagged · "
-            "precedent = Midland drilled wells: D114 bench pair AND the same neighbour pattern, ≥ 30 each · "
+            "sticks (D117; conflict sticks excluded, D145) · revisions 1-3 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
+            "same bench (within 150 ft vertically, any tag), below (deeper, 150-800 ft) or above (shallower, 150-500 ft); permit TVDs counted, flagged · "
+            "precedent = Midland drilled wells: D114 on bench × class (no neighbour tag) AND the same neighbour pattern, ≥ 30 each · "
             "factor = Delaware D113 table (INTERIM until 21b) · read-only</div>"
             "<p>Verdicts go in <code>cards_sample.csv</code> (<b>accept</b> = the outcome feels right for this location; <b>reject</b> = it doesn't; "
             "a note on why helps). Open the api10s in anduin for the gunbarrel you normally draw.</p>")

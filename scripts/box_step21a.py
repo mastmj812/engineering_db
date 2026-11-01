@@ -303,10 +303,10 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         L.to_pickle(lk)
     kids.to_pickle(RUNS / "children.pkl")
     print(f"[prox] child links {len(L):,} ({time.time() - t0:.0f} s)", flush=True)
-    L = sp.reclass_same(L)  # revision 1: same bench = same BOX bench AND <= 300 ft vertical
+    L = sp.by_depth(L)  # revision 3: same bench = within 150 ft vertically, whatever the tag
     kc = pdz.configuration(list(kids["api10"]), L).merge(kids[["api10", "bench", "fp", "geom"]], on="api10", how="left")
     sib = pp.siblings(L)
-    prec, prec_pat = pp.precedent(kc, sib), sp.pattern_precedent(kc, sib)
+    prec, prec_pat = sp.precedent(kc, sib), sp.pattern_precedent(kc, sib)
     # ladder fill on children that a tuning fold could score (fp in the fold windows, in the group's extent, tuning block)
     lo, hi = dt.date(2019, 12, 1), dt.date(2025, 12, 1)
     mid = [g.interpolate(0.5, normalized=True) for g in kc["geom"]]
@@ -338,7 +338,7 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         Lp = ppr.pud_links(p, u, ACTUALS)
         Lp.to_pickle(lp)
     print(f"[prox] stick links {len(Lp):,} ({time.time() - t0:.0f} s)", flush=True)
-    Lp = sp.reclass_same(Lp)
+    Lp = sp.by_depth(Lp)
     ids = list(p["location_id"])
     hair = pp.haircut_lookup(pd.read_csv(ppr.HAIRCUT_TABLE))
 
@@ -358,12 +358,12 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         x["child_bench"] = [child_tag.get(c, b) for c, b in zip(x["child"], x["child_bench"], strict=True)]
         x["parent_bench"] = [tag.get(a, b) for a, b in zip(x["parent"], x["parent_bench"], strict=True)]
         x["cls"] = [ps.pair_class(c, q, z) for c, q, z in zip(x["child_bench"], x["parent_bench"], x["dz_ft"], strict=True)]
-        return sp.reclass_same(x)
+        return sp.by_depth(x)  # depth decides the class; the tag only moves the stick's own bench
 
     Lw = retag(L, tag)
     kcw = pdz.configuration(list(kids["api10"]), Lw).merge(pd.DataFrame({"api10": kids["api10"], "bench": [tag[a] for a in kids["api10"]]}), on="api10")
     sibw = pp.siblings(Lw)
-    dw = outcomes(retag(Lp, {}), pp.precedent(kcw, sibw), sp.pattern_precedent(kcw, sibw))
+    dw = outcomes(retag(Lp, {}), sp.precedent(kcw, sibw), sp.pattern_precedent(kcw, sibw))
     s["outcome_wh_tag"] = s["location_id"].map(dw["outcome"])
 
     # DEAN: body (20b generated v1) vs loop addition
@@ -590,10 +590,11 @@ def render() -> str:
           f"child links {px['n_child_links']:,} · stick links {px['n_stick_links']:,} · BOX-membership relabels {px['box_bench_relabels']:,} · "
           f"bench pairs with precedent {px['n_precedent_pairs']:,} · bench × neighbour patterns {px.get('n_precedent_patterns', 0):,} · "
           f"same bench ≤ {px.get('same_dv_max_ft', 1000):,.0f} ft vertical · reference date {px['reference_date']}</div>"),
-         ("<p>Revision 1 (Michael 2026-10-31, card 13). A <b>neighbour</b> = a producer ≥ 12 months on, ≥ 30 % alongside, within 1,400 ft "
-          "sideways; <b>same bench</b> = the stick's BOX bench AND within 300 ft vertically (a same-tag well farther off is classed by "
-          "depth); <b>below</b> = a deeper neighbour within 800 ft, <b>above</b> = a shallower one within 500 ft. A stick with 2+ "
-          "neighbours is forecast only when BOTH (a) D114 holds (≥ 30 drilled multi-parent wells of the bench pair; ≥ 30 packages where "
+         ("<p>Revisions 1-3 (Michael 2026-10-31 / 11-01, cards 13, 14, 18). A <b>neighbour</b> = a producer ≥ 12 months on, ≥ 30 % "
+          "alongside, within 1,400 ft sideways; <b>same bench</b> = within 150 ft vertically WHATEVER its tag; <b>below</b> = a deeper "
+          "neighbour 150-800 ft down, <b>above</b> = a shallower one 150-500 ft up. A stick with 2+ "
+          "neighbours is forecast only when BOTH (a) D114 holds on the tag-free key (≥ 30 drilled multi-parent wells of the stick's "
+          "bench × neighbour class, or its bench for a mixed configuration; ≥ 30 packages where "
           "the factor ≤ 0.80) AND (b) ≥ 30 drilled Midland wells of its bench, also with 2+ neighbours, sit in the SAME neighbour "
           "pattern (same-bench on one side / both sides / none, + above, + below; its package count reported, not gated) — else "
           "<b>no_forecast_pattern</b>. Single-neighbour sticks stay as-is. The DELAWARE D113 factor table is an interim stand-in "

@@ -14,7 +14,7 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 815 passed / 46 skipped; step-21 tests 23 passed (digest pinned at revision 2).
+- Tests: eng_db suite 816 passed / 46 skipped; step-21 tests 25 passed (digest pinned at revision 3).
 - **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
@@ -164,6 +164,26 @@ above, 8) → no forecast; #39 (WCC) → single neighbour once a same-tag well 3
 ### 3.7 Revision 2 (Michael, 2026-11-01): conflict sticks are not drillable (D145)
 
 The population drops the 475 reconciliation-`conflict` sticks: 33,016 → **32,541** (DEAN 39, JM 73, LSSH 76, MS 31, WCA_1 114, WCB_1 118, WCB_2 7, WCC 6, WCD 11). Their revision-1 outcomes were haircut 243, no forecast (pattern) 74, as-is unexposed 69, no forecast (precedent) 51, single neighbour 38. After revision 2: haircut 10,654; no forecast 2,891 (**8.9 %**: precedent 1,472, package 12, pattern 1,407); as-is 18,996 (`prox_by_group.csv`). Nothing on the drilled side moves. Cards #10, #13, #22 and #30 were conflict sticks and now read "excluded" (numbering kept). The Tables above §3.6 stay as registered.
+
+### 3.8 Revision 3 (Michael, 2026-11-01, cards 14 / 18): same bench by depth, tag-free precedent key
+
+Same bench = within 150 ft vertically whatever the tag; D114 keyed on the stick's bench × neighbour class. On 32,541 sticks: haircut 10,654 → 10,782; no forecast 2,891 → **2,763 (8.5 %)**: pattern 2,173, precedent 584, package 6 (`prox_by_group.csv`). 2,419 sticks change outcome; the total barely moves, the mix does:
+
+| group | no forecast r2 | r3 |
+|---|---|---|
+| DEAN | 13.9 % | **27.3 %** |
+| JM | 12.8 % | 11.8 % |
+| LSSH | 6.8 % | 4.0 % |
+| MS | 13.3 % | **3.9 %** |
+| WCA_1 | 2.8 % | 6.8 % |
+| WCB_1 | 7.8 % | 10.0 % |
+| WCB_2 | 16.5 % | 16.4 % |
+| WCC / WCD | 43.5 / 3.6 % | unchanged |
+
+- DEAN: LSSH / WCA_1 wells within 150 ft now count beside a DEAN stick, so more DEAN sticks are flanked (both sides + above + below has 2 drilled DEAN precedents). D143: loop-addition sticks forecast 83.5 % → **69.2 %**, generated body 94.1 % → 85.7 %.
+- MS: the old key split MS precedents by the neighbour's tag (MS>topfill>JM had 19); pooled by class they clear 30.
+- Stick-TVD cost (deferred, Michael): a depth rule trusts the stick's Novi TVD. 231 of the 2,419 changed sticks sit > 150 ft (median) from their same-tag neighbours — e.g. card 41, a WCB_1 stick 226–297 ft below the WCB_1 wells either side, now "none beside + above". Card 18 is the same shape.
+- Cards changed: #14 → no forecast (both sides + above + below, 2 precedents); #18 / #41 → two neighbours above, haircut (33); #19 / #21 / #24 / #25 / #26 → haircut (pooled key ≥ 30; #21 is the bad-TVD JM stick); #27 / #31 / #34 → no forecast (pattern); #28 / #29 → no forecast (DEAN>topfill 29 < 30); #20 pattern only.
 
 ## 4. Water reach (D107 / D133)
 
