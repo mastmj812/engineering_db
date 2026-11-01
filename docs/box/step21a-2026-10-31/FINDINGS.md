@@ -14,7 +14,7 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 818 passed / 46 skipped; step-21 tests 26 passed (digest pinned at revision 5).
+- Tests: eng_db suite 819 passed / 46 skipped; step-21 tests 27 passed (digest pinned at revision 6).
 - **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
@@ -196,6 +196,21 @@ Found while measuring (reported, nothing changed): 619 sticks have a same-bench 
 ### 3.10 Revision 5 (Michael, 2026-11-01, card 42): no forecast within 400 ft of a same-bench producer
 
 Neither the precedent nor the factor sees distance. Drilled Midland wells with a same-bench (≤ 150 ft vertical) parent ≤ 400 ft sideways and ≥ 30 % alongside: 142 of 24,729 (0.6 %; ≤ 300 ft: 69). Sticks: 913 (≤ 300 ft: 529). All 913 now read `no_forecast_spacing`; **315 of them lose a forecast** (275 haircut, 40 single neighbour), the other 598 already had none (pattern 556, precedent 34, package 8). No forecast 3,417 → **3,732 (11.5 %)**; haircut 11,134; as-is 17,675. Spacing sticks by group: WCB_1 205, JM 199, WCA_1 195, LSSH 98, DEAN 81 (already no forecast; D143 shares unchanged at 65.9 / 80.0 %), MS 74, WCB_2 29, WCC 16, WCD 16. Card #42 → no forecast (Michael's reject); no other card moves.
+
+### 3.11 Pad C 233 under revisions 1–5 (the audit that started BOX)
+
+The 15 PUD sticks of the 2026-09-28 audit are all in the population (the pad's other 9 are RES: BRNT × 4 and US × 1 out of scope, JM × 2 and MS × 2 outside their extents). **No outcome changed from registration through revision 5**: the neighbours are the 2020–21 UL Boss Hogg wells and the nearest same-bench producer is 883 ft away. Factors are the interim Delaware table.
+
+| sticks | counting neighbours | 21a outcome | Novi implied haircut | audit evidence |
+|---|---|---|---|---|
+| WCA 1–2 | 5 below (WCB_1 350–375 ft, WCB_2 ~600 ft) | haircut 0.748 | −13 / −19 % | −35 % (WCA_1 over WCB_1, n = 28) |
+| WCA 3 | 5 below + a WCA_1 37 ft vertical at 883 ft | haircut 0.777 | −34 % | −35 % |
+| LSSH 4–6 | 2–3 WCA_1 390–580 ft below | haircut 0.748 / 0.748 / 0.856 | −13 / −9 / −14 % | −10 % (n = 8, n.s.) |
+| LSSH 1–3 | none / none / one WCA_1 699 ft below | as-is | +2 to +3 % | no analog |
+| WCC 1–3 | WCB_2 458–484 ft above | no forecast (26 / 26 / 11 precedents) | −8 / −8 / −19 % | −21 % (n = 19) |
+| WCD 1–3 | none | as-is | ≈ 0 | 1 analog |
+
+The audit's level (rock) and tail (EUR30 ÷ cum24 2.0–2.5× vs producing 1.3–2.0×) findings wait for 21b, where the pad is a named, reported check (revision 6).
 
 ## 4. Water reach (D107 / D133)
 

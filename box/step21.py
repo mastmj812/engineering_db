@@ -106,6 +106,12 @@ def tier_route(pooled_holdout: Mapping[int, int], floor: int = MIN_PACKAGES) -> 
     return "holdout" if d99_horizons(pooled_holdout, floor) else "provisional"
 
 
+# Revision 6 (Michael 2026-11-01): Pad C 233 (SM UL Boss Hogg, Upton) is a named 21b check, reported never judged. The 2026-09-28
+# pad audit (claude.ai/artifact/L2qhEL68AJsFFM8C7ziuMG) is the yardstick: stick label (the audit's) -> Novi 2026Q3 stick_id.
+PAD_C233 = {"WCA 1": 1579229, "WCA 2": 1561587, "WCA 3": 1617379, "LSSH 1": 1606892, "LSSH 2": 1573449, "LSSH 3": 1593633,
+            "LSSH 4": 1561931, "LSSH 5": 1555851, "LSSH 6": 1559850, "WCC 1": 1536501, "WCC 2": 1561504, "WCC 3": 1577383,
+            "WCD 1": 1598911, "WCD 2": 1563554, "WCD 3": 1553124}
+
 # D145 (Michael 2026-11-01): a reconciliation CONFLICT stick (partial cover 20-50 %, or 2+ producers each >= 50 %) is not a
 # drillable location. Midland 21a onward; the Delaware record (run 19, D144 hold) keeps D1's conflict clause until revised.
 DRILLABLE_STATUS = ("remaining_pud", "not_reconciled")
@@ -257,6 +263,21 @@ DEFINITION: dict[str, Any] = {
         "the Delaware D113 factor table and the warehouse-tag bench label as proximity sensitivities",
         "Novi 2025Q3 Midland per-ft bias as the exhibit (step 18)",
     ],
+    "named_checks": {
+        "pad_c233": {
+            "sticks": PAD_C233,
+            "why": "the pad audit that started BOX (2026-09-28): Novi WCA 1-2 and LSSH hot on year 1, WCC under-penalized, every "
+                   "tail too flat (EUR30 / cum24 2.0-2.5x vs producing 1.3-2.0x)",
+            "report_at_21b": [("each stick's proximity outcome, factor (Midland table) and its rung, beside the interim Delaware "
+                               "factor and Novi's implied haircut"),
+                              ("BOX oil cum12 / cum24 / EUR30 / EUR (50-yr) per 1,000 ft and EUR30 / cum24, beside Novi's and the "
+                               "audit's bench-pair yardstick (WCA_1 over WCB_1 -35 % rock-controlled cum12, n = 28; LSSH over WCA_1 "
+                               "-10 %, n = 8; WCC underfill -21 %, n = 19; WCD 1 analog)"),
+                              ("the audit's rock read (pad LSSH 0.65-0.71x its analog locations; WCA_1 0.98-1.06; WCC 1.04-1.29; "
+                               "WCD 1.18-1.40) against BOX's own cohort level")],
+            "judged": False,
+        },
+    },
     "read_before_this": [
         "step 18: Novi Midland bias and per-bench medians over all modern producers (no BOX forecast)",
         "step 20a / 20b: production summaries over all wells for the extents and cards (no BOX forecast)",
@@ -265,7 +286,7 @@ DEFINITION: dict[str, Any] = {
     ],
 }
 
-DIGEST = "415957a9dfedac55fbe062234143917b016961e40e4ca191673bd972d0a08776"  # revision 5 (2026-11-01, Michael, card 42: no forecast within 400 ft of a same-bench producer); r4 f1045738 (existing producers = parents); r3 f6c30aab (depth <= 150 ft, tag-free key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
+DIGEST = "91ed9d26510d6de634a43019e121979e85f208f39cbcd54bff5e23b83419b85b"  # revision 6 (2026-11-01, Michael: Pad C 233 named 21b check, reported only); r5 415957a9 (400 ft spacing floor); r4 f1045738 (existing producers = parents); r3 f6c30aab (depth <= 150 ft, tag-free key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
 
 
 def canonical() -> str:

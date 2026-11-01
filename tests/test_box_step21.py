@@ -152,3 +152,12 @@ def test_conflict_sticks_are_not_drillable():
     """D145 (revision 2): a reconciliation conflict stick is not a drillable location in the Midland population."""
     assert st.DRILLABLE_STATUS == ("remaining_pud", "not_reconciled")
     assert st.DEFINITION["locations"]["drillable_status"] == list(st.DRILLABLE_STATUS) and "D145" in st.DEFINITION["decisions"]
+
+
+def test_pad_c233_is_a_named_check_on_sticks_in_the_population():
+    """Revision 6: the 15 audited Pad C 233 sticks are reported at 21b, never judged, and all sit in the 21a population."""
+    chk = st.DEFINITION["named_checks"]["pad_c233"]
+    assert chk["sticks"] == st.PAD_C233 and len(st.PAD_C233) == 15 and chk["judged"] is False
+    s = pd.read_csv(st.DOCS / "sticks.csv.gz", usecols=["stick_id", "pad_name"])
+    assert set(st.PAD_C233.values()) <= set(s["stick_id"])
+    assert set(s.loc[s["stick_id"].isin(st.PAD_C233.values()), "pad_name"]) == {"Developed Pad C 233"}
