@@ -9,7 +9,7 @@ Evidence for box/step21.DEFINITION (docs/box/step21a-2026-10-31/PREREGISTRATION.
      .bench_counts, unchanged) and what they allow: the record treatment (box/step21.record_treatment), the D99 cells, the
      tier route. Counts only — no forecast and no error is computed for any package.
   2. Measured-water PACKAGES per horizon (a package with >= 1 measured-water member that reached k; scripts/box_water11's rule).
-  3. Undrilled sticks in each record extent (D117 universe: PUD + RES; remaining_pud / conflict / not reconciled; >= 50 % inside).
+  3. Undrilled sticks in each record extent (D117 universe: PUD + RES; remaining_pud / not reconciled — conflict excluded, D145; >= 50 % inside).
   4. Oil and measured-water analog REACH from those sticks (circle: lower bound on the real search); water top-operator share.
   5. Long laterals: pool producers > 15,000 ft (now analogs, D129), sticks by length class, and the observed per-ft-vs-length
      ratio on producers in TUNING blocks only (block x first-production-year cells) next to the Cui & Cross curve.
@@ -183,7 +183,8 @@ def counts_for(conn: Any, pools: dict[str, pd.DataFrame], ext: dict[str, dict[st
 def sticks_in_extents(conn: Any) -> pd.DataFrame:
     U = prod.universe(conn, basins=[BASIN])
     benches = {b: g for g, (b, _, _) in st.GROUPS.items()}
-    U = U[U["bench"].isin(benches) & U["in_scope"].astype(bool)].copy()
+    U = U[U["bench"].isin(benches) & U["in_scope"].astype(bool)
+          & U["recon_status"].fillna("not_reconciled").isin(st.DRILLABLE_STATUS)].copy()  # D145: conflict is not drillable
     U["group"] = U["bench"].map(benches)
     U["inside"] = U["inside_extent"].fillna(False).astype(bool)
     U["x"], U["y"] = dfr._xy(U["mid_lon"], U["mid_lat"])
@@ -413,8 +414,9 @@ def prox_tables(s: pd.DataFrame) -> dict[str, pd.DataFrame]:
                                                                    pattern_package=("pattern_package", "first")).reset_index())
     r0 = st.DOCS / "sticks_r0.csv.gz"  # the as-registered outcomes (before revision 1)
     if r0.exists():
-        was = pd.read_csv(r0, usecols=["stick_id", "outcome"]).rename(columns={"outcome": "outcome_r0"})
-        m = s[["stick_id", "group", "outcome"]].merge(was, on="stick_id", how="left")
+        was = pd.read_csv(r0, usecols=["stick_id", "group", "outcome"]).rename(columns={"outcome": "outcome_r0"})
+        m = was.merge(s[["stick_id", "outcome"]], on="stick_id", how="left")  # a stick no longer in s left the population (D145)
+        m["outcome"] = m["outcome"].fillna("excluded_conflict")
         out["revision1"] = pd.crosstab([m["group"], m["outcome_r0"]], m["outcome"]).reset_index()
     return out
 
@@ -564,7 +566,7 @@ def render() -> str:
           f"actuals through {meta['actuals_through']} (live {meta['live_last_full_month']}) · D52 holdout salt {meta['holdout_salt']} share "
           f"{meta['holdout_share']:.0%} · ≥ {meta['min_packages']} packages per judged cell · {meta['seconds']:,} s</div>"),
          ("<p>Grain is stated per table: <b>packages</b> (D53: co-developed co-extent pool wells, first production within 180 d, "
-          "overlap ≥ 30 %), <b>wells</b>, or <b>sticks</b> (Novi undrilled sticks, D117 universe: PUD + RES, remaining_pud / conflict / "
+          "overlap ≥ 30 %), <b>wells</b>, or <b>sticks</b> (Novi undrilled sticks, D117 universe: PUD + RES, remaining_pud / "
           "not reconciled, ≥ 50 % inside the record extent). Holdout packages are COUNTED only — no forecast or error exists for any "
           "package. Reach is circle-only (a lower bound: the strike ellipse is ignored).</p>"),
          "<h2>1. What the counts allow (record treatment, D99 cells, tier route — the pre-registered rules applied to 21a counts)</h2>",

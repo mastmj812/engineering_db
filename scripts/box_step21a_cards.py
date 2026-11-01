@@ -218,6 +218,7 @@ def main(argv: list[str] | None = None) -> int:
         pick["outcome_r0"] = pick["stick_id"].map(dict(zip(was["stick_id"], was["outcome"], strict=True))) if was is not None else None
     else:
         pick = was[["stick_id", "why", "outcome"]].rename(columns={"outcome": "outcome_r0"}).merge(s, on="stick_id", how="left")
+        pick["group_r0"] = pick["stick_id"].map(dict(zip(was["stick_id"], was["group"], strict=True)))
     with get_connection() as conn:
         U = prod.universe(conn, basins=["midland"])
         u = psr.pull_universe(conn, "midland")
@@ -235,6 +236,15 @@ def main(argv: list[str] | None = None) -> int:
     cards, rows = [], []
     for n, r in enumerate(pick.itertuples(), 1):
         sid = int(r.stick_id)
+        if not isinstance(r.group, str):  # left the population since the sample was drawn (D145: a conflict stick is not drillable)
+            g0 = getattr(r, "group_r0", "")
+            cards.append(f"<section class=card id=c{n}><h2>#{n} {g0} stick {sid} — excluded (was {r.outcome_r0})</h2>"
+                         "<div class='flag bad'>Not a drillable location: Novi reconciliation status <b>conflict</b> (partial cover "
+                         "20-50 %, or 2+ producers each covering ≥ 50 %). D145 (revision 2) takes conflict sticks out of the "
+                         "Midland population, so this stick gets no forecast and no proximity outcome.</div></section>")
+            rows.append({"card": n, "stick_id": sid, "group": g0, "pad_name": "", "why": r.why, "outcome_r0": r.outcome_r0,
+                         "outcome": "excluded_conflict", "verdict": "", "note": ""})
+            continue
         g = eg.to_ft([shapely.from_wkt(wkt[sid])])[0]
         t = float(tvd.get(sid, np.nan))
         L = Lp[Lp["child"] == str(sid)].copy()
@@ -278,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
             ".card{border-top:2px solid #9ca3af;margin-top:24px} img{max-width:100%} table{display:block;overflow-x:auto;max-width:100%}</style></head><body>"
             f"<h1>BOX step 21a — Midland proximity examples ({len(rows)} cards, seed {a.seed})</h1>"
             f"<div class=meta>built {dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec='seconds')} · reference date {REF} · in-extent undrilled "
-            "sticks (D117) · revision 1 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
+            "sticks (D117; conflict sticks excluded, D145) · revisions 1-2 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
             "same bench (same BOX bench, ≤ 300 ft vertically), below (deeper, ≤ 800 ft) or above (shallower, ≤ 500 ft); permit TVDs counted, flagged · "
             "precedent = Midland drilled wells: D114 bench pair AND the same neighbour pattern, ≥ 30 each · "
             "factor = Delaware D113 table (INTERIM until 21b) · read-only</div>"

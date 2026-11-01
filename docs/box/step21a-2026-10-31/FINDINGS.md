@@ -14,7 +14,7 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 807 passed / 46 skipped; step-21 tests 22 passed (digest pinned at revision 1).
+- Tests: eng_db suite 815 passed / 46 skipped; step-21 tests 23 passed (digest pinned at revision 2).
 - **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
@@ -160,6 +160,10 @@ beside + above + below" (69 drilled precedents), so they still pass.
 Cards: the same 46 sticks re-rendered (`prox_cards/cards.html`; as-registered outcomes kept in `cards_sample_r0.csv`); four
 change — #13 (MS, both sides + above + below, 0 precedents) and #15 (WCB_2, one side + below, 10) and #32 (DEAN, one side +
 above, 8) → no forecast; #39 (WCC) → single neighbour once a same-tag well 300+ ft off is classed by depth.
+
+### 3.7 Revision 2 (Michael, 2026-11-01): conflict sticks are not drillable (D145)
+
+The population drops the 475 reconciliation-`conflict` sticks: 33,016 → **32,541** (DEAN 39, JM 73, LSSH 76, MS 31, WCA_1 114, WCB_1 118, WCB_2 7, WCC 6, WCD 11). Their revision-1 outcomes were haircut 243, no forecast (pattern) 74, as-is unexposed 69, no forecast (precedent) 51, single neighbour 38. After revision 2: haircut 10,654; no forecast 2,891 (**8.9 %**: precedent 1,472, package 12, pattern 1,407); as-is 18,996 (`prox_by_group.csv`). Nothing on the drilled side moves. Cards #10, #13, #22 and #30 were conflict sticks and now read "excluded" (numbering kept). The Tables above §3.6 stay as registered.
 
 ## 4. Water reach (D107 / D133)
 

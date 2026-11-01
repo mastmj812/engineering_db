@@ -146,3 +146,9 @@ def test_ladder_fill():
     k = pd.DataFrame({"k1": ["a"] * 31 + ["b"] * 5, "k2": ["x"] * 36, "k3": [None] * 36, "k4": ["same"] * 36})
     f = ev.ladder_fill(k).set_index(["rung", "key"])
     assert f.at[("k1", "a"), "fills"] and not f.at[("k1", "b"), "fills"] and f.at[("k2", "x"), "n_children"] == 36
+
+
+def test_conflict_sticks_are_not_drillable():
+    """D145 (revision 2): a reconciliation conflict stick is not a drillable location in the Midland population."""
+    assert st.DRILLABLE_STATUS == ("remaining_pud", "not_reconciled")
+    assert st.DEFINITION["locations"]["drillable_status"] == list(st.DRILLABLE_STATUS) and "D145" in st.DEFINITION["decisions"]

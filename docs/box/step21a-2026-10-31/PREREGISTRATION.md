@@ -28,6 +28,7 @@ the water scorer wiring. A 21b / 21c run whose `box/`, `scripts/` or `dealintake
 |---|---|---|
 | 2026-10-31 (d2c28c8) | first registration | — |
 | 2026-10-31 (revision 1) | Proximity, Midland only: (a) **same bench = same BOX bench AND ≤ 300 ft vertically** (was ≤ 1,000 ft); a same-bench producer farther off is classed by depth (below when deeper, above when shallower) and needs that envelope; (b) **neighbour-pattern precedent ON TOP of D114**: a PUD with 2+ neighbours is forecast only when ≥ 30 drilled Midland wells of its bench, also with 2+ neighbours, sit in the SAME pattern (same-bench neighbours on none / one side / both sides, + above, + below; its package count reported, not gated), else `no_forecast_pattern` (`box/step21_prox.py`). Single-neighbour and unexposed PUDs unchanged. The Delaware record keeps D114 and the 1,000-ft cap until it is revised from what the Midland shows. Effect: FINDINGS §3.6. | Michael, card 13 review: an MS stick between two producing MS wells with a JM 120 ft below and a US above "will never be drilled, and shouldn't be forecasted" — there are no analogs of that development to measure a haircut from. D114's `mixed` key is the bench alone (0 of the 82 MS>mixed precedents had a neighbour above). The 1,000-ft same cap was a leftover of the exposure screen (drilled same-bench pairs: median 48 ft, p99 334 ft). |
+| 2026-11-01 (revision 2) | **Conflict sticks are not drillable locations** (D145, rescinds D1's conflict clause for the Midland): the population is D117 undrilled sticks ≥ 50 % inside the record extent with reconciliation status `remaining_pud` or not yet reconciled (`box/step21.DRILLABLE_STATUS`). 33,016 → 32,541 sticks (475 conflict out; 0 Midland sticks are not yet reconciled). Drilled-well evidence (counts, precedents, factors) unchanged. The Delaware record keeps D1 as written until revised. | Michael, card review 2026-11-01: "Conflict sticks should NOT count as drillable locations." A conflict stick is partly covered (20–50 %) or covered ≥ 50 % by 2+ producers — card 13 (MS, 45 % matched to a JM) was one. |
 
 ## 0. Transferred as decided (D134: the Delaware method, not re-derived)
 
@@ -183,5 +184,5 @@ D129 / D134 C decided, or the linear-per-ft twin as record — the 21a evidence 
 17,500 ft). Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
 commit.
 
-**Definition digest (revision 1):** `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9` (as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
+**Definition digest (revision 2):** `ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5` (revision 1: `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9`; as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
 **Frozen SHA:** _stamped at the gate_.

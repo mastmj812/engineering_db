@@ -106,15 +106,24 @@ def tier_route(pooled_holdout: Mapping[int, int], floor: int = MIN_PACKAGES) -> 
     return "holdout" if d99_horizons(pooled_holdout, floor) else "provisional"
 
 
+# D145 (Michael 2026-11-01): a reconciliation CONFLICT stick (partial cover 20-50 %, or 2+ producers each >= 50 %) is not a
+# drillable location. Midland 21a onward; the Delaware record (run 19, D144 hold) keeps D1's conflict clause until revised.
+DRILLABLE_STATUS = ("remaining_pud", "not_reconciled")
+
+
 DEFINITION: dict[str, Any] = {
     "name": "box_midland_tuning_holdout_r2",
     "written_on": "2026-10-31",
     "decisions": ["D52", "D53", "D57", "D58", "D63", "D92", "D94", "D97", "D99", "D102", "D105", "D106", "D107", "D108", "D109",
                   "D112", "D113", "D114", "D115", "D116", "D119", "D120", "D121", "D122", "D127", "D128", "D129", "D130", "D131",
-                  "D132", "D133", "D134", "D135", "D136", "D141", "D142", "D143"],
+                  "D132", "D133", "D134", "D135", "D136", "D141", "D142", "D143", "D145"],
     "basin": "midland",
     "groups": {g: {"bench": b, "extent_id": e, "pool_file": f"{POOL_DIR.as_posix()}/wells_final_{b}.csv", "pool_source": s}
                for g, (b, e, s) in GROUPS.items()},
+    "locations": {"universe": "D117 (Novi PUD + RES) undrilled sticks >= 50 % inside the group's record extent, reconciled "
+                              "remaining_pud or not yet reconciled; CONFLICT sticks are NOT drillable locations (revision 2, "
+                              "D145 rescinds D1's conflict clause for the Midland; the Delaware record keeps it until revised)",
+                  "drillable_status": list(DRILLABLE_STATUS)},
     "out_of_scope": {"US": "D127 emerging (bench_scope in_scope false); not covered, never zero",
                      "BRNT/MISS/MRMC/WDFD": "D2 emerging"},
     "pools": {"rule": "the step-20 sets of record (20a r3 + ask-3 verdicts; 20b post-verdict), members only, exclusions.csv "
@@ -247,7 +256,7 @@ DEFINITION: dict[str, Any] = {
     ],
 }
 
-DIGEST = "142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9"  # revision 1 (2026-10-31, Michael, card 13: same-bench 300 ft + neighbour-pattern precedent); registered 3299259e
+DIGEST = "ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5"  # revision 2 (2026-11-01, Michael: conflict sticks not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
 
 
 def canonical() -> str:
