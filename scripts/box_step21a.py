@@ -53,6 +53,7 @@ from box import prox_validate as pv
 from box import spacing3d_report as s3r
 from box import step21 as st
 from box import step21_evidence as ev
+from box import step21_prox as sp
 from box import tc_area_report as tar
 from box import tc_curve_report as rep
 from box import thin_bench as tb
@@ -301,8 +302,10 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         L.to_pickle(lk)
     kids.to_pickle(RUNS / "children.pkl")
     print(f"[prox] child links {len(L):,} ({time.time() - t0:.0f} s)", flush=True)
+    L = sp.reclass_same(L)  # revision 1: same bench = same BOX bench AND <= 300 ft vertical
     kc = pdz.configuration(list(kids["api10"]), L).merge(kids[["api10", "bench", "fp", "geom"]], on="api10", how="left")
-    prec = pp.precedent(kc, pp.siblings(L))
+    sib = pp.siblings(L)
+    prec, prec_pat = pp.precedent(kc, sib), sp.pattern_precedent(kc, sib)
     # ladder fill on children that a tuning fold could score (fp in the fold windows, in the group's extent, tuning block)
     lo, hi = dt.date(2019, 12, 1), dt.date(2025, 12, 1)
     mid = [g.interpolate(0.5, normalized=True) for g in kc["geom"]]
@@ -334,15 +337,16 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         Lp = ppr.pud_links(p, u, ACTUALS)
         Lp.to_pickle(lp)
     print(f"[prox] stick links {len(Lp):,} ({time.time() - t0:.0f} s)", flush=True)
+    Lp = sp.reclass_same(Lp)
     ids = list(p["location_id"])
     hair = pp.haircut_lookup(pd.read_csv(ppr.HAIRCUT_TABLE))
 
-    def outcomes(links: pd.DataFrame, prec_: dict[str, dict[str, int]]) -> pd.DataFrame:
+    def outcomes(links: pd.DataFrame, prec_: dict[str, dict[str, int]], prec_pat_: dict[str, dict[str, int]]) -> pd.DataFrame:
         cfg = pdz.configuration(ids, links.assign(permit=False)).set_index("api10")
         cfg["bench"] = p.set_index("location_id")["formation_blueox"].reindex(cfg.index)
-        return cfg.join(pp.decide_all(cfg, hair, prec_))
+        return cfg.join(sp.decide_all(cfg, hair, prec_, prec_pat_))
 
-    d = outcomes(Lp, prec)
+    d = outcomes(Lp, prec, prec_pat)
     s = s.drop(columns=["geom", "wkt"]).assign(location_id=s["stick_id"].astype(str)).merge(d.drop(columns="bench"), left_on="location_id", right_index=True, how="left")
     s["recent_producers"] = s["location_id"].map(ppr.recent_flags(Lp)).fillna(0).astype(int)
     s["permit_parents"] = s["location_id"].map(ppr.permit_flags(Lp)).fillna(0).astype(int)
@@ -353,12 +357,12 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
         x["child_bench"] = [child_tag.get(c, b) for c, b in zip(x["child"], x["child_bench"], strict=True)]
         x["parent_bench"] = [tag.get(a, b) for a, b in zip(x["parent"], x["parent_bench"], strict=True)]
         x["cls"] = [ps.pair_class(c, q, z) for c, q, z in zip(x["child_bench"], x["parent_bench"], x["dz_ft"], strict=True)]
-        return x
+        return sp.reclass_same(x)
 
     Lw = retag(L, tag)
     kcw = pdz.configuration(list(kids["api10"]), Lw).merge(pd.DataFrame({"api10": kids["api10"], "bench": [tag[a] for a in kids["api10"]]}), on="api10")
-    precw = pp.precedent(kcw, pp.siblings(Lw))
-    dw = outcomes(retag(Lp, {}), precw)
+    sibw = pp.siblings(Lw)
+    dw = outcomes(retag(Lp, {}), pp.precedent(kcw, sibw), sp.pattern_precedent(kcw, sibw))
     s["outcome_wh_tag"] = s["location_id"].map(dw["outcome"])
 
     # DEAN: body (20b generated v1) vs loop addition
@@ -371,23 +375,23 @@ def proximity(conn: Any, pools: dict[str, pd.DataFrame], U: pd.DataFrame, ext: d
     dean["part"] = [ev.body_or_addition(v) for v in dean["body_share"]]
     s = s.merge(dean[["stick_id", "part"]], on="stick_id", how="left")
     meta = {"n_universe": len(u), "n_children": len(kids), "n_child_links": len(L), "n_stick_links": len(Lp), "n_sticks": len(s),
-            "box_bench_relabels": len(moved), "n_precedent_pairs": len(prec), "seconds": round(time.time() - t0),
+            "box_bench_relabels": len(moved), "n_precedent_pairs": len(prec), "n_precedent_patterns": len(prec_pat),
+            "same_dv_max_ft": sp.SAME_DV_MAX_FT, "seconds": round(time.time() - t0),
             "haircut_table": str(ppr.HAIRCUT_TABLE), "haircut_table_sha256": st.sha256_file(ppr.HAIRCUT_TABLE),
             "reference_date": str(ACTUALS)}
     prec_df = pd.DataFrame([{"pair_key": k, "multi": v["multi"], "package": v["package"]} for k, v in prec.items()]).sort_values("multi", ascending=False)
-    return {"sticks": s, "fill": fill, "precedent": prec_df, "meta": meta, "dean_geom": (body, dg, dean)}
+    pat_df = pd.DataFrame([{"pattern_key": k, "multi": v["multi"], "package": v["package"]} for k, v in prec_pat.items()]).sort_values("pattern_key")
+    return {"sticks": s, "fill": fill, "precedent": prec_df, "precedent_pattern": pat_df, "meta": meta, "dean_geom": (body, dg, dean)}
 
 
 def prox_tables(s: pd.DataFrame) -> dict[str, pd.DataFrame]:
     out = {}
-    t = pd.crosstab(s["group"], s["outcome"]).reindex(columns=list(pp.OUTCOMES), fill_value=0)
+    nf = ["no_forecast_precedent", "no_forecast_package", "no_forecast_pattern"]
+    t = pd.crosstab(s["group"], s["outcome"]).reindex(columns=list(sp.OUTCOMES), fill_value=0)
     t["sticks"] = t.sum(axis=1)
-    t["no_forecast_pct"] = (100 * (t["no_forecast_precedent"] + t["no_forecast_package"]) / t["sticks"]).round(1)
-    t["multi_parent_pct"] = (100 * (t["haircut"] + t["no_forecast_precedent"] + t["no_forecast_package"]) / t["sticks"]).round(1)
     t.loc["ALL"] = t.sum(numeric_only=True)
-    a = t.loc["ALL"]
-    t.loc["ALL", "no_forecast_pct"] = round(100 * (a["no_forecast_precedent"] + a["no_forecast_package"]) / a["sticks"], 1)
-    t.loc["ALL", "multi_parent_pct"] = round(100 * (a["haircut"] + a["no_forecast_precedent"] + a["no_forecast_package"]) / a["sticks"], 1)
+    t["no_forecast_pct"] = (100 * t[nf].sum(axis=1) / t["sticks"]).round(1)
+    t["multi_parent_pct"] = (100 * (t["haircut"] + t[nf].sum(axis=1)) / t["sticks"]).round(1)
     out["by_group"] = t.reset_index()
     cc = pd.crosstab(s["group"], s["config_class"].fillna("unexposed"))
     out["config"] = cc.reset_index()
@@ -395,7 +399,7 @@ def prox_tables(s: pd.DataFrame) -> dict[str, pd.DataFrame]:
                     .agg(sticks=("stick_id", "size"), prec_multi=("prec_multi", "first"), prec_package=("prec_package", "first"),
                          factor=("factor", "first")).reset_index().sort_values("sticks", ascending=False))
     dn = s[s["group"] == "MID_DEAN"]
-    dt_ = pd.crosstab(dn["part"], dn["outcome"]).reindex(columns=list(pp.OUTCOMES), fill_value=0)
+    dt_ = pd.crosstab(dn["part"], dn["outcome"]).reindex(columns=list(sp.OUTCOMES), fill_value=0)
     dt_["sticks"] = dt_.sum(axis=1)
     dt_["forecast"] = dt_["as_is_unexposed"] + dt_["as_is_single_parent"] + dt_["haircut"]
     dt_["forecast_pct"] = (100 * dt_["forecast"] / dt_["sticks"]).round(1)
@@ -404,6 +408,14 @@ def prox_tables(s: pd.DataFrame) -> dict[str, pd.DataFrame]:
     out["dean_parents"] = (pd.crosstab([dpar["part"], dpar["config_class"]], dpar["outcome"]).reset_index())
     sw = pd.crosstab(s["outcome"], s["outcome_wh_tag"].fillna("(none)"))
     out["sensitivity_tag"] = sw.reset_index()
+    pt = s[s["pattern_key"].notna()]
+    out["patterns"] = (pt.groupby(["group", "pattern", "outcome"]).agg(sticks=("stick_id", "size"), pattern_multi=("pattern_multi", "first"),
+                                                                   pattern_package=("pattern_package", "first")).reset_index())
+    r0 = st.DOCS / "sticks_r0.csv.gz"  # the as-registered outcomes (before revision 1)
+    if r0.exists():
+        was = pd.read_csv(r0, usecols=["stick_id", "outcome"]).rename(columns={"outcome": "outcome_r0"})
+        m = s[["stick_id", "group", "outcome"]].merge(was, on="stick_id", how="left")
+        out["revision1"] = pd.crosstab([m["group"], m["outcome_r0"]], m["outcome"]).reset_index()
     return out
 
 
@@ -416,7 +428,7 @@ def dean_png(geom: tuple[Any, Any, pd.DataFrame], s: pd.DataFrame, path: Path) -
     body, dg, dean = geom
     o = dict(zip(s["stick_id"], s["outcome"], strict=False))
     colors = {"as_is_unexposed": "#2a9d8f", "as_is_single_parent": "#8ab17d", "haircut": "#e9c46a", "no_forecast_precedent": "#e76f51",
-              "no_forecast_package": "#9b2226"}
+              "no_forecast_package": "#9b2226", "no_forecast_pattern": "#6d597a"}
     fig, ax = plt.subplots(figsize=(9, 9), dpi=110)
     for part in getattr(body, "geoms", [body]):
         x, y = part.exterior.xy
@@ -479,11 +491,12 @@ def evidence() -> int:
     pf.to_csv(OUT / "per_ft_by_length.csv", index=False)
     px["fill"].to_csv(OUT / "prox_ladder_fill.csv", index=False)
     px["precedent"].to_csv(OUT / "prox_precedent.csv", index=False)
+    px["precedent_pattern"].to_csv(OUT / "prox_precedent_pattern.csv", index=False)
     for k, t in T.items():
         t.to_csv(OUT / f"prox_{k}.csv", index=False)
     keep = ["stick_id", "group", "bench", "category", "recon_status", "pad_name", "config_class", "n_parents_total", "n_same", "n_topfill",
             "n_underfill", "pb_same", "pb_topfill", "pb_underfill", "outcome", "factor", "pair_key", "prec_multi", "prec_package",
-            "recent_producers", "permit_parents", "outcome_wh_tag", "part"]
+            "recent_producers", "permit_parents", "outcome_wh_tag", "part", "pattern", "pattern_key", "pattern_multi", "pattern_package"]
     st_ = px["sticks"][keep].merge(r["sticks"].drop(columns=["group", "bench", "category", "recon_status", "pad_name"]), on="stick_id", how="left")
     st_.to_csv(OUT / "sticks.csv.gz", index=False, compression="gzip")
     dean_png(px["dean_geom"], px["sticks"], OUT / "dean_outcomes.png")
@@ -524,6 +537,8 @@ def render() -> str:
     byg, dean = pd.read_csv(OUT / "prox_by_group.csv"), pd.read_csv(OUT / "prox_dean.csv")
     fill, sens = pd.read_csv(OUT / "prox_ladder_fill.csv"), pd.read_csv(OUT / "prox_sensitivity_tag.csv")
     pairs = pd.read_csv(OUT / "prox_pairs.csv")
+    pats = pd.read_csv(OUT / "prox_patterns.csv")
+    rev1 = pd.read_csv(OUT / "prox_revision1.csv") if (OUT / "prox_revision1.csv").exists() else None
     inside = pd.read_csv(OUT / "sticks_inside_outside.csv")
     route = pd.DataFrame([{"group": g, **{k: (", ".join(map(str, v)) if isinstance(v, list) else v) for k, v in r.items()
                                           if k in ("record_treatment", "d99_horizons", "tier_route", "verdict_class_step14")},
@@ -571,10 +586,18 @@ def render() -> str:
          "<h2>5. Proximity on Midland producers (D112–D116 pattern)</h2>",
          (f"<div class=meta>producer universe {px['n_universe']:,} (horizontals in the Midland bbox + 0.05°) · drilled children {px['n_children']:,} · "
           f"child links {px['n_child_links']:,} · stick links {px['n_stick_links']:,} · BOX-membership relabels {px['box_bench_relabels']:,} · "
-          f"bench pairs with precedent {px['n_precedent_pairs']:,} · reference date {px['reference_date']}</div>"),
-         ("<p>Outcomes use MIDLAND precedent (D114: ≥ 30 drilled multi-parent wells of the bench pair; ≥ 30 packages where the factor ≤ 0.80) "
-          "and the DELAWARE D113 factor table as an interim stand-in (it decides only whether the package tier applies). Sticks, not "
-          "forecasts: no BOX volume exists yet.</p>"), _table(byg),
+          f"bench pairs with precedent {px['n_precedent_pairs']:,} · bench × neighbour patterns {px.get('n_precedent_patterns', 0):,} · "
+          f"same bench ≤ {px.get('same_dv_max_ft', 1000):,.0f} ft vertical · reference date {px['reference_date']}</div>"),
+         ("<p>Revision 1 (Michael 2026-10-31, card 13). A <b>neighbour</b> = a producer ≥ 12 months on, ≥ 30 % alongside, within 1,400 ft "
+          "sideways; <b>same bench</b> = the stick's BOX bench AND within 300 ft vertically (a same-tag well farther off is classed by "
+          "depth); <b>below</b> = a deeper neighbour within 800 ft, <b>above</b> = a shallower one within 500 ft. A stick with 2+ "
+          "neighbours is forecast only when BOTH (a) D114 holds (≥ 30 drilled multi-parent wells of the bench pair; ≥ 30 packages where "
+          "the factor ≤ 0.80) AND (b) ≥ 30 drilled Midland wells of its bench, also with 2+ neighbours, sit in the SAME neighbour "
+          "pattern (same-bench on one side / both sides / none, + above, + below; its package count reported, not gated) — else "
+          "<b>no_forecast_pattern</b>. Single-neighbour sticks stay as-is. The DELAWARE D113 factor table is an interim stand-in "
+          "(it decides only whether the package tier applies). Sticks, not forecasts: no BOX volume exists yet.</p>"), _table(byg),
+         *([("<h3>Revision 1: outcome as registered (rows) → after revision 1 (columns), sticks</h3>"), _table(rev1, max_rows=80)] if rev1 is not None else []),
+         "<h3>Neighbour patterns of the multi-neighbour sticks, with their drilled-pattern precedent</h3>", _table(pats, max_rows=120),
          "<h3>DEAN: generated body vs the owner loop's addition (D143)</h3>", _table(dean), "<img src=dean_outcomes.png alt='DEAN outcome map'>",
          "<h3>Bench pairs of the multi-parent sticks (top 60)</h3>", _table(pairs, {"factor": ".3f"}, max_rows=60),
          "<h3>Ladder rungs a Midland factor table could fill (tuning-window children in extent, tuning blocks; ≥ 30 per key)</h3>",

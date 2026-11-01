@@ -26,7 +26,8 @@ the water scorer wiring. A 21b / 21c run whose `box/`, `scripts/` or `dealintake
 
 | date | change | why |
 |---|---|---|
-| 2026-10-31 (this commit) | first registration | — |
+| 2026-10-31 (d2c28c8) | first registration | — |
+| 2026-10-31 (revision 1) | Proximity, Midland only: (a) **same bench = same BOX bench AND ≤ 300 ft vertically** (was ≤ 1,000 ft); a same-bench producer farther off is classed by depth (below when deeper, above when shallower) and needs that envelope; (b) **neighbour-pattern precedent ON TOP of D114**: a PUD with 2+ neighbours is forecast only when ≥ 30 drilled Midland wells of its bench, also with 2+ neighbours, sit in the SAME pattern (same-bench neighbours on none / one side / both sides, + above, + below; its package count reported, not gated), else `no_forecast_pattern` (`box/step21_prox.py`). Single-neighbour and unexposed PUDs unchanged. The Delaware record keeps D114 and the 1,000-ft cap until it is revised from what the Midland shows. Effect: FINDINGS §3.6. | Michael, card 13 review: an MS stick between two producing MS wells with a JM 120 ft below and a US above "will never be drilled, and shouldn't be forecasted" — there are no analogs of that development to measure a haircut from. D114's `mixed` key is the bench alone (0 of the 82 MS>mixed precedents had a neighbour above). The 1,000-ft same cap was a leftover of the exposure screen (drilled same-bench pairs: median 48 ft, p99 334 ft). |
 
 ## 0. Transferred as decided (D134: the Delaware method, not re-derived)
 
@@ -38,7 +39,8 @@ the water scorer wiring. A 21b / 21c run whose `box/`, `scripts/` or `dealintake
 - Acceptance: D53 package grain + folds, D58 scale-free spread, D52 holdout as frozen, D99 consistency holdout; D105 provisional
   tier; validation does not transfer across basins (D134 E).
 - Proximity: D112 pair metric and envelopes, D113 option (a), D114 two-tier precedent, D115 no shielding exemption, D116 derived
-  record (re-measured per run).
+  record (re-measured per run) — **amended for the Midland by revision 1** (same bench ≤ 300 ft; neighbour-pattern precedent on
+  top of D114; see the paragraph after §4).
 - Water: D107 ratio on raw oil (D108), D109 scoring, folded into step 21 (D133 / D134 D).
 - Long laterals: D129 as amended by **D134 C** — ONE variant, > 15,000-ft producers in the pool, classes reported, not judged.
 
@@ -98,6 +100,15 @@ stated with every number. The Delaware D113 table on the same wells is reported 
 else its `formation_blueox` tag. The Delaware study read warehouse tags; on the Midland the BOX sets relabel 580 producers of the
 proximity universe (the D136 WCB line is the largest share), and a parent's class should match the bench its forecast uses. The
 warehouse-tag reading is reported as a sensitivity (`index.html` §5).
+
+**Which PUDs get a forecast (revision 1).** A *neighbour* is a producer ≥ 12 months on at the data date, ≥ 30 % alongside the
+PUD, within 1,400 ft sideways and either *same bench* (the PUD's BOX bench, ≤ 300 ft vertically), *below* (deeper, ≤ 800 ft) or
+*above* (shallower, ≤ 500 ft); a same-bench producer more than 300 ft off is classed by its depth. Unexposed and
+single-neighbour PUDs are forecast as-is. A PUD with 2+ neighbours is forecast × factor only when (a) D114 holds — ≥ 30 drilled
+multi-parent wells of its bench pair, ≥ 30 packages where the factor ≤ 0.80 — AND (b) ≥ 30 drilled Midland wells of its bench,
+also with 2+ neighbours, sit in its *neighbour pattern* (same-bench neighbours on none / one side / both sides, + above, + below);
+the pattern's package count is reported, not gated. Otherwise no forecast — the stick is a stated class, never a zero. The same
+definitions classify the drilled children the factor is measured on (21b).
 
 ## 5. Record treatment and haircut per group
 
@@ -172,5 +183,5 @@ D129 / D134 C decided, or the linear-per-ft twin as record — the 21a evidence 
 17,500 ft). Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
 commit.
 
-**Definition digest (as registered):** `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`.
+**Definition digest (revision 1):** `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9` (as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
 **Frozen SHA:** _stamped at the gate_.

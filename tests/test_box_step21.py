@@ -16,6 +16,7 @@ from box import prox_pud as pp
 from box import step16 as s16
 from box import step21 as st
 from box import step21_evidence as ev
+from box import step21_prox as sp
 from box import thin_bench as tb
 
 
@@ -67,10 +68,14 @@ def test_folds_holdout_grain_match_the_harness():
     assert st.MIN_PACKAGES == tb.MIN_PACKAGES and st.MIN_PRIOR == tb.MIN_PRIOR
 
 
-def test_proximity_constants_are_the_delaware_ones():
+def test_proximity_constants_are_the_delaware_ones_but_the_same_bench_cap():
     p = st.DEFINITION["proximity"]
-    assert {k: tuple(v) for k, v in p["envelopes_ft"].items()} == pdz.ENVELOPE
+    env = {k: tuple(v) for k, v in p["envelopes_ft"].items()}
+    # revision 1: same bench <= 300 ft vertically (step21_prox.reclass_same, applied before prox_dose.configuration)
+    assert env == {**pdz.ENVELOPE, "same": (sp.SAME_DV_MAX_FT, pdz.ENVELOPE["same"][1])}
+    assert sp.SAME_DV_MAX_FT < pdz.ENVELOPE["same"][0]  # the cap binds before the shared envelope does
     assert (p["precedent"]["multi_parent_floor"], p["precedent"]["severe_factor"]) == (pp.PRECEDENT_FLOOR, pp.SEVERE)
+    assert sp.PATTERN_FLOOR == pp.PRECEDENT_FLOOR
 
 
 def test_record_treatment_rule():

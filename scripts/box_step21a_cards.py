@@ -1,6 +1,6 @@
 """BOX step 21a — proximity example cards for Michael's review (READ ONLY; nothing stored).
 
-    python -m scripts.box_step21a_cards [--n-per 6] [--seed 20261031]
+    python -m scripts.box_step21a_cards [--resample] [--n-per 6] [--seed 20261031]
 
 Reads the 21a evidence (docs/box/step21a-2026-10-31/sticks.csv.gz) and its links (runs/step21a/pud_links.pkl, written by
 `scripts.box_step21a evidence`), draws a seeded stratified sample of in-extent undrilled sticks and renders one card each:
@@ -11,7 +11,9 @@ Reads the 21a evidence (docs/box/step21a-2026-10-31/sticks.csv.gz) and its links
     the warehouse-tag outcome, and the parent table (api10, name, bench, tag, first production, months on, dz, gap, overlap)
 Counting parent = >= 12 months on production at the reference date, >= 30 % alongside, inside its class envelope; a permit-round
 TVD is counted and flagged (D115; box/prox_pud_report passes permit=False to configuration, no shielding exemption).
-Writes prox_cards/cards.html + cards_sample.csv (verdict column for accept / reject).
+Writes prox_cards/cards.html + cards_sample.csv (verdict column for accept / reject). Revision 1: by default the cards are the SAME
+sticks as the as-registered set (prox_cards/cards_sample_r0.csv), each showing its outcome as registered and after revision 1;
+--resample draws a fresh seeded sample instead. Links are re-classed by box/step21_prox.reclass_same (same bench <= 300 ft).
 """
 
 from __future__ import annotations
@@ -35,6 +37,7 @@ from box import prox_dose as pdz
 from box import prox_study as ps
 from box import prox_study_report as psr
 from box import step21 as st
+from box import step21_prox as sp
 from box.edge_gap_report import _CSS
 from box.tc_curve_report import _read
 
@@ -43,11 +46,14 @@ RUNS = Path("runs") / "step21a"
 REF = dt.date.fromisoformat(st.DEFINITION["folds"]["actuals_through"])
 _NAME_SQL = "SELECT api10, well_name, current_operator FROM curated.wells WHERE api10 = ANY(%(a)s)"
 COL = {"same": "#1d4ed8", "topfill": "#b91c1c", "underfill": "#047857"}
+PLAIN = {"same": "same bench", "topfill": "below", "underfill": "above"}  # topfill = the parent is deeper (the stick sits above it)
+R0 = OUT / "cards_sample_r0.csv"
 OUTCOME_TXT = {"as_is_unexposed": "forecast as-is (no depleting parent in an envelope)",
                "as_is_single_parent": "forecast as-is (single parent: no factor, D113 option a)",
                "haircut": "forecast × proximity factor (multi-parent, precedent met)",
                "no_forecast_precedent": "NO FORECAST — < 30 drilled multi-parent wells of this bench pair (D114)",
-               "no_forecast_package": "NO FORECAST — factor ≤ 0.80 and < 30 drilled packages (D114 tier 2)"}
+               "no_forecast_package": "NO FORECAST — factor ≤ 0.80 and < 30 drilled packages (D114 tier 2)",
+               "no_forecast_pattern": "NO FORECAST — < 30 drilled Midland wells of this bench in the same neighbour pattern (revision 1)"}
 
 
 def plus_bearing(az: float) -> float:
@@ -138,7 +144,8 @@ def card_png(stick: Any, tvd: float, links: pd.DataFrame, geoms: dict[str, Any],
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.6), dpi=100, gridspec_kw={"width_ratios": [1.35, 1]})
     # strike section
     ax1.axhspan(tvd - 1_100, tvd + 1_100, color="none")
-    for c, (vmax, hmax), top, bot in (("same", pdz.ENVELOPE["same"], tvd - pdz.ENVELOPE["same"][0], tvd + pdz.ENVELOPE["same"][0]),
+    same = (sp.SAME_DV_MAX_FT, pdz.ENVELOPE["same"][1])  # revision 1: same bench <= 300 ft vertically
+    for c, (vmax, hmax), top, bot in (("same", same, tvd - same[0], tvd + same[0]),
                                       ("topfill", pdz.ENVELOPE["topfill"], tvd, tvd + pdz.ENVELOPE["topfill"][0]),
                                       ("underfill", pdz.ENVELOPE["underfill"], tvd - pdz.ENVELOPE["underfill"][0], tvd)):
         ax1.add_patch(plt.Rectangle((-hmax, top), 2 * hmax, bot - top, fill=False, ls="--", lw=1.0, ec=COL[c], alpha=0.7))
@@ -185,7 +192,7 @@ def card_png(stick: Any, tvd: float, links: pd.DataFrame, geoms: dict[str, Any],
     w = 1.6
     ax2.set_xlim(m[0] / 5280 - w, m[0] / 5280 + w)
     ax2.set_ylim(m[1] / 5280 - w, m[1] / 5280 + w)
-    ax2.set_title("Plan, UTM 13N mi (black = PUD; blue same / red topfill / green underfill)", fontsize=8)
+    ax2.set_title("Plan, UTM 13N mi (black = PUD; blue same bench / red below / green above)", fontsize=8)
     fig.suptitle(title, fontsize=10)
     fig.tight_layout()
     buf = io.BytesIO()
@@ -200,11 +207,17 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--n-per", type=int, default=6)
     ap.add_argument("--seed", type=int, default=20261031)
+    ap.add_argument("--resample", action="store_true", help="draw a fresh sample instead of re-rendering the as-registered cards")
     a = ap.parse_args(argv)
     s = pd.read_csv(st.DOCS / "sticks.csv.gz")
-    Lp = pd.read_pickle(RUNS / "pud_links.pkl")
+    Lp = sp.reclass_same(pd.read_pickle(RUNS / "pud_links.pkl"))
     Lp["counts"] = counting(Lp)
-    pick = sample(s, a.n_per, a.seed, edge_ids(Lp))
+    was = pd.read_csv(R0) if R0.exists() else None
+    if was is None or a.resample:
+        pick = sample(s, a.n_per, a.seed, edge_ids(Lp))
+        pick["outcome_r0"] = pick["stick_id"].map(dict(zip(was["stick_id"], was["outcome"], strict=True))) if was is not None else None
+    else:
+        pick = was[["stick_id", "why", "outcome"]].rename(columns={"outcome": "outcome_r0"}).merge(s, on="stick_id", how="left")
     with get_connection() as conn:
         U = prod.universe(conn, basins=["midland"])
         u = psr.pull_universe(conn, "midland")
@@ -227,39 +240,47 @@ def main(argv: list[str] | None = None) -> int:
         L = Lp[Lp["child"] == str(sid)].copy()
         L["fp_year"] = [fp[p].year if p in fp else "?" for p in L["parent"]]
         L = L.sort_values(["counts", "dh_ft"], ascending=[False, True])
-        title = f"#{n} {r.group} stick {sid} ({r.category}, pad {r.pad_name}) — {r.outcome}"
+        changed = isinstance(r.outcome_r0, str) and r.outcome_r0 != r.outcome
+        title = f"#{n} {r.group} stick {sid} ({r.category}, pad {r.pad_name}) — {r.outcome}" + (f" (was {r.outcome_r0})" if changed else "")
         png = card_png(g, t, L, geoms, tvds, title)
         cnt = L[L["counts"]]
         tab = "".join(
             f"<tr><td>{p.parent}</td><td>{names.at[p.parent, 'well_name'] if p.parent in names.index else ''}</td>"
             f"<td>{names.at[p.parent, 'operator'] if p.parent in names.index else ''}</td><td>{p.parent_bench}</td><td>{tag.get(p.parent, '')}</td>"
-            f"<td>{fp.get(p.parent, '')}</td><td class=num>{(REF - fp[p.parent]).days // 30 if p.parent in fp else ''}</td><td>{p.cls}</td>"
+            f"<td>{fp.get(p.parent, '')}</td><td class=num>{(REF - fp[p.parent]).days // 30 if p.parent in fp else ''}</td><td>{PLAIN.get(p.cls, p.cls)}</td>"
             f"<td class=num>{p.dz_ft:+.0f}</td><td class=num>{p.dh_ft:.0f}</td><td class=num>{p.overlap:.0%}</td>"
             f"<td>{('counts' + (' (permit TVD)' if p.permit else '')) if p.counts else ('young/codev' if p.rel != 'parent' else ('< 30 % alongside' if p.overlap < ps.MIN_OVERLAP else 'outside envelope'))}</td></tr>"
             for p in L.itertuples())
         prec = "" if pd.isna(r.pair_key) else f"bench pair <b>{r.pair_key}</b>: {int(r.prec_multi)} drilled multi-parent wells, {int(r.prec_package)} packages (floor 30)"
+        if isinstance(r.pattern_key, str):
+            prec += (f"; neighbour pattern <b>{r.pattern}</b>: {int(r.pattern_multi)} drilled {r.bench} wells with 2+ neighbours in it, "
+                     f"{int(r.pattern_package)} packages (floor 30)")
+        was_txt = (f"<div class='flag bad'>As registered: {OUTCOME_TXT.get(r.outcome_r0, r.outcome_r0)} → revision 1: "
+                   f"{OUTCOME_TXT.get(r.outcome, r.outcome)}</div>" if changed else "")
         fac = "" if pd.isna(r.factor) or r.outcome in ("as_is_unexposed", "as_is_single_parent") else f" · factor {r.factor:.3f} (Delaware D113 table, INTERIM)"
         part = f" · DEAN {r.part}" if isinstance(r.part, str) else ""
         cards.append(
             f"<section class=card id=c{n}><h2>{title}</h2>"
             f"<div class=meta>{r.why} · stick TVD {t:,.0f} ft · length {r.length_ft:,.0f} ft · Novi status {r.recon_status}{part}</div>"
-            f"<p><b>{OUTCOME_TXT.get(r.outcome, r.outcome)}</b>. Configuration {r.config_class if isinstance(r.config_class, str) else 'none'} "
-            f"(counting parents: same {int(r.n_same)}, topfill {int(r.n_topfill)}, underfill {int(r.n_underfill)}){fac}. {prec}. "
+            f"{was_txt}<p><b>{OUTCOME_TXT.get(r.outcome, r.outcome)}</b>. Counting neighbours: same bench {int(r.n_same)}, "
+            f"below {int(r.n_topfill)}, above {int(r.n_underfill)}{fac}. {prec}. "
             f"Warehouse-tag reading: {r.outcome_wh_tag}. Producers &lt; 12 months nearby: {int(r.recent_producers)}; permit-TVD parents: {int(r.permit_parents)}.</p>"
             f"<img src='data:image/png;base64,{png}' alt='card {n}'>"
-            "<table><tr><th>api10</th><th>well</th><th>operator</th><th>BOX bench</th><th>tag</th><th>first prod</th><th>months on</th><th>class</th>"
+            "<table><tr><th>api10</th><th>well</th><th>operator</th><th>BOX bench</th><th>tag</th><th>first prod</th><th>months on</th><th>where</th>"
             f"<th>dz ft (+ parent deeper)</th><th>gap ft</th><th>alongside</th><th>status</th></tr>{tab}</table>"
             f"<p class=meta>{len(cnt)} counting of {len(L)} linked producers.</p></section>")
-        rows.append({"card": n, "stick_id": sid, "group": r.group, "pad_name": r.pad_name, "why": r.why, "outcome": r.outcome,
-                     "config_class": r.config_class, "pair_key": r.pair_key, "prec_multi": r.prec_multi, "factor_interim": r.factor,
+        rows.append({"card": n, "stick_id": sid, "group": r.group, "pad_name": r.pad_name, "why": r.why, "outcome_r0": r.outcome_r0, "outcome": r.outcome,
+                     "config_class": r.config_class, "pair_key": r.pair_key, "prec_multi": r.prec_multi, "pattern": r.pattern,
+                     "pattern_multi": r.pattern_multi, "factor_interim": r.factor,
                      "dean_part": r.part, "outcome_wh_tag": r.outcome_wh_tag, "counting_parents": ";".join(cnt["parent"]), "verdict": "", "note": ""})
     head = (f"<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
             f"<title>BOX 21a proximity cards</title><style>{_CSS} body{{max-width:1300px;margin:auto;padding:0 16px;overflow-x:hidden}} "
             ".card{border-top:2px solid #9ca3af;margin-top:24px} img{max-width:100%} table{display:block;overflow-x:auto;max-width:100%}</style></head><body>"
             f"<h1>BOX step 21a — Midland proximity examples ({len(rows)} cards, seed {a.seed})</h1>"
             f"<div class=meta>built {dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec='seconds')} · reference date {REF} · in-extent undrilled "
-            "sticks (D117) · envelopes same 1,000 vt × 1,400 hz, topfill 800 × 1,400 (parent deeper), underfill 500 × 1,400 (parent shallower) · "
-            "counting parent = ≥ 12 months producing, ≥ 30 % alongside, inside its envelope (permit TVDs counted, flagged) · precedent = Midland drilled children · "
+            "sticks (D117) · revision 1 · a counting neighbour = ≥ 12 months producing, ≥ 30 % alongside, within 1,400 ft sideways, and "
+            "same bench (same BOX bench, ≤ 300 ft vertically), below (deeper, ≤ 800 ft) or above (shallower, ≤ 500 ft); permit TVDs counted, flagged · "
+            "precedent = Midland drilled wells: D114 bench pair AND the same neighbour pattern, ≥ 30 each · "
             "factor = Delaware D113 table (INTERIM until 21b) · read-only</div>"
             "<p>Verdicts go in <code>cards_sample.csv</code> (<b>accept</b> = the outcome feels right for this location; <b>reject</b> = it doesn't; "
             "a note on why helps). Open the api10s in anduin for the gunbarrel you normally draw.</p>")
@@ -267,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
     pd.DataFrame(rows).to_csv(OUT / "cards_sample.csv", index=False)
     (OUT / "cards_summary.json").write_text(json.dumps({"n": len(rows), "seed": a.seed, "by_why": pd.DataFrame(rows)["why"].value_counts().to_dict()}, indent=1),
                                            encoding="utf-8")
-    print(pd.DataFrame(rows)[["card", "group", "why", "outcome", "pair_key"]].to_string(index=False))
+    print(pd.DataFrame(rows)[["card", "group", "why", "outcome_r0", "outcome", "pattern", "pattern_multi"]].to_string(index=False))
     return 0
 
 

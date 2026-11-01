@@ -14,7 +14,8 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 807 passed / 46 skipped; the digest pin waits for the gate (§5).
+- Tests: eng_db suite 807 passed / 46 skipped; step-21 tests 22 passed (digest pinned at revision 1).
+- **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
 
@@ -70,8 +71,9 @@ block × first-production-year cells; 90 % block bootstrap; reported lateral (`p
 
 Producer universe 31,051 Midland horizontals; 24,729 drilled children (≥ 2016) with 301,890 links; 33,016 in-extent undrilled
 sticks (D117: PUD + RES) with 273,693 links; reference date 2026-08-01. Precedent = Midland drilled children (60 bench-pair keys).
-The factor used to decide the package tier is the **Delaware D113 table (INTERIM)**. Counts are sticks, not volumes
-(`prox_by_group.csv`).
+The factor used to decide the package tier is the **Delaware D113 table (INTERIM)**. Counts are sticks, not volumes. The table
+and bullets below are **as registered**; revision 1 (§3.6) changes them, and `prox_by_group.csv` / `index.html` now carry the
+revision-1 outcomes.
 
 | group | sticks | unexposed | single parent | haircut | no forecast: precedent / package | multi-parent % |
 |---|---|---|---|---|---|---|
@@ -100,11 +102,64 @@ The factor used to decide the package tier is the **Delaware D113 table (INTERIM
   outcomes (0.25 %; `prox_sensitivity_tag.csv`).
 - A Midland factor table can be fit (`prox_ladder_fill.csv`): 11,923 tuning-window children inside the extents (tuning blocks
   only), 1,884 multi-parent (WCA_1 609, LSSH 566, WCB_1 257, MS 137, JM 135, DEAN 101, WCB_2 63, WCC 11, WCD 5). At the 30-child
-  floor 35 of 117 keys fill at k1, 43 / 121 at k2, 44 / 94 at k3, 33 / 43 at k4; thin configurations fall to the class rungs, as
+  floor 35 of 117 keys fill at k1, 43 / 121 at k2, 44 / 94 at k3, 33 / 43 at k4 (revision 1's 300-ft cap: 34 / 125, 42 / 122,
+  43 / 95, 33 / 44; multi-parent children unchanged at 1,884); thin configurations fall to the class rungs, as
   in the Delaware.
 - Hash note (no change): 13d's pin of `haircut_table_candidate.csv` (0a62beb8…) is the RAW (CRLF) bytes, while
   `prospective16.sha256_file` normalises to LF (382d2e08…). Same file, unchanged since e0845b1; a 2028 check through that helper
   would read a false mismatch.
+
+### 3.6 Revision 1 (Michael, 2026-10-31, card 13): which sticks get a forecast
+
+Card 13 is an MS stick between two producing MS wells (667 / 866 ft either side), a JM 120 ft below at 159 ft, a US 367 ft above
+and three LSSH below — one 2024 Diamondback development. D114 passed it on `MS>mixed` (82 drilled wells), but that key is the
+bench alone: 81 of the 82 had one MS neighbour plus a deeper one; **none** had a neighbour above, and none sat as tight. Michael:
+a stick like this will never be drilled and has no analogs to measure a haircut from, so it should not be forecast. Two rules,
+Midland only (`box/step21_prox.py`, revision row in `PREREGISTRATION.md`); the Delaware record keeps D114 until it is revised
+from what the Midland shows:
+
+- **Same bench = same BOX bench AND ≤ 300 ft vertically** (was 1,000 ft, a leftover of the exposure screen). Drilled same-bench
+  pairs: median 48 ft, p99 334 ft; 214 sticks had a same-bench neighbour > 300 ft off (WCC and JM sticks with suspect tags).
+  Farther ones are classed by depth (below / above) and need that envelope.
+- **Neighbour-pattern precedent, on top of D114.** A stick with 2+ neighbours is forecast only when ≥ 30 drilled Midland wells of
+  its bench, also with 2+ neighbours, sit in its pattern: same-bench neighbours on none / one side / both sides, + one above, +
+  one below. The pattern's package count is reported, not gated (gating it on the interim Delaware factor would refuse 1,751 more,
+  mostly "a well above and below, none beside" — not what was approved).
+
+Drilled Midland wells with 2+ neighbours, by pattern (`prox_precedent_pattern.csv`; precedent floor 30):
+
+| pattern | MS | JM | LSSH | DEAN | WCA | WCB_1 | WCB_2 |
+|---|---|---|---|---|---|---|---|
+| one side + below | 80 | 56 | 426 | 17 | 321 | 71 | 10 |
+| none beside + below | 130 | 86 | 378 | 38 | 273 | 32 | 3 |
+| none beside + above + below | 1 | 40 | 18 | 69 | 60 | 37 | 11 |
+| one side + above + below | 0 | 23 | 33 | 5 | 87 | 37 | 4 |
+| both sides | 3 | 2 | 32 | 0 | 74 | 33 | 6 |
+| both sides + below | 1 | 2 | 31 | 1 | 30 | 2 | 0 |
+| both sides + above | 0 | 0 | 2 | 0 | 21 | 16 | 2 |
+| both sides + above + below | 0 | 0 | 3 | 2 | 15 | 2 | 1 |
+
+**Effect (sticks; as registered → revision 1; `prox_revision1.csv`):** haircut 12,407 → 10,897; no forecast 1,523 → 3,016
+(4.6 % → 9.1 %). 1,481 move haircut → `no_forecast_pattern`. The 300-ft cap moves 54 more: 27 haircut → no forecast on D114
+itself, 14 no forecast → as-is, 9 single neighbour → unexposed, 3 haircut → as-is, 1 no forecast → haircut.
+
+| group | no_forecast_pattern | main patterns |
+|---|---|---|
+| MID_LSSH | 370 | none beside + above + below 263, both sides + above + below 105 |
+| MID_WCB_1 | 363 | both sides + above 273 |
+| MID_JM | 333 | one side + above + below 211, both sides + above + below 75 |
+| MID_MS | 146 | **both sides + below 109** (MS drilled between two MS producers: 3 times, ever), both sides + above + below 6 |
+| MID_WCB_2 | 119 | none beside + above + below 47 |
+| MID_WCA_1 | 108 | both sides + above + below 73, both sides + above 35 |
+| MID_DEAN | 42 | one side + above + below 19 |
+| MID_WCC / MID_WCD | 0 | their multi-neighbour sticks already fail D114 |
+
+DEAN (D143): forecast share in the loop's addition 86.8 % → 83.5 %, body 96.5 % → 94.1 %. Most DEAN additions sit in "none
+beside + above + below" (69 drilled precedents), so they still pass.
+
+Cards: the same 46 sticks re-rendered (`prox_cards/cards.html`; as-registered outcomes kept in `cards_sample_r0.csv`); four
+change — #13 (MS, both sides + above + below, 0 precedents) and #15 (WCB_2, one side + below, 10) and #32 (DEAN, one side +
+above, 8) → no forecast; #39 (WCC) → single neighbour once a same-tag well 300+ ft off is classed by depth.
 
 ## 4. Water reach (D107 / D133)
 
@@ -144,10 +199,10 @@ in-extent stick (`reach_water.csv`).
    - (b) **rec:** make the linear-per-ft twin (`mid_r2_lin`, same cohort) the Midland record and report Cui as the twin. The
      evidence was read on tuning blocks before any score, so this is the time to choose. The 17,500-ft+ tail (−8 %, 1–3 % of
      sticks) is disclosed. (b) needs a revision row and amends D129's "through Cui".
-6. **D143 / D114 mixed precedent (informs, doesn't block 21a).** DEAN's loop additions mostly pass on a bench-level "DEAN>mixed"
-   precedent. Judge it on the cards; if a mixed precedent should have to match the parent benches, that is a D114 amendment for all
-   groups in both basins — its own step.
-7. **The 46 proximity cards** (`prox_cards/cards.html`) — your review, before the freeze.
+6. **D114 mixed precedent — DONE as revision 1 (§3.6), Midland only.** Same bench ≤ 300 ft; neighbour-pattern precedent on top of
+   D114. Open: whether the pattern's PACKAGE count should also gate (it would refuse 1,751 more on the interim factor — better
+   decided on the Midland factor at 21b). The Delaware is revised later from the Midland result.
+7. **The 46 proximity cards** (`prox_cards/cards.html`, re-rendered under revision 1) — your review, before the freeze.
 
 **Flags (no action taken):** D129's "scored against the r2 band … with its own acceptance" vs D134 C (one variant, classes
 reported) — the pre-registration follows D134 C. Every Midland `box.bench_scope` row reads `validation = 'validated'` (the column
