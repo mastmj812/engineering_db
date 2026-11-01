@@ -46,7 +46,7 @@ def test_method_is_run_19s_r2_with_the_d129_band():
     assert st.RULES.translate_range == (5_000.0, math.inf)
     assert st.RULES == p16prod.RULES.__class__(**{**p16prod.RULES.__dict__, "translate_range": (5_000.0, math.inf)})
     assert repr(st.RULES) == st.DEFINITION["method"]["rules"]
-    assert st.HARNESS_VARIANTS == {st.RAW: (s16.MEASURED, st.RULES)} and st.HARNESS_SCORED == (st.RAW, f"{st.RAW}_lin")
+    assert st.HARNESS_VARIANTS == {st.RAW: (s16.MEASURED, st.RULES)} and st.HARNESS_SCORED == (st.RAW, f"{st.RAW}_lin", f"{st.RAW}_cuide")
     assert bsn.df_terminal(bsn.MIDLAND) == st.DEFINITION["method"]["df_terminal"] == 0.06  # D132
 
 
@@ -135,7 +135,10 @@ def test_per_ft_by_length_recovers_a_planted_ratio():
     assert abs(t.at["7.5-10k", "observed"] - 1.0) < 1e-9
     assert abs(t.at["12.5-15k", "observed"] - 0.90) < 0.01 and abs(t.at["15-17.5k", "observed"] - 0.85) < 0.01
     assert t.at["15-17.5k", "extrapolated"] and not t.at["7.5-10k", "extrapolated"]
-    assert t.at["15-17.5k", "cui"] < t.at["12.5-15k", "cui"] < 1.0
+    assert t.at["15-17.5k", "cui_delaware"] < t.at["12.5-15k", "cui_delaware"] < 1.0
+    # revision 7: the Midland panel (record) is near-flat; the Delaware one (as registered) is the steep twin
+    assert 0.98 < t.at["15-17.5k", "cui_midland"] < t.at["12.5-15k", "cui_midland"] < 1.0
+    assert t.at["15-17.5k", "cui_midland"] - t.at["15-17.5k", "cui_delaware"] > 0.09
 
 
 def test_dean_body_or_addition():

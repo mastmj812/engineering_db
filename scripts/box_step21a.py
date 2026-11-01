@@ -238,7 +238,7 @@ def reach_tables(U: pd.DataFrame, pools: dict[str, pd.DataFrame], labels: pd.Dat
         lrows.append({"group": g, "sticks_in_extent": len(s), **{f"sticks_{k}": int(v) for k, v in cls.value_counts().items()},
                       "share_gt_12_5k": round(float((ll > 12_500).mean()), 3) if len(ll) else None,
                       "share_gt_15k": round(float((ll > 15_000).mean()), 3) if len(ll) else None,
-                      "cui_at_p90_len": round(float(ev.lat.lateral_efficiency(float(np.nanpercentile(ll, 90)))), 3) if len(ll) else None})
+                      "cui_at_p90_len": round(float(ev.lat.lateral_efficiency(float(np.nanpercentile(ll, 90)), basin=ev.lat.bsn.MIDLAND)), 3) if len(ll) else None})
         m = pool_xy(w)
         stick_rows.append(s.assign(d10_oil_mi=r["d10_mi"].to_numpy(), ring_oil=r["ring"].to_numpy(), d10_water_mi=rw["d10_mi"].to_numpy(),
                                    water_class=wc, water_top_op_share=top, length_ft=ll.to_numpy())[
@@ -585,8 +585,9 @@ def render() -> str:
          "<h2>4. Long laterals</h2>", _table(length),
          ("<h3>Observed 12-month oil per 1,000 ft by lateral class vs the 7,500–10,000 ft class (TUNING blocks only; within 3-mi block × "
           "first-production-year cells; 90 % block-bootstrap interval) next to Cui &amp; Cross</h3><p>Lateral = reported lateral length. "
-          "A ratio above Cui = per-ft degradation flatter than the Delaware curve (D129: the translation then reads LOW on long PUDs).</p>"),
-         _table(pf_show, {"observed": ".3f", "lo90": ".3f", "hi90": ".3f", "cui": ".3f"}),
+          "cui_midland = the paper's Midland panel, the translation of record since revision 7; cui_delaware = its Delaware panel, "
+          "as registered (a ratio above it = per-ft degradation flatter than the Delaware curve, D129).</p>"),
+         _table(pf_show, {"observed": ".3f", "lo90": ".3f", "hi90": ".3f", "cui_midland": ".3f", "cui_delaware": ".3f"}),
          "<h2>5. Proximity on Midland producers (D112–D116 pattern)</h2>",
          (f"<div class=meta>producer universe {px['n_universe']:,} (horizontals in the Midland bbox + 0.05°) · drilled children {px['n_children']:,} · "
           f"child links {px['n_child_links']:,} · stick links {px['n_stick_links']:,} · BOX-membership relabels {px['box_bench_relabels']:,} · "

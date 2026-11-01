@@ -33,6 +33,7 @@ the water scorer wiring. A 21b / 21c run whose `box/`, `scripts/` or `dealintake
 | 2026-11-01 (revision 4) | Proximity, Midland only, **stick side: every producer existing at the data date is a parent**, whatever its months on (`box/step21_prox.existing_as_parents`). The drilled-well side (precedents, factor table, packages) keeps the ≥ 12-month parent and the 180-day co-development window. Stated assumption: ≥ 12 months from the data date to a BOX well's first production. Drilled-but-not-producing wells are not counted. Effect: FINDINGS §3.9. | Michael, card 8 (an MS stick whose neighbours came on ~140 days before the data date): "by the time an offer was made, accepted, closed, a rig stood up, the well drilled, the well frac'd ... those neighboring wells are very much parents"; "an existing well/neighbor today is essentially a parent." |
 | 2026-11-01 (revision 5) | Proximity, Midland only, **spacing floor**: a stick with a same-bench producer (by depth, revision 3; any age, revision 4) ≤ 400 ft sideways and ≥ 30 % alongside gets **no forecast in every bench**, whatever else it would get (`no_forecast_spacing`; `box/step21_prox.nearest_same_ft`). Effect: FINDINGS §3.10. | Michael, card 42 (a WCB_1 stick 201 ft and 694 ft between > 90 %-alongside WCB_1 producers, likely missed by reconciliation): precedent and factor don't see distance; drilled Midland wells sit within 400 ft of a same-bench parent 142 times in 24,729 (0.6 %). "The fact that other operators never do this is the clue we need. They choose not to do that for a reason." |
 | 2026-11-01 (revision 6) | **Named check, reported never judged: Pad C 233** (SM UL Boss Hogg, Upton; `box/step21.PAD_C233`, the audit's 15 PUD sticks by label). 21b reports per stick: proximity outcome, Midland factor and its rung beside the interim Delaware factor and Novi's implied haircut; BOX oil cum12 / cum24 / EUR30 / 50-yr EUR per 1,000 ft and EUR30 ÷ cum24 beside Novi's and the audit's bench-pair yardsticks (WCA_1 over WCB_1 −35 %, n = 28; LSSH over WCA_1 −10 %; WCC underfill −21 %); the audit's rock read against BOX's cohort level. No method changes. | Michael, 2026-11-01: the 2026-09-28 pad audit (https://claude.ai/artifact/L2qhEL68AJsFFM8C7ziuMG) started BOX; 21a decides only treatment (FINDINGS §3.11), so its level and tail findings can only be checked at 21b. |
+| 2026-11-01 (revision 7) | **Lateral translation on the Midland = the paper's MIDLAND panel** (Cui & Cross Figure 8, Wolfcamp A, 2,000 lb / 60 bbl per ft: 1.000 / 0.977 / 0.956 / 0.954 / 0.951 at 5,000 / 7,500 / 10,000 / 12,500 / 15,000 ft, read off the figure ±0.003; `box/lateral.CUI_MIDLAND`), extended past 15,000 ft (flagged), in place of the Delaware panel registered here. D129's "through Cui" = each basin's OWN panel; the Delaware panel and the Delaware record are unchanged (`lateral_efficiency` / `relative` default to it). 21b scores `mid_r2` on the Midland panel and reports two twins from the same cohort: linear per ft (`mid_r2_lin`) and the Delaware panel (`mid_r2_cuide`). The panel is Wolfcamp A only; it is applied to every Midland bench, Spraberry and DEAN included. | Michael, gate question 5: "I'd rather use Cui, which I believe is pretty flat in the Midland vs the Delaware." The Delaware panel implies 1.10 → 0.85 across 5,000–20,000 ft against observed Midland per-ft oil flat within ~2 % to 17,500 ft; the Midland panel sits inside the 90 % interval in every class from 10,000 to 17,500 ft (FINDINGS §2). |
 
 ## 0. Transferred as decided (D134: the Delaware method, not re-derived)
 
@@ -72,9 +73,10 @@ api10 sits in two groups. Out of scope: US (D127), BRNT / MISS / MRMC / WDFD (D2
 
 `Rules(relax=('count', 'spacing'), count_floor=5, wide_tol=0.4, lateral='translate', translate_range=(5000.0, inf), …)` = run 19's
 r2 rules with **no upper bound on the analog's completed lateral** (D129 / D134 C). The 5,000-ft floor stays. Every cohort's
-per-1,000-ft P50 is scaled to the location's completed lateral by Cui & Cross 2,000 lb / 60 bbl per ft (`box/lateral.py`), the
-last segment extended past 12,500 ft (flagged; §8 reports the share). The harness predicts it as **`mid_r2`** plus its
-linear-per-ft twin `mid_r2_lin` (same cohort; §8 only).
+per-1,000-ft P50 is scaled to the location's completed lateral by Cui & Cross 2,000 lb / 60 bbl per ft on the paper's **Midland
+panel** (revision 7; `box/lateral.CUI_MIDLAND`), the last segment extended past 15,000 ft (flagged; §8 reports the share). The
+harness predicts it as **`mid_r2`** plus two twins from the same cohort (§8 only): linear per ft (`mid_r2_lin`) and the paper's
+Delaware panel (`mid_r2_cuide`).
 
 ## 3. Folds, grain, holdout
 
@@ -156,11 +158,12 @@ operator's share of the 10 nearest measured analogs are reported per group (D133
 ## 8. Long laterals (reported in 21b, never judged — D134 C)
 
 - The D120 condition-6 mismatch classes (well completed lateral / cohort mean: < 0.80 / 0.80–1.25 / ≥ 1.25), oil + gas, cum-12 /
-  24 / 36, `mid_r2` vs `mid_r2_lin` from the same cohort, per group and pooled.
-- Absolute completed-lateral classes 5,000 … ≥ 20,000 ft; the share of locations whose translation extrapolates past 12,500 ft
-  and past 15,000 ft.
-- Context (21a, tuning blocks only): the observed per-ft ratio by length class vs Cui (`index.html` §4). D129's reading: if the
-  Midland curve is flatter than Cui, the translation reads LOW on long PUDs — disclosed, not corrected.
+  24 / 36, `mid_r2` vs `mid_r2_lin` and `mid_r2_cuide` from the same cohort, per group and pooled.
+- Absolute completed-lateral classes 5,000 … ≥ 20,000 ft; the share of locations whose translation extrapolates past 15,000 ft
+  (the Midland panel's last point) and past 12,500 ft.
+- Context (21a, tuning blocks only): the observed per-ft ratio by length class vs both panels (`index.html` §4). Revision 7
+  answers D129's reading: the Delaware panel read LOW on long PUDs; the Midland panel matches the observed ratio to 17,500 ft,
+  and its ≥ 17,500-ft gap (observed −8 % vs −2 %, 76 wells) is disclosed, not corrected.
 
 ## 9. Reported, never judged
 
@@ -185,8 +188,9 @@ for the nine groups, at the frozen SHA, recorded per run (with the nightly check
 Questions for Michael (`FINDINGS.md` §5 has the evidence and a recommendation for each): (1) proximity factor source, (2) the
 bench label, (3) the record-treatment rule as stated, (4) the actuals pin, (5) the lateral translation on the Midland (Cui as
 D129 / D134 C decided, or the linear-per-ft twin as record — the 21a evidence shows Midland per-ft oil flat within ~2 % to
-17,500 ft). Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
+17,500 ft). **Answered 2026-11-01:** (1) yes, Midland tuning children; (2) yes, BOX membership; (4) yes, 2026-08-01; (5) Cui on
+the paper's Midland panel (revision 7); (3) open. Any answer that changes this file or `DEFINITION` lands as a revision row, and the digest is re-stamped in the same
 commit.
 
-**Definition digest (revision 6):** `91ed9d26510d6de634a43019e121979e85f208f39cbcd54bff5e23b83419b85b` (revision 5: `415957a9dfedac55fbe062234143917b016961e40e4ca191673bd972d0a08776`; revision 4: `f1045738a6e785a54cdc4b9612cfe26053ea06b1a89a5aa3e2655db4d0d7f9a1`; revision 3: `f6c30aab5d70508c764ce3501e86d760ff7bdbd45d0c4175cce6234ab804849f`; revision 2: `ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5`; revision 1: `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9`; as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
+**Definition digest (revision 7):** `505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900` (revision 6: `91ed9d26510d6de634a43019e121979e85f208f39cbcd54bff5e23b83419b85b`; revision 5: `415957a9dfedac55fbe062234143917b016961e40e4ca191673bd972d0a08776`; revision 4: `f1045738a6e785a54cdc4b9612cfe26053ea06b1a89a5aa3e2655db4d0d7f9a1`; revision 3: `f6c30aab5d70508c764ce3501e86d760ff7bdbd45d0c4175cce6234ab804849f`; revision 2: `ec94f7fb75cc6a7af5857b982d1a9677287a4313f8532c127c0d050e731123b5`; revision 1: `142048ee9c1ce63b8ce74c93ecbc750742afde137ede24b4bc7050c3600594e9`; as registered: `3299259e86d157aeeb157d8b2d66393585a40e889f42e1a4fb7b46fad0af59de`).
 **Frozen SHA:** _stamped at the gate_.

@@ -1,13 +1,13 @@
 {
- "built_at": "2026-11-01T10:45:52-06:00",
- "code_sha": "1ca1dbc690ebb851f0a7062ecf23e6af999e12b4+dirty",
- "definition_digest": "91ed9d26510d6de634a43019e121979e85f208f39cbcd54bff5e23b83419b85b",
+ "built_at": "2026-11-01T12:06:11-06:00",
+ "code_sha": "6a82d62ade1a4b6cf5e5d901e94cfacdf9cae8d9+dirty",
+ "definition_digest": "505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900",
  "actuals_through": "2026-08-01",
  "live_last_full_month": "2026-08-01",
  "holdout_salt": "box-holdout-2026-10-13",
  "holdout_share": 0.2,
  "min_packages": 30,
- "seconds": 87,
+ "seconds": 151,
  "extents": {
   "MID_WCA_1": {
    "extent_id": 36,
@@ -256,22 +256,22 @@
   }
  },
  "prox": {
-  "n_universe": 31051,
-  "n_children": 24729,
+  "n_universe": 31041,
+  "n_children": 24717,
   "n_child_links": 301890,
   "n_stick_links": 273693,
   "n_sticks": 32541,
-  "box_bench_relabels": 580,
+  "box_bench_relabels": 818,
   "n_precedent_pairs": 38,
   "n_precedent_patterns": 82,
   "same_dv_max_ft": 150.0,
-  "seconds": 15,
+  "seconds": 19,
   "haircut_table": "docs\\box\\prox-2026-10-19\\haircut_table_candidate.csv",
   "haircut_table_sha256": "382d2e086a50cd84f2ce2817d5a12c4e3d6beb4c96ba64e8ac7854ca299b7fd0",
   "reference_date": "2026-08-01"
  },
  "labels": {
-  "calculated": 19671,
+  "calculated": 19670,
   "measured": 6991,
   "insufficient": 1029,
   "indeterminate": 184,

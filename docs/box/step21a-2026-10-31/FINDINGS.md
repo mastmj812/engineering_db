@@ -14,7 +14,7 @@ Read-only. Nothing was forecast, scored or stored; no warehouse write. Branch `c
 - **Harness:** `box/acceptance.BENCH_SPECS` gains the nine `MID_<bench>` groups (basin `midland`); their `--step16` path predicts
   `mid_r2` (run 19's r2 rules, lateral band 5,000 ft → no upper bound) and its linear-per-ft twin. Delaware specs unchanged.
 - **Pool:** `docs/box/pool-midland-2026-10-31/` = copies of the step-20 sets of record + `MANIFEST.json` (sha256 + source commit).
-- Tests: eng_db suite 819 passed / 46 skipped; step-21 tests 27 passed (digest pinned at revision 6).
+- Tests: eng_db suite 821 passed / 46 skipped; step-21 tests 27 passed (digest pinned at revision 7); Midland-panel + twin tests in `tests/test_box_backtest.py` / `tests/test_box_step16.py`.
 - **Revision 1 (2026-10-31):** same bench ≤ 300 ft + neighbour-pattern precedent (§3.6) — 1,481 sticks to no forecast.
 
 Grain is stated per table: packages, wells or sticks. No bias appears anywhere in this step.
@@ -51,13 +51,13 @@ the expectation below; the final values come from 21b's SCORED counts (lower at 
 per 1,000 ft relative to the 7,500–10,000 ft class; producers first-producing 2016-01 … 2025-07 in TUNING blocks only; within 3-mi
 block × first-production-year cells; 90 % block bootstrap; reported lateral (`per_ft_by_length.csv`):
 
-| lateral class, ft | wells (all 9) | observed [90 %] | Cui implies | Wolfcamp (5) | Spraberry (4) |
-|---|---|---|---|---|---|
-| 5,000–7,500 | 1,352 | 1.004 [0.987–1.019] | 1.099 | 1.012 | 0.988 |
-| 10,000–12,500 | 5,897 | 0.991 [0.979–1.002] | 0.949 | 0.987 | 0.998 |
-| 12,500–15,000 | 1,583 | 0.986 [0.977–0.996] | 0.916 | 0.989 | 0.983 |
-| 15,000–17,500 | 1,038 | 0.983 [0.971–0.995] | 0.882 | 0.981 | 0.985 |
-| 17,500–20,000 | 76 | 0.916 [0.872–0.957] | 0.848 | 0.955 | 0.880 |
+| lateral class, ft | wells (all 9) | observed [90 %] | Cui implies (Delaware panel, as registered) | **Cui, Midland panel (record, revision 7)** | Wolfcamp (5) | Spraberry (4) |
+|---|---|---|---|---|---|---|
+| 5,000–7,500 | 1,352 | 1.004 [0.987–1.019] | 1.099 | **1.023** | 1.012 | 0.988 |
+| 10,000–12,500 | 5,897 | 0.991 [0.979–1.002] | 0.949 | **0.988** | 0.987 | 0.998 |
+| 12,500–15,000 | 1,583 | 0.986 [0.977–0.996] | 0.916 | **0.986** | 0.989 | 0.983 |
+| 15,000–17,500 | 1,038 | 0.983 [0.971–0.995] | 0.882 | **0.982** | 0.981 | 0.985 |
+| 17,500–20,000 | 76 | 0.916 [0.872–0.957] | 0.848 | **0.979** | 0.955 | 0.880 |
 
 - Per-ft oil is flat within ~2 % from 5,000 to 17,500 ft; only the thin 17,500-ft+ tail degrades (−8 %, 76 wells). D129
   anticipated "flatter"; the size is the news. Translating with Cui puts a 16,000-ft PUD drawn from a 10,000–12,500-ft cohort
@@ -66,6 +66,14 @@ block × first-production-year cells; 90 % block bootstrap; reported lateral (`p
 - Removing the 15,000-ft cap admits 29–537 long producers per pool (`reach_oil.csv`) and moves the oil reach ring on 2–560 sticks
   per group (WCD 550, LSSH 560, DEAN 297); median 10th-analog gain 0.0–0.26 mi.
 - **Gate question 5** (§5). It bears on D129 / D134 C, which are settled, so nothing was changed.
+- **Revision 7 (Michael 2026-11-01, gate question 5): Cui on the paper's MIDLAND panel.** The "Cui implies" column above is the
+  paper's Delaware panel — the only one `box/lateral.py` carried. The same figure (Cui & Cross Fig. 8) has a Midland panel
+  (Wolfcamp A, to 15,000 ft; 2,000 lb / 60 bbl per ft: 1.000 / 0.977 / 0.956 / 0.954 / 0.951 at 5,000 … 15,000 ft, read off the
+  figure ±0.003, the printed 10,000-ft labels 0.99 / 0.99 / 0.97 / 0.96 agree). It sits inside the 90 % interval in every class
+  from 10,000 to 17,500 ft, 0.4 pt above it at 5,000–7,500 ft, and misses the thin ≥ 17,500-ft tail (−2 % vs −8 %, 76 wells;
+  disclosed). Against linear it differs by +2.3 % (short) to −2.1 % (17,500–20,000 ft). On a PUD drawn from a 10,000–12,500-ft
+  cohort: 16,000 ft ×0.995 (Delaware panel ×0.932), 6,000 ft ×1.037 (×1.171), 20,000 ft ×0.990 (×0.876). 21b reports linear
+  (`mid_r2_lin`) and the Delaware panel (`mid_r2_cuide`) as twins from the same cohort. `per_ft_by_length.csv` carries both panels.
 
 ## 3. Proximity on Midland producers (D112–D116 pattern; D143 DEAN)
 
@@ -212,6 +220,19 @@ The 15 PUD sticks of the 2026-09-28 audit are all in the population (the pad's o
 
 The audit's level (rock) and tail (EUR30 ÷ cum24 2.0–2.5× vs producing 1.3–2.0×) findings wait for 21b, where the pad is a named, reported check (revision 6).
 
+### 3.12 Evidence re-run at revision 7 (2026-11-01, after a late nightly)
+
+The revision-7 evidence run (12:06 CT) came after the day's nightly, which ran late (11:10–11:35 CT) and refreshed
+`curated.wells` / `formation_blueox`. **Record outcomes: 0 of 32,541 sticks changed** (every proximity column identical). What
+moved is live-tag evidence only:
+- producer universe 31,051 → 31,041, drilled children 24,729 → 24,717; tuning-window children in the extents 11,923 → 11,935,
+  multi-parent 1,884 unchanged (`prox_ladder_fill.csv`);
+- BOX-membership relabels 580 → 818, and the warehouse-tag sensitivity now moves 87 sticks (0 at revision 6: the tag-free key of
+  revision 3 had made it moot) — gate question 2 (BOX membership) keeps both out of the record;
+- the vendor tag has changed on 276 frozen-pool wells since the pool was copied (2026-10-31): JM → LSSH 74, WCB_2 → WCC 22,
+  WCB_1 → WCC 11, others ≤ 10. The 438 overrides are intact (438 / 438 honoured live). The pool is frozen (D137 pattern: report,
+  don't chase); these wells are 13e-style tag-release triage, not a 21a change.
+
 ## 4. Water reach (D107 / D133)
 
 Measured = `curated.water_data_quality` `measured`; reach = the 10th nearest measured-water producer (circle) from each
@@ -236,17 +257,20 @@ in-extent stick (`reach_water.csv`).
 
 ## 5. Gate 21a — your calls (recommendation first)
 
-1. **Proximity factor source — rec: Midland TUNING children only** (`PREREGISTRATION.md` §4). 1,884 multi-parent tuning children
+1. **Proximity factor source — rec: Midland TUNING children only — ANSWERED yes (Michael 2026-11-01).** (`PREREGISTRATION.md` §4). 1,884 multi-parent tuning children
    fill the class rungs; the holdout stays unread; the Delaware table is reported as a sensitivity. Alternative: carry the Delaware
    D113 table over unchanged (D134's "transfer, don't re-derive" read literally).
    **Card evidence (Michael, 2026-11-01): the interim haircuts read TOO LIGHT** — cards #9 (0.748), #11 (0.940), #12 (0.856), #33 (0.777) and #45 (0.923): "I would expect the PUD to perform much worse than the haircut factor suggested." The table ignores distance (the Delaware single-pair dose for same pool: 0.80 / 0.86 / 0.90 / 0.98 at 0–400 / 400–800 / 800–1,400 / 1,400–2,000 ft, cum-24). 21b should fit the Midland table with a nearest-gap rung where ≥ 30 children support it, and report these five cards' factors before and after.
-2. **Proximity bench label — rec: BOX membership** (580 producers relabelled; 84 stick outcomes move). Alternative: warehouse tags,
+2. **Proximity bench label — rec: BOX membership — ANSWERED yes (Michael 2026-11-01).** (580 producers relabelled; 84 stick outcomes move
+   at registration; 818 / 87 at the revision-7 re-run, §3.12). Alternative: warehouse tags,
    as the Delaware study read them.
 3. **Record-treatment rule (§5) — rec: confirm as written.** Expected: `mid_r2p_wf` WCA_1 / WCB_1 / LSSH / JM / MS (WCB_2
    marginal); `mid_r2p` DEAN / WCD; WCC provisional by construction.
-4. **Actuals pin 2026-08-01 — rec: confirm.**
-5. **Lateral translation on the Midland (bears on D129 / D134 C — your call; nothing changed).** §2: per-ft oil is flat within
-   ~2 % from 5,000 to 17,500 ft, where Cui implies 1.10 → 0.88. Both options stay ONE variant, and the harness computes both in 21b:
+4. **Actuals pin 2026-08-01 — rec: confirm — ANSWERED yes (Michael 2026-11-01).**
+5. **Lateral translation on the Midland — ANSWERED (Michael 2026-11-01): Cui, on the paper's MIDLAND panel = revision 7.**
+   The Cui "implies" of the original question was the paper's Delaware panel (the only one `box/lateral.py` carried); the
+   paper's Midland panel matches the observed ratio (§2). Linear (`mid_r2_lin`) and the Delaware panel (`mid_r2_cuide`) are
+   21b twins. The question as asked: §2: per-ft oil is flat within ~2 % from 5,000 to 17,500 ft, where Cui implies 1.10 → 0.88. Both options stay ONE variant, and the harness computes both in 21b:
    - (a) keep Cui as decided; the 21b length classes measure its bias, disclosed;
    - (b) **rec:** make the linear-per-ft twin (`mid_r2_lin`, same cohort) the Midland record and report Cui as the twin. The
      evidence was read on tuning blocks before any score, so this is the time to choose. The 17,500-ft+ tail (−8 %, 1–3 % of

@@ -26,10 +26,10 @@ DEAN>underfill,9,6
 WCD>underfill,5,0
 WCB_2>topfill,5,0
 WCC>same,5,1
-MS>same,4,1
-WCC>topfill,4,2
-JM>underfill,4,0
 WCD>same,4,1
+JM>underfill,4,0
+WCC>topfill,4,2
+MS>same,4,1
 JM>same,3,2
 US>topfill,3,1
 LSSH>underfill,2,0

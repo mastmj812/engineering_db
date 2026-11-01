@@ -287,7 +287,7 @@ def add_analog_predictions_v2(conn: Any, view: pd.DataFrame, f: dict[str, Any], 
         extra = {s16.MEASURED: s16.measured_pool(pool2, {str(k_): v_ for k_, v_ in sp_all.items()})}
         v16 = dict(variants16) if variants16 is not None else s16.VARIANTS
         tw = twins16 if twins16 is not None else s16.LINEAR_TWINS
-        variants = (*an.VARIANTS_V2, *v16, *(f"{v}_lin" for v in tw))
+        variants = (*an.VARIANTS_V2, *v16, *(f"{v}_lin" for v in tw), *(f"{v}{an.CUI_DE_TWIN}" for v in tw if basin != bsn.DELAWARE))
     xy_v = np.column_stack(br.dfr._xy(view["mid_lon"], view["mid_lat"]))
     xy_t = np.column_stack(br.dfr._xy(trn["mid_lon"], trn["mid_lat"]))
 

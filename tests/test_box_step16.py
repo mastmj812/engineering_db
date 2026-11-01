@@ -10,6 +10,7 @@ import pytest
 from scipy.spatial import cKDTree
 
 from box import analog as an
+from box import basin as bsn
 from box import step16 as s16
 from dealintake import config as di_config
 
@@ -89,6 +90,7 @@ def test_level_only_admits_post_peak_wells_only():
 
 def test_lateral_multiplier_translates_only_short_or_relaxed():
     assert an.lateral_multiplier(10_360.0, [10_000.0, 10_500.0], ()) == pytest.approx(10.36)
+    assert an.lateral_multiplier(7_720.0, [10_000.0], [an.LATERAL_RELAXED]) == an.lateral_multiplier(7_720.0, [10_000.0], [an.LATERAL_RELAXED], bsn.DELAWARE)
     assert an.lateral_multiplier(7_720.0, [10_000.0], [an.LATERAL_RELAXED]) > 7.72  # shorter lateral: higher per-ft efficiency
     assert an.lateral_multiplier(5_080.0, [10_000.0], ()) > 5.08
 
@@ -218,3 +220,22 @@ def test_prediction_path_carries_the_variants_and_leaves_box_v2_unchanged():
     assert np.allclose(ratio, an.lateral_multiplier(10_360.0, [10_000.0] * 12, [an.LATERAL_TRANSLATED]) / 10.36)
     assert with16[0]["box_v2s_r2_lat_ratio"] == pytest.approx(1.036)
     assert with16[0].get("box_v2") == base[0].get("box_v2")
+    assert not any(key.endswith(an.CUI_DE_TWIN) for key in with16[0])  # a Delaware run carries no Delaware-panel twin
+
+
+def test_midland_run_translates_on_its_own_panel_with_a_delaware_twin(monkeypatch):
+    """Step 21a revision 7: a Midland run's Cui uses the paper's Midland panel; the same cohort on the Delaware panel is a twin."""
+    monkeypatch.setattr(an, "_STATE", dict(an._STATE))  # the in-process run writes basin='midland' into the shared state
+    rows = [(1.0 + 0.1 * i, 10_000.0, 30.0, np.nan) for i in range(12)]
+    pool = _pool(rows)
+    pm = s16.measured_pool(pool, {f"w{i}": 1_000.0 for i in range(12)})
+    loc = {"api10": "pud", "x": 0.0, "y": 0.0, "lateral_ft": 16_000.0, "lateral_eff": 16_000.0, "spacing_ft": 1_000.0}
+    k = 24
+    p = an.predict_many_v2([loc], pool, pool, dt.date(2024, 12, 1), k, workers=1, bench="BS1_S", extra_pools={s16.MEASURED: pm},
+                           variants16=s16.VARIANTS, linear_twins=s16.LINEAR_TWINS, basin=bsn.MIDLAND)[0]
+    tw = f"box_v2s_r2{an.CUI_DE_TWIN}"
+    flags = [an.LATERAL_TRANSLATED]
+    mid, de = (an.lateral_multiplier(16_000.0, [10_000.0] * 12, flags, b) for b in (bsn.MIDLAND, bsn.DELAWARE))
+    assert np.allclose(np.asarray(p["box_v2s_r2"]["oil"]) / np.asarray(p["box_v2s_r2_lin"]["oil"]), mid / 16.0)
+    assert np.allclose(np.asarray(p[tw]["oil"]) / np.asarray(p["box_v2s_r2_lin"]["oil"]), de / 16.0)
+    assert 0.99 < mid / 16.0 < 1.0 and de / 16.0 < 0.95  # Midland panel ~flat; the Delaware one cuts ~7 % at 16,000 ft

@@ -96,16 +96,18 @@ def _class_mid(lo: float, hi: float) -> float:
     return (lo + hi) / 2.0 if np.isfinite(hi) else lo + 1_250.0
 
 
-def cui_ratio(lo: float, hi: float, ref: tuple[float, float] = REF_CLASS) -> float:
-    """Cui & Cross per-ft efficiency of a class's midpoint over the reference class's (box/lateral, extension past 12,500 ft)."""
-    return lat.lateral_efficiency(_class_mid(lo, hi)) / lat.lateral_efficiency(_class_mid(*ref))
+def cui_ratio(lo: float, hi: float, ref: tuple[float, float] = REF_CLASS, basin: str = lat.bsn.DELAWARE) -> float:
+    """Cui & Cross per-ft efficiency of a class's midpoint over the reference class's, on the basin's panel (box/lateral,
+    extension past the panel's last point)."""
+    return lat.lateral_efficiency(_class_mid(lo, hi), basin=basin) / lat.lateral_efficiency(_class_mid(*ref), basin=basin)
 
 
 def per_ft_by_length(d: pd.DataFrame, n_boot: int = 300, seed: int = 20261031, edges: Sequence[float] = LENGTH_EDGES_FT) -> pd.DataFrame:
     """`d`: one row per producer with block (hashable), fp_year, lateral_ft, oil12_kft (> 0). ln(oil12_kft) is demeaned
     within (block, fp_year) cells holding >= 2 wells; a class's ratio = exp(mean residual of the class - mean residual of the
     7,500-10,000 ft class). Block bootstrap (resample blocks) gives a 90 % interval. Returns one row per class with n wells,
-    n cells, the observed ratio and interval, and the Cui-implied ratio."""
+    n cells, the observed ratio and interval, and the Cui-implied ratio on the Midland panel (record, revision 7) and the
+    Delaware panel (as registered)."""
     x = d[np.isfinite(d["oil12_kft"]) & (d["oil12_kft"] > 0) & np.isfinite(d["lateral_ft"])].copy()
     x["cls"] = [length_class(v, edges) for v in x["lateral_ft"]]
     x = x[x["cls"].notna()]
@@ -138,7 +140,8 @@ def per_ft_by_length(d: pd.DataFrame, n_boot: int = 300, seed: int = 20261031, e
         q = bt[c].dropna() if c in bt else pd.Series(dtype=float)
         rows.append({"class": c, "n_wells": len(s), "n_cells": int(s["cell"].nunique()), "observed": point.get(c, np.nan),
                      "lo90": float(q.quantile(0.05)) if len(q) else np.nan, "hi90": float(q.quantile(0.95)) if len(q) else np.nan,
-                     "cui": cui_ratio(lo, hi), "extrapolated": bool(_class_mid(lo, hi) > 12_500.0)})
+                     "cui_midland": cui_ratio(lo, hi, basin=lat.bsn.MIDLAND), "cui_delaware": cui_ratio(lo, hi),
+                     "extrapolated": bool(_class_mid(lo, hi) > lat.paper_max_ft(lat.bsn.MIDLAND))})
     return pd.DataFrame(rows)
 
 

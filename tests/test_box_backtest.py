@@ -9,7 +9,9 @@ import pandas as pd
 import pytest
 
 from box import backtest as bt
+from box import basin as bsn
 from box import dev_factor as dfm
+from box import lateral as lat
 
 
 def test_lateral_efficiency_points_interp_and_extension() -> None:
@@ -21,6 +23,22 @@ def test_lateral_efficiency_points_interp_and_extension() -> None:
     for c in bt.CUI_DELAWARE:
         ys = [bt.lateral_efficiency(x, c) for x in range(5000, 15001, 500)]
         assert all(b <= a + 1e-12 for a, b in itertools.pairwise(ys))  # never increases with length
+
+
+def test_midland_panel_is_its_own_and_the_delaware_default_is_unchanged() -> None:
+    """Step 21a revision 7: each basin translates on its own panel of the paper's Figure 8; Delaware stays the default."""
+    for x in (3_000, 6_250, 10_000, 13_750, 20_000):
+        assert lat.lateral_efficiency(x) == lat.lateral_efficiency(x, basin=bsn.DELAWARE)
+    labels = {"1000-30": 0.99, "1350-40": 0.99, "1700-50": 0.97, "2000-60": 0.96}  # the figure's printed 10,000-ft labels
+    for c, v in labels.items():
+        assert abs(lat.lateral_efficiency(10_000, c, bsn.MIDLAND) - v) <= 0.005 + 1e-9  # a 2-dp label covers +-0.005
+    assert lat.lateral_efficiency(17_500, basin=bsn.MIDLAND) == pytest.approx(0.951 + (0.951 - 0.954))  # extended past 15,000 ft
+    assert lat.paper_max_ft(bsn.MIDLAND) == 15_000.0 and lat.paper_max_ft(bsn.DELAWARE) == 12_500.0
+    for c in ("1350-40", "1700-50", "2000-60"):  # 1000-30 is flat within the read (0.989 -> 0.992 -> 0.989)
+        ys = [lat.lateral_efficiency(x, c, bsn.MIDLAND) for x in range(5000, 20001, 500)]
+        assert all(b <= a + 1e-12 for a, b in itertools.pairwise(ys))
+    assert lat.relative(16_000, [11_250], basin=bsn.MIDLAND) == pytest.approx(0.995, abs=0.001)
+    assert lat.relative(16_000, [11_250]) == pytest.approx(0.932, abs=0.001)
 
 
 def test_bins() -> None:
