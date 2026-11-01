@@ -138,6 +138,52 @@ def class_bias(v: pd.DataFrame, mask: pd.Series, variants: tuple[str, ...], labe
     return rows
 
 
+def water_score(run: Path, groups: list[str], oil_validated_route: dict[str, str]) -> dict[str, pd.DataFrame]:
+    """§7 / D109 on the water tuning frames (scripts/box_step21b_water): pooled group x horizon cells on measured-water packages
+    (box/water11_report.cells, its judge: |bias| <= 20 % AND scale-free band <= benchmark + 0.10, >= 30 packages), the frozen
+    P2.5-P97.5 tuning intervals for the one-time holdout (box/water11_report.consistency, as built: 2,000 draws, its seed, a holdout
+    cell needs >= 10 packages), reach / thin / fallback, and the top operator's share of each target's analogs (D133)."""
+    from box import water11_report as wr
+
+    ops: dict[str, str] = {}
+    for g in groups:
+        p = st.POOL_DIR / f"wells_final_{st.GROUPS[g][0]}.csv"
+        w = pd.read_csv(p, dtype={"api10": str}, usecols=lambda c: c in ("api10", "operator"))
+        if "operator" in w:
+            ops.update(dict(zip(w["api10"], w["operator"].fillna("?"), strict=True)))
+    cells, ivl, rate, reach = [], [], [], []
+    for g in groups:
+        f = run / g / "water_tune.csv.gz"
+        if not f.exists():
+            continue
+        t = pd.read_csv(f, dtype={"api10": str, "package": str})
+        if t.empty:
+            continue
+        cells.append(wr.cells(t, by=("group",), methods=("ratio", "ratio_actoil")))
+        iv, pr_ = wr.consistency(wr.package_sums(t, "ratio"))
+        ivl.append(iv.assign(group=g, method="ratio"))
+        rate.append(pr_.assign(group=g))
+        top = []
+        for a in t["analogs"].fillna(""):
+            o = pd.Series([ops.get(x, "?") for x in a.split(";") if x])
+            top.append(float(o.value_counts(normalize=True).iloc[0]) if len(o) else np.nan)
+        t["top_operator_share"] = top
+        reach.append({"group": g, "measured targets": len(t), "radius_mi_p50": float(t["radius_mi"].median()), "radius_mi_p90": float(t["radius_mi"].quantile(0.9)),
+                      "past_20_mi_share": float((t["radius_mi"] > 20).mean()), "thin": int(t["thin"].astype(bool).sum()),
+                      "calculated_fallback": int((t["source"] == "calculated_fallback").sum()),
+                      "top_operator_share_p50": float(np.nanmedian(top)) if np.isfinite(top).any() else np.nan,
+                      "oil route": oil_validated_route.get(g)})
+    out = {"water_cells": pd.concat(cells, ignore_index=True) if cells else pd.DataFrame(),
+           "water_intervals": pd.concat(ivl, ignore_index=True) if ivl else pd.DataFrame(),
+           "water_pass_rate": pd.concat(rate, ignore_index=True) if rate else pd.DataFrame(), "water_reach": pd.DataFrame(reach)}
+    return out
+
+
+def frozen_water_csv(ivl: pd.DataFrame) -> str:
+    cols = ["group", "method", "horizon", "tuning_bias", "tuning_packages", "interval_lo", "interval_hi", "draw_packages_p50", "share_draws_judged"]
+    return ivl[cols].sort_values(["group", "horizon"]).reset_index(drop=True).to_csv(index=False, lineterminator="\n", float_format="%.12g")
+
+
 def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any | None = None, n_draws: int = 2000) -> dict[str, Any]:
     docs.mkdir(parents=True, exist_ok=True)
     groups = [g for g in (groups or list(st.GROUPS)) if (run / g / "run.json").exists()]
@@ -271,6 +317,8 @@ def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any 
             xx, yy = dfr._xy(v["mid_lon"], v["mid_lat"])
             vv = pd.concat([v.reset_index(drop=True), t15.side_classes(np.asarray(xx), np.asarray(yy), ext[g]["geom_ft"])], axis=1)
             vv["package"] = vv["pkg"]
+            # region_table reads box_v2's selection columns; show mid_r2's own (the strike azimuth is the location's, shared)
+            vv["v2_mode"], vv["v2_radius_mi"] = vv[f"{RAW}_mode"], vv[f"{RAW}_radius_mi"]
             region_rows.append(t15.region_table(vv, "record").assign(group=g))
         G[g]["v"] = v
         G[g]["record"] = rec_by_stream
@@ -291,6 +339,14 @@ def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any 
     txt = sb.frozen_intervals_csv(pd.concat([frozen, frozen_alt], ignore_index=True))
     (docs / "frozen_d99.csv").write_text(txt, encoding="utf-8", newline="\n")
     digest = sb.sha256_text(txt)
+    ws = water_score(run, groups, {r["group"]: r["route"] for r in rows})
+    for name, df in ws.items():
+        df.to_csv(docs / f"{name}.csv", index=False)
+    wdigest = None
+    if len(ws["water_intervals"]):
+        wtxt = frozen_water_csv(ws["water_intervals"])
+        (docs / "frozen_water.csv").write_text(wtxt, encoding="utf-8", newline="\n")
+        wdigest = sb.sha256_text(wtxt)
 
     # ---- sticks under the Midland table; the five cards; DEAN body vs addition
     stx = stick_table(prox, table, gap_table)
@@ -303,9 +359,9 @@ def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any 
         stx.assign(stick_id=stx["location_id"].astype(int)), on=["stick_id", "group"], how="left")
     cq.to_csv(docs / "cards_q1.csv", index=False)
     meta = {"built_at": dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds"), "groups": groups, "n_draws": n_draws,
-            "frozen_d99_sha256": digest, "prox": prox["meta"], "n_children": len(ch), "n_children_multi": int(ch["multi"].sum()),
+            "frozen_d99_sha256": digest, "frozen_water_sha256": wdigest, "prox": prox["meta"], "n_children": len(ch), "n_children_multi": int(ch["multi"].sum()),
             "n_children_multi_scored_oil24": int((ch["multi"] & ch[f"l_{sb.METRIC}"].notna()).sum()),
             "proof": proof(run), "definition_digest": st.digest()}
     (docs / "score_meta.json").write_text(json.dumps(meta, indent=1, default=str), encoding="utf-8")
     return {"meta": meta, "summary": summary, "G": G, "children": ch, "table": table, "gap_table": gap_table, "sticks": stx, "cards": cq,
-            **out_tables}
+            **out_tables, **ws}
