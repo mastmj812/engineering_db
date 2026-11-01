@@ -153,7 +153,18 @@ def record_factor(d: pd.DataFrame, table: pd.DataFrame) -> pd.Series:
     from box import production16 as p16
 
     cfg = d.drop_duplicates("api10").reset_index(drop=True)
-    return p16.oil_factors(cfg, table)
+    unfit = unfit_mask(cfg, table)
+    out = pd.Series(1.0, index=cfg["api10"].astype(str))
+    if (~unfit).any():
+        out.update(p16.oil_factors(cfg[~unfit.to_numpy()].reset_index(drop=True), table))
+    return out
+
+
+def unfit_mask(cfg: pd.DataFrame, table: pd.DataFrame) -> pd.Series:
+    """Multi-parent rows with NO usable key on production's ladder (box/prox_pud.decide would raise): reported as 'unfit', factor
+    1.0, never silently fitted — a table that leaves any is a gate item."""
+    a = assign(cfg, table, rungs=APPLIED_RUNGS)
+    return (a["rung"] == "unfit").reindex(cfg.index)
 
 
 def record_rung(d: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:

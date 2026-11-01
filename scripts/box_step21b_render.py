@@ -90,7 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--docs", type=Path, default=Path("docs") / "box" / "step21b-2026-11-01")
     a = ap.parse_args(argv)
     d = a.docs
-    r = lambda n: pd.read_csv(d / f"{n}.csv") if (d / f"{n}.csv").exists() else pd.DataFrame()
+    r = lambda n: pd.read_csv(d / f"{n}.csv") if (d / f"{n}.csv").exists() and (d / f"{n}.csv").stat().st_size > 2 else pd.DataFrame()
     meta = json.loads((d / "score_meta.json").read_text(encoding="utf-8"))
     summ, pooled, frozen = r("summary_table"), r("pooled"), pd.read_csv(d / "frozen_d99.csv")
     tab, cells, wf, guard, eh = r("prox_factor_table"), r("cells"), r("walk_forward"), r("guard_d106"), r("expected_holdout")

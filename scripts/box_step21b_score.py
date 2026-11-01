@@ -108,7 +108,12 @@ def stick_table(prox: dict[str, Any], table: pd.DataFrame, gap_table: pd.DataFra
     the interim (Delaware) outcome, + the nearest-gap-rung sensitivity factor."""
     cfg = prox["cfg"]
     hair = pp.haircut_lookup(table)
-    d = sp.decide_all(cfg, hair, prox["prec"], prox["prec_pat"], prox["near_same"])
+    unfit = sb.unfit_mask(cfg, table)
+    d = sp.decide_all(cfg[~unfit], hair, prox["prec"], prox["prec_pat"], prox["near_same"]).reindex(cfg.index)
+    d.loc[unfit, "outcome"] = "unfit_no_usable_rung"
+    ns = prox["near_same"].reindex(cfg.index)
+    d["near_same_ft"] = ns.to_numpy()
+    d.loc[unfit & (ns <= sp.SPACING_FLOOR_FT), "outcome"] = "no_forecast_spacing"  # revision 5 overrides every outcome
     it = prox["interim"]
     out = pd.DataFrame({"location_id": cfg.index, "bench": cfg["bench"].to_numpy(), "config_class": cfg["config_class"].to_numpy(),
                         "n_parents_total": cfg["n_parents_total"].to_numpy(), "config": cfg["config"].to_numpy(),
