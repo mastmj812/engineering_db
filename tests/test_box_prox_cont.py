@@ -118,12 +118,15 @@ def test_contest_prefers_the_generating_rule_and_defaults_on_a_tie():
     two["l_rel"] = np.log(fr["R2"]) + rng.normal(0, 0.05, n)   # generated multiplicatively
     res = pc.contest(two, n_boot=60)
     assert res["winner"] == "R2" and res["beta"]["all"]["b_near"] == pytest.approx(1.0, abs=0.15) and res["beta"]["all"]["b_far"] == pytest.approx(1.0, abs=0.15)
-    two["l_rel"] = rng.normal(0, 0.5, n)                      # no signal at all -> nothing excludes zero -> R3 default
-    res = pc.contest(two, n_boot=60)
-    assert res["winner"] == "R3" and "default" in res["reason"]
     two["l_rel"] = np.log(fr["R1"]) + rng.normal(0, 0.05, n)   # generated worst-only -> R1 wins (revision 2)
     res = pc.contest(two, n_boot=60)
     assert res["winner"] == "R1" and "entirely below zero" in res["reason"]
+    two["l_rel"] = rng.normal(0, 0.5, n)                      # residuals centred at zero: the smallest correction (R1) wins, not a tie
+    res = pc.contest(two, n_boot=60)
+    assert res["winner"] == "R1"
+    two["l_rel"] = 0.5 * (np.log(fr["R1"]) + np.log(fr["R2"])) + rng.normal(0, 0.5, n)   # halfway between R1 and R2, noisy -> unresolved -> R3 default
+    res = pc.contest(two, n_boot=60)
+    assert res["winner"] == "R3" and "default" in res["reason"], res["reason"]
 
 
 def test_level_mapping_caps_at_one_and_f_mix_is_the_group_mean():
