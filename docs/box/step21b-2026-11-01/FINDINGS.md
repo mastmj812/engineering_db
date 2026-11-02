@@ -1,4 +1,6 @@
-# BOX step 21b — Midland tuning-fold scoring (2026-11-01, re-run at revision 8 2026-11-02) — AT GATE 21b
+# BOX step 21b — Midland tuning-fold scoring (2026-11-01, re-run at revision 8 2026-11-02) — GATE 21b CLOSED (D149)
+
+> **GATE 21b CLOSED 2026-11-02 (D149): Michael accepted every recommendation in §1** ("Accept all recs"). Record treatment as in the Q1 table with **LSSH moved to `mid_r2p`**; D99 `cf13af17…` and water `64e592b5…` frozen; Midland proximity table, no nearest-gap rung; no pattern-package gate; water provisional Midland-wide; revision 8 kept. Decision file: `GATE_21B.json`. Next: 21c (one-time holdout at `5ceadc2`) on Michael's go. The text below is the gate as presented.
 
 Read-only. Nothing stored, no DDL, no record flip; the Delaware record stays on run 19 (D144) and nothing here reads or writes
 the Delaware. Branch `claude/box-step21b-tuning`. The contract is the FROZEN pre-registration
