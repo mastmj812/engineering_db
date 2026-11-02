@@ -1,0 +1,2 @@
+# Frozen BOX interval files are hashed (sha256) on their LF bytes: never convert line endings on checkout.
+docs/box/**/frozen_*.csv -text

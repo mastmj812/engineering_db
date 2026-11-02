@@ -1,0 +1,3 @@
+horizon,basin_wide_slope (bench x cutoff FE),wells,within_3mi_block_slope (+ block FE),wells_block,within_cohort_elasticity (lat_ratio)
+12,-0.09637915123533249,10737,-0.14810308249069212,10737,-0.08273368142150674
+24,-0.075523974432494,8843,-0.10857495381512203,8843,-0.040291648489676334

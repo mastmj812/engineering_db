@@ -68,9 +68,23 @@ def lateral_efficiency(lateral_ft: float, curve: str = RECORD_CURVE, basin: str 
 
 
 
+# Step 21b revision 8 (Michael 2026-11-02): on the Midland a target LONGER than its cohort's mean lateral translates on the
+# Delaware panel, any other on the Midland panel. The 21b tuning view: Midland per-ft oil falls going longer than the cohort
+# (>= 15,000 ft -12.6 % on the Midland panel, -6.7 % on the Delaware one, cum-12) but short targets earn no per-ft bonus
+# (5,000-7,500 ft -2.7 % Midland, -9.3 % Delaware). A basin not keyed here translates on its own panel (the Delaware, unchanged).
+LONGER_PANEL: dict[str, str] = {bsn.MIDLAND: bsn.DELAWARE}
+
+
+def panel(lateral_ft: float, member_laterals: Sequence[float], basin: str = bsn.DELAWARE) -> str:
+    """The panel a target translates on: LONGER_PANEL[basin] when L > its members' mean lateral, else the basin's own."""
+    ms = [float(x) for x in member_laterals if x is not None and np.isfinite(x) and x > 0]
+    return LONGER_PANEL.get(basin, basin) if ms and float(lateral_ft) > float(np.mean(ms)) else basin
+
+
 def relative(lateral_ft: float, member_laterals: Sequence[float], curve: str = RECORD_CURVE, basin: str = bsn.DELAWARE) -> float:
-    """E(L) / mean E(L_member): the multiplier on (area curve per kft x L / 1,000) for a well or PUD of lateral L."""
+    """E(L) / mean E(L_member): the multiplier on (area curve per kft x L / 1,000) for a well or PUD of lateral L, on `panel`."""
     ms = [float(x) for x in member_laterals if x is not None and np.isfinite(x) and x > 0]
     if not ms:
         raise ValueError("no member laterals")
-    return lateral_efficiency(lateral_ft, curve, basin) / float(np.mean([lateral_efficiency(x, curve, basin) for x in ms]))
+    p = panel(lateral_ft, ms, basin)
+    return lateral_efficiency(lateral_ft, curve, p) / float(np.mean([lateral_efficiency(x, curve, p) for x in ms]))

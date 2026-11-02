@@ -1,0 +1,26 @@
+{
+  "gate": "21b",
+  "closed": "2026-11-02",
+  "decision": "D149",
+  "by": "Michael (accept all recommendations, FINDINGS section 1)",
+  "frozen_sha": "5ceadc260b0e1ad78df2bfab39aaa79c812f8219",
+  "definition_digest": "9780f326",
+  "frozen_d99_sha256": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+  "frozen_water_sha256": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9",
+  "record_treatment": {
+    "MID_WCA_1": {"oil": "mid_r2p_wf", "gas": "mid_r2p", "basis": "rule; D106 refused gas (g48 1.41)"},
+    "MID_WCB_1": {"oil": "mid_r2p_wf", "gas": "mid_r2p", "basis": "rule; D106 refused gas (g48 1.21)"},
+    "MID_LSSH": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule gave mid_r2p_wf; moved to mid_r2p at gate 21b (downgrade, before any holdout read): wf worse than no haircut at every oil horizon"},
+    "MID_MS": {"oil": "mid_r2p_wf", "gas": "mid_r2p_wf", "basis": "rule"},
+    "MID_JM": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule gave mid_r2p_wf; D106 refused both streams (g48 1.98 / 1.52); disclose per-cutoff bias"},
+    "MID_WCB_2": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule (wf holdout 41 / 29.7 < 30)"},
+    "MID_WCD": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule (wf holdout 20 / 10)"},
+    "MID_DEAN": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule (wf holdout 24 / 9); flagged: gas cum-24 +26.0 % tuning, disclose per cutoff"},
+    "MID_WCC": {"oil": "mid_r2p", "gas": "mid_r2p", "basis": "rule; no D99 cell, provisional by construction (no holdout scored)"}
+  },
+  "proximity": "Midland table as fitted (prox_factor_table.csv): production's lookup k2 class x count x flank -> k3 -> k4, multi-parent only; no nearest-gap rung",
+  "pattern_package_gate": "not gated; reported (788 sticks on the Midland table would be refused)",
+  "water": "provisional on every Midland group (3 of 22 judged tuning cells pass); water holdout still scored once at 21c; read-only diagnosis (sql/41 TX measured label, operator concentration) after 21c, no re-tune",
+  "long_laterals": "reported, never judged; step-23 disclosure > 15,000 ft about 5-7 % over-forecast",
+  "revision_8": "kept as run (D148); realized pooled -4.8 -> -4.3 %, >= 15,000 ft -12.6 -> -7.2 %, class spread 2.2 -> 0.8 pt cum-12"
+}

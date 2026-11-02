@@ -238,4 +238,8 @@ def test_midland_run_translates_on_its_own_panel_with_a_delaware_twin(monkeypatc
     mid, de = (an.lateral_multiplier(16_000.0, [10_000.0] * 12, flags, b) for b in (bsn.MIDLAND, bsn.DELAWARE))
     assert np.allclose(np.asarray(p["box_v2s_r2"]["oil"]) / np.asarray(p["box_v2s_r2_lin"]["oil"]), mid / 16.0)
     assert np.allclose(np.asarray(p[tw]["oil"]) / np.asarray(p["box_v2s_r2_lin"]["oil"]), de / 16.0)
-    assert 0.99 < mid / 16.0 < 1.0 and de / 16.0 < 0.95  # Midland panel ~flat; the Delaware one cuts ~7 % at 16,000 ft
+    # step 21b revision 8: longer than the cohort -> the Delaware panel on the Midland too (the record equals its twin here) ...
+    assert mid == de and de / 16.0 < 0.95
+    # ... and a shorter target keeps the Midland panel (no Delaware per-ft bonus)
+    short_mid, short_de = (an.lateral_multiplier(6_000.0, [10_000.0] * 12, flags, b) for b in (bsn.MIDLAND, bsn.DELAWARE))
+    assert 1.0 < short_mid / 6.0 < 1.05 < short_de / 6.0
