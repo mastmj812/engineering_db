@@ -1,0 +1,55 @@
+horizon,holdout_counts_all_cutoffs,expected_holdout_scored,scored_cutoffs,d99_cell,group,treatment,role
+12,261,172.7889447236181,"2021, 2022, 2023, 2024",True,MID_WCA_1,mid_r2p_wf,record
+24,215,126.78894472361809,"2021, 2022, 2023",True,MID_WCA_1,mid_r2p_wf,record
+36,130,77.78064516129032,"2021, 2022",True,MID_WCA_1,mid_r2p_wf,record
+12,261,260.5889447236181,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_WCA_1,mid_r2p,alternative
+24,215,214.5889447236181,"2019, 2020, 2021, 2022, 2023",True,MID_WCA_1,mid_r2p,alternative
+36,130,129.78064516129032,"2020, 2021, 2022",True,MID_WCA_1,mid_r2p,alternative
+12,223,145.37186858468954,"2021, 2022, 2023, 2024",True,MID_WCB_1,mid_r2p_wf,record
+24,181,103.73594712909596,"2021, 2022, 2023, 2024",True,MID_WCB_1,mid_r2p_wf,record
+36,110,63.31584874348032,"2021, 2022",True,MID_WCB_1,mid_r2p_wf,record
+12,223,220.78643441102005,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_WCB_1,mid_r2p,alternative
+24,181,179.15051295542648,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_WCB_1,mid_r2p,alternative
+36,110,108.98251541014699,"2020, 2021, 2022",True,MID_WCB_1,mid_r2p,alternative
+12,59,58.69444444444444,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_WCB_2,mid_r2p,record
+24,48,47.724137931034484,"2019, 2020, 2021, 2022, 2023",True,MID_WCB_2,mid_r2p,record
+36,28,28.0,"2020, 2021, 2022",False,MID_WCB_2,mid_r2p,record
+12,59,40.69444444444444,"2021, 2022, 2023, 2024",True,MID_WCB_2,mid_r2p_wf,alternative
+24,48,29.724137931034484,"2021, 2022, 2023",False,MID_WCB_2,mid_r2p_wf,alternative
+36,28,21.0,"2021, 2022",False,MID_WCB_2,mid_r2p_wf,alternative
+12,7,7.0,"2019, 2020, 2021, 2022, 2023, 2024",False,MID_WCC,mid_r2p,record
+24,6,6.0,"2019, 2020, 2021, 2022, 2023",False,MID_WCC,mid_r2p,record
+36,5,5.0,"2020, 2021, 2022",False,MID_WCC,mid_r2p,record
+12,7,0.0,,False,MID_WCC,mid_r2p_wf,alternative
+24,6,0.0,,False,MID_WCC,mid_r2p_wf,alternative
+36,5,0.0,,False,MID_WCC,mid_r2p_wf,alternative
+12,47,46.26190476190476,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_WCD,mid_r2p,record
+24,37,36.26190476190476,"2019, 2020, 2021, 2022, 2023",True,MID_WCD,mid_r2p,record
+36,19,18.833333333333332,"2020, 2021, 2022",False,MID_WCD,mid_r2p,record
+12,47,20.0,"2023, 2024",False,MID_WCD,mid_r2p_wf,alternative
+24,37,10.0,2023,False,MID_WCD,mid_r2p_wf,alternative
+36,19,0.0,,False,MID_WCD,mid_r2p_wf,alternative
+12,121,93.0,"2021, 2022, 2023, 2024",True,MID_MS,mid_r2p_wf,record
+24,86,58.0,"2021, 2022, 2023",True,MID_MS,mid_r2p_wf,record
+36,45,30.0,"2021, 2022",True,MID_MS,mid_r2p_wf,record
+12,121,121.0,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_MS,mid_r2p,alternative
+24,86,86.0,"2019, 2020, 2021, 2022, 2023",True,MID_MS,mid_r2p,alternative
+36,45,45.0,"2020, 2021, 2022",True,MID_MS,mid_r2p,alternative
+12,117,116.78571428571428,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_JM,mid_r2p,record
+24,86,85.78571428571428,"2019, 2020, 2021, 2022, 2023",True,MID_JM,mid_r2p,record
+36,52,52.0,"2020, 2021, 2022",True,MID_JM,mid_r2p,record
+12,117,116.78571428571428,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_JM,mid_r2p,alternative
+24,86,85.78571428571428,"2019, 2020, 2021, 2022, 2023",True,MID_JM,mid_r2p,alternative
+36,52,52.0,"2020, 2021, 2022",True,MID_JM,mid_r2p,alternative
+12,221,137.48482699943278,"2021, 2022, 2023, 2024",True,MID_LSSH,mid_r2p_wf,record
+24,181,97.79878048780488,"2021, 2022, 2023",True,MID_LSSH,mid_r2p_wf,record
+36,116,62.803030303030305,"2021, 2022",True,MID_LSSH,mid_r2p_wf,record
+12,221,220.4848269994328,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_LSSH,mid_r2p,alternative
+24,181,180.7987804878049,"2019, 2020, 2021, 2022, 2023",True,MID_LSSH,mid_r2p,alternative
+36,116,115.80303030303031,"2020, 2021, 2022",True,MID_LSSH,mid_r2p,alternative
+12,52,50.90909090909091,"2019, 2020, 2021, 2022, 2023, 2024",True,MID_DEAN,mid_r2p,record
+24,37,35.90909090909091,"2019, 2020, 2021, 2022, 2023",True,MID_DEAN,mid_r2p,record
+36,23,21.90909090909091,"2020, 2021, 2022",False,MID_DEAN,mid_r2p,record
+12,52,24.0,"2023, 2024",False,MID_DEAN,mid_r2p_wf,alternative
+24,37,9.0,2023,False,MID_DEAN,mid_r2p_wf,alternative
+36,23,0.0,,False,MID_DEAN,mid_r2p_wf,alternative

@@ -1,0 +1,48 @@
+{
+ "built_at": "2026-11-01T19:49:36-06:00",
+ "groups": [
+  "MID_WCA_1",
+  "MID_WCB_1",
+  "MID_WCB_2",
+  "MID_WCC",
+  "MID_WCD",
+  "MID_MS",
+  "MID_JM",
+  "MID_LSSH",
+  "MID_DEAN"
+ ],
+ "n_draws": 2000,
+ "frozen_d99_sha256": "b50bcb71698d8133b4243c07eead17a5c7425fa74b802bade2f0c8906d115691",
+ "frozen_water_sha256": "5db6aeca42934d12db00f9182e99090ada3973625354abed9a5490be530dc42d",
+ "prox": {
+  "cache_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\.claude\\worktrees\\box-step21a\\runs\\step21a",
+  "sha256": {
+   "children.pkl": "a40a49f93b683c5c42b30719308aec92cbe31762501ebd6751dd91ec56ee665b",
+   "links.pkl": "eedea14a5d8a7699289d4b754b2479bd5c611a79e0e716771b0dbc676c9517a4",
+   "pud_links.pkl": "11726d697361d6d50b31dcad488f2cc8c692cf42a23ae8c1960afaf72bf32308"
+  },
+  "n_children": 24717,
+  "n_sticks": 32541,
+  "identity_diffs": 0,
+  "built_utc": "2026-11-01T18:31:26+00:00"
+ },
+ "n_children": 11203,
+ "n_children_multi": 1793,
+ "n_children_multi_scored_oil24": 1449,
+ "proof": {
+  "files": {
+   "analog_provenance_tuning_v2_MID_WCC_analog.csv": true,
+   "cells_tuning_v2_MID_WCC_analog.csv": true,
+   "months_tuning_v2_MID_WCC_analog.npz": true,
+   "summary_tuning_v2_MID_WCC_analog.json": true,
+   "view_tuning_v2_MID_WCC_analog_2019.csv.gz": true,
+   "view_tuning_v2_MID_WCC_analog_2020.csv.gz": true,
+   "view_tuning_v2_MID_WCC_analog_2021.csv.gz": true,
+   "view_tuning_v2_MID_WCC_analog_2022.csv.gz": true,
+   "view_tuning_v2_MID_WCC_analog_2023.csv.gz": true,
+   "view_tuning_v2_MID_WCC_analog_2024.csv.gz": true
+  },
+  "status": "identical"
+ },
+ "definition_digest": "505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900"
+}
