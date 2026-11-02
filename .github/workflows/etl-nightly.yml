@@ -10,10 +10,38 @@
 #                         task (`engineering_db_daily_etl`) was DISABLED in
 #                         the same change so they never both run against prod.
 #
-# Schedule: 11:15 UTC = 06:15 CDT / 05:15 CST — same slot the laptop task
-# used (daily 06:00 CT), so vendor nightly exports (Novi bulk, Enverus) are
-# already landed. Cron is UTC; the winter hour shift is accepted. Minute :15
-# avoids GitHub's top-of-the-hour scheduling congestion.
+#   Phase 4 (2026-11-02): fixed-hour trigger. The GitHub cron never fired on
+#                         time (see below), so an external scheduler now
+#                         dispatches the run and the cron became a guarded
+#                         backstop.
+#
+# Schedule (two triggers, one nightly):
+#   PRIMARY  - cron-job.org (always-on, NOT the laptop) POSTs the REST
+#              workflow_dispatch endpoint daily at 05:00 America/Chicago (it
+#              follows DST, so 05:00 CT all year = 11:00 UTC in CST, 10:00 UTC
+#              in CDT) with only_if_needed=true and a fine-grained PAT
+#              (Actions read/write, this repo only). Dispatch starts in seconds.
+#   BACKSTOP - the `schedule:` cron below. GitHub's scheduler is best-effort:
+#              the old 11:15 UTC slot fired 2.6-9.5 h late on the last 60 nights
+#              (median 4.6 h, i.e. ~10:00 CT, drifting to 16:00-17:30 UTC in
+#              October and 20:47 UTC on 2026-11-02), straight into the daytime
+#              BOX builds. It stays only to cover a primary that never fired
+#              (cron-job.org outage, expired PAT).
+#   The `gate` job makes the backstop safe: a guarded trigger (the cron, or a
+#   dispatch with only_if_needed=true) exits cleanly, without touching the DB,
+#   when an `etl` job already SUCCEEDED in a run created since the most recent
+#   09:00 UTC (03:00 CST / 04:00 CDT, before the primary in both seasons). A
+#   failed primary does not count, so the backstop retries it. A plain manual
+#   "Run workflow" (only_if_needed off) is never gated.
+# Vendor timing (measured 2026-11-02): the Novi bulk ExportDate lands anywhere
+# 02:00-16:00 UTC (median ~10:30 UTC), so no pre-workday hour always catches the
+# same-day export. Missing it loses nothing: the runner downloads the latest
+# full export, and the next night picks up the newer one. The Enverus batch
+# stamps updateddate ~04:30-06:30, and the incremental cursor is day-granular
+# (`updateddate=gt(<date of last success>)`), so a run that starts before the
+# batch picks it up the next night. The hour is therefore set by the workday:
+# p90 run 88 min, slowest 160 min, so a 05:00 CT start is done by ~06:30 CT on
+# 9 nights in 10 and by ~07:40 CT on the worst night.
 #
 # Connectivity: DB_HOST is the Supabase SESSION POOLER (IPv4, port 5432) - the
 # direct db.<ref>.supabase.co endpoint is IPv6-only and unreachable from Actions
@@ -27,13 +55,22 @@
 name: etl-nightly
 
 on:
-  workflow_dispatch: {}   # manual re-run / catch-up
+  workflow_dispatch:      # primary (cron-job.org) + manual re-run / catch-up
+    inputs:
+      only_if_needed:
+        description: >-
+          Skip if an ETL already succeeded since 09:00 UTC today (the external
+          scheduler sets this; leave it off for a manual catch-up)
+        type: boolean
+        default: false
   schedule:
-    - cron: "15 11 * * *"
+    - cron: "15 11 * * *"   # BACKSTOP only; gated, see header
 
 # Least privilege: talks to Supabase, needs no write access to the repo.
+# actions: read lets the gate list this workflow's earlier runs.
 permissions:
   contents: read
+  actions: read
 
 # Never let two ETL runs overlap against prod.
 concurrency:
@@ -41,7 +78,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Dedupe guard (see header). Read-only GitHub API calls, no DB access.
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          GUARDED: ${{ github.event_name == 'schedule' || github.event.inputs.only_if_needed == 'true' }}
+        run: |
+          if [ "$GUARDED" != "true" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Unguarded trigger ($EVENT): running the ETL." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # Most recent 09:00 UTC at or before now (yesterday's when the
+          # backstop fires between 00:00 and 09:00 UTC).
+          since=$(date -u -d "$(date -u +%F) 09:00" +%s)
+          if [ "$since" -gt "$(date -u +%s)" ]; then since=$((since - 86400)); fi
+          since=$(date -u -d "@$since" +%Y-%m-%dT%H:%M:%SZ)
+          # Earlier runs of this workflow created since then whose etl job
+          # succeeded. Skipped runs also conclude "success", so check the job.
+          done_id=""
+          for id in $(gh api -X GET "repos/$REPO/actions/workflows/etl-nightly.yml/runs"                         -f created=">=$since" -f status=success -f per_page=20                         --jq '.workflow_runs[].id'); do
+            [ "$id" = "$GITHUB_RUN_ID" ] && continue
+            n=$(gh api "repos/$REPO/actions/runs/$id/jobs"                   --jq '[.jobs[] | select(.name == "etl" and .conclusion == "success")] | length')
+            if [ "$n" -gt 0 ]; then done_id=$id; break; fi
+          done
+          if [ -n "$done_id" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Guarded trigger ($EVENT): run $done_id already completed the ETL since $since. Skipping." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Guarded trigger ($EVENT): no successful ETL since $since. Running." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
   etl:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:

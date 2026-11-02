@@ -5,8 +5,10 @@ description: Diagnose and clear a failed etl-nightly GitHub Actions run — red 
 
 # Nightly ETL failure triage (etl-nightly on GitHub Actions)
 
-The nightly of record: `.github/workflows/etl-nightly.yml`, cron 11:15 UTC (~06:15 CT),
-`concurrency: etl-nightly` (never two runs vs prod), 180-min timeout, Python 3.12, `DB_PORT=5432`
+The nightly of record: `.github/workflows/etl-nightly.yml`. PRIMARY trigger = cron-job.org POSTing
+`workflow_dispatch` (`only_if_needed=true`) at 05:00 America/Chicago; the GitHub cron (11:15 UTC,
+fires 3-10 h late) is a gated BACKSTOP only (see the workflow header). `concurrency: etl-nightly`
+(never two runs vs prod), 180-min timeout, Python 3.12, `DB_PORT=5432`
 (session pooler — the direct host is IPv6-only and unreachable from runners). Step order inside
 `scripts/run_daily.py`, each isolated in its own try/except:
 `sweep_stale → novi.sync → novi.load → settle → enverus.pull_wells → intel_sf.report_check →
@@ -38,8 +40,15 @@ text, rows. Then check the preflight: **a failed preflight means secrets/connect
 the ETL** (it runs a read-only `meta.etl_log` + `curated.wells` query before anything writes).
 
 If there's no red run at all but the email/healthchecks went quiet: check the run actually
-scheduled (GitHub cron can skip), then check SMTP/healthchecks env — `notify_run` swallows its own
-exceptions by design.
+fired. No `workflow_dispatch` run near 05:00 CT means the primary trigger failed: open the
+cron-job.org job's history (a 401 = the fine-grained PAT expired; Michael regenerates it and pastes
+it into the job header, never into chat; 422 = the `only_if_needed` input or the `main` ref
+changed). The backstop cron still runs that day, just late. Then check SMTP/healthchecks env —
+`notify_run` swallows its own exceptions by design.
+
+A green `schedule` run whose `etl` job shows **skipped** is NORMAL: the `gate` job found an ETL
+that already succeeded since 09:00 UTC (its step summary names the run). A guarded run only does
+work when the primary never fired or failed.
 
 ## 2. Classify by signature
 

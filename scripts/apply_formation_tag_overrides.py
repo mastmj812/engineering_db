@@ -29,8 +29,9 @@
         sql/31) -> sql/26
     Standalone use outside a window leaves the apps dark until that tail runs.
 
-Either mode: run outside the nightly (it lands ~15:00-17:30 UTC, not at the
-11:15 cron), then regenerate the data dictionary.
+Either mode: run outside the nightly (05:00 CT dispatch, done by ~06:30 CT;
+check `gh run list --workflow etl-nightly.yml` for a late backstop), then
+regenerate the data dictionary.
 
 Run from repo root in the venv:
     python -m scripts.apply_formation_tag_overrides --refresh --dry-run

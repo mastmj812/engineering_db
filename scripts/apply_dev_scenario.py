@@ -24,7 +24,7 @@ exec DDL on the 5432 session (statement_timeout=0), validate by identity.
      - CONCURRENTLY refresh smoke (dev_scenario survives it — plain view)
 
 !! DDL on the shared warehouse — explicit authorization required. Outside the
-nightly window (cron 11:15 UTC). From repo root in the venv:
+nightly window (05:00 CT dispatch, done by ~06:30 CT). From repo root in the venv:
     python -m scripts.apply_dev_scenario
 """
 
