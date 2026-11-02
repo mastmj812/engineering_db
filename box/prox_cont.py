@@ -52,7 +52,7 @@ MIN_FIT = 30                       # a stage / contest population below this is 
 RULES = ("R1", "R2", "R3", "R4")
 BAND_REFITS = 200                  # revision 3: block-bootstrap refits behind a joint band
 RULE_DEFAULT = "R3"                # G2: per-side product on a tie
-CAP = 1.0                          # G3: the §5 cap kept in v1
+CAP: float | None = None           # revision 4 (G3, Michael 2026-11-02 "Lift the cap"): the §5 uplift is carried; rev 2-3 capped at 1.0
 METRIC = "oil24"
 TEST_CUTOFFS = {"oil24": ("2021-12-01", "2022-12-01", "2023-12-01"),
                 "oil12": ("2021-12-01", "2022-12-01", "2023-12-01", "2024-12-01"),
@@ -102,13 +102,13 @@ DEFINITION: dict[str, Any] = {
                "C3": "bench-pair residuals (>= 30 children) outside +-10 % named", "C4": "F_min, d50 at cum-12 / 24 / 36",
                "C5": "residual by parent age / cum bins", "C6": "Delaware vs Midland parameters", "C7": "Pad C 233 factors",
                "C8": "walk-forward residual on unexposed test children (F_applied = 1)"},
-    "gate_defaults": {"G1": "whatever C2 says", "G2": RULE_DEFAULT, "G3": "cap kept", "G4": "incumbent precedent; geometry key reported",
+    "gate_defaults": {"G1": "whatever C2 says", "G2": RULE_DEFAULT, "G3": "revision 4: cap LIFTED on the C8 evidence (1.047 [1.024, 1.071] every fold)", "G4": "incumbent precedent; geometry key reported",
                       "G5": "no bench-pair offset", "G6": "score now, adopt at step 23"},
     "g4_candidate": {"floor": G4_PRECEDENT_FLOOR, "percentile": G4_PERCENTILE, "key": "side pattern (sides present, flanked)"},
 }
 
 
-DIGEST = "47b2898a089590aaa1d17a20697423d15fe8eb37e2a2b9a8756ed614380f3edb"  # revision 3 (2026-11-02: joint fit of record, per-rule contest on >= 2 parents, mix-normalised scoring residual); r2 87b3f603; r1 draft 4c140f6d
+DIGEST = "8b76b94e7a236f451b315cb81d7d44b7992a7dccd041997b180ee9c0f0f0b742"  # revision 4 (2026-11-02: cap lifted, G3); r3 47b2898a; r2 87b3f603; r1 draft 4c140f6d
 
 
 def canonical() -> str:
@@ -780,7 +780,7 @@ def sticks(pud_links: pd.DataFrame, model: Model, rule: str, mix: Mapping[str, f
     permit = par[par["permit"].astype(bool)].groupby("child").size().reindex(ids).fillna(0).astype(int)
     return pd.DataFrame({"stick": ids, "bench_group": g, "n_parents": cf["n_parents"].fillna(0).astype(int).to_numpy(), "nearest_d_eff": cf["nearest_d_eff"].to_numpy(),
                          "pattern": cf["pattern"].fillna("none").to_numpy(), "F_rule": f_rule, "factor": applied(f_rule, g, mix, cap),
-                         "factor_uncapped": applied(f_rule, g, mix, None), "permit_parents": permit.to_numpy()})
+                         "factor_capped": applied(f_rule, g, mix, 1.0), "factor_uncapped": applied(f_rule, g, mix, None), "permit_parents": permit.to_numpy()})
 
 
 def g4_support(drilled: pd.DataFrame) -> pd.DataFrame:

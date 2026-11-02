@@ -221,12 +221,13 @@ def step_sticks(d: pd.DataFrame, pud: pd.DataFrame, fit: dict[str, Any], rule: s
     st["g4"] = pc.g4_outcome(st, support)
     st.to_csv(out / f"sticks_{tag}.csv.gz", index=False, compression="gzip")
     support.to_csv(out / f"sticks_{tag}_g4_support.csv", index=False)
-    fb = pd.cut(st["factor"], [0, 0.8, 0.9, 0.95, 1.0001], labels=["<0.80", "0.80-0.90", "0.90-0.95", ">=0.95"], right=False)
+    fb = pd.cut(st["factor"], [0, 0.8, 0.9, 0.95, 1.0, 1.0000001, 10.0], labels=["<0.80", "0.80-0.90", "0.90-0.95", "0.95-1.00", "=1.00", ">1.00"], right=False)
     npb = pd.cut(st["n_parents"], [-1, 0, 1, 2, 10_000], labels=["0", "1", "2", "3+"])
     table = pd.crosstab(npb, fb)
     table.to_csv(out / f"sticks_{tag}_table.csv")
     return {"n_sticks": len(st), "rule": rule, "f_mix": mix, "by_parents_x_factor": {str(k): {str(c): int(v) for c, v in r.items()} for k, r in table.iterrows()},
-            "g4": st["g4"].value_counts().to_dict(), "mean_factor": float(st["factor"].mean()), "mean_factor_uncapped": float(st["factor_uncapped"].mean())}
+            "g4": st["g4"].value_counts().to_dict(), "mean_factor": float(st["factor"].mean()), "mean_factor_capped": float(st["factor_capped"].mean()),
+            "mean_factor_uncapped": float(st["factor_uncapped"].mean())}
 
 
 def run_basin(basin: str, d: pd.DataFrame, links: pd.DataFrame, pud: pd.DataFrame, n_boot: int, out: Path, steps: set[str]) -> dict[str, Any]:
