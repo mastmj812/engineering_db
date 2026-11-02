@@ -23,6 +23,7 @@ no-forecast population, and that is a gate question, not a result of this step.
 | 2026-11-02 | draft for review | — |
 | 2026-11-02 (revision 1, before acceptance) | §7 check C8 added (walk-forward residual on UNEXPOSED test children, the evidence G3 waits on); §9 rewritten with registered defaults: G2 tie-break = R3 per-side product, G3 cap kept in v1, G4 incumbent precedent kept (geometry key reported, cards drawn), G5 no bench-pair offset, G6 score now, adopt at step 23 for both basins | Michael, 2026-11-02 gate-question review: "i agree" to the six defaults as recommended |
 | 2026-11-02 (revision 2, before the freeze; eng_db PR #214) | Text aligned with the code it freezes: (1) **R4 drainage share** restated as the half-space form that the §3 table already implied — per axis the mean over its two sides of max(2F − 1, 0), unbounded side 1, lateral × vertical (the "mean of F" prose gave 0.9 for a single parent and contradicted the table); (2) **C2 is out of sample** — blocked 5-fold cross-validation (blocks assigned by the registered seed), both models fitted on the other folds, residuals on the held-out fold, the 90 % interval a block bootstrap of those residuals (in-sample the nine-parameter model always wins); (3) **R1 can win**: the §3 decision gains the clause "R1 wins when every other rule's gain interval lies entirely below zero" (as first written R1's gain over itself is zero, so it could never be chosen); (4) §4: the rule is chosen per training fold by the contest on strictly earlier cutoffs; (5) §5: F_mix is keyed per basin × BOX bench (a stick carries a bench, not a harness group such as `WCXY_WCA1`). Nothing scored before or after. | Michael, 2026-11-02, on the 24a ambiguity list: "i agree" (1), "ok" (2, 4, 5), "amendment" (3). |
+| 2026-11-02 (revision 3 — AFTER the one registered Delaware score, `rev2/FINDINGS.md`, verdict FAIL) | **The curve of record is fitted JOINTLY on every exposed child, with the combination rule inside the fit.** §2's single-parent stages A / B / C stay as a reported reference, not the fit. For each rule R the five surface parameters (F_min, d50, k, a_below, a_above) — nine for the three-curve form — are fitted by least squares of `l_rel` on ln F_R(all counting parents) over every training child with ≥ 1 parent; R1 fitted this way IS the worst-parent dose (the step-2 definition), so candidate (b) is inside the contest. **§3 contest population = every child with ≥ 2 parents**, each rule carrying its own jointly fitted curve; statistic, decision rule and R1 clause unchanged; intervals bootstrap the point-fit residuals (no refit per draw). **C2** compares the jointly fitted surface and three-curve forms by the same blocked cross-validation. C3 (bench-pair residuals) and C5 (parent age / cum) are produced by the script. **Scoring residual corrected:** `r = l_mix − ln(F / F_mix)` with `l_mix` = l minus the mean over ALL scored children of its (bench group, cutoff) — the 2c normalisation, the mix BOX's level is calibrated on (D58); the fit keeps the control-normalised `l_rel`. Rev 2 scored r on the control-normalised `l_rel` against a mix-relative factor, which understated P1 by ≈ ln F_mix (~2.5 %) and made **C8 ≈ 1 by construction (0.991), so G3 is REOPENED** — the rev-2 "cap costs nothing" reading is withdrawn. Re-scored on the same folds; Delaware only. | The rev-2 score: single-parent children sit far from their parent by construction (9 inside 400 ft vs 110 among 4+-parent children), so the registered fit had no near-distance data — F_min 0.954, k at its bound; P1 0.939 [0.889, 0.992] FAIL, P2 pass (beats the incumbent), P3 68 %; the contest could not separate the rules (β_nearer ≈ 2). Michael, 2026-11-02: "Yes, revision 3". **Disclosed: designed after a score** — the walk-forward stays blind in time, not in design (the 2c disclosure again). C8 settled G3 (cap kept) and is not re-litigated. |
 
 ## 0. Disclosed before this file (what has been read)
 
@@ -106,13 +107,22 @@ P5–P95 band of F(d) on a 100-ft grid, n, and the step-2 bins overlaid (check C
 **Why single-parent children define the curve:** the two-parent children are reserved for §3, where they TEST a combination
 rule instead of fitting a second relationship — Michael's "one piece at a time".
 
+**Revision 3 — the fit of record is joint.** The stages above are kept as the *single-parent reference* (reported: curves,
+bands, C1 on them). The curve that is validated and applied is fitted on **every training child with ≥ 1 counting parent**:
+for a rule R, residual = `l_rel` − ln F_R(parents; θ) with θ = (F_min, d50, k, a_below, a_above) (surface) or the nine
+parameters of the three-curve form, `scipy least_squares`, same bounds. Every parent of every child enters the fit, so the
+near end of the curve is where the data are (the rev-2 score had 9 single-parent children inside 400 ft). R1 fitted this way
+is the worst-parent dose of step 2. Bands: P5–P95 over 200 block-bootstrap refits of the point rule's curve.
+
 **Shielding, same side:** two parents on the same side of the child, the nearer between the child and the farther, is the
 case every rule in §3 must state. The single-parent stages never see it.
 
 ## 3. The combination rule — a pre-registered contest, not an assumption
 
-Population: children with **exactly two** depleting parents in the universe (both basins, pooled within basin). With the §2
-surface frozen, each parent has F_i = F(d_eff,i). Four candidate rules, each a function of the parents a child has:
+Population (revision 3): every child with **two or more** depleting parents in the universe (both basins, pooled within
+basin); the exactly-two subset is reported. Each rule carries its own jointly fitted curve (§2, revision 3), so a candidate is
+a rule + curve pair; the free regression (β_nearer, β_farther) is reported on the exactly-two children with the R3 curve.
+Four candidate rules, each a function of the parents a child has:
 
 | rule | F_child for two parents | two parents each at a "0.8 distance" | shielding (same side) |
 |---|---|---|---|
@@ -124,8 +134,9 @@ surface frozen, each parent has F_i = F(d_eff,i). Four candidate rules, each a f
 R2 is Michael's "0.64 makes sense"; R3 is the same thing with shielding built in; R4 is the geometric reading (each neighbour
 takes half the rock between it and the child). R1 is the incumbent exposure definition.
 
-**Scoring:** residual `r = l_rel − ln F_rule` per child; statistic = RMS of r over the two-parent children, with a 90 % block
-bootstrap interval of the DIFFERENCE from R1 (same draws for every rule). Also reported: the free regression
+**Scoring:** residual `r = l_rel − ln F_rule` per child; statistic = RMS of r over the multi-parent children, with a 90 % block
+bootstrap interval of the DIFFERENCE from R1 (same draws for every rule; revision 3: the draws re-weight the point-fit
+residuals, the curves are not refitted per draw). Also reported: the free regression
 `l_rel = β1 ln F_nearer + β2 ln F_farther` (β ≈ (1, 0) says R1, (1, 1) says R2, in between says saturating), by flanked vs
 same-side.
 
@@ -197,10 +208,11 @@ Reported, per basin and per BOX bench:
 
 - **C1 bins within band.** ≥ 80 % of the step-2 bins (and the same bins built on the Midland) with ≥ 30 children lie inside
   the fitted curve's P5–P95 band.
-- **C2 one surface.** Stage-B curves vs stage-A stretched by a_s, OUT OF SAMPLE (revision 2): the single-parent blocks are
-  split into 5 folds by the registered seed, both models are fitted on the other folds, residuals are taken on the held-out
-  fold, and the 90 % interval is a block bootstrap of those residuals (in-sample the nine-parameter model always wins). If the
-  three-curve RMS improvement over the single surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
+- **C2 one surface.** The jointly fitted three-curve form vs the jointly fitted surface (revision 3; rev 2 compared the
+  single-parent stages), OUT OF SAMPLE (revision 2): the exposed children's blocks are split into 5 folds by the registered
+  seed, both forms are fitted on the other folds under the default rule, residuals are taken on the held-out fold, and the
+  90 % interval is a block bootstrap of those residuals (in-sample the nine-parameter form always wins). If the three-curve
+  RMS improvement over the single surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
   parent scored on its own curve, the §3 rule unchanged, the 2-D Voronoi candidate dropped. Expected from the Delaware bins:
   the *below* curve is flat to ~800 ft and may not be a stretch of the lateral curve.
 - **C3 bench-pair residuals.** For child-bench × parent-bench pairs with ≥ 30 children, exp(mean r) under the chosen rule;

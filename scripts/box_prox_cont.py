@@ -124,52 +124,56 @@ def incumbent_ln_f(d: pd.DataFrame, links: pd.DataFrame, metric: str, cutoffs: t
 
 
 # ---- steps -----------------------------------------------------------------------------------------------------------
-def step_fit(d: pd.DataFrame, links: pd.DataFrame, metric: str, n_boot: int, out: Path, tag: str) -> dict[str, Any]:
+def step_fit(d: pd.DataFrame, links: pd.DataFrame, metric: str, n_boot: int, out: Path, tag: str, bands: bool = True) -> dict[str, Any]:
+    """Revision 3: the joint fit of record (every exposed child, each rule), the contest, C2 on the joint forms, bands of
+    the winner's curve, the single-parent stages as a reported reference with their bins (C1 on the reference)."""
     par = pc.parents(links, drilled=True)
     ctrl = pc.control_mask(d, links)
     lr = pc.l_rel(d, metric, ctrl)
+    P, lrel, blocks, _ = pc.exposed_frame(d, par, lr)
+    c2 = pc.check_c2_joint(P, lrel, blocks, n_boot=n_boot)
+    con = pc.contest_joint(P, lrel, blocks, three=c2["surface_fails"], n_boot=n_boot)
+    model = con["models"][con["winner"]]
+    res: dict[str, Any] = {"metric": metric, "n_children": len(d), "n_control": int(ctrl.sum()), "n_exposed": len(lrel), "n_multi": con["n"],
+                           "n_two": con.get("n_two"), "winner": con["winner"], "reason": con["reason"], "beta": con.get("beta", {}),
+                           "model": model.as_dict(), "models": {r: m.as_dict() for r, m in con["models"].items()}, "c2": c2}
+    if len(con["table"]):
+        con["table"].to_csv(out / f"contest_{tag}_{metric}.csv", index=False)
+    if bands:
+        bb = [pc.joint_band(P, lrel, blocks, con["winner"], GRID, which, n_refit=min(pc.BAND_REFITS, n_boot)) for which in ("same", "below", "above")]
+        pd.concat(bb, ignore_index=True).to_csv(out / f"fit_{tag}_{metric}_bands.csv", index=False)
+        # C1 against the step-2 bins built on EVERY exposed child's nearest parent (the worst-parent dose), per side
+        rf = pc.rule_factor(d, par, model, "R1")
+        near = par.copy()
+        near["d_eff"] = model.distance(near["dh_ft"].to_numpy(), near["dz_ft"].to_numpy(), near["side"].to_numpy())
+        near = near.sort_values("d_eff").drop_duplicates("child").set_index("child").reindex(d["api10"])
+        c1 = {}
+        for which, b in zip(("same", "below", "above"), bb, strict=True):
+            col, edges = ("dh_ft", pdz.DH_EDGES) if which == "same" else ("dv_ft", pdz.DV_EDGES)
+            m = (near["side"].to_numpy() == which) & lr.notna().to_numpy()
+            if which != "same":
+                m &= near["dh_ft"].to_numpy() <= pc.STACK_DH_MAX_FT
+            rows = []
+            for lo, hi in pairwise(edges):
+                mm = m & (near[col].to_numpy() >= lo) & (near[col].to_numpy() < hi)
+                rows.append({"lo_ft": lo, "hi_ft": hi, "n": int(mm.sum()), "effect": float(np.exp(lr.to_numpy()[mm].mean())) if mm.any() else np.nan, "side": which})
+            bins = pd.DataFrame(rows)
+            bins.to_csv(out / f"fit_{tag}_{metric}_bins_{which}.csv", index=False)
+            c1[which] = pc.check_c1(b, bins)
+        res["c1"] = c1
+        del rf
+    # the single-parent reference (rev 2's fit), reported
     sp = pc.single_frame(d, par, lr)
     st = pc.fit_stages(sp)
-    c2 = pc.check_c2(sp, n_boot=n_boot)
-    res: dict[str, Any] = {"metric": metric, "n_children": len(d), "n_control": int(ctrl.sum()), "n_single": len(sp), "stage_n": st["n"],
-                           "surface": st["surface"].as_dict() if st["surface"] else None, "three": st["three"].as_dict() if st["three"] else None,
-                           "c2": {k: v for k, v in c2.items() if k != "fits"}}
-    bands = {}
-    for which in ("same", "below", "above"):
-        n = st["n"][which]
-        if n >= pc.MIN_FIT:
-            b = pc.curve_band(sp, which, GRID, n_boot=n_boot)
-            b["side"] = which
-            bands[which] = b
-    if bands:
-        pd.concat(bands.values(), ignore_index=True).to_csv(out / f"fit_{tag}_{metric}_bands.csv", index=False)
-    # C1 bins (the step-2 edges) per side
-    c1 = {}
-    for which, b in bands.items():
-        col, edges = ("dh_ft", pdz.DH_EDGES) if which == "same" else ("dv_ft", pdz.DV_EDGES)
-        m = (sp["side"] == which) if which == "same" else ((sp["side"] == which) & (sp["dh_ft"] <= pc.STACK_DH_MAX_FT))
-        rows = []
-        for lo, hi in pairwise(edges):
-            mm = m & (sp[col] >= lo) & (sp[col] < hi)
-            rows.append({"lo_ft": lo, "hi_ft": hi, "n": int(mm.sum()), "effect": float(np.exp(sp.loc[mm, "l_rel"].mean())) if mm.any() else np.nan})
-        bins = pd.DataFrame(rows)
-        bins["side"] = which
-        bins.to_csv(out / f"fit_{tag}_{metric}_bins_{which}.csv", index=False)
-        c1[which] = pc.check_c1(b, bins)
-    res["c1"] = c1
+    res["single_reference"] = {"n": st["n"], "surface": st["surface"].as_dict() if st["surface"] else None}
     sp.to_csv(out / f"fit_{tag}_{metric}_single.csv.gz", index=False, compression="gzip")
-    res["_model"] = st["three"] if c2["surface_fails"] else st["surface"]
-    res["_sp"], res["_lr"], res["_par"] = sp, lr, par
+    res["_model"], res["_rule"], res["_lr"], res["_par"] = model, con["winner"], lr, par
     return res
 
 
 def step_contest(d: pd.DataFrame, fit: dict[str, Any], n_boot: int, out: Path, tag: str) -> dict[str, Any]:
-    two = pc.two_parent_frame(d, fit["_par"], fit["_lr"], fit["_model"])
-    res = pc.contest(two, n_boot=n_boot)
-    two.to_csv(out / f"contest_{tag}_children.csv.gz", index=False, compression="gzip")
-    if len(res["table"]):
-        res["table"].to_csv(out / f"contest_{tag}.csv", index=False)
-    return {k: v for k, v in res.items() if k != "table"}
+    """Revision 3: the contest ran inside step_fit; this reports it (kept for the CLI shape)."""
+    return {"n": fit["n_multi"], "n_two": fit["n_two"], "winner": fit["winner"], "reason": fit["reason"], "beta": fit["beta"], "models": fit["models"]}
 
 
 def step_validate(d: pd.DataFrame, links: pd.DataFrame, n_boot: int, out: Path, tag: str) -> dict[str, Any]:
@@ -186,6 +190,20 @@ def step_validate(d: pd.DataFrame, links: pd.DataFrame, n_boot: int, out: Path, 
         s = pc.score(p, n_boot=n_boot)
         s["cells"].to_csv(out / f"validate_{tag}_{m}_cells.csv", index=False)
         res[m] = {k: v for k, v in s.items() if k != "cells"} | {"folds": fits}
+        if m == pc.METRIC:
+            ex = p[p["n_parents"] > 0].copy()
+            c3 = (ex.groupby(["bench", "nearest_parent_bench"]).agg(n=("r", "size"), f=("f", "mean"), resid=("r", lambda x: float(np.exp(x.mean()))),
+                                                                   no_haircut=("r0", lambda x: float(np.exp(x.mean())))).reset_index())
+            c3 = c3[c3["n"] >= pc.CELL_MIN].sort_values("n", ascending=False)
+            c3["outside_10pct"] = (c3["resid"] - 1.0).abs() > 0.10
+            c3.to_csv(out / f"validate_{tag}_c3_bench_pairs.csv", index=False)
+            ex["age_bin"] = pd.cut(ex["nearest_age_days"], [364, 730, 1461, 1e9], labels=["1-2 yr", "2-4 yr", ">=4 yr"])
+            ex["cum_bin"] = pd.cut(ex["nearest_cum_kft"], [-1e9, 20e3, 40e3, 60e3, 1e12], labels=["0-20", "20-40", "40-60", ">=60 kbbl/kft"])
+            c5 = pd.concat([ex.groupby("age_bin", observed=True).agg(n=("r", "size"), resid=("r", lambda x: float(np.exp(x.mean())))).reset_index().rename(columns={"age_bin": "bin"}),
+                            ex.groupby("cum_bin", observed=True).agg(n=("r", "size"), resid=("r", lambda x: float(np.exp(x.mean())))).reset_index().rename(columns={"cum_bin": "bin"})])
+            c5.to_csv(out / f"validate_{tag}_c5_parent_age_cum.csv", index=False)
+            res[m]["c3_outside_10pct"] = c3.loc[c3["outside_10pct"], ["bench", "nearest_parent_bench", "n", "resid"]].to_dict("records")
+            res[m]["c5"] = c5.to_dict("records")
         parts.append(p.assign(metric=m))
     if parts:
         pd.concat(parts, ignore_index=True).to_csv(out / f"validate_{tag}_children.csv.gz", index=False, compression="gzip")
@@ -218,14 +236,13 @@ def run_basin(basin: str, d: pd.DataFrame, links: pd.DataFrame, pud: pd.DataFram
     fit = step_fit(d, links, pc.METRIC, n_boot, out, tag)
     rep["fit"] = {k: v for k, v in fit.items() if not k.startswith("_")}
     if "fit" in steps:
-        for m in ("oil12", "oil36"):   # C4: F_min / d50 by horizon
+        for m in ("oil12", "oil36"):   # C4: the winner's curve by horizon (no bands)
             if f"l_{m}" in d.columns:
-                f = step_fit(d, links, m, max(50, n_boot // 10), out, tag)
-                rep["fit"][f"c4_{m}"] = f["surface"]
-    rule = pc.RULE_DEFAULT
+                f = step_fit(d, links, m, max(50, n_boot // 10), out, tag, bands=False)
+                rep["fit"][f"c4_{m}"] = {"winner": f["winner"], **f["model"]}
+    rule = fit["_rule"]
     if "contest" in steps:
         rep["contest"] = step_contest(d, fit, n_boot, out, tag)
-        rule = rep["contest"]["winner"]
     if "validate" in steps:
         rep["validate"] = step_validate(d, links, n_boot, out, tag)
     if "sticks" in steps:
@@ -302,7 +319,7 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "smoke":
         out = a.out or Path("runs") / "prox_cont_smoke"
         rep = smoke(out, n_boot=min(a.boot, 100))
-        print(json.dumps({"digest": rep["digest"], "surface": rep["fit"]["surface"], "c2": rep["fit"]["c2"], "contest": rep.get("contest", {}).get("winner"),
+        print(json.dumps({"digest": rep["digest"], "model": rep["fit"]["model"], "c2": rep["fit"]["c2"], "contest": rep.get("contest", {}).get("winner"),
                           "beta": rep.get("contest", {}).get("beta", {}).get("all"), "verdict_oil24": rep.get("validate", {}).get("oil24", {}).get("verdict"),
                           "sticks": rep.get("sticks", {}).get("by_parents_x_factor")}, indent=1, default=_json))
         print(f"wrote {out}")
