@@ -7,8 +7,8 @@
 
 Pre-registration: docs/box/prox-continuous-2026-11-02/PREREGISTRATION.md. The model, rules, checks and verdict live in
 box/prox_cont.py (DEFINITION digest-pinned by tests/test_box_prox_cont.py). `run` reads §11 of the pre-registration: while it
-still says `<sha>` nothing is scored; once stamped, the working tree's HEAD must equal it (frozen files clean) or the run is
-refused. Midland reads TUNING children only (the 21b frame); the D52 holdout blocks are never loaded here.
+still says `<sha>` nothing is scored; once stamped, every frozen file must be byte-identical to that SHA and clean in the
+working tree, or the run is refused (HEAD itself may be later: the stamp commit lands on top of the frozen one). Midland reads TUNING children only (the 21b frame); the D52 holdout blocks are never loaded here.
 
 Delaware inputs: box.prox_dose_report.assemble (harness views + runs/prox caches, step-2 frame), the incumbent D113 ladder via
 box.prox_validate per test fold. Midland inputs: the 21b prox_children frame (l_oil24, block, bench_group, cutoff) + the 21a
@@ -58,12 +58,16 @@ def frozen_sha() -> str | None:
 
 
 def gate_check() -> str:
+    """The freeze: §11 must carry a SHA, every frozen file must be byte-identical to that SHA (HEAD itself may be later —
+    the stamp commit and later docs land on top of it), and the working tree must be clean on those files."""
     sha = frozen_sha()
     if sha is None:
         raise SystemExit("REFUSED: PREREGISTRATION.md section 11 still reads `<sha>` - gate 24a has not stamped the frozen SHA; nothing is scored before the freeze.")
-    head = _git("rev-parse", "HEAD")
-    if not head.startswith(sha) and not sha.startswith(head[: len(sha)]):
-        raise SystemExit(f"REFUSED: HEAD {head[:12]} is not the frozen SHA {sha}")
+    if subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], capture_output=True, check=False).returncode != 0:
+        raise SystemExit(f"REFUSED: the frozen SHA {sha} is not a commit in this checkout (fetch main)")
+    diff = subprocess.run(["git", "diff", "--stat", sha, "HEAD", "--", *FROZEN_FILES], capture_output=True, text=True, check=False).stdout.strip()
+    if diff:
+        raise SystemExit(f"REFUSED: frozen files differ from the frozen SHA {sha}:\n{diff}")
     dirty = _git("status", "--porcelain", "--", *FROZEN_FILES)
     if dirty:
         raise SystemExit(f"REFUSED: frozen files modified in the working tree:\n{dirty}")
