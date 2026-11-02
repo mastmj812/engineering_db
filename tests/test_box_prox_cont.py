@@ -120,7 +120,10 @@ def test_contest_prefers_the_generating_rule_and_defaults_on_a_tie():
     assert res["winner"] == "R2" and res["beta"]["all"]["b_near"] == pytest.approx(1.0, abs=0.15) and res["beta"]["all"]["b_far"] == pytest.approx(1.0, abs=0.15)
     two["l_rel"] = rng.normal(0, 0.5, n)                      # no signal at all -> nothing excludes zero -> R3 default
     res = pc.contest(two, n_boot=60)
-    assert res["winner"] in ("R1", "R3") and (res["winner"] == "R1" or "default" in res["reason"])
+    assert res["winner"] == "R3" and "default" in res["reason"]
+    two["l_rel"] = np.log(fr["R1"]) + rng.normal(0, 0.05, n)   # generated worst-only -> R1 wins (revision 2)
+    res = pc.contest(two, n_boot=60)
+    assert res["winner"] == "R1" and "entirely below zero" in res["reason"]
 
 
 def test_level_mapping_caps_at_one_and_f_mix_is_the_group_mean():

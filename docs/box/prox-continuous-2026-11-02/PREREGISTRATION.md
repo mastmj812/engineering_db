@@ -22,6 +22,7 @@ no-forecast population, and that is a gate question, not a result of this step.
 |---|---|---|
 | 2026-11-02 | draft for review | — |
 | 2026-11-02 (revision 1, before acceptance) | §7 check C8 added (walk-forward residual on UNEXPOSED test children, the evidence G3 waits on); §9 rewritten with registered defaults: G2 tie-break = R3 per-side product, G3 cap kept in v1, G4 incumbent precedent kept (geometry key reported, cards drawn), G5 no bench-pair offset, G6 score now, adopt at step 23 for both basins | Michael, 2026-11-02 gate-question review: "i agree" to the six defaults as recommended |
+| 2026-11-02 (revision 2, before the freeze; eng_db PR #214) | Text aligned with the code it freezes: (1) **R4 drainage share** restated as the half-space form that the §3 table already implied — per axis the mean over its two sides of max(2F − 1, 0), unbounded side 1, lateral × vertical (the "mean of F" prose gave 0.9 for a single parent and contradicted the table); (2) **C2 is out of sample** — blocked 5-fold cross-validation (blocks assigned by the registered seed), both models fitted on the other folds, residuals on the held-out fold, the 90 % interval a block bootstrap of those residuals (in-sample the nine-parameter model always wins); (3) **R1 can win**: the §3 decision gains the clause "R1 wins when every other rule's gain interval lies entirely below zero" (as first written R1's gain over itself is zero, so it could never be chosen); (4) §4: the rule is chosen per training fold by the contest on strictly earlier cutoffs; (5) §5: F_mix is keyed per basin × BOX bench (a stick carries a bench, not a harness group such as `WCXY_WCA1`). Nothing scored before or after. | Michael, 2026-11-02, on the 24a ambiguity list: "i agree" (1), "ok" (2, 4, 5), "amendment" (3). |
 
 ## 0. Disclosed before this file (what has been read)
 
@@ -118,7 +119,7 @@ surface frozen, each parent has F_i = F(d_eff,i). Four candidate rules, each a f
 | R1 worst-only (prox_dose's exposure) | min(F_1, F_2) | 0.80 | native (only the nearest counts) |
 | R2 multiplicative, all parents | F_1 · F_2 | 0.64 | counts both |
 | R3 per-side product | Π over sides {left, right, above, below} of the NEAREST parent's F on that side | 0.64 flanked, 0.80 same-side | native |
-| R4 drainage share (1-D Voronoi) | mean over sides of F on that side (unbounded side = 1), left/right from `dxy_ft`, above/below from dz | 0.60 flanked, 0.80 same-side | native |
+| R4 drainage share (1-D Voronoi) | per axis (lateral: left / right from `dxy_ft`; vertical: above / below from dz) the mean over its two sides of h = max(2F_side − 1, 0), an unbounded side h = 1; the two axes multiplied (revision 2) | 0.60 flanked, 0.80 same-side | native |
 
 R2 is Michael's "0.64 makes sense"; R3 is the same thing with shielding built in; R4 is the geometric reading (each neighbour
 takes half the rock between it and the child). R1 is the incumbent exposure definition.
@@ -129,7 +130,8 @@ bootstrap interval of the DIFFERENCE from R1 (same draws for every rule). Also r
 same-side.
 
 **Decision rule (per basin, then reconciled):** the rule with the lowest RMS wins **when its improvement over R1 excludes zero
-at 90 %**; otherwise **R3 wins by default** (Michael's stated prior that crowding never helps, with shielding, and the one
+at 90 %**; **R1 wins when every other rule's gain interval lies entirely below zero** (revision 2 — as first written R1 could
+never be chosen); otherwise **R3 wins by default** (Michael's stated prior that crowding never helps, with shielding, and the one
 that generalises to 3+ parents without a new assumption). The chosen rule is applied unchanged to 3+ parents. If the two
 basins pick different rules, each keeps its own and §7 C6 says whether the difference is outside the bootstrap.
 
@@ -139,7 +141,8 @@ surface), because its construction needs it; otherwise it is dropped and said so
 
 ## 4. Walk-forward validation (the 2c rule, re-used)
 
-Per basin. Fit the §2 surface and apply the §3 rule on children of strictly earlier cutoffs; test on fold c.
+Per basin. Fit the §2 surface, run the §3 contest and take its rule, all on children of strictly earlier cutoffs (the rule is
+chosen per training fold, revision 2); test on fold c.
 
 | horizon | test cutoffs |
 |---|---|
@@ -164,7 +167,8 @@ horizons and gas are reported, never gate. Midland test folds use tuning childre
 ## 5. Level: control-relative F onto a mix-calibrated forecast
 
 BOX's level is calibrated on every scored well, exposed ones included (D58 / the walk-forward haircut), so a factor relative to
-*unexposed* wells cannot be multiplied on as-is without penalising exposed sticks twice. Define per (basin, bench group)
+*unexposed* wells cannot be multiplied on as-is without penalising exposed sticks twice. Define per basin × BOX bench
+(revision 2: a stick carries a bench, not a harness group such as `WCXY_WCA1`; on the Midland the two coincide)
 `F_mix` = exp(mean ln F_rule over its scored drilled children). The factor applied to a stick is
 
     factor = F_rule(stick) / F_mix,   capped at 1.0 (D113: unexposed and lightly exposed sticks stay at BOX as-is)
@@ -193,8 +197,10 @@ Reported, per basin and per BOX bench:
 
 - **C1 bins within band.** ≥ 80 % of the step-2 bins (and the same bins built on the Midland) with ≥ 30 children lie inside
   the fitted curve's P5–P95 band.
-- **C2 one surface.** Stage-B curves vs stage-A stretched by a_s: if the separate-curve fit's RMS improvement over the single
-  surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
+- **C2 one surface.** Stage-B curves vs stage-A stretched by a_s, OUT OF SAMPLE (revision 2): the single-parent blocks are
+  split into 5 folds by the registered seed, both models are fitted on the other folds, residuals are taken on the held-out
+  fold, and the 90 % interval is a block bootstrap of those residuals (in-sample the nine-parameter model always wins). If the
+  three-curve RMS improvement over the single surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
   parent scored on its own curve, the §3 rule unchanged, the 2-D Voronoi candidate dropped. Expected from the Delaware bins:
   the *below* curve is flat to ~800 ft and may not be a stretch of the lateral curve.
 - **C3 bench-pair residuals.** For child-bench × parent-bench pairs with ≥ 30 children, exp(mean r) under the chosen rule;

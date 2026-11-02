@@ -82,7 +82,8 @@ DEFINITION: dict[str, Any] = {
     "rules": {"R1": "worst-only min F", "R2": "product of all F", "R3": "product over left/right/above/below of the nearest parent's F",
               "R4": "drainage share: per axis mean over sides of max(2F-1, 0), unbounded side 1, axes multiplied"},
     "contest": {"population": "exactly two depleting parents in the universe", "statistic": "RMS of l_rel - ln F_rule",
-                "winner": "lowest RMS when its improvement over R1 excludes zero at 90 %, else R3", "default": RULE_DEFAULT},
+                "winner": "lowest RMS when its improvement over R1 excludes zero at 90 %; R1 when every other rule's gain interval lies entirely below zero; else R3",
+                "default": RULE_DEFAULT},
     "level": {"factor": "F_rule / F_mix per basin x BOX bench", "cap": CAP},
     "c2": {"cross_validation": "blocked, K folds", "k_folds": 5},
     "validation": {"metric": METRIC, "test_cutoffs": TEST_CUTOFFS, "P1": {"material": MATERIAL, "band": P1_BAND},
@@ -100,7 +101,7 @@ DEFINITION: dict[str, Any] = {
 }
 
 
-DIGEST = "4c140f6de592db3e754e0479d04d592388a5019832b1f38eea226629d9c3d91d"  # registered 2026-11-02 (draft, pre-freeze); gate 24a stamps the SHA
+DIGEST = "87b3f6030e69508dd9128046290c2f13fd9c05cf17a60624f70f8cfa8654717c"  # revision 2 (2026-11-02: R1 can win; C2 k_folds; F_mix per bench); r1 draft 4c140f6d
 
 
 def canonical() -> str:
@@ -398,12 +399,15 @@ def contest(two: pd.DataFrame, n_boot: int = N_BOOT, seed: int = SEED) -> dict[s
                      "excludes_zero": bool(lo > 0.0)})
     t = pd.DataFrame(rows)
     best = t.sort_values("rms").iloc[0]
-    # §3 as registered: the lowest-RMS rule wins only when its gain over R1 excludes zero; otherwise R3. Read literally, R1
-    # itself can never win (its gain over R1 is zero) — reported as such; an amendment is Michael's call (24a report).
+    # §3 (revision 2): the lowest-RMS rule wins when its gain over R1 excludes zero; R1 wins when every other rule's gain
+    # interval lies entirely below zero; otherwise R3 by default.
+    others = t[t["rule"] != "R1"]
     if best["rule"] != "R1" and bool(best["excludes_zero"]):
         winner, reason = str(best["rule"]), f"lowest RMS {best['rule']} with the gain over R1 excluding zero"
+    elif bool((others["gain_hi"] < 0.0).all()):
+        winner, reason = "R1", "every other rule's gain over R1 lies entirely below zero"
     else:
-        winner, reason = RULE_DEFAULT, f"lowest RMS {best['rule']}; gain over R1 not resolved at 90 % (or R1 itself), default {RULE_DEFAULT}"
+        winner, reason = RULE_DEFAULT, f"lowest RMS {best['rule']}; gain over R1 not resolved at 90 %, default {RULE_DEFAULT}"
     return {"n": len(two), "winner": winner, "reason": reason, "table": t, "beta": free_regression(two)}
 
 
