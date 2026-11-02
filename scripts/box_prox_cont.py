@@ -67,12 +67,10 @@ def gate_check() -> str:
         raise SystemExit(f"REFUSED: the frozen SHA {sha} is not a commit in this checkout (fetch main)")
     diff = subprocess.run(["git", "diff", "--stat", sha, "HEAD", "--", *FROZEN_FILES], capture_output=True, text=True, check=False).stdout.strip()
     if diff:
-        raise SystemExit(f"REFUSED: frozen files differ from the frozen SHA {sha}:
-{diff}")
+        raise SystemExit(f"REFUSED: frozen files differ from the frozen SHA {sha}:\n{diff}")
     dirty = _git("status", "--porcelain", "--", *FROZEN_FILES)
     if dirty:
-        raise SystemExit(f"REFUSED: frozen files modified in the working tree:
-{dirty}")
+        raise SystemExit(f"REFUSED: frozen files modified in the working tree:\n{dirty}")
     return sha
 
 
