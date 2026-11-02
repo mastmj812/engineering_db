@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-01T19:49:36-06:00",
+ "built_at": "2026-11-02T02:31:48-06:00",
  "groups": [
   "MID_WCA_1",
   "MID_WCB_1",
@@ -12,8 +12,8 @@
   "MID_DEAN"
  ],
  "n_draws": 2000,
- "frozen_d99_sha256": "b50bcb71698d8133b4243c07eead17a5c7425fa74b802bade2f0c8906d115691",
- "frozen_water_sha256": "5db6aeca42934d12db00f9182e99090ada3973625354abed9a5490be530dc42d",
+ "frozen_d99_sha256": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+ "frozen_water_sha256": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9",
  "prox": {
   "cache_dir": "C:\\Users\\MichaelMast\\Projects\\engineering_db\\.claude\\worktrees\\box-step21a\\runs\\step21a",
   "sha256": {
@@ -44,5 +44,5 @@
   },
   "status": "identical"
  },
- "definition_digest": "505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900"
+ "definition_digest": "9780f326ef8a3aa037388270fd848e76f04ba6b0da47468d8fe4145b1dbefd77"
 }

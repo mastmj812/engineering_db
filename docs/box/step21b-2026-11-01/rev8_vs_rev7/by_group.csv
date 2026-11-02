@@ -1,0 +1,109 @@
+group,horizon,option,packages,oil package bias
+MID_DEAN,12,revision 7 record (Midland panel),215,-0.050428508436227516
+MID_JM,12,revision 7 record (Midland panel),400,0.011669282263637731
+MID_LSSH,12,revision 7 record (Midland panel),805,-0.05326101132676229
+MID_MS,12,revision 7 record (Midland panel),390,-0.06470871944248051
+MID_WCA_1,12,revision 7 record (Midland panel),1019,-0.05428998771196224
+MID_WCB_1,12,revision 7 record (Midland panel),760,-0.034417336307482733
+MID_WCB_2,12,revision 7 record (Midland panel),228,-0.08116542738824026
+MID_WCC,12,revision 7 record (Midland panel),50,-0.08983997730867706
+MID_WCD,12,revision 7 record (Midland panel),192,-0.0858106647832414
+MID_DEAN,12,revision 8 projected (diagnostic splice),215,-0.03020628799850057
+MID_JM,12,revision 8 projected (diagnostic splice),400,0.027144251734088312
+MID_LSSH,12,revision 8 projected (diagnostic splice),805,-0.03907553199212024
+MID_MS,12,revision 8 projected (diagnostic splice),390,-0.05228843567710389
+MID_WCA_1,12,revision 8 projected (diagnostic splice),1019,-0.03988379493972787
+MID_WCB_1,12,revision 8 projected (diagnostic splice),760,-0.019229099930323713
+MID_WCB_2,12,revision 8 projected (diagnostic splice),228,-0.06712096246713686
+MID_WCC,12,revision 8 projected (diagnostic splice),50,-0.08078694510879021
+MID_WCD,12,revision 8 projected (diagnostic splice),192,-0.0668502553049082
+MID_DEAN,12,revision 8 realized (record),215,-0.04158693143468528
+MID_JM,12,revision 8 realized (record),400,0.01630993369733188
+MID_LSSH,12,revision 8 realized (record),805,-0.048248982136686255
+MID_MS,12,revision 8 realized (record),390,-0.06086975198759769
+MID_WCA_1,12,revision 8 realized (record),1019,-0.04893661711383235
+MID_WCB_1,12,revision 8 realized (record),760,-0.028662904958151044
+MID_WCB_2,12,revision 8 realized (record),228,-0.07571393136725436
+MID_WCC,12,revision 8 realized (record),50,-0.09226452979773807
+MID_WCD,12,revision 8 realized (record),192,-0.07530559507464629
+MID_DEAN,12,Delaware panel twin,215,-0.04236354981950024
+MID_JM,12,Delaware panel twin,400,0.015056480226083848
+MID_LSSH,12,Delaware panel twin,805,-0.04988620208755155
+MID_MS,12,Delaware panel twin,390,-0.06378928634062811
+MID_WCA_1,12,Delaware panel twin,1019,-0.05096364834107129
+MID_WCB_1,12,Delaware panel twin,760,-0.031142331944370594
+MID_WCB_2,12,Delaware panel twin,228,-0.07990566273502442
+MID_WCC,12,Delaware panel twin,50,-0.09495442876240517
+MID_WCD,12,Delaware panel twin,192,-0.07432230906073843
+MID_DEAN,24,revision 7 record (Midland panel),159,-0.024411517989580727
+MID_JM,24,revision 7 record (Midland panel),312,0.10382245075625345
+MID_LSSH,24,revision 7 record (Midland panel),694,-0.06324348562536544
+MID_MS,24,revision 7 record (Midland panel),308,-0.09205705115316307
+MID_WCA_1,24,revision 7 record (Midland panel),876,-0.058087208510069495
+MID_WCB_1,24,revision 7 record (Midland panel),639,-0.03986398055933836
+MID_WCB_2,24,revision 7 record (Midland panel),197,-0.10813984442505138
+MID_WCC,24,revision 7 record (Midland panel),43,-0.16713782480108186
+MID_WCD,24,revision 7 record (Midland panel),145,-0.09031096902776312
+MID_DEAN,24,revision 8 projected (diagnostic splice),159,-0.008806806111854984
+MID_JM,24,revision 8 projected (diagnostic splice),312,0.12089892652729184
+MID_LSSH,24,revision 8 projected (diagnostic splice),694,-0.04972069107545015
+MID_MS,24,revision 8 projected (diagnostic splice),308,-0.07992491950503491
+MID_WCA_1,24,revision 8 projected (diagnostic splice),876,-0.04412376072622272
+MID_WCB_1,24,revision 8 projected (diagnostic splice),639,-0.02465470760881657
+MID_WCB_2,24,revision 8 projected (diagnostic splice),197,-0.09491887192272086
+MID_WCC,24,revision 8 projected (diagnostic splice),43,-0.15954499507061604
+MID_WCD,24,revision 8 projected (diagnostic splice),145,-0.07017588038239181
+MID_DEAN,24,revision 8 realized (record),159,-0.021289274844130252
+MID_JM,24,revision 8 realized (record),312,0.10846831090932121
+MID_LSSH,24,revision 8 realized (record),694,-0.058885488805883686
+MID_MS,24,revision 8 realized (record),308,-0.088649372302165
+MID_WCA_1,24,revision 8 realized (record),876,-0.05327525040425515
+MID_WCB_1,24,revision 8 realized (record),639,-0.03414462901834096
+MID_WCB_2,24,revision 8 realized (record),197,-0.1028848486572267
+MID_WCC,24,revision 8 realized (record),43,-0.1699624862784698
+MID_WCD,24,revision 8 realized (record),145,-0.07856853457934128
+MID_DEAN,24,Delaware panel twin,159,-0.022327702045841395
+MID_JM,24,Delaware panel twin,312,0.10854824362143035
+MID_LSSH,24,Delaware panel twin,694,-0.06033251535280555
+MID_MS,24,Delaware panel twin,308,-0.08998102527135861
+MID_WCA_1,24,Delaware panel twin,876,-0.055308300075892956
+MID_WCB_1,24,Delaware panel twin,639,-0.036181402083801134
+MID_WCB_2,24,Delaware panel twin,197,-0.10670993827296635
+MID_WCC,24,Delaware panel twin,43,-0.1727917140803334
+MID_WCD,24,Delaware panel twin,145,-0.07653754828353346
+MID_DEAN,36,revision 7 record (Midland panel),88,-0.050576275322159005
+MID_JM,36,revision 7 record (Midland panel),192,0.14065882379907899
+MID_LSSH,36,revision 7 record (Midland panel),555,-0.058650646486346866
+MID_MS,36,revision 7 record (Midland panel),221,-0.10407694481021046
+MID_WCA_1,36,revision 7 record (Midland panel),698,-0.0759027962523009
+MID_WCB_1,36,revision 7 record (Midland panel),515,-0.06136453396531392
+MID_WCB_2,36,revision 7 record (Midland panel),150,-0.14281084015489887
+MID_WCC,36,revision 7 record (Midland panel),37,-0.22374856819486574
+MID_WCD,36,revision 7 record (Midland panel),75,-0.11269889848918052
+MID_DEAN,36,revision 8 projected (diagnostic splice),88,-0.04353635329791303
+MID_JM,36,revision 8 projected (diagnostic splice),192,0.1596736019279034
+MID_LSSH,36,revision 8 projected (diagnostic splice),555,-0.04396560381854799
+MID_MS,36,revision 8 projected (diagnostic splice),221,-0.09008387178327734
+MID_WCA_1,36,revision 8 projected (diagnostic splice),698,-0.0633268143317516
+MID_WCB_1,36,revision 8 projected (diagnostic splice),515,-0.04624558946138865
+MID_WCB_2,36,revision 8 projected (diagnostic splice),150,-0.1316575007770856
+MID_WCC,36,revision 8 projected (diagnostic splice),37,-0.21625071995718298
+MID_WCD,36,revision 8 projected (diagnostic splice),75,-0.09511230107331907
+MID_DEAN,36,revision 8 realized (record),88,-0.0570459681908237
+MID_JM,36,revision 8 realized (record),192,0.1468084028289839
+MID_LSSH,36,revision 8 realized (record),555,-0.0536379121691553
+MID_MS,36,revision 8 realized (record),221,-0.09846145299889764
+MID_WCA_1,36,revision 8 realized (record),698,-0.07262273492973424
+MID_WCB_1,36,revision 8 realized (record),515,-0.05599534230676203
+MID_WCB_2,36,revision 8 realized (record),150,-0.1393684765685731
+MID_WCC,36,revision 8 realized (record),37,-0.22501439970079898
+MID_WCD,36,revision 8 realized (record),75,-0.10378783816102455
+MID_DEAN,36,Delaware panel twin,88,-0.05747505604361507
+MID_JM,36,Delaware panel twin,192,0.15054752692893372
+MID_LSSH,36,Delaware panel twin,555,-0.0534539130605836
+MID_MS,36,Delaware panel twin,221,-0.09792106558415524
+MID_WCA_1,36,Delaware panel twin,698,-0.07430422279984653
+MID_WCB_1,36,Delaware panel twin,515,-0.056423538828958376
+MID_WCB_2,36,Delaware panel twin,150,-0.14426983156513512
+MID_WCC,36,Delaware panel twin,37,-0.22719704491983128
+MID_WCD,36,Delaware panel twin,75,-0.09966784903033464
