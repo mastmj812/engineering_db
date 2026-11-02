@@ -13,7 +13,8 @@ dictionary).
 - **Explicit authorization before any DDL/write hits Supabase oilgas** — a phase-level "yes" to a
   plan is not authorization for the statement. Ask with the specific object and blast radius.
 - Anything that drops `erebor_locations` or the geography indexes runs **off-hours**, outside the
-  nightly window (cron 11:15 UTC).
+  nightly window (05:00 CT dispatch, done by ~06:30 CT; a late gated backstop may run in the
+  afternoon only if the primary failed — check `gh run list --workflow etl-nightly.yml`).
 - `psql` is not installed here. Apply via `python -m scripts.apply_*` or
   `python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('NN_file.sql')"` —
   both use `etl.db.get_connection()` (5432 session pooler, `statement_timeout=0`,
