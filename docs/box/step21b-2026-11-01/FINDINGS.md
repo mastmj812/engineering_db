@@ -112,6 +112,21 @@ No holdout bias, error or forecast was read.**
    the cohort's per-ft is translated to the target's length, and long targets draw cohorts of shorter wells. **No change at 21b**
    (D134 C, one variant, revision 7 is your answer). This is the size of the disclosure step 23 needs for > 15,000-ft PUDs.
 
+7. **Long-lateral translation (added 2026-11-02 after the §8 diagnostic) — rec: revision 8, a hybrid translation, then re-run
+   21b before 21c.** Use the Midland panel when a target is SHORTER than its cohort's mean lateral, and the Delaware panel when
+   it is LONGER. On the tuning wells it matches the Midland panel on short classes and the Delaware panel on long ones (§8):
+   - **pooled oil bias, all lengths:** −4.8 / −4.8 / −6.2 % → **−3.3 / −3.3 / −4.8 %** (cum-12 / 24 / 36);
+   - **≥ 15,000-ft class:** −12.6 / −10.8 / −10.9 % → **−6.7 / −4.6 / −4.6 %**;
+   - **spread across length classes** (stick-weighted |class − 10,000–12,500-ft class|): 2.2 / 1.7 / 1.2 pt → **1.0 / 0.5 /
+     0.6 pt**.
+
+   Neither panel alone does this. The Delaware panel fixes the long end but costs 6–7 pt on 5,000–7,500-ft PUDs (21 % of
+   sticks), because it gives short targets a per-ft bonus the Midland data don't show. **Honest caveat:** the hybrid was
+   designed after reading the tuning table. That's legitimate only because the holdout is still unread: registered now, 21c
+   tests it on wells it never saw. It amends your 21a Q5 answer (D147). Cost: revision row + new frozen SHA, the nine harness
+   runs again (~6–7 h; the translation lives in the harness), re-score, and gate 21b again with new D99 hashes (none frozen
+   yet). **Alternative:** keep the Midland panel and disclose by length class at step 23.
+
 ## 2. What ran (every run on the frozen files)
 
 | group | started → finished (UTC) | branch HEAD | box/ scripts/ dealintake/ vs 501d799 at start / end | scored tuning wells |
@@ -225,5 +240,44 @@ Against the audit's yardsticks (reported, never judged):
 - **Delaware:** untouched. Run 19 is the record (D144); no store, no flip, no Delaware read beyond the D113 table used as the
   `mid_r2p_de` sensitivity.
 
-**Gate 21b** = your answers to Q1 (record treatment per group), Q2 (the frozen intervals) and Q3 (the Midland proximity table);
-Q4–Q6 inform. Then 21c scores the D52 holdout once against `frozen_d99.csv` / `frozen_water.csv`.
+## 8. Long-lateral diagnostic (Michael 2026-11-02; read-only, tuning views only — `lateral_diag/`, `scripts/box_step21b_lateral_diag.py`)
+
+The question was why `mid_r2` over-forecasts ≥ 15,000-ft laterals by 11–13 % when 21a read per-ft oil as flat with length,
+and what each option does on the PUD mix. 11,203 tuning wells, 4,221 packages. The script refuses any row flagged as D52
+holdout (none present).
+
+- **"Long laterals sit in better rock" (my first explanation): NOT supported.** Local rock (mean year-1 oil per 1,000 ft within
+  3 mi) is flat to slightly lower for long laterals: 15.7k bbl at 15,000–17,500 ft vs 15.8k at 10,000–12,500 ft
+  (`rock_by_length.csv`). Only the thin ≥ 17,500-ft class (91 wells) sits in better rock.
+- **Per-ft does fall with length in this population.** Scored wells (first production 2020–2025): median actual cum-12 oil per
+  1,000 ft is 15.1k bbl at 5,000–7,500 ft → 14.3k at 10,000–12,500 → 13.4k at 15,000–17,500 (−11 % end to end). The log-log slope
+  is −0.10 basin-wide (bench × cutoff FE) and −0.15 within 3-mi blocks. 21a's flat read (all tuning-block producers 2016–2025,
+  within block × first-year cells, reported lateral) **is not reproduced here and the gap is not reconciled.** Candidate
+  causes: the population (2016–2019 wells in 21a), and reported vs completed lateral.
+- **The miss follows the length gap to the cohort**, `by_lat_ratio.csv`. Inside the 12,500–15,000 and 15,000–17,500-ft classes,
+  targets ≥ 1.5× their cohort's mean lateral miss −7.2 / −10.8 % on the Midland panel and −0.5 / −3.8 % on the Delaware panel
+  (cum-12). Targets near their cohort's length don't need the steeper curve. One thin exception: 15,000–17,500-ft targets
+  whose cohort is already ~13,000 ft miss −22 % on BOTH panels (31 packages), unexplained.
+- **A smooth fitted law does not work.** A power law E(L) = (L / 5,000)^e, cross-fitted on alternate 3-mi blocks, is unstable
+  (e = −0.13 vs −0.04 between halves at cum-12) and leaves ≥ 15,000 ft at −9.9 %. The effect is one-sided (longer than the
+  cohort), not a smooth curve. The emulator behind the fitted option reproduces the exact twins to a median 0.3 % (Midland) /
+  1.2 % (Delaware) (`emulator_check.csv`).
+- **Options on the PUD mix** (21a `sticks_by_length.csv`: 5,000–7,500 ft 21 %, 7,500–10,000 16 %, 10,000–12,500 40 %, 12,500–
+  15,000 8 %, ≥ 15,000 15 %), oil package bias, `options_by_class.csv` / `options_weighted.csv`:
+
+  | cum-12 / 24 / 36 | Midland panel (record) | Delaware panel | linear | hybrid |
+  |---|---|---|---|---|
+  | 5,000–7,500 ft | −2.7 / −3.0 / −5.7 % | −9.3 / −9.6 / −11.7 % | −0.3 / −0.6 / −3.5 % | −2.7 / −3.0 / −5.7 % |
+  | 10,000–12,500 ft | −4.2 / −4.6 / −5.5 % | −3.8 / −4.1 / −4.8 % | −4.4 / −4.9 / −5.8 % | −3.4 / −3.8 / −4.6 % |
+  | 15,000–17,500 ft | −12.6 / −10.8 / −10.9 % | −6.7 / −4.6 / −4.6 % | −13.2 / −11.3 / −11.6 % | −6.7 / −4.6 / −4.6 % |
+  | pooled, all lengths | −4.8 / −4.8 / −6.2 % | −4.5 / −4.5 / −5.8 % | — | **−3.3 / −3.3 / −4.8 %** |
+  | stick-weighted class spread | 2.2 / 1.7 / 1.2 pt | 1.8 / 1.7 / 2.0 pt | 2.9 / 2.4 / 1.6 pt | **1.0 / 0.5 / 0.6 pt** |
+
+  These are raw `mid_r2` (before the proximity factor and walk-forward), so the general ~−4 % level is what the record
+  treatments address. The comparison here is between translations. On the short side linear does better still (5,000–7,500 ft
+  −0.3 % vs −2.7 %); the hybrid keeps the record's Midland panel there so revision 8 changes only the side the data clearly
+  demand. Gas follows oil through ratio mode and is checked in a
+  re-run, not here.
+
+**Gate 21b** = your answers to Q1 (record treatment per group), Q2 (the frozen intervals), Q3 (the Midland proximity table)
+and Q7 (long-lateral translation: a yes means re-run 21b before anything is frozen); Q4–Q6 inform. Then 21c scores the D52 holdout once against `frozen_d99.csv` / `frozen_water.csv`.
