@@ -268,5 +268,8 @@ Each default holds unless the named evidence moves it; a change at the gate is a
 
 ## 11. Frozen SHA
 
-Stamped at gate 24a: `<sha>` (the commit that adds `box/prox_cont.DEFINITION` and its test). A run whose `box/` or
-`scripts/` frozen files differ from it is not a score.
+Stamped at gate 24a, 2026-11-02 (Michael: "Merge and stamp"): `7ce61fb640c83d73242608dd5567772f06e04c4f` — the head commit of eng_db PR #215 (the gate
+check), the last commit that touches a frozen file; PR #214 holds `box/prox_cont.py` at definition digest `87b3f603`, its tests and
+the scorer. `python -m scripts.box_prox_cont run` refuses unless every frozen file (`box/prox_cont.py`, `box/prox_dose.py`,
+`box/prox_study.py`, `box/prox_validate.py`, `box/step21_prox.py`, `scripts/box_prox_cont.py`) is byte-identical to this SHA and
+clean in the working tree (so it also refuses until #215 is on main). A run whose frozen files differ from it is not a score.
