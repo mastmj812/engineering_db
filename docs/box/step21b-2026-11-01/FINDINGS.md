@@ -27,7 +27,7 @@ No holdout bias, error or forecast was read.**
    | WCB_1 | wf → **wf oil / r2p gas** (gas g(48) 1.21) | +2.5 / +3.2 / +0.3 % | r2p −1.9 / −2.6 / −4.7 % | **keep** |
    | LSSH | wf → **wf** | −6.6 / −6.1 / −10.1 % (cum-36 FAILS) | r2p −2.8 / −3.6 / −3.0 % (all six cells PASS) | **move to `mid_r2p`** |
    | MS | wf → **wf** | −4.1 / −4.0 / −0.8 % | r2p −4.6 / −7.4 / −8.4 % (cum-36 FAILS) | **keep** |
-   | JM | wf → **r2p both streams** (oil g(48) 1.96, gas 1.51) | +3.1 / **+12.5 / +16.3 %** (cum-24 / 36 FAIL) | — (wf refused) | **move to provisional** |
+   | JM | wf → **r2p both streams** (oil g(48) 1.96, gas 1.51) | +3.1 / **+12.5 / +16.3 %** (cum-24 / 36 FAIL) | — (wf refused) | **keep** (revised; early cutoffs, below) |
    | WCB_2 | r2p (wf holdout 41 / **29.7** < 30) | −6.8 / −9.5 / −13.3 % (cum-36 not a D99 cell) | — | keep |
    | WCD | r2p (20 / 10) | −8.5 / −8.9 / −11.2 %; gas cum-12 / 24 FAIL (spread) | — | keep |
    | DEAN | r2p (24 / 9) | −2.8 / +0.2 / −3.1 %; **gas cum-24 +25.9 %** (FAILS) | — | keep, flagged |
@@ -35,12 +35,14 @@ No holdout bias, error or forecast was read.**
 
    - **LSSH** is the step-15 BS3_C / WCB_1 pattern: the walk-forward haircut (oil D62 factors 0.972 / 0.964 / 0.970 / 0.942)
      makes every oil horizon worse than no haircut and fails cum-36; `mid_r2p` passes all six pooled cells.
-   - **JM** under-forecasts oil by 12.5 % at cum-24 and 16.3 % at cum-36, both D99 horizons, and gas by 14.7 % at cum-36. The
-     correction the method allows (walk-forward) is refused by D106 because its own tail is non-physical (median g(48) 1.96).
-     A D99 PASS would only say the holdout matches tuning, so a validated JM would carry a known 12–16 % miss. Provisional
-     discloses it (D105). Alternative: keep `mid_r2p` and let D99 judge, with the bias disclosed.
-   - **DEAN gas** cum-24 +25.9 % sits in a D99 cell (interval +1.6…+62 %: wide, 46-package cell). Oil is clean. I'd keep it
-     and let D99 judge, but provisional is defensible on the same grounds as JM.
+   - **JM — rec REVISED 2026-11-02 to keep `mid_r2p`** (first draft said provisional). The pooled +12.5 % at cum-24 is the
+     early cutoffs: oil cum-24 package bias by cutoff 2019 **+72 %** (39 pkgs, median +47 %), 2020 +18 %, 2021 +5 %, 2022
+     −5 %, 2023 +3 %; without 2019 the pooled cum-24 is **+3.9 %**. The 2021–2023 cutoffs, closest to a forecast built on
+     today's denser pool, are within ±5 %. The walk-forward factor (1.03 / 1.13 / 1.16 / 1.40, > 1 = a RAISE) pools every
+     cutoff, so it would inflate today's JM forecast by 13–40 % to fix a miss the recent cutoffs no longer show. D106 refuses it
+     (median g(48) 1.96), correctly. Disclose the per-cutoff lines (D105 style), not the pooled figure alone.
+   - **DEAN gas** cum-24 +25.9 % is the same shape: 2019 **+139 %** (20 pkgs, median +144 %), 2020 +3 %, 2021 +29 % (median
+     +11 %), 2022 +10 %, 2023 −1 %; without 2019 the pooled cum-24 is +9.7 %. Keep it, disclose per cutoff, let D99 judge.
    - WCA_1 gas cum-36 under-forecasts +14.3 % (FAIL) under `mid_r2p` gas, because D106 refused the gas walk-forward. Oil is
      clean, so I'd keep it and disclose. Same reasoning, smaller miss, on the secondary stream.
 
