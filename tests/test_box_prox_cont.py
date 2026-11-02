@@ -164,10 +164,11 @@ def test_child_factors_and_sticks_end_to_end():
     f = float(model.curve(np.array([600.0]))[0])
     assert cf.at["s1", "pattern"] == "left+right" and bool(cf.at["s1", "flanked"]) and cf.at["s1", "F_R3"] == pytest.approx(f * f)
     assert cf.at["s2", "F_R1"] == cf.at["s2", "F_R4"] == pytest.approx(f)
-    st = pc.sticks(L, model, "R3", {"G": 0.95}, {"s1": "G", "s2": "G", "s3": "G"})
+    lifted = pc.Model(model.curve, model.a_below, model.a_above, level=1.0 / 0.95)   # revision 5: the level rides on the model
+    st = pc.sticks(L, lifted, "R3")
     st = st.set_index("stick")
-    assert st.at["s1", "factor_capped"] == pytest.approx(min(1.0, f * f / 0.95)) and st.at["s3", "permit_parents"] == 1 and st.at["s2", "factor_uncapped"] == pytest.approx(f / 0.95)
-    assert st.at["s2", "factor"] == st.at["s2", "factor_uncapped"]   # revision 4: factor = the uncapped one
+    assert st.at["s1", "factor_capped"] == pytest.approx(min(1.0, f * f / 0.95)) and st.at["s3", "permit_parents"] == 1 and st.at["s2", "factor"] == pytest.approx(f / 0.95)
+    assert st.at["s1", "factor"] == pytest.approx(f * f / 0.95) and st.at["s1", "level"] == pytest.approx(1.0 / 0.95)
     sup = pc.g4_support(pd.DataFrame({"pattern": ["left+right"] * 40 + ["left"] * 5, "n_parents": 2, "nearest_d_eff": list(np.linspace(300, 1500, 40)) + [100.0] * 5}))
     assert sup.set_index("pattern").at["left+right", "precedent"] and not sup.set_index("pattern").at["left", "precedent"]
     out = pc.g4_outcome(st.reset_index(), sup)

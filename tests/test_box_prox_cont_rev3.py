@@ -96,3 +96,21 @@ def test_walk_forward_rows_carry_the_c3_c5_fields_and_score_runs():
     un = p[p["unexposed"]]
     assert (un["f"] > 1.0).all()                                         # revision 4: unexposed children carry the 'none' uplift in f ...
     assert abs(s["C8"]["resid"] - 1.0) < 0.03                            # ... so their residual sits at 1 (rev 3 capped f at 1 and C8 read the uplift in r)
+    assert all(abs(fo["level"] - 1.0 / np.exp(lrel.mean())) < 0.04 for fo in fits)   # revision 5: the fitted level is the mix uplift
+
+
+def test_joint_fit_with_intercept_recovers_a_level_offset_and_the_surface():
+    """Revision 5: controls do not anchor the mix — a basin whose unexposed wells sit 6 % below the mix-implied level."""
+    links, ids, lrel, _blocks = _basin(n=3000, seed=21, p_zero=0.45, noise=0.15)
+    par = pc.parents(links, drilled=True)
+    P = pc.pad(par, ids)
+    offset = -0.06
+    l = np.where(P.n_parents == 0, lrel + offset, lrel)                 # unexposed children carry a setting offset the controls would hide
+    l = l - l.mean()                                                   # BOX's level is calibrated on the mix
+    m = pc.fit_joint(P, l, "R3", intercept=True)
+    unexposed_mean = float(np.exp(l[P.n_parents == 0].mean()))        # the level is what the data say the unexposed sit at
+    assert abs(m.level - unexposed_mean) < 0.02, (m.level, unexposed_mean)
+    assert abs(m.curve.f_min - 0.78) < 0.05 and abs(m.curve.d50 - 900.0) < 150.0
+    # the fitted level leaves the unexposed residual at ~0 (least squares balances it against the exposed fit: ~1 %)
+    r_un = l[P.n_parents == 0] - np.log(m.level)
+    assert abs(r_un.mean()) < 0.02

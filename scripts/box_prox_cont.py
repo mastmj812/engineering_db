@@ -125,25 +125,26 @@ def incumbent_ln_f(d: pd.DataFrame, links: pd.DataFrame, metric: str, cutoffs: t
 
 # ---- steps -----------------------------------------------------------------------------------------------------------
 def step_fit(d: pd.DataFrame, links: pd.DataFrame, metric: str, n_boot: int, out: Path, tag: str, bands: bool = True) -> dict[str, Any]:
-    """Revision 3: the joint fit of record (every exposed child, each rule), the contest, C2 on the joint forms, bands of
-    the winner's curve, the single-parent stages as a reported reference with their bins (C1 on the reference)."""
+    """Revision 5: the joint fit of record on EVERY scored child with a level intercept (each rule), the contest, C2 on the
+    joint forms, bands of the winner's curve, the single-parent stages as a reported reference with their bins (C1)."""
     par = pc.parents(links, drilled=True)
     ctrl = pc.control_mask(d, links)
     lr = pc.l_rel(d, metric, ctrl)
-    P, lrel, blocks, _ = pc.exposed_frame(d, par, lr)
-    c2 = pc.check_c2_joint(P, lrel, blocks, n_boot=n_boot)
-    con = pc.contest_joint(P, lrel, blocks, three=c2["surface_fails"], n_boot=n_boot)
+    lm = pc.l_mix(d, metric)
+    P, lmix, blocks, _ = pc.scored_frame(d, par, lm)
+    c2 = pc.check_c2_joint(P, lmix, blocks, n_boot=n_boot)
+    con = pc.contest_joint(P, lmix, blocks, three=c2["surface_fails"], n_boot=n_boot)
     model = con["models"][con["winner"]]
-    res: dict[str, Any] = {"metric": metric, "n_children": len(d), "n_control": int(ctrl.sum()), "n_exposed": len(lrel), "n_multi": con["n"],
-                           "n_two": con.get("n_two"), "winner": con["winner"], "reason": con["reason"], "beta": con.get("beta", {}),
+    res: dict[str, Any] = {"metric": metric, "n_children": len(d), "n_control": int(ctrl.sum()), "n_scored": len(lmix), "n_exposed": int((P.n_parents >= 1).sum()),
+                           "n_multi": con["n"], "n_two": con.get("n_two"), "winner": con["winner"], "reason": con["reason"], "beta": con.get("beta", {}),
                            "model": model.as_dict(), "models": {r: m.as_dict() for r, m in con["models"].items()}, "c2": c2}
     if len(con["table"]):
         con["table"].to_csv(out / f"contest_{tag}_{metric}.csv", index=False)
     if bands:
-        bb = [pc.joint_band(P, lrel, blocks, con["winner"], GRID, which, n_refit=min(pc.BAND_REFITS, n_boot)) for which in ("same", "below", "above")]
+        bb = [pc.joint_band(P, lmix, blocks, con["winner"], GRID, which, n_refit=min(pc.BAND_REFITS, n_boot)) for which in ("same", "below", "above")]
         pd.concat(bb, ignore_index=True).to_csv(out / f"fit_{tag}_{metric}_bands.csv", index=False)
+        res["level_band"] = {"level": float(bb[0]["level"].iloc[0]), "lo": float(bb[0]["level_lo"].iloc[0]), "hi": float(bb[0]["level_hi"].iloc[0])}
         # C1 against the step-2 bins built on EVERY exposed child's nearest parent (the worst-parent dose), per side
-        rf = pc.rule_factor(d, par, model, "R1")
         near = par.copy()
         near["d_eff"] = model.distance(near["dh_ft"].to_numpy(), near["dz_ft"].to_numpy(), near["side"].to_numpy())
         near = near.sort_values("d_eff").drop_duplicates("child").set_index("child").reindex(d["api10"])
@@ -161,8 +162,6 @@ def step_fit(d: pd.DataFrame, links: pd.DataFrame, metric: str, n_boot: int, out
             bins.to_csv(out / f"fit_{tag}_{metric}_bins_{which}.csv", index=False)
             c1[which] = pc.check_c1(b, bins)
         res["c1"] = c1
-        del rf
-    # the single-parent reference (rev 2's fit), reported
     sp = pc.single_frame(d, par, lr)
     st = pc.fit_stages(sp)
     res["single_reference"] = {"n": st["n"], "surface": st["surface"].as_dict() if st["surface"] else None}
@@ -213,9 +212,7 @@ def step_validate(d: pd.DataFrame, links: pd.DataFrame, n_boot: int, out: Path, 
 def step_sticks(d: pd.DataFrame, pud: pd.DataFrame, fit: dict[str, Any], rule: str, out: Path, tag: str) -> dict[str, Any]:
     model = fit["_model"]
     rf = pc.rule_factor(d, fit["_par"], model, rule)
-    mix = pc.f_mix(d[pc.MIX_KEY].to_numpy(), rf["F_rule"].to_numpy())
-    groups = pud.drop_duplicates("child").set_index("child")["child_bench"].astype(str).to_dict()
-    st = pc.sticks(pud, model, rule, mix, groups)
+    st = pc.sticks(pud, model, rule)
     drilled = pd.DataFrame({"pattern": rf["pattern"].to_numpy(), "n_parents": rf["n_parents"].to_numpy(), "nearest_d_eff": rf["nearest_d_eff"].to_numpy()})
     support = pc.g4_support(drilled)
     st["g4"] = pc.g4_outcome(st, support)
@@ -225,9 +222,8 @@ def step_sticks(d: pd.DataFrame, pud: pd.DataFrame, fit: dict[str, Any], rule: s
     npb = pd.cut(st["n_parents"], [-1, 0, 1, 2, 10_000], labels=["0", "1", "2", "3+"])
     table = pd.crosstab(npb, fb)
     table.to_csv(out / f"sticks_{tag}_table.csv")
-    return {"n_sticks": len(st), "rule": rule, "f_mix": mix, "by_parents_x_factor": {str(k): {str(c): int(v) for c, v in r.items()} for k, r in table.iterrows()},
-            "g4": st["g4"].value_counts().to_dict(), "mean_factor": float(st["factor"].mean()), "mean_factor_capped": float(st["factor_capped"].mean()),
-            "mean_factor_uncapped": float(st["factor_uncapped"].mean())}
+    return {"n_sticks": len(st), "rule": rule, "level": model.level, "by_parents_x_factor": {str(k): {str(c): int(v) for c, v in r.items()} for k, r in table.iterrows()},
+            "g4": st["g4"].value_counts().to_dict(), "mean_factor": float(st["factor"].mean()), "mean_factor_capped": float(st["factor_capped"].mean())}
 
 
 def run_basin(basin: str, d: pd.DataFrame, links: pd.DataFrame, pud: pd.DataFrame, n_boot: int, out: Path, steps: set[str]) -> dict[str, Any]:
