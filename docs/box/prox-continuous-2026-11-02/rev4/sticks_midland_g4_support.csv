@@ -1,0 +1,16 @@
+pattern,n,p2_d_eff,precedent
+above,510,275.18456215151514,True
+above+below,381,247.2960009280649,True
+below,1655,262.825175000723,True
+left,313,499.99707968709805,True
+left+above,463,326.08164630677106,True
+left+above+below,611,254.1000757096605,True
+left+below,642,309.0651175145166,True
+left+right,91,268.3589753386194,True
+left+right+above,295,283.2070076038735,True
+left+right+above+below,288,251.96855269493614,True
+left+right+below,169,237.1108465872047,True
+right,256,542.1384881683919,True
+right+above,486,286.1394146145179,True
+right+above+below,638,255.0429551845607,True
+right+below,604,262.2618503110893,True

@@ -23,6 +23,9 @@ no-forecast population, and that is a gate question, not a result of this step.
 | 2026-11-02 | draft for review | — |
 | 2026-11-02 (revision 1, before acceptance) | §7 check C8 added (walk-forward residual on UNEXPOSED test children, the evidence G3 waits on); §9 rewritten with registered defaults: G2 tie-break = R3 per-side product, G3 cap kept in v1, G4 incumbent precedent kept (geometry key reported, cards drawn), G5 no bench-pair offset, G6 score now, adopt at step 23 for both basins | Michael, 2026-11-02 gate-question review: "i agree" to the six defaults as recommended |
 | 2026-11-02 (revision 2, before the freeze; eng_db PR #214) | Text aligned with the code it freezes: (1) **R4 drainage share** restated as the half-space form that the §3 table already implied — per axis the mean over its two sides of max(2F − 1, 0), unbounded side 1, lateral × vertical (the "mean of F" prose gave 0.9 for a single parent and contradicted the table); (2) **C2 is out of sample** — blocked 5-fold cross-validation (blocks assigned by the registered seed), both models fitted on the other folds, residuals on the held-out fold, the 90 % interval a block bootstrap of those residuals (in-sample the nine-parameter model always wins); (3) **R1 can win**: the §3 decision gains the clause "R1 wins when every other rule's gain interval lies entirely below zero" (as first written R1's gain over itself is zero, so it could never be chosen); (4) §4: the rule is chosen per training fold by the contest on strictly earlier cutoffs; (5) §5: F_mix is keyed per basin × BOX bench (a stick carries a bench, not a harness group such as `WCXY_WCA1`). Nothing scored before or after. | Michael, 2026-11-02, on the 24a ambiguity list: "i agree" (1), "ok" (2, 4, 5), "amendment" (3). |
+| 2026-11-02 (revision 3 — AFTER the one registered Delaware score, `rev2/FINDINGS.md`, verdict FAIL) | **The curve of record is fitted JOINTLY on every exposed child, with the combination rule inside the fit.** §2's single-parent stages A / B / C stay as a reported reference, not the fit. For each rule R the five surface parameters (F_min, d50, k, a_below, a_above) — nine for the three-curve form — are fitted by least squares of `l_rel` on ln F_R(all counting parents) over every training child with ≥ 1 parent; R1 fitted this way IS the worst-parent dose (the step-2 definition), so candidate (b) is inside the contest. **§3 contest population = every child with ≥ 2 parents**, each rule carrying its own jointly fitted curve; statistic, decision rule and R1 clause unchanged; intervals bootstrap the point-fit residuals (no refit per draw). **C2** compares the jointly fitted surface and three-curve forms by the same blocked cross-validation. C3 (bench-pair residuals) and C5 (parent age / cum) are produced by the script. **Scoring residual corrected:** `r = l_mix − ln(F / F_mix)` with `l_mix` = l minus the mean over ALL scored children of its (bench group, cutoff) — the 2c normalisation, the mix BOX's level is calibrated on (D58); the fit keeps the control-normalised `l_rel`. Rev 2 scored r on the control-normalised `l_rel` against a mix-relative factor, which understated P1 by ≈ ln F_mix (~2.5 %) and made **C8 ≈ 1 by construction (0.991), so G3 is REOPENED** — the rev-2 "cap costs nothing" reading is withdrawn. Re-scored on the same folds; Delaware only. |
+| 2026-11-02 (revision 5 — AFTER the revision-4 scores: Delaware PASS, Midland FAIL on P1 with the uplift over-shooting, `rev4/FINDINGS.md` §5) | **A fitted level intercept.** The fit of record runs on EVERY scored training child (unexposed rows enter at F = 1) with the mix-normalised log-ratio: residual `l_mix − (c + ln F_rule(parents; θ))`, c free in [−0.5, 0.5] (ln scale) fitted with θ for each rule; the Model carries `level = exp(c)`. **factor = level × F_rule** — F_mix is retired (it was the implied level; now the level is measured on the same children the curve is). C2 and the contest run on the same frame (each rule its own c). C8 becomes the walk-forward check that the fitted level holds out of sample (unexposed test residual ≈ 1). Both basins re-scored on the same folds. | The Midland's unexposed tuning children sit at 1.058 vs the 1.090 the control anchor implied, and its material haircuts ran 5 % deep (P1 1.050): the control population is not the mix anchor there (undeveloped Midland acreage is the poorer acreage — exposure correlates with setting). The Delaware matched (1.047 vs 1.043), so it should move little. Michael, 2026-11-02: "Yes, revision 5". Designed after a score; disclosed as such (the 2c disclosure, again). |
+| 2026-11-02 (revision 4 — AFTER the revision-3 score, `rev3/FINDINGS.md`: P1 pass, P3 pass, P2 fail through the capped `none` cell) | **G3 decided: the §5 cap is LIFTED.** factor = F_rule / F_mix with no cap; unexposed sticks carry the `none` uplift. Nothing else changes (model, rules, contest, folds, seed). Re-scored on the same rows — deterministic, so the post-hoc numbers in `rev3/FINDINGS.md` §1 are the expected result; the registered score is still run. The stick what-if reports `factor` (uncapped, of record), `factor_capped` and `factor_uncapped` side by side. | The registered C8 clause was met: unexposed test children 1.047 [1.024, 1.071], above 1 in every fold, interval excludes 1 — BOX's mix-calibrated level carries spacing damage that unexposed wells do not have. Michael, 2026-11-02: "Lift the cap, rev 4". Cost stated: ~+434 MMbbl on the unexposed Delaware inventory (rev3 §3). | The rev-2 score: single-parent children sit far from their parent by construction (9 inside 400 ft vs 110 among 4+-parent children), so the registered fit had no near-distance data — F_min 0.954, k at its bound; P1 0.939 [0.889, 0.992] FAIL, P2 pass (beats the incumbent), P3 68 %; the contest could not separate the rules (β_nearer ≈ 2). Michael, 2026-11-02: "Yes, revision 3". **Disclosed: designed after a score** — the walk-forward stays blind in time, not in design (the 2c disclosure again). C8 settled G3 (cap kept) and is not re-litigated. |
 
 ## 0. Disclosed before this file (what has been read)
 
@@ -106,13 +109,28 @@ P5–P95 band of F(d) on a 100-ft grid, n, and the step-2 bins overlaid (check C
 **Why single-parent children define the curve:** the two-parent children are reserved for §3, where they TEST a combination
 rule instead of fitting a second relationship — Michael's "one piece at a time".
 
+**Revision 3 — the fit of record is joint.** The stages above are kept as the *single-parent reference* (reported: curves,
+bands, C1 on them). The curve that is validated and applied is fitted on **every training child with ≥ 1 counting parent**:
+for a rule R, residual = `l_rel` − ln F_R(parents; θ) with θ = (F_min, d50, k, a_below, a_above) (surface) or the nine
+parameters of the three-curve form, `scipy least_squares`, same bounds. Every parent of every child enters the fit, so the
+near end of the curve is where the data are (the rev-2 score had 9 single-parent children inside 400 ft). R1 fitted this way
+is the worst-parent dose of step 2. Bands: P5–P95 over 200 block-bootstrap refits of the point rule's curve.
+
+**Revision 5 — the level is fitted with the curve.** The frame is every scored training child, unexposed rows entering with
+F = 1; the log-ratio is `l_mix` (mix-normalised); residual `l_mix − (c + ln F_R)`, c ∈ [−0.5, 0.5]. The unexposed children pin c,
+the exposed ones shape θ, and the two are estimated together, so a basin whose unexposed acreage differs in setting from its
+developed sections gets the level the data show rather than the one the controls imply. `l_rel` (control-normalised) stays
+for the single-parent reference and the C1 bins only.
+
 **Shielding, same side:** two parents on the same side of the child, the nearer between the child and the farther, is the
 case every rule in §3 must state. The single-parent stages never see it.
 
 ## 3. The combination rule — a pre-registered contest, not an assumption
 
-Population: children with **exactly two** depleting parents in the universe (both basins, pooled within basin). With the §2
-surface frozen, each parent has F_i = F(d_eff,i). Four candidate rules, each a function of the parents a child has:
+Population (revision 3): every child with **two or more** depleting parents in the universe (both basins, pooled within
+basin); the exactly-two subset is reported. Each rule carries its own jointly fitted curve (§2, revision 3), so a candidate is
+a rule + curve pair; the free regression (β_nearer, β_farther) is reported on the exactly-two children with the R3 curve.
+Four candidate rules, each a function of the parents a child has:
 
 | rule | F_child for two parents | two parents each at a "0.8 distance" | shielding (same side) |
 |---|---|---|---|
@@ -124,8 +142,9 @@ surface frozen, each parent has F_i = F(d_eff,i). Four candidate rules, each a f
 R2 is Michael's "0.64 makes sense"; R3 is the same thing with shielding built in; R4 is the geometric reading (each neighbour
 takes half the rock between it and the child). R1 is the incumbent exposure definition.
 
-**Scoring:** residual `r = l_rel − ln F_rule` per child; statistic = RMS of r over the two-parent children, with a 90 % block
-bootstrap interval of the DIFFERENCE from R1 (same draws for every rule). Also reported: the free regression
+**Scoring:** residual `r = l_rel − ln F_rule` per child; statistic = RMS of r over the multi-parent children, with a 90 % block
+bootstrap interval of the DIFFERENCE from R1 (same draws for every rule; revision 3: the draws re-weight the point-fit
+residuals, the curves are not refitted per draw). Also reported: the free regression
 `l_rel = β1 ln F_nearer + β2 ln F_farther` (β ≈ (1, 0) says R1, (1, 1) says R2, in between says saturating), by flanked vs
 same-side.
 
@@ -171,10 +190,11 @@ BOX's level is calibrated on every scored well, exposed ones included (D58 / the
 (revision 2: a stick carries a bench, not a harness group such as `WCXY_WCA1`; on the Midland the two coincide)
 `F_mix` = exp(mean ln F_rule over its scored drilled children). The factor applied to a stick is
 
-    factor = F_rule(stick) / F_mix,   capped at 1.0 (D113: unexposed and lightly exposed sticks stay at BOX as-is)
+    factor = level × F_rule(stick)          (revision 5: level = exp(c), the intercept fitted with the curve on every scored
+                                             child; it replaces 1 / F_mix. Revision 4: no cap; rev 2-3 capped at 1.0)
 
-The uncapped version (unexposed sticks get the ~1.04 "none" uplift 2c measured) is reported beside it. **Whether to lift the
-cap is gate question G3**, not a result.
+The capped version (D113's as-is treatment of unexposed sticks) is reported beside it. **G3 was decided at revision 4** on the
+C8 evidence (unexposed test children 1.047 [1.024, 1.071], every fold above 1).
 
 ## 6. Stick side — reported what-if, nothing stored
 
@@ -197,10 +217,11 @@ Reported, per basin and per BOX bench:
 
 - **C1 bins within band.** ≥ 80 % of the step-2 bins (and the same bins built on the Midland) with ≥ 30 children lie inside
   the fitted curve's P5–P95 band.
-- **C2 one surface.** Stage-B curves vs stage-A stretched by a_s, OUT OF SAMPLE (revision 2): the single-parent blocks are
-  split into 5 folds by the registered seed, both models are fitted on the other folds, residuals are taken on the held-out
-  fold, and the 90 % interval is a block bootstrap of those residuals (in-sample the nine-parameter model always wins). If the
-  three-curve RMS improvement over the single surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
+- **C2 one surface.** The jointly fitted three-curve form vs the jointly fitted surface (revision 3; rev 2 compared the
+  single-parent stages), OUT OF SAMPLE (revision 2): the exposed children's blocks are split into 5 folds by the registered
+  seed, both forms are fitted on the other folds under the default rule, residuals are taken on the held-out fold, and the
+  90 % interval is a block bootstrap of those residuals (in-sample the nine-parameter form always wins). If the three-curve
+  RMS improvement over the single surface excludes zero at 90 %, the surface FAILS; the step then carries three curves (F_h, F_below, F_above), each side's
   parent scored on its own curve, the §3 rule unchanged, the 2-D Voronoi candidate dropped. Expected from the Delaware bins:
   the *below* curve is flat to ~800 ft and may not be a stretch of the lateral curve.
 - **C3 bench-pair residuals.** For child-bench × parent-bench pairs with ≥ 30 children, exp(mean r) under the chosen rule;
@@ -214,8 +235,9 @@ Reported, per basin and per BOX bench:
   serve both (the pooling Michael asked about, one level up).
 - **C7 Pad C 233** (21a revision 6): the 15 sticks' factors under this model beside the 21b Midland factor and the interim
   Delaware factor; reported, never judged.
-- **C8 the unexposed level (the evidence G3 waits on).** Walk-forward (§4 folds), test children with F_applied = 1 under the
-  §5 cap: exp(mean r) per fold and pooled, 90 % block-bootstrap interval. If it sits above 1.00 in every test fold and the
+- **C8 the unexposed level (the evidence G3 waits on; revision 5: the walk-forward check that the fitted level holds out of
+  sample — unexposed test residual ≈ 1, interval containing 1).** Walk-forward (§4 folds), test children with no parent:
+  exp(mean r) per fold and pooled, 90 % block-bootstrap interval. If it sits above 1.00 in every test fold and the
   pooled interval excludes 1.00, the "none" uplift is real and G3 reopens with that evidence; if the interval contains 1.00,
   the cap costs nothing and stays. Expected from 2c: ~1.04 against the mix. Reported per basin.
 
@@ -240,7 +262,7 @@ Each default holds unless the named evidence moves it; a change at the gate is a
 - **G2** adopt the §3 winning rule. **Default on a tie: R3 per-side product** (crowding never helps; shielding native; extends
   to 3+ parents with no new assumption). R4 drainage share is the more punitive tie-break and has a survivorship argument;
   it is adopted only when it wins the contest outright.
-- **G3** lift the §5 cap. **Default: cap kept in v1**; the uncapped number is reported. Lifting it raises every unexposed
+- **G3** lift the §5 cap. **Decided at revision 4: LIFTED** (was: cap kept in v1; the uncapped number reported). Lifting it raises every unexposed
   stick (~25,800 Delaware sticks, ~+3–4 %, order +500 MMbbl — more than the single-parent haircut removes), so the record's
   oil would rise and most of the inventory would sit above BOX's own calibrated level. G3 reopens only on C8's evidence.
 - **G4** re-key precedent on geometry (§6). **Default: the incumbent precedent stays** (D114 bench pair + package tier on the
@@ -268,8 +290,24 @@ Each default holds unless the named evidence moves it; a change at the gate is a
 
 ## 11. Frozen SHA
 
-Stamped at gate 24a, 2026-11-02 (Michael: "Merge and stamp"): `7ce61fb640c83d73242608dd5567772f06e04c4f` — the head commit of eng_db PR #215 (the gate
-check), the last commit that touches a frozen file; PR #214 holds `box/prox_cont.py` at definition digest `87b3f603`, its tests and
-the scorer. `python -m scripts.box_prox_cont run` refuses unless every frozen file (`box/prox_cont.py`, `box/prox_dose.py`,
-`box/prox_study.py`, `box/prox_validate.py`, `box/step21_prox.py`, `scripts/box_prox_cont.py`) is byte-identical to this SHA and
-clean in the working tree (so it also refuses until #215 is on main). A run whose frozen files differ from it is not a score.
+**Revision 5 freeze, 2026-11-02:** `77d50a7f69b807f0c710c148f071fd9e4c44ee4d` — the revision-5 code commit (fitted level intercept on every scored child; definition digest
+in `box/prox_cont.DIGEST`), on branch `claude/box-step24-delaware-score` (eng_db PR #217), stamped here in the commit that follows it.
+`python -m scripts.box_prox_cont run` refuses unless every frozen file (`box/prox_cont.py`, `box/prox_dose.py`, `box/prox_study.py`,
+`box/prox_validate.py`, `box/step21_prox.py`, `scripts/box_prox_cont.py`) is byte-identical to this SHA and clean in the working tree.
+A run whose frozen files differ from it is not a score.
+
+History: revision 4 froze at `55810294a5b77c00536b80e803b1ca12d7b09685` (Delaware PASS, Midland FAIL on P1; `rev4/`); revision 3 at
+`ffc042fa3366883e0aea16f0a23c5b48e3d72cbc` (`rev3/`); revision 2 at `7ce61fb640c83d73242608dd5567772f06e04c4f` (gate 24a, Michael:
+"Merge and stamp"; `rev2/`).
+
+## 12. Gate 24a — CLOSED 2026-11-02 (D150)
+
+**Revision 5 adopted in both basins** (Michael, "Adopt rev 5 both": option (a) of `FINDINGS.md` §4). Frozen SHA
+`77d50a7f69b807f0c710c148f071fd9e4c44ee4d`, digest `2e8bb5a7`. G1 one surface per basin; G2 Delaware R2 multiplicative
+(outright), Midland R3 per-side product (the registered default — R2 missed zero by 0.0002); G3 fitted level, Delaware 1.046 /
+Midland 1.067, factor = level × F_rule; G4 incumbent precedent kept, geometry key reported only; G5 no bench-pair offset; G6
+adoption at step 23's record run per basin with a D116-style re-measure, the Delaware on run 19 until then (D144). The Delaware
+oil cum-24 verdict is a FAIL by the letter of P2 (0.0439 vs 0.0437) adopted as a tie, with cum-12 and cum-36 passing; the Midland
+passes, its C8 by-fold drift a step-23 watch item. Step 21c is unchanged (its own frozen harness and table). Machine-readable:
+`GATE_24A.json`. Nothing stored.
+

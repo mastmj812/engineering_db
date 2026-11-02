@@ -16,7 +16,7 @@ def test_definition_matches_the_pinned_digest():
 def test_definition_states_the_registered_defaults():
     d = pc.DEFINITION
     assert d["side_by_depth_ft"] == 150.0 and d["universe_ft"] == {"dv": 1000.0, "dh": 2640.0}
-    assert d["gate_defaults"]["G2"] == "R3" and d["level"]["cap"] == 1.0 and d["bootstrap"] == {"blocks_ft": "3-mi (box.dev_factor.blocks)", "n": 1000, "seed": 20261102, "ci": (5.0, 95.0)}
+    assert d["gate_defaults"]["G2"] == "R3" and d["level"]["cap"] is None and d["bootstrap"] == {"blocks_ft": "3-mi (box.dev_factor.blocks)", "n": 1000, "seed": 20261102, "ci": (5.0, 95.0)}
     assert d["validation"]["test_cutoffs"]["oil24"] == ("2021-12-01", "2022-12-01", "2023-12-01")
 
 
@@ -132,9 +132,10 @@ def test_contest_prefers_the_generating_rule_and_defaults_on_a_tie():
 def test_level_mapping_caps_at_one_and_f_mix_is_the_group_mean():
     mix = pc.f_mix(np.array(["A", "A", "A", "B"]), np.array([1.0, 0.8, 0.64, 0.9]))
     assert mix["A"] == pytest.approx(np.exp(np.mean(np.log([1.0, 0.8, 0.64])))) and mix["B"] == pytest.approx(0.9)
-    out = pc.applied(np.array([1.0, 0.64, 0.9]), np.array(["A", "A", "B"]), mix)
+    out = pc.applied(np.array([1.0, 0.64, 0.9]), np.array(["A", "A", "B"]), mix, cap=1.0)
     assert out[0] == 1.0 and out[1] == pytest.approx(0.64 / mix["A"]) and out[2] == 1.0
     assert pc.applied(np.array([1.0]), np.array(["A"]), mix, cap=None)[0] > 1.0
+    assert pc.CAP is None and pc.applied(np.array([1.0]), np.array(["A"]), mix)[0] == pytest.approx(1.0 / mix["A"])   # revision 4: the uplift is carried
 
 
 def _links(rows):
@@ -163,9 +164,11 @@ def test_child_factors_and_sticks_end_to_end():
     f = float(model.curve(np.array([600.0]))[0])
     assert cf.at["s1", "pattern"] == "left+right" and bool(cf.at["s1", "flanked"]) and cf.at["s1", "F_R3"] == pytest.approx(f * f)
     assert cf.at["s2", "F_R1"] == cf.at["s2", "F_R4"] == pytest.approx(f)
-    st = pc.sticks(L, model, "R3", {"G": 0.95}, {"s1": "G", "s2": "G", "s3": "G"})
+    lifted = pc.Model(model.curve, model.a_below, model.a_above, level=1.0 / 0.95)   # revision 5: the level rides on the model
+    st = pc.sticks(L, lifted, "R3")
     st = st.set_index("stick")
-    assert st.at["s1", "factor"] == pytest.approx(min(1.0, f * f / 0.95)) and st.at["s3", "permit_parents"] == 1 and st.at["s2", "factor_uncapped"] == pytest.approx(f / 0.95)
+    assert st.at["s1", "factor_capped"] == pytest.approx(min(1.0, f * f / 0.95)) and st.at["s3", "permit_parents"] == 1 and st.at["s2", "factor"] == pytest.approx(f / 0.95)
+    assert st.at["s1", "factor"] == pytest.approx(f * f / 0.95) and st.at["s1", "level"] == pytest.approx(1.0 / 0.95)
     sup = pc.g4_support(pd.DataFrame({"pattern": ["left+right"] * 40 + ["left"] * 5, "n_parents": 2, "nearest_d_eff": list(np.linspace(300, 1500, 40)) + [100.0] * 5}))
     assert sup.set_index("pattern").at["left+right", "precedent"] and not sup.set_index("pattern").at["left", "precedent"]
     out = pc.g4_outcome(st.reset_index(), sup)

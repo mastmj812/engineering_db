@@ -1,0 +1,815 @@
+{
+  "basin": "delaware",
+  "digest": "2e8bb5a74ac5a42ba5a23567c8909901558d5a4aab75b0333154c5a360d55c83",
+  "n_boot": 1000,
+  "built": "2026-11-02 20:56 UTC",
+  "fit": {
+    "metric": "oil24",
+    "n_children": 14545,
+    "n_control": 3971,
+    "n_scored": 10394,
+    "n_exposed": 6581,
+    "n_multi": 4778,
+    "n_two": 1454,
+    "winner": "R2",
+    "reason": "lowest RMS R2 with the gain over R1 excluding zero",
+    "beta": {
+      "all": {
+        "n": 1454,
+        "b_near": 0.7323517189290241,
+        "b_far": 0.597779905122291
+      },
+      "flanked": {
+        "n": 67,
+        "b_near": 2.213621115557918,
+        "b_far": 1.3386601335340242
+      },
+      "same_side": {
+        "n": 1387,
+        "b_near": 0.6899096471590349,
+        "b_far": 0.5735123672168889
+      }
+    },
+    "model": {
+      "surface": true,
+      "f_min": 0.9123165666619888,
+      "d50": 1258.7231163642628,
+      "k": 4.799053622746606,
+      "a_below": 1.4893085236924757,
+      "a_above": 2.629611042314597,
+      "level": 1.0459798483731129
+    },
+    "models": {
+      "R1": {
+        "surface": true,
+        "f_min": 0.8396823396793691,
+        "d50": 1261.4438441422267,
+        "k": 6.5641848018295095,
+        "a_below": 1.391465580547829,
+        "a_above": 2.3333185235778204,
+        "level": 1.047638656570475
+      },
+      "R2": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "R3": {
+        "surface": true,
+        "f_min": 0.8725230478607648,
+        "d50": 1199.167978621531,
+        "k": 4.649638885973765,
+        "a_below": 1.293966366141142,
+        "a_above": 1.6358474681993527,
+        "level": 1.049825238288073
+      },
+      "R4": {
+        "surface": true,
+        "f_min": 0.877338736106167,
+        "d50": 1222.9984494108037,
+        "k": 4.853822425633704,
+        "a_below": 1.3335377413126899,
+        "a_above": 1.62813520146389,
+        "level": 1.0493382574982264
+      }
+    },
+    "c2": {
+      "gain": -0.0013846974786002053,
+      "lo": -0.0022135911279298538,
+      "hi": -0.0005462031104159604,
+      "surface_fails": false,
+      "n_cv": 10394
+    },
+    "level_band": {
+      "level": 1.0459798483731129,
+      "lo": 1.0296699939221965,
+      "hi": 1.059823969961274
+    },
+    "c1": {
+      "same": {
+        "n_bins": 5,
+        "share_inside": 0.2,
+        "pass": false
+      },
+      "below": {
+        "n_bins": 4,
+        "share_inside": 0.0,
+        "pass": false
+      },
+      "above": {
+        "n_bins": 4,
+        "share_inside": 0.0,
+        "pass": false
+      }
+    },
+    "single_reference": {
+      "n": {
+        "same": 830,
+        "below": 33,
+        "above": 36
+      },
+      "surface": {
+        "surface": true,
+        "f_min": 0.9536438823581214,
+        "d50": 1461.1989908220996,
+        "k": 7.999999999914141,
+        "a_below": 1.6697862989330732,
+        "a_above": 0.5004691546342548,
+        "level": 1.0
+      }
+    },
+    "c4_oil12": {
+      "winner": "R2",
+      "surface": true,
+      "f_min": 0.9049491643456741,
+      "d50": 1253.8644144507205,
+      "k": 5.4405759135943805,
+      "a_below": 1.6948031819929976,
+      "a_above": 3.0358285035390504,
+      "level": 1.0457807932091912
+    },
+    "c4_oil36": {
+      "winner": "R2",
+      "surface": true,
+      "f_min": 0.9216225680718055,
+      "d50": 1366.2383330367827,
+      "k": 6.083681697978511,
+      "a_below": 1.6637512270331352,
+      "a_above": 2.6110108370418614,
+      "level": 1.0421229514427546
+    }
+  },
+  "contest": {
+    "n": 4778,
+    "n_two": 1454,
+    "winner": "R2",
+    "reason": "lowest RMS R2 with the gain over R1 excluding zero",
+    "beta": {
+      "all": {
+        "n": 1454,
+        "b_near": 0.7323517189290241,
+        "b_far": 0.597779905122291
+      },
+      "flanked": {
+        "n": 67,
+        "b_near": 2.213621115557918,
+        "b_far": 1.3386601335340242
+      },
+      "same_side": {
+        "n": 1387,
+        "b_near": 0.6899096471590349,
+        "b_far": 0.5735123672168889
+      }
+    },
+    "models": {
+      "R1": {
+        "surface": true,
+        "f_min": 0.8396823396793691,
+        "d50": 1261.4438441422267,
+        "k": 6.5641848018295095,
+        "a_below": 1.391465580547829,
+        "a_above": 2.3333185235778204,
+        "level": 1.047638656570475
+      },
+      "R2": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "R3": {
+        "surface": true,
+        "f_min": 0.8725230478607648,
+        "d50": 1199.167978621531,
+        "k": 4.649638885973765,
+        "a_below": 1.293966366141142,
+        "a_above": 1.6358474681993527,
+        "level": 1.049825238288073
+      },
+      "R4": {
+        "surface": true,
+        "f_min": 0.877338736106167,
+        "d50": 1222.9984494108037,
+        "k": 4.853822425633704,
+        "a_below": 1.3335377413126899,
+        "a_above": 1.62813520146389,
+        "level": 1.0493382574982264
+      }
+    }
+  },
+  "validate": {
+    "oil24": {
+      "n_test": 6906,
+      "n_material": 593,
+      "P1_resid": 1.0154207778859983,
+      "P1_lo": 0.9790615158507677,
+      "P1_hi": 1.0529754844034593,
+      "P1": true,
+      "P2_rms": 0.04386413147651976,
+      "P2_rms_no_haircut": 0.07462806732693414,
+      "P2_rms_incumbent": 0.043699270106319216,
+      "P2": false,
+      "n_cells": 51,
+      "P3_share": 0.9411764705882353,
+      "P3": true,
+      "verdict": "FAIL",
+      "C8": {
+        "n": 2395,
+        "resid": 1.0018146965633614,
+        "lo": 0.9795322882959482,
+        "hi": 1.024567305052943,
+        "by_fold": {
+          "2021-12-01": 1.0034528957361177,
+          "2022-12-01": 0.9960566345351352,
+          "2023-12-01": 1.0079226531788807
+        },
+        "above_one_every_fold": false,
+        "interval_excludes_one": false
+      },
+      "folds": [
+        {
+          "cutoff": "2021-12-01",
+          "n_train": 3836,
+          "n_scored": 3487,
+          "n_exposed": 2069,
+          "n_multi": 1406,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0008355910360771657,
+            "lo": -0.0017196965293439005,
+            "hi": 1.8889685519293818e-05,
+            "surface_fails": false,
+            "n_cv": 3487
+          },
+          "surface": true,
+          "f_min": 0.897773332632908,
+          "d50": 1415.814744627312,
+          "k": 7.816593980448175,
+          "a_below": 1.9798656909101227,
+          "a_above": 1.3235646580629725,
+          "level": 1.0446463232815668
+        },
+        {
+          "cutoff": "2022-12-01",
+          "n_train": 6412,
+          "n_scored": 5965,
+          "n_exposed": 3643,
+          "n_multi": 2533,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0014636553810832287,
+            "lo": -0.0021708910612574434,
+            "hi": -0.0005649761572027208,
+            "surface_fails": false,
+            "n_cv": 5965
+          },
+          "surface": true,
+          "f_min": 0.8805856517419012,
+          "d50": 1353.8332848024172,
+          "k": 6.353147672527357,
+          "a_below": 1.718288489540861,
+          "a_above": 2.109708137376254,
+          "level": 1.0476578405140486
+        },
+        {
+          "cutoff": "2023-12-01",
+          "n_train": 9058,
+          "n_scored": 8574,
+          "n_exposed": 5362,
+          "n_multi": 3821,
+          "rule": "R2",
+          "contest_reason": "lowest RMS R2 with the gain over R1 excluding zero",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0015509886964768516,
+            "lo": -0.002228389958635585,
+            "hi": -0.0007914454244805858,
+            "surface_fails": false,
+            "n_cv": 8574
+          },
+          "surface": true,
+          "f_min": 0.9168043571850774,
+          "d50": 1325.918579955785,
+          "k": 6.506864074458939,
+          "a_below": 1.529990861892634,
+          "a_above": 2.422963462576861,
+          "level": 1.0437089105766586
+        }
+      ],
+      "c3_outside_10pct": [
+        {
+          "bench": "BS3_S",
+          "nearest_parent_bench": "WCA_1",
+          "n": 111,
+          "resid": 0.8854199416470475
+        },
+        {
+          "bench": "WCA_1",
+          "nearest_parent_bench": "BS3_S",
+          "n": 89,
+          "resid": 0.8923140848862903
+        },
+        {
+          "bench": "WCA_1",
+          "nearest_parent_bench": "WCB_1",
+          "n": 68,
+          "resid": 1.1191069858317997
+        },
+        {
+          "bench": "WCB_1",
+          "nearest_parent_bench": "WCB_1",
+          "n": 66,
+          "resid": 1.1076496631974884
+        },
+        {
+          "bench": "BS2_S",
+          "nearest_parent_bench": "BS3_C",
+          "n": 66,
+          "resid": 0.7517854955221107
+        },
+        {
+          "bench": "BS3_C",
+          "nearest_parent_bench": "BS3_S",
+          "n": 56,
+          "resid": 0.8828961055735752
+        },
+        {
+          "bench": "WCA_2",
+          "nearest_parent_bench": "WCC",
+          "n": 53,
+          "resid": 1.1076684092870634
+        },
+        {
+          "bench": "WCXY",
+          "nearest_parent_bench": "WCXY",
+          "n": 51,
+          "resid": 1.1611902575865458
+        },
+        {
+          "bench": "WCC",
+          "nearest_parent_bench": "WCA_2",
+          "n": 46,
+          "resid": 1.129125749981087
+        },
+        {
+          "bench": "BS2_S",
+          "nearest_parent_bench": "BS3_S",
+          "n": 45,
+          "resid": 1.178713812369334
+        },
+        {
+          "bench": "WCA_2",
+          "nearest_parent_bench": "WCB_2",
+          "n": 42,
+          "resid": 0.8862472000254475
+        },
+        {
+          "bench": "WCB_2",
+          "nearest_parent_bench": "WCB_2",
+          "n": 35,
+          "resid": 0.8435979622090705
+        },
+        {
+          "bench": "WCB_1",
+          "nearest_parent_bench": "WCXY",
+          "n": 30,
+          "resid": 1.2674018301600791
+        }
+      ],
+      "c5": [
+        {
+          "bin": "1-2 yr",
+          "n": 961,
+          "resid": 1.006536543273576
+        },
+        {
+          "bin": "2-4 yr",
+          "n": 1152,
+          "resid": 0.9452799275831301
+        },
+        {
+          "bin": ">=4 yr",
+          "n": 2398,
+          "resid": 1.0347969707527047
+        },
+        {
+          "bin": "0-20",
+          "n": 359,
+          "resid": 0.9029492295883591
+        },
+        {
+          "bin": "20-40",
+          "n": 1587,
+          "resid": 0.985013153085774
+        },
+        {
+          "bin": "40-60",
+          "n": 1431,
+          "resid": 0.9994402805983708
+        },
+        {
+          "bin": ">=60 kbbl/kft",
+          "n": 1134,
+          "resid": 1.0777157037033849
+        }
+      ]
+    },
+    "oil12": {
+      "n_test": 9620,
+      "n_material": 1023,
+      "P1_resid": 1.0430402680313904,
+      "P1_lo": 1.0109509094085578,
+      "P1_hi": 1.0770673264085737,
+      "P1": true,
+      "P2_rms": 0.034564913688356264,
+      "P2_rms_no_haircut": 0.07524360374185324,
+      "P2_rms_incumbent": 0.03639903564083404,
+      "P2": true,
+      "n_cells": 63,
+      "P3_share": 0.9206349206349206,
+      "P3": true,
+      "verdict": "PASS",
+      "C8": {
+        "n": 3190,
+        "resid": 1.0017679188802948,
+        "lo": 0.9814989227538996,
+        "hi": 1.0233939635277027,
+        "by_fold": {
+          "2021-12-01": 1.0104315258046768,
+          "2022-12-01": 0.994820529929922,
+          "2023-12-01": 1.0030598361917549,
+          "2024-12-01": 0.9969320700552934
+        },
+        "above_one_every_fold": false,
+        "interval_excludes_one": false
+      },
+      "folds": [
+        {
+          "cutoff": "2021-12-01",
+          "n_train": 3836,
+          "n_scored": 3511,
+          "n_exposed": 2081,
+          "n_multi": 1416,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.001228518151661806,
+            "lo": -0.002024200901677825,
+            "hi": -8.858041112631283e-05,
+            "surface_fails": false,
+            "n_cv": 3511
+          },
+          "surface": true,
+          "f_min": 0.863808845202176,
+          "d50": 1244.3997007202552,
+          "k": 6.461651226955399,
+          "a_below": 1.714811402249754,
+          "a_above": 2.483412576606989,
+          "level": 1.0447698226638178
+        },
+        {
+          "cutoff": "2022-12-01",
+          "n_train": 6412,
+          "n_scored": 5990,
+          "n_exposed": 3657,
+          "n_multi": 2544,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.002016168988913547,
+            "lo": -0.0030452645146518353,
+            "hi": -0.0008854186691596164,
+            "surface_fails": false,
+            "n_cv": 5990
+          },
+          "surface": true,
+          "f_min": 0.8615914555789448,
+          "d50": 1272.3848236836884,
+          "k": 6.893428087323496,
+          "a_below": 1.590694575317522,
+          "a_above": 2.0533295097291346,
+          "level": 1.0500221835656123
+        },
+        {
+          "cutoff": "2023-12-01",
+          "n_train": 9058,
+          "n_scored": 8599,
+          "n_exposed": 5376,
+          "n_multi": 3832,
+          "rule": "R2",
+          "contest_reason": "lowest RMS R2 with the gain over R1 excluding zero",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.002012740699323501,
+            "lo": -0.0029371428763256906,
+            "hi": -0.0011135256458340349,
+            "surface_fails": false,
+            "n_cv": 8599
+          },
+          "surface": true,
+          "f_min": 0.900252542893093,
+          "d50": 1258.9690451135687,
+          "k": 6.848996982004136,
+          "a_below": 1.4668152771636123,
+          "a_above": 2.4030335180811475,
+          "level": 1.0467215524691087
+        },
+        {
+          "cutoff": "2024-12-01",
+          "n_train": 11709,
+          "n_scored": 11223,
+          "n_exposed": 7155,
+          "n_multi": 5231,
+          "rule": "R2",
+          "contest_reason": "lowest RMS R2 with the gain over R1 excluding zero",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0019818848824596502,
+            "lo": -0.0029403455191386206,
+            "hi": -0.0012382734336088164,
+            "surface_fails": false,
+            "n_cv": 11223
+          },
+          "surface": true,
+          "f_min": 0.8971300503857027,
+          "d50": 1228.1125503807227,
+          "k": 5.502824001387253,
+          "a_below": 1.5564552430242427,
+          "a_above": 2.7456158254579557,
+          "level": 1.0477999035677275
+        }
+      ]
+    },
+    "oil36": {
+      "n_test": 4099,
+      "n_material": 268,
+      "P1_resid": 0.99811624942599,
+      "P1_lo": 0.9554843203001699,
+      "P1_hi": 1.0393998702132592,
+      "P1": true,
+      "P2_rms": 0.04565818899892919,
+      "P2_rms_no_haircut": 0.07070372131312945,
+      "P2_rms_incumbent": 0.04674878375298506,
+      "P2": true,
+      "n_cells": 37,
+      "P3_share": 0.8918918918918919,
+      "P3": true,
+      "verdict": "PASS",
+      "C8": {
+        "n": 1435,
+        "resid": 1.0055746707745754,
+        "lo": 0.9786945918194322,
+        "hi": 1.0334035245189892,
+        "by_fold": {
+          "2021-12-01": 1.0071270039892848,
+          "2022-12-01": 1.0031680499824065
+        },
+        "above_one_every_fold": true,
+        "interval_excludes_one": false
+      },
+      "folds": [
+        {
+          "cutoff": "2021-12-01",
+          "n_train": 3836,
+          "n_scored": 3030,
+          "n_exposed": 1804,
+          "n_multi": 1227,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R4; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0003305551402698059,
+            "lo": -0.0011675775359170997,
+            "hi": 0.0006640477662135324,
+            "surface_fails": false,
+            "n_cv": 3030
+          },
+          "surface": true,
+          "f_min": 0.9116335611629711,
+          "d50": 1442.8252788288212,
+          "k": 7.217360849297704,
+          "a_below": 1.473709880229662,
+          "a_above": 1.3710461106906608,
+          "level": 1.0420702543468952
+        },
+        {
+          "cutoff": "2022-12-01",
+          "n_train": 6412,
+          "n_scored": 5443,
+          "n_exposed": 3344,
+          "n_multi": 2335,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0013366920224121004,
+            "lo": -0.002107665543447132,
+            "hi": -0.0005759377346778339,
+            "surface_fails": false,
+            "n_cv": 5443
+          },
+          "surface": true,
+          "f_min": 0.8881287645574546,
+          "d50": 1351.2027869037272,
+          "k": 5.2537135402533846,
+          "a_below": 1.562766535955888,
+          "a_above": 2.1049119579001982,
+          "level": 1.0468234626817174
+        }
+      ]
+    },
+    "gas24": {
+      "n_test": 6904,
+      "n_material": 518,
+      "P1_resid": 1.0654643104157149,
+      "P1_lo": 1.0160052344894437,
+      "P1_hi": 1.1134402850545082,
+      "P1": false,
+      "P2_rms": 0.05218980671014867,
+      "P2_rms_no_haircut": 0.06774107259759989,
+      "P2_rms_incumbent": 0.050036874477258825,
+      "P2": false,
+      "n_cells": 51,
+      "P3_share": 0.8431372549019608,
+      "P3": true,
+      "verdict": "FAIL",
+      "C8": {
+        "n": 2393,
+        "resid": 0.9999749039556253,
+        "lo": 0.971281416559352,
+        "hi": 1.0285010152718204,
+        "by_fold": {
+          "2021-12-01": 1.0185148123667709,
+          "2022-12-01": 0.9948780449522479,
+          "2023-12-01": 0.9801180161813045
+        },
+        "above_one_every_fold": false,
+        "interval_excludes_one": false
+      },
+      "folds": [
+        {
+          "cutoff": "2021-12-01",
+          "n_train": 3836,
+          "n_scored": 3498,
+          "n_exposed": 2078,
+          "n_multi": 1410,
+          "rule": "R2",
+          "contest_reason": "lowest RMS R2 with the gain over R1 excluding zero",
+          "surface_fails": false,
+          "c2": {
+            "gain": 0.0002965012745080875,
+            "lo": -0.0008251373651388782,
+            "hi": 0.0011055535694892396,
+            "surface_fails": false,
+            "n_cv": 3498
+          },
+          "surface": true,
+          "f_min": 0.8820108869139444,
+          "d50": 1239.7762668073167,
+          "k": 5.3363545678998605,
+          "a_below": 2.506223016414961,
+          "a_above": 5.999999999999999,
+          "level": 1.0360332331007698
+        },
+        {
+          "cutoff": "2022-12-01",
+          "n_train": 6412,
+          "n_scored": 5976,
+          "n_exposed": 3652,
+          "n_multi": 2537,
+          "rule": "R3",
+          "contest_reason": "lowest RMS R2; gain over R1 not resolved at 90 %, default R3",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0004099662509740587,
+            "lo": -0.0013851805612511813,
+            "hi": 0.0004669759657467326,
+            "surface_fails": false,
+            "n_cv": 5976
+          },
+          "surface": true,
+          "f_min": 0.8555356355968162,
+          "d50": 1234.584618220652,
+          "k": 4.369186266500809,
+          "a_below": 1.8916054948087544,
+          "a_above": 5.999995190244785,
+          "level": 1.0406643499666264
+        },
+        {
+          "cutoff": "2023-12-01",
+          "n_train": 9058,
+          "n_scored": 8582,
+          "n_exposed": 5371,
+          "n_multi": 3825,
+          "rule": "R2",
+          "contest_reason": "lowest RMS R2 with the gain over R1 excluding zero",
+          "surface_fails": false,
+          "c2": {
+            "gain": -0.0002867575735932548,
+            "lo": -0.0008358513942822859,
+            "hi": 0.0003651992352817572,
+            "surface_fails": false,
+            "n_cv": 8582
+          },
+          "surface": true,
+          "f_min": 0.9287287160909713,
+          "d50": 1572.6104466338138,
+          "k": 7.93638325045014,
+          "a_below": 1.9330968963997592,
+          "a_above": 5.773027418869636,
+          "level": 1.0379567721910494
+        }
+      ]
+    }
+  },
+  "sticks": {
+    "n_sticks": 41875,
+    "rule": "R2",
+    "level": 1.0459798483731129,
+    "by_parents_x_factor": {
+      "0": {
+        "<0.80": 0,
+        "0.80-0.90": 0,
+        "0.90-0.95": 0,
+        "0.95-1.00": 0,
+        ">1.00": 6181
+      },
+      "1": {
+        "<0.80": 0,
+        "0.80-0.90": 0,
+        "0.90-0.95": 0,
+        "0.95-1.00": 858,
+        ">1.00": 4666
+      },
+      "2": {
+        "<0.80": 0,
+        "0.80-0.90": 112,
+        "0.90-0.95": 414,
+        "0.95-1.00": 1218,
+        ">1.00": 2545
+      },
+      "3+": {
+        "<0.80": 7412,
+        "0.80-0.90": 7546,
+        "0.90-0.95": 4110,
+        "0.95-1.00": 3778,
+        ">1.00": 3035
+      }
+    },
+    "g4": {
+      "forecast": 38314,
+      "no_forecast_geometry": 3561
+    },
+    "mean_factor": 0.9238924687129614,
+    "mean_factor_capped": 0.90996727622819
+  },
+  "frozen_sha": "77d50a7f69b807f0c710c148f071fd9e4c44ee4d",
+  "inputs": {
+    "view_rows": 15581,
+    "duplicate_api10_dropped": 989,
+    "not_in_step1_children": 47,
+    "children": 14545,
+    "digests": {
+      "tuning": "6379b9dabe91",
+      "holdout": "2b9418617f35"
+    },
+    "by_group": {
+      "AVA_0": 85,
+      "AVA_1": 182,
+      "AVA_2": 160,
+      "BS1_S": 658,
+      "BS2_C": 294,
+      "BS2_S": 2043,
+      "BS3_C": 1140,
+      "BS3_S": 1497,
+      "WCA": 5406,
+      "WCB_1": 954,
+      "WCB_2": 680,
+      "WCC": 457,
+      "WCXY_WCA1": 989
+    },
+    "by_split": {
+      "holdout": 3907,
+      "tuning": 10638
+    },
+    "groups": {
+      "ambiguous": 608,
+      "control": 3971,
+      "exposed": 8818,
+      "young": 1148
+    }
+  }
+}

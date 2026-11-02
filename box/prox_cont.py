@@ -50,8 +50,10 @@ SEED = 20261102
 CI = (5.0, 95.0)                   # 90 % block-bootstrap interval
 MIN_FIT = 30                       # a stage / contest population below this is reported, not fitted
 RULES = ("R1", "R2", "R3", "R4")
+BAND_REFITS = 200                  # revision 3: block-bootstrap refits behind a joint band
+C_BOUNDS = (-0.5, 0.5)             # revision 5: the level intercept's bounds (ln scale)
 RULE_DEFAULT = "R3"                # G2: per-side product on a tie
-CAP = 1.0                          # G3: the §5 cap kept in v1
+CAP: float | None = None           # revision 4 (G3, Michael 2026-11-02 "Lift the cap"): the §5 uplift is carried; rev 2-3 capped at 1.0
 METRIC = "oil24"
 TEST_CUTOFFS = {"oil24": ("2021-12-01", "2022-12-01", "2023-12-01"),
                 "oil12": ("2021-12-01", "2022-12-01", "2023-12-01", "2024-12-01"),
@@ -78,30 +80,37 @@ DEFINITION: dict[str, Any] = {
     "model": {"d_eff": "sqrt(dh^2 + (a_side*dz)^2), a_same = 0", "F": "F_min + (1-F_min)/(1+(d50/d)^k)", "bounds": BOUNDS, "init": INIT,
               "stages": {"A": "single parent, side same -> F_h(dh)", "B": f"single parent, below / above, dh <= {STACK_DH_MAX_FT:.0f} -> F_below(dv), F_above(dv)",
                          "C": "single parent, any -> a_below, a_above with stage A held"},
-              "min_fit": MIN_FIT, "fit": "scipy least_squares on l_rel vs ln F, bounded"},
+              "min_fit": MIN_FIT, "fit": "scipy least_squares on l_rel vs ln F, bounded",
+              "fit_of_record": "revision 3: joint, every child with >= 1 counting parent, l_rel vs ln F_rule(all parents; theta), "
+                               "theta = (F_min, d50, k, a_below, a_above) or the nine three-curve parameters; the stages are a reported reference",
+              "band_refits": BAND_REFITS},
     "rules": {"R1": "worst-only min F", "R2": "product of all F", "R3": "product over left/right/above/below of the nearest parent's F",
               "R4": "drainage share: per axis mean over sides of max(2F-1, 0), unbounded side 1, axes multiplied"},
-    "contest": {"population": "exactly two depleting parents in the universe", "statistic": "RMS of l_rel - ln F_rule",
+    "contest": {"population": "revision 3: every child with >= 2 counting parents, each rule with its own jointly fitted curve (exactly-two reported)",
+                "statistic": "RMS of l_rel - ln F_rule", "intervals": "block draws re-weight the point-fit residuals, no refit per draw",
                 "winner": "lowest RMS when its improvement over R1 excludes zero at 90 %; R1 when every other rule's gain interval lies entirely below zero; else R3",
                 "default": RULE_DEFAULT},
-    "level": {"factor": "F_rule / F_mix per basin x BOX bench", "cap": CAP},
-    "c2": {"cross_validation": "blocked, K folds", "k_folds": 5},
+    "level": {"factor": "revision 5: level x F_rule, level = exp(c) with c a free intercept in the joint fit on EVERY scored training child "
+                        "(controls enter at F = 1); residual l_mix - (c + ln F_rule); no F_mix; no cap", "c_bounds": [-0.5, 0.5], "cap": CAP},
+    "c2": {"cross_validation": "blocked, K folds", "k_folds": 5, "forms": "revision 3: jointly fitted surface vs three-curve, default rule"},
     "validation": {"metric": METRIC, "test_cutoffs": TEST_CUTOFFS, "P1": {"material": MATERIAL, "band": P1_BAND},
                    "P2": {"cells": "side pattern x 400-ft bin of nearest d_eff", "cell_min": CELL_MIN, "edges": list(CELL_EDGES_FT[:-1]),
                           "beats": ["no haircut", "incumbent ladder"]},
-                   "P3": {"tol": P3_TOL, "share": P3_SHARE}, "verdict": "P1 and P2 and P3 per basin"},
+                   "P3": {"tol": P3_TOL, "share": P3_SHARE}, "verdict": "P1 and P2 and P3 per basin",
+                   "residual": "revision 3: r = l_mix - ln(F / F_mix), l_mix = l minus the mean over ALL scored children of (bench group, cutoff); "
+                               "the fit uses the control-normalised l_rel (rev 2 scored r on l_rel, which made C8 = 1 by construction)"},
     "bootstrap": {"blocks_ft": "3-mi (box.dev_factor.blocks)", "n": N_BOOT, "seed": SEED, "ci": CI},
     "checks": {"C1": f"{C1_SHARE:.0%} of >= {MIN_FIT}-child bins inside the P5-P95 band", "C2": "three curves vs surface RMS improvement excludes zero at 90 %",
                "C3": "bench-pair residuals (>= 30 children) outside +-10 % named", "C4": "F_min, d50 at cum-12 / 24 / 36",
                "C5": "residual by parent age / cum bins", "C6": "Delaware vs Midland parameters", "C7": "Pad C 233 factors",
                "C8": "walk-forward residual on unexposed test children (F_applied = 1)"},
-    "gate_defaults": {"G1": "whatever C2 says", "G2": RULE_DEFAULT, "G3": "cap kept", "G4": "incumbent precedent; geometry key reported",
+    "gate_defaults": {"G1": "whatever C2 says", "G2": RULE_DEFAULT, "G3": "revision 4: cap LIFTED on the C8 evidence (1.047 [1.024, 1.071] every fold)", "G4": "incumbent precedent; geometry key reported",
                       "G5": "no bench-pair offset", "G6": "score now, adopt at step 23"},
     "g4_candidate": {"floor": G4_PRECEDENT_FLOOR, "percentile": G4_PERCENTILE, "key": "side pattern (sides present, flanked)"},
 }
 
 
-DIGEST = "87b3f6030e69508dd9128046290c2f13fd9c05cf17a60624f70f8cfa8654717c"  # revision 2 (2026-11-02: R1 can win; C2 k_folds; F_mix per bench); r1 draft 4c140f6d
+DIGEST = "2e8bb5a74ac5a42ba5a23567c8909901558d5a4aab75b0333154c5a360d55c83"  # revision 5 (2026-11-02: fitted level intercept, every scored child); r4 8b76b94e; r3 47b2898a; r2 87b3f603; r1 draft 4c140f6d
 
 
 def canonical() -> str:
@@ -158,6 +167,7 @@ class Model:
     a_above: float = 1.0
     below: Curve | None = None
     above: Curve | None = None
+    level: float = 1.0   # revision 5: exp(c), the fitted unexposed level relative to the mix; factor = level x F_rule
 
     @property
     def surface(self) -> bool:
@@ -177,7 +187,7 @@ class Model:
 
     def as_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {"surface": self.surface, "f_min": self.curve.f_min, "d50": self.curve.d50, "k": self.curve.k,
-                               "a_below": self.a_below, "a_above": self.a_above}
+                               "a_below": self.a_below, "a_above": self.a_above, "level": self.level}
         for n, c in (("below", self.below), ("above", self.above)):
             if c is not None:
                 out |= {f"{n}_f_min": c.f_min, f"{n}_d50": c.d50, f"{n}_k": c.k}
@@ -213,6 +223,13 @@ def l_rel(d: pd.DataFrame, metric: str, control: np.ndarray) -> pd.Series:
         else:
             base.append(m_all)
     return l - np.array(base, float)
+
+
+def l_mix(d: pd.DataFrame, metric: str) -> pd.Series:
+    """l minus the mean over ALL scored children of its (bench group, cutoff) — the mix BOX's level is calibrated on (D58),
+    the 2c normalisation. The fit uses `l_rel` (control-relative); the §4 / §5 scoring residual uses this one, because the
+    applied factor F / F_mix is mix-relative. Unexposed children then carry the 'none' uplift in r (C8)."""
+    return l_rel(d, metric, np.ones(len(d), bool))
 
 
 def control_mask(d: pd.DataFrame, links: pd.DataFrame) -> np.ndarray:
@@ -456,11 +473,17 @@ def applied(f_rule: np.ndarray, groups: np.ndarray, mix: Mapping[str, float], ca
 
 
 def rule_factor(d: pd.DataFrame, par: pd.DataFrame, model: Model, rule: str) -> pd.DataFrame:
-    """Per child of `d`: F under `rule` (1 when unexposed), n parents, nearest d_eff, pattern."""
-    cf = child_factors(par[par["child"].isin(d["api10"])], model, rules=(rule,)).set_index("child").reindex(d["api10"])
-    out = pd.DataFrame({"F_rule": cf[f"F_{rule}"].fillna(1.0).to_numpy(), "n_parents": cf["n_parents"].fillna(0).astype(int).to_numpy(),
-                        "nearest_d_eff": cf["nearest_d_eff"].to_numpy(), "pattern": cf["pattern"].fillna("none").to_numpy()}, index=d.index)
-    return out
+    """Per child of `d`: F under `rule` (1 when unexposed), n parents, nearest d_eff, pattern, and the nearest parent's
+    bench / age / cum per kft (C3 / C5 diagnostics)."""
+    q = par[par["child"].isin(d["api10"])].copy()
+    cf = child_factors(q, model, rules=(rule,)).set_index("child").reindex(d["api10"])
+    q["d_eff"] = model.distance(q["dh_ft"].to_numpy(), q["dz_ft"].to_numpy(), q["side"].to_numpy())
+    near = q.sort_values("d_eff").drop_duplicates("child").set_index("child").reindex(d["api10"])
+    cum = near["parent_cum_bbl_per_kft"] if "parent_cum_bbl_per_kft" in near else pd.Series(np.nan, index=near.index)
+    return pd.DataFrame({"F_rule": cf[f"F_{rule}"].fillna(1.0).to_numpy(), "n_parents": cf["n_parents"].fillna(0).astype(int).to_numpy(),
+                         "nearest_d_eff": cf["nearest_d_eff"].to_numpy(), "pattern": cf["pattern"].fillna("none").to_numpy(),
+                         "nearest_parent_bench": near["parent_bench"].to_numpy(), "nearest_age_days": near["age_days"].to_numpy(),
+                         "nearest_cum_kft": cum.to_numpy()}, index=d.index)
 
 
 def cell_of(pattern: np.ndarray, nearest: np.ndarray) -> np.ndarray:
@@ -471,37 +494,262 @@ def cell_of(pattern: np.ndarray, nearest: np.ndarray) -> np.ndarray:
 
 def walk_forward(d: pd.DataFrame, links: pd.DataFrame, metric: str, test_cutoffs: Sequence[str], ln_f_inc: pd.Series | None = None,
                  rule: str | None = None, n_boot: int = N_BOOT, seed: int = SEED) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    """Per test cutoff: fit stages + choose the rule (or use `rule`) on strictly earlier cutoffs, F_mix from them, apply to
-    the test children. Returns the test rows (l_rel, r, r0, r_inc, f, cell) and the per-fold fits."""
+    """Revision 5. Per test cutoff: on strictly earlier cutoffs, fit every rule jointly on EVERY scored child with a level
+    intercept, C2 the default rule's surface vs three-curve form, run the contest (or use `rule`); apply level x F_rule to
+    the test children. Returns the test rows (l_mix, r, r0, r_inc, f, cell) and the per-fold fits."""
     par = parents(links, drilled=True)
-    ctrl = control_mask(d, links)
-    lr = l_rel(d, metric, ctrl)
+    lm = l_mix(d, metric)
     parts, fits = [], []
+    nb = max(50, n_boot // 10)
     for c in test_cutoffs:
-        tr, te = (d["cutoff"] < c).to_numpy(), ((d["cutoff"] == c).to_numpy() & lr.notna().to_numpy())
+        tr, te = (d["cutoff"] < c).to_numpy(), ((d["cutoff"] == c).to_numpy() & lm.notna().to_numpy())
         if not te.any() or tr.sum() < MIN_FIT:
             continue
         dtr = d[tr]
-        sp = single_frame(dtr, par, lr[tr])
-        st = fit_stages(sp)
-        if st["surface"] is None:
+        P, lmix, blocks, _ = scored_frame(dtr, par, lm[tr])
+        if (P.n_parents >= 1).sum() < MIN_FIT:
             continue
-        c2 = check_c2(sp, n_boot=max(50, n_boot // 10), seed=seed)
-        model = st["three"] if c2["surface_fails"] else st["surface"]
-        chosen = rule or contest(two_parent_frame(dtr, par, lr[tr], model), n_boot=max(50, n_boot // 10), seed=seed)["winner"]
-        rf_tr = rule_factor(dtr, par, model, chosen)
-        mix = f_mix(dtr[MIX_KEY].to_numpy(), rf_tr["F_rule"].to_numpy())
+        c2 = check_c2_joint(P, lmix, blocks, n_boot=nb, seed=seed)
+        con = contest_joint(P, lmix, blocks, three=c2["surface_fails"], n_boot=nb, seed=seed)
+        chosen = rule or con["winner"]
+        model = con["models"][chosen]
         dte = d[te]
         rf = rule_factor(dte, par, model, chosen)
-        f_app = applied(rf["F_rule"].to_numpy(), dte[MIX_KEY].to_numpy(), mix)
+        f_app = model.level * rf["F_rule"].to_numpy()
         p = pd.DataFrame({"api10": dte["api10"].to_numpy(), "cutoff": c, "block": dte["block"].to_numpy(), "bench_group": dte["bench_group"].to_numpy(),
-                          "l_rel": lr[te].to_numpy(), "f": f_app, "F_rule": rf["F_rule"].to_numpy(), "n_parents": rf["n_parents"].to_numpy(),
+                          "bench": dte[MIX_KEY].to_numpy(), "l_mix": lm[te].to_numpy(), "f": f_app, "F_rule": rf["F_rule"].to_numpy(),
+                          "n_parents": rf["n_parents"].to_numpy(), "nearest_d_eff": rf["nearest_d_eff"].to_numpy(),
+                          "nearest_parent_bench": rf["nearest_parent_bench"].to_numpy(), "nearest_age_days": rf["nearest_age_days"].to_numpy(),
+                          "nearest_cum_kft": rf["nearest_cum_kft"].to_numpy(),
                           "cell": cell_of(rf["pattern"].to_numpy(), rf["nearest_d_eff"].to_numpy()), "unexposed": (rf["n_parents"].to_numpy() == 0)})
-        p["r"], p["r0"] = p["l_rel"] - np.log(p["f"]), p["l_rel"]
-        p["r_inc"] = p["l_rel"] - (ln_f_inc.reindex(dte.index).fillna(0.0).to_numpy() if ln_f_inc is not None else 0.0)
+        p["r"], p["r0"] = p["l_mix"] - np.log(p["f"]), p["l_mix"]
+        p["r_inc"] = p["l_mix"] - (ln_f_inc.reindex(dte.index).fillna(0.0).to_numpy() if ln_f_inc is not None else 0.0)
         parts.append(p)
-        fits.append({"cutoff": c, "n_train": int(tr.sum()), "n_single": len(sp), "rule": chosen, "surface_fails": c2["surface_fails"], **model.as_dict(), "f_mix": mix})
+        fits.append({"cutoff": c, "n_train": int(tr.sum()), "n_scored": len(lmix), "n_exposed": int((P.n_parents >= 1).sum()), "n_multi": con["n"], "rule": chosen,
+                     "contest_reason": con["reason"], "surface_fails": c2["surface_fails"], "c2": dict(c2.items()), **model.as_dict()})
     return (pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()), fits
+
+
+# ---- revision 3: the joint fit (every exposed child, the rule inside the fit) ---------------------------------------
+SIDE_CODE = {"same": 0, "below": 1, "above": 2}
+AXIS_CODE = {"left": 0, "right": 1, "above": 2, "below": 3}
+
+
+@dataclass(frozen=True)
+class Padded:
+    """Every counting parent of every child as [n, m] arrays (m = the largest parent count), pads masked out."""
+    child: np.ndarray
+    dh: np.ndarray
+    dz: np.ndarray
+    side: np.ndarray
+    axis: np.ndarray
+    mask: np.ndarray
+
+    @property
+    def n_parents(self) -> np.ndarray:
+        return self.mask.sum(axis=1)
+
+    def take(self, idx: np.ndarray) -> Padded:
+        return Padded(self.child[idx], self.dh[idx], self.dz[idx], self.side[idx], self.axis[idx], self.mask[idx])
+
+
+def pad(par: pd.DataFrame, children: Sequence[str]) -> Padded:
+    """Pad the counting parents of `children` (in that order; a child with none gets an all-masked row)."""
+    ids = list(children)
+    pos = {c: i for i, c in enumerate(ids)}
+    q = par[par["child"].isin(pos)]
+    counts = q.groupby("child").size()
+    m = max(1, int(counts.max()) if len(counts) else 1)
+    n = len(ids)
+    dh, dz = np.zeros((n, m)), np.zeros((n, m))
+    side, axis = np.full((n, m), -1, int), np.full((n, m), -1, int)
+    mask = np.zeros((n, m), bool)
+    slot = np.zeros(n, int)
+    for c, h, z, sd, ax in zip(q["child"].to_numpy(), q["dh_ft"].to_numpy(float), q["dz_ft"].to_numpy(float), q["side"].to_numpy(), q["axis_side"].to_numpy(), strict=True):
+        i = pos[c]
+        j = slot[i]
+        dh[i, j], dz[i, j], side[i, j], axis[i, j], mask[i, j] = h, z, SIDE_CODE[sd], AXIS_CODE[ax], True
+        slot[i] += 1
+    return Padded(np.array(ids, dtype=object), dh, dz, side, axis, mask)
+
+
+def theta_model(theta: Sequence[float], three: bool, intercept: bool = False) -> Model:
+    t = [float(v) for v in theta]
+    level = float(np.exp(t[-1])) if intercept else 1.0
+    if not three:
+        return Model(Curve(t[0], t[1], t[2]), t[3], t[4], level=level)
+    return Model(Curve(t[0], t[1], t[2]), t[3], t[4], below=Curve(t[5], t[6], t[7]), above=Curve(t[8], t[9], t[10]), level=level)
+
+
+def model_theta(model: Model, intercept: bool = False) -> list[float]:
+    c = model.curve
+    t = [c.f_min, c.d50, c.k, model.a_below, model.a_above]
+    if not model.surface:
+        assert model.below is not None and model.above is not None
+        t += [model.below.f_min, model.below.d50, model.below.k, model.above.f_min, model.above.d50, model.above.k]
+    if intercept:
+        t.append(float(np.log(model.level)))
+    return t
+
+
+def f_matrix(P: Padded, model: Model) -> np.ndarray:
+    """F per parent slot under `model`; pads = 1."""
+    if model.surface:
+        a = np.where(P.side == 1, model.a_below, np.where(P.side == 2, model.a_above, 0.0))
+        F_ = model.curve(np.hypot(P.dh, a * P.dz))
+    else:
+        assert model.below is not None and model.above is not None
+        F_ = np.where(P.side == 0, model.curve(P.dh), np.where(P.side == 1, model.below(np.abs(P.dz)), model.above(np.abs(P.dz))))
+    return np.where(P.mask, F_, 1.0)
+
+
+def rule_vector(Fm: np.ndarray, P: Padded, rule: str) -> np.ndarray:
+    """The child's F under `rule` from the parent matrix (vectorised twin of `combine`)."""
+    if rule == "R1":
+        return Fm.min(axis=1)
+    if rule == "R2":
+        return Fm.prod(axis=1)
+    per_side = np.stack([np.where(P.mask & (P.axis == s), Fm, 1.0).min(axis=1) for s in range(4)], axis=1)  # left, right, above, below
+    if rule == "R3":
+        return per_side.prod(axis=1)
+    if rule == "R4":
+        h = np.maximum(2.0 * per_side - 1.0, 0.0)
+        return np.maximum(((h[:, 0] + h[:, 1]) / 2.0) * ((h[:, 2] + h[:, 3]) / 2.0), 1e-3)
+    raise ValueError(rule)
+
+
+def _bounds(three: bool, intercept: bool = False) -> tuple[list[float], list[float], list[float]]:
+    lo = [BOUNDS["f_min"][0], BOUNDS["d50"][0], BOUNDS["k"][0], BOUNDS["a"][0], BOUNDS["a"][0]]
+    hi = [BOUNDS["f_min"][1], BOUNDS["d50"][1], BOUNDS["k"][1], BOUNDS["a"][1], BOUNDS["a"][1]]
+    x0 = [INIT["f_min"], INIT["d50"], INIT["k"], INIT["a"], INIT["a"]]
+    if three:
+        lo += [BOUNDS["f_min"][0], BOUNDS["d50"][0], BOUNDS["k"][0]] * 2
+        hi += [BOUNDS["f_min"][1], BOUNDS["d50"][1], BOUNDS["k"][1]] * 2
+        x0 += [INIT["f_min"], INIT["d50"], INIT["k"]] * 2
+    if intercept:
+        lo.append(C_BOUNDS[0])
+        hi.append(C_BOUNDS[1])
+        x0.append(0.0)
+    return x0, lo, hi
+
+
+def fit_joint(P: Padded, lrel: np.ndarray, rule: str, w: np.ndarray | None = None, three: bool = False, x0: Sequence[float] | None = None,
+              intercept: bool = False) -> Model:
+    """Revision 3: θ by least squares of l on ln F_rule(parents; θ) over every child in P. Revision 5 (`intercept=True`): the
+    fit of record — P holds EVERY scored child (unexposed rows all-masked, F = 1), l is the mix-normalised log-ratio, and a
+    free intercept c is fitted with θ: residual l − (c + ln F_rule); the Model carries level = exp(c)."""
+    lrel = np.asarray(lrel, float)
+    x_init, lo, hi = _bounds(three, intercept)
+    if x0 is not None:
+        x_init = list(x0)
+    off = (lambda th: th[-1]) if intercept else (lambda th: 0.0)
+    res = _ls(lambda th: lrel - off(th) - np.log(rule_vector(f_matrix(P, theta_model(th, three, intercept)), P, rule)), x_init, lo, hi, w)
+    return theta_model(res.x, three, intercept)
+
+
+def joint_band(P: Padded, lrel: np.ndarray, blocks: np.ndarray, rule: str, grid: np.ndarray, which: str, n_refit: int = BAND_REFITS, seed: int = SEED,
+               intercept: bool = True) -> pd.DataFrame:
+    """P5-P95 band of the per-parent curve F along one side (same: dh; below / above: dv at dh = 0) over block-bootstrap
+    refits of the fit of record; the level is reported separately (`level`, `level_lo`, `level_hi`)."""
+    W = pdz.boot_weights(blocks, n_boot=n_refit, seed=seed)
+    curves, levels = [], []
+    x0 = None
+    for i in range(W.shape[0]):
+        m = fit_joint(P, lrel, rule, W[i], x0=x0, intercept=intercept)
+        if i == 0:
+            x0 = model_theta(m, intercept)
+        side = np.full(len(grid), which, dtype=object)
+        dh = grid if which == "same" else np.zeros(len(grid))
+        dz = np.zeros(len(grid)) if which == "same" else (grid if which == "below" else -grid)
+        curves.append(m.factor(dh, dz, side))
+        levels.append(m.level)
+    c = np.array(curves)
+    lo, hi = np.percentile(c[1:], CI, axis=0)
+    llo, lhi = np.percentile(levels[1:], CI)
+    return pd.DataFrame({"d_ft": grid, "F": c[0], "lo": lo, "hi": hi, "n": len(lrel), "side": which, "level": levels[0], "level_lo": llo, "level_hi": lhi})
+
+
+def check_c2_joint(P: Padded, lrel: np.ndarray, blocks: np.ndarray, rule: str = RULE_DEFAULT, n_boot: int = N_BOOT, seed: int = SEED, k_folds: int = K_FOLDS,
+                   intercept: bool = True) -> dict[str, Any]:
+    """C2 on the joint fits: surface vs three-curve form, blocked K-fold out of sample, interval = block bootstrap of the
+    held-out residuals. Surface FAILS when the interval excludes zero."""
+    ub = np.unique(blocks)
+    fold_of = dict(zip(ub, np.random.default_rng(seed).permutation(len(ub)) % k_folds, strict=True))
+    folds = np.array([fold_of[b] for b in blocks])
+    r_s, r_t = np.full(len(lrel), np.nan), np.full(len(lrel), np.nan)
+    for k in range(k_folds):
+        tr, te = folds != k, folds == k
+        if te.sum() == 0 or tr.sum() < MIN_FIT:
+            continue
+        ms = fit_joint(P.take(tr), lrel[tr], rule, intercept=intercept)
+        x0 = model_theta(ms)[:5] + [ms.curve.f_min, ms.curve.d50, ms.curve.k] * 2 + ([float(np.log(ms.level))] if intercept else [])
+        mt = fit_joint(P.take(tr), lrel[tr], rule, three=True, x0=x0, intercept=intercept)
+        Pt = P.take(te)
+        r_s[te] = lrel[te] - np.log(ms.level) - np.log(rule_vector(f_matrix(Pt, ms), Pt, rule))
+        r_t[te] = lrel[te] - np.log(mt.level) - np.log(rule_vector(f_matrix(Pt, mt), Pt, rule))
+    ok = np.isfinite(r_s) & np.isfinite(r_t)
+    if ok.sum() < MIN_FIT:
+        return {"gain": np.nan, "lo": np.nan, "hi": np.nan, "surface_fails": False, "n_cv": int(ok.sum())}
+    W = pdz.boot_weights(blocks[ok], n_boot=n_boot, seed=seed)
+    gain = np.array([rms(r_s[ok], W[i]) - rms(r_t[ok], W[i]) for i in range(W.shape[0])])
+    lo, hi = np.percentile(gain[1:], CI)
+    return {"gain": float(gain[0]), "lo": float(lo), "hi": float(hi), "surface_fails": bool(lo > 0.0), "n_cv": int(ok.sum())}
+
+
+def contest_joint(P: Padded, lrel: np.ndarray, blocks: np.ndarray, three: bool = False, n_boot: int = N_BOOT, seed: int = SEED,
+                  intercept: bool = True) -> dict[str, Any]:
+    """Revision 3 contest: each rule fitted jointly on every child in P (revision 5: every scored child, with its own level
+    intercept); scored on the children with >= 2 parents; RMS, gain over R1 (same block draws re-weighting the point-fit
+    residuals), the registered decision. Returns the models."""
+    multi = P.n_parents >= 2
+    models = {r: fit_joint(P, lrel, r, three=three, intercept=intercept) for r in RULES}
+    if multi.sum() < MIN_FIT:
+        return {"n": int(multi.sum()), "winner": RULE_DEFAULT, "reason": f"fewer than {MIN_FIT} multi-parent children; default", "table": pd.DataFrame(), "models": models}
+    Pm = P.take(multi)
+    res = {r: lrel[multi] - np.log(models[r].level) - np.log(rule_vector(f_matrix(Pm, models[r]), Pm, r)) for r in RULES}
+    W = pdz.boot_weights(blocks[multi], n_boot=n_boot, seed=seed)
+    rows = []
+    for r in RULES:
+        gain = np.array([rms(res["R1"], W[i]) - rms(res[r], W[i]) for i in range(W.shape[0])])
+        lo, hi = np.percentile(gain[1:], CI)
+        rows.append({"rule": r, "n": int(multi.sum()), "rms": rms(res[r]), "gain_vs_R1": float(gain[0]), "gain_lo": float(lo), "gain_hi": float(hi),
+                     "excludes_zero": bool(lo > 0.0), **{k: round(v, 4) for k, v in models[r].as_dict().items() if k != "surface"}})
+    t = pd.DataFrame(rows)
+    best = t.sort_values("rms").iloc[0]
+    others = t[t["rule"] != "R1"]
+    if best["rule"] != "R1" and bool(best["excludes_zero"]):
+        winner, reason = str(best["rule"]), f"lowest RMS {best['rule']} with the gain over R1 excluding zero"
+    elif bool((others["gain_hi"] < 0.0).all()):
+        winner, reason = "R1", "every other rule's gain over R1 lies entirely below zero"
+    else:
+        winner, reason = RULE_DEFAULT, f"lowest RMS {best['rule']}; gain over R1 not resolved at 90 %, default {RULE_DEFAULT}"
+    two = P.n_parents == 2
+    beta: dict[str, Any] = {}
+    if two.sum() >= MIN_FIT:
+        P2 = P.take(two)
+        Fm = f_matrix(P2, models["R3"])
+        Fs = np.sort(np.where(P2.mask, Fm, np.inf), axis=1)[:, :2]
+        flank = ((np.where(P2.mask & (P2.axis == 0), 1, 0).sum(axis=1) > 0) & (np.where(P2.mask & (P2.axis == 1), 1, 0).sum(axis=1) > 0))
+        frame = pd.DataFrame({"F_near": Fs[:, 0], "F_far": Fs[:, 1], "l_rel": lrel[two] - np.log(models["R3"].level), "flanked": flank})
+        beta = free_regression(frame)
+    return {"n": int(multi.sum()), "n_two": int(two.sum()), "winner": winner, "reason": reason, "table": t, "models": models, "beta": beta}
+
+
+def exposed_frame(d: pd.DataFrame, par: pd.DataFrame, lr: pd.Series) -> tuple[Padded, np.ndarray, np.ndarray, np.ndarray]:
+    """Every child of `d` with >= 1 counting parent and a finite l: Padded, l, block, row index into d (revision 3's frame)."""
+    n = count_parents(d, par)
+    m = (n >= 1).to_numpy() & lr.notna().to_numpy()
+    idx = np.flatnonzero(m)
+    P = pad(par, d["api10"].to_numpy()[idx])
+    return P, lr.to_numpy(float)[idx], d["block"].to_numpy()[idx], idx
+
+
+def scored_frame(d: pd.DataFrame, par: pd.DataFrame, lm: pd.Series) -> tuple[Padded, np.ndarray, np.ndarray, np.ndarray]:
+    """Revision 5: EVERY child of `d` with a finite l_mix (unexposed rows all-masked, F = 1): Padded, l_mix, block, row index."""
+    m = lm.notna().to_numpy()
+    idx = np.flatnonzero(m)
+    P = pad(par, d["api10"].to_numpy()[idx])
+    return P, lm.to_numpy(float)[idx], d["block"].to_numpy()[idx], idx
 
 
 def _boot_mean(x: np.ndarray, blocks: np.ndarray, n_boot: int, seed: int) -> tuple[float, float, float]:
@@ -543,20 +791,19 @@ def score(p: pd.DataFrame, n_boot: int = N_BOOT, seed: int = SEED) -> dict[str, 
 
 
 # ---- stick side (§6) -----------------------------------------------------------------------------------------------
-def sticks(pud_links: pd.DataFrame, model: Model, rule: str, mix: Mapping[str, float], groups: Mapping[str, str], cap: float | None = CAP) -> pd.DataFrame:
-    """Per stick: F under the rule, the capped and uncapped applied factor, n parents, nearest d_eff, pattern, permit flag.
-    `pud_links` already carries the basin's stick-side parent rule (Delaware >= 12 mo; Midland every existing producer);
-    `groups` maps stick -> bench group for F_mix."""
+def sticks(pud_links: pd.DataFrame, model: Model, rule: str) -> pd.DataFrame:
+    """Per stick: F under the rule, factor = level x F (of record, revision 5), the capped reading beside it, n parents,
+    nearest d_eff, pattern, permit flag. `pud_links` already carries the basin's stick-side parent rule."""
     par = parents(pud_links, drilled=False)
     cf = child_factors(par, model, rules=(rule,)).set_index("child")
     ids = pd.Index(sorted(set(pud_links["child"])))
     cf = cf.reindex(ids)
-    g = np.array([groups.get(str(i), "") for i in ids])
     f_rule = cf[f"F_{rule}"].fillna(1.0).to_numpy()
     permit = par[par["permit"].astype(bool)].groupby("child").size().reindex(ids).fillna(0).astype(int)
-    return pd.DataFrame({"stick": ids, "bench_group": g, "n_parents": cf["n_parents"].fillna(0).astype(int).to_numpy(), "nearest_d_eff": cf["nearest_d_eff"].to_numpy(),
-                         "pattern": cf["pattern"].fillna("none").to_numpy(), "F_rule": f_rule, "factor": applied(f_rule, g, mix, cap),
-                         "factor_uncapped": applied(f_rule, g, mix, None), "permit_parents": permit.to_numpy()})
+    factor = model.level * f_rule
+    return pd.DataFrame({"stick": ids, "n_parents": cf["n_parents"].fillna(0).astype(int).to_numpy(), "nearest_d_eff": cf["nearest_d_eff"].to_numpy(),
+                         "pattern": cf["pattern"].fillna("none").to_numpy(), "F_rule": f_rule, "level": model.level, "factor": factor,
+                         "factor_capped": np.minimum(factor, 1.0), "permit_parents": permit.to_numpy()})
 
 
 def g4_support(drilled: pd.DataFrame) -> pd.DataFrame:
