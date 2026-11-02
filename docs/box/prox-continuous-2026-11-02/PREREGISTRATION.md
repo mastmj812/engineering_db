@@ -290,10 +290,12 @@ Each default holds unless the named evidence moves it; a change at the gate is a
 
 ## 11. Frozen SHA
 
-**Revision 4 freeze, 2026-11-02:** `55810294a5b77c00536b80e803b1ca12d7b09685` — the revision-4 code commit (cap lifted; definition digest in `box/prox_cont.DIGEST`), on
-branch `claude/box-step24-delaware-score` (eng_db PR #217), stamped here in the commit that follows it. `python -m scripts.box_prox_cont run`
-refuses unless every frozen file (`box/prox_cont.py`, `box/prox_dose.py`, `box/prox_study.py`, `box/prox_validate.py`, `box/step21_prox.py`,
-`scripts/box_prox_cont.py`) is byte-identical to this SHA and clean in the working tree. A run whose frozen files differ from it is not a score.
+**Revision 5 freeze, 2026-11-02:** `77d50a7f69b807f0c710c148f071fd9e4c44ee4d` — the revision-5 code commit (fitted level intercept on every scored child; definition digest
+in `box/prox_cont.DIGEST`), on branch `claude/box-step24-delaware-score` (eng_db PR #217), stamped here in the commit that follows it.
+`python -m scripts.box_prox_cont run` refuses unless every frozen file (`box/prox_cont.py`, `box/prox_dose.py`, `box/prox_study.py`,
+`box/prox_validate.py`, `box/step21_prox.py`, `scripts/box_prox_cont.py`) is byte-identical to this SHA and clean in the working tree.
+A run whose frozen files differ from it is not a score.
 
-History: revision 3 froze at `ffc042fa3366883e0aea16f0a23c5b48e3d72cbc` (scored once, `rev3/`); revision 2 at
-`7ce61fb640c83d73242608dd5567772f06e04c4f` (gate 24a, Michael: "Merge and stamp"; scored once, `rev2/`).
+History: revision 4 froze at `55810294a5b77c00536b80e803b1ca12d7b09685` (Delaware PASS, Midland FAIL on P1; `rev4/`); revision 3 at
+`ffc042fa3366883e0aea16f0a23c5b48e3d72cbc` (`rev3/`); revision 2 at `7ce61fb640c83d73242608dd5567772f06e04c4f` (gate 24a, Michael:
+"Merge and stamp"; `rev2/`).
