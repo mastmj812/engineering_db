@@ -13,7 +13,8 @@ from scripts import box_step21b as drv
 
 
 def test_frozen_sha_is_the_registered_one() -> None:
-    assert drv.FROZEN_SHA.startswith("501d799")
+    assert len(drv.FROZEN_SHA) == 40 and int(drv.FROZEN_SHA, 16) >= 0
+    assert drv.FROZEN_SHA in (st.DOCS / "PREREGISTRATION.md").read_text(encoding="utf-8")  # the SHA stamped in §11
     assert st.digest() == st.DIGEST  # the definition the scorer reads is the frozen one
 
 

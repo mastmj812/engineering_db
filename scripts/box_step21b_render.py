@@ -159,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
               "<div class=meta>Frozen D99 intervals (P2.5–P97.5 over 2,000 20 % block draws of the tuning packages, seed 5):</div>",
               t(frozen[frozen.group == g])]
     s += ["<h2 id=ll>4. Long laterals (§8, reported, never judged)</h2>",
-          "<div class=meta>Package bias on the subset (packages = the subset's members). mid_r2 = Cui Midland panel; _lin = linear per ft; _cuide = Delaware panel; same cohort.</div>",
+          "<div class=meta>Package bias on the subset (packages = the subset's members). mid_r2 = the record (revision 8: Cui Midland panel, Delaware panel when longer than the cohort); _lin = linear per ft; _cuide = Delaware panel; same cohort.</div>",
           t(r("long_laterals")),
           "<h2 id=s9>5. Reported, never judged (§9)</h2>", "<h3>Thin-control (< 3 local wells within 3 mi at the cutoff)</h3>", t(r("thin_control")),
           "<h3>Production-sharing vs not</h3>", t(r("sharing")), "<h3>Edges (within 5 mi, by compass side; mid_r2 selection columns)</h3>", t(r("edge_regions")),

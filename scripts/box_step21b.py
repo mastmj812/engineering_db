@@ -29,7 +29,8 @@ from typing import Any
 
 from box import step21 as st
 
-FROZEN_SHA = "501d79910b2537ee7579cbbc43352666fda2ef82"
+# The frozen commit lives OUTSIDE box/ scripts/ dealintake/ so the freeze commit can be named after it is made (revision 8).
+FROZEN_SHA = (Path(__file__).resolve().parents[1] / "docs" / "box" / "step21b-2026-11-01" / "FROZEN_SHA").read_text(encoding="utf-8").strip()
 FROZEN_PATHS = ("box", "scripts", "dealintake")
 ACTUALS_THROUGH = dt.date.fromisoformat(st.DEFINITION["folds"]["actuals_through"])
 # heaviest pool first so the lanes finish together (pool rows: PREREGISTRATION §1)

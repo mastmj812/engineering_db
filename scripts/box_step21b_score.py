@@ -155,7 +155,7 @@ def long_lateral_rows(v: pd.DataFrame, g: str) -> list[dict[str, Any]]:
         rows += [dict(r, group=g, kind="completed lateral, ft") for r in class_bias(v, lc == lab, (RAW, *TWINS), lab)]
     rows.append({"group": g, "kind": "share of scored wells", "class": "> 12,500 ft", "wells": int((v["lateral_ft"] > 12_500).sum()),
                  "share": float((v["lateral_ft"] > 12_500).mean())})
-    rows.append({"group": g, "kind": "share of scored wells", "class": "> 15,000 ft (past the Midland panel)", "wells": int((v["lateral_ft"] > 15_000).sum()),
+    rows.append({"group": g, "kind": "share of scored wells", "class": "> 15,000 ft (past the Midland panel's last point)", "wells": int((v["lateral_ft"] > 15_000).sum()),
                  "share": float((v["lateral_ft"] > 15_000).mean())})
     return rows
 

@@ -37,8 +37,20 @@ def test_midland_panel_is_its_own_and_the_delaware_default_is_unchanged() -> Non
     for c in ("1350-40", "1700-50", "2000-60"):  # 1000-30 is flat within the read (0.989 -> 0.992 -> 0.989)
         ys = [lat.lateral_efficiency(x, c, bsn.MIDLAND) for x in range(5000, 20001, 500)]
         assert all(b <= a + 1e-12 for a, b in itertools.pairwise(ys))
-    assert lat.relative(16_000, [11_250], basin=bsn.MIDLAND) == pytest.approx(0.995, abs=0.001)
     assert lat.relative(16_000, [11_250]) == pytest.approx(0.932, abs=0.001)
+
+
+def test_midland_translates_longer_targets_on_the_delaware_panel() -> None:
+    """Step 21b revision 8: on the Midland a target longer than its cohort's mean lateral uses the Delaware panel, any other the
+    Midland panel; the Delaware (and any basin not keyed) is unchanged."""
+    assert lat.relative(16_000, [11_250], basin=bsn.MIDLAND) == lat.relative(16_000, [11_250], basin=bsn.DELAWARE) == pytest.approx(0.932, abs=0.001)
+    assert lat.relative(6_000, [11_250], basin=bsn.MIDLAND) == pytest.approx(
+        lat.lateral_efficiency(6_000, basin=bsn.MIDLAND) / lat.lateral_efficiency(11_250, basin=bsn.MIDLAND))  # ~1.037, not ~1.17
+    assert lat.relative(11_250, [11_250], basin=bsn.MIDLAND) == pytest.approx(1.0)  # equal length: Midland panel, no change
+    members = [8_000, 10_000, 14_000]  # the switch reads the MEAN member lateral (10,667 ft)
+    assert lat.panel(10_600, members, bsn.MIDLAND) == bsn.MIDLAND and lat.panel(10_700, members, bsn.MIDLAND) == bsn.DELAWARE
+    for x in (6_000, 16_000):
+        assert lat.panel(x, members, bsn.DELAWARE) == bsn.DELAWARE
 
 
 def test_bins() -> None:

@@ -63,7 +63,7 @@ HARNESS_SCORED: tuple[str, ...] = (RAW, f"{RAW}_lin", f"{RAW}{lat.CUI_DE_TWIN}")
 # and absolute completed-lateral classes (the D129 question: does the Cui curve hold, and past 15,000 ft, extrapolated?).
 MISMATCH_CUTS = (0.80, 1.25)
 LATERAL_CLASS_FT = (5_000.0, 7_500.0, 10_000.0, 12_500.0, 15_000.0, 17_500.0, 20_000.0)
-CUI_PAPER_MAX_FT = lat.paper_max_ft(bsn.MIDLAND)  # 15,000 ft (revision 7: the Midland panel); past it E(L) is extended (flagged)
+CUI_PAPER_MAX_FT = lat.paper_max_ft(bsn.MIDLAND)  # 15,000 ft (revision 7: the Midland panel); past it E(L) is extended (flagged); revision 8 targets longer than their cohort use the Delaware panel (12,500 ft)
 
 MIN_PACKAGES = 30  # D53 / D99 / D102 floor
 MIN_PRIOR = 2  # D57 walk-forward: >= 2 earlier judged cutoffs
@@ -156,11 +156,18 @@ DEFINITION: dict[str, Any] = {
                  "translate_range=(5000.0, inf), level_only=False, level_only_post_peak=3.0)",
         "lateral": "translate: analogs completed lateral >= 5,000 ft, NO upper bound (D129 / D134 C); every cohort Cui & Cross "
                    "2,000 lb / 60 bbl per ft, the paper's MIDLAND panel (Wolfcamp A, Figure 8; box/lateral.CUI_MIDLAND), the "
-                   "last segment extended past 15,000 ft (flagged); ONE variant",
+                   "last segment extended past 15,000 ft (flagged); revision 8: a target LONGER than its cohort's mean lateral "
+                   "translates on the DELAWARE panel instead (box/lateral.LONGER_PANEL / panel; its last segment extended past "
+                   "12,500 ft); ONE variant",
         "lateral_panel": "revision 7 (Michael 2026-11-01, gate question 5): D129's 'through Cui' = each basin's OWN panel of the "
                          "paper; the Delaware panel (registered here at 21a) read 1.10 -> 0.85 against observed Midland per-ft "
                          "oil flat within ~2 % from 5,000 to 17,500 ft; the Midland panel matches it (FINDINGS section 2). The "
                          "panel is Wolfcamp A only and is applied to every Midland bench, Spraberry and DEAN included",
+        "lateral_longer": "revision 8 (Michael 2026-11-02, gate 21b, AFTER the 21b tuning score and BEFORE any holdout read): "
+                          "the tuning view showed the Midland panel over-forecasting oil where the target is longer than its "
+                          "cohort (>= 15,000 ft -12.6 % cum-12) and the Delaware panel over-forecasting short targets (5,000-7,500 "
+                          "ft -9.3 %); the hybrid matched the better panel on each side (FINDINGS 21b section 8). Designed on "
+                          "tuning data only; 21c's holdout is its test. Midland only; the Delaware record is unchanged",
         "spacing": "measured, every pool well (D119)", "volumes": "uptime_free (D63)", "df_terminal": 0.06,
         "short_history": "the D57 transfer as in r2 (level_only off)", "calendar_factor": "per-variant F(k), seeded sample (as built)",
     },
@@ -257,10 +264,11 @@ DEFINITION: dict[str, Any] = {
     "long_laterals": {
         "rule": "D129 / D134 C: ONE variant (the rules above); no exclusion by length",
         "reported_never_judged": [("D120 condition-6 mismatch classes (< 0.80 / 0.80-1.25 / >= 1.25 of the cohort mean), oil + "
-                                   "gas, cum-12 / 24 / 36, Cui (Midland panel) vs a linear-per-ft twin and a Delaware-panel "
-                                   "twin from the same cohort"),
+                                   "gas, cum-12 / 24 / 36, the record (revision 8: Midland panel, Delaware panel when longer "
+                                   "than the cohort) vs a linear-per-ft twin and a Delaware-panel twin from the same cohort"),
                                   "absolute completed-lateral classes 5,000 ... >= 20,000 ft", ("share of locations whose "
-                                  "translation extrapolates past 15,000 ft (the Midland panel's last point; and past 12,500 ft)")],
+                                  "translation extrapolates past 15,000 ft (the Midland panel's last point) and past 12,500 ft "
+                                  "(the Delaware panel's, used for targets longer than their cohort, revision 8)")],
     },
     "reported_never_judged": [
         "thin-control wells (< 3 modern local wells within 3 mi at the cutoff), oil cum-12 / cum-24",
@@ -294,7 +302,7 @@ DEFINITION: dict[str, Any] = {
     ],
 }
 
-DIGEST = "505439b9b1d9c2976e63b9354309c3aff9da5a7d672b656cada4a96a5cf06900"  # revision 7 (2026-11-01, Michael, gate question 5: Cui on the paper's Midland panel, Delaware panel a twin); r6 91ed9d26 (Pad C 233 named 21b check); r5 415957a9 (400 ft spacing floor); r4 f1045738 (existing producers = parents); r3 f6c30aab (depth <= 150 ft, tag-free key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
+DIGEST = "9780f326ef8a3aa037388270fd848e76f04ba6b0da47468d8fe4145b1dbefd77"  # revision 8 (2026-11-02, Michael, gate 21b: Delaware panel for targets longer than their cohort, Midland); r7 505439b9 (Cui on the paper's Midland panel, Delaware panel a twin); r6 91ed9d26 (Pad C 233 named 21b check); r5 415957a9 (400 ft spacing floor); r4 f1045738 (existing producers = parents); r3 f6c30aab (depth <= 150 ft, tag-free key); r2 ec94f7fb (conflict not drillable, D145); r1 142048ee (same-bench 300 ft + neighbour pattern); registered 3299259e
 
 
 def canonical() -> str:
