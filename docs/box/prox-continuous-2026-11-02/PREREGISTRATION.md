@@ -21,6 +21,7 @@ no-forecast population, and that is a gate question, not a result of this step.
 | date | change | why |
 |---|---|---|
 | 2026-11-02 | draft for review | — |
+| 2026-11-02 (revision 1, before acceptance) | §7 check C8 added (walk-forward residual on UNEXPOSED test children, the evidence G3 waits on); §9 rewritten with registered defaults: G2 tie-break = R3 per-side product, G3 cap kept in v1, G4 incumbent precedent kept (geometry key reported, cards drawn), G5 no bench-pair offset, G6 score now, adopt at step 23 for both basins | Michael, 2026-11-02 gate-question review: "i agree" to the six defaults as recommended |
 
 ## 0. Disclosed before this file (what has been read)
 
@@ -207,6 +208,10 @@ Reported, per basin and per BOX bench:
   serve both (the pooling Michael asked about, one level up).
 - **C7 Pad C 233** (21a revision 6): the 15 sticks' factors under this model beside the 21b Midland factor and the interim
   Delaware factor; reported, never judged.
+- **C8 the unexposed level (the evidence G3 waits on).** Walk-forward (§4 folds), test children with F_applied = 1 under the
+  §5 cap: exp(mean r) per fold and pooled, 90 % block-bootstrap interval. If it sits above 1.00 in every test fold and the
+  pooled interval excludes 1.00, the "none" uplift is real and G3 reopens with that evidence; if the interval contains 1.00,
+  the cap costs nothing and stays. Expected from 2c: ~1.04 against the mix. Reported per basin.
 
 ## 8. Decisions of record this step touches, and what happens to each
 
@@ -219,14 +224,31 @@ Reported, per basin and per BOX bench:
 | D116 derived record, re-measured per run | kept; adoption = a re-measure of run 19 (Delaware) and the Midland record at step 23 |
 | gunbarrel sign rule v2 (rule 16) | `dxy_ft` sides are relative to the child's heading, not the v2 frame; used only to tell left from right, never persisted |
 
-## 9. Gate 24a — the questions this step hands Michael
+## 9. Gate 24a — the questions this step hands Michael, with the defaults registered 2026-11-02 (revision 1)
 
-- **G1** adopt the §2 surface (or the three curves if C2 fails) in place of the class envelopes?
-- **G2** adopt the §3 winning rule?
-- **G3** lift the §5 cap (unexposed sticks above BOX as-is)?
-- **G4** re-key precedent on geometry (§6) — operator-behaviour policy, his call; the 400-ft floor stays either way?
-- **G5** carry a bench-pair offset where C3 names one?
-- **G6** schedule: Delaware re-measure of run 19 (D116) and Midland at step 23, or hold both until 21c closes?
+Each default holds unless the named evidence moves it; a change at the gate is a dated decision in the plan, not a re-fit.
+
+- **G1** adopt the §2 surface, or the three curves if C2 fails, in place of the class envelopes. **Default: whatever C2 says.**
+  Three curves is a legitimate outcome of the step, not a failure of it (expected from the Delaware bins: a parent below
+  holds ~0.78–0.84 to 800 ft, a plateau rather than a stretched lateral curve).
+- **G2** adopt the §3 winning rule. **Default on a tie: R3 per-side product** (crowding never helps; shielding native; extends
+  to 3+ parents with no new assumption). R4 drainage share is the more punitive tie-break and has a survivorship argument;
+  it is adopted only when it wins the contest outright.
+- **G3** lift the §5 cap. **Default: cap kept in v1**; the uncapped number is reported. Lifting it raises every unexposed
+  stick (~25,800 Delaware sticks, ~+3–4 %, order +500 MMbbl — more than the single-parent haircut removes), so the record's
+  oil would rise and most of the inventory would sit above BOX's own calibrated level. G3 reopens only on C8's evidence.
+- **G4** re-key precedent on geometry (§6). **Default: the incumbent precedent stays** (D114 bench pair + package tier on the
+  Delaware; 21a pattern precedent + 400-ft floor on the Midland); the geometry key is reported with its moved-stick counts and
+  20 cards. Precedent is the one guard against survivorship, and the per-bench reading of operator behaviour is the owner's
+  policy (21a revisions 1 / 5). If the cards read drillable, the half-step to propose is the geometry key on the *mixed* rung
+  only, where the incumbent is weakest.
+- **G5** carry a bench-pair offset where C3 names one. **Default: no.** An offset per pair is the class table returning with
+  its 30-analog floor. Carried only for a pair with ≥ 30 children, outside the bootstrap, and a physical reason (a known frac
+  barrier); otherwise C3 stays a reported diagnostic.
+- **G6** schedule. **Default: score now, adopt at step 23 for both basins.** The step touches no record; Midland fitting on
+  tuning children cannot contaminate the 21c holdout. Adoption waits for step 23's one record run (D130) so the Delaware stays
+  on run 19 until the Midland record is ready to price (D144, one re-price for Steven, not a third) and both basins carry one
+  proximity method at one SHA.
 
 ## 10. Code (written AFTER Michael's acceptance, before any score; frozen with the SHA)
 
