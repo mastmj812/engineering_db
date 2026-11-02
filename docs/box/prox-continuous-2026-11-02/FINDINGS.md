@@ -133,7 +133,7 @@ sticks 0.642, the 2,221 pattern-refused 0.718, the 596 precedent-refused 0.845 �
 catch the worst-placed sticks. The G4 key would refuse 5,168 (3,109 of them incumbent-haircut) and forecast 2,213 of the 3,732
 the incumbent refuses. No Midland stick oil exists yet (21c has not run), so no MMbbl comparison.
 
-## 4. Read, for gate 24a
+## 4. Read, for gate 24a — CLOSED 2026-11-02 (D150): option (a), revision 5 adopted in both basins (`GATE_24A.json`)
 
 - **G1** adopt the surface — yes in both basins (C2, both with evidence).
 - **G2** rule: Delaware R2 multiplicative, outright for the third time. Midland unresolved → R3 by the registered default; R2

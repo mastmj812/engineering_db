@@ -299,3 +299,15 @@ A run whose frozen files differ from it is not a score.
 History: revision 4 froze at `55810294a5b77c00536b80e803b1ca12d7b09685` (Delaware PASS, Midland FAIL on P1; `rev4/`); revision 3 at
 `ffc042fa3366883e0aea16f0a23c5b48e3d72cbc` (`rev3/`); revision 2 at `7ce61fb640c83d73242608dd5567772f06e04c4f` (gate 24a, Michael:
 "Merge and stamp"; `rev2/`).
+
+## 12. Gate 24a — CLOSED 2026-11-02 (D150)
+
+**Revision 5 adopted in both basins** (Michael, "Adopt rev 5 both": option (a) of `FINDINGS.md` §4). Frozen SHA
+`77d50a7f69b807f0c710c148f071fd9e4c44ee4d`, digest `2e8bb5a7`. G1 one surface per basin; G2 Delaware R2 multiplicative
+(outright), Midland R3 per-side product (the registered default — R2 missed zero by 0.0002); G3 fitted level, Delaware 1.046 /
+Midland 1.067, factor = level × F_rule; G4 incumbent precedent kept, geometry key reported only; G5 no bench-pair offset; G6
+adoption at step 23's record run per basin with a D116-style re-measure, the Delaware on run 19 until then (D144). The Delaware
+oil cum-24 verdict is a FAIL by the letter of P2 (0.0439 vs 0.0437) adopted as a tie, with cum-12 and cum-36 passing; the Midland
+passes, its C8 by-fold drift a step-23 watch item. Step 21c is unchanged (its own frozen harness and table). Machine-readable:
+`GATE_24A.json`. Nothing stored.
+
