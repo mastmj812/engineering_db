@@ -27,8 +27,8 @@ written before it ran (the 16c pattern); each piece names the paragraph it imple
 """
 
 from __future__ import annotations
-
 import __future__ as fut
+
 import difflib
 import hashlib
 import inspect

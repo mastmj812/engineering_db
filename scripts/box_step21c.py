@@ -303,7 +303,7 @@ def cmd_judge(a: argparse.Namespace) -> int:
         months = {s: np.concatenate([*(m[s] for m in tv["months"].values()), *(m[s] for m in h["months"].values())]) for s in ac.STREAMS}
         gd = s21c.guard_d106(d102, months)
         wf_streams = [s for s in ac.STREAMS if rec[s] == st.PROX_WF]
-        out["d102"].append(d102.assign(group=g, applies=lambda x: x["stream"].isin(wf_streams) & (s21c.tier(vd) == "validated")))
+        out["d102"].append(d102.assign(group=g, applies=d102["stream"].isin(wf_streams) & (s21c.tier(vd) == "validated")))
         for s in ac.STREAMS:
             guard_rows.append({"group": g, "stream": s, "record": rec[s], "refused": gd[s]["refused"], "reasons": "; ".join(gd[s]["reasons"]),
                                "factors 12/24/36/48": " / ".join(f"{gd[s]['factors'][k]:.3f}" for k in sorted(gd[s]["factors"])),
@@ -322,7 +322,7 @@ def cmd_judge(a: argparse.Namespace) -> int:
         t = pd.read_csv(f, dtype={"api10": str, "package": str}) if f.exists() else pd.DataFrame()
         wj = s21c.water_judge(t, frozen_w, g)
         wrows.append(wj)
-        verdicts[g]["water"] = {"holdout_judged": int(wj["judged"].sum()), "consistent": int((wj["consistent"] == True).sum()),  # noqa: E712
+        verdicts[g]["water"] = {"holdout_judged": int(wj["judged"].sum()), "consistent": int((wj["consistent"] == True).sum()),
                                 "tier": "provisional (tuning cells fail, GATE_21B water; D109)", "water_frame": f.exists()}
     meta = {"built_utc": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"), "head": b21.head_sha(), "frozen_check": fc,
             "frozen_intervals": frozen_chk, "reproduce": {k: rp[k] for k in ("built_utc", "all_identical", "frozen_d99_sha256", "frozen_water_sha256")},
