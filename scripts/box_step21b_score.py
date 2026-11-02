@@ -143,6 +143,23 @@ def class_bias(v: pd.DataFrame, mask: pd.Series, variants: tuple[str, ...], labe
     return rows
 
 
+def long_lateral_rows(v: pd.DataFrame, g: str) -> list[dict[str, Any]]:
+    """§8 classes on one group's scored wells (or the nine pooled): D120 mismatch, absolute completed lateral, long shares."""
+    mm = pd.Series(np.where(v["lat_ratio"] < st.MISMATCH_CUTS[0], "shorter", np.where(v["lat_ratio"] >= st.MISMATCH_CUTS[1], "longer", "near")), index=v.index)
+    mm[v["lat_ratio"].isna()] = "(no cohort)"
+    lc = v["lateral_ft"].map(st.lateral_class)
+    rows: list[dict[str, Any]] = []
+    for lab in ("shorter", "near", "longer"):
+        rows += [dict(r, group=g, kind="mismatch (well / cohort mean lateral)") for r in class_bias(v, mm == lab, (RAW, *TWINS), lab)]
+    for lab in sorted(lc.unique()):
+        rows += [dict(r, group=g, kind="completed lateral, ft") for r in class_bias(v, lc == lab, (RAW, *TWINS), lab)]
+    rows.append({"group": g, "kind": "share of scored wells", "class": "> 12,500 ft", "wells": int((v["lateral_ft"] > 12_500).sum()),
+                 "share": float((v["lateral_ft"] > 12_500).mean())})
+    rows.append({"group": g, "kind": "share of scored wells", "class": "> 15,000 ft (past the Midland panel)", "wells": int((v["lateral_ft"] > 15_000).sum()),
+                 "share": float((v["lateral_ft"] > 15_000).mean())})
+    return rows
+
+
 def water_score(run: Path, groups: list[str], oil_validated_route: dict[str, str]) -> dict[str, pd.DataFrame]:
     """§7 / D109 on the water tuning frames (scripts/box_step21b_water): pooled group x horizon cells on measured-water packages
     (box/water11_report.cells, its judge: |bias| <= 20 % AND scale-free band <= benchmark + 0.10, >= 30 packages), the frozen
@@ -299,17 +316,7 @@ def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any 
 
         # §8 long laterals (reported, never judged)
         v["lat_ratio"] = pd.to_numeric(v.get(f"{RAW}_lat_ratio"), errors="coerce")
-        mm = pd.Series(np.where(v["lat_ratio"] < st.MISMATCH_CUTS[0], "shorter", np.where(v["lat_ratio"] >= st.MISMATCH_CUTS[1], "longer", "near")), index=v.index)
-        mm[v["lat_ratio"].isna()] = "(no cohort)"
-        lc = v["lateral_ft"].map(st.lateral_class)
-        for lab in ("shorter", "near", "longer"):
-            ll_rows += [dict(r, group=g, kind="mismatch (well / cohort mean lateral)") for r in class_bias(v, mm == lab, (RAW, *TWINS), lab)]
-        for lab in sorted(lc.unique()):
-            ll_rows += [dict(r, group=g, kind="completed lateral, ft") for r in class_bias(v, lc == lab, (RAW, *TWINS), lab)]
-        ll_rows.append({"group": g, "kind": "share of scored wells", "class": "> 12,500 ft", "wells": int((v["lateral_ft"] > 12_500).sum()),
-                        "share": float((v["lateral_ft"] > 12_500).mean())})
-        ll_rows.append({"group": g, "kind": "share of scored wells", "class": "> 15,000 ft (past the Midland panel)", "wells": int((v["lateral_ft"] > 15_000).sum()),
-                        "share": float((v["lateral_ft"] > 15_000).mean())})
+        ll_rows += long_lateral_rows(v, g)
         # §9 thin-control, sharing, edges
         nloc = pd.to_numeric(v.get("n_local"), errors="coerce")
         thin_rows += [dict(r, group=g) for r in class_bias(v, nloc < 3, (RAW, "record"), "thin-control (< 3 local wells in 3 mi)", (12, 24))]
@@ -327,6 +334,9 @@ def run_score(run: Path, docs: Path, groups: list[str] | None = None, conn: Any 
             region_rows.append(t15.region_table(vv, "record").assign(group=g))
         G[g]["v"] = v
         G[g]["record"] = rec_by_stream
+
+    # §8 pooled over the nine groups (a package never spans groups: ids prefixed with the group)
+    ll_rows += long_lateral_rows(pd.concat([G[g]["v"].assign(pkg=g + ":" + G[g]["v"]["pkg"].astype(str)) for g in G], ignore_index=True), "pooled")
 
     # ---- write
     summary = pd.DataFrame(rows)

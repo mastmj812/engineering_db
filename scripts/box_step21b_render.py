@@ -23,6 +23,7 @@ CSS = """
 :root[data-theme="dark"]{--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--s1:#3987e5;--s2:#d95926;--band:#3a3a37;--bg:#111110}
 body{background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 auto;max-width:1280px;padding:16px;overflow-x:hidden}
 h1{font-size:22px}h2{font-size:18px;margin-top:28px;border-bottom:1px solid var(--grid)}h3{font-size:15px}
+code{overflow-wrap:anywhere}
 table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;font-size:12.5px;margin:6px 0 12px}
 th,td{border:1px solid var(--grid);padding:3px 6px;text-align:right;white-space:nowrap}th{background:var(--surface);color:var(--ink2)}
 td:first-child,th:first-child{text-align:left}.meta{color:var(--ink2);font-size:12.5px;margin:4px 0 8px}
