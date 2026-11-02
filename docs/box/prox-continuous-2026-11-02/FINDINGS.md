@@ -106,7 +106,59 @@ sticks lose 2.4 %; the unexposed inventory gains ~5 %. The G4 geometry key would
   measured from 6,581 children, a measured stack asymmetry, no 30-analog floor on the factor, and the unexposed uplift the
   ladder's `none` rung already carried but D113 never applied.
 
-## 5. Disclosed
+## 5. Midland (scored 2026-11-02 at the same freeze, tuning children only) — FAIL on P1, over-correction
+
+Inputs: the 21b frame (11,203 tuning children, 3,101 controls, 5,791 exposed of which **4,933 carry ≥ 2 parents** — 85 %, against
+73 % on the Delaware) and the 21a caches (`runs/step21a/{children,links,pud_links}.pkl`, sha256-verified against the 21b
+manifest). Oil cum-24 only (the frame carries one horizon); the incumbent is the 21b Midland factor table. D52 holdout blocks
+unread. `summary_midland.json` is the record.
+
+| test | result | number |
+|---|---|---|
+| P1 calibration where material (804 test children) | **FAIL** | **1.050 [1.014, 1.088]** — the factor cuts ~5 % too deep where it is material |
+| P2 skill (52 cells) | PASS | 0.051 vs 0.078 no haircut vs **0.061 incumbent 21b table** |
+| P3 cell calibration | PASS | 90 % (5 of 52 outside) |
+| C8 unexposed (1,992) | over-shoots | **0.971 [0.947, 0.996]**: applied uplift 1.090, observed 1.058 |
+
+By parent count: 0 → 0.971 (factor 1.090, no haircut 1.058), 1 → 1.005, 2 → 1.005, 3 → 1.015, 4+ → 1.018 (factor 0.924, no
+haircut 0.935, incumbent 0.987). Per bench group the residual is 0.993–1.018 everywhere, the incumbent 1.00–1.04: level by
+bench is fine, the tilt is between exposed and unexposed.
+
+**Contest unresolved → R3 by default.** R2 had the lowest RMS (0.3794 vs R1 0.3806) but its gain does not exclude zero
+(−0.0018, +0.0042); the folds chose R3 three times. Curve of record (R3): F_min 0.705, d50 478 ft, k 1.8, **a_below = a_above
+= 0.50, both at the bound** — a vertical foot counts half a sideways foot, in both directions, and the bound wants less.
+Midland stack neighbours are severe and symmetric; the Delaware's fast release above does not appear here (above-parent bins at
+0–800 ft: 0.59–0.74; below: 0.67–0.78). R2's curve (F_min 0.892, d50 944, a_below 1.29, a_above 1.12) is the Delaware R2's
+shape with the stack anisotropy near 1 instead of 3. C2: surface holds (three curves worse, −0.006 [−0.009, −0.003]). C5 is
+flat by parent age (no parent-cum column in the 21a links). C3 names WCA_1 over WCB_2 1.11, WCD over WCB_1 1.11, JM / JM 1.18,
+LSSH over JM 1.10, WCD / WCD 0.88, all n 35–76. The single-parent reference has 289 / 27 / 10 children — the rev-2 artefact
+again, as predicted.
+
+**Post hoc (not a score): the R2 rule pinned through the same walk-forward** gives P1 1.079 [1.036, 1.116], P2 0.050, P3 0.86 —
+worse where material. The over-correction is not the rule.
+
+**Read.** The level implied by the fit does not match the Midland's unexposed wells. The joint fit measures exposed children
+against their bench group's *controls*; F_mix then turns that into a mix-relative factor on the assumption that the control
+level is the right anchor. On the Delaware it was (observed unexposed 1.047 vs implied 1.043). On the Midland the unexposed
+wells sit 3 % below the implied anchor (1.058 vs 1.090) and the exposed ones 5 % above their factor — the control population
+sits in a different setting than the developed sections (undeveloped acreage in the Midland is the poorer acreage), so part of
+the measured "haircut" is setting, not spacing. It is the exposure-correlates-with-setting confound named at rev 2, now a
+basin-wide offset. The fix is a level parameter: a free intercept in the joint fit (the unexposed uplift fitted, not implied
+by F_mix), which would leave the Delaware where it is and pull the Midland's floor up by ~3–5 %. That is a revision-5 candidate
+for both basins, deterministic re-score, Michael's call; not built.
+
+**Sticks (what-if).** 27,051 of the 32,541 drillable Midland sticks carry ≥ 1 link; 18,674 have 4+ parents. Mean factor 0.882
+(capped 0.872). Against the 21b incumbent outcomes (revision-5 rules): the 11,134 incumbent-haircut sticks average **0.838 under
+rev 4 vs 0.837 incumbent** — the same haircut, reached by a curve instead of a table; the 3,404 single-parent sticks 0.952; the
+913 spacing-floor sticks 0.633 and the 2,221 pattern-refused 0.705 — the curve agrees those are the worst-placed sticks, which
+is why the floor and the pattern gate exist. The G4 geometry key would refuse 5,168 (incl. 3,109 the incumbent haircuts) and
+forecast 2,213 of the 3,732 the incumbent refuses. No Midland stick oil exists yet (21c has not run), so no MMbbl comparison.
+
+**For gate 24a, Midland:** not adoptable as scored (P1). Two routes: (a) revision 5 with a fitted level intercept, both basins,
+re-score; (b) the capped form (rev 3's) on the Midland, which would hold unexposed at 1.0 and leave the exposed over-cut in
+place — not recommended. The Delaware PASS stands on its own freeze and is not affected by either.
+
+## 6. Disclosed
 
 Revision 3 (joint fit, mix-normalised residual) and revision 4 (cap lifted) were both designed after a score — the walk-forward
 is blind in time, not in design, the 2c disclosure. The revision-4 score is deterministic given revision 3's; its numbers were
