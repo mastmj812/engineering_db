@@ -93,4 +93,6 @@ def test_walk_forward_rows_carry_the_c3_c5_fields_and_score_runs():
     assert s["P1"], (s["P1_resid"], s["P1_lo"], s["P1_hi"])          # a mix-calibrated truth scores calibrated where material
     cells = s["cells"][s["cells"]["n"] >= 10]
     assert cells["mean_r"].abs().mean() < cells["mean_r0"].abs().mean()   # the factor removes most of the exposed miss
-    assert s["C8"]["resid"] > 1.0                                        # unexposed children carry the 'none' uplift
+    un = p[p["unexposed"]]
+    assert (un["f"] > 1.0).all()                                         # revision 4: unexposed children carry the 'none' uplift in f ...
+    assert abs(s["C8"]["resid"] - 1.0) < 0.03                            # ... so their residual sits at 1 (rev 3 capped f at 1 and C8 read the uplift in r)
