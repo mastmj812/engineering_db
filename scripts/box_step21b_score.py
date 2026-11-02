@@ -89,7 +89,7 @@ def proof(run: Path, group: str = "MID_WCC") -> dict[str, Any]:
         g = a / f.name
         if f.suffix == ".npz":
             x, y = np.load(f), np.load(g)
-            same = x.files == y.files and all(np.array_equal(x[k], y[k], equal_nan=True) for k in x.files)
+            same = x.files == y.files and all(np.array_equal(x[k], y[k], equal_nan=x[k].dtype.kind == "f") for k in x.files)
         elif f.suffix == ".json":
             x, y = (json.loads(p.read_text(encoding="utf-8")) for p in (f, g))
             x.pop("built_at", None)
