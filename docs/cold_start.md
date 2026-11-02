@@ -105,8 +105,13 @@ exercised by the first real run in §7.)
 ## 6. The nightly of record: GitHub Actions
 
 Since 2026-07-21 the nightly runs as the **`etl-nightly` workflow**
-(`.github/workflows/etl-nightly.yml`) on a cron of `15 11 * * *` UTC
-(06:15 CDT / 05:15 CST — the laptop task's old 06:00 CT slot). Secrets live in
+(`.github/workflows/etl-nightly.yml`). Since 2026-11-02 its primary trigger
+is an external scheduler (cron-job.org) that POSTs the `workflow_dispatch`
+REST endpoint at 05:00 America/Chicago with a fine-grained PAT; the GitHub cron
+(`15 11 * * *` UTC) fired 3-10 h late under GitHub's best-effort scheduler and
+is now only a backstop that the `gate` job skips once an ETL has succeeded
+since 09:00 UTC. The workflow header has the measured lag and vendor timing;
+§6a below sets up the PAT and the cron-job.org job. Secrets live in
 the repo's **Actions secrets** (`gh secret list`) and mirror `.env`; the full
 run log is uploaded as a workflow artifact, and the email summary +
 healthchecks.io dead-man switch work exactly as they did on the laptop.
@@ -119,6 +124,52 @@ healthchecks.io dead-man switch work exactly as they did on the laptop.
 - The old Windows task (`engineering_db_daily_etl`) is **disabled, not
   deleted** — it is the tested fallback. Re-enable it (and disable the cron)
   only as a pair.
+
+## 6a. The primary trigger: fine-grained PAT + cron-job.org
+
+GitHub's `schedule:` cron is best-effort (it fired 2.6-9.5 h late on the 60
+nights before 2026-11-02), but a `workflow_dispatch` API call starts a run in
+seconds. So an always-on outside scheduler makes that call at a fixed local
+hour. Two pieces, both created by Michael (the token value never goes into
+chat, the repo, `.env` or a ticket):
+
+**A. The token** (a fine-grained personal access token: a password that only
+lets the holder do what its scope lists). GitHub → profile picture →
+*Settings* → *Developer settings* → *Personal access tokens* → *Fine-grained
+tokens* → *Generate new token*:
+
+- Token name `etl-nightly-dispatch`; resource owner `mastmj812`.
+- Expiration: the longest offered (1 year); put a reminder two weeks before.
+- Repository access: *Only select repositories* → `engineering_db`.
+- Repository permissions: **Actions → Read and write**. Nothing else
+  (`Metadata: Read-only` is added automatically). With only this scope a leaked
+  token can start, cancel or re-run this repo's workflows and delete run logs;
+  it cannot read code or secrets, push, or change settings.
+- *Generate token*, copy it (it is shown once) and paste it straight into B.
+
+**B. The scheduler** (cron-job.org, free). *Create cronjob*:
+
+- Title `engineering_db etl-nightly`.
+- URL `https://api.github.com/repos/mastmj812/engineering_db/actions/workflows/etl-nightly.yml/dispatches`
+- Schedule: every day at **05:00**, time zone **America/Chicago** (it follows
+  DST, so the run stays at 05:00 CT year-round).
+- *Advanced*: request method **POST**; headers
+  `Accept: application/vnd.github+json`,
+  `Authorization: Bearer <the token from A>`,
+  `X-GitHub-Api-Version: 2022-11-28`,
+  `Content-Type: application/json`; request body
+  `{"ref":"main","inputs":{"only_if_needed":"true"}}`.
+- Notifications: email on failure.
+- Save, then *Test run*. Expect HTTP **204** and, within seconds, a new
+  `workflow_dispatch` run under *Actions → etl-nightly*. If that day's ETL
+  already succeeded, its `gate` job skips the `etl` job (green, etl skipped),
+  so the test does not re-run the ETL.
+
+Responses: 204 = dispatched; 401 = token expired or revoked (make a new one in
+A, paste it into the header); 404 = wrong URL or token not scoped to this repo;
+422 = the `only_if_needed` input is missing on `main` (the workflow change must
+be merged first). While the primary is broken the backstop cron still runs the
+ETL each day, just late.
 
 ## 6b. Fallback: register the nightly on a host (Windows Task Scheduler)
 
