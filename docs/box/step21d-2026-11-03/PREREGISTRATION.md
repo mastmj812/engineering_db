@@ -1,7 +1,9 @@
-# Step 21d — 2026 Midland prospective test of the step-23 method, all nine groups (PRE-REGISTRATION, DRAFT at gate 21d)
+# Step 21d — 2026 Midland prospective test of the step-23 method, all nine groups (PRE-REGISTRATION, FROZEN 2026-11-03)
 
-**Status: DRAFT, at gate 21d.** Nothing is frozen until Michael chooses the graduation rule (FINDINGS §6 Q1) and the remaining
-gate calls. Then the definition digest and the commit SHA are frozen, and the merge of this file's PR is the freeze.
+**Status: FROZEN 2026-11-03 at gate 21d (D152, `GATE_21D.json`).** Michael chose rule (b) and accepted the recommendations on
+Q2–Q6 ("Rule (b), accept recs"). Definition digest `187811fd` (`187811fd8f86b4cdb9b0e32909711013bb6f9dc99344d30df94a876419727ad7`), frozen at commit `56d2b01`
+(`56d2b0111942dda056b35a2afd99f817c8fb2089`). The draft digest was `2dae765e`; the gate added only the decision record and the frozen status.
+The merge of this file's PR is the freeze.
 
 Nothing is scored. No 2026 Midland well's production volume has been read. The only 2026 facts used are well identities, tags,
 first-production dates, locations, laterals, TVDs and the geometry of their neighbours (`cohort_at_draft.csv`). FINDINGS §7
@@ -99,7 +101,7 @@ The cohort keeps growing through December and through reporting lag. A cell is j
 **Cells:** oil and gas × cum-12 and cum-24. A cell is judged when the full cohort holds at least 30 packages there.
 
 **Consistency (D99), the cell test:** the cohort's package bias lies inside the cell's interval.
-- **Interval (proposed, FINDINGS §6 Q2):** P2.5–P97.5 of [bias(draw) − bias(complement)] + bias(all tuning), over 2,000 draws of
+- **Interval (D152, FINDINGS §6 Q2):** P2.5–P97.5 of [bias(draw) − bias(complement)] + bias(all tuning), over 2,000 draws of
   3-mi blocks of the group's 21b tuning packages. The block share is cohort packages ÷ tuning packages; seed 20261103.
 - That is D125's subset draw plus the tuning mean's own sampling error. D125's subset interval is reported beside it.
 - The reference is the 21b tuning packages pooled over cutoffs 2019–2024, under the §4 treatment. They are pinned in
@@ -111,7 +113,7 @@ The cohort keeps growing through December and through reporting lag. A cell is j
 
 | group at freeze | rule | consequence |
 |---|---|---|
-| provisional | **graduation: ★ chosen at gate 21d** — (a) consistency on every judged cell (D125), or (b) consistency on every judged cell OR accuracy on every judged cell | PASS: proposed for validated at its own gate. A group that passes on accuracy alone ships raw, no haircut, with the cohort line as its disclosure until that gate decides |
+| provisional | **graduation (D152, rule (b)):** consistency on every judged cell OR accuracy on every judged cell | PASS: proposed for validated at its own gate. A group that passes on accuracy alone ships raw, no haircut, with the cohort line as its disclosure until that gate decides |
 | validated | keep: consistency on every judged cell (D99) | any judged cell outside: provisional (D105); diagnose, never re-tune |
 | any | no oil cell reaches 30 packages | NOT JUDGED, tier unchanged |
 
@@ -167,5 +169,5 @@ Early reads use the same scorer and are labelled "not judged".
 ## 8. Durability
 
 - The 54 tuning views (`runs/step21b/MID_*`) and the links cache (`runs/step21a/links.pkl`) live only on this laptop. They are
-  pinned by hash in `tuning_views.sha256`. Without them the intervals cannot be drawn in 2028. FINDINGS §6 Q6 asks for the
-  OneDrive copy (the 13d precedent).
+  pinned by hash in `tuning_views.sha256`. Without them the intervals cannot be drawn in 2028. **Copied 2026-11-03
+  (D152 Q6)** to `Engineering - General/box-step21d-tuning-views-2026-11-03` with the manifest; all 55 hashes verified there.

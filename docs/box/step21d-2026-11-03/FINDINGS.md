@@ -1,8 +1,11 @@
-# BOX step 21d — Midland prospective pre-registration, FINDINGS (AT GATE 21d)
+# BOX step 21d — Midland prospective pre-registration, FINDINGS (GATE 21d CLOSED 2026-11-03, D152)
 
-> **AT GATE 21d.** The draft definition is `box/prospective21.py` (digest pinned at this commit, re-pinned once at the gate) and
-> `PREREGISTRATION.md`. Gate 21d = Michael chooses the graduation rule (§6 Q1) and answers Q2–Q6, then the digest and the commit
-> SHA are frozen. Nothing is scored, stored or flipped. No 2026 Midland production volume was read (§7).
+> **GATE 21d CLOSED 2026-11-03 (D152, `GATE_21D.json`).** Michael: "Rule (b), accept recs".
+> - Q1: graduation = consistency OR accuracy (spread bar D58 + 0.05). Q2: the interval carries the tuning mean's error (A2).
+> - Q3: water reported only. Q4: drilled side. Q5: every well scored, the no-forecast subset reported.
+> - Q6: inputs copied to `Engineering - General/box-step21d-tuning-views-2026-11-03` (55 / 55 hashes verified).
+> - Frozen: digest `187811fd`, commit `56d2b01`. Nothing is scored, stored or flipped. No 2026 Midland production volume
+>   was read (§7). The sections below are the gate evidence as it stood.
 
 Bias = Σ actual / Σ forecast − 1 per package, mean over packages, so **negative = BOX over-forecasts**. Grain = D53 packages.
 Every operating characteristic below is computed on the **21b TUNING packages only** (wells first producing before 2025-12-01,

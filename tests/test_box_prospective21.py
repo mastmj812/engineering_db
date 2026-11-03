@@ -94,3 +94,8 @@ def test_gate_21d_answers_are_in_the_frozen_definition():
     assert "+ 0.05" in d["verdict"]["accuracy"]["rule"] and "sampling error" in d["verdict"]["consistency"]["interval"]
     assert d["verdict"]["water"].startswith("reported only") and "drilled side" in d["method"]["proximity"]["configuration"]
     assert d["method"]["proximity"]["precedent"].startswith("every cohort well is scored")
+
+
+def test_gate_21d_record_matches_the_frozen_digest():
+    g = json.loads(Path("docs/box/step21d-2026-11-03/GATE_21D.json").read_text(encoding="utf-8"))
+    assert g["decision"] == "D152" and g["definition_digest"] == ps.DIGEST and len(g["frozen_sha"]) == 40
