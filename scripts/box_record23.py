@@ -526,6 +526,21 @@ def cmd_store(a: argparse.Namespace) -> int:
                                              "WHERE pf.run_id = %s AND ri.status = 'conflict'", (S,)).fetchall()}
             q("CREATE TEMP TABLE tmp_conf (location_id bigint PRIMARY KEY) ON COMMIT DROP")
             _copy(cur, "tmp_conf", ["location_id"], pd.DataFrame({"location_id": sorted(conf)}))
+            # gate 23b (Michael 2026-11-03, "make it not covered"): a source forecast stick stored WITHOUT water (its WOR fit found no
+            # eligible water analog at the 20-mi cap; box_water_run --accept-no-water) is not_covered_no_analogs in the record — no
+            # streams, no proximity row, n_analogs = its water-analog count — and disclosed. `--no-water refuse` stops the store instead.
+            nowater = {int(r[0]): int(r[1]) for r in q(
+                "SELECT o.location_id, (SELECT count(*) FROM box.location_water_analog a WHERE a.run_id = o.run_id AND a.location_id = o.location_id) "
+                "FROM box.pud_forecast_stream o WHERE o.run_id = %s AND o.stream = 'oil' AND NOT EXISTS (SELECT 1 FROM box.pud_forecast_stream w "
+                "WHERE w.run_id = o.run_id AND w.location_id = o.location_id AND w.stream = 'water')", (S,)).fetchall()}
+            nowater = {k: v for k, v in nowater.items() if k not in real and k not in conf}
+            if nowater and a.no_water == "refuse":
+                raise SystemExit(f"{len(nowater)} source forecast locations carry no water ({sorted(nowater)[:20]}); --no-water refuse")
+            _check(all(v < 3 for v in nowater.values()), f"no-water sticks have < 3 water analogs (not_covered_no_analogs CHECK) ({nowater})")
+            q("CREATE TEMP TABLE tmp_nowater (location_id bigint PRIMARY KEY, n_water int NOT NULL) ON COMMIT DROP")
+            _copy(cur, "tmp_nowater", ["location_id", "n_water"], pd.DataFrame({"location_id": list(nowater), "n_water": list(nowater.values())}))
+            if nowater:
+                print(f"    note {len(nowater)} source forecast location(s) without water -> not_covered_no_analogs ({sorted(nowater)})", flush=True)
             q("CREATE TEMP TABLE tmp_px (location_id bigint PRIMARY KEY, old double precision NOT NULL, new double precision NOT NULL, "
               "keep boolean NOT NULL, drop_realized boolean NOT NULL) ON COMMIT DROP")
             src_oil = dict(q("SELECT location_id, prox_factor FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'oil'", (S,)).fetchall())
@@ -547,13 +562,16 @@ def cmd_store(a: argparse.Namespace) -> int:
             if _failures:
                 raise RuntimeError("universe")
             o["new"] = o["factor"].astype(float)
-            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"] & ~o["location_id"].isin(conf)
+            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"] & ~o["location_id"].isin(conf) & ~o["location_id"].isin(nowater)
             _copy(cur, "tmp_px", ["location_id", "old", "new", "keep", "drop_realized"], o)
             disc = {"decisions": "D150 (step 24 rev 5), D153 (Delaware derivation)" if a.basin == bsn.DELAWARE else "D150, D151, D152",
                     "table_ref": table_ref, "source_run": S, "code_sha": code_sha, "outcomes_sha256": hashlib.sha256(Path(a.outcomes).read_bytes()).hexdigest(),
                     "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum()),
                     "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)},
-                    "readmitted_carried_refusal": {"sticks": len(carried), "proximity_rows": f"copied from run {S} (its own table_ref)"}}
+                    "readmitted_carried_refusal": {"sticks": len(carried), "proximity_rows": f"copied from run {S} (its own table_ref)"},
+                    "no_water_not_covered": {"decision": "gate 23b (Michael 2026-11-03)", "class": "not_covered_no_analogs",
+                                             "reason": "WOR fit found < 3 eligible water analogs at the 20-mi cap; oil / gas forecast not shipped",
+                                             "location_ids": sorted(nowater), "water_analogs": nowater}}
             if a.basin == bsn.MIDLAND:
                 disc["method_23"] = json.loads(Path(a.method_block).read_text(encoding="utf-8")) if a.method_block else rc.method_block()
                 bad = rc.check_method(disc["method_23"])
@@ -569,15 +587,20 @@ def cmd_store(a: argparse.Namespace) -> int:
                      f"(source prox_factor divided out), incumbent precedent gates, gas / water / analogs identical, no refit"), S)).fetchone()[0]
             pc_ = _cols(q, "pud_forecast")
             cf = "EXISTS (SELECT 1 FROM tmp_conf k WHERE k.location_id = p.location_id)"
+            nw_ = "EXISTS (SELECT 1 FROM tmp_nowater k WHERE k.location_id = p.location_id)"
             search = {"search_mode", "radius_mi", "radius_class", "n_analogs"}  # sql/65 uncovered_ck: a not-searched class carries none
 
             def col(c: str) -> str:
                 if c == "run_id":
                     return "%(new)s"
                 if c == "coverage":
-                    return f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END"
+                    return (f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN {nw_} THEN 'not_covered_no_analogs' "
+                            "WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END")
                 if c == "recon_status":
                     return f"CASE WHEN {cf} THEN 'conflict' ELSE p.recon_status END"
+                if c == "n_analogs":  # a no-water stick reports the count that failed: its water analogs (sql/60 no_analogs_ck: < 3)
+                    return (f"CASE WHEN {cf} THEN NULL WHEN {nw_} THEN (SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) "
+                            "ELSE p.n_analogs END")
                 if c in search:
                     return f"CASE WHEN {cf} THEN NULL ELSE p.{c} END"
                 return f"p.{c}"
@@ -590,7 +613,7 @@ def cmd_store(a: argparse.Namespace) -> int:
                        (S, new)).fetchone()
             _check(n_univ[1] == n_univ[0] - len(real), f"universe {n_univ[1]:,} = source {n_univ[0]:,} - realized since {len(real):,}")
             # proximity first: its CHECKs (sql/71) fail in seconds, before the slow stream / month copy
-            px = oc[~oc["location_id"].isin(real | conf | carried)].copy()
+            px = oc[~oc["location_id"].isin(real | conf | carried | set(nowater))].copy()
             px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
             px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
             px["label"] = None
@@ -665,7 +688,7 @@ def identity(q: Any, S: int, new: int) -> None:
     nw_src = q("SELECT count(*) FROM box.pud_forecast_stream s JOIN tmp_px t USING (location_id) WHERE s.run_id = %s AND t.keep "
                "AND s.stream = 'water'", (S,)).fetchone()[0]
     nw = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (new,)).fetchone()[0]
-    _check(nw == nw_src, f"water stream rows {nw:,} = kept source locations with water {nw_src:,} ({keep - nw_src:,} kept without water)")
+    _check(nw == nw_src == keep, f"water stream rows {nw:,} = kept source locations {keep:,} (with water {nw_src:,})")
     r = q("""SELECT sum(s1.eur), sum(s0.eur * t.new / t.old) FROM box.pud_forecast_stream s1 JOIN box.pud_forecast_stream s0
              ON s0.run_id = %s AND s0.location_id = s1.location_id AND s0.stream = s1.stream JOIN tmp_px t ON t.location_id = s1.location_id
              WHERE s1.run_id = %s AND s1.stream = 'oil'""", (S, new)).fetchone()
@@ -782,6 +805,8 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--readmitted", choices=("refuse", "carry-refusal"), default="carry-refusal",  # D154 (d)
                    help="a stick the source refused that the re-measure would forecast (no source rows): refuse the store, or keep its refusal")
     s.add_argument("--method-block", type=Path, default=None, help="Midland: the stored method block (default box/record23.method_block())")
+    s.add_argument("--no-water", choices=("not-covered", "refuse"), default="not-covered",  # gate 23b
+                   help="a source forecast stick stored without water: not_covered_no_analogs in the record (disclosed), or refuse the store")
     s.add_argument("--commit", action="store_true")
     s.add_argument("--allow-dirty", action="store_true")
     f = sub.add_parser("flip")
