@@ -56,7 +56,7 @@ asserts it returns no mismatch, and a parametrized test proves it catches drift 
 
 **Equivalence (the base equals the method 21b / 21c scored).** Each group's build re-predicts a seeded sample of 24 sticks with
 the HARNESS (`box/analog.predict_location_v2`, variant `mid_r2`) and refuses unless the production months match to 1e-12.
-Smoke 2026-11-03: WCA_1, 30 sticks, max relative difference **0.0** on 24 / 24. The full build reports each group (§4.2).
+Smoke 2026-11-03 (30 sticks each, end to end through run.pkl): WCA_1 and WCC, max relative difference **0.0** on 24 / 24 each. The full build reports every group (§4.2).
 
 **21d stays blind.** The base build's F(k) sample (published, not applied, D63) is drawn from the 12-month training cohort
 (`c12` at the cutoff): no 2026 well can be in it at data-through 2026-08-01. The build checks it anyway and refuses if one is.
