@@ -1,5 +1,8 @@
 # BOX step 21c — Midland one-time D52 holdout, FINDINGS (AT GATE 21c)
 
+> **Gate answer, Q1 (Michael, 2026-11-03): "LSSH validated".** Reading (b): a `mid_r2p_wf` → `mid_r2p` move at the tuning gate
+> is judged on its holdout (the §5 / step-15 WCB_1 precedent). LSSH = validated on `mid_r2p`, no haircut. Q2–Q5 are still open.
+
 Scored once on 2026-11-02/03 under the frozen pre-registration: `docs/box/step21a-2026-10-31/PREREGISTRATION.md` +
 `box/step21.DEFINITION`, revision 8, digest `9780f326`, frozen SHA `5ceadc2` (D148). Record treatments come from gate 21b (D149,
 `docs/box/step21b-2026-11-01/GATE_21B.json`). Both frozen interval files hashed equal to GATE_21B.json before use:
