@@ -242,15 +242,16 @@ def measure_delaware(a: argparse.Namespace) -> int:
     from scripts import box_step16d_prox as sdp
 
     t0 = time.time()
-    out = OUT / "delaware"
+    out = a.out or OUT / "delaware"
     out.mkdir(parents=True, exist_ok=True)
     conn = get_connection()
+    box = _box_conn(a, conn)
     try:
-        run, through, _rv, basin = _read(conn, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
+        run, through, _rv, basin = _read(box, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
         if basin != bsn.DELAWARE:
             raise SystemExit(f"run {a.src_run} is {basin}")
         cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
-        p = pd.DataFrame(_read(conn, _SRC_SQL.format(ext=sdp._ext(conn)), {"run": run}), columns=cols)
+        p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
         e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
         recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
         p = p.merge(e, on="stick_id", how="left")
@@ -259,9 +260,11 @@ def measure_delaware(a: argparse.Namespace) -> int:
         u = psr.pull_universe(conn, basin)
         print(f"run {run} ({basin}, data through {through}): {len(p):,} sticks (forecast + no-precedent), producers {len(u):,} "
               f"({time.time() - t0:.0f} s)", flush=True)
-        prior = pd.DataFrame(_read(conn, "SELECT location_id, outcome, factor FROM box.pud_proximity WHERE run_id = %(run)s", {"run": run}),
+        prior = pd.DataFrame(_read(box, "SELECT location_id, outcome, factor FROM box.pud_proximity WHERE run_id = %(run)s", {"run": run}),
                              columns=["location_id", "outcome_src", "factor_src"])
     finally:
+        if box is not conn:
+            box.close()
         conn.close()
     ref = through  # D115 / D116: producers >= 12 months on at the run's data date
     L = ppr.pud_links(p, u, ref)
@@ -354,12 +357,98 @@ def measure_midland(a: argparse.Namespace) -> int:
     return 0
 
 
+def _box_conn(a: argparse.Namespace, live: Any) -> Any:
+    """Where the run's box rows live: `--box-db rehearsal` = the scripts.box_rehearsal container (23b), else live. Curated is
+    always read from live (the step-16d prox-measure pattern)."""
+    if a.box_db != "rehearsal":
+        return live
+    from scripts import box_rehearsal as reh
+
+    return reh._box_conn()
+
+
+def measure_midland_run(a: argparse.Namespace) -> int:
+    """D116 on the stored Midland base run (23b / 23c): the 21a stick-side links re-measured live at the run's data date (by-depth
+    class, every existing producer a parent), the 21b incumbent decisions (21b table, unfit -> spacing / D150 factor, pattern and
+    400-ft floor, the drilled-side precedent of runs/step21b/prox.pkl) and the D150 R3 factors. Read-only on both databases."""
+    import shapely
+
+    from box import edge_gap as eg
+    from box import prox_dose as pdz
+    from box import prox_pud as pp
+    from box import prox_pud_report as ppr
+    from box import prox_study_report as psr
+    from box import step21_prox as sp
+    from box import step21b as sb
+    from box.tc_curve_report import _read
+    from etl.db import get_connection
+    from scripts import box_step16d_prox as sdp
+
+    t0 = time.time()
+    out = a.out or OUT / "midland"
+    out.mkdir(parents=True, exist_ok=True)
+    conn = get_connection()
+    box = _box_conn(a, conn)
+    try:
+        run, through, _rv, basin = _read(box, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
+        if basin != bsn.MIDLAND:
+            raise SystemExit(f"run {a.src_run} is {basin}")
+        cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
+        p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
+        e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
+        recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
+        u = psr.pull_universe(conn, basin)
+    finally:
+        if box is not conn:
+            box.close()
+        conn.close()
+    p = p.merge(e, on="stick_id", how="left")
+    p["tvd_ft"] = pd.to_numeric(p["tvd_ft"], errors="coerce")
+    p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
+    print(f"run {run} ({basin}, data through {through}): {len(p):,} forecast sticks, producers {len(u):,} ({time.time() - t0:.0f} s)", flush=True)
+    bd = sp.by_depth(ppr.pud_links(p.assign(location_id=p["location_id"].astype(str)), u, through))  # 21a revision 3
+    Lp = sp.existing_as_parents(bd)  # revision 4: every existing producer a parent; what the store's named parents read
+    with open(out / "pud_links.pkl", "wb") as f:
+        pickle.dump(Lp, f)
+    ids = [str(x) for x in p["location_id"]]
+    cfg = pdz.configuration(ids, Lp.assign(permit=False)).set_index("api10")
+    cfg["bench"] = p.set_index(p["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
+    with open(RUNS / "step21b" / "prox.pkl", "rb") as f:
+        prox = pickle.load(f)
+    table = pd.read_csv(rc.MIDLAND_TABLE)
+    unfit = sb.unfit_mask(cfg, table)
+    near = sp.nearest_same_ft(Lp)
+    inc = sp.decide_all(cfg[~unfit], pp.haircut_lookup(table), prox["prec"], prox["prec_pat"], near).reindex(cfg.index)
+    inc.loc[unfit, "outcome"] = "unfit_no_usable_rung"
+    inc.loc[unfit & (near.reindex(cfg.index) <= sp.SPACING_FLOOR_FT), "outcome"] = "no_forecast_spacing"
+    fac = rc.stick_factors(Lp, bsn.MIDLAND, ids)
+    oc = rc.outcomes(inc.assign(outcome=inc["outcome"].replace({"unfit_no_usable_rung": "haircut"})), fac)
+    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc)
+    d["incumbent_raw"] = inc["outcome"].reindex(d.index)
+    d["factor_table"] = inc["factor"].reindex(d.index)
+    d = d.reset_index()
+    d["recon_now"] = d["stick_id"].map(recon).fillna("not_reconciled")
+    d["src_forecast"] = d["coverage"].isin(["covered", "covered_provisional"])
+    d["outcome_src"] = np.nan  # a base run has no proximity rows: old factor = 1 (pud_forecast_stream.prox_factor default)
+    d["n_recent_producers"] = d["key"].map(ppr.recent_flags(bd)).fillna(0).astype(int)
+    d["n_permit_parents"] = d["key"].map(ppr.permit_flags(Lp)).fillna(0).astype(int)
+    d.to_csv(out / "outcomes.csv.gz", index=False, compression="gzip")
+    s = summarise(d, run, through)
+    s |= {"n_links": len(Lp), "seconds": round(time.time() - t0), "precedent_source": "runs/step21b/prox.pkl", "code_sha": _git("rev-parse", "HEAD"),
+          "box_db": a.box_db}
+    (out / "summary.json").write_text(json.dumps(s, indent=1, default=_jdump), encoding="utf-8")
+    print(json.dumps(s, indent=1, default=_jdump))
+    return 0
+
+
 def cmd_measure(a: argparse.Namespace) -> int:
     if a.basin == bsn.DELAWARE:
         return measure_delaware(a)
-    if not a.from_cache:
-        raise SystemExit("the live Midland re-measure runs on the stored base run at the build (23b); use --from-cache at 23a")
-    return measure_midland(a)
+    if a.from_cache:
+        return measure_midland(a)
+    if a.src_run == rc.DELAWARE_SOURCE_RUN:
+        raise SystemExit("--src-run: the stored Midland base run")
+    return measure_midland_run(a)
 
 
 # ----------------------------------------------------------------------------
@@ -632,6 +721,8 @@ def main(argv: list[str] | None = None) -> int:
     m.add_argument("--src-run", type=int, default=rc.DELAWARE_SOURCE_RUN)
     m.add_argument("--prec-runs", type=Path, default=RUNS / "prox")
     m.add_argument("--from-cache", action="store_true")
+    m.add_argument("--box-db", choices=("live", "rehearsal"), default="live", help="where the source run's box rows are (curated: live)")
+    m.add_argument("--out", type=Path, default=None, help="default runs/step23/<basin>")
     s = sub.add_parser("store")
     s.add_argument("--basin", choices=(bsn.DELAWARE, bsn.MIDLAND), required=True)
     s.add_argument("--src-run", type=int, required=True)
