@@ -528,9 +528,13 @@ def cmd_store(a: argparse.Namespace) -> int:
               "keep boolean NOT NULL, drop_realized boolean NOT NULL) ON COMMIT DROP")
             src_oil = dict(q("SELECT location_id, prox_factor FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'oil'", (S,)).fetchall())
             ra = oc["keep"].astype(bool) & ~oc["location_id"].isin(src_oil)
+            carried: set[int] = set()
             if a.readmitted == "carry-refusal" and ra.any():  # gate 23a (d): a stick the source refused stays refused (no source rows)
                 oc.loc[ra, "outcome"] = oc.loc[ra, "outcome_src"]
                 oc.loc[ra, "keep"] = False
+                # its proximity row is the SOURCE run's (the configuration + D114 keys that refused it), copied verbatim below —
+                # never the refusal word on today's re-measured configuration, which carries no D114 keys (sql/71 multi_ck)
+                carried = {int(x) for x in oc.loc[ra, "location_id"]} - real - conf
                 print(f"    note {int(ra.sum())} re-admitted sticks carry the source run's refusal ({oc.loc[ra, 'outcome'].value_counts().to_dict()})", flush=True)
             o = oc[oc["location_id"].isin(src_oil)].copy()
             o["old"] = o["location_id"].map(src_oil).astype(float)
@@ -546,7 +550,8 @@ def cmd_store(a: argparse.Namespace) -> int:
             disc = {"decisions": "D150 (step 24 rev 5), D153 (Delaware derivation)" if a.basin == bsn.DELAWARE else "D150, D151, D152",
                     "table_ref": table_ref, "source_run": S, "code_sha": code_sha, "outcomes_sha256": hashlib.sha256(Path(a.outcomes).read_bytes()).hexdigest(),
                     "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum()),
-                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)}}
+                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)},
+                    "readmitted_carried_refusal": {"sticks": len(carried), "proximity_rows": f"copied from run {S} (its own table_ref)"}}
             if a.basin == bsn.MIDLAND:
                 disc["method_23"] = json.loads(Path(a.method_block).read_text(encoding="utf-8")) if a.method_block else rc.method_block()
                 bad = rc.check_method(disc["method_23"])
@@ -582,6 +587,31 @@ def cmd_store(a: argparse.Namespace) -> int:
             n_univ = q("SELECT (SELECT count(*) FROM box.pud_forecast WHERE run_id = %s), (SELECT count(*) FROM box.pud_forecast WHERE run_id = %s)",
                        (S, new)).fetchone()
             _check(n_univ[1] == n_univ[0] - len(real), f"universe {n_univ[1]:,} = source {n_univ[0]:,} - realized since {len(real):,}")
+            # proximity first: its CHECKs (sql/71) fail in seconds, before the slow stream / month copy
+            px = oc[~oc["location_id"].isin(real | conf | carried)].copy()
+            px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
+            px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
+            px["label"] = None
+            px["table_ref"] = table_ref
+            px["factor"] = px["factor"].astype(float)
+            for c in PROX_INT_COLS:  # read back from CSV as float where any value is NULL ("78.0" refused by an integer column)
+                if c in px:
+                    px[c] = pd.to_numeric(px[c]).round().astype("Int64")
+            for c in PROX_COLS:
+                if c not in px:
+                    px[c] = None
+            _copy(cur, "box.pud_proximity", ["run_id", *PROX_COLS], px.assign(run_id=new))
+            if carried:
+                pcols = ", ".join(PROX_COLS)
+                q(f"INSERT INTO box.pud_proximity (run_id, {pcols}) SELECT %(new)s, {pcols} FROM box.pud_proximity "
+                  "WHERE run_id = %(src)s AND location_id = ANY(%(ids)s)", {"new": new, "src": S, "ids": sorted(carried)})
+                got = q("SELECT count(*) FROM box.pud_proximity WHERE run_id = %s AND location_id = ANY(%s) AND table_ref IS DISTINCT FROM %s",
+                        (new, sorted(carried), table_ref)).fetchone()[0]
+                _check(got == len(carried), f"{len(carried)} carried refusals keep run {S}'s proximity rows verbatim ({got:,})")
+            par = named_parents(pd.read_pickle(a.links), a.basin)
+            par = par[par["location_id"].isin(set(o.loc[o["keep"], "location_id"]))]
+            _copy(cur, "box.pud_proximity_parent", ["run_id", *PARENT_COLS], par.assign(run_id=new))
+            n_par = len(par)
             sc_ = _cols(q, "pud_forecast_stream")
             scaled = {"eur", "eur_per_kft", "cum12", "cum24"}
             sel = ", ".join("%(new)s" if c == "run_id" else "CASE WHEN s.stream = 'oil' THEN t.new ELSE 1 END" if c == "prox_factor" else
@@ -596,23 +626,6 @@ def cmd_store(a: argparse.Namespace) -> int:
                 sel = ", ".join("%(new)s" if c == "run_id" else f"a.{c}" for c in ac_)
                 q(f"INSERT INTO box.{t} ({', '.join(ac_)}) SELECT {sel} FROM box.{t} a JOIN tmp_px x USING (location_id) "
                   "WHERE a.run_id = %(src)s AND x.keep", {"new": new, "src": S})
-            px = oc[~oc["location_id"].isin(real | conf)].copy()
-            px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
-            px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
-            px["label"] = None
-            px["table_ref"] = table_ref
-            px["factor"] = px["factor"].astype(float)
-            for c in PROX_INT_COLS:  # read back from CSV as float where any value is NULL ("78.0" refused by an integer column)
-                if c in px:
-                    px[c] = pd.to_numeric(px[c]).round().astype("Int64")
-            for c in PROX_COLS:
-                if c not in px:
-                    px[c] = None
-            _copy(cur, "box.pud_proximity", ["run_id", *PROX_COLS], px.assign(run_id=new))
-            par = named_parents(pd.read_pickle(a.links), a.basin)
-            par = par[par["location_id"].isin(set(o.loc[o["keep"], "location_id"]))]
-            _copy(cur, "box.pud_proximity_parent", ["run_id", *PARENT_COLS], par.assign(run_id=new))
-            n_par = len(par)
             q("""UPDATE box.forecast_run SET counts = (SELECT jsonb_object_agg(coverage, n) FROM (SELECT coverage, count(*) n FROM box.pud_forecast
                  WHERE run_id = %(new)s GROUP BY 1) c) WHERE run_id = %(new)s""", {"new": new})
             identity(q, S, new)
