@@ -1,0 +1,44 @@
+{
+ "forecast_locations": 28828,
+ "outgoing_record": null,
+ "deck_reference_run": 31,
+ "decks_required": [
+  "wti60_hh1",
+  "wti60_hh2",
+  "wti60_hh3",
+  "wti60_hh4",
+  "wti70_hh1",
+  "wti70_hh2",
+  "wti70_hh3",
+  "wti70_hh4",
+  "wti80_hh1",
+  "wti80_hh2",
+  "wti80_hh3",
+  "wti80_hh4",
+  "wti90_hh1",
+  "wti90_hh2",
+  "wti90_hh3",
+  "wti90_hh4"
+ ],
+ "priced_by_deck": {
+  "wti60_hh1": 28828,
+  "wti60_hh2": 28828,
+  "wti60_hh3": 28828,
+  "wti60_hh4": 28828,
+  "wti70_hh1": 28828,
+  "wti70_hh2": 28828,
+  "wti70_hh3": 28828,
+  "wti70_hh4": 28828,
+  "wti80_hh1": 28828,
+  "wti80_hh2": 28828,
+  "wti80_hh3": 28828,
+  "wti80_hh4": 28828,
+  "wti90_hh1": 28828,
+  "wti90_hh2": 28828,
+  "wti90_hh3": 28828,
+  "wti90_hh4": 28828
+ },
+ "ok": true
+}
+records [('delaware', 31), ('midland', 34)]; box_scout_locations by basin {'delaware': 48072} -> {'delaware': 48072, 'midland': 28828} (midland expected 28,828)
+COMMITTED: run 34 is the midland record

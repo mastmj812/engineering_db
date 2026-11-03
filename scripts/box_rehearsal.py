@@ -38,7 +38,8 @@ SEED_TABLES = ("bench_scope", "extent", "extent_edge", "tc_area", "type_curve", 
 # step 23b: what the derive store (realized / conflict join), sql/69 and erebor's BOX + econ screens read, copied as plain tables
 MIRROR = ("curated.reconciled_inventory", "curated.erebor_locations", "curated.intel_locations", "curated.producing_reference",
           "curated.intel_pad_geom", "curated.intel_pad_member", "curated.intel_formation_blueox", "curated.wells",
-          "curated.formation_blueox_tvd", "raw_novi_intel.pads", "raw_novi_intel.basin_outline")
+          "curated.formation_blueox_tvd", "raw_novi_intel.pads", "raw_novi_intel.basin_outline",
+          "curated.wells_enriched", "curated.production")
 PG17_ONLY = re.compile(r"^SET (transaction_timeout|idle_session_timeout)\b.*$", re.MULTILINE)
 
 

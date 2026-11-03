@@ -1,0 +1,6 @@
+1531430: covered validated | oil × distance factor, multi parent (D150) | topfill · 6 parents · nearest WCA_1 612 ft vt / 835 ft hz | factor 0.997 | streams ['gas', 'oil', 'water'] | water block True
+1531456: covered validated | oil × distance factor, single parent (D150) | underfill · 1 parent · nearest WCC 551 ft vt / 2,463 ft hz | factor 1.056 | streams ['gas', 'oil', 'water'] | water block True
+1531453: covered validated | oil × level (no parent; D150) | no depleted parent | factor 1.067 | streams ['gas', 'oil', 'water'] | water block True
+1531472: not_covered_no_precedent None | no forecast: < 30 drilled multi-parent wells of the bench pair (D114) | same · 2 parents · flanked | factor 0.955 | streams [] | water block False
+1531464: not_covered_no_precedent None | no forecast: within 400 ft of a same-bench producer (21a) | mixed · 6 parents (3 same / 3 topfill) · flanked same + topfill | factor 0.618 | streams [] | water block False
+1545426: covered validated | oil × level (no parent; D150) | no depleted parent | factor 1.067 | streams ['gas', 'oil'] | water block False

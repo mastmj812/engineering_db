@@ -723,7 +723,14 @@ successor is priced and current.
 - **23d flip, verify, prune** (each on its own go, after Steven has priced both): econ row counts per new run, both flips, erebor
   + sql/69 checks; prune per D123 / D144 (run 19 `--include-priced`, the Midland base run, any leftover base); plan + memory.
   Then the Midland joins step 13 (pool refresh, 13e).
-**Status: 23a BUILT 2026-11-03; GATE 23a CLOSED 2026-11-03 = D154** (every recommendation accepted; eng_db PR #221). NEXT = 23b container rehearsal on go.
+**Status: 23a BUILT 2026-11-03; GATE 23a CLOSED 2026-11-03 = D154** (every recommendation accepted; eng_db PR #221). **23b REHEARSED 2026-11-03, AT GATE 23b** (`docs/box/step23-2026-11-03/REHEARSAL_23B.md`, container only):
+- Both records stored: Delaware derive 48,072 / 25,386.6 MMbbl; Midland 28,828 / 11,128.0 MMbbl.
+- Both flips simulated on synthetic econ. Unpriced and partly-priced flips are refused, sql/69 rows equal the priced forecast
+  locations per basin, and erebor reads both records.
+- Seven defects fixed on the branch, plus erebor PR #30.
+- DECIDE at the gate: one Midland WCD stick with no water analog (store without water, disclosed = rec).
+
+NEXT = 23c on "go apply".
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
