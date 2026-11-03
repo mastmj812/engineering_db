@@ -423,7 +423,9 @@ def measure_midland_run(a: argparse.Namespace) -> int:
     inc.loc[unfit & (near.reindex(cfg.index) <= sp.SPACING_FLOOR_FT), "outcome"] = "no_forecast_spacing"
     fac = rc.stick_factors(Lp, bsn.MIDLAND, ids)
     oc = rc.outcomes(inc.assign(outcome=inc["outcome"].replace({"unfit_no_usable_rung": "haircut"})), fac)
-    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc)
+    # the configuration + D114 key columns box.pud_proximity stores (as measure_delaware joins them; missing here until the 23b store)
+    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
+    d = d.join(inc[["haircut_key", "pair_key", "prec_multi", "prec_package"]])
     d["incumbent_raw"] = inc["outcome"].reindex(d.index)
     d["factor_table"] = inc["factor"].reindex(d.index)
     d = d.reset_index()
