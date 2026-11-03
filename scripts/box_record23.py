@@ -686,15 +686,29 @@ REL_TOL = 1e-9
 
 
 def priced(q: Any, run: int, basin: str) -> dict[str, Any]:
-    """Is `run` priced like the basin's current record? Every forecast location x every deck the outgoing record carries (or, with no
-    priced record yet, >= 1 deck covering every forecast location)."""
+    """Is `run` priced like the basin's current record? Every forecast location x every deck the outgoing record carries. A basin with
+    no record yet (the first Midland record) must carry the decks of the other basin's record — Steven prices both basins on one
+    deck set, and sql/69 shows only DEFAULT_DECK — and with no record anywhere, >= 1 deck covering every location, DEFAULT_DECK among them
+    (the 23b rehearsal: the old fallback let a one-deck Midland run flip and show nothing)."""
     n = q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND coverage IN ('covered', 'covered_provisional')", (run,)).fetchone()[0]
     rec = q("SELECT run_id FROM box.forecast_run WHERE basin = %s AND is_record", (basin,)).fetchone()
-    decks_rec = {r[0] for r in q("SELECT DISTINCT deck_id FROM box_econ.box_pud_econ WHERE run_id = %s", (rec[0],)).fetchall()} if rec else set()
+    ref = rec or q("SELECT run_id FROM box.forecast_run WHERE basin <> %s AND is_record ORDER BY run_id LIMIT 1", (basin,)).fetchone()
+    decks_ref = {r[0] for r in q("SELECT DISTINCT deck_id FROM box_econ.box_pud_econ WHERE run_id = %s", (ref[0],)).fetchall()} if ref else set()
     have = dict(q("SELECT deck_id, count(DISTINCT location_id) FROM box_econ.box_pud_econ WHERE run_id = %s GROUP BY 1", (run,)).fetchall())
-    need = decks_rec or set(have)
-    ok = bool(need) and all(have.get(dk, 0) == n for dk in need)
-    return {"forecast_locations": n, "outgoing_record": rec[0] if rec else None, "decks_required": sorted(need), "priced_by_deck": have, "ok": ok}
+    need = decks_ref or (set(have) | {DEFAULT_DECK})
+    ok = n > 0 and all(have.get(dk, 0) == n for dk in need)
+    return {"forecast_locations": n, "outgoing_record": rec[0] if rec else None, "deck_reference_run": ref[0] if ref else None,
+            "decks_required": sorted(need), "priced_by_deck": have, "ok": ok}
+
+
+DEFAULT_DECK = "wti70_hh3"  # sql/69's deck (apply_box_scout_locations._CASE)
+_SCOUT_BY_BASIN = "SELECT basin, count(*) FROM curated.box_scout_locations GROUP BY 1"
+# what sql/69 must hold per basin after the flip: priced (default deck) record-run forecast locations on the map, minus realized
+_SCOUT_EXPECTED = ("SELECT count(*) FROM box.pud_forecast bp JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
+                   "WHERE bp.run_id = %(run)s AND bp.coverage IN ('covered', 'covered_provisional') "
+                   "AND el.recon_status IS DISTINCT FROM 'realized_drift' AND el.recon_status IS DISTINCT FROM 'realized_phantom' "
+                   "AND EXISTS (SELECT 1 FROM box_econ.box_pud_econ e WHERE e.run_id = bp.run_id AND e.location_id = bp.location_id "
+                   "AND e.deck_id = %(deck)s AND e.pv10_mm IS NOT NULL)")
 
 
 def cmd_flip(a: argparse.Namespace) -> int:
@@ -712,15 +726,20 @@ def cmd_flip(a: argparse.Namespace) -> int:
             if not p["ok"]:
                 raise SystemExit(f"REFUSED: run {a.run} is not priced like the {a.basin} record — flipping now would blank erebor's econ and "
                                  "curated.box_scout_locations (2026-10-30). Wait for Steven.")
-            before = q("SELECT count(*) FROM curated.box_scout_locations").fetchone()[0]
+            before = dict(q(_SCOUT_BY_BASIN).fetchall())
             q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE basin = %s AND is_record", (a.run, a.basin))
             q("UPDATE box.forecast_run SET is_record = true WHERE run_id = %s AND basin = %s", (a.run, a.basin))
             recs = q("SELECT basin, run_id FROM box.forecast_run WHERE is_record ORDER BY 1").fetchall()
-            after = q("SELECT count(*) FROM curated.box_scout_locations").fetchone()[0]
-            print(f"records {recs}; box_scout_locations {before:,} -> {after:,}")
-            if after == 0:
+            after = dict(q(_SCOUT_BY_BASIN).fetchall())
+            want = q(_SCOUT_EXPECTED, {"run": a.run, "deck": DEFAULT_DECK}).fetchone()[0]
+            print(f"records {recs}; box_scout_locations by basin {before} -> {after} ({a.basin} expected {want:,})")
+            if after.get(a.basin, 0) == 0 or after.get(a.basin, 0) != want:
                 conn.rollback()
-                raise SystemExit("box_scout_locations would be EMPTY after the flip: rolled back")
+                raise SystemExit(f"box_scout_locations would hold {after.get(a.basin, 0):,} {a.basin} rows, not {want:,}: rolled back")
+            for other, nb in before.items():
+                if other != a.basin and after.get(other, 0) != nb:
+                    conn.rollback()
+                    raise SystemExit(f"the flip moved the {other} rows ({nb:,} -> {after.get(other, 0):,}): rolled back")
         if a.commit:
             conn.commit()
             print(f"COMMITTED: run {a.run} is the {a.basin} record")
