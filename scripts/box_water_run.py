@@ -189,6 +189,11 @@ def cmd_store(a: argparse.Namespace) -> int:
             extra = sorted(set(water) - set(pf))
             if missing or extra:
                 raise SystemExit(f"water artifact does not match run {rid}: {len(missing)} forecast locations without water, {len(extra)} unknown sticks")
+            failed = {s for s in pf if "failed" in water[s]}
+            accept = set(a.accept_no_water or [])
+            if failed != accept:  # every forecast location without water is named on the command line, or the store refuses (23b)
+                raise SystemExit(f"{len(failed)} forecast locations have no water ({sorted(failed)[:20]}); --accept-no-water names {sorted(accept)[:20]}. "
+                                 "Name exactly these sticks to store them without a water stream (reported in the run's disclosure), or don't store.")
             st, an, mo, nf = [], [], [], 0
             for stick, (lid, cov) in pf.items():
                 rec = water[stick]
@@ -213,9 +218,12 @@ def cmd_store(a: argparse.Namespace) -> int:
                           "FROM STDIN") as cp:
                 for row in an:
                     cp.write_row(row)
+            dj = disclosure_json() | ({"without_water": [{"stick_id": s, "group": water[s]["group"], "reason": water[s]["failed"],
+                                                       "sel": w_json({k: v for k, v in water[s]["sel"].items() if k != "api10s"})}
+                                                      for s in sorted(failed)]} if failed else {})
             q("UPDATE box.forecast_run SET disclosure = disclosure || jsonb_build_object('water', %s::jsonb), "
               "notes = replace(notes, 'no water (D72)', 'water: WOR vs cum oil on measured analogs, raw box_v2 oil (D107 / D108), tier per group (D110); D72 retired') "
-              "WHERE run_id = %s", (Jsonb(disclosure_json()), rid))
+              "WHERE run_id = %s", (Jsonb(dj), rid))
             for t in ("pud_forecast_stream", "pud_forecast_month", "location_water_analog"):
                 q(f"ANALYZE box.{t}")
             print(f"rows written ({len(st)} water streams, {len(an)} water analogs, {nf} without water) ({time.time() - t0:.0f} s); identity", flush=True)
@@ -225,7 +233,8 @@ def cmd_store(a: argparse.Namespace) -> int:
             ma = q("SELECT count(*) FROM box.pud_forecast_month WHERE run_id = %s AND stream <> 'water'", (rid,)).fetchone()[0]
             chk(ma == mbefore, f"oil / gas month rows unchanged ({ma} = {mbefore})")
             nw = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (rid,)).fetchone()[0]
-            chk(nw == len(pf) - nf and nf == 0, f"water rows = covered + covered_provisional ({nw} = {len(pf)}; {nf} locations without water)")
+            chk(nw == len(pf) - nf and nf == len(accept), f"water rows = covered + covered_provisional - named no-water sticks ({nw} = {len(pf)} - {nf}; "
+                f"{nf} without water, {len(accept)} named by --accept-no-water)")
             grp, bad = q("""WITH m AS MATERIALIZED (SELECT location_id, count(*) n, sum(volume) v FROM box.pud_forecast_month
                                                  WHERE run_id = %s AND stream = 'water' GROUP BY 1)
                             SELECT count(*), count(*) FILTER (WHERE m.n <> 600 OR abs(m.v - s.eur) > 1e-3 * s.eur)
@@ -274,6 +283,8 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("store")
     s.add_argument("--out", type=Path, default=Path("runs") / "box12b")
     s.add_argument("--run-id", type=int, default=None)
+    s.add_argument("--accept-no-water", type=lambda v: [int(x) for x in v.split(",") if x.strip()], default=None,
+                   help="stick ids stored WITHOUT a water stream (WOR ratio fit failed); must name exactly the failed sticks (23b)")
     a = ap.parse_args(argv)
     if a.cmd == "build" and (a.carry is None) != (a.carry_run is None):
         ap.error("--carry and --carry-run go together")

@@ -655,9 +655,15 @@ def cmd_store(a: argparse.Namespace) -> int:
 def identity(q: Any, S: int, new: int) -> None:
     print("identities", flush=True)
     keep = q("SELECT count(*) FROM tmp_px WHERE keep").fetchone()[0]
-    for st in ("oil", "gas", "water"):
+    for st in ("oil", "gas"):
         n = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = %s", (new, st)).fetchone()[0]
         _check(n == keep, f"{st} stream rows {n:,} = kept source locations {keep:,}")
+    # water: carried verbatim, so the new run has it exactly where the source did (a source stored without water on a named
+    # stick, box_water_run --accept-no-water, keeps that gap and its disclosure)
+    nw_src = q("SELECT count(*) FROM box.pud_forecast_stream s JOIN tmp_px t USING (location_id) WHERE s.run_id = %s AND t.keep "
+               "AND s.stream = 'water'", (S,)).fetchone()[0]
+    nw = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (new,)).fetchone()[0]
+    _check(nw == nw_src, f"water stream rows {nw:,} = kept source locations with water {nw_src:,} ({keep - nw_src:,} kept without water)")
     r = q("""SELECT sum(s1.eur), sum(s0.eur * t.new / t.old) FROM box.pud_forecast_stream s1 JOIN box.pud_forecast_stream s0
              ON s0.run_id = %s AND s0.location_id = s1.location_id AND s0.stream = s1.stream JOIN tmp_px t ON t.location_id = s1.location_id
              WHERE s1.run_id = %s AND s1.stream = 'oil'""", (S, new)).fetchone()
@@ -670,7 +676,7 @@ def identity(q: Any, S: int, new: int) -> None:
     g = q("""WITH m AS MATERIALIZED (SELECT location_id, stream, count(*) n, sum(volume) v FROM box.pud_forecast_month WHERE run_id = %s GROUP BY 1, 2)
              SELECT count(*), count(*) FILTER (WHERE m.n <> 600 OR abs(m.v - s.eur) > 1e-3 * s.eur) FROM m JOIN box.pud_forecast_stream s
              ON s.run_id = %s AND s.location_id = m.location_id AND s.stream = m.stream""", (new, new)).fetchone()
-    _check(g[1] == 0 and g[0] == 3 * keep, f"every stream: 600 months summing to its EUR within 0.1 % ({g[0]:,} groups, {g[1]} off)")
+    _check(g[1] == 0 and g[0] == 2 * keep + nw, f"every stream: 600 months summing to its EUR within 0.1 % ({g[0]:,} groups, {g[1]} off)")
     bad = q("""SELECT count(*) FROM box.pud_proximity x JOIN box.pud_forecast_stream s ON s.run_id = x.run_id AND s.location_id = x.location_id
                AND s.stream = 'oil' WHERE x.run_id = %s AND abs(s.prox_factor - x.factor) > 1e-12""", (new,)).fetchone()[0]
     _check(bad == 0, "oil prox_factor = pud_proximity.factor on every forecast location")
