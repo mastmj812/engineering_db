@@ -674,6 +674,17 @@ verdicts move membership, the extent regenerates from the ratified set before an
   **Gate 21a** = SHA frozen. **BUILT 2026-10-31, AT GATE 21a** (`docs/box/step21a-2026-10-31/`: PREREGISTRATION, FINDINGS §5 questions 1–5 + cards; definition digest 3299259e as registered). **GATE 21a CLOSED 2026-11-01** (D146, D147): revisions 1–7, frozen SHA `501d799`, digest `505439b9`. Revision 8 (D148, 2026-11-02, after the 21b tuning score): frozen SHA `5ceadc2`, digest `9780f326`.
 - **21b** tuning-fold scoring (oil / gas / water). **BUILT + re-run at revision 8 2026-11-02; GATE 21b CLOSED 2026-11-02 (D149)** (`docs/box/step21b-2026-11-01/`, `GATE_21B.json`). **21c** one-time holdout per group. **SCORED ONCE 2026-11-02/03, AT GATE 21c** (branch `claude/box-step21c-holdout`, `docs/box/step21c-2026-11-02/FINDINGS.md`; frozen 5ceadc2 on every run, guard-lift option A, scorer reproduced 21b 12 / 12 first; nothing stored): D99 PASS WCA_1, LSSH, WCD; FAIL WCB_1 / JM / MS (gas cum-12), WCB_2 (oil), DEAN (oil + gas); water provisional everywhere, holdout 17 / 17 consistent; D102 haircut WCA_1 oil only (0.979 / 0.975 / 0.954 / 0.950); ★ LSSH tier = gate Q1 (§6 "moved" vs §5 / step-15 WCB_1). **Gate 21c** = validated / provisional per
   group (oil, gas and water tiers) + haircut tables (9c guard, D106).
+- **21d Midland prospective pre-registration (the 13d / D125 pattern), frozen BEFORE step 23 publishes** (Michael 2026-11-03,
+  during gate 21c). Every Midland D52 holdout is spent, so this is the only route a Midland group can change tier (D124):
+  without it a provisional bench has no path to validated. Content: the method as scored at 21 (revision 8, `5ceadc2`, the D149
+  record treatments + the gate-21c tiers), the 2026 Midland cohort first-producing inside the stored extents (cutoff
+  2025-12-01, tags at scoring time), judged ONCE on the full cohort at production through ≥ 2028-01-01 (cum-12) / ≥ 2029-01-01
+  (cum-24), thin groups below 30 packages NOT JUDGED with tier unchanged (WCC likely never judgeable; WCD / DEAN ~40 packages
+  by the holdout arithmetic). Frozen before anyone reads a 2026 Midland outcome. **Open rule question, decided before the
+  freeze:** D99 consistency alone (the D125 rule) vs adding an accuracy route for graduation only (provisional → validated on
+  consistency OR |bias| ≤ 10 % with spread ≤ the local-offsets benchmark, ≥ 30 packages) — the 21c WCB_2 case (holdout ~unbiased,
+  FAILed for being unlike its over-forecast tuning half) is the motivating example. **Gate 21d** = rule chosen + definition
+  digest + SHA frozen.
 
 ### Step 22 — Midland water — FOLDED INTO STEP 21 (D134 D, 2026-10-26)
 D107 water (D133) is pre-registered in 21a and scored the D109 way in 21b / 21c from the same folds; no separate gate.
@@ -683,7 +694,8 @@ Build Midland (oil / gas / water / proximity) as the Midland record run (D130; t
 container rehearsal (`scripts.box_rehearsal`) with every identity green per basin → live store on go → prune per D123 → Steven
 re-prices → erebor check (Map / Highgrade show Midland; coverage classes stated, never zero) → `curated.box_scout_locations`
 re-created (sql/69). No dependence on a Novi vintage or a Delaware refresh (D130). After
-this, Midland joins step 13 (pool refresh, 13e tag releases) and gets its own 13d-style prospective pre-registration.
+this, Midland joins step 13 (pool refresh, 13e tag releases); its 13d-style prospective pre-registration is step 21d, frozen
+before this step publishes.
 **Gate 23.**
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
@@ -794,14 +806,14 @@ count, and a bench-pooled test over every matched holdout well must pass as well
 | 18 | 1 short | decision only (Midland scope, families, thin benches, Df, record-run strategy, long laterals, water route) |
 | 19 | 1–2 | basin parameterization; Delaware bit-identical |
 | 20 | ≈ 1–2 per family | 20a Wolfcamp → 20b Spraberry; tags + extent at one gate per family (Delaware rule + edge metric, D134) |
-| 21 | ≈ 3–4 | 21a pre-registration (incl. water, one long-lateral variant) → 21b tuning → 21c holdout once |
+| 21 | ≈ 3–4 | 21a pre-registration (incl. water, one long-lateral variant) → 21b tuning → 21c holdout once → 21d Midland prospective pre-registration |
 | 22 | — | folded into 21 (D134) |
 | 23 | ≈ 2 | build + container rehearsal + live store as the one record run |
 
 **Phase 2 order:** 9a → 9b → 9c → 11 → 12a → 12b → 14 → 15a → 15b → 15c → 15d. **Step 10 runs alongside 9** (swap it ahead if a
 live deal needs BOX in a drop). **Step 13 interrupts** whenever the next vintage is near.
 
-**Phase 3 order (D134):** 18 → 19 → 20a → 20b → 21a → 21b → 21c → 23 (step 22 folded into 21). Step 23 publishes on its own schedule (D130). Phase 3 shares this checkout and
+**Phase 3 order (D134):** 18 → 19 → 20a → 20b → 21a → 21b → 21c → 21d → 23 (step 22 folded into 21; 21d frozen before 23 publishes). Step 23 publishes on its own schedule (D130). Phase 3 shares this checkout and
 the warehouse with steps 13 / 17: worktree per writing session, and any `sql/NN` reserved here first (**sql/70 reserved = D130 per-basin record index, step 19**).
 
 **Parallel sessions (Phase 2):**

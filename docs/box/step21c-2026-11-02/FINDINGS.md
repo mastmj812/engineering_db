@@ -2,6 +2,10 @@
 
 > **Gate answer, Q1 (Michael, 2026-11-03): "LSSH validated".** Reading (b): a `mid_r2p_wf` → `mid_r2p` move at the tuning gate
 > is judged on its holdout (the §5 / step-15 WCB_1 precedent). LSSH = validated on `mid_r2p`, no haircut. Q2–Q5 are still open.
+>
+> **Added during the gate (Michael, 2026-11-03): step 21d**, a frozen Midland prospective pre-registration (the 13d / D125
+> pattern) before step 23 publishes, so a provisional bench has a route to validated. Its graduation rule (D99 consistency
+> alone vs an added accuracy route) is decided before the freeze. Plan §5, step 21.
 
 Scored once on 2026-11-02/03 under the frozen pre-registration: `docs/box/step21a-2026-10-31/PREREGISTRATION.md` +
 `box/step21.DEFINITION`, revision 8, digest `9780f326`, frozen SHA `5ceadc2` (D148). Record treatments come from gate 21b (D149,
