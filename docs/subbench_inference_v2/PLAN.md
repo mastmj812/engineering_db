@@ -50,7 +50,7 @@ edge of their control; it is not in the rule.
 ### 2.3 Output (what `sql/19` would carry)
 `formation_blueox` (the bench), `formation_blueox_confidence` (0.5–1.0), and the path (`local_model` / `vote` /
 `frontier`) in `formation_blueox_source` or a new column (decided at step 2). Confidence bands for reporting:
-**< 0.80**, **0.80–0.95**, **≥ 0.95**.
+**< 0.80**, **0.80–0.95**, **≥ 0.95**. Confidence is a flag only (§5 Q1): it is displayed, never acted on.
 
 ## 3. Acceptance criteria (FROZEN at the freeze commit, scored once after it)
 
@@ -87,7 +87,8 @@ A failed criterion is reported as a fail. No re-tuning after the score without a
 
 ## 5. Open questions (Michael)
 
-1. **What low confidence does** — flag only, or also mark BOX provisional.
+1. ~~**What low confidence does**~~ — **DECIDED 2026-11-03: flag only.** Confidence and path are carried on the
+   stick and shown; they change nothing downstream (no BOX tier change, no exclusion, no review queue).
 2. **Frontier sticks** — vote + flag (current draft), or use the geologist's Delaware structure grids
    (`Grids/Delaware/Structure`), the one source that needs no producers.
 3. **Lea/Eddy producer tags** — investigate in parallel through the override path (not this rule).
@@ -98,3 +99,4 @@ A failed criterion is reported as a fail. No re-tuning after the score without a
 |---|---|
 | 2026-11-03 | Prototype + draft (this document §1–§3); rule and criteria frozen at `f138eb0`; scored once → `score-2026-11-03/` |
 | 2026-11-03 | **Score at f138eb0: ALL PASS (C1–C4).** Held-out producers (hold-out radius 0.74 mi, true lateral distance): Delaware WCA 74.5 vs 65.2 %, Delaware WCB 84.2 vs 78.7 %, Midland WCB 88.5 vs 85.5 %. Texas WCB vs depth below WCA: Delaware 77.1 vs live 70.3 %, Midland 84.3 vs 82.8 %. Calibration Delaware WCB 71.9 / 89.4 / 93.3 %, Midland WCB 66.7 / 87.5 / 95.9 %. Pad 3240 all WCB_1. Ungated: Delaware WCA calibration 69.8 / 85.0 / 84.7 % (flat above 0.80 — WCA_1/WCA_2 too close for the top band to mean more); Avalon 77.3 vs 75.0 %. Flips vs live: Delaware WCA 1,999, Delaware WCB 4,178 (1,145 in `box_scout_locations`; WCA 566), Midland WCB 1,181; frontier 3,152 / 4,474 / 1,932, none in `box_scout_locations`. Re-implemented current rule reproduces the live tag on 95.6 %. Gate 1 → Michael (§5 questions). |
+| 2026-11-03 | §5 Q1 decided (Michael): low confidence = **flag only** — no BOX provisional marking, no exclusion, no review queue. |
