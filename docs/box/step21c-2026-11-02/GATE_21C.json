@@ -1,0 +1,35 @@
+{
+  "gate": "21c",
+  "closed": "2026-11-03",
+  "decision": "D151",
+  "by": "Michael (\"LSSH validated\"; \"Yes, add it\" = step 21d; \"Accept Q2-Q5 recs\")",
+  "frozen_sha": "5ceadc260b0e1ad78df2bfab39aaa79c812f8219",
+  "definition_digest": "9780f326",
+  "frozen_d99_sha256": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+  "frozen_water_sha256": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9",
+  "run_source_sha256": "4bcad48cc6e53bb2f2739166cd1bf111b81b2f65eac06242907f72f436fd6780",
+  "scored_at_head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+  "tier": {
+    "MID_WCA_1": {"oil_gas": "validated", "ships": {"oil": "mid_r2p_wf", "gas": "mid_r2p"}, "d99": "PASS 6/6"},
+    "MID_LSSH": {"oil_gas": "validated", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "PASS 6/6", "basis": "Q1: a mid_r2p_wf -> mid_r2p move at the tuning gate is judged on its holdout (section 5 / step-15 WCB_1)"},
+    "MID_WCD": {"oil_gas": "validated", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "PASS 4/4"},
+    "MID_WCB_1": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "FAIL (gas cum-12)"},
+    "MID_WCB_2": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "FAIL (oil cum-12/24/36)"},
+    "MID_JM": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "FAIL (gas cum-12)"},
+    "MID_MS": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "FAIL (gas cum-12)", "note": "loses its walk-forward haircut; raw mid_r2p oil pooled -6.2 / -7.6 / -8.9 % (BOX high), disclosed"},
+    "MID_DEAN": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "FAIL (oil cum-12/24, gas cum-12)"},
+    "MID_WCC": {"oil_gas": "provisional", "ships": {"oil": "mid_r2p", "gas": "mid_r2p"}, "d99": "not scored (no D99 cell)"}
+  },
+  "water": "provisional on all nine (D149 (5)); holdout 17/17 judged cells consistent",
+  "haircut_step23": {
+    "MID_WCA_1": {"stream": "oil", "d102_factor": {"12": 0.979164, "24": 0.974905, "36": 0.954451, "48": 0.949671}, "packages": {"12": 1281, "24": 1092, "36": 865, "48": 408}, "d106": "passes (monotone; median g48 0.884)"},
+    "all_other_streams": "none"
+  },
+  "watch_items": [
+    "DEAN holdout under-forecast: oil +21.8 / +23.2 %, gas +29.3 % (gas BOX-specific)",
+    "WCB_2: holdout oil +5.1 / +1.8 / +2.4 % vs tuning -6.2 / -8.9 / -13.0 %",
+    "WCB_1 / JM / MS: holdout gas cum-12 below tuning, shared by the local-offsets benchmark"
+  ],
+  "open_for_gate_23": "D150 swaps the continuous proximity factor in at step 23; state whether the WCA_1 D102 haircut is recomputed on the shipped treatment",
+  "next": "21d Midland prospective pre-registration (graduation rule decided before the freeze), then 23"
+}

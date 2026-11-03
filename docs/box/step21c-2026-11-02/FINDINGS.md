@@ -1,7 +1,10 @@
-# BOX step 21c — Midland one-time D52 holdout, FINDINGS (AT GATE 21c)
+# BOX step 21c — Midland one-time D52 holdout, FINDINGS (GATE 21c CLOSED 2026-11-03, D151)
 
-> **Gate answer, Q1 (Michael, 2026-11-03): "LSSH validated".** Reading (b): a `mid_r2p_wf` → `mid_r2p` move at the tuning gate
-> is judged on its holdout (the §5 / step-15 WCB_1 precedent). LSSH = validated on `mid_r2p`, no haircut. Q2–Q5 are still open.
+> **GATE 21c CLOSED 2026-11-03 (D151, `GATE_21C.json`).** Q1 "LSSH validated": reading (b), a `mid_r2p_wf` → `mid_r2p` move at
+> the tuning gate is judged on its holdout (the §5 / step-15 WCB_1 precedent), so LSSH is validated on `mid_r2p` with no
+> haircut. Q2–Q5 "Accept Q2–Q5 recs": tiers as scored, the WCA_1-oil-only haircut, §6 counts govern, FAILs as text watch items.
+> Open for gate 23: D150 (continuous proximity, merged the same day) swaps the proximity factor at step 23. The tiers and the
+> WCA_1 haircut were earned on the 21 table, so step 23 states whether the D102 haircut is recomputed on the shipped treatment.
 >
 > **Added during the gate (Michael, 2026-11-03): step 21d**, a frozen Midland prospective pre-registration (the 13d / D125
 > pattern) before step 23 publishes, so a provisional bench has a route to validated. Its graduation rule (D99 consistency

@@ -1,0 +1,28 @@
+{
+  "gate": "24a",
+  "closed": "2026-11-02",
+  "decision": "D150",
+  "by": "Michael (\"Adopt rev 5 both\": option (a) of FINDINGS.md section 4)",
+  "frozen_sha": "77d50a7f69b807f0c710c148f071fd9e4c44ee4d",
+  "definition_digest": "2e8bb5a74ac5a42ba5a23567c8909901558d5a4aab75b0333154c5a360d55c83",
+  "adopted": {
+    "G1_surface": "one five-parameter log-logistic in d_eff per basin (C2 holds in both; three-curve form worse out of sample)",
+    "G2_rule": {"delaware": "R2 multiplicative (won outright, gain 0.0024 [0.0007, 0.0040])", "midland": "R3 per-side product (registered default; R2 gain 0.0025 [-0.0002, 0.0052] missed zero)"},
+    "G3_level": {"delaware": 1.0459798483731129, "midland": 1.0673947845823253, "form": "factor = level x F_rule; F_mix retired; every unexposed stick carries the level"},
+    "G4_precedent": "incumbent kept: D114 bench pair + package tier (Delaware); 21a pattern precedent + 400-ft floor (Midland); geometry key reported only, cards not drawn",
+    "G5_bench_pair_offset": "none; WCXY/WCA_1 seam and WCA over WCB_1 recorded as diagnostics",
+    "G6_schedule": "adopted at step 23's record run per basin with a D116-style re-measure (every existing producer per basin rule, level per basin from that basin's fit); Delaware stays on run 19 until then (D144)"
+  },
+  "curves": {
+    "delaware": {"rule": "R2", "f_min": 0.9123165666619888, "d50_ft": 1258.7231163642628, "k": 4.799053622746606, "a_below": 1.4893085236924757, "a_above": 2.629611042314597, "level": 1.0459798483731129},
+    "midland": {"rule": "R3", "f_min": 0.7195304198267564, "d50_ft": 485.108159824318, "k": 1.9552065903775868, "a_below": 0.5, "a_above": 0.5, "level": 1.0673947845823253}
+  },
+  "verdicts": {
+    "delaware_oil24": "FAIL by the letter of P2 (0.0439 vs incumbent 0.0437, 0.4 % of RMS; a tie in substance, sign set by the cell binning); P1 1.015 [0.979, 1.053]; P3 94 %; oil cum-12 and cum-36 PASS; gas FAIL (oil-fitted factor)",
+    "midland_oil24": "PASS: P1 1.037 [0.994, 1.081]; P2 0.0453 vs 21b table 0.0583; P3 92 %; C8 0.983 [0.959, 1.008] drifting 1.000 -> 0.960 by fold (step-23 watch item)"
+  },
+  "supersedes": "D113's class x count x flank table and its multi-parent-only clause, at step 23; D112 envelopes replaced by the universe + d_eff; D115 / D116 kept",
+  "step_21c": "unchanged: the Midland holdout is scored once at 5ceadc2 with the step-21 harness and its own 21b factor table (D149 item 3); the curve's validation is this step's walk-forward on tuning children",
+  "disclosed": "revision 5 designed after the revision-4 Midland score (fourth design change after a score); its predictions missed in both basins (FINDINGS.md section 5)",
+  "nothing_stored": true
+}
