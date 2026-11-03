@@ -205,7 +205,8 @@ The incumbent's D113 classes are narrower. D150 mean factor: multi 0.897, single
 
 **Base-run oil / gas** (filled at 23b; the full read-only build `runs/step23/midland_record_base`, code `1aec6b3`, data through
 2026-08-01, WCA_1 haircut recomputed per D154 (a)): 32,541 forecast, oil 13,520.1 MMbbl, gas 53,558.0 Bcf. With D150 applied, the record
-keeps 28,828 forecast sticks (the live re-measure; +19 vs the 28,809 above) carrying oil 11,128.0 MMbbl and gas 46,467.0 Bcf. Per bench:
+keeps 28,827 forecast sticks (the live re-measure keeps 28,828, +19 vs the 28,809 above; one no-water stick is not covered at gate 23b)
+carrying oil 11,127.6 MMbbl and gas 46,466.3 Bcf. Per bench:
 `REHEARSAL_23B.md` §4.2.
 
 ---
