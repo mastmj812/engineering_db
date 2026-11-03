@@ -2,6 +2,7 @@
 
     python -m scripts.box_rehearsal_econ price --run N [--decks all | --drop-deck wti70_hh3]   # container only
     python -m scripts.box_rehearsal_econ clear --run N
+    (run with the LIVE env, not the container's DB_*: live is only read for the deck ids; writes go to the container)
 
 Writes box_econ.box_pud_econ rows for every forecast location of container run N on the decks the live record is priced on (the
 16 deck ids, read from live, read-only). Every row is labelled synthetic (assumption_set_id / build_id / schema_version =
@@ -30,7 +31,11 @@ def live_decks() -> list[str]:
         cur.execute("SET TRANSACTION READ ONLY")
         rows = cur.execute("SELECT DISTINCT e.deck_id FROM box_econ.box_pud_econ e JOIN box.forecast_run r ON r.run_id = e.run_id "
                            "WHERE r.is_record ORDER BY 1").fetchall()
+        port = conn.info.port
         conn.rollback()
+    if port == reh.PORT or not rows:
+        raise SystemExit(f"REFUSING: read {len(rows)} record decks from port {port} — run this with the LIVE env (read-only there); "
+                         "the container is written through box_rehearsal._box_conn only")
     return [r[0] for r in rows]
 
 
