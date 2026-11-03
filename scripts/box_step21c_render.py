@@ -29,7 +29,7 @@ def _dots(pc: pd.DataFrame) -> str:
     lo = float(min(pc["interval_lo"].min(), pc["holdout_bias"].min(), -0.3))
     hi = float(max(pc["interval_hi"].max(), pc["holdout_bias"].max(), 0.3))
     w, left, rh = 560, 110, 22
-    x = lambda b: left + (b - lo) / (hi - lo) * (w - left - 20)  # noqa: E731
+    x = lambda b: left + (b - lo) / (hi - lo) * (w - left - 20)
     rows = []
     for i, r in enumerate(pc.itertuples()):
         y = 18 + i * rh
@@ -48,7 +48,8 @@ def _dots(pc: pd.DataFrame) -> str:
 def main(docs: Path) -> int:
     V = json.loads((docs / "verdicts.json").read_text(encoding="utf-8"))
     rd = {n: pd.read_csv(docs / f"{n}.csv") for n in ("pooled_cells", "counts", "wf_identity", "f_drift", "d102", "guard_d106", "disclosure",
-                                                      "vintage", "water_holdout", "pooled_variants", "pooled_tuning_21b", "coverage", "per_cutoff")
+                                                      "vintage", "water_holdout", "pooled_variants", "pooled_tuning_21b", "coverage", "per_cutoff",
+                                                      "diag_shift", "diag_null_group", "disclosure_provisional_r2p")
           if (docs / f"{n}.csv").exists()}
     G = V["groups"]
     summ = pd.DataFrame([{"group": g, "record oil / gas": f"{x['record']['oil']} / {x['record']['gas']}", "cells": ", ".join(x["cells"]) or "none",
@@ -57,10 +58,10 @@ def main(docs: Path) -> int:
                           "water holdout judged / consistent": f"{x['water']['holdout_judged']} / {x['water']['consistent']}"} for g, x in G.items()])
     parts = [f"<!doctype html><html><head><meta charset='utf-8'><title>BOX step 21c holdout</title><style>{_CSS}</style></head><body>",
              "<h1>BOX step 21c — Midland one-time D52 holdout (revision 8, frozen SHA 5ceadc2)</h1>",
-             f"<div class=meta>Built {html.escape(V['meta']['built_utc'])} at HEAD {V['meta']['head'][:7]}; definition digest "
+             (f"<div class=meta>Built {html.escape(V['meta']['built_utc'])} at HEAD {V['meta']['head'][:7]}; definition digest "
              f"{V['meta']['definition_digest'][:8]}; frozen intervals {V['meta']['frozen_intervals']['got']['frozen_d99.csv'][:8]} / "
              f"{V['meta']['frozen_intervals']['got']['frozen_water.csv'][:8]} (= GATE_21B.json). Bias = Σ actual / Σ forecast − 1: "
-             "<b>negative = BOX over-forecasts</b>. Grain = D53 packages pooled over cutoffs. MID_WCC: no D99 cell, not scored.</div>",
+             "<b>negative = BOX over-forecasts</b>. Grain = D53 packages pooled over cutoffs. MID_WCC: no D99 cell, not scored.</div>"),
              "<h2>1. Verdicts</h2>", _table(summ)]
     pc = rd.get("pooled_cells", pd.DataFrame())
     parts.append("<h2>2. Judged cells (bar = frozen P2.5–P97.5 tuning interval, tick = tuning bias, dot = holdout bias)</h2>")
@@ -78,7 +79,10 @@ def main(docs: Path) -> int:
                         ("pooled_tuning_21b", "4b. The same cells on the tuning packages (21b, reproduced)"),
                         ("d102", "5. Step-23 haircut table (D102: tuning + holdout mid_r2p merged per cutoff, ≥ 30 floor)"),
                         ("guard_d106", "5b. 9c guard (D106) on the D102 table"), ("disclosure", "6. D105 disclosure lines (record treatment; 95 % 3-mi-block bootstrap)"),
-                        ("vintage", "6b. By vintage (tuning + holdout)"), ("water_holdout", "7. Water holdout (D109: ≥ 10 measured packages, frozen interval)"),
+                        ("disclosure_provisional_r2p", "6a. D105 lines on raw mid_r2p (what a provisional group ships) where the record carried wf"),
+                        ("vintage", "6b. By vintage (tuning + holdout)"),
+                        ("diag_shift", "7a-diag. FAIL diagnosis: holdout − tuning shift, BOX vs the local-offsets benchmark (reported only)"),
+                        ("diag_null_group", "7b-diag. FAILs a holdout like tuning would give (21b pass rate of a good forecast)"), ("water_holdout", "7. Water holdout (D109: ≥ 10 measured packages, frozen interval)"),
                         ("per_cutoff", "8. Per-cutoff D53 cells, record (reported, never gating)"), ("coverage", "9. Proximity coverage of the holdout wells"),
                         ("wf_identity", "10. Walk-forward identity (holdout haircuts = tuning haircuts)"), ("f_drift", "11. F(k) drift: holdout run vs 21b")):
         if name in rd:

@@ -1,0 +1,17 @@
+group,stream,record,refused,reasons,factors 12/24/36/48,g48_median,g48_share_outside,applies (wf record AND validated)
+MID_WCA_1,oil,mid_r2p_wf,False,,0.979 / 0.975 / 0.954 / 0.950,0.8844917617939358,0.0,True
+MID_WCA_1,gas,mid_r2p,True,"gas D92 g(48) median 1.383 outside [0.6, 1.2]",1.051 / 1.090 / 1.145 / 1.201,1.382981512493144,1.0,False
+MID_WCB_1,oil,mid_r2p_wf,False,,0.993 / 0.990 / 0.973 / 0.976,0.928300257595055,0.0,False
+MID_WCB_1,gas,mid_r2p,True,"gas D92 g(48) median 1.211 outside [0.6, 1.2]",1.017 / 1.032 / 1.071 / 1.109,1.2105589450151457,0.7748710390567428,False
+MID_LSSH,oil,mid_r2p,False,,0.982 / 0.972 / 0.977 / 0.952,0.9129637272937641,0.0,False
+MID_LSSH,gas,mid_r2p,False,,0.985 / 0.990 / 1.028 / 1.057,1.1400746059706344,0.0002942041776993233,False
+MID_WCB_2,oil,mid_r2p,False,,0.961 / 0.932 / 0.902 / 0.844,0.6327092994460595,0.08221024258760108,False
+MID_WCB_2,gas,mid_r2p,True,gas D62 factors not monotone in k (1.032 / 1.041 / 1.067 / 1.054; reversal 0.012 > 0.01),1.032 / 1.041 / 1.067 / 1.054,1.0954648583081905,0.0,False
+MID_JM,oil,mid_r2p,True,"oil D92 g(48) median 2.025 outside [0.6, 1.2]",1.013 / 1.104 / 1.176 / 1.396,2.0251801497401196,1.0,False
+MID_JM,gas,mid_r2p,True,"gas D92 g(48) median 1.559 outside [0.6, 1.2]",0.989 / 1.052 / 1.146 / 1.264,1.5586328816965733,1.0,False
+MID_MS,oil,mid_r2p_wf,False,,0.938 / 0.924 / 0.911 / 0.849,0.7250250665438451,0.0,False
+MID_MS,gas,mid_r2p_wf,False,,0.983 / 0.979 / 0.929 / 0.908,0.8193493130270745,0.0,False
+MID_WCD,oil,mid_r2p,True,oil D62 factors not monotone in k (0.898 / 0.872 / 0.914; reversal 0.026 > 0.01),0.898 / 0.872 / 0.914,0.9232037335515074,0.0,False
+MID_WCD,gas,mid_r2p,False,,0.903 / 0.902 / 0.923,0.948213217756111,0.0,False
+MID_DEAN,oil,mid_r2p,False,,1.033 / 1.037 / 0.977,0.8615653728474109,0.0,False
+MID_DEAN,gas,mid_r2p,True,gas: no location to evaluate g(48),1.091 / 1.164 / 1.895,,,False
