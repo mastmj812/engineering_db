@@ -56,14 +56,20 @@ FP_FROM, FP_TO = dt.date(2026, 1, 1), dt.date(2026, 12, 31)
 MIN_PACKAGES = 30
 HORIZONS_JUDGED = (12, 24)
 GRADUATION_OPTIONS = ("consistency", "consistency_or_accuracy")
-GRADUATION = "consistency_or_accuracy"   # PROPOSED (FINDINGS §6 Q1); gate 21d writes Michael's choice here, then the digest is frozen
+GRADUATION = "consistency_or_accuracy"   # CHOSEN at gate 21d (Michael 2026-11-03, "Rule (b), accept recs"; D152)
 
 DEFINITION: dict[str, Any] = {
     "name": "box_prospective_2026_midland",
     "written_on": "2026-11-03",
-    "status": "draft at gate 21d (graduation rule proposed, not chosen)",
+    "status": "FROZEN at gate 21d (D152)",
+    "gate_21d": {"decided_on": "2026-11-03", "by": "Michael (\"Rule (b), accept recs\")", "decision": "D152",
+                 "Q1": "graduation = consistency OR accuracy; accuracy spread bar = D58 benchmark + 0.05",
+                 "Q2": "the consistency interval carries the tuning mean's own sampling error ([draw - complement] + all)",
+                 "Q3": "water reported only, never a tier", "Q4": "drilled-side configuration; stick side reported",
+                 "Q5": "every cohort well scored, precedent ignored; the no-forecast subset counted and reported",
+                 "Q6": "tuning views + links cache copied to Engineering - General/box-step21d-tuning-views-2026-11-03"},
     "decisions": ["D52", "D53", "D58", "D63", "D85", "D99", "D102", "D105", "D106", "D107", "D109", "D124", "D125", "D128", "D130",
-                  "D132", "D136", "D145", "D146", "D147", "D148", "D149", "D150", "D151"],
+                  "D132", "D136", "D145", "D146", "D147", "D148", "D149", "D150", "D151", "D152"],
     "basin": "midland",
     "cutoff": CUTOFF.isoformat(),
     "cohort": {
@@ -165,7 +171,7 @@ DEFINITION: dict[str, Any] = {
               "MS ships ~6-9 % high on oil, raw (D151)", "the D150 Midland level drifting by fold (C8 1.000 -> 0.960)"],
 }
 
-DIGEST = "2dae765eded84419349ba6d4007a1b8c8cd7c42c501f9144b70ac21f001b5ec8"  # DRAFT at gate 21d (graduation proposed: consistency_or_accuracy); re-pinned once at the gate with Michael's choices
+DIGEST = "187811fd8f86b4cdb9b0e32909711013bb6f9dc99344d30df94a876419727ad7"  # FROZEN at gate 21d 2026-11-03 (D152: graduation consistency OR accuracy, A2 interval); draft 2dae765e
 
 
 def canonical() -> str:

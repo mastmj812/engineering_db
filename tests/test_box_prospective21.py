@@ -85,3 +85,12 @@ def test_a_uniform_haircut_cannot_change_the_consistency_verdict():
         assert abs(lo - oc.scaled(lo0, h)) < 1e-12 and abs(hi - oc.scaled(hi0, h)) < 1e-12
         b = float(np.mean(e))
         assert (lo0 <= b <= hi0) == (lo <= oc.scaled(b, h) <= hi)
+
+
+def test_gate_21d_answers_are_in_the_frozen_definition():
+    d = ps.DEFINITION
+    assert d["status"].startswith("FROZEN") and d["gate_21d"]["decision"] == "D152" and "D152" in d["decisions"]
+    assert d["verdict"]["graduation"] == "consistency_or_accuracy" == ps.GRADUATION
+    assert "+ 0.05" in d["verdict"]["accuracy"]["rule"] and "sampling error" in d["verdict"]["consistency"]["interval"]
+    assert d["verdict"]["water"].startswith("reported only") and "drilled side" in d["method"]["proximity"]["configuration"]
+    assert d["method"]["proximity"]["precedent"].startswith("every cohort well is scored")
