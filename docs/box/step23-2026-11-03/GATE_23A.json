@@ -1,0 +1,21 @@
+{
+  "gate": "23a",
+  "closed": "2026-11-03",
+  "decision": "D154",
+  "by": "Michael (\"Accept all recs\": RECORD_PLAN.md section 7 (a)-(i))",
+  "code_sha_at_gate": "581ebb2",
+  "answers": {
+    "a_wca1_haircut": {"choice": "recomputed on the D150 treatment", "basis": "recomputed_d150",
+                       "factor": {"12": 0.9576101370991077, "24": 0.9525747243826522, "36": 0.9324890419177336, "48": 0.9268679977658079},
+                       "source": "docs/box/step23-2026-11-03/d102_d150.csv (MID_WCA_1 oil)"},
+    "b_wcd_level": "disclose only (WCD -11.2 / WCB_2 -12.0 / MS -10.0 % shipped tuning oil at cum-12 / 24 / 24); no per-bench level; 21d judges it",
+    "c_midland_level": "ship the fitted 1.0674; the C8 fold drift (1.000 -> 0.960) is disclosed",
+    "d_delaware": {"choice": "derive from run 25 (D153)", "readmitted": "carry-refusal (127 sticks keep run 25's refusal; 13c re-decides)"},
+    "e_sql71": "apply as drafted: container at 23b, live on its own go",
+    "f_d145_delaware": "extend D145 to the Delaware: conflict sticks -> not_covered_conflict (634 forecast sticks / 366.2 MMbbl at the 23a measure)",
+    "g_package_trigger": "the incumbent table factor (Delaware D113 candidate table; Midland 21b table); D150 scales oil only",
+    "h_realized_since": "sticks reconciled as drilled since the source run leave the derived universe",
+    "i_erebor": "a small erebor PR before 23b's erebor check (proximity words, factor > 1 shown, not_covered_conflict class)"
+  },
+  "next": "23b container rehearsal on Michael's go; PR #221 merged first"
+}

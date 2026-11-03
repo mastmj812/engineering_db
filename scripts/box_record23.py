@@ -637,8 +637,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--src-run", type=int, required=True)
     s.add_argument("--outcomes", type=Path, required=True)
     s.add_argument("--links", type=Path, required=True, help="the measure's pud_links.pkl (named D150 parents)")
-    s.add_argument("--d145", action="store_true", help="gate 23a (f): extend D145 to this basin (conflict sticks -> not_covered_conflict)")
-    s.add_argument("--readmitted", choices=("refuse", "carry-refusal"), default="refuse",
+    s.add_argument("--no-d145", dest="d145", action="store_false",
+                   help="D154 (f) extends D145 to the Delaware (conflict sticks -> not_covered_conflict); this flag turns it off")
+    s.add_argument("--readmitted", choices=("refuse", "carry-refusal"), default="carry-refusal",  # D154 (d)
                    help="a stick the source refused that the re-measure would forecast (no source rows): refuse the store, or keep its refusal")
     s.add_argument("--method-block", type=Path, default=None, help="Midland: the stored method block (default box/record23.method_block())")
     s.add_argument("--commit", action="store_true")

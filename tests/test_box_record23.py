@@ -141,3 +141,19 @@ def test_expected_oil_by_bench():
     oc = pd.DataFrame({"keep": [True, True, False], "factor": [1.05, 0.9, 0.7]}, index=["1", "2", "3"])
     e = rc.expected_oil(src, oc)
     assert e.loc["A", "oil_new"] == pytest.approx(105.0 + 90.0) and "B" not in e.index
+
+
+def test_d154_haircut_of_record_is_the_recomputed_one():
+    """Gate 23a (a): the record ships WCA_1's D102 recomputed on D150; the stored block says so and still passes 21d's check."""
+    import json
+
+    h = rc.d102_shipped()
+    assert rc.HAIRCUT_BASIS == "recomputed_d150" and h == rc.d102_recomputed() != rc.d102_as_delivered()
+    assert h == pytest.approx({12: 0.95761, 24: 0.95257, 36: 0.93249, 48: 0.92687}, abs=1e-5)
+    assert all(a >= b for a, b in zip(list(h.values()), list(h.values())[1:], strict=False))  # monotone (D106 table half)
+    b = rc.method_block()
+    assert b["haircut"]["MID_WCA_1"]["basis"] == "recomputed_d150" and rc.check_method(b) == []
+    gate = json.loads((rc.ROOT / rc.DOCS / "GATE_23A.json").read_text(encoding="utf-8"))
+    assert {int(k): v for k, v in gate["answers"]["a_wca1_haircut"]["factor"].items()} == pytest.approx(h, rel=1e-12)
+    pack = json.loads((rc.ROOT / rc.DOCS / "midland_pack_recomputed.json").read_text(encoding="utf-8"))
+    assert {int(k): v["factor"] for k, v in pack["groups"]["MID_WCA_1"]["haircut"]["oil"].items()} == pytest.approx(h, rel=1e-12)

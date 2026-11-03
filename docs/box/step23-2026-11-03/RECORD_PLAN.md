@@ -1,6 +1,6 @@
 # BOX step 23a — record plan: the Midland record + the Delaware's D117 / D150 move, priced once
 
-**Status: AT GATE 23a (2026-11-03). Nothing stored, nothing applied, no record touched.** Live today: the Delaware record is
+**Status: GATE 23a CLOSED 2026-11-03 = D154 — every recommendation in §7 accepted ("Accept all recs"; `GATE_23A.json`). Nothing stored, nothing applied, no record touched.** The code defaults now carry the decisions: the recomputed WCA_1 haircut (a), `--readmitted carry-refusal` (d) and D145 on the Delaware (f). Live today: the Delaware record is
 the 16d record (run 19), priced by Steven (687,520 `box_econ` rows, 16 decks, re-priced 2026-11-02). The D117 record (run 25)
 is stored, not record, unpriced. The Midland has no BOX run. `sql/70` is live (`box_forecast_run_record_basin_uq`, UNIQUE (basin)
 WHERE is_record); erebor main reads the record per basin (erebor #28, `5afe6ba`).

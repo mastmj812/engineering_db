@@ -88,6 +88,22 @@ def midland_groups() -> dict[str, dict[str, Any]]:
     return out
 
 
+D102_D150 = DOCS / "d102_d150.csv"
+HAIRCUT_BASIS = "recomputed_d150"  # gate 23a (a), D154: WCA_1's D102 recomputed on the shipped (D150) treatment
+
+
+def d102_recomputed() -> dict[int, float]:
+    """WCA_1 oil D102 on the D150 treatment (scripts/box_record23 pack; 21b tuning + 21c holdout cells merged per cutoff)."""
+    t = pd.read_csv(ROOT / D102_D150)
+    t = t[(t["group"] == "MID_WCA_1") & (t["stream"] == "oil")]
+    return {int(h): float(f) for h, f in zip(t["horizon"], t["factor"], strict=True)}
+
+
+def d102_shipped() -> dict[int, float]:
+    """The WCA_1 oil haircut the Midland record ships (D154 (a))."""
+    return d102_recomputed() if HAIRCUT_BASIS == "recomputed_d150" else d102_as_delivered()
+
+
 def d102_as_delivered() -> dict[int, float]:
     """WCA_1 oil, D151 (2): the D102 table computed at gate 21c on the 21 table treatment (cum-12 / 24 / 36 / 48)."""
     f = gate_21c()["haircut_step23"]["MID_WCA_1"]["d102_factor"]
@@ -157,10 +173,11 @@ def rescale(old_factor: np.ndarray, new_factor: np.ndarray) -> np.ndarray:
 # ----------------------------------------------------------------------------
 
 
-def method_block(haircut: Mapping[int, float] | None = None, haircut_basis: str = "as_delivered_21c") -> dict[str, Any]:
+def method_block(haircut: Mapping[int, float] | None = None, haircut_basis: str | None = None) -> dict[str, Any]:
     """forecast_run.disclosure["method_23"] of the Midland record run: what 21d's record_run_check reads. Every value comes from
     the frozen module or gate file that owns it (never copied from prospective21, so the comparison is a real one)."""
-    h = d102_as_delivered() if haircut is None else {int(k): float(v) for k, v in haircut.items()}
+    h = d102_shipped() if haircut is None else {int(k): float(v) for k, v in haircut.items()}
+    haircut_basis = haircut_basis or (HAIRCUT_BASIS if haircut is None else "given")
     m, rule = d150(bsn.MIDLAND)
     c = gate_24a()
     g = midland_groups()

@@ -184,6 +184,12 @@ def cmd_build(a: argparse.Namespace) -> int:
     t0 = time.time()
     code_sha = pud._git_sha()
     a.pack, a.pack_sha256 = load_pack(a.pack_path)
+    h = haircut_of(a.pack["groups"]["MID_WCA_1"]) or {}
+    got = {k: v["factor"] for k, v in (h.get("oil") or {}).items()}
+    want = rc.d102_shipped()
+    same = set(got) == set(want) and all(abs(got[k] - want[k]) <= 1e-12 * want[k] for k in want)
+    if not same and not a.allow_other_haircut:
+        raise SystemExit(f"pack WCA_1 haircut {got} != the haircut of record {rc.d102_shipped()} (D154 (a)); --allow-other-haircut for a sensitivity")
     a.out.mkdir(parents=True, exist_ok=True)
     cfg = di_config.load()
     B: dict[str, dict[str, Any]] = {}
@@ -240,8 +246,9 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--workers", type=int, default=14)
     b.add_argument("--groups", type=lambda v: [x.strip() for x in v.split(",") if x.strip()], default=list(GROUPS))
     b.add_argument("--limit", type=int, default=0, help="smoke only: cap locations per group (never stored)")
-    b.add_argument("--pack-path", type=Path, default=rc.DOCS / "midland_pack_as_delivered.json")
+    b.add_argument("--pack-path", type=Path, default=rc.DOCS / "midland_pack_recomputed.json")  # D154 (a)
     b.add_argument("--data-through", type=dt.date.fromisoformat, default=None, help="pin the last full month (default: the live one)")
+    b.add_argument("--allow-other-haircut", action="store_true", help="sensitivity only: a pack whose WCA_1 haircut is not D154's")
     s = sub.add_parser("store")
     s.add_argument("--out", type=Path, default=Path("runs") / "step23" / "midland_base")
     a = ap.parse_args(argv)
