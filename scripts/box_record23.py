@@ -470,6 +470,7 @@ def _copy(cur: Any, table: str, cols: list[str], df: pd.DataFrame) -> None:
 PROX_COLS = ["location_id", "coverage", "config_class", "n_same", "n_topfill", "n_underfill", "n_parents_total", "flanked_same", "flanked_topfill",
              "flanked_underfill", "outcome", "factor", "haircut_key", "pair_key", "prec_multi", "prec_package", "label", "n_permit_parents",
              "n_recent_producers", "table_ref"]
+PROX_INT_COLS = ("n_same", "n_topfill", "n_underfill", "n_parents_total", "prec_multi", "prec_package", "n_permit_parents", "n_recent_producers")
 
 
 PARENT_COLS = ["location_id", "api10", "cls", "parent_bench", "dv_ft", "dh_ft", "dxy_ft", "overlap", "age_days", "permit"]
@@ -601,6 +602,9 @@ def cmd_store(a: argparse.Namespace) -> int:
             px["label"] = None
             px["table_ref"] = table_ref
             px["factor"] = px["factor"].astype(float)
+            for c in PROX_INT_COLS:  # read back from CSV as float where any value is NULL ("78.0" refused by an integer column)
+                if c in px:
+                    px[c] = pd.to_numeric(px[c]).round().astype("Int64")
             for c in PROX_COLS:
                 if c not in px:
                     px[c] = None
