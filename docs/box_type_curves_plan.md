@@ -686,7 +686,12 @@ verdicts move membership, the extent regenerates from the ratified set before an
   freeze:** D99 consistency alone (the D125 rule) vs adding an accuracy route for graduation only (provisional → validated on
   consistency OR |bias| ≤ 10 % with spread ≤ the local-offsets benchmark, ≥ 30 packages) — the 21c WCB_2 case (holdout ~unbiased,
   FAILed for being unlike its over-forecast tuning half) is the motivating example. **Gate 21d** = rule chosen + definition
-  digest + SHA frozen.
+  digest + SHA frozen. **BUILT 2026-11-03, AT GATE 21d** (`docs/box/step21d-2026-11-03/`: PREREGISTRATION, FINDINGS §6 Q1–Q6;
+  `box/prospective21.py` draft digest 2dae765e; nothing scored or stored, no 2026 Midland volume read): 1,427 cohort wells so far,
+  WCC never judgeable (~1 package), WCD 39 / DEAN 60 / WCB_2 47 expected; recs = graduation (b) consistency OR accuracy, the
+  interval carries the tuning mean's error (D125's subset interval fails 10–27 % of cells per honest split, not 5 %), water
+  reported only; the WCA_1 D102 open item cannot move a verdict (uniform haircut invariance); flag for gate 23: D150's level
+  moves WCD shipped tuning oil to −11 %.
 
 ### Step 22 — Midland water — FOLDED INTO STEP 21 (D134 D, 2026-10-26)
 D107 water (D133) is pre-registered in 21a and scored the D109 way in 21b / 21c from the same folds; no separate gate.

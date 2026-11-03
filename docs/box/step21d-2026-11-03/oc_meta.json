@@ -1,0 +1,31 @@
+{
+ "built_utc": "2026-11-03 03:22",
+ "seed": 20261103,
+ "draws": 2000,
+ "split": [
+  400,
+  400
+ ],
+ "scales": [
+  1.0,
+  1.15,
+  0.85
+ ],
+ "definition_digest": "2dae765eded84419349ba6d4007a1b8c8cd7c42c501f9144b70ac21f001b5ec8",
+ "links_sha256": "eedea14a5d8a7699289d4b754b2479bd5c611a79e0e716771b0dbc676c9517a4",
+ "identity_24a_frame": {
+  "children_scored": 8834,
+  "want_scored": 8834,
+  "exposed": 5791,
+  "want_exposed": 5791
+ },
+ "identity_haircut_invariance": {
+  "max_abs_diff_mapped_interval_end": 2.0122792321330962e-16,
+  "haircut": {
+   "12": 0.979164,
+   "24": 0.974905,
+   "36": 0.954451,
+   "48": 0.949671
+  }
+ }
+}
