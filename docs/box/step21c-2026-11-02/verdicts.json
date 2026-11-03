@@ -1,0 +1,430 @@
+{
+ "meta": {
+  "built_utc": "2026-11-03T01:32:59+00:00",
+  "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+  "frozen_check": {
+   "frozen_sha": "5ceadc260b0e1ad78df2bfab39aaa79c812f8219",
+   "identical": true,
+   "changed": [],
+   "added": [
+    "box/step21c.py",
+    "scripts/box_step21b_render_r8.py",
+    "scripts/box_step21b_rev8_compare.py",
+    "scripts/box_step21c.py",
+    "scripts/box_step21c_harness.py",
+    "scripts/box_step21c_render.py",
+    "scripts/box_step21c_water.py"
+   ],
+   "untracked": []
+  },
+  "frozen_intervals": {
+   "got": {
+    "frozen_d99.csv": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+    "frozen_water.csv": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9"
+   },
+   "want": {
+    "frozen_d99.csv": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+    "frozen_water.csv": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9"
+   },
+   "identical": true
+  },
+  "reproduce": {
+   "built_utc": "2026-11-02T15:28:12+00:00",
+   "all_identical": true,
+   "frozen_d99_sha256": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+   "frozen_water_sha256": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9"
+  },
+  "definition_digest": "9780f326ef8a3aa037388270fd848e76f04ba6b0da47468d8fe4145b1dbefd77",
+  "skipped": {
+   "MID_WCC": "no D99 cell (PREREGISTRATION \u00a76: provisional by construction, no holdout scored; GATE_21B.json)"
+  }
+ },
+ "groups": {
+  "MID_WCA_1": {
+   "record": {
+    "oil": "mid_r2p_wf",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "PASS",
+     "oil": "PASS"
+    },
+    "overall": "PASS",
+    "n_cells": 6,
+    "n_outside": 0,
+    "outside": []
+   },
+   "tier": "validated",
+   "gate21b_basis": "rule; D106 refused gas (g48 1.41)",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T21:12:06+00:00",
+    "finished_utc": "2026-11-02T23:28:03+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "applies",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 3,
+    "consistent": 3,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_WCB_1": {
+   "record": {
+    "oil": "mid_r2p_wf",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "FAIL",
+     "oil": "PASS"
+    },
+    "overall": "FAIL",
+    "n_cells": 6,
+    "n_outside": 1,
+    "outside": [
+     "gas cum-12"
+    ]
+   },
+   "tier": "provisional",
+   "gate21b_basis": "rule; D106 refused gas (g48 1.21)",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T21:12:06+00:00",
+    "finished_utc": "2026-11-02T23:24:38+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (provisional: raw mid_r2p, D105)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 3,
+    "consistent": 3,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_LSSH": {
+   "record": {
+    "oil": "mid_r2p",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "alternative",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "PASS",
+     "oil": "PASS"
+    },
+    "overall": "PASS",
+    "n_cells": 6,
+    "n_outside": 0,
+    "outside": []
+   },
+   "tier": "validated",
+   "gate21b_basis": "rule gave mid_r2p_wf; moved to mid_r2p at gate 21b (downgrade, before any holdout read): wf worse than no haircut at every oil horizon",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T21:12:06+00:00",
+    "finished_utc": "2026-11-02T23:13:50+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (record mid_r2p)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 3,
+    "consistent": 3,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_WCB_2": {
+   "record": {
+    "oil": "mid_r2p",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "PASS",
+     "oil": "FAIL"
+    },
+    "overall": "FAIL",
+    "n_cells": 6,
+    "n_outside": 3,
+    "outside": [
+     "oil cum-12",
+     "oil cum-24",
+     "oil cum-36"
+    ]
+   },
+   "tier": "provisional",
+   "gate21b_basis": "rule (wf holdout 41 / 29.7 < 30)",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T23:13:52+00:00",
+    "finished_utc": "2026-11-03T00:50:11+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (record mid_r2p)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 0,
+    "consistent": 0,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_JM": {
+   "record": {
+    "oil": "mid_r2p",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "FAIL",
+     "oil": "PASS"
+    },
+    "overall": "FAIL",
+    "n_cells": 6,
+    "n_outside": 1,
+    "outside": [
+     "gas cum-12"
+    ]
+   },
+   "tier": "provisional",
+   "gate21b_basis": "rule gave mid_r2p_wf; D106 refused both streams (g48 1.98 / 1.52); disclose per-cutoff bias",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T23:24:41+00:00",
+    "finished_utc": "2026-11-03T00:29:54+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (record mid_r2p)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 3,
+    "consistent": 3,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_MS": {
+   "record": {
+    "oil": "mid_r2p_wf",
+    "gas": "mid_r2p_wf"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "oil cum-36",
+    "gas cum-12",
+    "gas cum-24",
+    "gas cum-36"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "FAIL",
+     "oil": "PASS"
+    },
+    "overall": "FAIL",
+    "n_cells": 6,
+    "n_outside": 1,
+    "outside": [
+     "gas cum-12"
+    ]
+   },
+   "tier": "provisional",
+   "gate21b_basis": "rule",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-02T23:28:05+00:00",
+    "finished_utc": "2026-11-03T00:49:17+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (provisional: raw mid_r2p, D105)",
+    "gas": "none (provisional: raw mid_r2p, D105)"
+   },
+   "water": {
+    "holdout_judged": 3,
+    "consistent": 3,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_WCD": {
+   "record": {
+    "oil": "mid_r2p",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "gas cum-12",
+    "gas cum-24"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "PASS",
+     "oil": "PASS"
+    },
+    "overall": "PASS",
+    "n_cells": 4,
+    "n_outside": 0,
+    "outside": []
+   },
+   "tier": "validated",
+   "gate21b_basis": "rule (wf holdout 20 / 10)",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-03T00:29:57+00:00",
+    "finished_utc": "2026-11-03T01:00:53+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (record mid_r2p)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 0,
+    "consistent": 0,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  },
+  "MID_DEAN": {
+   "record": {
+    "oil": "mid_r2p",
+    "gas": "mid_r2p"
+   },
+   "frozen_rows": "record",
+   "cells": [
+    "oil cum-12",
+    "oil cum-24",
+    "gas cum-12",
+    "gas cum-24"
+   ],
+   "verdict": {
+    "by_stream": {
+     "gas": "FAIL",
+     "oil": "FAIL"
+    },
+    "overall": "FAIL",
+    "n_cells": 4,
+    "n_outside": 3,
+    "outside": [
+     "oil cum-12",
+     "oil cum-24",
+     "gas cum-12"
+    ]
+   },
+   "tier": "provisional",
+   "gate21b_basis": "rule (wf holdout 24 / 9); flagged: gas cum-24 +26.0 % tuning, disclose per cutoff",
+   "run": {
+    "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+    "started_utc": "2026-11-03T00:49:19+00:00",
+    "finished_utc": "2026-11-03T01:19:10+00:00",
+    "returncode": 0
+   },
+   "frozen_identical_start_end": [
+    true,
+    true
+   ],
+   "haircut_d102": {
+    "oil": "none (record mid_r2p)",
+    "gas": "none (record mid_r2p)"
+   },
+   "water": {
+    "holdout_judged": 2,
+    "consistent": 2,
+    "tier": "provisional (tuning cells fail, GATE_21B water; D109)",
+    "water_frame": true
+   }
+  }
+ }
+}

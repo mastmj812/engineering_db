@@ -1,0 +1,9 @@
+group,cells,outside,pass_rate_good_forecast_21b,fail
+MID_WCA_1,6,0,0.834,False
+MID_WCB_1,6,1,0.825,True
+MID_LSSH,6,0,0.808,False
+MID_WCB_2,6,3,0.8715,True
+MID_JM,6,1,0.8185,True
+MID_MS,6,1,0.8195,True
+MID_WCD,4,0,0.884,False
+MID_DEAN,4,3,0.859,True

@@ -1,0 +1,83 @@
+{
+  "built_utc": "2026-11-02T15:28:12+00:00",
+  "head": "e2b0b4778f0bd81c0f5554c5c12aec4a6fa59953",
+  "frozen_check": {
+    "frozen_sha": "5ceadc260b0e1ad78df2bfab39aaa79c812f8219",
+    "identical": true,
+    "changed": [],
+    "added": [
+      "box/step21c.py",
+      "scripts/box_step21b_render_r8.py",
+      "scripts/box_step21b_rev8_compare.py",
+      "scripts/box_step21c.py",
+      "scripts/box_step21c_harness.py",
+      "scripts/box_step21c_water.py"
+    ],
+    "untracked": []
+  },
+  "frozen_d99_sha256": "cf13af179754c0cc2d1dac9fa6755c50aa275df74c2b43564c410665aa1e7d03",
+  "frozen_water_sha256": "64e592b5326852d01de811352d5d57282d506397b51d80070e62d17f856c8ff9",
+  "files": [
+    {
+      "file": "frozen_d99.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "frozen_water.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "prox_factor_table.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "cells.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "walk_forward.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "guard_d106.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "expected_holdout.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "pooled.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "intervals_all.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "water_cells.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "water_intervals.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    },
+    {
+      "file": "summary_table.csv",
+      "byte_identical": true,
+      "max_abs_numeric_diff": null
+    }
+  ],
+  "all_identical": true
+}
