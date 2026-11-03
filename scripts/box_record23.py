@@ -427,6 +427,13 @@ def cmd_store(a: argparse.Namespace) -> int:
                                           "WHERE pf.run_id = %s AND ri.status LIKE 'realized%%'", (S,)).fetchall()}
             q("CREATE TEMP TABLE tmp_real (location_id bigint PRIMARY KEY) ON COMMIT DROP")
             _copy(cur, "tmp_real", ["location_id"], pd.DataFrame({"location_id": sorted(real)}))
+            # gate 23a (f): D145 extended to this basin — a stick reconciled as CONFLICT now is not drillable (not_covered_conflict)
+            conf: set[int] = set()
+            if a.d145:
+                conf = {int(r[0]) for r in q("SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.reconciled_inventory ri ON ri.stick_id = pf.stick_id "
+                                             "WHERE pf.run_id = %s AND ri.status = 'conflict'", (S,)).fetchall()}
+            q("CREATE TEMP TABLE tmp_conf (location_id bigint PRIMARY KEY) ON COMMIT DROP")
+            _copy(cur, "tmp_conf", ["location_id"], pd.DataFrame({"location_id": sorted(conf)}))
             q("CREATE TEMP TABLE tmp_px (location_id bigint PRIMARY KEY, old double precision NOT NULL, new double precision NOT NULL, "
               "keep boolean NOT NULL, drop_realized boolean NOT NULL) ON COMMIT DROP")
             src_oil = dict(q("SELECT location_id, prox_factor FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'oil'", (S,)).fetchall())
@@ -444,11 +451,12 @@ def cmd_store(a: argparse.Namespace) -> int:
             if _failures:
                 raise RuntimeError("universe")
             o["new"] = o["factor"].astype(float)
-            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"]
+            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"] & ~o["location_id"].isin(conf)
             _copy(cur, "tmp_px", ["location_id", "old", "new", "keep", "drop_realized"], o)
             disc = {"decisions": "D150 (step 24 rev 5), D153 (Delaware derivation)" if a.basin == bsn.DELAWARE else "D150, D151, D152",
                     "table_ref": table_ref, "source_run": S, "code_sha": code_sha, "outcomes_sha256": hashlib.sha256(Path(a.outcomes).read_bytes()).hexdigest(),
-                    "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum())}
+                    "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum()),
+                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)}}
             if a.basin == bsn.MIDLAND:
                 disc["method_23"] = json.loads(Path(a.method_block).read_text(encoding="utf-8")) if a.method_block else rc.method_block()
                 bad = rc.check_method(disc["method_23"])
@@ -463,8 +471,21 @@ def cmd_store(a: argparse.Namespace) -> int:
                      (f"; step 23 (D150{', D153' if a.basin == bsn.DELAWARE else ''}): derived from run {S}, oil x level x F_{rule} on every forecast stick "
                      f"(source prox_factor divided out), incumbent precedent gates, gas / water / analogs identical, no refit"), S)).fetchone()[0]
             pc_ = _cols(q, "pud_forecast")
-            sel = ", ".join("%(new)s" if c == "run_id" else
-                            "CASE WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END" if c == "coverage" else f"p.{c}" for c in pc_)
+            cf = "EXISTS (SELECT 1 FROM tmp_conf k WHERE k.location_id = p.location_id)"
+            search = {"search_mode", "radius_mi", "radius_class", "n_analogs"}  # sql/65 uncovered_ck: a not-searched class carries none
+
+            def col(c: str) -> str:
+                if c == "run_id":
+                    return "%(new)s"
+                if c == "coverage":
+                    return f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END"
+                if c == "recon_status":
+                    return f"CASE WHEN {cf} THEN 'conflict' ELSE p.recon_status END"
+                if c in search:
+                    return f"CASE WHEN {cf} THEN NULL ELSE p.{c} END"
+                return f"p.{c}"
+
+            sel = ", ".join(col(c) for c in pc_)
             # a stick reconciled as drilled since the source run leaves the universe (erebor then classes it `realized` itself)
             q(f"INSERT INTO box.pud_forecast ({', '.join(pc_)}) SELECT {sel} FROM box.pud_forecast p LEFT JOIN tmp_px t USING (location_id) "
               "WHERE p.run_id = %(src)s AND NOT EXISTS (SELECT 1 FROM tmp_real r WHERE r.location_id = p.location_id)", {"new": new, "src": S})
@@ -485,7 +506,7 @@ def cmd_store(a: argparse.Namespace) -> int:
                 sel = ", ".join("%(new)s" if c == "run_id" else f"a.{c}" for c in ac_)
                 q(f"INSERT INTO box.{t} ({', '.join(ac_)}) SELECT {sel} FROM box.{t} a JOIN tmp_px x USING (location_id) "
                   "WHERE a.run_id = %(src)s AND x.keep", {"new": new, "src": S})
-            px = oc[~oc["location_id"].isin(real)].copy()
+            px = oc[~oc["location_id"].isin(real | conf)].copy()
             px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
             px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
             px["label"] = None
@@ -616,6 +637,7 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--src-run", type=int, required=True)
     s.add_argument("--outcomes", type=Path, required=True)
     s.add_argument("--links", type=Path, required=True, help="the measure's pud_links.pkl (named D150 parents)")
+    s.add_argument("--d145", action="store_true", help="gate 23a (f): extend D145 to this basin (conflict sticks -> not_covered_conflict)")
     s.add_argument("--readmitted", choices=("refuse", "carry-refusal"), default="refuse",
                    help="a stick the source refused that the re-measure would forecast (no source rows): refuse the store, or keep its refusal")
     s.add_argument("--method-block", type=Path, default=None, help="Midland: the stored method block (default box/record23.method_block())")
