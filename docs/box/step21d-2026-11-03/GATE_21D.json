@@ -1,0 +1,47 @@
+{
+  "gate": "21d",
+  "closed": "2026-11-03",
+  "decision": "D152",
+  "by": "Michael (\"Rule (b), accept recs\")",
+  "frozen_sha": "56d2b0111942dda056b35a2afd99f817c8fb2089",
+  "definition_digest": "187811fd8f86b4cdb9b0e32909711013bb6f9dc99344d30df94a876419727ad7",
+  "draft_digest": "2dae765eded84419349ba6d4007a1b8c8cd7c42c501f9144b70ac21f001b5ec8",
+  "answers": {
+    "Q1_graduation": "consistency OR accuracy (provisional -> proposed for validated); accuracy = |bias| <= 10 % AND scale-free spread <= benchmark + 0.05 on every judged cell; a group graduating on accuracy alone ships raw with the cohort line until its own gate",
+    "keep_validated": "consistency only (D99)",
+    "Q2_interval": "P2.5-P97.5 of [bias(draw) - bias(complement)] + bias(all), 2,000 draws of 3-mi blocks at the cohort share, seed 20261103 (D125's subset interval reported beside it)",
+    "Q3_water": "reported only, never a tier",
+    "Q4_configuration": "drilled side (D150 / 21b / 21c); stick side reported",
+    "Q5_no_forecast": "every cohort well scored, precedent ignored; no-forecast subset counted and reported (departs from 13d's exclusion)",
+    "Q6_durability": "Engineering - General/box-step21d-tuning-views-2026-11-03 (54 views + links.pkl + manifest, 55/55 sha256 verified)"
+  },
+  "method": {
+    "base": "step 21 rev 8, 5ceadc2, digest 9780f326",
+    "proximity": "D150 Midland R3, level 1.0674, 77d50a7, digest 2e8bb5a7",
+    "haircut": "WCA_1 oil D102 as delivered by the Midland record run (verdict-invariant to it)"
+  },
+  "groups_expected_judged": {
+    "MID_WCA_1": 180,
+    "MID_WCB_1": 131,
+    "MID_WCB_2": 47,
+    "MID_WCC": 1,
+    "MID_WCD": 39,
+    "MID_MS": 74,
+    "MID_JM": 124,
+    "MID_LSSH": 121,
+    "MID_DEAN": 60
+  },
+  "not_judged_by_construction": [
+    "MID_WCC"
+  ],
+  "schedule": {
+    "cum12": "first build with production through >= 2028-01-01",
+    "cum24": "first build with production through >= 2029-01-01"
+  },
+  "open_for_gate_23": [
+    "WCA_1 D102 recompute on D150 (does not affect 21d)",
+    "D150 level moves WCD shipped tuning oil bias -7.5 -> -11.2 % (WCB_2 -9.2 / -12.0, MS -7.2 / -10.0)"
+  ],
+  "nothing_stored": true,
+  "next": "step 23 (Midland record run) on Michael's go; the 21d scorer is built and committed before its first judged run (~2028-Q1)"
+}

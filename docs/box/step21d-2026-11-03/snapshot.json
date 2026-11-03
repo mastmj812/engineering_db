@@ -1,0 +1,12 @@
+{
+ "built_utc": "2026-11-03 03:13",
+ "definition_digest": "2dae765eded84419349ba6d4007a1b8c8cd7c42c501f9144b70ac21f001b5ec8",
+ "wells_2026": 1427,
+ "wells_2025": 2528,
+ "universe": 31041,
+ "children_with_links": 3953,
+ "links": 62057,
+ "seconds": 102,
+ "newest_first_production_2026": "2026-09-01",
+ "read": "curated.wells identity / geometry / first-production / TVD columns, curated.formation_blueox, curated.wells_enriched bench, box.extent; no production table, no volume column"
+}
