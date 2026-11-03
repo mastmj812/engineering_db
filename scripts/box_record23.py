@@ -628,6 +628,11 @@ def cmd_store(a: argparse.Namespace) -> int:
                   "WHERE a.run_id = %(src)s AND x.keep", {"new": new, "src": S})
             q("""UPDATE box.forecast_run SET counts = (SELECT jsonb_object_agg(coverage, n) FROM (SELECT coverage, count(*) n FROM box.pud_forecast
                  WHERE run_id = %(new)s GROUP BY 1) c) WHERE run_id = %(new)s""", {"new": new})
+            # the new run's rows are uncommitted, so the planner has no statistics for them and the anti-join identities
+            # go quadratic (an hour in the 23b rehearsal); ANALYZE inside the transaction counts our own inserts
+            for t in ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog", "location_water_analog",
+                      "pud_proximity", "pud_proximity_parent"):
+                q(f"ANALYZE box.{t}")
             identity(q, S, new)
             got = q("SELECT count(*) FROM box.pud_proximity_parent WHERE run_id = %s", (new,)).fetchone()[0]
             _check(got == n_par, f"{n_par:,} named D150 parents of kept locations ({got:,})")
