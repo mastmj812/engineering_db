@@ -598,6 +598,10 @@ def cmd_store(a: argparse.Namespace) -> int:
                             "WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END")
                 if c == "recon_status":
                     return f"CASE WHEN {cf} THEN 'conflict' ELSE p.recon_status END"
+                if c == "flags":  # the oil search's own flags stay; the reason it ships nothing is added (erebor shows flags as notes)
+                    return (f"CASE WHEN {nw_} THEN array_append(p.flags, 'not covered (gate 23b): the water WOR fit found ' || "
+                            "(SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) || "
+                            "' eligible water analogs at the 20-mi cap; no oil / gas / water forecast ships') ELSE p.flags END")
                 if c == "n_analogs":  # a no-water stick reports the count that failed: its water analogs (sql/60 no_analogs_ck: < 3)
                     return (f"CASE WHEN {cf} THEN NULL WHEN {nw_} THEN (SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) "
                             "ELSE p.n_analogs END")
