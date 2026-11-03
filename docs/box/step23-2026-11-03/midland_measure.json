@@ -1,0 +1,172 @@
+{
+ "source": "runs/step21b/prox.pkl (21b, built 2026-11-01) + runs/step21a/pud_links.pkl",
+ "n_sticks": 32541,
+ "outcomes": {
+  "factor_multi_parent": 19151,
+  "level_unexposed": 7368,
+  "factor_single_parent": 2290,
+  "no_forecast_pattern": 2221,
+  "no_forecast_spacing": 913,
+  "no_forecast_precedent": 596,
+  "no_forecast_package": 2
+ },
+ "unfit": 0,
+ "forecast": 28809,
+ "by_bench_outcome": [
+  {
+   "bench": "DEAN",
+   "factor_multi_parent": 451,
+   "factor_single_parent": 135,
+   "level_unexposed": 328,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 222,
+   "no_forecast_precedent": 110,
+   "no_forecast_spacing": 81
+  },
+  {
+   "bench": "JM",
+   "factor_multi_parent": 2657,
+   "factor_single_parent": 182,
+   "level_unexposed": 595,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 445,
+   "no_forecast_precedent": 10,
+   "no_forecast_spacing": 199
+  },
+  {
+   "bench": "LSSH",
+   "factor_multi_parent": 4797,
+   "factor_single_parent": 428,
+   "level_unexposed": 1570,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 332,
+   "no_forecast_precedent": 13,
+   "no_forecast_spacing": 98
+  },
+  {
+   "bench": "MS",
+   "factor_multi_parent": 2677,
+   "factor_single_parent": 291,
+   "level_unexposed": 923,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 195,
+   "no_forecast_precedent": 0,
+   "no_forecast_spacing": 74
+  },
+  {
+   "bench": "WCA_1",
+   "factor_multi_parent": 3117,
+   "factor_single_parent": 339,
+   "level_unexposed": 1133,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 337,
+   "no_forecast_precedent": 0,
+   "no_forecast_spacing": 195
+  },
+  {
+   "bench": "WCB_1",
+   "factor_multi_parent": 3229,
+   "factor_single_parent": 349,
+   "level_unexposed": 1141,
+   "no_forecast_package": 2,
+   "no_forecast_pattern": 551,
+   "no_forecast_precedent": 0,
+   "no_forecast_spacing": 205
+  },
+  {
+   "bench": "WCB_2",
+   "factor_multi_parent": 445,
+   "factor_single_parent": 55,
+   "level_unexposed": 180,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 139,
+   "no_forecast_precedent": 1,
+   "no_forecast_spacing": 29
+  },
+  {
+   "bench": "WCC",
+   "factor_multi_parent": 326,
+   "factor_single_parent": 19,
+   "level_unexposed": 29,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 0,
+   "no_forecast_precedent": 302,
+   "no_forecast_spacing": 16
+  },
+  {
+   "bench": "WCD",
+   "factor_multi_parent": 1452,
+   "factor_single_parent": 492,
+   "level_unexposed": 1469,
+   "no_forecast_package": 0,
+   "no_forecast_pattern": 0,
+   "no_forecast_precedent": 160,
+   "no_forecast_spacing": 16
+  }
+ ],
+ "factor_by_bench": [
+  {
+   "bench": "DEAN",
+   "size": 914,
+   "mean": 0.9800007296944019,
+   "min": 0.5654822019721566,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "JM",
+   "size": 3434,
+   "mean": 0.9154291235548945,
+   "min": 0.5698242932007432,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "LSSH",
+   "size": 6795,
+   "mean": 0.9365701523942858,
+   "min": 0.5027401616519183,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "MS",
+   "size": 3891,
+   "mean": 0.9559708303284637,
+   "min": 0.6320873589131121,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "WCA_1",
+   "size": 4589,
+   "mean": 0.9438430476557256,
+   "min": 0.5234593413247207,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "WCB_1",
+   "size": 4719,
+   "mean": 0.9493553414508958,
+   "min": 0.620201804032272,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "WCB_2",
+   "size": 680,
+   "mean": 0.992323069887461,
+   "min": 0.7297235475483611,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "WCC",
+   "size": 374,
+   "mean": 0.9336300098538168,
+   "min": 0.6815782983386537,
+   "max": 1.0673947845823253
+  },
+  {
+   "bench": "WCD",
+   "size": 3413,
+   "mean": 1.0096915026341762,
+   "min": 0.7137505463146262,
+   "max": 1.0673947845823253
+  }
+ ]
+}

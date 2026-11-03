@@ -65,7 +65,16 @@ PRODUCTION_BENCHES: dict[str, tuple[str, str, frozenset[str]]] = {
     # passed one-time holdout: WCB_1, WCC. PROVISIONAL (D105, sql/63 `covered_provisional`): AVA_0/1/2, BS2_C (never out-of-time
     # tested) and BS3_S, BS3_C, WCB_2, BS1_S (holdout FAIL 2026-10-18) - BENCH_SPECS["provisional"] is the authority.
     **{b: ("delaware", b, frozenset({b})) for b in ("WCB_1", "WCC", "AVA_0", "AVA_1", "AVA_2", "BS2_C", "BS3_S", "BS3_C", "WCB_2", "BS1_S")},
+    # Step 23 (D130 / D135): the nine Midland groups, one bench_scope bench + formation + record extent each (D128, no pooling).
+    # Their production build is scripts/box_record23_midland (the step-21 rules, box/record23); tiers are D151's (below).
+    **{f"MID_{b}": ("midland", b, frozenset({b})) for b in ("WCA_1", "WCB_1", "WCB_2", "WCC", "WCD", "MS", "JM", "LSSH", "DEAN")},
 }
+# D151 (gate 21c): the Midland PROVISIONAL groups (raw mid_r2p, covered_provisional). box/acceptance.BENCH_SPECS is the step-21
+# harness's frozen table and carries no Midland tier, so the production tier lives here; tests pin it to GATE_21C.json.
+MIDLAND_PROVISIONAL = frozenset({"MID_WCB_1", "MID_WCB_2", "MID_JM", "MID_MS", "MID_DEAN", "MID_WCC"})
+# D145: a reconciliation CONFLICT stick is not a drillable location in these basins (the Delaware keeps D1 until it is revised)
+CONFLICT_NOT_DRILLABLE = frozenset({bsn.MIDLAND})
+NOT_COVERED_CONFLICT = "not_covered_conflict"  # sql/71
 COVERED = ("covered", "covered_provisional")  # the two forecast-carrying classes; `covered` alone = VALIDATED in every reader
 RUN7_COVERED: tuple[str, ...] = ("WCA",)
 INSIDE_SHARE = 0.5  # step 3's in-extent rule
@@ -160,6 +169,8 @@ def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
     fails."""
     if not bool(r.in_scope):
         return "not_covered_emerging"
+    if r.basin in CONFLICT_NOT_DRILLABLE and r.recon_status == "conflict":
+        return NOT_COVERED_CONFLICT
     grp = production_bench(r, covered)
     if r.formation_blueox == "WCXY" and grp is None:
         return "not_covered_wcxy"
@@ -171,8 +182,9 @@ def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
 
 
 def covered_class(group: str) -> str:
-    """'covered_provisional' for a D105 provisional group (BENCH_SPECS["provisional"]), else 'covered'."""
-    return "covered_provisional" if ac.BENCH_SPECS[group].get("provisional") else "covered"
+    """'covered_provisional' for a D105 provisional group (BENCH_SPECS["provisional"]; Midland: D151's MIDLAND_PROVISIONAL), else
+    'covered'."""
+    return "covered_provisional" if ac.BENCH_SPECS[group].get("provisional") or group in MIDLAND_PROVISIONAL else "covered"
 
 
 def pdp_sticks(conn: Any, forms: Sequence[str], basin: str = bsn.DELAWARE) -> pd.DataFrame:
