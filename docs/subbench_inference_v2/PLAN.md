@@ -91,7 +91,8 @@ A failed criterion is reported as a fail. No re-tuning after the score without a
    stick and shown; they change nothing downstream (no BOX tier change, no exclusion, no review queue).
 2. ~~**Frontier sticks**~~ — **DECIDED 2026-11-03: vote + flag** (the frozen draft, §2.2 step 1). The geologist's
    structure grids are not used for frontier sticks.
-3. **Lea/Eddy producer tags** — investigate in parallel through the override path (not this rule).
+3. ~~**Lea/Eddy producer tags**~~ — **DECIDED 2026-11-03: investigate in parallel**, its own session + PR through
+   the override path (not this rule; proposal only until Michael's go).
 
 ## 6. Record
 
