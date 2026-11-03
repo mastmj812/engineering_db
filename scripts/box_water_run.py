@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import math
 import pickle
 import subprocess
 import sys
@@ -266,7 +267,9 @@ def w_json(x: Any) -> Any:
     if isinstance(x, (list, tuple)):
         return [w_json(v) for v in x]
     if isinstance(x, (np.floating, np.integer)):
-        return x.item()
+        x = x.item()
+    if isinstance(x, float) and math.isnan(x):  # NaN is not JSON (a thin-cohort nm_share in the no-water disclosure, 23b)
+        return None
     return x
 
 
