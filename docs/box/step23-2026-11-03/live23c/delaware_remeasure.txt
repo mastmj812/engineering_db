@@ -1,0 +1,165 @@
+run 25 (delaware, data through 2026-07-01): 57,638 sticks (forecast + no-precedent), producers 33,901 (20 s)
+  PUD pairs: 5,000/57,638, 22,554 links, 56 s
+  PUD pairs: 10,000/57,638, 45,778 links, 114 s
+  PUD pairs: 15,000/57,638, 75,252 links, 188 s
+  PUD pairs: 20,000/57,638, 109,975 links, 234 s
+  PUD pairs: 25,000/57,638, 144,269 links, 278 s
+  PUD pairs: 30,000/57,638, 179,596 links, 327 s
+  PUD pairs: 35,000/57,638, 214,776 links, 377 s
+  PUD pairs: 40,000/57,638, 250,227 links, 426 s
+  PUD pairs: 45,000/57,638, 285,963 links, 478 s
+  PUD pairs: 50,000/57,638, 321,235 links, 528 s
+  PUD pairs: 55,000/57,638, 341,986 links, 558 s
+{
+ "source_run": 25,
+ "data_through": "2026-07-01",
+ "n_sticks": 57638,
+ "src_forecast": 48945,
+ "outcomes": {
+  "factor_multi_parent": 24380,
+  "level_unexposed": 18020,
+  "factor_single_parent": 6553,
+  "no_forecast_package": 4566,
+  "no_forecast_precedent": 4119
+ },
+ "incumbent_outcomes_now": {
+  "as_is_unexposed": 29794,
+  "haircut": 11049,
+  "as_is_single_parent": 8110,
+  "no_forecast_package": 4566,
+  "no_forecast_precedent": 4119
+ },
+ "incumbent_moved_vs_source": 187,
+ "dropped_no_precedent_now": 23,
+ "readmitted_needs_source_rows": 31,
+ "realized_since_source": 136,
+ "conflict_now_forecast": 639,
+ "factor": {
+  "mean": 0.9810355677460355,
+  "min": 0.4103804974367185,
+  "max": 1.0459798483731129,
+  "share_gt_1": 0.6059196097321008
+ },
+ "expected_forecast": 48787,
+ "oil_src_mmbbl": 25482.58160789687,
+ "oil_new_mmbbl": 25790.50758497706,
+ "by_bench": [
+  {
+   "formation_blueox": "AVA_0",
+   "n": 373,
+   "oil_src_mmbbl": 223.93345015736404,
+   "oil_new_mmbbl": 226.3528166779732,
+   "gas_bcf": 2097.200664645995,
+   "water_mmbbl": 543.8454957499525
+  },
+  {
+   "formation_blueox": "AVA_1",
+   "n": 971,
+   "oil_src_mmbbl": 577.2519037172286,
+   "oil_new_mmbbl": 590.967081262323,
+   "gas_bcf": 6303.847460836146,
+   "water_mmbbl": 1076.7805811301787
+  },
+  {
+   "formation_blueox": "AVA_2",
+   "n": 1780,
+   "oil_src_mmbbl": 966.78470363682,
+   "oil_new_mmbbl": 983.8540608073287,
+   "gas_bcf": 9621.392054488912,
+   "water_mmbbl": 2294.0804522271224
+  },
+  {
+   "formation_blueox": "BS1_S",
+   "n": 4825,
+   "oil_src_mmbbl": 2958.4508575735695,
+   "oil_new_mmbbl": 3056.7582791579744,
+   "gas_bcf": 14814.187274617472,
+   "water_mmbbl": 11620.971054795209
+  },
+  {
+   "formation_blueox": "BS2_C",
+   "n": 2137,
+   "oil_src_mmbbl": 1279.5884823852532,
+   "oil_new_mmbbl": 1318.2980047750495,
+   "gas_bcf": 3960.071792374487,
+   "water_mmbbl": 3833.775836672129
+  },
+  {
+   "formation_blueox": "BS2_S",
+   "n": 7034,
+   "oil_src_mmbbl": 3228.0603733247935,
+   "oil_new_mmbbl": 3297.1254554468765,
+   "gas_bcf": 18596.8982842183,
+   "water_mmbbl": 14600.09711107735
+  },
+  {
+   "formation_blueox": "BS3_C",
+   "n": 7168,
+   "oil_src_mmbbl": 3370.285978492325,
+   "oil_new_mmbbl": 3383.29833589756,
+   "gas_bcf": 14855.127339925903,
+   "water_mmbbl": 13333.668335518516
+  },
+  {
+   "formation_blueox": "BS3_S",
+   "n": 5989,
+   "oil_src_mmbbl": 3472.1967899935216,
+   "oil_new_mmbbl": 3535.0035217971276,
+   "gas_bcf": 11966.515075706655,
+   "water_mmbbl": 13548.274951695554
+  },
+  {
+   "formation_blueox": "WCA_1",
+   "n": 937,
+   "oil_src_mmbbl": 468.17767513044475,
+   "oil_new_mmbbl": 468.37771796908083,
+   "gas_bcf": 2539.9117957650806,
+   "water_mmbbl": 2390.1863612898437
+  },
+  {
+   "formation_blueox": "WCA_2",
+   "n": 928,
+   "oil_src_mmbbl": 479.5236167548599,
+   "oil_new_mmbbl": 484.1170213136098,
+   "gas_bcf": 2638.0345258176458,
+   "water_mmbbl": 2438.0121493652814
+  },
+  {
+   "formation_blueox": "WCB_1",
+   "n": 3991,
+   "oil_src_mmbbl": 2063.120521147586,
+   "oil_new_mmbbl": 2003.7633336853298,
+   "gas_bcf": 12900.931934691658,
+   "water_mmbbl": 16173.072163143077
+  },
+  {
+   "formation_blueox": "WCB_2",
+   "n": 2309,
+   "oil_src_mmbbl": 1189.1897146320766,
+   "oil_new_mmbbl": 1188.0632407467865,
+   "gas_bcf": 12216.58583588878,
+   "water_mmbbl": 11624.071367922532
+  },
+  {
+   "formation_blueox": "WCC",
+   "n": 2275,
+   "oil_src_mmbbl": 953.8590530386393,
+   "oil_new_mmbbl": 990.0041507546922,
+   "gas_bcf": 17946.150383148437,
+   "water_mmbbl": 10311.086117990288
+  },
+  {
+   "formation_blueox": "WCXY",
+   "n": 8070,
+   "oil_src_mmbbl": 4252.1584879123875,
+   "oil_new_mmbbl": 4264.524564685349,
+   "gas_bcf": 21288.008201550576,
+   "water_mmbbl": 24802.239532236134
+  }
+ ],
+ "n_links": 349668,
+ "seconds": 608,
+ "precedent_source": "runs\\prox",
+ "code_sha": "74d837b40e2ea6ee7065be198561e0db29558c60"
+}
+rc=0
