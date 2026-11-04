@@ -1,0 +1,29 @@
+[1/2] sql/69: create curated.box_scout_locations + grant + comments
+[2/2] validate
+    rows (0.3s): (42833, 42833)
+    expected rows (record-run forecast locations, not realized) (0.7s): (42833,)
+    forecast locations left out as realized (0.1s): (137,)
+    blank oil EUR (must be 0) (0.2s): (0,)
+    priced rows (PV10 present) / expected priced (own record run's default deck) (0.6s): (42833, 42833)
+    priced / unpriced rows by basin (informational) (0.5s): ('delaware', 42833, 0)
+    econ columns half-filled (deck or push time without PV10, must be 0) (0.1s): (0,)
+    deck labels (0.5s): ('WTI $70 / HH $3', 42833)
+    oil EUR view vs box (MMbbl) (0.6s): (Decimal('22546.876'), Decimal('22546.876'))
+    per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft (0.4s): (0, 42833)
+    tier tally (0.2s): [('delaware', 'provisional', 25036), ('delaware', 'validated', 17797)]
+    irr blank (informational) (0.5s): (1918,)
+    tvd_ft blank / permit-round (multiple of 100) / min / max (informational) (0.3s): (0, 563, 1123.0, 14462.0)
+    OK   rows == record-run forecast locations on the map, minus realized (priced or not, v4)
+    OK   stick_id unique
+    OK   every row carries oil EUR
+    OK   econ only where Steven priced the record run itself (no older run's econ)
+    OK   econ columns blank together
+    OK   at most one econ deck label
+    OK   oil EUR ties to box.pud_forecast_stream exactly
+    note: 0 rows where SUM(EUR)/SUM(lateral_ft) is not the stored per-ft basis
+    note: bbox plan uses idx_erebor_locations_geom: True
+    timing full scan: 0.48s (42833, 42833)
+    timing township bbox: 0.07s (43, 43)
+    OK   analyst_ro can SELECT
+=== OK in 6s ===
+rc=0
