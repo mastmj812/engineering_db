@@ -1,6 +1,7 @@
-# #eng-updates post — DRAFT (step 23d; not posted)
+# #eng-updates post (step 23d) — posted 2026-11-04
 
-Drafted 2026-11-04 for Michael. **Not posted.** It goes to #eng-updates only on his explicit go. That post is how Steven gets notified; there is no email.
+Drafted 2026-11-04 for Michael. **POSTED 2026-11-04** to #eng-updates on his go ("Post it") as a top-level post tagging Steven:
+https://blue-ox-resources.slack.com/archives/C0C7RMAU3BJ/p1793822595781589 (ts 1793822595.781589). Text as below.
 
 ---
 
