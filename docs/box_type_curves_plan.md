@@ -740,8 +740,10 @@ water identical to run 25; 0 econ rows on run 27 (unpriced). The Delaware screen
 flip at 23d. **Midland base run STORED LIVE 2026-11-03 as run 28, NOT record** (Michael "Go store Midland base"; from
 `runs/step23/midland_record_base`, code 1aec6b3, data through 2026-08-01, built after the 11-03 nightly; 886 s): 32,541 forecast
 sticks / 13,520.1 MMbbl oil / 53,558.0 Bcf gas, every identity and class equal to the rehearsed [32]; no water yet; Midland
-box.location 4,157 -> 85,855, Delaware untouched. NEXT, each on its own go: the Midland base
-water (`--accept-no-water 1545426`), the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
+box.location 4,157 -> 85,855, Delaware untouched. **Midland water STORED on run 28** (Michael "Go store Midland water";
+`--accept-no-water 1545426`; 880 s): 32,540 water streams / 61,188.8 MMbbl, 533,998 water analogs, all provisional, 14
+calculated-fallback; oil / gas rows unchanged; stick 1545426 (MID_WCD) stays without water, disclosed in
+`disclosure.water.without_water`. NEXT, each on its own go: the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 

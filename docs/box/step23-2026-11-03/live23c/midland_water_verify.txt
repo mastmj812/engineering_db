@@ -1,0 +1,8 @@
+records [('delaware', 19)]
+run 28 streams [('gas', 32541, Decimal('53558.0')), ('oil', 32541, Decimal('13520.1')), ('water', 32540, Decimal('61188.8'))]
+stick 1545426 on run 28 [(1545426, 184395, 'covered', ['gas', 'oil'])]
+box_scout_locations [('delaware', 42833)]
+econ rows on record 19 [(687520, 16)]
+Delaware runs oil [(19, 42970, Decimal('22623.3')), (25, 48945, Decimal('25569.9')), (27, 48072, Decimal('25386.6'))]
+run 28 disclosure keys ['by_bench', 'error_convention', 'hindcast_bias', 'holdout', 'label', 'latest_vintage_text', 'lead', 'lines', 'method_23_base', 'radius_ranges', 'radius_ranges_basis', 'selection', 'thin_control', 'tier', 'water']
+run 28 disclosure.water.without_water [{"sel": {"thin": true, "source": "calculated_fallback", "nm_share": null, "radius_mi": 20.0, "n_eligible": 0, "n_measured_at_cap": 2}, "group": "MID_WCD", "reason": "WOR ratio fit failed on the measured cohort", "stick_id": 1545426}]

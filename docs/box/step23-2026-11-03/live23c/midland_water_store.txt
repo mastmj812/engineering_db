@@ -1,0 +1,11 @@
+target (<live server address redacted>, 5432, 'postgres')
+rows written (32540 water streams, 533998 water analogs, 1 without water) (586 s); identity
+    ok   oil / gas stream rows unchanged (count + ordered md5 of every row): [('gas', 32541, 'f72c562daa64a1fb0238ccabe6aaebf9'), ('oil', 32541, 'f40f20d1db9bad17123de0cff5d3c44f')]
+    ok   oil / gas month rows unchanged (39049200 = 39049200)
+    ok   water rows = covered + covered_provisional - named no-water sticks (32540 = 32541 - 1; 1 without water, 1 named by --accept-no-water)
+    ok   every water stream has 600 months summing to its eur within 0.1 % (32540 groups, 0 off)
+    ok   validated water = WCA + BS2_S covered rows (0 = 0); tiers {'provisional': 32540}
+    ok   every water location has >= 3 named water analogs (min 3, max 20, 32540 locations)
+    info calculated-fallback water locations: 14
+stored water on run_id 28: 32540 streams, tiers {'provisional': 32540} (880 s)
+rc=0
