@@ -1,7 +1,13 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 15                # v15 2026-10-22: generated-bench spacing from NEARBY Novi sticks of the same bench
+config_version: 17                # v17 2026-11-04: PROTOTYPE normalize: (report-only) — BOX's D150 proximity factor on the
+                                  #    generated sticks + every analog, and Cui & Cross lateral translation (D50), read per
+                                  #    unit beside the curve; nothing selected or saved on it (Michael, Eggs Tyrone)
+                                  # v16 2026-11-04: reviewer POOL STANDOFF rule (pool_standoff:; benches.yaml `pools:`) —
+                                  #    a bench's pool may draw several tags and keep only wells >= N ft below the local
+                                  #    median of named benches (Michael, Eggs Tyrone: WCB_1/WCB_2 >= 400 ft under the WCA)
+                                  # v15 2026-10-22: generated-bench spacing from NEARBY Novi sticks of the same bench
                                   #    (planned_spacing:) — PUD 1/2/3 mi -> RES -> offset PDP closer-XY -> reviewer flag;
                                   #    the 880-ft fallback is retired (Michael, RIP Harambe)
                                   # v14 2026-10-19: PDP-proximity cull (pdp_proximity:) — planned rows within 300 ft vt /
@@ -204,6 +210,27 @@ pdp_proximity:                    # v14 (Michael 2026-10-19, Chevron Farmouts: "
   near_miss_ratio: 1.25           # PROVISIONAL: within 1.25x either distance (375 ft / 1,000 ft) -> flag, never cull
   producer_radius_mi: 1.5         # producers considered (= the review page's offset-PDP layer)
   permit_tvd_culls: false         # a producer at a round-100 TVD (permit depth, rule 10) flags, never culls
+
+pool_standoff:                    # v16 (Michael 2026-11-04, Eggs Tyrone) — how a reviewer `pools:` rule in benches.yaml
+  # measures a candidate's standoff: candidate TVD minus the MEDIAN TVD of the
+  # reference benches' producing horizontals (formation_blueox in `below`)
+  # whose sticks lie within ref_radius_mi of the candidate's stick — the first
+  # radius reaching ref_min_wells wins. Round-100 TVDs (permit depths, rule 10)
+  # never enter the reference, and a candidate at one is excluded (permit_tvd):
+  # its standoff is not a measurement. No reference = excluded (no_standoff_ref).
+  # The THRESHOLD (min_standoff_ft) is the reviewer's, per bench, in benches.yaml.
+  ref_radius_mi: [1.0, 2.0]
+  ref_min_wells: 3
+
+normalize:                        # v17 PROTOTYPE, REPORT-ONLY (Michael 2026-11-04, Eggs Tyrone). dealintake/normalize.py
+  # Reads BOX's own definitions — D150 continuous proximity (box/record23.d150, level x F_rule; stick side = producers
+  # >= 12 mo at the production vintage date, D115; analog side = drilled, at the analog's first production) and Cui & Cross
+  # (D50, box/lateral.relative). Per unit: A = curve of record x stick/analog factor ratio x Cui; B = the nearest
+  # cohort_size wells of the pool rule WITHOUT its scenario_classes, analogs inside lateral_window_ft (BOX's window,
+  # translated not band-filtered), same ratio + Cui. Changes no curve, cohort or handoff.
+  enabled: true
+  lateral_window_ft: [5000, 15000]   # = BOX 16b (analogs 5,000-15,000 ft, Cui-translated)
+  cohort_size: 20                    # = type_curve.max_wells
 
 edge_trigger:                     # gate 5.4 — developed-extent proxy (no
   method: density_gradient        # structure surface / play polygon exists)

@@ -1,0 +1,70 @@
+target (<live server address redacted>, 'postgres', 'postgres')
+runs [(19, 'delaware', True), (25, 'delaware', False)]
+  ok   pud_forecast coverage_tier: 0 violating rows
+  ok   pud_forecast conflict: 0 violating rows
+  ok   stream prox_factor: 0 violating rows
+  ok   prox outcome: 0 violating rows
+  ok   prox factor: 0 violating rows
+  ok   prox coverage: 0 violating rows
+  ok   prox as_is: 0 violating rows
+  ok   prox multi: 0 violating rows
+  ok   prox label: 0 violating rows
+  ok   prox unexposed: 0 violating rows
+  ok   parent age: 0 violating rows
+current constraints:
+    box.pud_forecast box_pud_forecast_coverage_tier_ck | CHECK ((coverage = ANY (ARRAY['covered'::text, 'covered_provisional'::text, 'not_covered_emerging'::text, 'not_covered_wcxy'::text, 'not_covered_unvalidated'::t
+    box.pud_forecast box_pud_forecast_covered_ck | CHECK (((coverage <> ALL (ARRAY['covered'::text, 'covered_provisional'::text])) OR ((search_mode IS NOT NULL) AND (radius_mi IS NOT NULL) AND (radius_class IS N
+    box.pud_forecast box_pud_forecast_inside_ck | CHECK (((coverage <> ALL (ARRAY['covered'::text, 'covered_provisional'::text])) OR (inside_extent AND (extent_id IS NOT NULL))))
+    box.pud_forecast box_pud_forecast_no_analogs_ck | CHECK (((coverage <> 'not_covered_no_analogs'::text) OR (COALESCE(n_analogs, 0) < 3)))
+    box.pud_forecast box_pud_forecast_no_precedent_ck | CHECK (((coverage <> 'not_covered_no_precedent'::text) OR ((search_mode IS NOT NULL) AND (COALESCE(n_analogs, 0) >= 3) AND inside_extent AND (extent_id IS NOT N
+    box.pud_forecast box_pud_forecast_radius_ck | CHECK (((radius_class IS NULL) OR ((radius_class = '5 mi ring'::text) = (radius_mi <= (5)::double precision))))
+    box.pud_forecast box_pud_forecast_uncovered_ck | CHECK (((coverage = ANY (ARRAY['covered'::text, 'covered_provisional'::text, 'not_covered_no_analogs'::text, 'not_covered_no_precedent'::text])) OR ((search_mod
+    box.pud_forecast pud_forecast_completed_lateral_ft_check | CHECK ((completed_lateral_ft > (0)::double precision))
+    box.pud_forecast pud_forecast_lateral_ft_check | CHECK ((lateral_ft > (0)::double precision))
+    box.pud_forecast pud_forecast_n_analogs_check | CHECK ((n_analogs >= 0))
+    box.pud_forecast pud_forecast_planned_spacing_ft_check | CHECK ((planned_spacing_ft > (0)::double precision))
+    box.pud_forecast pud_forecast_radius_class_check | CHECK ((radius_class = ANY (ARRAY['5 mi ring'::text, 'past 5 mi'::text])))
+    box.pud_forecast pud_forecast_radius_mi_check | CHECK ((radius_mi > (0)::double precision))
+    box.pud_forecast pud_forecast_recon_status_check | CHECK ((recon_status = ANY (ARRAY['remaining_pud'::text, 'conflict'::text, 'not_reconciled'::text])))
+    box.pud_forecast pud_forecast_search_mode_check | CHECK ((search_mode = ANY (ARRAY['circle'::text, 'strike'::text])))
+    box.pud_forecast pud_forecast_spacing_source_check | CHECK ((spacing_source = ANY (ARRAY['neighbour_gap'::text, 'default_880'::text])))
+    box.pud_forecast_stream box_pud_forecast_stream_coverage_tier_ck | CHECK ((coverage = ANY (ARRAY['covered'::text, 'covered_provisional'::text])))
+    box.pud_forecast_stream box_pud_forecast_stream_eur_ck | CHECK ((abs((eur - ((eur_raw * eur_haircut) * prox_factor))) <= ((0.000001)::double precision * eur)))
+    box.pud_forecast_stream box_pud_forecast_stream_prox_factor_ck | CHECK (((prox_factor > (0)::double precision) AND (prox_factor <= (1)::double precision) AND ((stream = 'oil'::text) OR (prox_factor = (1)::double precision))))
+    box.pud_forecast_stream box_pud_forecast_stream_stream_ck | CHECK ((stream = ANY (ARRAY['oil'::text, 'gas'::text, 'water'::text])))
+    box.pud_forecast_stream box_pud_forecast_stream_tier_ck | CHECK (((tier IS NULL) OR (tier = ANY (ARRAY['validated'::text, 'provisional'::text]))))
+    box.pud_forecast_stream box_pud_forecast_stream_tier_le_coverage_ck | CHECK (((tier IS NULL) OR (coverage = 'covered'::text) OR (tier = 'provisional'::text)))
+    box.pud_forecast_stream box_pud_forecast_stream_water_tier_ck | CHECK (((stream <> 'water'::text) OR (tier IS NOT NULL)))
+    box.pud_forecast_stream pud_forecast_stream_cum12_check | CHECK ((cum12 >= (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_cum24_check | CHECK ((cum24 >= (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_eur_check | CHECK ((eur > (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_eur_haircut_check | CHECK ((eur_haircut > (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_eur_per_kft_check | CHECK ((eur_per_kft > (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_eur_raw_check | CHECK ((eur_raw > (0)::double precision))
+    box.pud_forecast_stream pud_forecast_stream_lateral_mult_check | CHECK ((lateral_mult > (0)::double precision))
+    box.pud_proximity box_pud_proximity_as_is_ck | CHECK (((outcome <> ALL (ARRAY['as_is_unexposed'::text, 'as_is_single_parent'::text])) OR ((factor = (1)::double precision) AND (haircut_key IS NULL) AND (label
+    box.pud_proximity box_pud_proximity_coverage_ck | CHECK ((((outcome = ANY (ARRAY['no_forecast_precedent'::text, 'no_forecast_package'::text])) = (coverage = 'not_covered_no_precedent'::text)) AND (coverage = AN
+    box.pud_proximity box_pud_proximity_label_ck | CHECK (((outcome = 'haircut'::text) = (label IS NOT NULL)))
+    box.pud_proximity box_pud_proximity_multi_ck | CHECK (((outcome = ANY (ARRAY['as_is_unexposed'::text, 'as_is_single_parent'::text])) OR ((haircut_key IS NOT NULL) AND (pair_key IS NOT NULL) AND (prec_multi I
+    box.pud_proximity box_pud_proximity_unexposed_ck | CHECK (((outcome = 'as_is_unexposed'::text) = (config_class IS NULL)))
+    box.pud_proximity pud_proximity_config_class_check | CHECK ((config_class = ANY (ARRAY['same'::text, 'topfill'::text, 'underfill'::text, 'mixed'::text])))
+    box.pud_proximity pud_proximity_factor_check | CHECK (((factor > (0)::double precision) AND (factor <= (1)::double precision)))
+    box.pud_proximity pud_proximity_label_check | CHECK ((label = 'validated_with_exception'::text))
+    box.pud_proximity pud_proximity_n_parents_total_check | CHECK ((n_parents_total >= 0))
+    box.pud_proximity pud_proximity_n_permit_parents_check | CHECK ((n_permit_parents >= 0))
+    box.pud_proximity pud_proximity_n_recent_producers_check | CHECK ((n_recent_producers >= 0))
+    box.pud_proximity pud_proximity_n_same_check | CHECK ((n_same >= 0))
+    box.pud_proximity pud_proximity_n_topfill_check | CHECK ((n_topfill >= 0))
+    box.pud_proximity pud_proximity_n_underfill_check | CHECK ((n_underfill >= 0))
+    box.pud_proximity pud_proximity_outcome_check | CHECK ((outcome = ANY (ARRAY['as_is_unexposed'::text, 'as_is_single_parent'::text, 'haircut'::text, 'no_forecast_precedent'::text, 'no_forecast_package'::text])
+    box.pud_proximity pud_proximity_prec_multi_check | CHECK ((prec_multi >= 0))
+    box.pud_proximity pud_proximity_prec_package_check | CHECK ((prec_package >= 0))
+    box.pud_proximity_parent pud_proximity_parent_age_days_check | CHECK ((age_days >= 365))
+    box.pud_proximity_parent pud_proximity_parent_api10_check | CHECK ((api10 ~ '^[0-9]{10}$'::text))
+    box.pud_proximity_parent pud_proximity_parent_cls_check | CHECK ((cls = ANY (ARRAY['same'::text, 'topfill'::text, 'underfill'::text])))
+    box.pud_proximity_parent pud_proximity_parent_dh_ft_check | CHECK ((dh_ft >= (0)::double precision))
+    box.pud_proximity_parent pud_proximity_parent_dv_ft_check | CHECK ((dv_ft >= (0)::double precision))
+    box.pud_proximity_parent pud_proximity_parent_overlap_check | CHECK (((overlap > (0)::double precision) AND (overlap <= (1)::double precision)))
+other sessions touching box: []
+locks on box relations: []
+TOTAL violating rows: 0

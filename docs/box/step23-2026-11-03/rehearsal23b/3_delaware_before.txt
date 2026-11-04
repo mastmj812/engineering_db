@@ -1,0 +1,9 @@
+=== BEFORE Delaware flip (16:22:57)
+record | delaware | 27
+scout | delaware | 27 | 48809 | 25493.851 | 48809.0
+econ_rows | 27 | 16 | 783120
+econ_rows | 31 | 16 | 769152
+erebor delaware: record run 27 counts {'covered': 23310, 'covered_provisional': 25635, 'not_covered_emerging': 18480, 'not_covered_no_precedent': 8693, 'not_covered_outside_extent': 90725}
+erebor delaware econ legend: {"basin":"delaware","metric":"econ","run_id":27,"scope":{"benches":[],"exclude":[],"tiers":["validated","provisional"]},"econ":"pv10","unit":"$MM","better":"high","label":"PV10","priced":true,"case":{"deck_id":"wti70_hh3","assumption_set_id":"synthetic-23b","built_at":"2026-11-03T22:00:47.848967+00:00"},"n":48945,"tier_counts":{"validated":23310,"provisional":25635},"breaks":{"p5":1.0,"p25":1.0,"p
+erebor midland: record run 27 counts {'covered': 23310, 'covered_provisional': 25635, 'not_covered_emerging': 18480, 'not_covered_no_precedent': 8693, 'not_covered_outside_extent': 90725}
+erebor midland econ legend: {"basin":"midland","metric":"econ","run_id":27,"scope":{"benches":[],"exclude":[],"tiers":["validated","provisional"]},"econ":"pv10","unit":"$MM","better":"high","label":"PV10","priced":true,"case":{"deck_id":"wti70_hh3","assumption_set_id":"synthetic-23b","built_at":"2026-11-03T22:00:47.848967+00:00"},"n":0,"tier_counts":{"validated":0,"provisional":0},"breaks":null}

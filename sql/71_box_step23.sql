@@ -1,6 +1,8 @@
 -- sql/71 — BOX step 23: the record runs under D150 (continuous proximity factor) and D145 (conflict sticks not drillable)
 --
--- AUTHORED AT GATE 23a, NOT APPLIED. Container-validated at 23b; live apply on its own explicit "go apply" (stop-and-ask DDL).
+-- AUTHORED AT GATE 23a. Container-validated at 23b. APPLIED LIVE 2026-11-03 at 23c (Michael "Go apply sql/71"): one transaction,
+-- 1.8 s, file sha256 644339f6825d58e3 as applied; 0 violating rows on runs 19 / 25 beforehand, 11/11 constraints validated after
+-- (docs/box/step23-2026-11-03/live23c/sql71_*.txt). Byte changes to this header only after the apply.
 --
 -- What sql/65 / sql/63 cannot hold (docs/box/step23-2026-11-03/RECORD_PLAN.md §5):
 --   * D150 factor = level x F_rule on EVERY forecast stick. The fitted levels (Delaware 1.046, Midland 1.067) put the factor of

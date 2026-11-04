@@ -1,0 +1,9 @@
+target (<live server address redacted>, 5432, 'postgres')
+  run 19 (delaware): record=True superseded_by=None pud_forecast=121,696 months=77,346,000 priced_rows=687,520
+  run 25 (delaware): record=False superseded_by=None pud_forecast=166,843 months=88,101,000 priced_rows=0
+  run 27 (delaware): record=False superseded_by=None pud_forecast=166,561 months=86,529,600 priced_rows=0
+  run 28 (midland): record=False superseded_by=None pud_forecast=85,849 months=58,573,200 priced_rows=0
+  run 30 (midland): record=False superseded_by=None pud_forecast=85,849 months=51,841,800 priced_rows=0
+  run 32 (delaware): record=False superseded_by=None pud_forecast=166,561 months=86,666,400 priced_rows=0
+record(s) {'delaware': [19], 'midland': []}; prune [27]; keep [19, 25, 28, 30, 32]
+dry run: nothing deleted

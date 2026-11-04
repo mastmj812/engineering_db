@@ -1,0 +1,4 @@
+not_covered_no_analogs n_analogs 0 | streams [] | proximity None
+  note: Thin cohort: 6 analogs where the run wants at least 10 (the run flagged it under_count).
+  note: Not covered (gate 23b): the water WOR fit found 0 eligible water analogs at the 20-mi cap; no oil / gas / water forecast ships.
+  note: 2 same-bench producers within 2 mi are NOT in the cohort (closest 0.6 mi; their laterals 9,541–9,768 ft). BOX's analog rules (bench, lateral band, vintage, months on production) decide membership.

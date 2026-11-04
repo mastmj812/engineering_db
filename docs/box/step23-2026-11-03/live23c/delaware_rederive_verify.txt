@@ -1,0 +1,10 @@
+runs [(19, 'delaware', True, datetime.date(2026, 7, 1)), (25, 'delaware', False, datetime.date(2026, 7, 1)), (27, 'delaware', False, datetime.date(2026, 7, 1)), (28, 'midland', False, datetime.date(2026, 8, 1)), (30, 'midland', False, datetime.date(2026, 8, 1)), (32, 'delaware', False, datetime.date(2026, 7, 1))]
+records [('delaware', 19)]
+new Delaware run 32
+coverage [('not_covered_outside_extent', 90125), ('covered_provisional', 25277), ('covered', 22871), ('not_covered_emerging', 18465), ('not_covered_no_precedent', 8256), ('not_covered_conflict', 1567)]
+streams [('gas', 48148, Decimal('149764.5')), ('oil', 48148, Decimal('25421.0')), ('water', 48148, Decimal('126826.9'))]
+outcomes [('factor_multi_parent', 23697), ('level_unexposed', 17957), ('factor_single_parent', 6494), ('no_forecast_package', 4365), ('no_forecast_precedent', 3891)]
+oil prox_factor range [(Decimal('0.4249'), Decimal('1.0460'))]
+box_scout_locations [('delaware', 42833)]
+econ rows on record 19 [(687520, 16)]
+oil by run [(19, 42970, Decimal('22623.3')), (25, 48945, Decimal('25569.9')), (27, 48072, Decimal('25386.6')), (28, 32541, Decimal('13520.1')), (30, 28801, Decimal('11078.0')), (32, 48148, Decimal('25421.0'))]

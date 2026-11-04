@@ -44,7 +44,8 @@ def di_pair(di_nom: float | None, b: float | None) -> tuple[str, str]:
 
 
 BUILDUP_COLS = [
-    "api10", "well_name", "operator", "first_production_date", "lateral_length_ft", "bench", "spacing_class",
+    "api10", "well_name", "operator", "first_production_date", "lateral_length_ft", "bench", "tvd_ft",
+    "standoff_ft", "standoff_ref_tvd_ft", "spacing_class",
     "tier", "scenario_class", "months_produced", "eur_per_1000ft", "anduin_oil_eur_per_1000ft",
     "proppant_lbs_per_ft", "dist_ft", "codev_benches", "parent_benches_below", "parent_benches_above",
     "child_benches",
@@ -59,7 +60,8 @@ def buildup_rows(wells: list[dict[str, Any]], qc_rows: dict[str, dict[str, Any]]
         di_n, di_e = di_pair(f.get("di_initial"), f.get("b"))
         out.append([
             w["api10"], w.get("well_name"), w.get("operator"), w.get("first_production_date"), w.get("lateral_length_ft"),
-            w.get("bench"), w.get("spacing_class"), w.get("tier"), w.get("scenario_class"), w.get("months_produced"),
+            w.get("bench"), w.get("tvd_ft"),
+            None if w.get("standoff_ft") is None else round(w["standoff_ft"]), w.get("spacing_class"), w.get("tier"), w.get("scenario_class"), w.get("months_produced"),
             w.get("eur_per_1000ft"), w.get("anduin_oil_eur_per_1000ft"), di_n, di_e,
             f.get("b"), f.get("peak_index_months"), w.get("proppant_lbs_per_ft"),
         ])
@@ -67,7 +69,7 @@ def buildup_rows(wells: list[dict[str, Any]], qc_rows: dict[str, dict[str, Any]]
 
 
 BUILDUP_HEADERS = [
-    "api10", "Well", "Operator", "First prod", "Lateral ft", "Bench", "Spacing", "Codev tier", "Scenario", "Months",
+    "api10", "Well", "Operator", "First prod", "Lateral ft", "Bench", "TVD ft", "Below ref ft", "Spacing", "Codev tier", "Scenario", "Months",
     "Novi EUR/1,000 ft (screen)", "anduin oil EUR/1,000 ft", "Di nom /yr", "Di eff yr-1", "b",
     "Peak mo", "Proppant lb/ft",
 ]
@@ -79,6 +81,48 @@ def write_csv(path: Path, wells: list[dict[str, Any]], cols: list[str] = BUILDUP
         w.writerow(cols)
         for r in wells:
             w.writerow([";".join(r[c]) if isinstance(r.get(c), list) else r.get(c) for c in cols])
+
+
+NORMALIZE_INTRO = (
+    "PROTOTYPE, report-only (config v17) — BOX's own definitions read on this bench; the curve, cohort and handoff above "
+    "are unchanged. Factor = D150 proximity factor (level × F_rule): the stick's from every producer ≥ 12 months on at "
+    "the data date, an analog's from the producers ≥ 12 months on at its own first production. Cui = Cui & Cross "
+    "lateral efficiency of the unit vs the cohort's laterals (D50). A = the curve of record × (stick factor ÷ mean "
+    "analog factor) × Cui. B = the nearest wells of the pool rule WITHOUT its scenario selection, analogs 5,000–15,000 ft "
+    "(BOX's window, translated not band-filtered), same ratio + Cui; B per well = the same translation done well by well "
+    "(median). EUR = raw 50-yr oil per 1,000 ft.")
+NORMALIZE_HEADERS = ["DSU", "Sticks", "Stick factor (range)", "Parents / stick", "Curve of record /1,000 ft",
+                     "A: cohort factor", "A: ratio", "A: Cui", "A: EUR /1,000 ft", "B: TC /1,000 ft", "B: cohort factor",
+                     "B: ratio", "B: Cui", "B: EUR /1,000 ft", "B per well /1,000 ft"]
+NORMALIZE_COHORT_HEADERS = ["api10", "Well", "Operator", "Tag", "Scenario", "Distance mi", "Lateral ft", "Below ref ft",
+                            "anduin oil EUR /1,000 ft", "Parents", "Factor", "Pattern"]
+
+
+def normalize_rows(nz: dict[str, Any], name: dict[str, str] | None = None) -> tuple[list[list[Any]], list[list[Any]]]:
+    """(per-unit readings, cohort B wells) for the v17 prototype section."""
+    name = name or {}
+
+    def f(v: Any, spec: str) -> str:
+        return "—" if v is None else format(v, spec)
+
+    units = []
+    for u, r in (nz.get("units") or {}).items():
+        a, b = r.get("A") or {}, r.get("B") or {}
+        rng = r.get("stick_factor_range")
+        npar = r.get("n_parents") or []
+        units.append([name.get(u, u), r["n_sticks"],
+                      f"{f(r.get('stick_factor'), '.3f')} ({rng[0]:.3f}–{rng[1]:.3f})" if rng else "—",
+                      f"{min(npar)}–{max(npar)}" if npar else "—", f(r.get("tc_a_oil_eur_per_1000ft"), ",.0f"),
+                      f(a.get("mean_analog_factor"), ".3f"), f(a.get("ratio"), ".3f"), f(a.get("cui"), ".3f"),
+                      f(a.get("eur_per_1000ft"), ",.0f") + (f" ({a['vs_tc']:+.1%})" if a.get("vs_tc") is not None else ""),
+                      f(nz.get("tc_b_oil_eur_per_1000ft"), ",.0f"), f(b.get("mean_analog_factor"), ".3f"),
+                      f(b.get("ratio"), ".3f"), f(b.get("cui"), ".3f"),
+                      f(b.get("eur_per_1000ft"), ",.0f"), f(r.get("B_per_well"), ",.0f")])
+    wells = [[w["api10"], w.get("well_name"), w.get("operator"), w.get("bench"), w.get("scenario_class"),
+              f(w.get("dist_mi"), ".1f"), f(w.get("lateral_length_ft"), ",.0f"), f(w.get("standoff_ft"), ",.0f"),
+              f(w.get("anduin_oil_eur_per_1000ft"), ",.0f"), f(w.get("n_parents"), ".0f"), f(w.get("factor"), ".3f"),
+              w.get("pattern") or "—"] for w in nz.get("cohort_b") or []]
+    return units, wells
 
 
 COHORT_HEADERS = ["Well", "Operator", "api10", "First prod", "Lateral ft", "Nearest unit", "Distance mi",

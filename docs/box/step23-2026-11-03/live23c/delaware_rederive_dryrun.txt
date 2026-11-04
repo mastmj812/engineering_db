@@ -1,0 +1,22 @@
+    ok   source run 25 is a stored delaware run ((25, 'delaware', False, datetime.date(2026, 7, 1)))
+    ok   no-water sticks have < 3 water analogs (not_covered_no_analogs CHECK) ({})
+    note 31 re-admitted sticks carry the source run's refusal ({'no_forecast_package': 18, 'no_forecast_precedent': 13})
+    ok   every source forecast location has an outcome (48,945 / 48,945)
+    ok   no re-admitted stick without source rows (0)
+    ok   universe 166,561 = source 166,843 - realized since 282
+    ok   30 carried refusals keep run 25's proximity rows verbatim (30)
+identities
+    ok   oil stream rows 48,148 = kept source locations 48,148
+    ok   gas stream rows 48,148 = kept source locations 48,148
+    ok   water stream rows 48,148 = kept source locations 48,148 (with water 48,148)
+    ok   oil EUR 25,421.049 MMbbl = source x new / old 25,421.049
+    ok   gas rows identical to the source (0 differ)
+    ok   water rows identical to the source (0 differ)
+    ok   every stream: 600 months summing to its EUR within 0.1 % (144,444 groups, 0 off)
+    ok   oil prox_factor = pud_proximity.factor on every forecast location
+    ok   no orphan stream / analog rows (0)
+    ok   run 25 untouched
+    ok   132,712 named D150 parents of kept locations (132,712)
+    ok   run 31 is NOT a record
+rehearsal OK — rolled back (pass --commit to store) (2168 s)
+rc=0

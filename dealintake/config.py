@@ -36,6 +36,7 @@ _REQUIRED = {
     "split": ("min_wells_per_group", "median_ratio", "alpha"),
     "pdp_proximity": ("enabled", "vertical_ft", "horizontal_ft", "overlap_min_frac", "near_miss_ratio",
                       "producer_radius_mi", "permit_tvd_culls"),
+    "pool_standoff": ("ref_radius_mi", "ref_min_wells"),
 }
 
 

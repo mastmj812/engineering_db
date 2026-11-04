@@ -1,0 +1,26 @@
+REFUSED: run 32: not priced like the record: flipping would show blank econ in erebor and curated.box_scout_locations until Steven prices it (2026-10-30). Pass --allow-unpriced to choose that (2026-11-04), or wait for Steven.
+{
+ "forecast_locations": 32541,
+ "outgoing_record": 36,
+ "deck_reference_run": 36,
+ "decks_required": [
+  "wti60_hh1",
+  "wti60_hh2",
+  "wti60_hh3",
+  "wti60_hh4",
+  "wti70_hh1",
+  "wti70_hh2",
+  "wti70_hh3",
+  "wti70_hh4",
+  "wti80_hh1",
+  "wti80_hh2",
+  "wti80_hh3",
+  "wti80_hh4",
+  "wti90_hh1",
+  "wti90_hh2",
+  "wti90_hh3",
+  "wti90_hh4"
+ ],
+ "priced_by_deck": {},
+ "ok": false
+}

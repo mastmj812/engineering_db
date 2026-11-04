@@ -1,0 +1,22 @@
+target (<live server address redacted>, 5432, 'postgres')
+locations: 85855 (81698 seed, 0 carried) (21 s)
+rows written + analyzed (743 s); checking identity
+    ok   pud_forecast rows 85849 = universe 85849
+    ok   [MID_DEAN] covered_provisional 1327 + no_analogs 0 = in-extent DEAN universe 1327 (other forecast class 0)
+    ok   [MID_JM] covered_provisional 4088 + no_analogs 0 = in-extent JM universe 4088 (other forecast class 0)
+    ok   [MID_LSSH] covered 7238 + no_analogs 0 = in-extent LSSH universe 7238 (other forecast class 0)
+    ok   [MID_MS] covered_provisional 4160 + no_analogs 0 = in-extent MS universe 4160 (other forecast class 0)
+    ok   [MID_WCA_1] covered 5121 + no_analogs 0 = in-extent WCA_1 universe 5121 (other forecast class 0)
+    ok   [MID_WCB_1] covered_provisional 5477 + no_analogs 0 = in-extent WCB_1 universe 5477 (other forecast class 0)
+    ok   [MID_WCB_2] covered_provisional 849 + no_analogs 0 = in-extent WCB_2 universe 849 (other forecast class 0)
+    ok   [MID_WCC] covered_provisional 692 + no_analogs 0 = in-extent WCC universe 692 (other forecast class 0)
+    ok   [MID_WCD] covered 3589 + no_analogs 0 = in-extent WCD universe 3589 (other forecast class 0)
+    ok   covered 15948 + covered_provisional 16593 + no_analogs 0 = in-extent universe of every covered group 32541
+    note no_analogs rows = 0 (D74: reported, never dropped; covered falls short of the universe by this many)
+    ok   oil stream rows 32541 = covered + covered_provisional 32541
+    ok   gas stream rows 32541 = covered + covered_provisional 32541
+    ok   every stream has 600 months summing to its eur within 0.1 % (65082 stream groups, 0 off)
+    ok   every covered location has >= 3 named analogs (min 5, max 20)
+    ok   analog rows cover all 32541 covered + covered_provisional locations (32541)
+stored run_id 28: {'covered': 15948, 'covered_provisional': 16593, 'not_covered_conflict': 669, 'not_covered_emerging': 14803, 'not_covered_outside_extent': 37836} (886 s)
+rc=0

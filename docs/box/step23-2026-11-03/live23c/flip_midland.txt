@@ -1,0 +1,14 @@
+{
+ "forecast_locations": 28801,
+ "outgoing_record": null,
+ "deck_reference_run": 32,
+ "decks_required": [
+  "wti70_hh3"
+ ],
+ "priced_by_deck": {},
+ "ok": false
+}
+--allow-unpriced: run 30 is not priced; its econ stays blank until Steven prices it
+records [('delaware', 32), ('midland', 30)]; box_scout_locations by basin {'delaware': 48148} -> {'delaware': 48148, 'midland': 28801} (midland expected 28,801; econ on 0 of 28,801)
+COMMITTED: run 30 is the midland record
+rc=0
