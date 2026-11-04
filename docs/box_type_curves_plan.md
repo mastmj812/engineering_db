@@ -755,7 +755,8 @@ Delaware step-23 record is RE-DERIVED from the D117 record (run 25) on the 11-04
 `live23c/delaware_remeasure/`), stored live as run 32, NOT record** (dry run then commit, 2,430 s): 48,148 forecast sticks /
 25,421.0 MMbbl oil (run 27: 48,072 / 25,386.6; +76, +0.14 %); 31 re-admitted sticks carry run 25's refusal (was 127); identities
 green. Both step-23 records (Delaware run 32, Midland run 30) now read the same warehouse state (after the 11-04 nightly). Run 27
-is superseded: prune on its own go ("Go prune run 27", 2026-11-04, `box_prune_runs --run 27`). **Unpriced flip decided (Michael
+is superseded: **PRUNED LIVE 2026-11-04** ("Go prune run 27"; `box_prune_runs --run 27 --apply`, one transaction, 5,017 s;
+kept 19 / 25 / 28 / 30 / 32, record 19 unchanged, 0 orphan rows). **Unpriced flip decided (Michael
 2026-11-04):** the step-23 records go live BEFORE Steven prices them; blank econ beats an older run's econ. sql/69 v4 APPLIED
 LIVE 2026-11-04 ("go apply sql/69 v4"; file sha 8986dbfd): `box_scout_locations` keeps every undrilled record-run forecast
 location, econ columns blank until Steven prices that run; today identical to v3 (42,833 Delaware rows, all priced, run 19).
