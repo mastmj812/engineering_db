@@ -147,8 +147,24 @@ def exclusion_reasons(
         reasons.append(f"spacing_{sc}")
     if not c.get("codev_scorable", True):
         reasons.append("no_codev_context")
-    reasons += standoff_reasons(c, pool_rule)
+    reasons += standoff_reasons(c, pool_rule) + scenario_reasons(c, pool_rule)
     return reasons
+
+
+SCENARIO_CLASSES = ("standalone", "codev_stack", "topfill", "underfill", "sandwich")   # curated.dev_scenario (sql/50)
+
+
+def scenario_reasons(c: dict[str, Any], pool_rule: dict[str, Any] | None) -> list[str]:
+    """Reviewer pool rule `scenario_classes` (Michael 2026-11-04, Eggs Tyrone: "underfills
+    only" — the planned sticks sit under a producing WCA): keep only candidates whose
+    curated.dev_scenario class (sql/50, the house vertical-parent rule — 660-ft midpoint
+    gate, 1,000-ft band, shielding) is listed. A SELECTION by the reviewer, unlike the
+    tier-blind default where scenario is reported only. No class (no codev basis) = out."""
+    allowed = (pool_rule or {}).get("scenario_classes")
+    if not allowed:
+        return []
+    cls = c.get("scenario_class")
+    return [] if cls in allowed else [f"scenario_{cls or 'none'}"]
 
 
 def standoff_reasons(c: dict[str, Any], pool_rule: dict[str, Any] | None) -> list[str]:

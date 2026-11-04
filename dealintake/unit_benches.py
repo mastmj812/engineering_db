@@ -28,7 +28,7 @@ from typing import Any
 import yaml
 
 from dealintake import strat
-from dealintake.select_wells import bench_code
+from dealintake.select_wells import SCENARIO_CLASSES, bench_code
 
 FILENAME = "benches.yaml"
 _SKIP = {"OTHER"}
@@ -255,6 +255,9 @@ def read_pools(run_dir: Path) -> dict[str, dict[str, Any]]:
           below: [WCA_1, WCA_2]      reference benches for the standoff
           min_standoff_ft: 400       keep wells >= this far below the reference's
                                      local median (config pool_standoff measures it)
+          scenario_classes: [underfill]   keep only these curated.dev_scenario
+                                     classes (standalone / codev_stack / topfill /
+                                     underfill / sandwich) — a reviewer SELECTION
 
     `tags` alone widens the pool; `below` + `min_standoff_ft` go together.
     {} when the file or the section is absent."""
@@ -267,10 +270,15 @@ def read_pools(run_dir: Path) -> dict[str, dict[str, Any]]:
         where = f"{FILENAME}: pools.{b}"
         if not isinstance(v, dict):
             raise ValueError(f"{where} must be a mapping")  # noqa: TRY004 — a file-content error
-        stray = sorted(set(v) - {"tags", "below", "min_standoff_ft"})
+        stray = sorted(set(v) - {"tags", "below", "min_standoff_ft", "scenario_classes"})
         if stray:
             raise ValueError(f"{where}: unknown key(s) {stray}")
         rule: dict[str, Any] = {}
+        sc = v.get("scenario_classes")
+        if sc is not None:
+            if not isinstance(sc, list) or not sc or any(x not in SCENARIO_CLASSES for x in sc):
+                raise ValueError(f"{where}.scenario_classes must be a non-empty list from {SCENARIO_CLASSES}, got {sc!r}")
+            rule["scenario_classes"] = list(sc)
         for k in ("tags", "below"):
             if v.get(k) is not None:
                 if not isinstance(v[k], list) or not v[k] or not all(isinstance(t, str) and t for t in v[k]):

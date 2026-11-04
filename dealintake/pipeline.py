@@ -1244,7 +1244,9 @@ def evaluate(
                                   if p_standoff else "")),
                     "decision": (f"pool = {', '.join(p_tags)} wells"
                                  + (f" >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])}"
-                                    if p_standoff else "")),
+                                    if p_standoff else "")
+                                 + (f"; dev_scenario class {' / '.join(prule['scenario_classes'])} only"
+                                    if prule.get("scenario_classes") else "")),
                     "by": f"reviewer ({unit_benches.FILENAME} pools:)",
                 })
             cands0 = wh.candidates(conn, union, bench, RADIUS_STEPS_MI[0], tags=p_tags, standoff=p_standoff)
@@ -1450,7 +1452,9 @@ def evaluate(
                        f"(pool standoff {so_vals[0]:,.0f}-{so_vals[-1]:,.0f} ft, median {_median(so_vals):,.0f} ft)"
                        if p_standoff and so_vals else
                        f"; >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])} median"
-                       if p_standoff else ""))
+                       if p_standoff else "")
+                    + (f"; dev_scenario class {' / '.join(prule['scenario_classes'])} only (REVIEWER SELECTION — "
+                       "the default cohort is tier-blind)" if prule.get("scenario_classes") else ""))
                 if p_standoff:
                     lim = float(prule["min_standoff_ft"])
                     near = [c for c in excluded if c["exclusion"] == f"standoff<{lim:.0f}"

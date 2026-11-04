@@ -51,6 +51,24 @@ def test_classify_applies_the_rule_with_reasons_and_keeps_both_tags():
     assert {c["api10"]: c["exclusion"] for c in excluded} == {"3": "standoff<400", "4": "permit_tvd"}
 
 
+def test_scenario_classes_select_underfills_only():
+    # Michael 2026-11-04 (Eggs Tyrone): "underfills only" — dev_scenario class, a reviewer SELECTION
+    rule = {**RULE, "scenario_classes": ["underfill"]}
+    uf = {**cand("1", 11145, 434), "scenario_class": "underfill"}
+    st = cand("2", 11145, 434)                                   # standalone
+    nob = {**cand("3", 11145, 434), "scenario_class": None}
+    eligible, excluded, _ = classify([uf, st, nob], CFG, bench="WCB_2", planned_stack=["WCB_2"],
+                                     planned_lateral_ft=9900.0, basin="delaware", planned_spacing_ft=1320.0,
+                                     pool_rule=rule)
+    assert [c["api10"] for c in eligible] == ["1"]
+    assert {c["api10"]: c["exclusion"] for c in excluded} == {"2": "scenario_standalone", "3": "scenario_none"}
+    # a standoff failure and a class failure both carry their reason
+    both = {**cand("4", 11010, 300), "scenario_class": "codev_stack"}
+    _, ex, _ = classify([both], CFG, bench="WCB_2", planned_stack=["WCB_2"], planned_lateral_ft=9900.0,
+                        basin="delaware", planned_spacing_ft=1320.0, pool_rule=rule)
+    assert ex[0]["exclusion"] == "standoff<400;scenario_codev_stack"
+
+
 def test_resolve_standoff_first_radius_with_enough_wells():
     so = {"ref_radius_mi": [1.0, 2.0], "ref_min_wells": 3, "below": ["WCA_1"]}
     r = {"tvd_ft": 11145, "standoff_ref_n_0": 2, "standoff_ref_tvd_0": 10600.0,
@@ -81,6 +99,8 @@ def test_read_pools(tmp_path):
     _yaml(tmp_path, "units: {}\npools:\n  WCB_2:\n    tags: [WCB_1, WCB_2]\n    below: [WCA_1, WCA_2]\n"
                     "    min_standoff_ft: 400\n")
     assert unit_benches.read_pools(tmp_path) == {"WCB_2": RULE}
+    _yaml(tmp_path, "units: {}\npools:\n  WCB_2: {scenario_classes: [underfill]}\n")
+    assert unit_benches.read_pools(tmp_path) == {"WCB_2": {"scenario_classes": ["underfill"]}}
 
 
 @pytest.mark.parametrize("body, msg", [
@@ -90,6 +110,8 @@ def test_read_pools(tmp_path):
     ("WCB_2: {tags: [WCB_1], min_standoff_ft: -5, below: [WCA_1]}", "positive number"),
     ("WCB_2: {tags: [WCB_1], standoff: 400}", "unknown key"),
     ("WCB_2: {}", "empty rule"),
+    ("WCB_2: {scenario_classes: [underfil]}", "scenario_classes"),
+    ("WCB_2: {scenario_classes: []}", "scenario_classes"),
 ])
 def test_read_pools_rejects(tmp_path, body, msg):
     _yaml(tmp_path, f"units: {{}}\npools:\n  {body}\n")
