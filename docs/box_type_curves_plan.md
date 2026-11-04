@@ -737,7 +737,10 @@ still run 19, `box_scout_locations` 42,833. **Delaware step-23 record STORED LIV
 "Go store Delaware"; derived from the D117 record (run 25) on the 23a outcomes, sha 748a1fbe; dry run first, then commit, 2,124 s):
 48,072 forecast sticks / 25,386.6 MMbbl oil, every identity green and every coverage class equal to the rehearsed [31]; gas +
 water identical to run 25; 0 econ rows on run 27 (unpriced). The Delaware screens are unchanged: they read run 19 until the
-flip at 23d. NEXT, each on its own go: the Midland base run +
+flip at 23d. **Midland base run STORED LIVE 2026-11-03 as run 28, NOT record** (Michael "Go store Midland base"; from
+`runs/step23/midland_record_base`, code 1aec6b3, data through 2026-08-01, built after the 11-03 nightly; 886 s): 32,541 forecast
+sticks / 13,520.1 MMbbl oil / 53,558.0 Bcf gas, every identity and class equal to the rehearsed [32]; no water yet; Midland
+box.location 4,157 -> 85,855, Delaware untouched. NEXT, each on its own go: the Midland base
 water (`--accept-no-water 1545426`), the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
