@@ -127,6 +127,7 @@ def exclusion_reasons(
     lateral_tol: float,
     planned_spacing_ft: float,
     lateral_band_ft: tuple[float, float] | None = None,
+    pool_rule: dict[str, Any] | None = None,
 ) -> list[str]:
     tc = cfg["type_curve"]
     reasons: list[str] = []
@@ -146,7 +147,42 @@ def exclusion_reasons(
         reasons.append(f"spacing_{sc}")
     if not c.get("codev_scorable", True):
         reasons.append("no_codev_context")
+    reasons += standoff_reasons(c, pool_rule) + scenario_reasons(c, pool_rule)
     return reasons
+
+
+SCENARIO_CLASSES = ("standalone", "codev_stack", "topfill", "underfill", "sandwich")   # curated.dev_scenario (sql/50)
+
+
+def scenario_reasons(c: dict[str, Any], pool_rule: dict[str, Any] | None) -> list[str]:
+    """Reviewer pool rule `scenario_classes` (Michael 2026-11-04, Eggs Tyrone: "underfills
+    only" — the planned sticks sit under a producing WCA): keep only candidates whose
+    curated.dev_scenario class (sql/50, the house vertical-parent rule — 660-ft midpoint
+    gate, 1,000-ft band, shielding) is listed. A SELECTION by the reviewer, unlike the
+    tier-blind default where scenario is reported only. No class (no codev basis) = out."""
+    allowed = (pool_rule or {}).get("scenario_classes")
+    if not allowed:
+        return []
+    cls = c.get("scenario_class")
+    return [] if cls in allowed else [f"scenario_{cls or 'none'}"]
+
+
+def standoff_reasons(c: dict[str, Any], pool_rule: dict[str, Any] | None) -> list[str]:
+    """Reviewer pool rule (benches.yaml `pools:`, config v16 — Michael 2026-11-04,
+    Eggs Tyrone: "WCB wells substantially below the WCA, ~400 ft"): the candidate
+    must sit >= min_standoff_ft below the local median of the reference benches
+    (warehouse.resolve_standoff). A round-100 candidate TVD is a permit depth
+    (rule 10) — its standoff is not a measurement, so it is excluded, not guessed."""
+    if not pool_rule or pool_rule.get("min_standoff_ft") is None:
+        return []
+    tvd = c.get("tvd_ft")
+    if tvd is not None and float(tvd) % 100 == 0:
+        return ["permit_tvd"]
+    so = c.get("standoff_ft")
+    if so is None:
+        return ["no_standoff_ref"]
+    lim = float(pool_rule["min_standoff_ft"])
+    return [] if so >= lim else [f"standoff<{lim:.0f}"]
 
 
 @dataclass
@@ -193,6 +229,7 @@ def classify(
     planned_spacing_ft: float,
     existing_benches: list[str] | None = None,
     lateral_band_ft: tuple[float, float] | None = None,
+    pool_rule: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
     """Tag every candidate with spacing class + scenario tier and split into
     (eligible, excluded-with-reasons, adjacent planned benches). No capping —
@@ -200,7 +237,9 @@ def classify(
     `existing_benches` = benches producing in the class's units within the
     vertical band of this bench (first-order parent test).
     `lateral_band_ft` = explicit (lo, hi) lateral band (one pool per bench: the
-    span of the units' planned laterals); None = planned lateral +/- tolerance."""
+    span of the units' planned laterals); None = planned lateral +/- tolerance.
+    `pool_rule` = the reviewer's benches.yaml `pools:` entry for this bench
+    (tags / below / min_standoff_ft) — see standoff_reasons."""
     adjacent = adjacent_benches(bench, planned_stack)
     tol = cfg.lateral_tolerance(basin, planned_lateral_ft)
     eligible, excluded = [], []
@@ -210,7 +249,7 @@ def classify(
         c["tier"] = codev_tier(c, adjacent, existing_benches)
         reasons = exclusion_reasons(
             c, cfg, planned_lateral_ft=planned_lateral_ft, lateral_tol=tol,
-            planned_spacing_ft=planned_spacing_ft, lateral_band_ft=lateral_band_ft,
+            planned_spacing_ft=planned_spacing_ft, lateral_band_ft=lateral_band_ft, pool_rule=pool_rule,
         )
         if reasons:
             c["exclusion"] = ";".join(reasons)
