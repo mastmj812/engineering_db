@@ -1,0 +1,28 @@
+{
+ "forecast_locations": 28801,
+ "outgoing_record": null,
+ "deck_reference_run": 19,
+ "decks_required": [
+  "wti60_hh1",
+  "wti60_hh2",
+  "wti60_hh3",
+  "wti60_hh4",
+  "wti70_hh1",
+  "wti70_hh2",
+  "wti70_hh3",
+  "wti70_hh4",
+  "wti80_hh1",
+  "wti80_hh2",
+  "wti80_hh3",
+  "wti80_hh4",
+  "wti90_hh1",
+  "wti90_hh2",
+  "wti90_hh3",
+  "wti90_hh4"
+ ],
+ "priced_by_deck": {},
+ "ok": false
+}
+--allow-unpriced: run 30 is not priced; its econ stays blank until Steven prices it
+records [('delaware', 19), ('midland', 30)]; box_scout_locations by basin {'delaware': 42833} -> {'delaware': 42833, 'midland': 28801} (midland expected 28,801; econ on 0 of 28,801)
+rehearsal — rolled back (pass --commit)

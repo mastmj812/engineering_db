@@ -1,7 +1,8 @@
 """curated.box_scout_locations (sql/69) — static checks, no database.
 
-Pins (v2, Michael 2026-10-21: "as simple as possible"): the view holds ONLY undrilled stick
-locations with a BOX record-run forecast AND Steven's priced default-deck econ; it carries the
+Pins (v2, Michael 2026-10-21: "as simple as possible"; v4 2026-11-04): the view holds every undrilled
+stick location with a BOX record-run forecast, Steven's default-deck econ for THAT run where he has
+priced it and blank where not (never an older run's econ); it carries the
 minimal land-facing column set (no reconciliation / coverage / Novi tag / NPV / screen_pass
 columns); and every script that rebuilds curated.erebor_locations (sql/22, whose DROP ...
 CASCADE drops this view) re-creates it right after.
@@ -64,17 +65,20 @@ def test_minimal_column_set():
         assert gone not in _code(BODY), gone
 
 
-def test_rows_are_priced_forecast_locations_only():
+def test_rows_are_record_forecast_locations_econ_blank_until_priced():
     code = _code(BODY)
     assert "FROM box.forecast_run WHERE is_record" in code
     assert "bp.coverage IN ('covered', 'covered_provisional')" in code
-    # econ is an INNER join on the default deck's newest assumption set, priced rows only
-    assert "JOIN box_econ.box_pud_econ be" in code and "LEFT JOIN box_econ" not in code
+    # v4: econ is a LEFT join (rows never depend on pricing) on the default deck's newest assumption set, priced rows only
+    assert "LEFT JOIN box_econ.box_pud_econ be" in code
+    assert not re.search(r"(?m)^JOIN box_econ\.box_pud_econ be", code)
     assert "e.deck_id = 'wti70_hh3'" in code and "AND be.pv10_mm IS NOT NULL" in code
+    # ... and only ever the record run's own econ, never an older run's
+    assert "be.run_id = bp.run_id" in code and "JOIN run ON e.run_id = run.run_id" in code
     # D130 (sql/70): one record run per basin, so the econ case is picked PER record run and joined on its run_id
     assert "SELECT DISTINCT ON (g.run_id)" in code
     assert "ORDER BY g.run_id, g.built_at DESC NULLS LAST, g.assumption_set_id DESC" in code
-    assert "JOIN econ_case ON econ_case.run_id = bp.run_id" in code and "JOIN econ_case ON true" not in code
+    assert "LEFT JOIN econ_case ON econ_case.run_id = bp.run_id" in code and "JOIN econ_case ON true" not in code
     # undrilled only (our reconciliation), no PDP — the filter is applied, the column is not shown
     assert "el.recon_status IS DISTINCT FROM 'realized_drift'" in code
     assert "el.category <> 'PDP'" in code
@@ -114,8 +118,12 @@ def test_every_sql22_caller_recreates_the_view():
 
 def test_checks_cover_identity_and_tieout():
     labels = [label for label, _ in app.checks("v_src")]
-    for need in ("rows", "expected rows (priced forecast locations, not realized)", "blank oil EUR or PV10 (must be 0)",
-                 "deck labels", "oil EUR view vs box (MMbbl)"):
+    for need in ("rows", "expected rows (record-run forecast locations, not realized)", "blank oil EUR (must be 0)",
+                 "priced rows (PV10 present) / expected priced (own record run's default deck)",
+                 "econ columns half-filled (deck or push time without PV10, must be 0)", "deck labels", "oil EUR view vs box (MMbbl)"):
         assert need in labels
-    # the independent expected-row query must not be correlated per row (it timed out once)
+    # the independent expected-row queries must not be correlated per row (it timed out once)
     assert "WHERE run_id = bp.run_id" not in app._population()
+    assert "WHERE run_id = bp.run_id" not in app._population(app._PRICED)
+    # v4: the row population never joins econ; the priced subset does, on the record run's own econ only
+    assert "box_econ" not in app._population() and "be.run_id = bp.run_id" in app._PRICED

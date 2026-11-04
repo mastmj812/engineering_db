@@ -731,7 +731,44 @@ successor is priced and current.
 - Gate decision (Michael 2026-11-03, "Make it not covered"): the one Midland WCD stick with no water analog (1545426) is
   not_covered_no_analogs in the record, disclosed; the base run keeps it without water.
 
-NEXT = 23c on "go apply".
+**23c STARTED 2026-11-03** (`docs/box/step23-2026-11-03/live23c/`): sql/71 APPLIED LIVE (Michael "Go apply sql/71"; one
+transaction, 1.8 s, 0 violating rows beforehand, 11/11 constraints validated). Nothing served moved: the Delaware record is
+still run 19, `box_scout_locations` 42,833. **Delaware step-23 record STORED LIVE 2026-11-03 as run 27, NOT record** (Michael
+"Go store Delaware"; derived from the D117 record (run 25) on the 23a outcomes, sha 748a1fbe; dry run first, then commit, 2,124 s):
+48,072 forecast sticks / 25,386.6 MMbbl oil, every identity green and every coverage class equal to the rehearsed [31]; gas +
+water identical to run 25; 0 econ rows on run 27 (unpriced). The Delaware screens are unchanged: they read run 19 until the
+flip at 23d. **Midland base run STORED LIVE 2026-11-03 as run 28, NOT record** (Michael "Go store Midland base"; from
+`runs/step23/midland_record_base`, code 1aec6b3, data through 2026-08-01, built after the 11-03 nightly; 886 s): 32,541 forecast
+sticks / 13,520.1 MMbbl oil / 53,558.0 Bcf gas, every identity and class equal to the rehearsed [32]; no water yet; Midland
+box.location 4,157 -> 85,855, Delaware untouched. **Midland water STORED on run 28** (Michael "Go store Midland water";
+`--accept-no-water 1545426`; 880 s): 32,540 water streams / 61,188.8 MMbbl, 533,998 water analogs, all provisional, 14
+calculated-fallback; oil / gas rows unchanged; stick 1545426 (MID_WCD) stays without water, disclosed in
+`disclosure.water.without_water`. **Midland step-23 record STORED LIVE 2026-11-04 as run 30, NOT record** (Michael "yes lets
+build the midland record"; live re-measure on run 28 after the 11-04 nightly, outcomes sha 2c343215; dry run then commit, 1,593 s):
+28,801 forecast sticks / 11,078.0 MMbbl oil / 46,382.3 Bcf gas / 54,013.2 MMbbl water; 1545426 not_covered_no_analogs; every
+identity green. vs the rehearsed [36] (28,827 / 11,127.6): -26 sticks, -0.45 % oil, all from the re-measure. Cause: Novi
+re-issued DirectionalSurveys for 13,471 wells on 11-02/03 (2,952,761 rows ingested 11-04; 0 the day before); 7,238 Midland
+parent wellsticks went from 3 to 4 vertices, the shape the other 19,052 already had (`live23c/survey_revision_spotcheck.txt`):
+a data improvement, not a defect. The same revision moves the Delaware (read-only re-measure on run 25: 748 / 57,638 sticks
+change outcome, D150 oil 25,752.9 -> 25,790.5 MMbbl, +0.15 %). **Decided (Michael 2026-11-04, "Re-derive Delaware"): the
+Delaware step-23 record is RE-DERIVED from the D117 record (run 25) on the 11-04 measure (outcomes sha in
+`live23c/delaware_remeasure/`), stored live as run 32, NOT record** (dry run then commit, 2,430 s): 48,148 forecast sticks /
+25,421.0 MMbbl oil (run 27: 48,072 / 25,386.6; +76, +0.14 %); 31 re-admitted sticks carry run 25's refusal (was 127); identities
+green. Both step-23 records (Delaware run 32, Midland run 30) now read the same warehouse state (after the 11-04 nightly). Run 27
+is superseded: **PRUNED LIVE 2026-11-04** ("Go prune run 27"; `box_prune_runs --run 27 --apply`, one transaction, 5,017 s;
+kept 19 / 25 / 28 / 30 / 32, record 19 unchanged, 0 orphan rows). **Unpriced flip decided (Michael
+2026-11-04):** the step-23 records go live BEFORE Steven prices them; blank econ beats an older run's econ. sql/69 v4 APPLIED
+LIVE 2026-11-04 ("go apply sql/69 v4"; file sha 8986dbfd): `box_scout_locations` keeps every undrilled record-run forecast
+location, econ columns blank until Steven prices that run; today identical to v3 (42,833 Delaware rows, all priced, run 19).
+`flip --allow-unpriced` is the explicit switch. Run 19's econ is pruned about a day after the flip, not with it. NEXT, each on
+its own go: **BOTH FLIPPED LIVE 2026-11-04 ~19:55 UTC** ("Go flip both"; after the 18:38 backstop ETL finished, re-rehearsed,
+then `flip --allow-unpriced --commit` per basin): **Delaware record = run 32** (box_scout_locations 42,833 priced -> 48,148,
+econ blank), **Midland record = run 30** (0 -> 28,801, econ blank); run 19 superseded_by 32, its 687,520 econ rows kept for a
+revert. erebor (local main fast-forwarded to #30) reads both records, priced=false, D150 popups correct. NEXT, each on its
+own go: Steven prices runs 32 + 30 (asked 2026-11-04 in #eng-updates, ts 1793822595.781589), run 19 pruned with --include-priced ~1 day after the flip, then 25 + 28. **D151 tiers WRITTEN to `box.bench_scope.validation` 2026-11-04** (Michael "yes, please do"; one
+transaction: WCB_1 / WCB_2 / JM / MS / DEAN / WCC validated -> provisional, the column default since sql/63; all nine in-scope
+Midland rows' decision_ref + the D151 gate-21c reference; 0 disagreements with run 30's tiers; Delaware rows untouched;
+`live23c/d151_tiers.txt`). #eng-updates post SENT 2026-11-04.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 

@@ -1,0 +1,4 @@
+sql/71 sha256 644339f6825d58e3
+target (<live server address redacted>, 'postgres', 'postgres')
+constraints present + validated: 11/11; old sql/65 checks left: []
+COMMITTED sql/71 (1.8 s)

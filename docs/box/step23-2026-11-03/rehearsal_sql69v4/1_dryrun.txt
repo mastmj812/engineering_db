@@ -1,0 +1,26 @@
+[dry-run] READ ONLY: sql/69 body inline, nothing created
+    rows (0.7s): (76899, 76899)
+    expected rows (record-run forecast locations, not realized) (0.2s): (76899,)
+    forecast locations left out as realized (0.1s): (0,)
+    blank oil EUR (must be 0) (0.3s): (0,)
+    priced rows (PV10 present) / expected priced (own record run's default deck) (1.7s): (76899, 76899)
+    priced / unpriced rows by basin (informational) (2.6s): [('delaware', 48072, 0), ('midland', 28827, 0)]
+    econ columns half-filled (deck or push time without PV10, must be 0) (0.6s): (0,)
+    deck labels (0.5s): []
+    oil EUR view vs box (MMbbl) (0.8s): (Decimal('36514.239'), Decimal('36514.239'))
+    per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft (0.5s): (0, 76899)
+    tier tally (0.7s): [('delaware', 'provisional', 25210), ('delaware', 'validated', 22862), ('midland', 'provisional', 14035), ('midland', 'validated', 14792)]
+    irr blank (informational) (2.4s): (76899,)
+    tvd_ft blank / permit-round (multiple of 100) / min / max (informational) (0.7s): (0, 897, 1123.0, 14462.0)
+    OK   rows == record-run forecast locations on the map, minus realized (priced or not, v4)
+    OK   stick_id unique
+    OK   every row carries oil EUR
+    OK   econ only where Steven priced the record run itself (no older run's econ)
+    OK   econ columns blank together
+    OK   at most one econ deck label
+    OK   oil EUR ties to box.pud_forecast_stream exactly
+    note: 0 rows where SUM(EUR)/SUM(lateral_ft) is not the stored per-ft basis
+    note: bbox plan uses idx_erebor_locations_geom: True
+    timing full scan: 2.44s (76899, 76899)
+    timing township bbox: 0.31s (215, 215)
+=== OK in 15s ===

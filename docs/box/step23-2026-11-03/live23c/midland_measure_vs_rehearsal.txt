@@ -1,0 +1,53 @@
+columns ['key', 'location_id', 'stick_id', 'formation_blueox', 'bench', 'coverage', 'recon_status', 'oil_eur', 'prox_factor', 'gas_eur', 'water_eur', 'tvd_ft', 'deplet_t', 'operator', 'outcome', 'factor', 'F_rule', 'n_parents_d150', 'pattern_d150', 'incumbent_outcome', 'keep', 'n_same', 'dv_same', 'dh_same', 'pb_same', 'flanked_same', 'band_same', 'n_topfill', 'dv_topfill', 'dh_topfill', 'pb_topfill', 'flanked_topfill', 'band_topfill', 'n_underfill', 'dv_underfill', 'dh_underfill', 'pb_underfill', 'flanked_underfill', 'band_underfill', 'config_class']
+key stick_id 32541 32541
+matched 32541
+sticks whose outcome changed 1101
+outcome_l              factor_multi_parent  ...  no_forecast_spacing
+outcome_r                                   ...                     
+factor_multi_parent                      0  ...                   62
+factor_single_parent                   140  ...                    3
+level_unexposed                         22  ...                    0
+no_forecast_package                      0  ...                    0
+no_forecast_pattern                    105  ...                   37
+no_forecast_precedent                   19  ...                    2
+no_forecast_spacing                     83  ...                    0
+
+[7 rows x 6 columns]
+  changed n_same: 339
+  changed prec_multi: 165
+  changed prec_package: 165
+forecast sticks with same outcome, factor changed >1e-9: 8627
+outcome_l              factor_multi_parent  factor_single_parent  level_unexposed  no_forecast_package  no_forecast_pattern  no_forecast_precedent  no_forecast_spacing
+outcome_r                                                                                                                                                              
+factor_multi_parent                  18787                   113               19                    0                  149                     27                   62
+factor_single_parent                   140                  2013               49                    0                    0                      0                    3
+level_unexposed                         22                   154             7290                    0                    0                      0                    0
+no_forecast_package                      0                     0                0                    2                    1                      0                    0
+no_forecast_pattern                    105                     0                0                    0                 1973                      2                   37
+no_forecast_precedent                   19                     1                3                    0                    2                    553                    2
+no_forecast_spacing                     83                     3                1                    0                   92                     12                  822
+columns that differ (sticks): {'band_underfill': 26044, 'pb_underfill': 25791, 'band_same': 25444, 'pb_same': 24940, 'config': 23742, 'band_topfill': 20607, 'pb_topfill': 20133, 'haircut_key': 19176, 'pair_key': 18376, 'config_class': 15138, 'factor': 11405, 'F_rule': 11405, 'n_parents_d150': 5939, 'dh_topfill': 4236, 'n_parents_total': 3623, 'dv_topfill': 3152, 'dh_same': 2632, 'n_topfill': 2455, 'dh_underfill': 2316, 'dv_same': 2048, 'dv_underfill': 1716, 'factor_table': 1653, 'pattern_d150': 1535, 'incumbent_outcome': 1373, 'incumbent_raw': 1373, 'n_same': 1258, 'n_underfill': 1204, 'outcome': 1101, 'prec_multi': 853, 'prec_package': 852, 'n_recent_producers': 552, 'flanked_topfill': 479, 'keep': 456, 'flanked_underfill': 302, 'flanked_same': 300, 'n_permit_parents': 263, 'deplet_t': 245}
+same-outcome forecast sticks: factor live/rehearsal quantiles {0.0: 0.6904, 0.01: 0.8987, 0.05: 0.9636, 0.5: 1.0, 0.95: 1.0135, 0.99: 1.0601, 1.0: 1.3024}
+<class 'pandas.DataFrame'> (270872, 15)
+    child      parent child_bench parent_bench      cls     rel  age_days   dz_ft   dv_ft       dh_ft   overlap  permit  shielded      dxy_ft rel_asof
+0  171403  4232939977       WCA_1        WCB_1  topfill  parent      4032   196.0   196.0  249.078281  0.992801   False     False  249.078281   parent
+1  171403  4232940468       WCA_1        WCA_1     same  parent      3749    -8.0     8.0  631.212000  0.996399   False     False  631.212000   parent
+2  171403  4232943845       WCA_1          WCD  topfill  parent      2203  1418.0  1418.0  353.672225  0.990557   False     False  353.672225   parent
+['child', 'parent', 'child_bench', 'parent_bench', 'cls', 'rel', 'age_days', 'dz_ft', 'dv_ft', 'dh_ft', 'overlap', 'permit', 'shielded', 'dxy_ft', 'rel_asof']
+runs/step23/rehearsal/midland child sample 171403 key sample 171403 loc 171403
+runs/step23/live/midland_measure child sample 171250 key sample 171250 loc 171250
+link pairs: {'both': 263420, 'left_only': 7452, 'right_only': 2886}
+  parent_bench: 2243 of 263420 differ e.g. {('LSSH', 'JM'): 670, ('WCC', 'WCB_2'): 233, ('JM', 'LSSH'): 92, ('DEAN', 'LSSH'): 91, ('LSSH', 'WCA_1'): 90, ('DEAN', 'WCB_1'): 80}
+  cls: 1662 of 263420 differ e.g. {('same', 'topfill'): 589, ('underfill', 'same'): 544, ('topfill', 'underfill'): 166, ('topfill', 'same'): 139, ('underfill', 'topfill'): 131, ('same', 'underfill'): 93}
+  rel: 0 of 263420 differ
+  age_days: 311 of 263420 differ age diff: {-23.0: 42, -2.0: 40, 7.0: 22, -14.0: 20, 1.0: 20}
+  dv_ft: 46402 of 263420 differ
+  dh_ft: 72163 of 263420 differ
+  overlap: 68445 of 263420 differ
+  permit: 1009 of 263420 differ
+  shielded: 0 of 263420 differ
+  rel_asof: 0 of 263420 differ
+new parent api10s in live: 1363  dropped: 3138
+parents with any dh change: 7238 of 26290 ; of those, all links changed: 7238
+sticks with any dh change: 20215 of 26517 ; of those, all links changed: 1027
+dh change size ft quantiles: {0.5: 140.5, 0.9: 442.2, 0.99: 805.9, 1.0: 1709.3}
