@@ -761,7 +761,11 @@ kept 19 / 25 / 28 / 30 / 32, record 19 unchanged, 0 orphan rows). **Unpriced fli
 LIVE 2026-11-04 ("go apply sql/69 v4"; file sha 8986dbfd): `box_scout_locations` keeps every undrilled record-run forecast
 location, econ columns blank until Steven prices that run; today identical to v3 (42,833 Delaware rows, all priced, run 19).
 `flip --allow-unpriced` is the explicit switch. Run 19's econ is pruned about a day after the flip, not with it. NEXT, each on
-its own go: both flips (--allow-unpriced), the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
+its own go: **BOTH FLIPPED LIVE 2026-11-04 ~19:55 UTC** ("Go flip both"; after the 18:38 backstop ETL finished, re-rehearsed,
+then `flip --allow-unpriced --commit` per basin): **Delaware record = run 32** (box_scout_locations 42,833 priced -> 48,148,
+econ blank), **Midland record = run 30** (0 -> 28,801, econ blank); run 19 superseded_by 32, its 687,520 econ rows kept for a
+revert. erebor (local main fast-forwarded to #30) reads both records, priced=false, D150 popups correct. NEXT, each on its
+own go: Steven prices runs 32 + 30, run 19 pruned with --include-priced ~1 day after the flip, then 25 + 28; the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
