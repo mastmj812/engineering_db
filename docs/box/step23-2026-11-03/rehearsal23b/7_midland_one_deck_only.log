@@ -1,0 +1,28 @@
+REFUSED: run 34 is not priced like the midland record — flipping now would blank erebor's econ and curated.box_scout_locations (2026-10-30). Wait for Steven.
+{
+ "forecast_locations": 28828,
+ "outgoing_record": null,
+ "deck_reference_run": 31,
+ "decks_required": [
+  "wti60_hh1",
+  "wti60_hh2",
+  "wti60_hh3",
+  "wti60_hh4",
+  "wti70_hh1",
+  "wti70_hh2",
+  "wti70_hh3",
+  "wti70_hh4",
+  "wti80_hh1",
+  "wti80_hh2",
+  "wti80_hh3",
+  "wti80_hh4",
+  "wti90_hh1",
+  "wti90_hh2",
+  "wti90_hh3",
+  "wti90_hh4"
+ ],
+ "priced_by_deck": {
+  "wti70_hh3": 28828
+ },
+ "ok": false
+}

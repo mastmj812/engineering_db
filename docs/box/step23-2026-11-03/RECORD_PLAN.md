@@ -203,8 +203,11 @@ in-extent drillable (21b keep set exactly); refused: pattern 2,221, spacing 913,
 Multi / single / unexposed here count the D150 parents: dv ≤ 1,000 ft, dh ≤ 2,640 ft, ≥ 30 % alongside, every existing producer.
 The incumbent's D113 classes are narrower. D150 mean factor: multi 0.897, single 1.033, unexposed 1.067.
 
-**Base-run oil / gas** (the full read-only build, `runs/step23/midland_base`, data through 2026-08-01, as-delivered haircut):
-MID_BUILD
+**Base-run oil / gas** (filled at 23b; the full read-only build `runs/step23/midland_record_base`, code `1aec6b3`, data through
+2026-08-01, WCA_1 haircut recomputed per D154 (a)): 32,541 forecast, oil 13,520.1 MMbbl, gas 53,558.0 Bcf. With D150 applied, the record
+keeps 28,827 forecast sticks (the live re-measure keeps 28,828, +19 vs the 28,809 above; one no-water stick is not covered at gate 23b)
+carrying oil 11,127.6 MMbbl and gas 46,466.3 Bcf. Per bench:
+`REHEARSAL_23B.md` §4.2.
 
 ---
 

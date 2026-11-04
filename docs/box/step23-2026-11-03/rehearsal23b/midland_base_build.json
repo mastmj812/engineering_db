@@ -1,0 +1,123 @@
+{
+ "code_sha": "1aec6b3efee24c30f02bac058d3df5ef3bc7c3b3",
+ "data_through": "2026-08-01",
+ "groups": {
+  "MID_WCA_1": {
+   "tier": "validated",
+   "spec": "mid_r2c_wf",
+   "in_extent": 5121,
+   "forecast": 5121,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 1715.3569258248,
+   "gas_bcf": 9297.858815988944
+  },
+  "MID_WCB_1": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 5477,
+   "forecast": 5477,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 2081.209215260198,
+   "gas_bcf": 11535.680822302671
+  },
+  "MID_WCB_2": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 849,
+   "forecast": 849,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 325.3445208080114,
+   "gas_bcf": 2465.8521431099493
+  },
+  "MID_WCC": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 692,
+   "forecast": 692,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 297.35147252466464,
+   "gas_bcf": 1533.831813184749
+  },
+  "MID_WCD": {
+   "tier": "validated",
+   "spec": "mid_r2c",
+   "in_extent": 3589,
+   "forecast": 3589,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 1563.2944948974014,
+   "gas_bcf": 5357.460082458097
+  },
+  "MID_MS": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 4160,
+   "forecast": 4160,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 1816.601155299328,
+   "gas_bcf": 5207.024739078112
+  },
+  "MID_JM": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 4088,
+   "forecast": 4088,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 2121.2413861794967,
+   "gas_bcf": 6786.523067906076
+  },
+  "MID_LSSH": {
+   "tier": "validated",
+   "spec": "mid_r2c",
+   "in_extent": 7238,
+   "forecast": 7238,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 2968.924151342189,
+   "gas_bcf": 9768.700184281717
+  },
+  "MID_DEAN": {
+   "tier": "provisional",
+   "spec": "mid_r2c",
+   "in_extent": 1327,
+   "forecast": 1327,
+   "equivalence": {
+    "n": 24,
+    "max_rel_diff": 0.0,
+    "variant": "mid_r2"
+   },
+   "oil_mmbbl": 630.7799031579784,
+   "gas_bcf": 1605.052893332099
+  }
+ }
+}

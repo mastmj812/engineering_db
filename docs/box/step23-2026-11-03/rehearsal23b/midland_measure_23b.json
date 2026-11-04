@@ -1,0 +1,117 @@
+{
+ "source_run": 32,
+ "data_through": "2026-08-01",
+ "n_sticks": 32541,
+ "src_forecast": 32541,
+ "outcomes": {
+  "factor_multi_parent": 19157,
+  "level_unexposed": 7466,
+  "factor_single_parent": 2205,
+  "no_forecast_pattern": 2117,
+  "no_forecast_spacing": 1013,
+  "no_forecast_precedent": 580,
+  "no_forecast_package": 3
+ },
+ "incumbent_outcomes_now": {
+  "as_is_unexposed": 14456,
+  "haircut": 11031,
+  "as_is_single_parent": 3341,
+  "no_forecast_pattern": 2117,
+  "no_forecast_spacing": 1013,
+  "no_forecast_precedent": 580,
+  "no_forecast_package": 3
+ },
+ "incumbent_moved_vs_source": 32541,
+ "dropped_no_precedent_now": 3713,
+ "readmitted_needs_source_rows": 0,
+ "realized_since_source": 0,
+ "conflict_now_forecast": 0,
+ "factor": {
+  "mean": 0.9538804357696464,
+  "min": 0.5027401616519183,
+  "max": 1.0673947845823253,
+  "share_gt_1": 0.466386846121826
+ },
+ "expected_forecast": 28828,
+ "oil_src_mmbbl": 11730.391518521423,
+ "oil_new_mmbbl": 11127.962562071087,
+ "by_bench": [
+  {
+   "formation_blueox": "DEAN",
+   "n": 922,
+   "oil_src_mmbbl": 418.1266715537131,
+   "oil_new_mmbbl": 409.3205390742171,
+   "gas_bcf": 1045.7449545111936,
+   "water_mmbbl": 802.3821472452757
+  },
+  {
+   "formation_blueox": "JM",
+   "n": 3422,
+   "oil_src_mmbbl": 1731.8446592822993,
+   "oil_new_mmbbl": 1583.5230548147279,
+   "gas_bcf": 5543.530354163778,
+   "water_mmbbl": 6274.589073025036
+  },
+  {
+   "formation_blueox": "LSSH",
+   "n": 6801,
+   "oil_src_mmbbl": 2762.4872302130175,
+   "oil_new_mmbbl": 2577.344910092967,
+   "gas_bcf": 9126.74071726665,
+   "water_mmbbl": 8746.301347836998
+  },
+  {
+   "formation_blueox": "MS",
+   "n": 3885,
+   "oil_src_mmbbl": 1669.0673943507072,
+   "oil_new_mmbbl": 1596.0274567410133,
+   "gas_bcf": 4799.67971291035,
+   "water_mmbbl": 8647.513173322215
+  },
+  {
+   "formation_blueox": "WCA_1",
+   "n": 4579,
+   "oil_src_mmbbl": 1502.8169754931585,
+   "oil_new_mmbbl": 1418.5590492033637,
+   "gas_bcf": 8140.986178126459,
+   "water_mmbbl": 14995.09706251279
+  },
+  {
+   "formation_blueox": "WCB_1",
+   "n": 4740,
+   "oil_src_mmbbl": 1760.8105415728373,
+   "oil_new_mmbbl": 1663.7859691415565,
+   "gas_bcf": 9830.882718644978,
+   "water_mmbbl": 8690.656589235627
+  },
+  {
+   "formation_blueox": "WCB_2",
+   "n": 687,
+   "oil_src_mmbbl": 259.3968409557446,
+   "oil_new_mmbbl": 258.58616425531756,
+   "gas_bcf": 2006.733342832364,
+   "water_mmbbl": 945.0604702506333
+  },
+  {
+   "formation_blueox": "WCC",
+   "n": 379,
+   "oil_src_mmbbl": 145.61924382717638,
+   "oil_new_mmbbl": 135.58855274023347,
+   "gas_bcf": 870.1400476386993,
+   "water_mmbbl": 733.2598196410513
+  },
+  {
+   "formation_blueox": "WCD",
+   "n": 3413,
+   "oil_src_mmbbl": 1480.22196127277,
+   "oil_new_mmbbl": 1485.2268660076918,
+   "gas_bcf": 5102.573418814503,
+   "water_mmbbl": 4334.408636743856
+  }
+ ],
+ "n_links": 270872,
+ "seconds": 403,
+ "precedent_source": "runs/step21b/prox.pkl",
+ "code_sha": "e915b60ecf49b4a202d0de0d6ff77cf4792f3d4c",
+ "box_db": "rehearsal"
+}

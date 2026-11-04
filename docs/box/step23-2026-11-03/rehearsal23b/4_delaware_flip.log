@@ -1,0 +1,44 @@
+{
+ "forecast_locations": 48072,
+ "outgoing_record": 27,
+ "deck_reference_run": 27,
+ "decks_required": [
+  "wti60_hh1",
+  "wti60_hh2",
+  "wti60_hh3",
+  "wti60_hh4",
+  "wti70_hh1",
+  "wti70_hh2",
+  "wti70_hh3",
+  "wti70_hh4",
+  "wti80_hh1",
+  "wti80_hh2",
+  "wti80_hh3",
+  "wti80_hh4",
+  "wti90_hh1",
+  "wti90_hh2",
+  "wti90_hh3",
+  "wti90_hh4"
+ ],
+ "priced_by_deck": {
+  "wti60_hh1": 48072,
+  "wti60_hh2": 48072,
+  "wti60_hh3": 48072,
+  "wti60_hh4": 48072,
+  "wti70_hh1": 48072,
+  "wti70_hh2": 48072,
+  "wti70_hh3": 48072,
+  "wti70_hh4": 48072,
+  "wti80_hh1": 48072,
+  "wti80_hh2": 48072,
+  "wti80_hh3": 48072,
+  "wti80_hh4": 48072,
+  "wti90_hh1": 48072,
+  "wti90_hh2": 48072,
+  "wti90_hh3": 48072,
+  "wti90_hh4": 48072
+ },
+ "ok": true
+}
+records [('delaware', 31)]; box_scout_locations by basin {'delaware': 48809} -> {'delaware': 48072} (delaware expected 48,072)
+COMMITTED: run 31 is the delaware record

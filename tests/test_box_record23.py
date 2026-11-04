@@ -157,3 +157,51 @@ def test_d154_haircut_of_record_is_the_recomputed_one():
     assert {int(k): v for k, v in gate["answers"]["a_wca1_haircut"]["factor"].items()} == pytest.approx(h, rel=1e-12)
     pack = json.loads((rc.ROOT / rc.DOCS / "midland_pack_recomputed.json").read_text(encoding="utf-8"))
     assert {int(k): v["factor"] for k, v in pack["groups"]["MID_WCA_1"]["haircut"]["oil"].items()} == pytest.approx(h, rel=1e-12)
+
+
+class _FakeBox:
+    """Just enough of box.forecast_run / pud_forecast / box_pud_econ for priced()."""
+
+    def __init__(self, runs: dict[int, tuple[str, bool]], n: dict[int, int], econ: dict[int, dict[str, int]]):
+        self.runs, self.n, self.econ = runs, n, econ
+
+    def __call__(self, sql: str, p: tuple = ()):
+        class R:
+            def __init__(self, rows): self.rows = rows
+            def fetchone(self): return self.rows[0] if self.rows else None
+            def fetchall(self): return self.rows
+        if "count(*) FROM box.pud_forecast" in sql:
+            return R([(self.n[p[0]],)])
+        if "basin <> %s AND is_record" in sql:
+            return R(sorted((r,) for r, (b, rec) in self.runs.items() if b != p[0] and rec)[:1])
+        if "basin = %s AND is_record" in sql:
+            return R([(r,) for r, (b, rec) in self.runs.items() if b == p[0] and rec])
+        if "SELECT DISTINCT deck_id" in sql:
+            return R([(d,) for d in self.econ.get(p[0], {})])
+        if "GROUP BY 1" in sql:
+            return R(list(self.econ.get(p[0], {}).items()))
+        raise AssertionError(sql)
+
+
+def test_priced_first_midland_record_needs_the_delaware_decks():
+    """23b: with no Midland record, a one-deck Midland run must NOT pass (it would flip and show nothing in sql/69)."""
+    from scripts import box_record23 as sr
+
+    decks = {"wti60_hh2": 10, "wti70_hh3": 10}
+    box = _FakeBox({1: (bsn.DELAWARE, True), 2: (bsn.MIDLAND, False)}, {1: 10, 2: 5}, {1: decks, 2: {"wti60_hh2": 5}})
+    p = sr.priced(box, 2, bsn.MIDLAND)
+    assert not p["ok"] and p["deck_reference_run"] == 1 and p["decks_required"] == sorted(decks)
+    box.econ[2] = {"wti60_hh2": 5, "wti70_hh3": 5}
+    assert sr.priced(box, 2, bsn.MIDLAND)["ok"]
+    box.econ[2] = {"wti60_hh2": 5, "wti70_hh3": 4}  # one location short on one deck
+    assert not sr.priced(box, 2, bsn.MIDLAND)["ok"]
+
+
+def test_priced_with_no_record_anywhere_needs_the_default_deck():
+    from scripts import box_record23 as sr
+
+    box = _FakeBox({2: (bsn.MIDLAND, False)}, {2: 5}, {2: {"wti60_hh2": 5}})
+    assert not sr.priced(box, 2, bsn.MIDLAND)["ok"]
+    box.econ[2][sr.DEFAULT_DECK] = 5
+    assert sr.priced(box, 2, bsn.MIDLAND)["ok"]
+    assert not sr.priced(_FakeBox({3: (bsn.MIDLAND, False)}, {3: 0}, {3: {}}), 3, bsn.MIDLAND)["ok"]
