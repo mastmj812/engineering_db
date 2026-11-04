@@ -1,13 +1,13 @@
-county,formation_blueox,3BSPGS -> XY,A -> B1,B1 -> B2,B2 -> C,XY -> A,above 3BSPGS,below C,no grid,no position
-Eddy,WCA_1,11,849,23,19,163,0,5,0,7
-Eddy,WCA_2,6,546,101,22,27,0,5,0,2
-Eddy,WCB_1,1,33,47,25,2,0,6,0,1
-Eddy,WCB_2,0,5,15,187,1,0,8,0,0
-Eddy,WCC,1,9,3,453,1,0,66,0,0
-Eddy,WCXY,14,228,8,1,192,2,1,0,0
-Lea,WCA_1,26,648,67,36,206,1,4,1,0
-Lea,WCA_2,11,500,92,54,67,0,13,0,0
-Lea,WCB_1,1,90,104,79,3,0,7,0,0
-Lea,WCB_2,0,3,18,152,0,1,2,0,0
-Lea,WCC,0,4,4,59,0,0,17,0,1
-Lea,WCXY,11,122,1,0,149,0,0,0,0
+county,formation_blueox,3BSPGS -> XY,A -> B1,B1 -> B2,B2 -> C,XY -> A,above 3BSPGS,below C,no position
+Eddy,WCA_1,5,662,21,9,126,0,3,7
+Eddy,WCA_2,3,451,85,19,17,0,4,1
+Eddy,WCB_1,1,28,39,16,2,0,5,1
+Eddy,WCB_2,0,5,12,153,1,0,5,0
+Eddy,WCC,0,2,3,388,0,0,63,0
+Eddy,WCXY,12,192,4,0,156,2,1,0
+Lea,WCA_1,20,582,60,29,168,1,4,0
+Lea,WCA_2,5,434,84,45,59,0,11,1
+Lea,WCB_1,1,74,87,71,3,0,6,0
+Lea,WCB_2,0,2,12,129,0,1,1,0
+Lea,WCC,0,2,3,46,0,0,14,1
+Lea,WCXY,6,105,1,0,136,0,0,0

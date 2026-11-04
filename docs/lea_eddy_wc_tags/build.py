@@ -22,6 +22,13 @@ WCXY from Enverus. Rule V (fixed before any card was drawn): such a well, with >
 of LADDER_FT); flagged when the nearest rung is a WCB / WCC bench, destination = that bench. Cards follow the tag screen
 (5 per class, sequential gate at qc_rule.CLASS_GATE via box.tag_screen.decide). The seed this writes is a PROPOSAL for
 review: proposed_override_seed.csv, outside seeds/, never loaded.
+
+Planned surveys (Michael 2026-11-04): a well whose directional survey is the pre-drill plan
+(directional_survey_is_planned) has a planned TVD AND a planned lateral path, so neither its depth nor its position
+is evidence. Such wells are never judged (rule V subjects), never used as depth evidence (3-mi WCA medians, the WCA
+plane, the producer grid table, the sensitivity) and never drawn on a card (GOONCH FEDERAL COM 0409 #234H, planned,
+plotted on top of its stacked offset #214H). The live wca_delta_ft (sql/30) still counts them; the sensitivity table
+shows what dropping them does.
 """
 
 from __future__ import annotations
@@ -190,9 +197,10 @@ def rule_v(d: pd.DataFrame) -> pd.DataFrame:
     rungs = np.array(list(LADDER_FT.values()))
     names = np.array(list(LADDER_FT), dtype=object)
     b = v["v_below_wca_ft"].values
-    near = np.where(np.isnan(b), None, names[np.argmin(np.abs(np.nan_to_num(b)[:, None] - rungs[None, :]), axis=1)])
+    near = np.where(np.isnan(b), "no depth evidence", names[np.argmin(np.abs(np.nan_to_num(b)[:, None] - rungs[None, :]), axis=1)])
     v["v_rung"] = near
-    v["screen_rule"] = np.where(pd.Series(near, index=v.index).isin(["WCB_1", "WCB_2", "WCC"]), RULE, "")
+    v["screen_rule"] = np.where(pd.Series(near, index=v.index).isin(["WCB_1", "WCB_2", "WCC"]) & ~v["planned"], RULE, "")
+    v.loc[v["planned"], "v_rung"] = "planned survey: not judged"
     v["screen_dest"] = np.where(v["screen_rule"] == RULE, v["v_rung"], None)
     v["screen_class"] = np.where(v["screen_rule"] == RULE, v["formation_blueox"] + "->" + v["screen_dest"].astype(str) + f" ({RULE})", "")
     v["screen_margin"] = v["v_below_wca_ft"]
@@ -263,7 +271,8 @@ def main(argv: list[str] | None = None) -> int:
         d.loc[pos, col] = rel[col].values
 
     # ---- stick side --------------------------------------------------------------------------------------------
-    w = stick_diagnosis(sticks, d, stack, tr)
+    real = d[~d["planned"]]  # planned surveys are no evidence (module docstring)
+    w = stick_diagnosis(sticks, real, stack, tr)
     w = w.merge(rec[["stick_id", "coverage"]], on="stick_id", how="left")
     w["coverage"] = w["coverage"].fillna("not in record run")
     an = w[w["anom"]]
@@ -290,16 +299,19 @@ def main(argv: list[str] | None = None) -> int:
         .sort_values(["county", "stick_id"]).to_csv(a.out / "sticks_anomalous.csv", index=False)
 
     # ---- producer side -----------------------------------------------------------------------------------------
-    nm_wc = d[(d["st"] == "NM") & d["formation_blueox"].isin(["WCXY", "WCA_1", "WCA_2", "WCB_1", "WCB_2", "WCC"])]
+    nm_wc = real[(real["st"] == "NM") & real["formation_blueox"].isin(["WCXY", "WCA_1", "WCA_2", "WCB_1", "WCB_2", "WCC"])]
     prod_grid = pd.crosstab([nm_wc["county"], nm_wc["formation_blueox"]], nm_wc["grid_interval"])
     prod_grid.to_csv(a.out / "producers_nm_grid_interval.csv")
-    nm_wca = d[(d["st"] == "NM") & d["formation_blueox"].isin(WCA)]
-    screen_deep = set(d.loc[d["formation_blueox"].isin(WCA) & d["screen_dest"].isin(["WCB_1", "WCB_2", "WCC", "WCD"]), "api10"])
-    grid_deep = set(nm_wca.loc[nm_wca["grid_interval"].isin(GRID_IV[4:]), "api10"])
+    nm_wca = real[(real["st"] == "NM") & real["formation_blueox"].isin(WCA)]
+    screen_deep = set(real.loc[real["formation_blueox"].isin(WCA) & real["screen_dest"].isin(["WCB_1", "WCB_2", "WCC", "WCD"]), "api10"])
     v = rule_v(d)
     flagged = v[v["screen_rule"] == RULE]
-    sens = sensitivity(w, d, {"minus screen-flagged WCA->deeper": screen_deep, "minus rule-V class (all 89)": set(v["api10"]),
-                              "minus grid-deep NM WCA (upper bound)": grid_deep | screen_deep | set(v["api10"])})
+    grid_deep = set(nm_wca.loc[nm_wca["grid_interval"].isin(GRID_IV[4:]), "api10"])
+    sens = sensitivity(w, d, {"real surveys only (planned dropped)": set(d.loc[d["planned"], "api10"])})
+    sens = sens.join(sensitivity(w, real, {"real only, minus screen-flagged WCA->deeper": screen_deep,
+                                           "real only, minus rule-V flags": set(flagged["api10"]),
+                                           "real only, minus grid-deep NM WCA (upper bound)": grid_deep | screen_deep | set(flagged["api10"])})
+                     .drop(columns=["live wca_delta_ft", "recomputed (midpoints)"]))
     sens.to_csv(a.out / "sensitivity_wca_median.csv")
 
     cols = ["screen_class", "api10", "well_name", "operator", "county", "formation_blueox", "screen_dest", "novi_formation", "env_interval",
@@ -315,14 +327,16 @@ def main(argv: list[str] | None = None) -> int:
     cls.to_csv(a.out / "classes.csv")
 
     # cards: round 1 = ts.ROUND1 per class, cohort first, even across the margin (ts.sample)
-    xy = np.full((len(d), 2), np.nan)
-    xy[pos.values] = _project_xy_ft(d.loc[pos, "mid_lon"].values, d.loc[pos, "mid_lat"].values)
-    dd = d.copy()
+    dd = real.copy().reset_index(drop=True)  # cards never draw a planned-survey well
+    rp = dd["mid_lon"].notna() & dd["tvd_ft"].notna()
+    xy = np.full((len(dd), 2), np.nan)
+    xy[rp.values] = _project_xy_ft(dd.loc[rp, "mid_lon"].values, dd.loc[rp, "mid_lat"].values)
+    vr = v.set_index("api10")
     for c in ("v_below_wca_ft", "v_n_wca_wit", "screen_rule", "screen_dest", "screen_class", "screen_margin"):
-        dd[c] = v[c].reindex(dd.index) if c in v else None
+        dd[c] = dd["api10"].map(vr[c])
     rows, sections = [], []
     for name, g in flagged.groupby("screen_class"):
-        g = dd.loc[g.index]
+        g = dd[dd["api10"].isin(g["api10"])]
         pick = ts.sample(g, ts.ROUND1)
         sections.append(f"<h2 id=\"c{_esc(name)}\">{_esc(name)} — {len(g)} flagged ({int(g['cohort'].sum())} cohort); {len(pick)} cards</h2>"
                         + "".join(_card(dd, xy, s) for _, s in pick.iterrows()))
@@ -347,8 +361,9 @@ def main(argv: list[str] | None = None) -> int:
         "the tag screen counts it as no vote). Placed by TVD minus the median of clean WCA_1/WCA_2 witnesses within 1.5 mi (class wells excluded), "
         "nearest rung of the NM ladder (WCA 0 / WCB_1 +291 / WCB_2 +564 / WCC +814 ft). Mark each card <b>accept</b> or <b>reject</b> in "
         "<code>cards_sample.csv</code> (column <code>verdict</code>; a bench code = your own call on the well). Sequential gate as the tag screen: "
-        "5/5 accept takes the class, 0–1/5 rejects it, otherwise 5 more cards and 7/10. Nothing here is applied: accepted wells go to "
-        "ref.formation_tag_overrides only on your separate go, and the Delaware BOX record stays held on run 19 (D144).</div>"),
+        "5/5 accept takes the class, 0–1/5 rejects it, otherwise 5 more cards and 7/10. Planned-survey wells are neither judged nor drawn (their TVD and lateral path are the pre-drill plan). Nothing here is applied: "
+        "accepted wells go to ref.formation_tag_overrides only on your separate go; an apply moves them out of the Delaware BOX record's pools at its "
+        "next build.</div>"),
         _table(["class", "flagged", "cohort", "median ft below local WCA", "grid B1 or deeper", "grid above B1", "in a BOX record oil pool"],
                [[n, _fmt(int(r.n)), _fmt(int(r.n_cohort)), _fmt(r.median_below_wca_ft, 0), _fmt(int(r.grid_B1_or_deeper)), _fmt(int(r.grid_above_B1)),
                  _fmt(int(r.in_box_record_pool))] for n, r in cls.iterrows()]),
@@ -368,7 +383,7 @@ def main(argv: list[str] | None = None) -> int:
                       "screen_wca_to_deeper_delaware": len(screen_deep),
                       "screen_wca_to_deeper_nm": int(nm_wca["screen_dest"].isin(["WCB_1", "WCB_2", "WCC", "WCD"]).sum()),
                       "nm_wca_grid_B1_or_deeper": len(grid_deep),
-                      "rule_v_class": len(v), "rule_v_no_depth_evidence": int(v["v_below_wca_ft"].isna().sum()),
+                      "rule_v_class": len(v), "rule_v_planned_not_judged": int(v["planned"].sum()),
                       "rule_v_rungs": _int(v["v_rung"].value_counts()), "rule_v_flagged": len(flagged),
                       "rule_v_flagged_in_box_record_pool": int(in_pool["api10"].nunique())},
         "ladder_ft": LADDER_FT, "cards": len(rows), "classes": _int(flagged["screen_class"].value_counts()),
