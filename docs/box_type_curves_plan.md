@@ -733,7 +733,11 @@ successor is priced and current.
 
 **23c STARTED 2026-11-03** (`docs/box/step23-2026-11-03/live23c/`): sql/71 APPLIED LIVE (Michael "Go apply sql/71"; one
 transaction, 1.8 s, 0 violating rows beforehand, 11/11 constraints validated). Nothing served moved: the Delaware record is
-still run 19, `box_scout_locations` 42,833. NEXT, each on its own go: the Delaware derive from run 25, the Midland base run +
+still run 19, `box_scout_locations` 42,833. **Delaware step-23 record STORED LIVE 2026-11-03 as run 27, NOT record** (Michael
+"Go store Delaware"; derived from the D117 record (run 25) on the 23a outcomes, sha 748a1fbe; dry run first, then commit, 2,124 s):
+48,072 forecast sticks / 25,386.6 MMbbl oil, every identity green and every coverage class equal to the rehearsed [31]; gas +
+water identical to run 25; 0 econ rows on run 27 (unpriced). The Delaware screens are unchanged: they read run 19 until the
+flip at 23d. NEXT, each on its own go: the Midland base run +
 water (`--accept-no-water 1545426`), the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
