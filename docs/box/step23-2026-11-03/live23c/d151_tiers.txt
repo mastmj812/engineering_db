@@ -1,0 +1,22 @@
+target (<live server address redacted>, 5432, 'postgres')
+validation rows updated 6 | decision_ref rows annotated 9
+   ('midland', 'DEAN', True, 'validated') -> provisional
+   ('midland', 'JM', True, 'validated') -> provisional
+   ('midland', 'MS', True, 'validated') -> provisional
+   ('midland', 'WCB_1', True, 'validated') -> provisional
+   ('midland', 'WCB_2', True, 'validated') -> provisional
+   ('midland', 'WCC', True, 'validated') -> provisional
+COMMITTED
+--- fresh session
+   LSSH True validated | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   WCA_1 True validated | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   WCD True validated | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   DEAN True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   JM True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   MS True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   WCB_1 True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   WCB_2 True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+   WCC True provisional | D151 gate 21c (docs/box/step21c-2026-11-02/FINDINGS.md, GATE_21C.json)
+run 30 tiers vs bench_scope (benches where they disagree): []
+delaware rows unchanged count: [(14, 8)]
+records: [('delaware', 32), ('midland', 30)]
