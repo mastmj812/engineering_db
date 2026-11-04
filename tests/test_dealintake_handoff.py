@@ -136,6 +136,26 @@ def test_curves_zones_tab_order_and_scope(tmp_path):
     assert cs[0]["reserve_category"] == "UPSIDE"
 
 
+def test_pool_rule_rides_the_saved_filter_spec(tmp_path):
+    # Eggs Tyrone 2026-11-04: a WCB_2 cohort drawn from WCB_1 + WCB_2 tags, underfills only —
+    # the saved spec must say so, or anduin's buildup calls the WCB_1 members off-filter.
+    sig, prop = _sig()
+    sig["benches"]["WCB_2"]["pool_rule"] = {"tags": ["WCB_1", "WCB_2"], "below": ["WCA_1", "WCA_2"],
+                                            "min_standoff_ft": 400.0, "scenario_classes": ["underfill"],
+                                            "ref_radius_mi": [1.0, 2.0], "ref_min_wells": 3}
+    cs = handoff.plan_curves(sig, prop, tmp_path)
+    fs = cs[1]["save_body"]["filter_spec"]
+    assert fs["formations"] == ["WCB_1", "WCB_2"] and fs["scenario_classes"] == ["underfill"]
+    assert cs[1]["save_body"]["provenance"]["formations"] == ["WCB_1", "WCB_2"]
+    assert fs["dealintake"]["cohort_rule"] == ("reviewer pool rule: tags WCB_1, WCB_2; >= 400 ft below the local "
+                                               "WCA_1/WCA_2 median TVD; dev_scenario class underfill only")
+    assert fs["dealintake"]["pool_rule"]["min_standoff_ft"] == 400.0
+    assert set(fs) - {"dealintake"} == set(handoff.ANDUIN_DEFAULT_FILTER)   # no key anduin doesn't know
+    wcb1 = cs[0]["save_body"]["filter_spec"]                                 # no rule: unchanged
+    assert wcb1["formations"] == ["WCB_1"] and wcb1["scenario_classes"] == []
+    assert wcb1["dealintake"]["cohort_rule"] == "nearest" and "pool_rule" not in wcb1["dealintake"]
+
+
 def test_mixed_roles_block_the_curve(tmp_path):
     sig, prop = _sig()
     B = sig["benches"]["WCB_2"]
