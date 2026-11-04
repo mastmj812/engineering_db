@@ -1,5 +1,6 @@
--- sql/69 — curated.box_scout_locations: the land team's ONE table for BOX locations — every stick that
---          carries a BOX forecast AND Steven's econ, nothing else (Michael 2026-10-21)
+-- sql/69 — curated.box_scout_locations: the land team's ONE table for BOX locations — every undrilled stick
+--          that carries a BOX record-run forecast, with Steven's econ where he has priced it (Michael 2026-10-21;
+--          v4 2026-11-04)
 --
 -- WHY: the BOX numbers live across box.pud_forecast, box.pud_forecast_stream (one row per stream) and
 -- box_econ.box_pud_econ (one row per location x 16 decks x assumption set). This view joins them once,
@@ -22,11 +23,17 @@
 -- same column, so this is the depth BOX's forecast was screened at. It is NOT an offset-well median (rule 10 governs
 -- how WE derive a landing TVD for a new location; this column reports the depth of Novi's planned stick as-is).
 --
+-- v4 (Michael 2026-11-04, step 23): the record may go live BEFORE Steven prices it. Econ from an older run is worse than
+-- none, so the econ is joined ONLY on the record run itself and LEFT: every record-run forecast location stays in the view,
+-- and the econ columns (pv10_mm .. econ_pushed_at) are blank until Steven pushes econ for that run, then fill in on their
+-- own (plain view). Rows no longer depend on pricing; no column added. Edited in place (v2 / v3 precedent): every script
+-- that re-creates this view after sql/22 runs this file, so the definition of record stays in one place.
+--
 -- BOX: the record runs (box.forecast_run.is_record — one PER BASIN since D130 / sql/70; each stick's row comes from its
 -- own basin's record, and the econ case is picked per record run). EUR = raw 50-yr technical integral incl. the bench
 -- haircut and the D113 proximity oil factor. box_tier keeps validated and PROVISIONAL apart (D105).
--- ECON: Steven's box_econ.box_pud_econ for the record run, deck wti70_hh3 (WTI $70 / HH $3), its most
--- recently built assumption set — display only (D13: nothing here computes economics; econ never flows
+-- ECON: Steven's box_econ.box_pud_econ for the record run ONLY (never an older run's), deck wti70_hh3 (WTI $70 / HH $3),
+-- its most recently built assumption set; blank where that run is not priced (v4) — display only (D13: nothing here computes economics; econ never flows
 -- back into BOX). The view lives in curated, not box: nothing in box reads box_econ.
 --
 -- DEPENDS ON: curated.erebor_locations (sql/22 matview: geometry + name + reconciliation), box.forecast_run
@@ -87,8 +94,8 @@ JOIN box.pud_forecast bp
   ON bp.run_id = run.run_id AND bp.coverage IN ('covered', 'covered_provisional')
 JOIN curated.erebor_locations el
   ON el.stick_id = bp.stick_id AND el.category <> 'PDP'
-JOIN econ_case ON econ_case.run_id = bp.run_id
-JOIN box_econ.box_pud_econ be
+LEFT JOIN econ_case ON econ_case.run_id = bp.run_id  -- v4: blank econ until Steven prices the record run
+LEFT JOIN box_econ.box_pud_econ be
   ON be.run_id = bp.run_id AND be.location_id = bp.location_id
  AND be.deck_id = econ_case.deck_id AND be.assumption_set_id = econ_case.assumption_set_id
  AND be.pv10_mm IS NOT NULL
@@ -104,7 +111,7 @@ WHERE el.recon_status IS DISTINCT FROM 'realized_drift'
 GRANT SELECT ON curated.box_scout_locations TO analyst_ro;
 
 COMMENT ON VIEW curated.box_scout_locations IS
-'Land team''s BOX locations (sql/69): one row per undrilled stick location that has a BOX record-run forecast AND Steven''s default-deck econ (WTI $70 / HH $3) — nothing else. geom = the stick, EPSG 4326 LineString. box_tier: validated or provisional (report apart). EUR = raw 50-yr technical integral. Econ is Steven''s, display only (D13). Plain view: always current with the latest BOX record run and Steven''s latest push.';
+'Land team''s BOX locations (sql/69 v4): one row per undrilled stick location that has a BOX record-run forecast. Econ columns carry Steven''s default-deck econ (WTI $70 / HH $3) for THAT record run, and are blank until he has priced it (never an older run''s econ). geom = the stick, EPSG 4326 LineString. box_tier: validated or provisional (report apart). EUR = raw 50-yr technical integral. Econ is Steven''s, display only (D13). Plain view: always current with the latest BOX record run and Steven''s latest push.';
 COMMENT ON COLUMN curated.box_scout_locations.stick_id IS 'Location key (unique in this view).';
 COMMENT ON COLUMN curated.box_scout_locations.location_name IS 'Stick name.';
 COMMENT ON COLUMN curated.box_scout_locations.basin IS 'delaware / midland.';
@@ -120,11 +127,11 @@ COMMENT ON COLUMN curated.box_scout_locations.gas_eur_mcf IS 'BOX gas EUR, mcf.'
 COMMENT ON COLUMN curated.box_scout_locations.gas_eur_mcf_per_ft IS 'BOX gas EUR per lateral foot, mcf/ft.';
 COMMENT ON COLUMN curated.box_scout_locations.water_eur_bbl IS 'BOX water EUR, bbl.';
 COMMENT ON COLUMN curated.box_scout_locations.water_eur_bbl_per_ft IS 'BOX water EUR per lateral foot, bbl/ft.';
-COMMENT ON COLUMN curated.box_scout_locations.pv10_mm IS 'Steven''s PV10 at the econ_deck prices, $MM (display only).';
-COMMENT ON COLUMN curated.box_scout_locations.pv20_mm IS 'Steven''s PV20 at the econ_deck prices, $MM (display only).';
-COMMENT ON COLUMN curated.box_scout_locations.irr_pct IS 'Steven''s IRR, %; blank where he reports none. Summarise with a median, never a sum or mean.';
-COMMENT ON COLUMN curated.box_scout_locations.breakeven_wti_pv20 IS 'Steven''s breakeven WTI price at PV20, $/bbl (lower = better).';
-COMMENT ON COLUMN curated.box_scout_locations.capex_mm IS 'Steven''s capex, $MM.';
-COMMENT ON COLUMN curated.box_scout_locations.econ_deck IS 'Price deck of the econ columns (Steven''s default: WTI $70 / HH $3).';
+COMMENT ON COLUMN curated.box_scout_locations.pv10_mm IS 'Steven''s PV10 at the econ_deck prices, $MM (display only); blank until Steven prices this record run.';
+COMMENT ON COLUMN curated.box_scout_locations.pv20_mm IS 'Steven''s PV20 at the econ_deck prices, $MM (display only); blank until Steven prices this record run.';
+COMMENT ON COLUMN curated.box_scout_locations.irr_pct IS 'Steven''s IRR, %; blank where he reports none or has not yet priced this record run. Summarise with a median, never a sum or mean.';
+COMMENT ON COLUMN curated.box_scout_locations.breakeven_wti_pv20 IS 'Steven''s breakeven WTI price at PV20, $/bbl (lower = better); blank until Steven prices this record run.';
+COMMENT ON COLUMN curated.box_scout_locations.capex_mm IS 'Steven''s capex, $MM; blank until Steven prices this record run.';
+COMMENT ON COLUMN curated.box_scout_locations.econ_deck IS 'Price deck of the econ columns (Steven''s default: WTI $70 / HH $3); blank until Steven prices this record run.';
 COMMENT ON COLUMN curated.box_scout_locations.box_run_id IS 'BOX record run the forecast comes from (its basin''s record: one record run per basin, D130).';
-COMMENT ON COLUMN curated.box_scout_locations.econ_pushed_at IS 'When Steven pushed these econ numbers.';
+COMMENT ON COLUMN curated.box_scout_locations.econ_pushed_at IS 'When Steven pushed these econ numbers; blank until Steven prices this record run.';

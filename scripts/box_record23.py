@@ -19,9 +19,11 @@ WRITES (each on its own explicit go; DB_* env points at the rehearsal container 
             derive the record candidate from run N (Delaware: run 25; Midland: the stored base run) in ONE transaction: oil rows x
             new / old factor, no-forecast sticks re-classed, D150 proximity rows, identities checked, ROLLED BACK unless --commit.
             Never makes a record (that is `flip`, its own go).
-    python -m scripts.box_record23 flip --basin B --run N [--commit]
+    python -m scripts.box_record23 flip --basin B --run N [--allow-unpriced] [--commit]
             make run N its basin's record. REFUSED unless Steven has priced run N (box_econ.box_pud_econ rows for every forecast
-            location on every deck the outgoing record carries) — the 2026-10-30 blank-econ flip is never repeated.
+            location on every deck the outgoing record carries) — the 2026-10-30 blank-econ flip is never repeated by accident —
+            or --allow-unpriced says blank econ is the choice (Michael 2026-11-04: blank beats an older run's econ; sql/69 v4
+            keeps the run's forecast locations with econ blank until Steven prices it).
 """
 
 from __future__ import annotations
@@ -738,12 +740,22 @@ def priced(q: Any, run: int, basin: str) -> dict[str, Any]:
 
 DEFAULT_DECK = "wti70_hh3"  # sql/69's deck (apply_box_scout_locations._CASE)
 _SCOUT_BY_BASIN = "SELECT basin, count(*) FROM curated.box_scout_locations GROUP BY 1"
-# what sql/69 must hold per basin after the flip: priced (default deck) record-run forecast locations on the map, minus realized
+# what sql/69 (v4) must hold per basin after the flip: the record run's forecast locations on the map, minus realized, priced or not
 _SCOUT_EXPECTED = ("SELECT count(*) FROM box.pud_forecast bp JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
                    "WHERE bp.run_id = %(run)s AND bp.coverage IN ('covered', 'covered_provisional') "
-                   "AND el.recon_status IS DISTINCT FROM 'realized_drift' AND el.recon_status IS DISTINCT FROM 'realized_phantom' "
-                   "AND EXISTS (SELECT 1 FROM box_econ.box_pud_econ e WHERE e.run_id = bp.run_id AND e.location_id = bp.location_id "
-                   "AND e.deck_id = %(deck)s AND e.pv10_mm IS NOT NULL)")
+                   "AND el.recon_status IS DISTINCT FROM 'realized_drift' AND el.recon_status IS DISTINCT FROM 'realized_phantom'")
+_SCOUT_PRICED = "SELECT count(*) FILTER (WHERE pv10_mm IS NOT NULL), count(*) FROM curated.box_scout_locations WHERE box_run_id = %s"
+
+
+def flip_refusal(p: dict[str, Any], allow_unpriced: bool) -> str | None:
+    """Why the flip must not go ahead, or None. An unpriced run flips only with --allow-unpriced (Michael 2026-11-04: blank econ
+    beats an older run's econ; the record may go live before Steven prices it, then his push fills the screens)."""
+    if p["forecast_locations"] == 0:
+        return "the run has no forecast locations"
+    if not p["ok"] and not allow_unpriced:
+        return ("not priced like the record: flipping would show blank econ in erebor and curated.box_scout_locations until Steven "
+                "prices it (2026-10-30). Pass --allow-unpriced to choose that (2026-11-04), or wait for Steven.")
+    return None
 
 
 def cmd_flip(a: argparse.Namespace) -> int:
@@ -758,16 +770,20 @@ def cmd_flip(a: argparse.Namespace) -> int:
                 raise SystemExit(f"run {a.run} is not a stored {a.basin} run ({b})")
             p = priced(q, a.run, a.basin)
             print(json.dumps(p, indent=1))
+            why = flip_refusal(p, a.allow_unpriced)
+            if why:
+                raise SystemExit(f"REFUSED: run {a.run}: {why}")
             if not p["ok"]:
-                raise SystemExit(f"REFUSED: run {a.run} is not priced like the {a.basin} record — flipping now would blank erebor's econ and "
-                                 "curated.box_scout_locations (2026-10-30). Wait for Steven.")
+                print(f"--allow-unpriced: run {a.run} is not priced; its econ stays blank until Steven prices it", flush=True)
             before = dict(q(_SCOUT_BY_BASIN).fetchall())
             q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE basin = %s AND is_record", (a.run, a.basin))
             q("UPDATE box.forecast_run SET is_record = true WHERE run_id = %s AND basin = %s", (a.run, a.basin))
             recs = q("SELECT basin, run_id FROM box.forecast_run WHERE is_record ORDER BY 1").fetchall()
             after = dict(q(_SCOUT_BY_BASIN).fetchall())
-            want = q(_SCOUT_EXPECTED, {"run": a.run, "deck": DEFAULT_DECK}).fetchone()[0]
-            print(f"records {recs}; box_scout_locations by basin {before} -> {after} ({a.basin} expected {want:,})")
+            want = q(_SCOUT_EXPECTED, {"run": a.run}).fetchone()[0]
+            n_priced, n_rows = q(_SCOUT_PRICED, (a.run,)).fetchone()
+            print(f"records {recs}; box_scout_locations by basin {before} -> {after} ({a.basin} expected {want:,}; "
+                  f"econ on {n_priced:,} of {n_rows:,})")
             if after.get(a.basin, 0) == 0 or after.get(a.basin, 0) != want:
                 conn.rollback()
                 raise SystemExit(f"box_scout_locations would hold {after.get(a.basin, 0):,} {a.basin} rows, not {want:,}: rolled back")
@@ -817,6 +833,8 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--basin", choices=(bsn.DELAWARE, bsn.MIDLAND), required=True)
     f.add_argument("--run", type=int, required=True)
     f.add_argument("--commit", action="store_true")
+    f.add_argument("--allow-unpriced", action="store_true",
+                   help="flip a run Steven has not priced: erebor + box_scout_locations show its forecasts with blank econ (2026-11-04)")
     a = ap.parse_args(argv)
     rc_ = {"pack": cmd_pack, "measure": cmd_measure, "store": cmd_store, "flip": cmd_flip}[a.cmd](a)
     return rc_ or (1 if _failures else 0)

@@ -205,3 +205,14 @@ def test_priced_with_no_record_anywhere_needs_the_default_deck():
     box.econ[2][sr.DEFAULT_DECK] = 5
     assert sr.priced(box, 2, bsn.MIDLAND)["ok"]
     assert not sr.priced(_FakeBox({3: (bsn.MIDLAND, False)}, {3: 0}, {3: {}}), 3, bsn.MIDLAND)["ok"]
+
+
+def test_flip_refuses_unpriced_unless_allowed():
+    # 2026-10-30: never blank econ by accident; 2026-11-04 (Michael): blank beats an older run's econ, as a stated choice
+    from scripts import box_record23 as sr
+
+    unpriced = {"forecast_locations": 10, "ok": False}
+    assert "--allow-unpriced" in sr.flip_refusal(unpriced, allow_unpriced=False)
+    assert sr.flip_refusal(unpriced, allow_unpriced=True) is None
+    assert sr.flip_refusal({"forecast_locations": 10, "ok": True}, allow_unpriced=False) is None
+    assert sr.flip_refusal({"forecast_locations": 0, "ok": False}, allow_unpriced=True)  # an empty run never flips

@@ -1,18 +1,19 @@
 """curated.box_scout_locations (sql/69): the land team's BOX locations view (Supabase).
 
-One row per undrilled stick location that has a BOX record-run forecast AND Steven's
-default-deck (wti70_hh3) econ — nothing else — for analyst_ro / QGIS (Michael 2026-10-21;
-v2 trimmed to priced locations and a minimal column set). Plain VIEW: no storage, no
-refresh, always current with the record run and Steven's latest push.
+One row per undrilled stick location that has a BOX record-run forecast, with Steven's
+default-deck (wti70_hh3) econ for THAT run where he has priced it, blank where not (v4,
+Michael 2026-11-04: the record may go live before Steven prices it; stale econ from an
+older run is worse than none) — for analyst_ro / QGIS (v2 2026-10-21: minimal column set).
+Plain VIEW: no storage, no refresh, always current with the record run and Steven's latest push.
 
   --dry-run (READ ONLY, creates nothing): runs every validation below against sql/69's
      SELECT inline, inside a read-only transaction.
 
   (no flag) — DDL on the shared warehouse, explicit go (cheap: a view, no data built):
      1. sql/69  DROP VIEW IF EXISTS + CREATE VIEW + GRANT analyst_ro + COMMENTs.
-     2. validate (same checks, on the view): rows == the record run's priced forecast
-        locations on the map minus realized, unique stick_id, no blank EUR / PV10, one
-        deck label, oil EUR tie-out, the per-ft lateral basis, tier tally, tvd_ft blank /
+     2. validate (same checks, on the view): rows == the record run's forecast locations on
+        the map minus realized, priced rows == those Steven priced (default deck, newest
+        assumption set), unique stick_id, no blank EUR, at most one deck label, oil EUR tie-out, the per-ft lateral basis, tier tally, tvd_ft blank /
         permit-round counts, analyst_ro SELECT, bbox plan + timings.
 
 `recreate(cur)` is the hook for every script that executes sql/22: that DROP ... CASCADE of
@@ -74,30 +75,39 @@ _CASE = ("SELECT run_id, assumption_set_id FROM ("
 
 def _population(extra: str = "") -> str:
     """The rows the view must hold, computed independently of it: each record run's (one per basin, D130) forecast
-    locations on the map (non-PDP), priced on that run's default-deck newest assumption set, minus realized."""
+    locations on the map (non-PDP), priced or not (v4)."""
     return (
         "FROM box.pud_forecast bp "
         "JOIN box.forecast_run fr ON fr.run_id = bp.run_id AND fr.is_record "
-        f"JOIN ({_CASE}) ec ON ec.run_id = bp.run_id "
         "JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
-        "JOIN box_econ.box_pud_econ be ON be.run_id = bp.run_id AND be.location_id = bp.location_id "
-        "AND be.deck_id = 'wti70_hh3' AND be.pv10_mm IS NOT NULL AND be.assumption_set_id = ec.assumption_set_id "
         f"{extra}"
         f"WHERE bp.coverage IN {FORECAST}"
     )
+
+
+# the subset that must carry econ: priced on its own record run's default-deck newest assumption set (never another run's)
+_PRICED = (f"JOIN ({_CASE}) ec ON ec.run_id = bp.run_id "
+           "JOIN box_econ.box_pud_econ be ON be.run_id = bp.run_id AND be.location_id = bp.location_id "
+           "AND be.deck_id = 'wti70_hh3' AND be.pv10_mm IS NOT NULL AND be.assumption_set_id = ec.assumption_set_id ")
 
 
 def checks(src: str) -> list[tuple[str, str]]:
     """(label, SQL) pairs over `src` (the view name, or the inline body as a subquery)."""
     return [
         ("rows", f"SELECT count(*), count(DISTINCT stick_id) FROM {src} v"),
-        ("expected rows (priced forecast locations, not realized)",
+        ("expected rows (record-run forecast locations, not realized)",
          f"SELECT count(*) {_population()} {NOT_REALIZED}"),
-        ("priced forecast locations left out as realized",
+        ("forecast locations left out as realized",
          f"SELECT count(*) {_population()} AND el.recon_status IN {REALIZED}"),
-        ("blank oil EUR or PV10 (must be 0)",
-         f"SELECT count(*) FROM {src} v WHERE v.oil_eur_bbl IS NULL OR v.pv10_mm IS NULL"),
-        ("deck labels", f"SELECT econ_deck, count(*) FROM {src} v GROUP BY 1"),
+        ("blank oil EUR (must be 0)", f"SELECT count(*) FROM {src} v WHERE v.oil_eur_bbl IS NULL"),
+        ("priced rows (PV10 present) / expected priced (own record run's default deck)",
+         (f"SELECT (SELECT count(*) FROM {src} v WHERE v.pv10_mm IS NOT NULL), "
+          f"(SELECT count(*) {_population(_PRICED)} {NOT_REALIZED})")),
+        ("priced / unpriced rows by basin (informational)",
+         f"SELECT v.basin, count(v.pv10_mm), count(*) - count(v.pv10_mm) FROM {src} v GROUP BY 1 ORDER BY 1"),
+        ("econ columns half-filled (deck or push time without PV10, must be 0)",
+         f"SELECT count(*) FROM {src} v WHERE v.pv10_mm IS NULL AND (v.econ_deck IS NOT NULL OR v.econ_pushed_at IS NOT NULL)"),
+        ("deck labels", f"SELECT econ_deck, count(*) FROM {src} v WHERE econ_deck IS NOT NULL GROUP BY 1"),
         ("oil EUR view vs box (MMbbl)",
          (f"SELECT round((SELECT sum(oil_eur_bbl) FROM {src} v)::numeric / 1e6, 3), "
           f"round((SELECT sum(s.eur) {_population(OIL_STREAM)} {NOT_REALIZED})::numeric / 1e6, 3)")),
@@ -119,7 +129,7 @@ def run_checks(cur, src: str) -> bool:
         t = time.monotonic()
         rows = cur.execute(q).fetchall()
         res[label] = rows
-        print(f"    {label} ({time.monotonic() - t:.1f}s): {rows if len(rows) > 1 else rows[0]}", flush=True)
+        print(f"    {label} ({time.monotonic() - t:.1f}s): {rows if len(rows) != 1 else rows[0]}", flush=True)
 
     def need(cond: bool, what: str) -> None:
         nonlocal ok
@@ -127,11 +137,14 @@ def run_checks(cur, src: str) -> bool:
         ok &= cond
 
     n, n_distinct = res["rows"][0]
-    need(n == res["expected rows (priced forecast locations, not realized)"][0][0],
-         "rows == priced record-run forecast locations on the map, minus realized")
+    need(n == res["expected rows (record-run forecast locations, not realized)"][0][0],
+         "rows == record-run forecast locations on the map, minus realized (priced or not, v4)")
     need(n == n_distinct, "stick_id unique")
-    need(res["blank oil EUR or PV10 (must be 0)"][0][0] == 0, "every row carries oil EUR and PV10")
-    need(len(res["deck labels"]) == 1, "one econ deck label")
+    need(res["blank oil EUR (must be 0)"][0][0] == 0, "every row carries oil EUR")
+    got, want = res["priced rows (PV10 present) / expected priced (own record run's default deck)"][0]
+    need(got == want, "econ only where Steven priced the record run itself (no older run's econ)")
+    need(res["econ columns half-filled (deck or push time without PV10, must be 0)"][0][0] == 0, "econ columns blank together")
+    need(len(res["deck labels"]) <= 1, "at most one econ deck label")
     v_oil, b_oil = res["oil EUR view vs box (MMbbl)"][0]
     need(v_oil == b_oil, "oil EUR ties to box.pud_forecast_stream exactly")
     off, _ = res["per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft"][0]
