@@ -30,10 +30,14 @@ from dealintake.render.dossier import _slug, _stream_rows, _transfer_rows
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
     COHORT_HEADERS,
+    NORMALIZE_COHORT_HEADERS,
+    NORMALIZE_HEADERS,
+    NORMALIZE_INTRO,
     PROXIMITY_HEADERS,
     buildup_rows,
     cohort_rows,
     di_pair,
+    normalize_rows,
     num,
     p_value,
     pct,
@@ -503,6 +507,20 @@ def render(run_dir: Path) -> Path:
             p.append(_table(BUILDUP_HEADERS, buildup_rows(G["tc_wells"], G.get("anduin_oil") or {})))
             p.append("</details>")
             _ = gname
+        nz = B.get("normalize")
+        if nz:
+            p.append(f'<h3 id="{_slug(f"{key}_normalize")}">Proximity + lateral normalization '
+                     f'{_chip("PROTOTYPE · report-only", "#7c3aed")}</h3>')
+            if nz.get("error"):
+                p.append(f'<div class="flag">prototype failed: {_esc(nz["error"])}</div>')
+            else:
+                p.append(f'<div class="meta">{_esc(NORMALIZE_INTRO)}</div>')
+                urows, wrows = normalize_rows(nz, name)
+                p.append(_table(NORMALIZE_HEADERS, urows))
+                p.append(f"<details><summary>Cohort B — {len(wrows)} nearest wells, radius {nz['radius_mi']:g} mi, "
+                         f"{_esc(nz['cohort_b_rule'])}, laterals {nz['lateral_window_ft'][0]:,.0f}–"
+                         f"{nz['lateral_window_ft'][1]:,.0f} ft</summary>"
+                         + _table(NORMALIZE_COHORT_HEADERS, wrows) + "</details>")
 
     # ---- decision log + handoff ---------------------------------------------------
     p.append("<h2>Decision log</h2>")
