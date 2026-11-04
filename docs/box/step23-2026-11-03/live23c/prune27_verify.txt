@@ -1,0 +1,11 @@
+runs [(19, 'delaware', True), (25, 'delaware', False), (28, 'midland', False), (30, 'midland', False), (32, 'delaware', False)]
+box.pud_forecast rows on run 27: 0
+box.pud_forecast_stream rows on run 27: 0
+box.location_analog rows on run 27: 0
+box.location_water_analog rows on run 27: 0
+box.pud_proximity rows on run 27: 0
+box.pud_proximity_parent rows on run 27: 0
+box.pud_forecast_month rows on run 27: False
+oil by run [(19, 42970, Decimal('22623.3')), (25, 48945, Decimal('25569.9')), (28, 32541, Decimal('13520.1')), (30, 28801, Decimal('11078.0')), (32, 48148, Decimal('25421.0'))]
+box_scout_locations [('delaware', 42833, 42833)]
+econ rows on record 19 [(687520, 16)]

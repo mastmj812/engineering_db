@@ -1,0 +1,5 @@
+live definition LEFT-joins box_econ: True | LEFT-joins econ_case: True
+view comment v4: Land team's BOX locations (sql/69 v4): one row per undrilled stick location that
+rows by basin, priced / total: [('delaware', 42833, 42833)]
+analyst_ro select: True
+records: [('delaware', 19)]
