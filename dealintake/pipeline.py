@@ -1391,6 +1391,11 @@ def evaluate(
                 B["units"][label] = UB
                 _log_proximity(res, key, label, UB.get("pdp_proximity"), g2["source"], opts, cfg.version)
 
+            # The bench header shows the landing TVD actually PLACED (reviewer tvd_ft
+            # where set) — not the propose medians, which can carry a permit depth
+            # (Eggs Tyrone 9-16 WCB_2: 11,572 = 11,145 and a 12,000-ft permit TVD).
+            B["tvd_ft"] = _median([UB["tvd_ft"] for UB in B["units"].values()]) or B["tvd_ft"]
+
             # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
             B["edge_trigger"] = {"fired": edge, **edge_sig}
