@@ -750,9 +750,12 @@ identity green. vs the rehearsed [36] (28,827 / 11,127.6): -26 sticks, -0.45 % o
 re-issued DirectionalSurveys for 13,471 wells on 11-02/03 (2,952,761 rows ingested 11-04; 0 the day before); 7,238 Midland
 parent wellsticks went from 3 to 4 vertices, the shape the other 19,052 already had (`live23c/survey_revision_spotcheck.txt`):
 a data improvement, not a defect. The same revision moves the Delaware (read-only re-measure on run 25: 748 / 57,638 sticks
-change outcome, D150 oil 25,752.9 -> 25,790.5 MMbbl, +0.15 %); the Delaware run 27 is stored on the 11-03 measure. OPEN: re-derive
-the Delaware on the 11-04 measure (a new run; run 27 pruned) so both basins share one survey state, or keep run 27. NEXT, each
-on its own go: that Delaware decision, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
+change outcome, D150 oil 25,752.9 -> 25,790.5 MMbbl, +0.15 %). **Decided (Michael 2026-11-04, "Re-derive Delaware"): the
+Delaware step-23 record is RE-DERIVED from the D117 record (run 25) on the 11-04 measure (outcomes sha in
+`live23c/delaware_remeasure/`), stored live as run 32, NOT record** (dry run then commit, 2,430 s): 48,148 forecast sticks /
+25,421.0 MMbbl oil (run 27: 48,072 / 25,386.6; +76, +0.14 %); 31 re-admitted sticks carry run 25's refusal (was 127); identities
+green. Both step-23 records (Delaware run 32, Midland run 30) now read the same warehouse state (after the 11-04 nightly). Run 27
+is superseded: prune on its own go. NEXT, each on its own go: the run-27 prune, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
