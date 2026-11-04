@@ -765,7 +765,10 @@ its own go: **BOTH FLIPPED LIVE 2026-11-04 ~19:55 UTC** ("Go flip both"; after t
 then `flip --allow-unpriced --commit` per basin): **Delaware record = run 32** (box_scout_locations 42,833 priced -> 48,148,
 econ blank), **Midland record = run 30** (0 -> 28,801, econ blank); run 19 superseded_by 32, its 687,520 econ rows kept for a
 revert. erebor (local main fast-forwarded to #30) reads both records, priced=false, D150 popups correct. NEXT, each on its
-own go: Steven prices runs 32 + 30 (asked 2026-11-04 in #eng-updates, ts 1793822595.781589), run 19 pruned with --include-priced ~1 day after the flip, then 25 + 28; the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
+own go: Steven prices runs 32 + 30 (asked 2026-11-04 in #eng-updates, ts 1793822595.781589), run 19 pruned with --include-priced ~1 day after the flip, then 25 + 28. **D151 tiers WRITTEN to `box.bench_scope.validation` 2026-11-04** (Michael "yes, please do"; one
+transaction: WCB_1 / WCB_2 / JM / MS / DEAN / WCC validated -> provisional, the column default since sql/63; all nine in-scope
+Midland rows' decision_ref + the D151 gate-21c reference; 0 disagreements with run 30's tiers; Delaware rows untouched;
+`live23c/d151_tiers.txt`). #eng-updates post SENT 2026-11-04.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
