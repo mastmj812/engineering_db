@@ -731,7 +731,10 @@ successor is priced and current.
 - Gate decision (Michael 2026-11-03, "Make it not covered"): the one Midland WCD stick with no water analog (1545426) is
   not_covered_no_analogs in the record, disclosed; the base run keeps it without water.
 
-NEXT = 23c on "go apply".
+**23c STARTED 2026-11-03** (`docs/box/step23-2026-11-03/live23c/`): sql/71 APPLIED LIVE (Michael "Go apply sql/71"; one
+transaction, 1.8 s, 0 violating rows beforehand, 11/11 constraints validated). Nothing served moved: the Delaware record is
+still run 19, `box_scout_locations` 42,833. NEXT, each on its own go: the Delaware derive from run 25, the Midland base run +
+water (`--accept-no-water 1545426`), the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 

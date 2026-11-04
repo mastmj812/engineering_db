@@ -1,0 +1,10 @@
+  ('box.pud_forecast', 'box_pud_forecast_conflict_ck', True, "CHECK (((coverage <> 'not_covered_conflict'::text) OR (recon_status = 'conflict'::text)))")
+  ('box.pud_forecast_stream', 'box_pud_forecast_stream_prox_factor_ck', True, "CHECK (((prox_factor > (0)::double precision) AND (prox_factor <= (1.5)::double precision) AND ((stream = 'oil")
+  ('box.pud_proximity', 'box_pud_proximity_coverage_ck', True, "CHECK ((((outcome ~~ 'no_forecast_%'::text) = (coverage = 'not_covered_no_precedent'::text)) AND (coverage = A")
+  ('box.pud_proximity', 'box_pud_proximity_factor_ck', True, 'CHECK (((factor > (0)::double precision) AND (factor <= (1.5)::double precision)))')
+  ('box.pud_proximity', 'box_pud_proximity_outcome_ck', True, "CHECK ((outcome = ANY (ARRAY['as_is_unexposed'::text, 'as_is_single_parent'::text, 'haircut'::text, 'level_une")
+  ('box.pud_proximity_parent', 'box_pud_proximity_parent_age_ck', True, 'CHECK ((age_days >= 0))')
+records [('delaware', 19)]
+runs [(19, 'delaware', True), (25, 'delaware', False)]
+box_scout_locations [('delaware', 19, 42833)]
+econ rows on the record (687520, 16)
