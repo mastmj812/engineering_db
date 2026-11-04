@@ -5,6 +5,10 @@ record is published.
     python -m scripts.box_prune_runs --apply                    deletes every non-record run Steven has NOT priced
     python -m scripts.box_prune_runs --apply --include-priced   D123: also deletes priced runs, their box_econ.box_pud_econ rows
                                                                 first, in the same transaction (Steven's econ for a superseded run)
+    python -m scripts.box_prune_runs --run 27 [--apply]         only the named run(s), each one not a record and unpriced (or
+                                                                --include-priced), else nothing is pruned; the one-record-per-
+                                                                basin check is skipped (a superseded run mid-step, before a
+                                                                basin has its record: step 23c)
 
 Everything happens in ONE transaction, with checks before COMMIT (any failure rolls back). --basin limits the prune to one basin's
 runs (default: every basin); every basin that holds a run must hold exactly one record run, else nothing is pruned.
@@ -43,6 +47,24 @@ def select_prune(runs: list[tuple[Any, ...]], include_priced: bool = False, basi
     return [int(r[0]) for r in runs if not r[1] and (include_priced or int(r[5]) == 0) and (basin is None or r[6] == basin)]
 
 
+def select_named(runs: list[tuple[Any, ...]], ids: list[int], include_priced: bool = False) -> list[int]:
+    """--run: exactly the named runs, or a SystemExit naming every one that is missing, a record or (without include_priced)
+    priced. Never widens to other runs."""
+    by = {int(r[0]): r for r in runs}
+    bad = {}
+    for i in ids:
+        r = by.get(int(i))
+        if r is None:
+            bad[i] = "no such run"
+        elif r[1]:
+            bad[i] = "is a record"
+        elif int(r[5]) and not include_priced:
+            bad[i] = f"priced ({int(r[5]):,} box_econ rows)"
+    if bad:
+        raise SystemExit(f"--run refused, nothing pruned: {bad}")
+    return sorted({int(i) for i in ids})
+
+
 def records_by_basin(runs: list[tuple[Any, ...]]) -> dict[str, list[int]]:
     """basin -> its record run ids, for every basin that holds a run (D130: exactly one each)."""
     out: dict[str, list[int]] = {}
@@ -62,6 +84,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--include-priced", action="store_true", help="D123: prune priced runs too, deleting their box_econ rows first")
     ap.add_argument("--basin", default=None, help="prune only this basin's runs (default: every basin)")
+    ap.add_argument("--run", type=int, action="append", default=None,
+                    help="prune only this run id (repeatable); refuses a record or a priced run; skips the one-record-per-basin check")
     a = ap.parse_args(argv)
     t0 = time.time()
     conn = get_connection()
@@ -74,10 +98,10 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  run {r[0]} ({r[6]}): record={r[1]} superseded_by={r[2]} pud_forecast={r[3]:,} months={r[4]:,} priced_rows={r[5]:,}")
             recs = records_by_basin(runs)
             bad = {b: ids for b, ids in recs.items() if len(ids) != 1}
-            if bad:
+            if bad and not a.run:
                 raise SystemExit(f"expected exactly one record run per basin holding runs, found {recs}")
-            rec = sorted(ids[0] for ids in recs.values())
-            prune = select_prune(runs, a.include_priced, a.basin)
+            rec = sorted(i for ids in recs.values() for i in ids)
+            prune = select_named(runs, a.run, a.include_priced) if a.run else select_prune(runs, a.include_priced, a.basin)
             priced = {int(r[0]): int(r[5]) for r in runs if int(r[0]) in prune and int(r[5])}
             held = [int(r[0]) for r in runs if not r[1] and int(r[5]) and int(r[0]) not in prune]
             if held:
