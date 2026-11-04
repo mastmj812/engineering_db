@@ -1,0 +1,10 @@
+sticks 57638 57638 matched 57638
+outcome changed: 748
+outcome_n              factor_multi_parent  factor_single_parent  level_unexposed  no_forecast_package  no_forecast_precedent
+outcome_a                                                                                                                    
+factor_multi_parent                      0                   135               11                   77                     56
+factor_single_parent                   125                     0              113                    0                      4
+level_unexposed                          6                    84                0                    0                      0
+no_forecast_package                     75                     0                1                    0                      3
+no_forecast_precedent                   43                     2                0                   13                      0
+same-outcome forecast sticks 48358 factor changed: 8854 ratio quantiles {0.0: 0.8568, 0.01: 0.9732, 0.5: 1.0, 0.99: 1.024, 1.0: 1.2519}

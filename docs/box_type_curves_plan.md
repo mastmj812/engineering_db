@@ -743,7 +743,16 @@ sticks / 13,520.1 MMbbl oil / 53,558.0 Bcf gas, every identity and class equal t
 box.location 4,157 -> 85,855, Delaware untouched. **Midland water STORED on run 28** (Michael "Go store Midland water";
 `--accept-no-water 1545426`; 880 s): 32,540 water streams / 61,188.8 MMbbl, 533,998 water analogs, all provisional, 14
 calculated-fallback; oil / gas rows unchanged; stick 1545426 (MID_WCD) stays without water, disclosed in
-`disclosure.water.without_water`. NEXT, each on its own go: the Midland record, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
+`disclosure.water.without_water`. **Midland step-23 record STORED LIVE 2026-11-04 as run 30, NOT record** (Michael "yes lets
+build the midland record"; live re-measure on run 28 after the 11-04 nightly, outcomes sha 2c343215; dry run then commit, 1,593 s):
+28,801 forecast sticks / 11,078.0 MMbbl oil / 46,382.3 Bcf gas / 54,013.2 MMbbl water; 1545426 not_covered_no_analogs; every
+identity green. vs the rehearsed [36] (28,827 / 11,127.6): -26 sticks, -0.45 % oil, all from the re-measure. Cause: Novi
+re-issued DirectionalSurveys for 13,471 wells on 11-02/03 (2,952,761 rows ingested 11-04; 0 the day before); 7,238 Midland
+parent wellsticks went from 3 to 4 vertices, the shape the other 19,052 already had (`live23c/survey_revision_spotcheck.txt`):
+a data improvement, not a defect. The same revision moves the Delaware (read-only re-measure on run 25: 748 / 57,638 sticks
+change outcome, D150 oil 25,752.9 -> 25,790.5 MMbbl, +0.15 %); the Delaware run 27 is stored on the 11-03 measure. OPEN: re-derive
+the Delaware on the 11-04 measure (a new run; run 27 pruned) so both basins share one survey state, or keep run 27. NEXT, each
+on its own go: that Delaware decision, the D151 tiers to `bench_scope.validation`, the #eng-updates draft.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 
