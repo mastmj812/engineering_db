@@ -1,0 +1,73 @@
+{
+ "built_at": "2026-11-03T14:36:17-06:00",
+ "git_sha": "63a2771",
+ "asof": "2026-09-01",
+ "n_producers": 31826,
+ "sticks": {
+  "wcb_by_county": {
+   "Culberson": 1361,
+   "Eddy": 3143,
+   "Lea": 3217,
+   "Loving": 1359,
+   "Pecos": 2228,
+   "Reeves": 3780,
+   "Ward": 1094,
+   "Winkler": 494
+  },
+  "anomalous_by_county": {
+   "Culberson": 65,
+   "Eddy": 331,
+   "Lea": 1297,
+   "Loving": 1,
+   "Pecos": 274,
+   "Reeves": 15,
+   "Ward": 115,
+   "Winkler": 22
+  },
+  "anomalous_grid_call": {
+   "above B1 (WCA depth or shallower)": 1464,
+   "in / below B1": 445,
+   "no grid": 211
+  },
+  "anomalous_box_record_covered": 53
+ },
+ "producers": {
+  "nm_wca": 3512,
+  "nm_wca_cons_status": {
+   "agree": 1813,
+   "off_band": 725,
+   "flag": 469,
+   "ambiguous": 367,
+   "no_evidence": 129,
+   "no_position": 9
+  },
+  "screen_wca_to_deeper_delaware": 63,
+  "screen_wca_to_deeper_nm": 21,
+  "nm_wca_grid_B1_or_deeper": 441,
+  "rule_v_class": 89,
+  "rule_v_no_depth_evidence": 17,
+  "rule_v_rungs": {
+   "WCB_1": 20,
+   "WCA": 20,
+   "WCB_2": 18,
+   "WCC": 14
+  },
+  "rule_v_flagged": 52,
+  "rule_v_flagged_in_box_record_pool": 24
+ },
+ "ladder_ft": {
+  "WCA": 0.0,
+  "WCB_1": 291.0,
+  "WCB_2": 564.0,
+  "WCC": 814.0
+ },
+ "cards": 26,
+ "classes": {
+  "WCA_2->WCB_1 (V)": 20,
+  "WCA_1->WCB_2 (V)": 10,
+  "WCA_1->WCC (V)": 9,
+  "WCA_2->WCB_2 (V)": 7,
+  "WCA_2->WCC (V)": 5,
+  "WCXY->WCB_2 (V)": 1
+ }
+}

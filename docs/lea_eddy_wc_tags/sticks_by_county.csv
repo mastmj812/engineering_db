@@ -1,0 +1,9 @@
+county,wcb_sticks,anomalous,anom_median_wca_delta_ft,anom_median_delta_vs_wca_plane_ft,anom_median_wca_gradient_ft_per_mi,anom_median_wcb_minus_novi_wca_stick_ft,anom_shallower_than_novi_wca_stick,normal_median_wcb_minus_novi_wca_stick_ft,anom_grid_above_B1,anom_grid_in_below_B1,anom_no_grid,anom_median_ft_below_XY_top,anom_median_ft_below_B1_top,anom_box_record_covered
+Lea,3217,1297,-324.0,-235.0,138.0,-108.0,857,317.0,1071,146,80,-58.0,-260.0,39
+Eddy,3143,331,-336.0,-173.0,111.0,203.0,114,582.0,233,98,0,83.0,-144.0,4
+Pecos,2228,274,-244.0,32.0,199.0,180.0,82,433.0,57,140,77,553.0,424.0,0
+Ward,1094,115,-422.0,24.0,148.0,56.0,49,294.0,22,40,53,232.0,42.0,8
+Reeves,3780,15,-119.0,42.0,80.0,-146.0,12,369.0,7,8,0,449.0,58.0,0
+Loving,1359,1,-106.0,-142.0,102.0,,0,435.0,1,0,0,133.0,-307.0,1
+Culberson,1361,65,-192.0,-45.0,109.0,-71.0,50,481.0,56,9,0,173.0,-156.0,1
+Winkler,494,22,-433.0,-72.0,168.0,-97.0,11,318.0,17,4,1,144.0,-321.0,0

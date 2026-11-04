@@ -1,0 +1,4 @@
+grid_call,covered,covered_provisional,not in record run,not_covered_no_precedent,not_covered_outside_extent
+above B1 (WCA depth or shallower),36,7,456,59,906
+in / below B1,9,1,116,7,312
+no grid,0,0,116,0,95
