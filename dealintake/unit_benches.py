@@ -244,6 +244,51 @@ def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
     return out
 
 
+def read_pools(run_dir: Path) -> dict[str, dict[str, Any]]:
+    """Deal-level reviewer POOL rules (config v16; Michael 2026-11-04, Eggs Tyrone),
+    one per bench — the pool is per bench, so the rule is too:
+
+      pools:
+        WCB_2:
+          tags: [WCB_1, WCB_2]       formation_blueox tags drawn into the pool
+                                     (tags can be unreliable between adjacent benches)
+          below: [WCA_1, WCA_2]      reference benches for the standoff
+          min_standoff_ft: 400       keep wells >= this far below the reference's
+                                     local median (config pool_standoff measures it)
+
+    `tags` alone widens the pool; `below` + `min_standoff_ft` go together.
+    {} when the file or the section is absent."""
+    path = run_dir / FILENAME
+    if not path.exists():
+        return {}
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    out: dict[str, dict[str, Any]] = {}
+    for b, v in (raw.get("pools") or {}).items():
+        where = f"{FILENAME}: pools.{b}"
+        if not isinstance(v, dict):
+            raise ValueError(f"{where} must be a mapping")  # noqa: TRY004 — a file-content error
+        stray = sorted(set(v) - {"tags", "below", "min_standoff_ft"})
+        if stray:
+            raise ValueError(f"{where}: unknown key(s) {stray}")
+        rule: dict[str, Any] = {}
+        for k in ("tags", "below"):
+            if v.get(k) is not None:
+                if not isinstance(v[k], list) or not v[k] or not all(isinstance(t, str) and t for t in v[k]):
+                    raise ValueError(f"{where}.{k} must be a non-empty list of bench codes, got {v[k]!r}")
+                rule[k] = [bench_code(t) for t in v[k]]
+        so = v.get("min_standoff_ft")
+        if so is not None:
+            if isinstance(so, bool) or not isinstance(so, (int, float)) or so <= 0:
+                raise ValueError(f"{where}.min_standoff_ft must be a positive number (ft), got {so!r}")
+            rule["min_standoff_ft"] = float(so)
+        if ("below" in rule) != ("min_standoff_ft" in rule):
+            raise ValueError(f"{where}: `below` and `min_standoff_ft` go together")
+        if not rule:
+            raise ValueError(f"{where}: empty rule")
+        out[bench_code(b)] = rule
+    return out
+
+
 def reviewed_benches(run_dir: Path) -> dict[str, dict[str, Any]]:
     """{unit: {benches: [enabled], bench_opts: {bench: options}, min_leg_ft}}
     from an existing benches.yaml, {} when there is none — lets a re-propose

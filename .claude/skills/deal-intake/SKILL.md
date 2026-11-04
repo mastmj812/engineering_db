@@ -410,7 +410,25 @@ shown beside it (WCB_2 deep-TVD context).
 ### Gate 5a — eligible pool
 
 Candidates = producing horizontals in the TVD-corrected bench within the
-radius. Excluded WITH REASONS (a well can carry several): first production
+radius. **Reviewer pool rule** (config v16, Michael 2026-11-04, Eggs Tyrone —
+deep rights under a developed WCA, WCB_1/WCB_2 tags unreliable, no underfill
+analogs exist): a deal-level `pools:` section in `benches.yaml`, one entry per
+bench —
+```
+pools:
+  WCB_2: {tags: [WCB_1, WCB_2], below: [WCA_1, WCA_2], min_standoff_ft: 400}
+```
+`tags` = the formation_blueox tags drawn into the pool; `below` +
+`min_standoff_ft` keep only wells at least that far below the MEDIAN TVD of the
+`below` benches' producers around each candidate (config `pool_standoff:` —
+1 mi, then 2 mi, ≥ 3 wells, round-100 permit TVDs never in the reference).
+Exclusions read `standoff<400`, `no_standoff_ref`, `permit_tvd` (a candidate at a
+round-100 TVD). The pool flags count the wells per tag, give the standoff range,
+and name the wells within 25 ft under the threshold (one pad can straddle it —
+TVD is a lateral median). The water cohort keeps the bench tag (BOX's rule;
+flagged). The buildup table carries each well's TVD and standoff. Set the
+planned bench's own `tvd_ft` to match (Eggs Tyrone: 11,150 ft ≈ 440 ft under
+the WCA). Excluded WITH REASONS (a well can carry several): first production
 before `first_prod_after`; lateral outside the pool band — shortest planned
 lateral × (1 − tol) to longest × (1 + tol), tol = the per-basin tolerance
 (delaware 25 % / midland 40 % — mirrors ledger §9), widened to

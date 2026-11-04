@@ -11,7 +11,7 @@ deliberately never selected.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from typing import Any
 
@@ -107,20 +107,76 @@ def pdp_in_unit(conn, unit: BaseGeometry, min_overlap: float = 0.30) -> list[dic
     return [r for r in rows if (r["inside_frac"] or 0) >= min_overlap]
 
 
+def _standoff_sql(standoff: dict[str, Any] | None) -> tuple[str, str]:
+    """(select columns, lateral join) measuring a candidate's TVD standoff below
+    the reference benches (config v16 pool_standoff + benches.yaml `pools:`):
+    the median TVD of the reference benches' producing horizontals within each
+    ref radius of the candidate's stick, round-100 permit TVDs excluded (rule 10).
+    Empty strings when no rule is set."""
+    if not standoff:
+        return "", ""
+    radii = [float(r) for r in standoff["ref_radius_mi"]]
+    cols = "".join(
+        f""", ref.n{i} AS standoff_ref_n_{i}, ref.med{i} AS standoff_ref_tvd_{i}""" for i in range(len(radii)))
+    aggs = ",\n".join(
+        f"""count(*) FILTER (WHERE x.d <= {r * M_PER_MI:.1f}) AS n{i},
+            percentile_cont(0.5) WITHIN GROUP (ORDER BY x.tvd) FILTER (WHERE x.d <= {r * M_PER_MI:.1f}) AS med{i}"""
+        for i, r in enumerate(radii))
+    join = f"""
+        LEFT JOIN LATERAL (
+            SELECT {aggs}
+            FROM (SELECT w2.tvd_ft AS tvd,
+                         extensions.ST_Distance(w2.wellstick_geom::extensions.geography,
+                                                w.wellstick_geom::extensions.geography) AS d
+                  FROM curated.wells w2
+                  JOIN curated.wells_enriched we2 ON we2.api10 = w2.api10
+                  WHERE we2.formation_blueox = ANY(%(ref_benches)s)
+                    AND extensions.ST_DWithin(w2.wellstick_geom::extensions.geography,
+                                              w.wellstick_geom::extensions.geography, {max(radii) * M_PER_MI:.1f})
+                    AND {_HZ.replace('w.', 'w2.')}
+                    AND w2.first_production_date IS NOT NULL
+                    AND w2.tvd_ft IS NOT NULL AND w2.tvd_ft::int %% 100 <> 0) x
+        ) ref ON true"""
+    return cols, join
+
+
+def resolve_standoff(r: dict[str, Any], standoff: dict[str, Any]) -> None:
+    """Pick the first ref radius reaching ref_min_wells; set standoff_ref_tvd_ft,
+    standoff_ref_n, standoff_ref_radius_mi and standoff_ft (candidate TVD minus
+    the reference median, + = below) — None when no radius has enough wells."""
+    radii = [float(x) for x in standoff["ref_radius_mi"]]
+    r.update(standoff_ref_tvd_ft=None, standoff_ref_n=None, standoff_ref_radius_mi=None, standoff_ft=None)
+    for i, rad in enumerate(radii):
+        n, med = r.pop(f"standoff_ref_n_{i}", None), r.pop(f"standoff_ref_tvd_{i}", None)
+        if r["standoff_ref_tvd_ft"] is None and n is not None and n >= int(standoff["ref_min_wells"]) and med is not None:
+            r.update(standoff_ref_tvd_ft=float(med), standoff_ref_n=int(n), standoff_ref_radius_mi=rad)
+    if r["standoff_ref_tvd_ft"] is not None and r.get("tvd_ft") is not None:
+        r["standoff_ft"] = float(r["tvd_ft"]) - r["standoff_ref_tvd_ft"]
+
+
 def candidates(
     conn,
     unit: BaseGeometry,
     bench: str,
     radius_mi: float,
+    *,
+    tags: Sequence[str] | None = None,
+    standoff: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """TC candidates for one bench: producing horizontals in the TVD-corrected
     bench within `radius_mi` of the unit (stick-to-unit geography), joined to
     curated.codev_context (neighbor arrays) and curated.dev_scenario (sql/50:
     the house vertical-parent rule — 660-ft midpoint offset gate, 1,000-ft
     band, shielding — already applied; scenario_class + gated parent bench
-    lists). Raw — filtering/tiering is select_wells' job."""
+    lists). Raw — filtering/tiering is select_wells' job.
+    `tags` (reviewer `pools:` rule, config v16): the formation_blueox tags drawn
+    into this bench's pool (default: the bench itself). `standoff`: {below:
+    [benches], ref_radius_mi, ref_min_wells} — adds standoff_ft per candidate
+    (resolve_standoff); the threshold is applied in select_wells."""
+    tags = list(tags or [bench])
+    s_cols, s_join = _standoff_sql(standoff)
     rows = _rows(conn, f"""
-        SELECT w.api10, we.well_name, we.current_operator AS operator, we.formation_blueox AS bench,
+        SELECT w.api10, we.well_name, we.current_operator AS operator, we.formation_blueox AS bench{s_cols},
                we.basin_blueox AS basin, w.first_production_date, w.last_reported_month,
                w.lateral_length_ft, w.tvd_ft, we.lateral_closer_xy_ft,
                we.stack_closer_z_ft, we.parent_days_online, we.is_child,
@@ -144,14 +200,17 @@ def candidates(
         CROSS JOIN (SELECT extensions.ST_GeomFromText(%(u)s, 4326) AS g) u
         JOIN curated.wells_enriched we ON we.api10 = w.api10
         LEFT JOIN curated.codev_context cc ON cc.api10 = w.api10
-        LEFT JOIN curated.dev_scenario  ds ON ds.api10 = w.api10
+        LEFT JOIN curated.dev_scenario  ds ON ds.api10 = w.api10{s_join}
         WHERE extensions.ST_DWithin(w.wellstick_geom::extensions.geography,
                                     u.g::extensions.geography, %(r)s)
           AND {_HZ}
           AND w.first_production_date IS NOT NULL
-          AND we.formation_blueox = %(bench)s
-    """, {"u": unit.wkt, "r": radius_mi * M_PER_MI, "bench": bench})
+          AND we.formation_blueox = ANY(%(tags)s)
+    """, {"u": unit.wkt, "r": radius_mi * M_PER_MI, "tags": tags,
+          "ref_benches": list((standoff or {}).get("below") or [])})
     for r in rows:
+        if standoff:
+            resolve_standoff(r, standoff)
         r["codev_scorable"] = bool(r["codev_scorable"])
         ll = r["lateral_length_ft"]
         # Screen value only (Novi 30-yr EUR per 1,000 ft) for tier medians and

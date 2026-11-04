@@ -1106,6 +1106,12 @@ def evaluate(
         raise ValueError(f"--radius names {stray}, not in the evaluated benches {benches}")
     if any(r <= 0 for r in radius_overrides.values()):
         raise ValueError(f"--radius must be > 0 mi, got {radius_overrides}")
+    # Reviewer POOL rules (config v16, benches.yaml `pools:`): extra tags and a
+    # standoff below named benches, per bench (the pool is per bench).
+    pool_rules = unit_benches.read_pools(run_dir)
+    stray = [b for b in pool_rules if b not in benches]
+    if stray:
+        raise ValueError(f"{unit_benches.FILENAME} pools: names {stray}, not in the evaluated benches {benches}")
     stack = sorted(benches, key=lambda b: statistics.median(tvd_by_bench[b]))
     bench_tvd = {b: statistics.median(tvd_by_bench[b]) for b in stack}
 
@@ -1221,7 +1227,27 @@ def evaluate(
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
             # in-bench producers within the first selection radius.
-            cands0 = wh.candidates(conn, union, bench, RADIUS_STEPS_MI[0])
+            prule = pool_rules.get(bench)
+            p_tags = (prule or {}).get("tags") or [bench]
+            p_standoff = ({**cfg["pool_standoff"], "below": prule["below"]}
+                          if prule and prule.get("min_standoff_ft") is not None else None)
+            if prule:
+                B["pool_rule"] = {**prule, "tags": p_tags,
+                                  "ref_radius_mi": cfg["pool_standoff"]["ref_radius_mi"] if p_standoff else None,
+                                  "ref_min_wells": cfg["pool_standoff"]["ref_min_wells"] if p_standoff else None}
+                res["decision_log"].append({
+                    "gate": "5a pool rule", "bench": key,
+                    "signal": (f"pool tags {', '.join(p_tags)}"
+                               + (f"; standoff = TVD minus the median {'/'.join(prule['below'])} producer TVD within "
+                                  f"{'/'.join(f'{r:g}' for r in cfg['pool_standoff']['ref_radius_mi'])} mi "
+                                  f"(>= {cfg['pool_standoff']['ref_min_wells']} wells, permit TVDs out)"
+                                  if p_standoff else "")),
+                    "decision": (f"pool = {', '.join(p_tags)} wells"
+                                 + (f" >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])}"
+                                    if p_standoff else "")),
+                    "by": f"reviewer ({unit_benches.FILENAME} pools:)",
+                })
+            cands0 = wh.candidates(conn, union, bench, RADIUS_STEPS_MI[0], tags=p_tags, standoff=p_standoff)
             bc = Counter(c["basin"] for c in cands0 if c["basin"]).most_common(1)
             basin = bc[0][0] if bc else None
             B["basin"] = basin
@@ -1396,11 +1422,11 @@ def evaluate(
             pool_flags: list[str] = []
             r_over = radius_overrides.get(bench)
             radius, eligible, excluded, adjacent = _select_pool(
-                lambda r, _b=bench, _c=cands0, _un=union: (
-                    _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r)),
-                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches, _bd=band_ll: classify(
+                lambda r, _b=bench, _c=cands0, _un=union, _t=p_tags, _so=p_standoff: (
+                    _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r, tags=_t, standoff=_so)),
+                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches, _bd=band_ll, _pr=prule: classify(
                     cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=_ll,
-                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex, lateral_band_ft=_bd),
+                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex, lateral_band_ft=_bd, pool_rule=_pr),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
             pool_tol = cfg.lateral_tolerance(basin, planned_ll)
@@ -1409,6 +1435,26 @@ def evaluate(
                                  if band_ll else
                                  f"lateral tol {pool_tol:.0%}{' (long-lateral class)' if pool_tol > tol else ''}")
                               + f", eligible pool {len(eligible)}")
+            if prule:
+                so_vals = sorted(c["standoff_ft"] for c in eligible if c.get("standoff_ft") is not None)
+                n_tag = Counter(c["bench"] for c in eligible)
+                pool_flags.append(
+                    f"REVIEWER pool rule: tags {', '.join(p_tags)}"
+                    + (f" ({', '.join(f'{t} {n_tag[t]}' for t in p_tags)} in the pool)" if eligible else "")
+                    + (f"; >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])} median "
+                       f"(pool standoff {so_vals[0]:,.0f}-{so_vals[-1]:,.0f} ft, median {_median(so_vals):,.0f} ft)"
+                       if p_standoff and so_vals else
+                       f"; >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])} median"
+                       if p_standoff else ""))
+                if p_standoff:
+                    lim = float(prule["min_standoff_ft"])
+                    near = [c for c in excluded if c["exclusion"] == f"standoff<{lim:.0f}"
+                            and c.get("standoff_ft") is not None and c["standoff_ft"] >= lim - 25]
+                    if near:
+                        pool_flags.append(
+                            f"{len(near)} well(s) fail ONLY the standoff and sit within 25 ft of it "
+                            f"({', '.join(f'{c['api10']} {c['standoff_ft']:,.0f} ft' for c in near[:8])}"
+                            f"{', ...' if len(near) > 8 else ''}) — the threshold splits them; TVD is a lateral median")
             if r_over is not None:
                 if edge:
                     pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")
@@ -1631,6 +1677,10 @@ def evaluate(
                         wc = water.measured_cohort(conn, cfg, g_area, bench, basin, g_ll, sp,
                                                    wcfg.get("validated_benches") or [])
                         G["flags"] += water.flags(wc)
+                        if prule:
+                            G["flags"].append(f"water: the measured-water cohort is drawn on the {bench} tag by BOX's "
+                                              "water rule — the reviewer pool rule (tags / standoff) applies to the "
+                                              "oil cohort only")
                         if wc["api10s"]:
                             wc["anduin_forecast"] = ad.forecast(wc["api10s"])  # only_missing: fit the ones anduin lacks
                             try:
