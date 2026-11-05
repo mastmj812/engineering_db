@@ -1,8 +1,8 @@
 {
- "built_at": "2026-11-03T14:36:17-06:00",
- "git_sha": "63a2771",
+ "built_at": "2026-11-04T15:22:50-06:00",
+ "git_sha": "c64c200",
  "asof": "2026-09-01",
- "n_producers": 31826,
+ "n_producers": 31821,
  "sticks": {
   "wcb_by_county": {
    "Culberson": 1361,
@@ -29,31 +29,33 @@
    "in / below B1": 445,
    "no grid": 211
   },
-  "anomalous_box_record_covered": 53
+  "anomalous_box_record_covered": 52
  },
  "producers": {
-  "nm_wca": 3512,
+  "nm_wca": 2916,
   "nm_wca_cons_status": {
-   "agree": 1813,
-   "off_band": 725,
-   "flag": 469,
-   "ambiguous": 367,
-   "no_evidence": 129,
+   "agree": 1530,
+   "off_band": 598,
+   "flag": 358,
+   "ambiguous": 320,
+   "no_evidence": 101,
    "no_position": 9
   },
-  "screen_wca_to_deeper_delaware": 63,
-  "screen_wca_to_deeper_nm": 21,
-  "nm_wca_grid_B1_or_deeper": 441,
-  "rule_v_class": 89,
-  "rule_v_no_depth_evidence": 17,
+  "screen_wca_to_deeper_delaware": 53,
+  "screen_wca_to_deeper_nm": 14,
+  "nm_wca_grid_B1_or_deeper": 374,
+  "rule_v_class": 95,
+  "rule_v_planned_not_judged": 32,
   "rule_v_rungs": {
-   "WCB_1": 20,
-   "WCA": 20,
-   "WCB_2": 18,
-   "WCC": 14
+   "planned survey: not judged": 32,
+   "WCB_1": 18,
+   "WCA": 18,
+   "no depth evidence": 14,
+   "WCB_2": 7,
+   "WCC": 6
   },
-  "rule_v_flagged": 52,
-  "rule_v_flagged_in_box_record_pool": 24
+  "rule_v_flagged": 31,
+  "rule_v_flagged_in_box_record_pool": 9
  },
  "ladder_ft": {
   "WCA": 0.0,
@@ -61,13 +63,12 @@
   "WCB_2": 564.0,
   "WCC": 814.0
  },
- "cards": 26,
+ "cards": 18,
  "classes": {
-  "WCA_2->WCB_1 (V)": 20,
-  "WCA_1->WCB_2 (V)": 10,
-  "WCA_1->WCC (V)": 9,
-  "WCA_2->WCB_2 (V)": 7,
+  "WCA_2->WCB_1 (V)": 18,
   "WCA_2->WCC (V)": 5,
-  "WCXY->WCB_2 (V)": 1
+  "WCA_1->WCB_2 (V)": 4,
+  "WCA_2->WCB_2 (V)": 3,
+  "WCA_1->WCC (V)": 1
  }
 }
