@@ -1,6 +1,6 @@
 # formation_blueox rule v3 — rule and criteria (step 1)
 
-**Status:** DRAFT. These become FROZEN at the commit that adds this file. They are scored once, in step 2. Nothing is
+**Status:** FROZEN at `1be65da` (2026-11-05). Scored once, in step 2, after Michael accepts at Gate 1. Nothing is
 applied.
 
 - Code: `box/tag_rule.py`, constants in `RULE`, record via `rule_record()`. Tests: `tests/test_tag_rule.py`.
