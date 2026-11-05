@@ -48,7 +48,7 @@ WHERE tc.is_record AND tc.stream = 'oil' AND m.included
 """
 _RECORD_STICKS_SQL = """
 SELECT pf.stick_id, pf.basin, pf.bench, pf.formation_blueox, pf.coverage, fr.run_id
-FROM box.pud_forecast pf JOIN box.forecast_run fr USING (run_id) WHERE fr.is_record
+FROM box.pud_forecast pf JOIN box.forecast_run fr USING (run_id) WHERE fr.is_record AND fr.basin IN ('delaware', 'midland')
 """
 _SCOUT_SQL = "SELECT stick_id, basin, bench FROM curated.box_scout_locations"
 _RECON_SQL = "SELECT stick_id, basin_blueox AS basin, formation_blueox, matched_api10, status FROM curated.reconciled_inventory"
