@@ -48,16 +48,16 @@
  "churn": [
   {
    "basin": "delaware",
-   "code_moved": 2446,
-   "fam_moved": 1159,
-   "vs_live": 2553,
+   "code_moved": 2392,
+   "fam_moved": 1105,
+   "vs_live": 2372,
    "wells": 31821
   },
   {
    "basin": "midland",
-   "code_moved": 1366,
-   "fam_moved": 963,
-   "vs_live": 1316,
+   "code_moved": 1353,
+   "fam_moved": 953,
+   "vs_live": 1286,
    "wells": 28865
   }
  ],
@@ -68,7 +68,7 @@
   "off_column_moved": 0
  },
  "witness_share": {
-  "delaware": 0.658,
+  "delaware": 0.657,
   "midland": 0.903
  }
 }

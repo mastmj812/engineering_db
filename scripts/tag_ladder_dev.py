@@ -27,6 +27,9 @@ def build(cache: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     v = pd.read_pickle(cache / "vendors.pkl")[["api10", "novi_code", "env_code", "novi_raw", "env_raw"]]
     order = sb.bench_order()
     d = dev.prepare(w).merge(v, on="api10", how="left")
+    d["vendor_crosswalk"] = d["vendor"]
+    d["vendor"] = tl.input_code(d)  # rev 1: start from vendor + sql/23 (raw vendor for overridden wells)
+    d["vendor"] = d["vendor"].where(d["vendor"].notna(), None)
     pairs = dev.rule_pairs(d)
     grid = dev.grid_for(d, st, order)
     res, rungs = tl.run_producers(d, pairs, order, grid)
@@ -56,7 +59,8 @@ def run(cache: Path, out: Path) -> dict:
         "protected": int((mv & (d["vendor"].isin(tr.PROTECTED) | d["rule"].isin(tr.PROTECTED))).sum()),
         "lithology": int(sum(mv & pd.Series([any({a, b} <= p for p in tr.LITH_PAIRS) for a, b in zip(d["vendor"], d["rule"], strict=True)], index=d.index))),
         "xy_lea_ward": int((mv & d["county"].isin(tr.RULE_B_COUNTIES)
-                            & pd.Series([tr._crosses_xy(b, a, c) for b, a, c in zip(d["basin"], vf, rf, strict=True)], index=d.index)).sum()),
+                            & pd.Series([tl.crosses_xy(b, a, c, sb.bench_order()) for b, a, c in zip(d["basin"], vf, rf, strict=True)],
+                                        index=d.index)).sum()),
         "off_column_moved": int((mv & ~pd.Series([c in sb.bench_order().get(b, []) for b, c in zip(d["basin"], d["vendor"], strict=True)], index=d.index)).sum()),
     }
     d[mv].groupby(["basin", "vendor", "rule"]).size().rename("n").reset_index().sort_values("n", ascending=False).to_csv(out / "moves_from_to.csv", index=False)

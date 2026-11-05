@@ -59,6 +59,22 @@ class Ladder:
 LADDER = Ladder()
 
 
+def crosses_xy(basin: str, f1: str | None, f2: str | None, order: dict[str, list[str]]) -> bool:
+    """v4 rev 1: a move between a Delaware family above the XY top (shallower than WCA) and one at or below it."""
+    if basin != "delaware" or f1 is None or f2 is None:
+        return False
+    fo = tr.family_order(order)["delaware"]
+    k = fo.index("WCA")
+    i1, i2 = (fo.index(f) if f in fo else None for f in (f1, f2))
+    return i1 is not None and i2 is not None and (i1 < k) != (i2 < k)
+
+
+def input_code(df: pd.DataFrame) -> pd.Series:
+    """v4 rev 1: the code v4 starts from = the vendor code after the sql/23 gross correction (= live for a
+    non-overridden well); a ratified-override well starts from its raw vendor code, so overrides never leak."""
+    return df["live"].where(df["live_source"] != "ratified_override", df["vendor"])
+
+
 def family_agree(df: pd.DataFrame) -> np.ndarray:
     """Every mapped vendor code (novi_code, env_code) maps to the vendor code's family."""
     out = np.zeros(len(df), bool)
@@ -236,7 +252,7 @@ def assign(subj: pd.DataFrame, pairs: pd.DataFrame, ref: pd.DataFrame, rungs: pd
         if target is None or target == v:
             continue
         tf = tr.family(b, target)
-        why = tr._blocked(b, cty, v, target, tr._crosses_xy(b, vf, tf))
+        why = tr._blocked(b, cty, v, target, crosses_xy(b, vf, tf, order))
         if why is None and tf != vf and sup.get((i, tf), 0) < lad.support_min_n:
             why = "no_target_support"
         if why is None and tf != vf and not move_family:

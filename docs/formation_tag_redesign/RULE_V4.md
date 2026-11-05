@@ -1,6 +1,6 @@
 # formation_blueox rule v4, "the ladder" (revision 2, after v3 failed)
 
-**Status:** DRAFT until the freeze commit that adds this file. Nothing is applied.
+**Status:** FROZEN at `5767fe5`, with revision 1 (§4) before any card verdict or score. Nothing is applied.
 
 - Code: `box/tag_ladder.py`, constants in `LADDER`. Tests: `tests/test_tag_ladder.py`.
 - Development run: `scripts/tag_ladder_dev.py`. Blind cards: `scripts/tag_ladder_cards.py`.
@@ -80,4 +80,4 @@ nothing either way until you have seen both. **If K0 fails**, v4 fails.
 
 | # | Date | Change | Why |
 |---|---|---|---|
-| — | — | — | — |
+| 1 | 2026-11-05 | (a) v4 starts from the vendor code **after the sql/23 gross correction**, i.e. the live tag for a non-overridden well. An overridden well starts from its raw vendor code, so overrides still never leak. (b) In Lea / Ward the XY guard blocks a move between **any** family above the XY top and any at or below it (v3 checked only BS3 ↔ WCA). | Found while checking the first card draw, before any verdict. Michael had seen nothing, and no score had been computed. Starting from the raw vendor code undid sql/23's > 600 ft fixes wherever v4 couldn't judge: 204 wells, e.g. PRE-ONGARD WELL #009 BS1_S → OTHER at 5,007 ft, and WARWINK UNIVERSITY 18-34 A 2H WCB_1 → BS3_S at 12,650 ft. The guard gap was found on the latter. The first draw is kept unjudged in `v4-blind-cards-2026-11-05-superseded/`; the cards were re-drawn with the same seed. |

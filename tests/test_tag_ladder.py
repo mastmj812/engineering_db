@@ -117,3 +117,15 @@ def test_sticks_flag_family_conflicts():
     s = tl.run_sticks(sticks, pairs, prod, res["witness"].to_numpy(bool), rungs, ORDER, None, LAD)
     assert s.iloc[0]["code"] == "WCB_1" and s.iloc[0]["flag"] == "family_conflict"
     assert s.iloc[1]["code"] == "WCB_2"
+
+
+def test_xy_guard_covers_every_family_across_the_xy_top():
+    assert tl.crosses_xy("delaware", "BS3_S", "WCB", ORDER) and tl.crosses_xy("delaware", "WCC", "BS2_S", ORDER)
+    assert not tl.crosses_xy("delaware", "WCA", "WCB", ORDER) and not tl.crosses_xy("delaware", "BS2_S", "BS3_S", ORDER)
+    assert not tl.crosses_xy("midland", "LSSH", "WCA_1", ORDER)
+
+
+def test_input_code_keeps_sql23_but_not_overrides():
+    df = pd.DataFrame({"vendor": ["OTHER", "WCA_2", "WCA_1"], "live": ["BS1_S", "WCB_1", "WCA_1"],
+                       "live_source": ["tvd_corrected", "ratified_override", "enverus"]})
+    assert tl.input_code(df).tolist() == ["BS1_S", "WCA_2", "WCA_1"]
