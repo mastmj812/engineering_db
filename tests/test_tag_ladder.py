@@ -82,7 +82,7 @@ def test_disagreeing_vendors_are_not_witnesses():
     df.loc[df["vendor"] == "WCA_1", "novi_code"] = "WCB_1"  # every WCA_1 well disputed
     df.loc[df["vendor"] == "WCA_2", "novi_code"] = "WCB_2"
     res = _run(df)
-    assert res["anchor_used"].isna().all() or (res["anchor_used"] != "primary").all()
+    assert not (res["anchor_used"] == "WCA").any()  # disputed WCA wells never form the WCA anchor
 
 
 def test_guards_and_unmapped():
@@ -129,3 +129,23 @@ def test_input_code_keeps_sql23_but_not_overrides():
     df = pd.DataFrame({"vendor": ["OTHER", "WCA_2", "WCA_1"], "live": ["BS1_S", "WCB_1", "WCA_1"],
                        "live_source": ["tvd_corrected", "ratified_override", "enverus"]})
     assert tl.input_code(df).tolist() == ["BS1_S", "WCA_2", "WCA_1"]
+
+
+def test_rev2_lever_cap_keeps_vendor_far_from_every_anchor():
+    # an Avalon well 3,000 ft above the only anchor band (WCA): too far to place a thin split
+    df = _wells([("WCA_1", 12_000, 6), ("WCA_2", 12_130, 6), ("AVA_1", 8_744, 3), ("AVA_2", 8_960, 6), ("AVA_2", 8_920, 1)])
+    x = _run(df).iloc[-1]
+    assert x["code"] == "AVA_2" and x["basis"] == "no_anchor" and x["nearest_anchor_ft"] > 1_000
+
+
+def test_rev2_nearest_anchor_is_used():
+    df = _wells([("BS2_S", 9_950, 6), ("WCA_1", 12_000, 6), ("BS2_C", 9_500, 6)])
+    res = _run(df)
+    assert (res.iloc[12:]["anchor_used"] == "BS2_S").all()  # BS2_C wells measure against BS2_S, not WCA
+
+
+def test_rev2_no_move_into_an_ambiguous_cluster():
+    # WCXY and WCA_1 rungs 40 ft apart -> one cluster; a WCA_2-tagged well sitting there is not moved
+    df = _wells([("WCXY", 11_960, 6), ("WCA_1", 12_000, 6), ("WCA_2", 12_200, 6), ("WCA_2", 11_985, 1)])
+    x = _run(df).iloc[-1]
+    assert x["code"] == "WCA_2" and x["flag"] == "ambiguous_target"

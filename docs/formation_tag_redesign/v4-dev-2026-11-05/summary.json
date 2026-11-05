@@ -1,5 +1,6 @@
 {
  "rule": {
+  "revision": 2,
   "ladder": {
    "anchor_radius_mi": 1.5,
    "anchor_min_n": 3,
@@ -10,16 +11,19 @@
    "support_radius_mi": 1.5,
    "support_min_n": 3,
    "grid_min_miss_ft": 50.0,
-   "grid_min_share": 0.5
+   "grid_min_share": 0.5,
+   "max_lever_ft": 1000.0
   },
   "anchors": {
    "delaware": [
-    "WCA",
-    "BS2_S"
+    "BS1_S",
+    "BS2_S",
+    "WCA"
    ],
    "midland": [
-    "WCA_1",
-    "LSSH"
+    "JM",
+    "LSSH",
+    "WCA_1"
    ]
   },
   "families": {
@@ -48,16 +52,16 @@
  "churn": [
   {
    "basin": "delaware",
-   "code_moved": 2392,
-   "fam_moved": 1105,
-   "vs_live": 2372,
+   "code_moved": 1817,
+   "fam_moved": 775,
+   "vs_live": 1802,
    "wells": 31821
   },
   {
    "basin": "midland",
-   "code_moved": 1353,
-   "fam_moved": 953,
-   "vs_live": 1286,
+   "code_moved": 1148,
+   "fam_moved": 755,
+   "vs_live": 1095,
    "wells": 28865
   }
  ],

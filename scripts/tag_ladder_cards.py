@@ -62,7 +62,7 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v4: pd.Series, rungs
     wide = fc._neighbourhood(dd, xy, i, replace(DEFAULT_PARAMS, radius_ft=fc.SECTION_PREFILTER_FT))
     png, _ = fc.card_figure(subj, fc._neighbourhood(dd, xy, i, DEFAULT_PARAMS), DEFAULT_PARAMS, dest=v4["final"],
                             section=fc.strike_section(subj, wide))
-    anchor = tl.ANCHORS[v4["basin"]][0 if v4["anchor_used"] == "primary" else 1]
+    anchor = v4["anchor_used"]
     kv = (
         f"<b>card {n}</b> · <b>{_esc(subj['api10'])}</b> {_esc(subj['well_name'])} · {_esc(subj['operator'])} · {_esc(subj['county'])} · "
         f"fp {_esc(subj['first_production_date'])} · lateral {_fmt(subj['lateral_length_ft'], 0)} ft · "
@@ -89,6 +89,9 @@ def run(cache: Path, out: Path) -> Path:
     for b in ("delaware", "midland"):
         dd = _scored(b, cache / f"scored_{b}.pkl").reset_index(drop=True)
         dd["api10"] = dd["api10"].astype(str)
+        # rev 2 (Michael 2026-11-05): cards draw evidence wells only: no planned survey, nothing shallower than 4,000 ft
+        ok = ~dd["planned"].fillna(False).astype(bool) & (pd.to_numeric(dd["tvd_ft"], errors="coerce") >= sb.MIN_EVIDENCE_TVD_FT)
+        dd = dd[ok | dd["api10"].isin(set(pick["api10"]))].reset_index(drop=True)
         xy = _project_xy_ft(dd["mid_lon"].to_numpy(float), dd["mid_lat"].to_numpy(float))
         g = pick[pick["basin"] == b]
         html = []
@@ -107,7 +110,7 @@ def run(cache: Path, out: Path) -> Path:
         f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Ladder blind cards</title><style>{fc._CSS}</style></head><body>",
         "<h1>formation_blueox rule v4 — blind review cards (K0)</h1>",
         (f"<div class=meta>Built {built}, read-only. 15 random producers per basin (seed {SEED}) where rule v4 + overrides differs from "
-        "today's tag; no card is a labelled, overridden or planned-survey well, so none has a known answer. Neighbours are drawn by their "
+        "today's tag; no card is a labelled, overridden or planned-survey well, so none has a known answer. Neighbours are evidence wells only (no planned survey, none under 4,000 ft), drawn by their "
         "LIVE tags (strike section, orthogonal to the lateral; dashed = 1.5-mi band medians). Mark each card in "
         "<code>cards_sample.csv</code>: <b>agree</b> / <b>reject</b> / a bench code (your own call) / free text (a hold, not counted). "
         "Pass = 70 % agree among judged, and 60 % in each basin. Nothing here is applied.</div>"),

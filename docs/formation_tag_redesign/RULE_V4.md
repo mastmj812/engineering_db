@@ -1,6 +1,6 @@
 # formation_blueox rule v4, "the ladder" (revision 2, after v3 failed)
 
-**Status:** FROZEN at `5767fe5`, with revision 1 (§4) before any card verdict or score. Nothing is applied.
+**Status:** FROZEN at `5767fe5`, with revisions 1 and 2 (§4) before any counted verdict or score. Nothing is applied.
 
 - Code: `box/tag_ladder.py`, constants in `LADDER`. Tests: `tests/test_tag_ladder.py`.
 - Development run: `scripts/tag_ladder_dev.py`. Blind cards: `scripts/tag_ladder_cards.py`.
@@ -16,9 +16,9 @@ of its family calls):
 
 - **Witnesses.** Evidence wells (survey depth or clean `tvd_ft`, not planned) whose vendors agree on the family:
   every mapped vendor string (Novi and Enverus) maps to the same family.
-- **Anchor.** The median depth of witnesses of the basin's anchor family within 1.5 mi, with 3 or more of them.
-  - Delaware: WCA (WCXY + WCA_1 + WCA_2), falling back to BS2_S.
-  - Midland: WCA_1, falling back to LSSH.
+- **Anchor (rev 2).** The median depth of witnesses of an anchor family within 1.5 mi, with 3 or more of them.
+  - Delaware anchors: BS1_S, BS2_S, WCA. Midland anchors: JM, LSSH, WCA_1.
+  - Each well uses the **nearest** anchor, and only within **1,000 ft**; beyond that it keeps its vendor code.
   - offset = depth − anchor.
 - **Ladder.** One rung per bench.
   - A rung = the median offset of evidence wells carrying that vendor code, per county, falling back to state and
@@ -31,8 +31,8 @@ of its family calls):
 - **Placement.** A well lands in the cluster its offset falls in.
   - **Keep** the vendor code if it is in that cluster. Confidence is high only in a one-bench cluster, with a margin
     of at least max(30 ft, a quarter of the gap).
-  - **Move** to the cluster's nearest bench only when the margin clears that bar **and** the target family has 3 or
-    more evidence wells within 1.5 mi. That second condition comes from your reason for holding three #230 cards:
+  - **Move** to the cluster's nearest bench only when the margin clears that bar, the target is a one-bench cluster
+    (rev 2), **and** the target family has 3 or more evidence wells within 1.5 mi. That second condition comes from your reason for holding three #230 cards:
     "lacking deep neighbors".
 - **Grid** (Delaware, controlled; same control test as v3 revision 1).
   - Where his interval excludes the vendor family by 50 ft or more, the well moves to the nearest rung of a family
@@ -81,3 +81,4 @@ nothing either way until you have seen both. **If K0 fails**, v4 fails.
 | # | Date | Change | Why |
 |---|---|---|---|
 | 1 | 2026-11-05 | (a) v4 starts from the vendor code **after the sql/23 gross correction**, i.e. the live tag for a non-overridden well. An overridden well starts from its raw vendor code, so overrides still never leak. (b) In Lea / Ward the XY guard blocks a move between **any** family above the XY top and any at or below it (v3 checked only BS3 ↔ WCA). | Found while checking the first card draw, before any verdict. Michael had seen nothing, and no score had been computed. Starting from the raw vendor code undid sql/23's > 600 ft fixes wherever v4 couldn't judge: 204 wells, e.g. PRE-ONGARD WELL #009 BS1_S → OTHER at 5,007 ft, and WARWINK UNIVERSITY 18-34 A 2H WCB_1 → BS3_S at 12,650 ft. The guard gap was found on the latter. The first draw is kept unjudged in `v4-blind-cards-2026-11-05-superseded/`; the cards were re-drawn with the same seed. |
+| 2 | 2026-11-05 | (a) **Nearest anchor with a 1,000-ft lever cap.** Anchors are Delaware BS1_S / BS2_S / WCA and Midland JM / LSSH / WCA_1. Each well uses the anchor nearest its depth, and only if the offset is ≤ 1,000 ft; otherwise it keeps its code (`no_anchor`). (b) **No move into a multi-bench cluster** (`ambiguous_target`). (c) **Cards draw evidence wells only**: no planned survey, nothing under 4,000 ft. | Michael on card 1 of the revision-1 draw (COTTON DRAW UNIT #115H, AVA_2 at 8,920 ft, local AVA_2 median 8,960 / AVA_1 8,744). v4 measured it from the WCA band 2,969 ft below. The local Avalon–WCA interval runs about 170 ft thicker than Eddy's average, which is more than the 220-ft AVA_1/AVA_2 spacing, and v4 moved it into the AVA_0/AVA_1 cluster (rungs 26 ft apart). He also flagged sub-2,000-ft records on the card: excluded from v4 (4,000-ft evidence floor) but drawn on the plot, along with planned surveys, against his standing rule. Only card 1 was looked at, and no verdict was recorded. That draw is kept as `v4-blind-cards-2026-11-05-superseded-2/`, and the cards are re-drawn with the same seed. |

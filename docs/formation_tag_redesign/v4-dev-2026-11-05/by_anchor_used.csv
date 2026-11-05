@@ -1,7 +1,9 @@
 basin,anchor_used,n
-delaware,primary,27889
-delaware,secondary,2068
-delaware,,1864
-midland,primary,25554
-midland,secondary,1239
-midland,,2072
+delaware,BS1_S,2228
+delaware,BS2_S,6109
+delaware,WCA,19382
+delaware,,4102
+midland,JM,3307
+midland,LSSH,6170
+midland,WCA_1,15880
+midland,,3508

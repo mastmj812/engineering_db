@@ -7,8 +7,10 @@ as the Lea/Eddy rule V did (15/15 family calls upheld by Michael):
   A. Witnesses. Evidence wells (survey depth or clean tvd_ft, not planned) whose vendors agree on the FAMILY (every
      mapped vendor string, Novi and Enverus, maps to the same family). Families hold (0.5 % gross inversions), so
      these are the trustworthy depth references.
-  B. Anchor. Per well, the median depth of witnesses of the basin's ANCHOR family within anchor_radius_mi (>=
-     anchor_min_n). Delaware anchor WCA (fallback BS2_S); Midland WCA_1 (fallback LSSH). offset = depth - anchor.
+  B. Anchor (rev 2). Per well, the median depth of witnesses of each ANCHOR family within anchor_radius_mi (>=
+     anchor_min_n): Delaware BS1_S / BS2_S / WCA, Midland JM / LSSH / WCA_1. The well uses the NEAREST one, and only
+     when it is within max_lever_ft (a 3,000-ft lever arm turns normal isochore variation into a wrong sub-bench:
+     COTTON DRAW UNIT #115H, 2026-11-05). offset = depth - anchor; otherwise `no_anchor` (vendor kept).
   C. Ladder. A rung per bench = the median offset of evidence wells (with an anchor) carrying that vendor code, per
      county, falling back to state, then basin (>= rung_min_n). Benches whose rungs sit closer than sep_ft (or out of
      order) form one unresolvable CLUSTER. A well whose vendor bench has no rung here is not judged (`no_rung`).
@@ -17,7 +19,8 @@ as the Lea/Eddy rule V did (15/15 family calls upheld by Michael):
        max(conf_min_ft, conf_frac x the gap); inside a multi-bench cluster it is low (Gate 0 Q1 (a)).
      * otherwise MOVE to the cluster's bench nearest the offset, but only when the margin clears the same bar,
        the target family has >= support_min_n evidence wells within support_radius_mi ("deep neighbours",
-       Michael's reason for holding three #230 cards), and no guard blocks it.
+       Michael's reason for holding three #230 cards), the target is a ONE-bench cluster (rev 2:
+       `ambiguous_target` otherwise), and no guard blocks it.
   E. Grid (Delaware, controlled). Where the geologist's interval decisively (>= grid_min_miss_ft) excludes the
      vendor family, the well may move to the nearest rung of a family the interval allows. A ladder move into a
      family the interval excludes is blocked (`grid_conflict`).
@@ -39,7 +42,8 @@ import pandas as pd
 from box import tag_rule as tr
 from box import tag_scoreboard as sb
 
-ANCHORS: dict[str, tuple[str, str]] = {"delaware": ("WCA", "BS2_S"), "midland": ("WCA_1", "LSSH")}
+# rev 2: several reliable anchor families per basin; a well uses the nearest one within max_lever_ft
+ANCHORS: dict[str, tuple[str, ...]] = {"delaware": ("BS1_S", "BS2_S", "WCA"), "midland": ("JM", "LSSH", "WCA_1")}
 
 
 @dataclass(frozen=True)
@@ -54,6 +58,7 @@ class Ladder:
     support_min_n: int = 3
     grid_min_miss_ft: float = 50.0
     grid_min_share: float = 0.5
+    max_lever_ft: float = 1_000.0  # rev 2: an anchor farther than this cannot place a thin split
 
 
 LADDER = Ladder()
@@ -88,29 +93,43 @@ def family_agree(df: pd.DataFrame) -> np.ndarray:
 
 
 def anchors(pairs: pd.DataFrame, ref: pd.DataFrame, witness: np.ndarray, n_subj: int, lad: Ladder = LADDER) -> pd.DataFrame:
-    """Per subject i: anchor_primary / anchor_secondary median depth (NaN when < anchor_min_n witnesses)."""
+    """Per subject i and anchor family: median depth of its witnesses within anchor_radius_mi (NaN below
+    anchor_min_n). One column per anchor family across both basins."""
     fam = np.array([tr.family(b, c) for b, c in zip(ref["basin"], ref["vendor"], strict=True)], dtype=object)
     z = ref["depth_ft"].to_numpy(float)
     p = pairs[pairs["d"] <= lad.anchor_radius_mi * sb.M_PER_MI]
     p = p[witness[p["j"].to_numpy()]]
-    t = pd.DataFrame({"i": p["i"].to_numpy(), "fam": fam[p["j"].to_numpy()], "z": z[p["j"].to_numpy()],
-                      "basin": ref["basin"].to_numpy()[p["j"].to_numpy()]})
-    out = pd.DataFrame(index=range(n_subj), columns=["anchor_primary", "anchor_secondary"], dtype=float)
-    for slot, k in (("anchor_primary", 0), ("anchor_secondary", 1)):
-        want = np.array([ANCHORS.get(b, (None, None))[k] for b in t["basin"]], dtype=object)
-        g = t[t["fam"] == want].groupby("i")["z"].agg(["median", "size"])
-        g = g[g["size"] >= lad.anchor_min_n]
-        out.loc[g.index, slot] = g["median"].to_numpy()
+    j = p["j"].to_numpy()
+    t = pd.DataFrame({"i": p["i"].to_numpy(), "fam": fam[j], "z": z[j], "basin": ref["basin"].to_numpy()[j]})
+    cols = sorted({f for fs in ANCHORS.values() for f in fs})
+    out = pd.DataFrame(np.nan, index=range(n_subj), columns=cols)
+    keep = np.array([f in ANCHORS.get(b, ()) for b, f in zip(t["basin"], t["fam"], strict=True)], bool)
+    g = t[keep].groupby(["i", "fam"])["z"].agg(["median", "size"])
+    g = g[g["size"] >= lad.anchor_min_n].reset_index()
+    for f, gg in g.groupby("fam"):
+        out.loc[gg["i"].to_numpy(), f] = gg["median"].to_numpy()
     return out
 
 
-def offsets(df: pd.DataFrame, anc: pd.DataFrame) -> pd.DataFrame:
-    """offset and anchor_used ('primary' / 'secondary' / None) per row."""
+def offsets(df: pd.DataFrame, anc: pd.DataFrame, lad: Ladder = LADDER) -> pd.DataFrame:
+    """Rev 2: the NEAREST anchor family with local witnesses (smallest |depth - anchor|), used only when that
+    offset is within max_lever_ft. Returns offset_ft, anchor_used (the family) and nearest_anchor_ft (reported
+    even when it exceeds the cap)."""
     z = df["depth_ft"].to_numpy(float)
-    a1, a2 = anc["anchor_primary"].to_numpy(float), anc["anchor_secondary"].to_numpy(float)
-    used = np.where(np.isfinite(a1), "primary", np.where(np.isfinite(a2), "secondary", None))
-    off = np.where(np.isfinite(a1), z - a1, np.where(np.isfinite(a2), z - a2, np.nan))
-    return pd.DataFrame({"offset_ft": off, "anchor_used": used}, index=df.index)
+    off, used, near = np.full(len(df), np.nan), np.full(len(df), None, dtype=object), np.full(len(df), np.nan)
+    A = {f: anc[f].to_numpy(float) for f in anc.columns}
+    for k, b in enumerate(df["basin"]):
+        best = None
+        for f in ANCHORS.get(b, ()):
+            a = A[f][k]
+            if np.isfinite(a) and np.isfinite(z[k]) and (best is None or abs(z[k] - a) < abs(best[1])):
+                best = (f, z[k] - a)
+        if best is None:
+            continue
+        near[k] = abs(best[1])
+        if abs(best[1]) <= lad.max_lever_ft:
+            used[k], off[k] = best
+    return pd.DataFrame({"offset_ft": off, "anchor_used": used, "nearest_anchor_ft": near}, index=df.index)
 
 
 def calibrate(df: pd.DataFrame, calib: np.ndarray, lad: Ladder = LADDER) -> pd.DataFrame:
@@ -257,6 +276,9 @@ def assign(subj: pd.DataFrame, pairs: pd.DataFrame, ref: pd.DataFrame, rungs: pd
             why = "no_target_support"
         if why is None and tf != vf and not move_family:
             why = "family_conflict"
+        # rev 2: never move INTO a cluster depth cannot split (the bench picked inside it would be a coin flip)
+        if why is None and len(next((ms for ms, _ in cl if target in ms), [target])) > 1:
+            why = "ambiguous_target"
         if why:
             flag[i] = why
             continue
@@ -271,7 +293,7 @@ def run_producers(df: pd.DataFrame, pairs: pd.DataFrame, order: dict[str, list[s
     depth_ft, evidence."""
     wit = df["evidence"].to_numpy(bool) & family_agree(df)
     anc = anchors(pairs, df, wit, len(df), lad)
-    off = offsets(df, anc)
+    off = offsets(df, anc, lad)
     d = df.join(off)
     # rungs from ALL evidence wells: a county-wide median dilutes the local error clusters that sank v3, and
     # witnesses-only left the Delaware with no BS2_C / BS3_C / WCC rung (the vendors name those differently)
@@ -283,10 +305,10 @@ def run_producers(df: pd.DataFrame, pairs: pd.DataFrame, order: dict[str, list[s
 def run_sticks(sticks: pd.DataFrame, pairs_sp: pd.DataFrame, prod: pd.DataFrame, prod_witness: np.ndarray, rungs: pd.DataFrame,
                order: dict[str, list[str]], grid: pd.DataFrame | None = None, lad: Ladder = LADDER) -> pd.DataFrame:
     anc = anchors(pairs_sp, prod, prod_witness, len(sticks), lad)
-    off = offsets(sticks, anc)
+    off = offsets(sticks, anc, lad)
     res = assign(sticks.join(off), pairs_sp, prod, rungs, order, grid, False, lad)
     return off.join(res)
 
 
 def rule_record() -> dict:
-    return {"ladder": asdict(LADDER), "anchors": ANCHORS, "families": tr.FAMILY, "protected": sorted(tr.PROTECTED)}
+    return {"revision": 2, "ladder": asdict(LADDER), "anchors": ANCHORS, "families": tr.FAMILY, "protected": sorted(tr.PROTECTED)}
