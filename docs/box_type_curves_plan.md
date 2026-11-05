@@ -768,7 +768,16 @@ revert. erebor (local main fast-forwarded to #30) reads both records, priced=fal
 own go: Steven prices runs 32 + 30 (asked 2026-11-04 in #eng-updates, ts 1793822595.781589), run 19 pruned with --include-priced ~1 day after the flip, then 25 + 28. **D151 tiers WRITTEN to `box.bench_scope.validation` 2026-11-04** (Michael "yes, please do"; one
 transaction: WCB_1 / WCB_2 / JM / MS / DEAN / WCC validated -> provisional, the column default since sql/63; all nine in-scope
 Midland rows' decision_ref + the D151 gate-21c reference; 0 disagreements with run 30's tiers; Delaware rows untouched;
-`live23c/d151_tiers.txt`). #eng-updates post SENT 2026-11-04.
+`live23c/d151_tiers.txt`). #eng-updates post SENT 2026-11-04. **Steven PRICED both 2026-11-04 ~21:38 UTC** (read-only check: run 32
+complete, 48,148 locations x 16 decks = 770,368 rows, provenance + downtime_basis on every row, oil EUR ties exactly; run 30
+PARTIAL, 24,927 of 28,801 locations / 398,832 rows; the 3,874 missing sit in nine fringe Midland counties (Andrews 1,696, Ector
+795, Irion 626, Borden 437, Crockett 137, Dawson 94, Mitchell 17, Crane 10, Scurry 9; plus 53 in Midland County), blank econ in
+erebor + the scout view by design (v4); Michael raising it with Steven). **Runs 19, 25 and 28 PRUNED LIVE 2026-11-05** ("Go
+prune all three"; `box_prune_runs --run N --apply`, one transaction each, in order): run 19 `--include-priced` (its 687,520
+econ rows deleted first; 1,285 s), run 25 (2,009 s), run 28 (2,206 s); each printed "record(s) [30, 32] unchanged; no orphan
+rows" (`live23c/prune_19_25_28_*.txt`). Run 19 went ~7 h after the flip, not the ~1 day first planned: run 32 was priced and
+checked, so the revert window had served its purpose. **The only BOX runs now are the two records: Delaware run 32 and Midland
+run 30.** Step 23 is CLOSED apart from the Midland pricing gap, which is Steven's to settle.
 
 ## 6. Thresholds and knobs (initial values; pilot recalibrates)
 

@@ -1,0 +1,40 @@
+start Thu Nov  5 02:51:36 UTC 2026
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+  run 19 (delaware): record=False superseded_by=32 pud_forecast=121,696 months=77,346,000 priced_rows=687,520
+  run 25 (delaware): record=False superseded_by=None pud_forecast=166,843 months=88,101,000 priced_rows=0
+  run 28 (midland): record=False superseded_by=None pud_forecast=85,849 months=58,573,200 priced_rows=0
+  run 30 (midland): record=True superseded_by=None pud_forecast=85,849 months=51,841,800 priced_rows=398,832
+  run 32 (delaware): record=True superseded_by=None pud_forecast=166,561 months=86,666,400 priced_rows=770,368
+priced runs to prune, box_econ rows deleted first: {19: 687520}
+record(s) {'delaware': [32], 'midland': [30]}; prune [19]; keep [25, 28, 30, 32]
+pruned runs [19]; kept [25, 28, 30, 32]; record(s) [30, 32] unchanged; no orphan rows; box_econ rows deleted {19: 687520} (1285 s)
+
+real	21m25.900s
+user	0m0.015s
+sys	0m0.031s
+end Thu Nov  5 03:13:02 UTC 2026
+start Thu Nov  5 03:13:02 UTC 2026
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+  run 25 (delaware): record=False superseded_by=None pud_forecast=166,843 months=88,101,000 priced_rows=0
+  run 28 (midland): record=False superseded_by=None pud_forecast=85,849 months=58,573,200 priced_rows=0
+  run 30 (midland): record=True superseded_by=None pud_forecast=85,849 months=51,841,800 priced_rows=398,832
+  run 32 (delaware): record=True superseded_by=None pud_forecast=166,561 months=86,666,400 priced_rows=770,368
+record(s) {'delaware': [32], 'midland': [30]}; prune [25]; keep [28, 30, 32]
+pruned runs [25]; kept [28, 30, 32]; record(s) [30, 32] unchanged; no orphan rows (2009 s)
+
+real	33m30.499s
+user	0m0.000s
+sys	0m0.078s
+end Thu Nov  5 03:46:32 UTC 2026
+start Thu Nov  5 03:46:32 UTC 2026
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+  run 28 (midland): record=False superseded_by=None pud_forecast=85,849 months=58,573,200 priced_rows=0
+  run 30 (midland): record=True superseded_by=None pud_forecast=85,849 months=51,841,800 priced_rows=398,832
+  run 32 (delaware): record=True superseded_by=None pud_forecast=166,561 months=86,666,400 priced_rows=770,368
+record(s) {'midland': [30], 'delaware': [32]}; prune [28]; keep [30, 32]
+pruned runs [28]; kept [30, 32]; record(s) [30, 32] unchanged; no orphan rows (2206 s)
+
+real	36m47.346s
+user	0m0.000s
+sys	0m0.031s
+end Thu Nov  5 04:23:20 UTC 2026
