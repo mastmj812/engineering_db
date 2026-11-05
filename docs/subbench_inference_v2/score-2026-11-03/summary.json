@@ -1,0 +1,307 @@
+{
+  "run_at": "2026-11-03T12:50:09",
+  "git_sha": "f138eb0",
+  "rule": {
+    "pool": "first_production_date IS NOT NULL AND tvd_ft % 100 <> 0",
+    "candidates": 200,
+    "model_n": 30,
+    "model_r_m": 8046.72,
+    "model_bw_m": 2414.016,
+    "model_min_per_bench": 2,
+    "model_min_sep_ft": 40.0,
+    "model_sigma_floor_ft": 25.0,
+    "vote_n": 12,
+    "vote_sigma_tvd_ft": 60.0,
+    "vote_sigma_d_m": 2414.016,
+    "frontier_min_n": 4,
+    "frontier_r_m": 8046.72,
+    "current_n": 12,
+    "conf_bands": [
+      0.8,
+      0.95
+    ],
+    "wcb2_cut_ft": 400.0
+  },
+  "hold_out_radius_mi": 0.74,
+  "n_pool": 38275,
+  "n_pool_producers": 30866,
+  "n_sticks": 35290,
+  "current_reproduces_live_pct": 95.6,
+  "groups": {
+    "delaware_AVA": {
+      "producers": 1667,
+      "held_out_current_pct": 75.0,
+      "held_out_draft_pct": 77.3,
+      "held_out_by_path": {
+        "frontier": {
+          "n": 44,
+          "draft_pct": 59.1,
+          "current_pct": 54.5
+        },
+        "vote": {
+          "n": 1623,
+          "draft_pct": 77.8,
+          "current_pct": 75.6
+        }
+      },
+      "calibration": {
+        "0.80-0.95": {
+          "n": 290,
+          "draft_pct": 80.7
+        },
+        "<0.80": {
+          "n": 505,
+          "draft_pct": 59.2
+        },
+        ">=0.95": {
+          "n": 872,
+          "draft_pct": 86.7
+        }
+      }
+    },
+    "delaware_WCA": {
+      "producers": 10038,
+      "held_out_current_pct": 65.2,
+      "held_out_draft_pct": 74.5,
+      "held_out_by_path": {
+        "frontier": {
+          "n": 6,
+          "draft_pct": 50.0,
+          "current_pct": 33.3
+        },
+        "local_model": {
+          "n": 7578,
+          "draft_pct": 78.3,
+          "current_pct": 67.1
+        },
+        "vote": {
+          "n": 2454,
+          "draft_pct": 63.0,
+          "current_pct": 59.5
+        }
+      },
+      "calibration": {
+        "0.80-0.95": {
+          "n": 1897,
+          "draft_pct": 85.0
+        },
+        "<0.80": {
+          "n": 6888,
+          "draft_pct": 69.8
+        },
+        ">=0.95": {
+          "n": 1253,
+          "draft_pct": 84.7
+        }
+      },
+      "sticks": {
+        "n": 6585,
+        "flips_vs_live": 1999,
+        "flip_pct": 30.4,
+        "flips_undrilled": 1950,
+        "flips_in_box_scout": 566,
+        "flip_matrix": {
+          "WCA_1->WCA_2": 879,
+          "WCA_2->WCA_1": 1120
+        },
+        "paths": {
+          "frontier": 3152,
+          "local_model": 1996,
+          "vote": 1437
+        },
+        "bands": {
+          "<0.80": 3343,
+          ">=0.95": 2356,
+          "0.80-0.95": 886
+        },
+        "frontier_in_box_scout": 0,
+        "review_conf_lt_080_non_frontier": 1832
+      }
+    },
+    "delaware_WCB": {
+      "producers": 3073,
+      "held_out_current_pct": 78.7,
+      "held_out_draft_pct": 84.2,
+      "held_out_by_path": {
+        "frontier": {
+          "n": 26,
+          "draft_pct": 69.2,
+          "current_pct": 61.5
+        },
+        "local_model": {
+          "n": 2533,
+          "draft_pct": 85.5,
+          "current_pct": 79.0
+        },
+        "vote": {
+          "n": 514,
+          "draft_pct": 78.6,
+          "current_pct": 78.2
+        }
+      },
+      "calibration": {
+        "0.80-0.95": {
+          "n": 658,
+          "draft_pct": 89.4
+        },
+        "<0.80": {
+          "n": 1184,
+          "draft_pct": 71.9
+        },
+        ">=0.95": {
+          "n": 1231,
+          "draft_pct": 93.3
+        }
+      },
+      "sticks": {
+        "n": 16676,
+        "flips_vs_live": 4178,
+        "flip_pct": 25.1,
+        "flips_undrilled": 4064,
+        "flips_in_box_scout": 1145,
+        "flip_matrix": {
+          "WCB_1->WCB_2": 1834,
+          "WCB_2->WCB_1": 2344
+        },
+        "paths": {
+          "local_model": 8362,
+          "frontier": 4474,
+          "vote": 3840
+        },
+        "bands": {
+          ">=0.95": 6939,
+          "<0.80": 6748,
+          "0.80-0.95": 2989
+        },
+        "frontier_in_box_scout": 0,
+        "review_conf_lt_080_non_frontier": 4576
+      }
+    },
+    "midland_WCB": {
+      "producers": 8442,
+      "held_out_current_pct": 85.5,
+      "held_out_draft_pct": 88.5,
+      "held_out_by_path": {
+        "frontier": {
+          "n": 17,
+          "draft_pct": 76.5,
+          "current_pct": 76.5
+        },
+        "vote": {
+          "n": 8425,
+          "draft_pct": 88.5,
+          "current_pct": 85.5
+        }
+      },
+      "calibration": {
+        "0.80-0.95": {
+          "n": 1214,
+          "draft_pct": 87.5
+        },
+        "<0.80": {
+          "n": 1797,
+          "draft_pct": 66.7
+        },
+        ">=0.95": {
+          "n": 5431,
+          "draft_pct": 95.9
+        }
+      },
+      "sticks": {
+        "n": 12029,
+        "flips_vs_live": 1181,
+        "flip_pct": 9.8,
+        "flips_undrilled": 1157,
+        "flips_in_box_scout": 0,
+        "flip_matrix": {
+          "WCB_1->WCB_2": 553,
+          "WCB_2->WCB_1": 628
+        },
+        "paths": {
+          "vote": 10097,
+          "frontier": 1932
+        },
+        "bands": {
+          ">=0.95": 8058,
+          "<0.80": 2162,
+          "0.80-0.95": 1809
+        },
+        "frontier_in_box_scout": 0,
+        "review_conf_lt_080_non_frontier": 1873
+      }
+    }
+  },
+  "criteria": {
+    "C1": {
+      "delaware_WCA": {
+        "draft": 74.5,
+        "current": 65.2,
+        "pass": true
+      },
+      "delaware_WCB": {
+        "draft": 84.2,
+        "current": 78.7,
+        "pass": true
+      },
+      "midland_WCB": {
+        "draft": 88.5,
+        "current": 85.5,
+        "pass": true
+      }
+    },
+    "C2": {
+      "delaware_WCB": {
+        "n": 9102,
+        "draft": 77.1,
+        "live": 70.3,
+        "pass": true
+      },
+      "midland_WCB": {
+        "n": 10763,
+        "draft": 84.3,
+        "live": 82.8,
+        "pass": true
+      }
+    },
+    "C3": {
+      "delaware_WCB": {
+        "bands": {
+          "<0.80": 71.9,
+          "0.80-0.95": 89.4,
+          ">=0.95": 93.3
+        },
+        "pass": true
+      },
+      "midland_WCB": {
+        "bands": {
+          "<0.80": 66.7,
+          "0.80-0.95": 87.5,
+          ">=0.95": 95.9
+        },
+        "pass": true
+      }
+    },
+    "C4": {
+      "pad_3240": [
+        {
+          "draft": "WCB_1",
+          "conf": 0.974
+        },
+        {
+          "draft": "WCB_1",
+          "conf": 0.97
+        },
+        {
+          "draft": "WCB_1",
+          "conf": 0.978
+        },
+        {
+          "draft": "WCB_1",
+          "conf": 0.967
+        }
+      ],
+      "pass": true
+    },
+    "all_pass": true
+  }
+}

@@ -1,0 +1,15 @@
+runs: [(30, 'midland', True, None), (32, 'delaware', True, None)]
+box.pud_forecast rows on runs 19/25/28: (0,)
+box.pud_forecast_stream rows on runs 19/25/28: (0,)
+box.location_analog rows on runs 19/25/28: (0,)
+box.location_water_analog rows on runs 19/25/28: (0,)
+box.pud_proximity rows on runs 19/25/28: (0,)
+box.pud_proximity_parent rows on runs 19/25/28: (0,)
+box.pud_forecast_month rows on runs 19/25/28 exist: (False,)
+box_econ rows on runs 19/25/28: (0,)
+box_econ runs present: [(30, 398832, 16), (32, 770368, 16)]
+oil by run (forecast locations / MMbbl): [(30, 28801, Decimal('11078.0')), (32, 48148, Decimal('25421.0'))]
+records' month rows: [(30, 51841800), (32, 86666400)]
+box_scout_locations (basin, rows, priced): [('delaware', 48148, 48148), ('midland', 28801, 24927)]
+erebor delaware: 32 priced True n 48148
+erebor midland: 30 priced True n 24927
