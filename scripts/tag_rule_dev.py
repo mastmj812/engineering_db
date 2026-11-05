@@ -22,6 +22,7 @@ import pandas as pd
 from box import extent_package as pkg
 from box import tag_rule as tr
 from box import tag_scoreboard as sb
+from box import tops_qc as tq
 from scripts import tag_scoreboard as sbs
 
 CELL_M = 6 * sb.M_PER_MI
@@ -51,7 +52,7 @@ def rule_pairs(d: pd.DataFrame, r: tr.Rule = tr.RULE) -> pd.DataFrame:
 def grid_for(d: pd.DataFrame, st: pd.DataFrame, order: dict[str, list[str]]) -> pd.DataFrame:
     clean = d[d["evidence"]].reset_index(drop=True)
     stations, depths, mid = sbs.grid_frame(clean, st)
-    ctrl = sbs.control_distances(mid)
+    ctrl = sbs.control_distances(mid, tq.STACK)  # every interval boundary (RULE.md rev 1)
     wells = clean.set_index("api10").loc[mid["api10"], ["basin", "vendor", "county"]]
     g = tr.grid_evidence(stations, depths, wells, order, ctrl, pkg.TRUST_MAX_FT)
     return g.reindex(d["api10"]).reset_index(drop=True)

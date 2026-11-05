@@ -152,4 +152,4 @@ revision in §5.
 
 | # | Date | Change | Why |
 |---|---|---|---|
-| — | — | — | — |
+| 1 | 2026-11-05 | Grid control is measured on every interval boundary (all of `tops_qc.STACK`), not only the tag-interval surfaces. | Input bug, found before any score. WOLFCAMP_A had no pick distance, so a well in his XY→A or A→B1 interval was never grid-controlled: the grid could move WCA→WCB but never WCB→WCA, against §1's "both bounding surfaces have a pick". The dev run was repeated (churn + guards only) before scoring. |

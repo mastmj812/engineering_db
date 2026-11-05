@@ -70,9 +70,12 @@ def grid_frame(clean: pd.DataFrame, st: pd.DataFrame) -> tuple[pd.DataFrame, np.
     return stations, depths, mid
 
 
-def control_distances(mid: pd.DataFrame) -> dict[str, np.ndarray]:
+def control_distances(mid: pd.DataFrame, surfaces: tuple[str, ...] | None = None) -> dict[str, np.ndarray]:
+    """Distance to the nearest geologist pick per surface at each well midpoint. Default = the tag-interval surfaces
+    (the scoreboard's tag-based control); the rule passes tops_qc.STACK (every interval boundary, RULE.md rev 1)."""
     xy = mid[["x", "y"]].to_numpy(float)
-    surfaces = sorted({s for tb in tq.TAG_INTERVAL.values() for s in tb})
+    if surfaces is None:
+        surfaces = tuple(sorted({s for tb in tq.TAG_INTERVAL.values() for s in tb}))
     return {s: pkg.dist_to_control(s, xy) for s in surfaces}
 
 

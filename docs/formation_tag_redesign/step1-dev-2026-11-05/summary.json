@@ -85,10 +85,10 @@
   {
    "basin": "delaware",
    "wells": 31821,
-   "moved": 2439,
-   "family_moved": 734,
-   "moved_pct": 7.66,
-   "family_moved_pct": 2.31
+   "moved": 2571,
+   "family_moved": 852,
+   "moved_pct": 8.08,
+   "family_moved_pct": 2.68
   },
   {
    "basin": "midland",
@@ -110,7 +110,7 @@
    "midland": 6.03
   },
   "rule": {
-   "delaware": 5.64,
+   "delaware": 5.61,
    "midland": 3.1
   }
  },
