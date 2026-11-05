@@ -1,6 +1,6 @@
 # formation_blueox rule v4, "the ladder" (revision 2, after v3 failed)
 
-**Status:** rev 2 FAILED K0 (14/30). **Revision 3 (§4) is the live candidate**: the grid is off, and a move needs ≥ 80 ft of margin. It is tested on a FRESH blind draw (seed 51125, every earlier card well excluded). Nothing is applied.
+**Status:** rev 3 **K0 FAILED 2026-11-05: 18/29 (62 %)**; Delaware 10/15 passed per basin, Midland 8/14 failed (v4r3-blind-cards-2026-11-05/FINDINGS.md). v4 fails. Nothing is applied.
 
 - Code: `box/tag_ladder.py`, constants in `LADDER`. Tests: `tests/test_tag_ladder.py`.
 - Development run: `scripts/tag_ladder_dev.py`. Blind cards: `scripts/tag_ladder_cards.py`.

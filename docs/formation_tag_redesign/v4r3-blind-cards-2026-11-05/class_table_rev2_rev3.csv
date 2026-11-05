@@ -1,0 +1,10 @@
+cls,cards,agree,rev2,rev3,agree_pct
+DE Avalon sub-bench,6,4,2,4,67.0
+"DE Bone Spring / Avalon, across families",11,9,3,8,82.0
+DE WCA <-> WCB,8,1,6,2,12.0
+DE WCA sub-bench (WCXY/WCA_1/WCA_2),4,2,4,0,50.0
+DE WCB / WCC / WCD,1,1,0,1,100.0
+MID Spraberry / Dean / WCA_1,6,3,5,1,50.0
+MID WCA_1 <-> WCB_1,10,5,5,5,50.0
+MID WCB_1 <-> WCB_2,8,4,4,4,50.0
+MID WCB_2 / WCC / WCD,5,3,1,4,60.0
