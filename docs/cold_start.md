@@ -110,7 +110,10 @@ is an external scheduler (cron-job.org) that POSTs the `workflow_dispatch`
 REST endpoint at 05:00 America/Chicago with a fine-grained PAT; the GitHub cron
 (`15 11 * * *` UTC) fired 3-10 h late under GitHub's best-effort scheduler and
 is now only a backstop that the `gate` job skips once an ETL has succeeded
-since 09:00 UTC. The workflow header has the measured lag and vendor timing;
+since 09:00 UTC (`scripts/etl_gate.py`; it filters the unfiltered runs
+listing itself because the API's `status=` filter dropped the 2026-11-04
+primary run, and the backstop ran a second full ETL). Dry-run it for any past
+moment with `GATE_NOW` (see its docstring). The workflow header has the measured lag and vendor timing;
 §6a below sets up the PAT and the cron-job.org job. Secrets live in
 the repo's **Actions secrets** (`gh secret list`) and mirror `.env`; the full
 run log is uploaded as a workflow artifact, and the email summary +

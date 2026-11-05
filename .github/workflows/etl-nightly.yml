@@ -79,44 +79,26 @@ concurrency:
 
 jobs:
   # Dedupe guard (see header). Read-only GitHub API calls, no DB access.
+  # The logic lives in scripts/etl_gate.py (stdlib only, unit-tested in
+  # tests/test_etl_gate.py). It filters the UNFILTERED runs listing itself:
+  # the API's status= filter silently dropped the 2026-11-04 primary run, so
+  # the backstop re-ran the full ETL that afternoon.
   gate:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       run: ${{ steps.check.outputs.run }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/etl_gate.py
+          sparse-checkout-cone-mode: false
       - id: check
         env:
           GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
           EVENT: ${{ github.event_name }}
           GUARDED: ${{ github.event_name == 'schedule' || github.event.inputs.only_if_needed == 'true' }}
-        run: |
-          if [ "$GUARDED" != "true" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Unguarded trigger ($EVENT): running the ETL." | tee -a "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          # Most recent 09:00 UTC at or before now (yesterday's when the
-          # backstop fires between 00:00 and 09:00 UTC).
-          since=$(date -u -d "$(date -u +%F) 09:00" +%s)
-          if [ "$since" -gt "$(date -u +%s)" ]; then since=$((since - 86400)); fi
-          since=$(date -u -d "@$since" +%Y-%m-%dT%H:%M:%SZ)
-          # Earlier runs of this workflow created since then whose etl job
-          # succeeded. Skipped runs also conclude "success", so check the job.
-          done_id=""
-          for id in $(gh api -X GET "repos/$REPO/actions/workflows/etl-nightly.yml/runs"                         -f created=">=$since" -f status=success -f per_page=20                         --jq '.workflow_runs[].id'); do
-            [ "$id" = "$GITHUB_RUN_ID" ] && continue
-            n=$(gh api "repos/$REPO/actions/runs/$id/jobs"                   --jq '[.jobs[] | select(.name == "etl" and .conclusion == "success")] | length')
-            if [ "$n" -gt 0 ]; then done_id=$id; break; fi
-          done
-          if [ -n "$done_id" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Guarded trigger ($EVENT): run $done_id already completed the ETL since $since. Skipping." | tee -a "$GITHUB_STEP_SUMMARY"
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Guarded trigger ($EVENT): no successful ETL since $since. Running." | tee -a "$GITHUB_STEP_SUMMARY"
-          fi
+        run: python3 scripts/etl_gate.py
 
   etl:
     needs: gate
