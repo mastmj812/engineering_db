@@ -47,7 +47,7 @@ FROM box.tc_member m JOIN box.type_curve tc USING (tc_id) JOIN box.tc_area ta US
 WHERE tc.is_record AND tc.stream = 'oil' AND m.included
 """
 _RECORD_STICKS_SQL = """
-SELECT pf.stick_id, pf.basin, pf.bench, pf.coverage, fr.run_id
+SELECT pf.stick_id, pf.basin, pf.bench, pf.formation_blueox, pf.coverage, fr.run_id
 FROM box.pud_forecast pf JOIN box.forecast_run fr USING (run_id) WHERE fr.is_record
 """
 _SCOUT_SQL = "SELECT stick_id, basin, bench FROM curated.box_scout_locations"
@@ -277,7 +277,8 @@ def run(cache: Path, out: Path) -> dict[str, Any]:
     sid = sk.set_index("stick_id")
     rs = ctx["record_sticks"].assign(stick_id=lambda x: x["stick_id"].astype(str))
     rs["rule"] = rs["stick_id"].map(sid["rule"])
-    rs["changes"] = rs["rule"].notna() & (rs["rule"] != rs["bench"])
+    # compare with the stored stick tag, not the BOX pool bench ('WCA' pools WCA_1 + WCA_2)
+    rs["changes"] = rs["rule"].notna() & (rs["rule"] != rs["formation_blueox"])
     rs.groupby(["basin", "coverage"]).agg(sticks=("stick_id", "size"), bench_changes=("changes", "sum")).to_csv(out / "blast_box_record_sticks.csv")
     sc = ctx["scout"].assign(stick_id=lambda x: x["stick_id"].astype(str))
     sc["rule"] = sc["stick_id"].map(sid["rule"])

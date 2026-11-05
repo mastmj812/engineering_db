@@ -1,0 +1,375 @@
+{
+ "git_sha": "0fcd574",
+ "rule": {
+  "rule": {
+   "fam_radius_mi": 1.5,
+   "fam_min_n": 5,
+   "fam_margin_ft": 100.0,
+   "fam_min_off_ft": 150.0,
+   "fam_min_sep_ft": 150.0,
+   "grid_min_miss_ft": 50.0,
+   "grid_min_share": 0.5,
+   "pos_radius_mi": 1.0,
+   "pos_radius2_mi": 1.5,
+   "pos_min_n": 3,
+   "pos_min_sep_ft": 75.0,
+   "conf_frac": 0.25,
+   "conf_min_ft": 30.0,
+   "passes": 2
+  },
+  "family": {
+   "delaware": {
+    "AVA_0": "AVA",
+    "AVA_1": "AVA",
+    "AVA_2": "AVA",
+    "WCXY": "WCA",
+    "WCA_1": "WCA",
+    "WCA_2": "WCA",
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   },
+   "midland": {
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   }
+  },
+  "protected": [
+   "BRNT",
+   "MISS",
+   "WDFD"
+  ],
+  "interval_codes": {
+   "AVALON1": [
+    "AVA_0",
+    "AVA_1"
+   ],
+   "AVALON2": [
+    "AVA_2"
+   ],
+   "1BSPGS": [
+    "BS1_S"
+   ],
+   "2BSPGC": [
+    "BS2_C"
+   ],
+   "2BSPGS": [
+    "BS2_S"
+   ],
+   "3BSPGC": [
+    "BS3_C"
+   ],
+   "3BSPGS": [
+    "BS3_S"
+   ],
+   "WOLFCAMP_XY": [
+    "WCXY",
+    "WCA_1",
+    "WCA_2"
+   ],
+   "WOLFCAMP_A": [
+    "WCXY",
+    "WCA_1",
+    "WCA_2"
+   ],
+   "WOLFCAMP-B1": [
+    "WCB_1"
+   ],
+   "WOLFCAMP-B2": [
+    "WCB_2",
+    "WCC"
+   ]
+  }
+ },
+ "criteria": {
+  "K1": {
+   "carded_pct": {
+    "delaware": 38.9,
+    "midland": 30.1
+   },
+   "pass": false
+  },
+  "K2": {
+   "class_accepted_pct": 42.731277533039645,
+   "pass": false
+  },
+  "K3": {
+   "holds": [
+    {
+     "api10": "3001545466",
+     "vendor": "WCA_1",
+     "rule": "WCA_1",
+     "confidence": "low",
+     "position_basis": "vendor"
+    },
+    {
+     "api10": "3002548553",
+     "vendor": "WCA_2",
+     "rule": "WCA_1",
+     "confidence": "high",
+     "position_basis": "local_band"
+    },
+    {
+     "api10": "3002545008",
+     "vendor": "WCA_2",
+     "rule": "WCA_1",
+     "confidence": "high",
+     "position_basis": "local_band"
+    }
+   ],
+   "pass": false
+  },
+  "K4": {
+   "agree_pct": {
+    "live": 85.0,
+    "final": 86.73,
+    "rule": 86.84,
+    "vendor": 85.03
+   },
+   "pass": true
+  },
+  "K5": {
+   "worst_delta_pt": -1.5,
+   "per_bench": {
+    "AVA_0": 2.51,
+    "AVA_2": 3.02,
+    "BS1_S": 3.56,
+    "BS2_C": 4.24,
+    "BS2_S": 0.22,
+    "BS3_C": 4.6,
+    "BS3_S": 1.71,
+    "WCA_1": 0.1,
+    "WCA_2": 2.46,
+    "WCB_1": 4.94,
+    "WCB_2": -1.5,
+    "WCC": 1.77,
+    "WCXY": 0.72
+   },
+   "pass": false
+  },
+  "K6": {
+   "controlled_agree_pct_excl_open": {
+    "live": 89.9,
+    "final": 92.73
+   },
+   "n": {
+    "live": 6328,
+    "final": 6383
+   },
+   "pass": true
+  },
+  "K7": {
+   "band_pct": {
+    "live": {
+     "delaware": 10.02,
+     "midland": 5.23
+    },
+    "final": {
+     "delaware": 5.99,
+     "midland": 3.7
+    }
+   },
+   "pass": true
+  },
+  "K8": {
+   "inv_2plus_pct": {
+    "live": {
+     "delaware": 0.848,
+     "midland": 0.119
+    },
+    "final": {
+     "delaware": 0.582,
+     "midland": 0.189
+    }
+   },
+   "pass": false
+  },
+  "K9": {
+   "inv_adjacent_pct": {
+    "live": {
+     "delaware": 3.85,
+     "midland": 0.842
+    },
+    "final": {
+     "delaware": 3.097,
+     "midland": 0.542
+    }
+   },
+   "pass": true
+  },
+  "K10": {
+   "protected": 0,
+   "lithology": 0,
+   "xy_lea_ward": 0,
+   "pass": true
+  },
+  "K11": {
+   "family_moved_pct": {
+    "delaware": 2.68,
+    "midland": 2.5
+   },
+   "pass": true
+  },
+  "K12": {
+   "pad_3240": [
+    {
+     "stick_id": 1696704,
+     "live": "WCB_1",
+     "rule": "WCB_1",
+     "confidence": "low"
+    },
+    {
+     "stick_id": 1707739,
+     "live": "WCB_1",
+     "rule": "WCB_1",
+     "confidence": "low"
+    },
+    {
+     "stick_id": 1770178,
+     "live": "WCB_1",
+     "rule": "WCB_1",
+     "confidence": "low"
+    },
+    {
+     "stick_id": 1813535,
+     "live": "WCB_1",
+     "rule": "WCB_1",
+     "confidence": "low"
+    }
+   ],
+   "pass": true
+  },
+  "K13": {
+   "lea_anomalous": 1297,
+   "found": 1297,
+   "flagged_pct": 47.7,
+   "pass": false
+  }
+ },
+ "reported": {
+  "grid_family_basis_wells": 14509,
+  "grid_family_moves": 502,
+  "self_consistency_test_fold": {
+   "vendor": {
+    "band": {
+     "delaware": 10.31,
+     "midland": 5.69
+    },
+    "inv": {
+     "delaware|2+ apart": 1.162,
+     "delaware|adjacent": 4.103,
+     "midland|2+ apart": 0.245,
+     "midland|adjacent": 1.017
+    }
+   },
+   "live": {
+    "band": {
+     "delaware": 10.02,
+     "midland": 5.23
+    },
+    "inv": {
+     "delaware|2+ apart": 0.848,
+     "delaware|adjacent": 3.85,
+     "midland|2+ apart": 0.119,
+     "midland|adjacent": 0.842
+    }
+   },
+   "rule": {
+    "band": {
+     "delaware": 5.96,
+     "midland": 3.66
+    },
+    "inv": {
+     "delaware|2+ apart": 0.578,
+     "delaware|adjacent": 3.098,
+     "midland|2+ apart": 0.197,
+     "midland|adjacent": 0.534
+    }
+   },
+   "final": {
+    "band": {
+     "delaware": 5.99,
+     "midland": 3.7
+    },
+    "inv": {
+     "delaware|2+ apart": 0.582,
+     "delaware|adjacent": 3.097,
+     "midland|2+ apart": 0.189,
+     "midland|adjacent": 0.542
+    }
+   }
+  },
+  "stick_nearest_producer_mi_median": 0.12,
+  "multi_family_sticks_without_producer_within_1p5mi": 8074,
+  "blast": {
+   "box_pool_members": 7526,
+   "box_pool_code_changes": 1053,
+   "box_pool_leaves": 10,
+   "record_sticks": 252410,
+   "record_stick_bench_changes": 23692,
+   "scout_locations": 76949,
+   "scout_label_changes": 4052,
+   "recon_rows": 257397,
+   "recon_stick_changes": 5434,
+   "recon_matched_well_changes": 924
+  },
+  "producer_churn": [
+   {
+    "basin": "delaware",
+    "code_moved": 2571,
+    "fam_moved": 852,
+    "vs_live": 2643
+   },
+   {
+    "basin": "midland",
+    "code_moved": 1251,
+    "fam_moved": 723,
+    "vs_live": 1165
+   }
+  ],
+  "stick_churn": [
+   {
+    "basin": "delaware",
+    "live_source": "crosswalk",
+    "sticks": 147058,
+    "moved": 4155,
+    "flagged": 18383
+   },
+   {
+    "basin": "delaware",
+    "live_source": "inferred",
+    "sticks": 23261,
+    "moved": 652,
+    "flagged": 2146
+   },
+   {
+    "basin": "midland",
+    "live_source": "crosswalk",
+    "sticks": 75210,
+    "moved": 0,
+    "flagged": 361
+   },
+   {
+    "basin": "midland",
+    "live_source": "inferred",
+    "sticks": 12029,
+    "moved": 627,
+    "flagged": 146
+   }
+  ]
+ },
+ "passed": {
+  "K1": false,
+  "K2": false,
+  "K3": false,
+  "K4": true,
+  "K5": false,
+  "K6": true,
+  "K7": true,
+  "K8": false,
+  "K9": true,
+  "K10": true,
+  "K11": true,
+  "K12": true,
+  "K13": false
+ }
+}

@@ -1,6 +1,6 @@
 # formation_blueox rule v3 — rule and criteria (step 1)
 
-**Status:** FROZEN at `1be65da` (2026-11-05). Scored once, in step 2, after Michael accepts at Gate 1. Nothing is
+**Status:** FROZEN at `1be65da` (rev 1 `66bf9e8`). **SCORED 2026-11-05: FAIL** (K1, K2, K3, K5, K8, K13; see step2-score-2026-11-05/FINDINGS.md). Nothing is
 applied.
 
 - Code: `box/tag_rule.py`, constants in `RULE`, record via `rule_record()`. Tests: `tests/test_tag_rule.py`.
