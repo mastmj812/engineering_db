@@ -31,7 +31,7 @@ def build(cache: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     d["vendor"] = tl.input_code(d)  # rev 1: start from vendor + sql/23 (raw vendor for overridden wells)
     d["vendor"] = d["vendor"].where(d["vendor"].notna(), None)
     pairs = dev.rule_pairs(d)
-    grid = dev.grid_for(d, st, order)
+    grid = dev.grid_for(d, st, order) if tl.LADDER.use_grid else None  # rev 3: grid off
     res, rungs = tl.run_producers(d, pairs, order, grid)
     d = d.join(res)
     d["rule"] = d["code"]

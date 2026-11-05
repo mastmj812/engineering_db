@@ -9,7 +9,9 @@ from box import tag_ladder as tl
 from box import tag_scoreboard as sb
 
 ORDER = sb.bench_order()
-LAD = tl.Ladder(rung_min_n=3)
+# mechanics tests run with the rev-2 bar and the grid ON (so the grid code stays covered); rev-3 defaults are tested below
+LAD = tl.Ladder(rung_min_n=3, conf_min_ft=30.0, use_grid=True)
+REV3 = tl.Ladder(rung_min_n=3)
 
 
 def _wells(spec: list[tuple[str, int, int]], county: str = "Reeves", basin: str = "delaware", agree: bool = True) -> pd.DataFrame:
@@ -149,3 +151,24 @@ def test_rev2_no_move_into_an_ambiguous_cluster():
     df = _wells([("WCXY", 11_960, 6), ("WCA_1", 12_000, 6), ("WCA_2", 12_200, 6), ("WCA_2", 11_985, 1)])
     x = _run(df).iloc[-1]
     assert x["code"] == "WCA_2" and x["flag"] == "ambiguous_target"
+
+
+
+def test_rev3_defaults_grid_off_and_80ft_bar():
+    assert tl.LADDER.use_grid is False and tl.LADDER.conf_min_ft == 80.0
+    cl = [(["WCA_1"], 0.0), (["WCA_2"], 130.0), (["WCB_1"], 300.0)]
+    assert not tl.place(140.0, cl, REV3)[2]  # 75 ft from the boundary: below the 80-ft bar
+
+
+def test_rev3_grid_is_ignored():
+    df = _wells([*STACK, ("WCA_2", 12_200, 1)])
+    g = pd.DataFrame({"dom_interval": [None] * 36 + ["WOLFCAMP-B1"], "dom_share": [np.nan] * 36 + [0.9],
+                      "controlled": [False] * 36 + [True], "no_control": [False] * 37, "fam_miss_ft": [np.nan] * 36 + [120.0]})
+    x = _run(df, g, REV3).iloc[-1]
+    assert x["code"] == "WCA_2" and x["basis"] == "ladder"  # the grid would have moved it (see the rev-2 test)
+
+
+def test_rev3_wide_margin_move_still_happens():
+    df = _wells([("WCA_1", 12_000, 6), ("WCA_2", 12_130, 6), ("WCB_1", 12_400, 6), ("WCB_2", 12_800, 6), ("WCA_2", 12_410, 1)])
+    x = _run(df, None, REV3).iloc[-1]
+    assert x["code"] == "WCB_1" and x["confidence"] == "high" and x["margin_ft"] >= 80

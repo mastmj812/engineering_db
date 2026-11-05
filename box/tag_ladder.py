@@ -21,9 +21,12 @@ as the Lea/Eddy rule V did (15/15 family calls upheld by Michael):
        the target family has >= support_min_n evidence wells within support_radius_mi ("deep neighbours",
        Michael's reason for holding three #230 cards), the target is a ONE-bench cluster (rev 2:
        `ambiguous_target` otherwise), and no guard blocks it.
-  E. Grid (Delaware, controlled). Where the geologist's interval decisively (>= grid_min_miss_ft) excludes the
-     vendor family, the well may move to the nearest rung of a family the interval allows. A ladder move into a
-     family the interval excludes is blocked (`grid_conflict`).
+  E. Grid: OFF since rev 3 (use_grid=False; Michael 2026-11-05). On the rev-2 blind cards every grid-decided
+     Delaware move was rejected (0/4); his B1 and B2 tops are not where operators split WCA/WCB or WCB_2/WCC. When on
+     (Delaware, controlled), the grid decides where it excludes the vendor family by >= grid_min_miss_ft, and it
+     vetoes a ladder move into a family the interval excludes (`grid_conflict`).
+  Rev 3 also raises the move / high-confidence bar to conf_min_ft = 80 ft (rev-2 cards: 8/8 agree at >= 80 ft, so
+  that value is fitted to those cards and is tested on a fresh draw).
   Guards (as v3): never into or out of WDFD / BRNT / MISS; never a BS2 / BS3 sand<->carbonate swap; never across
   the XY top in Lea / Ward (rule B pending). Off-column vendor codes (OTHER, unmapped) are never re-placed
   (`unmapped`: the step-20a OTHER class was a TVD-defect bucket).
@@ -52,13 +55,14 @@ class Ladder:
     anchor_min_n: int = 3
     rung_min_n: int = 15
     sep_ft: float = 75.0
-    conf_min_ft: float = 30.0
+    conf_min_ft: float = 80.0  # rev 3: a move (and high confidence) needs >= 80 ft to the boundary
     conf_frac: float = 0.25
     support_radius_mi: float = 1.5
     support_min_n: int = 3
     grid_min_miss_ft: float = 50.0
     grid_min_share: float = 0.5
     max_lever_ft: float = 1_000.0  # rev 2: an anchor farther than this cannot place a thin split
+    use_grid: bool = False  # rev 3: the geologist's grids neither decide nor veto (B1 / B2 are not operator boundaries)
 
 
 LADDER = Ladder()
@@ -254,7 +258,7 @@ def assign(subj: pd.DataFrame, pairs: pd.DataFrame, ref: pd.DataFrame, rungs: pd
         elif ok:
             target = min(members, key=lambda c: abs(off - rep[c]))
         # grid (Delaware, controlled): may exclude the vendor family, or veto a move
-        g = grid.iloc[i] if grid is not None and i < len(grid) else None
+        g = grid.iloc[i] if lad.use_grid and grid is not None and i < len(grid) else None
         if (g is not None and isinstance(g.get("dom_interval"), str) and bool(g.get("controlled")) and not bool(g.get("no_control"))
                 and float(g.get("dom_share") or 0) >= lad.grid_min_share and g["dom_interval"] in tr.INTERVAL_CODES and pd.notna(g.get("fam_miss_ft"))):
             allowed = {tr.family(b, c) for c in tr.INTERVAL_CODES[g["dom_interval"]]}
@@ -311,4 +315,4 @@ def run_sticks(sticks: pd.DataFrame, pairs_sp: pd.DataFrame, prod: pd.DataFrame,
 
 
 def rule_record() -> dict:
-    return {"revision": 2, "ladder": asdict(LADDER), "anchors": ANCHORS, "families": tr.FAMILY, "protected": sorted(tr.PROTECTED)}
+    return {"revision": 3, "ladder": asdict(LADDER), "anchors": ANCHORS, "families": tr.FAMILY, "protected": sorted(tr.PROTECTED)}

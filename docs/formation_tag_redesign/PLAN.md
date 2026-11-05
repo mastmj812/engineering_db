@@ -34,7 +34,7 @@ measured every time it changes.
    3, Wolfcamp A vs B). Within a family, the sub-bench is a depth call, made the same way for every well.
 2. **Name only what depth can resolve.** Where depth can't separate two benches locally, the tag says so (low
    confidence or the parent code; decision Q1). It doesn't pass a vendor guess off as a call.
-3. **Evidence order:**
+3. **Evidence order** (amended 2026-11-05, v4 rev 3: the geologist's grids are dropped from the tag rule. They stay a reported scoreboard check until he refines them, which is a longer-term geology task outside this work):
    1. ratified override (a human call);
    2. the geologist's surfaces where there is control (Delaware V5 grids);
    3. local producer bands, from clean wells only;

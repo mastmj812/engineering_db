@@ -31,8 +31,16 @@ SEED = 20261105
 PER_BASIN = 15
 
 
-def candidates(d: pd.DataFrame, labels: pd.DataFrame) -> pd.DataFrame:
-    c = d[d["evidence"] & d["override"].isna() & ~d["api10"].isin(set(labels["api10"]))
+def previously_carded(root: Path = sb.ROOT) -> set[str]:
+    """Every api10 on any earlier v4 card draw (judged or superseded): a fresh draw never repeats a well."""
+    out: set[str] = set()
+    for f in (root / "docs" / "formation_tag_redesign").glob("v4*-blind-cards-*/cards_sample.csv"):
+        out |= set(pd.read_csv(f, dtype={"api10": str})["api10"])
+    return out
+
+
+def candidates(d: pd.DataFrame, labels: pd.DataFrame, exclude: set[str] | None = None) -> pd.DataFrame:
+    c = d[d["evidence"] & d["override"].isna() & ~d["api10"].isin(set(labels["api10"]) | (exclude or set()))
           & (d["final"].fillna("~") != d["live"].fillna("~")) & d["final"].notna()]
     return c
 
@@ -75,15 +83,16 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v4: pd.Series, rungs
     return f"<div class=card id=\"w{_esc(subj['api10'])}\"><div class=kv>{kv}</div><img src=\"{png}\"></div>"
 
 
-def run(cache: Path, out: Path) -> Path:
+def run(cache: Path, out: Path, rungs_csv: Path, seed: int = SEED) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     sample_path = out / "cards_sample.csv"
     if sample_path.exists():
         fc.guard_verdict_file(sample_path)
     d = pd.read_pickle(cache / "producers_v4.pkl")
-    rungs = pd.read_csv(sb.ROOT / "docs" / "formation_tag_redesign" / "v4-dev-2026-11-05" / "rungs.csv")
+    rungs = pd.read_csv(rungs_csv)
     order = sb.bench_order()
-    pick = draw(candidates(d, sb.labelled_set()))
+    prior = previously_carded()
+    pick = draw(candidates(d, sb.labelled_set(), prior), seed=seed)
     sections, rows = [], []
     n = 0
     for b in ("delaware", "midland"):
@@ -109,7 +118,7 @@ def run(cache: Path, out: Path) -> Path:
     page = [
         f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Ladder blind cards</title><style>{fc._CSS}</style></head><body>",
         "<h1>formation_blueox rule v4 — blind review cards (K0)</h1>",
-        (f"<div class=meta>Built {built}, read-only. 15 random producers per basin (seed {SEED}) where rule v4 + overrides differs from "
+        (f"<div class=meta>Built {built}, read-only. 15 random producers per basin (seed {seed}; every earlier card well excluded) where rule v4 + overrides differs from "
         "today's tag; no card is a labelled, overridden or planned-survey well, so none has a known answer. Neighbours are evidence wells only (no planned survey, none under 4,000 ft), drawn by their "
         "LIVE tags (strike section, orthogonal to the lateral; dashed = 1.5-mi band medians). Mark each card in "
         "<code>cards_sample.csv</code>: <b>agree</b> / <b>reject</b> / a bench code (your own call) / free text (a hold, not counted). "
@@ -124,8 +133,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--rungs", type=Path, required=True, help="rungs.csv from the matching tag_ladder_dev run")
+    ap.add_argument("--seed", type=int, default=SEED)
     a = ap.parse_args(argv)
-    print(run(a.cache, a.out))
+    print(run(a.cache, a.out, a.rungs, a.seed))
     return 0
 
 
