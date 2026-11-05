@@ -1,6 +1,6 @@
 # formation_blueox rule v4, "the ladder" (revision 2, after v3 failed)
 
-**Status:** FROZEN at `5767fe5`, with revisions 1 and 2 (§4) before any counted verdict or score. Nothing is applied.
+**Status:** FROZEN at `5767fe5` (revisions 1 and 2, §4). **K0 FAILED 2026-11-05: 14/30 blind-card agrees (47 %); v4 fails** (v4-blind-cards-2026-11-05/FINDINGS.md). Nothing is applied.
 
 - Code: `box/tag_ladder.py`, constants in `LADDER`. Tests: `tests/test_tag_ladder.py`.
 - Development run: `scripts/tag_ladder_dev.py`. Blind cards: `scripts/tag_ladder_cards.py`.
