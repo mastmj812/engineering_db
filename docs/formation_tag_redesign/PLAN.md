@@ -169,7 +169,19 @@ Draft criteria, to set at the freeze:
 - **Existing 438 overrides.** Kept, and they still win. Each is scored, so one the rule now disagrees with comes up
   for review rather than being silently overridden.
 
-## 5. Questions for Michael (Gate 0)
+## 5. Gate 0 decisions (Michael, 2026-11-05)
+
+| Q | Decision |
+|---|---|
+| Q1 unresolvable splits | **(a)** keep the vendor sub-bench, `confidence = low`; the code vocabulary is unchanged |
+| Q2 Midland | local producer bands only (no geologist surfaces needed first) |
+| Q3 low confidence | flag only: the well keeps its vendor sub-bench and is shown and counted |
+| Q4 overrides | an override always wins; the 4 stale rows are reloaded in the same apply |
+| Q5 landing | off-cycle; priced records run 32 (Delaware) and run 30 (Midland) stay on their old benches until the next BOX run |
+
+Step 0 is go.
+
+### Questions as asked
 
 - **Q1 — Unresolvable splits.** Where depth can't separate WCA_1 / WCA_2 (geologist rule C) or WCXY / WCA_1
   (102 ft locally):
