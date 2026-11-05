@@ -1,0 +1,5 @@
+target <live pooler> 5432
+runs [(19, 'delaware', True), (25, 'delaware', False), (27, 'delaware', False)]
+box.location by basin [('delaware', 167070, '2026Q3'), ('midland', 4157, '2026Q3')]
+box_scout_locations [('delaware', 42833)]
+active box sessions [(0,)]

@@ -1,0 +1,8 @@
+runs [(19, 'delaware', True, 'box_v2_wf', datetime.date(2026, 7, 1), '0fab8515baf20e568715f27fd3b5c32ba9a9606a'), (25, 'delaware', False, 'box_v2_wf', datetime.date(2026, 7, 1), '6ef9df971565d128a637acadefb2a28f14dee4fd'), (27, 'delaware', False, 'box_v2_wf', datetime.date(2026, 7, 1), '3dc0a8433185fba5dc1b89afd5afc641ebfbf4ab'), (28, 'midland', False, 'box_v2_wf', datetime.date(2026, 8, 1), '1aec6b3efee24c30f02bac058d3df5ef3bc7c3b3')]
+records [('delaware', 19)]
+run 28 oil / gas [('gas', 32541, Decimal('53558.0')), ('oil', 32541, Decimal('13520.1'))]
+run 28 water rows (expected 0 until the water store) [(0,)]
+box.location by basin [('delaware', 167070), ('midland', 85855)]
+box_scout_locations [('delaware', 42833)]
+econ rows on record 19 [(687520, 16)]
+runs 25 / 27 oil unchanged [(25, 48945, Decimal('25569.9')), (27, 48072, Decimal('25386.6'))]

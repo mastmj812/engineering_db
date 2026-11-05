@@ -1,0 +1,23 @@
+[1/2] sql/69: create curated.box_scout_locations + grant + comments
+[2/2] validate
+    rows (1.5s): (48809, 48809)
+    expected rows (priced forecast locations, not realized) (0.4s): (48809,)
+    priced forecast locations left out as realized (0.4s): (136,)
+    blank oil EUR or PV10 (must be 0) (0.7s): (0,)
+    deck labels (0.4s): (None, 48809)
+    oil EUR view vs box (MMbbl) (1.2s): (Decimal('25493.851'), Decimal('25493.851'))
+    per-ft basis: rows where oil EUR / per-ft differs from lateral_ft by > 1 ft (0.7s): (0, 48809)
+    tier tally (0.5s): [('delaware', 'provisional', 25570), ('delaware', 'validated', 23239)]
+    irr blank (informational) (0.5s): (48809,)
+    tvd_ft blank / permit-round (multiple of 100) / min / max (informational) (0.5s): (0, 617, 1123.0, 14462.0)
+    OK   rows == priced record-run forecast locations on the map, minus realized
+    OK   stick_id unique
+    OK   every row carries oil EUR and PV10
+    OK   one econ deck label
+    OK   oil EUR ties to box.pud_forecast_stream exactly
+    note: 0 rows where SUM(EUR)/SUM(lateral_ft) is not the stored per-ft basis
+    note: bbox plan uses idx_erebor_locations_geom: False
+    timing full scan: 0.42s (48809, 48809)
+    timing township bbox: 0.44s (215, 215)
+    OK   analyst_ro can SELECT
+=== OK in 8s ===

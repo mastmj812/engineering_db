@@ -23,6 +23,7 @@ cohort-transfer rows (listed in the dossier).
 from __future__ import annotations
 
 import json
+import math
 import statistics
 from collections import Counter
 from collections.abc import Callable, Sequence
@@ -1106,6 +1107,12 @@ def evaluate(
         raise ValueError(f"--radius names {stray}, not in the evaluated benches {benches}")
     if any(r <= 0 for r in radius_overrides.values()):
         raise ValueError(f"--radius must be > 0 mi, got {radius_overrides}")
+    # Reviewer POOL rules (config v16, benches.yaml `pools:`): extra tags and a
+    # standoff below named benches, per bench (the pool is per bench).
+    pool_rules = unit_benches.read_pools(run_dir)
+    stray = [b for b in pool_rules if b not in benches]
+    if stray:
+        raise ValueError(f"{unit_benches.FILENAME} pools: names {stray}, not in the evaluated benches {benches}")
     stack = sorted(benches, key=lambda b: statistics.median(tvd_by_bench[b]))
     bench_tvd = {b: statistics.median(tvd_by_bench[b]) for b in stack}
 
@@ -1221,7 +1228,29 @@ def evaluate(
             adj = adjacent_benches(bench, stack)
             # Basin (per-basin lateral tolerance, ledger §9) = majority basin of the
             # in-bench producers within the first selection radius.
-            cands0 = wh.candidates(conn, union, bench, RADIUS_STEPS_MI[0])
+            prule = pool_rules.get(bench)
+            p_tags = (prule or {}).get("tags") or [bench]
+            p_standoff = ({**cfg["pool_standoff"], "below": prule["below"]}
+                          if prule and prule.get("min_standoff_ft") is not None else None)
+            if prule:
+                B["pool_rule"] = {**prule, "tags": p_tags,
+                                  "ref_radius_mi": cfg["pool_standoff"]["ref_radius_mi"] if p_standoff else None,
+                                  "ref_min_wells": cfg["pool_standoff"]["ref_min_wells"] if p_standoff else None}
+                res["decision_log"].append({
+                    "gate": "5a pool rule", "bench": key,
+                    "signal": (f"pool tags {', '.join(p_tags)}"
+                               + (f"; standoff = TVD minus the median {'/'.join(prule['below'])} producer TVD within "
+                                  f"{'/'.join(f'{r:g}' for r in cfg['pool_standoff']['ref_radius_mi'])} mi "
+                                  f"(>= {cfg['pool_standoff']['ref_min_wells']} wells, permit TVDs out)"
+                                  if p_standoff else "")),
+                    "decision": (f"pool = {', '.join(p_tags)} wells"
+                                 + (f" >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])}"
+                                    if p_standoff else "")
+                                 + (f"; dev_scenario class {' / '.join(prule['scenario_classes'])} only"
+                                    if prule.get("scenario_classes") else "")),
+                    "by": f"reviewer ({unit_benches.FILENAME} pools:)",
+                })
+            cands0 = wh.candidates(conn, union, bench, RADIUS_STEPS_MI[0], tags=p_tags, standoff=p_standoff)
             bc = Counter(c["basin"] for c in cands0 if c["basin"]).most_common(1)
             basin = bc[0][0] if bc else None
             B["basin"] = basin
@@ -1365,6 +1394,11 @@ def evaluate(
                 B["units"][label] = UB
                 _log_proximity(res, key, label, UB.get("pdp_proximity"), g2["source"], opts, cfg.version)
 
+            # The bench header shows the landing TVD actually PLACED (reviewer tvd_ft
+            # where set) — not the propose medians, which can carry a permit depth
+            # (Eggs Tyrone 9-16 WCB_2: 11,572 = 11,145 and a 12,000-ft permit TVD).
+            B["tvd_ft"] = _median([UB["tvd_ft"] for UB in B["units"].values()]) or B["tvd_ft"]
+
             # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
             B["edge_trigger"] = {"fired": edge, **edge_sig}
@@ -1396,11 +1430,11 @@ def evaluate(
             pool_flags: list[str] = []
             r_over = radius_overrides.get(bench)
             radius, eligible, excluded, adjacent = _select_pool(
-                lambda r, _b=bench, _c=cands0, _un=union: (
-                    _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r)),
-                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches, _bd=band_ll: classify(
+                lambda r, _b=bench, _c=cands0, _un=union, _t=p_tags, _so=p_standoff: (
+                    _c if r == RADIUS_STEPS_MI[0] else wh.candidates(conn, _un, _b, r, tags=_t, standoff=_so)),
+                lambda cands, _b=bench, _bn=basin, _sp=sp, _ll=planned_ll, _ex=existing_benches, _bd=band_ll, _pr=prule: classify(
                     cands, cfg, bench=_b, planned_stack=stack, planned_lateral_ft=_ll,
-                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex, lateral_band_ft=_bd),
+                    basin=_bn, planned_spacing_ft=_sp, existing_benches=_ex, lateral_band_ft=_bd, pool_rule=_pr),
                 min_wells=min_wells, edge=edge, radius_override=r_over,
             )
             pool_tol = cfg.lateral_tolerance(basin, planned_ll)
@@ -1409,6 +1443,28 @@ def evaluate(
                                  if band_ll else
                                  f"lateral tol {pool_tol:.0%}{' (long-lateral class)' if pool_tol > tol else ''}")
                               + f", eligible pool {len(eligible)}")
+            if prule:
+                so_vals = sorted(c["standoff_ft"] for c in eligible if c.get("standoff_ft") is not None)
+                n_tag = Counter(c["bench"] for c in eligible)
+                pool_flags.append(
+                    f"REVIEWER pool rule: tags {', '.join(p_tags)}"
+                    + (f" ({', '.join(f'{t} {n_tag[t]}' for t in p_tags)} in the pool)" if eligible else "")
+                    + (f"; >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])} median "
+                       f"(pool standoff {so_vals[0]:,.0f}-{so_vals[-1]:,.0f} ft, median {_median(so_vals):,.0f} ft)"
+                       if p_standoff and so_vals else
+                       f"; >= {prule['min_standoff_ft']:,.0f} ft below the local {'/'.join(prule['below'])} median"
+                       if p_standoff else "")
+                    + (f"; dev_scenario class {' / '.join(prule['scenario_classes'])} only (REVIEWER SELECTION — "
+                       "the default cohort is tier-blind)" if prule.get("scenario_classes") else ""))
+                if p_standoff:
+                    lim = float(prule["min_standoff_ft"])
+                    near = [c for c in excluded if c["exclusion"] == f"standoff<{lim:.0f}"
+                            and c.get("standoff_ft") is not None and c["standoff_ft"] >= lim - 25]
+                    if near:
+                        pool_flags.append(
+                            f"{len(near)} well(s) fail ONLY the standoff and sit within 25 ft of it "
+                            f"({', '.join(f'{c['api10']} {c['standoff_ft']:,.0f} ft' for c in near[:8])}"
+                            f"{', ...' if len(near) > 8 else ''}) — the threshold splits them; TVD is a lateral median")
             if r_over is not None:
                 if edge:
                     pool_flags.append("EDGE trigger fired — bypassed by the reviewer radius override (concentric pool)")
@@ -1631,6 +1687,10 @@ def evaluate(
                         wc = water.measured_cohort(conn, cfg, g_area, bench, basin, g_ll, sp,
                                                    wcfg.get("validated_benches") or [])
                         G["flags"] += water.flags(wc)
+                        if prule:
+                            G["flags"].append(f"water: the measured-water cohort is drawn on the {bench} tag by BOX's "
+                                              "water rule — the reviewer pool rule (tags / standoff) applies to the "
+                                              "oil cohort only")
                         if wc["api10s"]:
                             wc["anduin_forecast"] = ad.forecast(wc["api10s"])  # only_missing: fit the ones anduin lacks
                             try:
@@ -1668,10 +1728,100 @@ def evaluate(
             if ad and B.get("short_history_transfer", {}).get("written"):
                 B["transfer_compare"] = _compare_without_transfer(
                     ad, B, eligible, short_history_transfer)
+            # PROTOTYPE (config v17, report-only): BOX's proximity + Cui normalization read on this bench.
+            ncfg = cfg.raw.get("normalize") or {}
+            if ncfg.get("enabled") and ad and B["tc_groups"]:
+                try:
+                    B["normalize"] = _normalize(
+                        conn, ad, cfg, ncfg, B, units, union, basin, radius, p_tags, p_standoff, prule, prop,
+                        pool_ll, bench, stack, sp, existing_benches)
+                except Exception as exc:  # noqa: BLE001 — a prototype reading never fails the run; the dossier says why
+                    B["normalize"] = {"error": f"{type(exc).__name__}: {exc}"}
         # laterals for the dossier maps — display only, kept out of signals.json
         write_json(run_dir / "well_sticks.json", wh.wellsticks(conn, map_api10s(res)))
     write_json(run_dir / "signals.json", res)
     return res
+
+
+def _normalize(conn: Any, ad: Anduin, cfg: Config, ncfg: dict[str, Any], B: dict[str, Any], units: dict[str, Any],
+               union: Any, basin: str | None, radius: float, tags: list[str], standoff: dict[str, Any] | None,
+               prule: dict[str, Any] | None, prop: dict[str, Any], pool_ll: dict[tuple[str, str], tuple[float, str]],
+               bench: str, stack: list[str], sp: float, existing: list[str]) -> dict[str, Any]:
+    """PROTOTYPE (config v17): readings A (curve of record) and B (nearest pool, scenario normalized, BOX lateral window)
+    per unit — see dealintake/normalize.py. Fits missing anduin forecasts for cohort B (only_missing); writes nothing else."""
+    from dealintake import (
+        normalize as normalize_mod,  # lazy: pulls in the BOX modules only when the prototype is on
+    )
+
+    b = (basin or "delaware").lower()
+    as_of = date.fromisoformat(str(prop["snapshot"]["production_vintage"])[:10])
+    lo, hi = (float(x) for x in ncfg["lateral_window_ft"])
+    rule_b = {k: v for k, v in (prule or {}).items() if k != "scenario_classes"} or None
+    cands = wh.candidates(conn, union, bench, radius, tags=tags, standoff=standoff)
+    elig, _, _ = classify(cands, cfg, bench=bench, planned_stack=stack, planned_lateral_ft=B["planned_lateral_ft"],
+                          basin=basin, planned_spacing_ft=sp, existing_benches=existing, lateral_band_ft=(lo, hi),
+                          pool_rule=rule_b)
+    n = int(ncfg.get("cohort_size") or cfg["type_curve"]["max_wells"])
+    cohort_b = sorted(elig, key=lambda c: (c.get("dist_ft") is None, c.get("dist_ft") or 0.0, c["api10"]))[:n]
+    api_b = [c["api10"] for c in cohort_b]
+    out: dict[str, Any] = {"as_of": as_of.isoformat(), "lateral_window_ft": [lo, hi], "radius_mi": radius,
+                           "cohort_b_rule": "pool rule without scenario_classes" if prule else "bench tag",
+                           "model": None, "units": {}, "cohort_b": [], "cohort_a": {}}
+    if api_b:
+        ad.forecast(api_b)                                    # only_missing: fit the ones anduin lacks
+        eur_ft = {r["api10"]: float(r["eur"]) / float(r["well_lateral_ft"]) * 1000.0
+                  for r in ad.forecasts(api_b) if r["stream"] == "oil" and r.get("eur") and r.get("well_lateral_ft")}
+        for c in cohort_b:
+            c["anduin_oil_eur_per_1000ft"] = eur_ft.get(c["api10"])
+        tcb = ad.compute_type_curve(api_b)
+        out["tc_b_oil_eur_per_1000ft"] = (((tcb.get("streams") or {}).get("oil") or {}).get("fitted") or {}).get("eur_per_unit")
+    far_mi = max([c.get("dist_ft") or 0.0 for c in cohort_b]
+                 + [c.get("dist_ft") or 0.0 for G in B["tc_groups"] for c in G["tc_wells"]] + [0.0]) / 5280.0
+    idx = normalize_mod._Index(normalize_mod.universe(conn, union, max(radius, far_mi) + 1.0))
+    model, rule = normalize_mod.rc.d150(b)
+    out["model"] = {"rule": rule, **model.as_dict()}
+    fac_b = normalize_mod.analog_factors(idx, api_b, b)
+    out["cohort_b"] = [{"api10": c["api10"], "well_name": c.get("well_name"), "operator": c.get("operator"),
+                        "bench": c.get("bench"), "scenario_class": c.get("scenario_class"),
+                        "dist_mi": (c.get("dist_ft") or 0.0) / 5280.0, "lateral_length_ft": c.get("lateral_length_ft"),
+                        "standoff_ft": c.get("standoff_ft"), "anduin_oil_eur_per_1000ft": c.get("anduin_oil_eur_per_1000ft"),
+                        "n_parents": _num(fac_b["n_parents"].get(c["api10"])), "factor": _num(fac_b["factor"].get(c["api10"])),
+                        "pattern": fac_b["pattern"].get(c["api10"])} for c in cohort_b]
+    for G in B["tc_groups"]:
+        wells_a = G["tc_wells"]
+        fac_a = normalize_mod.analog_factors(idx, [c["api10"] for c in wells_a], b)
+        tc_a = ((G.get("tc_preview") or {}).get("oil") or {}).get("eur_per_unit")
+        out["cohort_a"][G["name"]] = {"n": len(wells_a), "mean_factor": normalize_mod._mean(list(fac_a["factor"])),
+                                      "factors": {a: _num(f) for a, f in fac_a["factor"].items()}}
+        for lb in G["units"]:
+            locs = (B["units"].get(lb) or {}).get("locations") or []
+            sf = normalize_mod.stick_factors(idx, [{"id": f"{lb}:{loc['id']}", "wkt": loc["wkt"],
+                                                    "tvd_ft": loc.get("tvd") or B["units"][lb]["tvd_ft"]} for loc in locs],
+                                             bench, as_of, b)
+            stick = normalize_mod._median(list(sf["factor"])) if len(sf) else None
+            ll = pool_ll[(lb, bench)][0]
+            out["units"][lb] = {
+                "group": G["name"], "n_sticks": len(sf), "stick_factor": stick,
+                "stick_factor_range": [float(sf["factor"].min()), float(sf["factor"].max())] if len(sf) else None,
+                "n_parents": [int(x) for x in sf["n_parents"]] if len(sf) else [],
+                "permit_parents": int(sf["permit_parents"].sum()) if len(sf) else 0,
+                "planned_lateral_ft": ll,
+                "A": normalize_mod.reading(tc_a, stick, list(fac_a["factor"]), ll,
+                                           [c.get("lateral_length_ft") for c in wells_a], b) if stick else None,
+                "B": normalize_mod.reading(out.get("tc_b_oil_eur_per_1000ft"), stick, list(fac_b["factor"]), ll,
+                                           [c.get("lateral_length_ft") for c in cohort_b], b) if stick and api_b else None,
+                "B_per_well": normalize_mod.per_well(cohort_b, fac_b, stick, ll, b) if stick and api_b else None,
+                "tc_a_oil_eur_per_1000ft": tc_a,
+            }
+    return out
+
+
+def _num(v: Any) -> float | None:
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f if math.isfinite(f) else None
 
 
 def _log_proximity(res: dict[str, Any], key: str, label: str, s: dict[str, Any] | None, source: str,

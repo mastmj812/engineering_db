@@ -1,0 +1,7 @@
+records [('delaware', 19, 32), ('delaware', 25, None), ('midland', 28, None), ('midland', 30, None), ('delaware', 32, None)]
+scout [('delaware', 32, 48148, 0, Decimal('25421.0')), ('midland', 30, 28801, 0, Decimal('11078.0'))]
+econ rows by run [(19, 16, 687520)]
+erebor delaware: record run 32 counts {'covered': 22871, 'covered_provisional': 25277, 'not_covered_conflict': 1567, 'not_covered_emerging': 18465, 'not_covered_no_precedent': 8256, 'not_covered_outside_extent': 90125}
+erebor delaware econ legend: {"basin":"delaware","metric":"econ","run_id":32,"scope":{"benches":[],"exclude":[],"tiers":["validated","provisional"]},"econ":"pv10","unit":"$MM","better":"high","label":"PV10","priced":false,"case":null,"n":0,"breaks":null,"tier_counts":null}
+erebor midland: record run 30 counts {'covered': 14786, 'covered_provisional': 14015, 'not_covered_conflict': 678, 'not_covered_emerging': 14794, 'not_covered_no_analogs': 1, 'not_covered_no_precedent': 3739, 'not_covered_outside_extent': 37836}
+erebor midland econ legend: {"basin":"midland","metric":"econ","run_id":30,"scope":{"benches":[],"exclude":[],"tiers":["validated","provisional"]},"econ":"pv10","unit":"$MM","better":"high","label":"PV10","priced":false,"case":null,"n":0,"breaks":null,"tier_counts":null}

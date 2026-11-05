@@ -1,0 +1,19 @@
+    ok   source run 32 is a stored midland run ((32, 'midland', False, datetime.date(2026, 8, 1)))
+    ok   every source forecast location has an outcome (32,541 / 32,541)
+    ok   no re-admitted stick without source rows (0)
+    ok   Midland method block = the 21d definition ([])
+    ok   universe 85,849 = source 85,849 - realized since 0
+identities
+    ok   oil stream rows 28,828 = kept source locations 28,828
+    ok   gas stream rows 28,828 = kept source locations 28,828
+    ok   water stream rows 28,827 = kept source locations with water 28,827 (1 kept without water)
+    ok   oil EUR 11,127.963 MMbbl = source x new / old 11,127.963
+    ok   gas rows identical to the source (0 differ)
+    ok   water rows identical to the source (0 differ)
+    ok   every stream: 600 months summing to its EUR within 0.1 % (86,483 groups, 0 off)
+    ok   oil prox_factor = pud_proximity.factor on every forecast location
+    ok   no orphan stream / analog rows (0)
+    ok   run 32 untouched
+    ok   151,939 named D150 parents of kept locations (151,939)
+    ok   run 34 is NOT a record
+COMMITTED run 34 (not record) (670 s)

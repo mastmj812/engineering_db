@@ -19,9 +19,11 @@ WRITES (each on its own explicit go; DB_* env points at the rehearsal container 
             derive the record candidate from run N (Delaware: run 25; Midland: the stored base run) in ONE transaction: oil rows x
             new / old factor, no-forecast sticks re-classed, D150 proximity rows, identities checked, ROLLED BACK unless --commit.
             Never makes a record (that is `flip`, its own go).
-    python -m scripts.box_record23 flip --basin B --run N [--commit]
+    python -m scripts.box_record23 flip --basin B --run N [--allow-unpriced] [--commit]
             make run N its basin's record. REFUSED unless Steven has priced run N (box_econ.box_pud_econ rows for every forecast
-            location on every deck the outgoing record carries) — the 2026-10-30 blank-econ flip is never repeated.
+            location on every deck the outgoing record carries) — the 2026-10-30 blank-econ flip is never repeated by accident —
+            or --allow-unpriced says blank econ is the choice (Michael 2026-11-04: blank beats an older run's econ; sql/69 v4
+            keeps the run's forecast locations with econ blank until Steven prices it).
 """
 
 from __future__ import annotations
@@ -242,15 +244,16 @@ def measure_delaware(a: argparse.Namespace) -> int:
     from scripts import box_step16d_prox as sdp
 
     t0 = time.time()
-    out = OUT / "delaware"
+    out = a.out or OUT / "delaware"
     out.mkdir(parents=True, exist_ok=True)
     conn = get_connection()
+    box = _box_conn(a, conn)
     try:
-        run, through, _rv, basin = _read(conn, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
+        run, through, _rv, basin = _read(box, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
         if basin != bsn.DELAWARE:
             raise SystemExit(f"run {a.src_run} is {basin}")
         cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
-        p = pd.DataFrame(_read(conn, _SRC_SQL.format(ext=sdp._ext(conn)), {"run": run}), columns=cols)
+        p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
         e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
         recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
         p = p.merge(e, on="stick_id", how="left")
@@ -259,9 +262,11 @@ def measure_delaware(a: argparse.Namespace) -> int:
         u = psr.pull_universe(conn, basin)
         print(f"run {run} ({basin}, data through {through}): {len(p):,} sticks (forecast + no-precedent), producers {len(u):,} "
               f"({time.time() - t0:.0f} s)", flush=True)
-        prior = pd.DataFrame(_read(conn, "SELECT location_id, outcome, factor FROM box.pud_proximity WHERE run_id = %(run)s", {"run": run}),
+        prior = pd.DataFrame(_read(box, "SELECT location_id, outcome, factor FROM box.pud_proximity WHERE run_id = %(run)s", {"run": run}),
                              columns=["location_id", "outcome_src", "factor_src"])
     finally:
+        if box is not conn:
+            box.close()
         conn.close()
     ref = through  # D115 / D116: producers >= 12 months on at the run's data date
     L = ppr.pud_links(p, u, ref)
@@ -354,12 +359,100 @@ def measure_midland(a: argparse.Namespace) -> int:
     return 0
 
 
+def _box_conn(a: argparse.Namespace, live: Any) -> Any:
+    """Where the run's box rows live: `--box-db rehearsal` = the scripts.box_rehearsal container (23b), else live. Curated is
+    always read from live (the step-16d prox-measure pattern)."""
+    if a.box_db != "rehearsal":
+        return live
+    from scripts import box_rehearsal as reh
+
+    return reh._box_conn()
+
+
+def measure_midland_run(a: argparse.Namespace) -> int:
+    """D116 on the stored Midland base run (23b / 23c): the 21a stick-side links re-measured live at the run's data date (by-depth
+    class, every existing producer a parent), the 21b incumbent decisions (21b table, unfit -> spacing / D150 factor, pattern and
+    400-ft floor, the drilled-side precedent of runs/step21b/prox.pkl) and the D150 R3 factors. Read-only on both databases."""
+    import shapely
+
+    from box import edge_gap as eg
+    from box import prox_dose as pdz
+    from box import prox_pud as pp
+    from box import prox_pud_report as ppr
+    from box import prox_study_report as psr
+    from box import step21_prox as sp
+    from box import step21b as sb
+    from box.tc_curve_report import _read
+    from etl.db import get_connection
+    from scripts import box_step16d_prox as sdp
+
+    t0 = time.time()
+    out = a.out or OUT / "midland"
+    out.mkdir(parents=True, exist_ok=True)
+    conn = get_connection()
+    box = _box_conn(a, conn)
+    try:
+        run, through, _rv, basin = _read(box, sdp._RUN_ID_SQL, {"run": a.src_run})[0]
+        if basin != bsn.MIDLAND:
+            raise SystemExit(f"run {a.src_run} is {basin}")
+        cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
+        p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
+        e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
+        recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
+        u = psr.pull_universe(conn, basin)
+    finally:
+        if box is not conn:
+            box.close()
+        conn.close()
+    p = p.merge(e, on="stick_id", how="left")
+    p["tvd_ft"] = pd.to_numeric(p["tvd_ft"], errors="coerce")
+    p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
+    print(f"run {run} ({basin}, data through {through}): {len(p):,} forecast sticks, producers {len(u):,} ({time.time() - t0:.0f} s)", flush=True)
+    bd = sp.by_depth(ppr.pud_links(p.assign(location_id=p["location_id"].astype(str)), u, through))  # 21a revision 3
+    Lp = sp.existing_as_parents(bd)  # revision 4: every existing producer a parent; what the store's named parents read
+    with open(out / "pud_links.pkl", "wb") as f:
+        pickle.dump(Lp, f)
+    ids = [str(x) for x in p["location_id"]]
+    cfg = pdz.configuration(ids, Lp.assign(permit=False)).set_index("api10")
+    cfg["bench"] = p.set_index(p["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
+    with open(RUNS / "step21b" / "prox.pkl", "rb") as f:
+        prox = pickle.load(f)
+    table = pd.read_csv(rc.MIDLAND_TABLE)
+    unfit = sb.unfit_mask(cfg, table)
+    near = sp.nearest_same_ft(Lp)
+    inc = sp.decide_all(cfg[~unfit], pp.haircut_lookup(table), prox["prec"], prox["prec_pat"], near).reindex(cfg.index)
+    inc.loc[unfit, "outcome"] = "unfit_no_usable_rung"
+    inc.loc[unfit & (near.reindex(cfg.index) <= sp.SPACING_FLOOR_FT), "outcome"] = "no_forecast_spacing"
+    fac = rc.stick_factors(Lp, bsn.MIDLAND, ids)
+    oc = rc.outcomes(inc.assign(outcome=inc["outcome"].replace({"unfit_no_usable_rung": "haircut"})), fac)
+    # the configuration + D114 key columns box.pud_proximity stores (as measure_delaware joins them; missing here until the 23b store)
+    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
+    d = d.join(inc[["haircut_key", "pair_key", "prec_multi", "prec_package"]])
+    d["incumbent_raw"] = inc["outcome"].reindex(d.index)
+    d["factor_table"] = inc["factor"].reindex(d.index)
+    d = d.reset_index()
+    d["recon_now"] = d["stick_id"].map(recon).fillna("not_reconciled")
+    d["src_forecast"] = d["coverage"].isin(["covered", "covered_provisional"])
+    d["outcome_src"] = np.nan  # a base run has no proximity rows: old factor = 1 (pud_forecast_stream.prox_factor default)
+    d["n_recent_producers"] = d["key"].map(ppr.recent_flags(bd)).fillna(0).astype(int)
+    d["n_permit_parents"] = d["key"].map(ppr.permit_flags(Lp)).fillna(0).astype(int)
+    d.to_csv(out / "outcomes.csv.gz", index=False, compression="gzip")
+    s = summarise(d, run, through)
+    s |= {"n_links": len(Lp), "seconds": round(time.time() - t0), "precedent_source": "runs/step21b/prox.pkl", "code_sha": _git("rev-parse", "HEAD"),
+          "box_db": a.box_db}
+    (out / "summary.json").write_text(json.dumps(s, indent=1, default=_jdump), encoding="utf-8")
+    print(json.dumps(s, indent=1, default=_jdump))
+    return 0
+
+
 def cmd_measure(a: argparse.Namespace) -> int:
     if a.basin == bsn.DELAWARE:
         return measure_delaware(a)
-    if not a.from_cache:
-        raise SystemExit("the live Midland re-measure runs on the stored base run at the build (23b); use --from-cache at 23a")
-    return measure_midland(a)
+    if a.from_cache:
+        return measure_midland(a)
+    if a.src_run == rc.DELAWARE_SOURCE_RUN:
+        raise SystemExit("--src-run: the stored Midland base run")
+    return measure_midland_run(a)
 
 
 # ----------------------------------------------------------------------------
@@ -381,6 +474,7 @@ def _copy(cur: Any, table: str, cols: list[str], df: pd.DataFrame) -> None:
 PROX_COLS = ["location_id", "coverage", "config_class", "n_same", "n_topfill", "n_underfill", "n_parents_total", "flanked_same", "flanked_topfill",
              "flanked_underfill", "outcome", "factor", "haircut_key", "pair_key", "prec_multi", "prec_package", "label", "n_permit_parents",
              "n_recent_producers", "table_ref"]
+PROX_INT_COLS = ("n_same", "n_topfill", "n_underfill", "n_parents_total", "prec_multi", "prec_package", "n_permit_parents", "n_recent_producers")
 
 
 PARENT_COLS = ["location_id", "api10", "cls", "parent_bench", "dv_ft", "dh_ft", "dxy_ft", "overlap", "age_days", "permit"]
@@ -434,13 +528,32 @@ def cmd_store(a: argparse.Namespace) -> int:
                                              "WHERE pf.run_id = %s AND ri.status = 'conflict'", (S,)).fetchall()}
             q("CREATE TEMP TABLE tmp_conf (location_id bigint PRIMARY KEY) ON COMMIT DROP")
             _copy(cur, "tmp_conf", ["location_id"], pd.DataFrame({"location_id": sorted(conf)}))
+            # gate 23b (Michael 2026-11-03, "make it not covered"): a source forecast stick stored WITHOUT water (its WOR fit found no
+            # eligible water analog at the 20-mi cap; box_water_run --accept-no-water) is not_covered_no_analogs in the record — no
+            # streams, no proximity row, n_analogs = its water-analog count — and disclosed. `--no-water refuse` stops the store instead.
+            nowater = {int(r[0]): int(r[1]) for r in q(
+                "SELECT o.location_id, (SELECT count(*) FROM box.location_water_analog a WHERE a.run_id = o.run_id AND a.location_id = o.location_id) "
+                "FROM box.pud_forecast_stream o WHERE o.run_id = %s AND o.stream = 'oil' AND NOT EXISTS (SELECT 1 FROM box.pud_forecast_stream w "
+                "WHERE w.run_id = o.run_id AND w.location_id = o.location_id AND w.stream = 'water')", (S,)).fetchall()}
+            nowater = {k: v for k, v in nowater.items() if k not in real and k not in conf}
+            if nowater and a.no_water == "refuse":
+                raise SystemExit(f"{len(nowater)} source forecast locations carry no water ({sorted(nowater)[:20]}); --no-water refuse")
+            _check(all(v < 3 for v in nowater.values()), f"no-water sticks have < 3 water analogs (not_covered_no_analogs CHECK) ({nowater})")
+            q("CREATE TEMP TABLE tmp_nowater (location_id bigint PRIMARY KEY, n_water int NOT NULL) ON COMMIT DROP")
+            _copy(cur, "tmp_nowater", ["location_id", "n_water"], pd.DataFrame({"location_id": list(nowater), "n_water": list(nowater.values())}))
+            if nowater:
+                print(f"    note {len(nowater)} source forecast location(s) without water -> not_covered_no_analogs ({sorted(nowater)})", flush=True)
             q("CREATE TEMP TABLE tmp_px (location_id bigint PRIMARY KEY, old double precision NOT NULL, new double precision NOT NULL, "
               "keep boolean NOT NULL, drop_realized boolean NOT NULL) ON COMMIT DROP")
             src_oil = dict(q("SELECT location_id, prox_factor FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'oil'", (S,)).fetchall())
             ra = oc["keep"].astype(bool) & ~oc["location_id"].isin(src_oil)
+            carried: set[int] = set()
             if a.readmitted == "carry-refusal" and ra.any():  # gate 23a (d): a stick the source refused stays refused (no source rows)
                 oc.loc[ra, "outcome"] = oc.loc[ra, "outcome_src"]
                 oc.loc[ra, "keep"] = False
+                # its proximity row is the SOURCE run's (the configuration + D114 keys that refused it), copied verbatim below —
+                # never the refusal word on today's re-measured configuration, which carries no D114 keys (sql/71 multi_ck)
+                carried = {int(x) for x in oc.loc[ra, "location_id"]} - real - conf
                 print(f"    note {int(ra.sum())} re-admitted sticks carry the source run's refusal ({oc.loc[ra, 'outcome'].value_counts().to_dict()})", flush=True)
             o = oc[oc["location_id"].isin(src_oil)].copy()
             o["old"] = o["location_id"].map(src_oil).astype(float)
@@ -451,12 +564,16 @@ def cmd_store(a: argparse.Namespace) -> int:
             if _failures:
                 raise RuntimeError("universe")
             o["new"] = o["factor"].astype(float)
-            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"] & ~o["location_id"].isin(conf)
+            o["keep"] = o["keep"].astype(bool) & ~o["drop_realized"] & ~o["location_id"].isin(conf) & ~o["location_id"].isin(nowater)
             _copy(cur, "tmp_px", ["location_id", "old", "new", "keep", "drop_realized"], o)
             disc = {"decisions": "D150 (step 24 rev 5), D153 (Delaware derivation)" if a.basin == bsn.DELAWARE else "D150, D151, D152",
                     "table_ref": table_ref, "source_run": S, "code_sha": code_sha, "outcomes_sha256": hashlib.sha256(Path(a.outcomes).read_bytes()).hexdigest(),
                     "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum()),
-                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)}}
+                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)},
+                    "readmitted_carried_refusal": {"sticks": len(carried), "proximity_rows": f"copied from run {S} (its own table_ref)"},
+                    "no_water_not_covered": {"decision": "gate 23b (Michael 2026-11-03)", "class": "not_covered_no_analogs",
+                                             "reason": "WOR fit found < 3 eligible water analogs at the 20-mi cap; oil / gas forecast not shipped",
+                                             "location_ids": sorted(nowater), "water_analogs": nowater}}
             if a.basin == bsn.MIDLAND:
                 disc["method_23"] = json.loads(Path(a.method_block).read_text(encoding="utf-8")) if a.method_block else rc.method_block()
                 bad = rc.check_method(disc["method_23"])
@@ -472,15 +589,24 @@ def cmd_store(a: argparse.Namespace) -> int:
                      f"(source prox_factor divided out), incumbent precedent gates, gas / water / analogs identical, no refit"), S)).fetchone()[0]
             pc_ = _cols(q, "pud_forecast")
             cf = "EXISTS (SELECT 1 FROM tmp_conf k WHERE k.location_id = p.location_id)"
+            nw_ = "EXISTS (SELECT 1 FROM tmp_nowater k WHERE k.location_id = p.location_id)"
             search = {"search_mode", "radius_mi", "radius_class", "n_analogs"}  # sql/65 uncovered_ck: a not-searched class carries none
 
             def col(c: str) -> str:
                 if c == "run_id":
                     return "%(new)s"
                 if c == "coverage":
-                    return f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END"
+                    return (f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN {nw_} THEN 'not_covered_no_analogs' "
+                            "WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END")
                 if c == "recon_status":
                     return f"CASE WHEN {cf} THEN 'conflict' ELSE p.recon_status END"
+                if c == "flags":  # the oil search's own flags stay; the reason it ships nothing is added (erebor shows flags as notes)
+                    return (f"CASE WHEN {nw_} THEN array_append(p.flags, 'not covered (gate 23b): the water WOR fit found ' || "
+                            "(SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) || "
+                            "' eligible water analogs at the 20-mi cap; no oil / gas / water forecast ships') ELSE p.flags END")
+                if c == "n_analogs":  # a no-water stick reports the count that failed: its water analogs (sql/60 no_analogs_ck: < 3)
+                    return (f"CASE WHEN {cf} THEN NULL WHEN {nw_} THEN (SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) "
+                            "ELSE p.n_analogs END")
                 if c in search:
                     return f"CASE WHEN {cf} THEN NULL ELSE p.{c} END"
                 return f"p.{c}"
@@ -492,6 +618,31 @@ def cmd_store(a: argparse.Namespace) -> int:
             n_univ = q("SELECT (SELECT count(*) FROM box.pud_forecast WHERE run_id = %s), (SELECT count(*) FROM box.pud_forecast WHERE run_id = %s)",
                        (S, new)).fetchone()
             _check(n_univ[1] == n_univ[0] - len(real), f"universe {n_univ[1]:,} = source {n_univ[0]:,} - realized since {len(real):,}")
+            # proximity first: its CHECKs (sql/71) fail in seconds, before the slow stream / month copy
+            px = oc[~oc["location_id"].isin(real | conf | carried | set(nowater))].copy()
+            px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
+            px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
+            px["label"] = None
+            px["table_ref"] = table_ref
+            px["factor"] = px["factor"].astype(float)
+            for c in PROX_INT_COLS:  # read back from CSV as float where any value is NULL ("78.0" refused by an integer column)
+                if c in px:
+                    px[c] = pd.to_numeric(px[c]).round().astype("Int64")
+            for c in PROX_COLS:
+                if c not in px:
+                    px[c] = None
+            _copy(cur, "box.pud_proximity", ["run_id", *PROX_COLS], px.assign(run_id=new))
+            if carried:
+                pcols = ", ".join(PROX_COLS)
+                q(f"INSERT INTO box.pud_proximity (run_id, {pcols}) SELECT %(new)s, {pcols} FROM box.pud_proximity "
+                  "WHERE run_id = %(src)s AND location_id = ANY(%(ids)s)", {"new": new, "src": S, "ids": sorted(carried)})
+                got = q("SELECT count(*) FROM box.pud_proximity WHERE run_id = %s AND location_id = ANY(%s) AND table_ref IS DISTINCT FROM %s",
+                        (new, sorted(carried), table_ref)).fetchone()[0]
+                _check(got == len(carried), f"{len(carried)} carried refusals keep run {S}'s proximity rows verbatim ({got:,})")
+            par = named_parents(pd.read_pickle(a.links), a.basin)
+            par = par[par["location_id"].isin(set(o.loc[o["keep"], "location_id"]))]
+            _copy(cur, "box.pud_proximity_parent", ["run_id", *PARENT_COLS], par.assign(run_id=new))
+            n_par = len(par)
             sc_ = _cols(q, "pud_forecast_stream")
             scaled = {"eur", "eur_per_kft", "cum12", "cum24"}
             sel = ", ".join("%(new)s" if c == "run_id" else "CASE WHEN s.stream = 'oil' THEN t.new ELSE 1 END" if c == "prox_factor" else
@@ -506,22 +657,13 @@ def cmd_store(a: argparse.Namespace) -> int:
                 sel = ", ".join("%(new)s" if c == "run_id" else f"a.{c}" for c in ac_)
                 q(f"INSERT INTO box.{t} ({', '.join(ac_)}) SELECT {sel} FROM box.{t} a JOIN tmp_px x USING (location_id) "
                   "WHERE a.run_id = %(src)s AND x.keep", {"new": new, "src": S})
-            px = oc[~oc["location_id"].isin(real | conf)].copy()
-            px = px[px["location_id"].isin(set(src_oil) | set(oc.loc[~oc["keep"].astype(bool), "location_id"]))]
-            px["coverage"] = np.where(px["keep"].astype(bool), px.get("coverage_src", px.get("coverage")), "not_covered_no_precedent")
-            px["label"] = None
-            px["table_ref"] = table_ref
-            px["factor"] = px["factor"].astype(float)
-            for c in PROX_COLS:
-                if c not in px:
-                    px[c] = None
-            _copy(cur, "box.pud_proximity", ["run_id", *PROX_COLS], px.assign(run_id=new))
-            par = named_parents(pd.read_pickle(a.links), a.basin)
-            par = par[par["location_id"].isin(set(o.loc[o["keep"], "location_id"]))]
-            _copy(cur, "box.pud_proximity_parent", ["run_id", *PARENT_COLS], par.assign(run_id=new))
-            n_par = len(par)
             q("""UPDATE box.forecast_run SET counts = (SELECT jsonb_object_agg(coverage, n) FROM (SELECT coverage, count(*) n FROM box.pud_forecast
                  WHERE run_id = %(new)s GROUP BY 1) c) WHERE run_id = %(new)s""", {"new": new})
+            # the new run's rows are uncommitted, so the planner has no statistics for them and the anti-join identities
+            # go quadratic (an hour in the 23b rehearsal); ANALYZE inside the transaction counts our own inserts
+            for t in ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog", "location_water_analog",
+                      "pud_proximity", "pud_proximity_parent"):
+                q(f"ANALYZE box.{t}")
             identity(q, S, new)
             got = q("SELECT count(*) FROM box.pud_proximity_parent WHERE run_id = %s", (new,)).fetchone()[0]
             _check(got == n_par, f"{n_par:,} named D150 parents of kept locations ({got:,})")
@@ -544,9 +686,15 @@ def cmd_store(a: argparse.Namespace) -> int:
 def identity(q: Any, S: int, new: int) -> None:
     print("identities", flush=True)
     keep = q("SELECT count(*) FROM tmp_px WHERE keep").fetchone()[0]
-    for st in ("oil", "gas", "water"):
+    for st in ("oil", "gas"):
         n = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = %s", (new, st)).fetchone()[0]
         _check(n == keep, f"{st} stream rows {n:,} = kept source locations {keep:,}")
+    # water: carried verbatim, so the new run has it exactly where the source did (a source stored without water on a named
+    # stick, box_water_run --accept-no-water, keeps that gap and its disclosure)
+    nw_src = q("SELECT count(*) FROM box.pud_forecast_stream s JOIN tmp_px t USING (location_id) WHERE s.run_id = %s AND t.keep "
+               "AND s.stream = 'water'", (S,)).fetchone()[0]
+    nw = q("SELECT count(*) FROM box.pud_forecast_stream WHERE run_id = %s AND stream = 'water'", (new,)).fetchone()[0]
+    _check(nw == nw_src == keep, f"water stream rows {nw:,} = kept source locations {keep:,} (with water {nw_src:,})")
     r = q("""SELECT sum(s1.eur), sum(s0.eur * t.new / t.old) FROM box.pud_forecast_stream s1 JOIN box.pud_forecast_stream s0
              ON s0.run_id = %s AND s0.location_id = s1.location_id AND s0.stream = s1.stream JOIN tmp_px t ON t.location_id = s1.location_id
              WHERE s1.run_id = %s AND s1.stream = 'oil'""", (S, new)).fetchone()
@@ -559,7 +707,7 @@ def identity(q: Any, S: int, new: int) -> None:
     g = q("""WITH m AS MATERIALIZED (SELECT location_id, stream, count(*) n, sum(volume) v FROM box.pud_forecast_month WHERE run_id = %s GROUP BY 1, 2)
              SELECT count(*), count(*) FILTER (WHERE m.n <> 600 OR abs(m.v - s.eur) > 1e-3 * s.eur) FROM m JOIN box.pud_forecast_stream s
              ON s.run_id = %s AND s.location_id = m.location_id AND s.stream = m.stream""", (new, new)).fetchone()
-    _check(g[1] == 0 and g[0] == 3 * keep, f"every stream: 600 months summing to its EUR within 0.1 % ({g[0]:,} groups, {g[1]} off)")
+    _check(g[1] == 0 and g[0] == 2 * keep + nw, f"every stream: 600 months summing to its EUR within 0.1 % ({g[0]:,} groups, {g[1]} off)")
     bad = q("""SELECT count(*) FROM box.pud_proximity x JOIN box.pud_forecast_stream s ON s.run_id = x.run_id AND s.location_id = x.location_id
                AND s.stream = 'oil' WHERE x.run_id = %s AND abs(s.prox_factor - x.factor) > 1e-12""", (new,)).fetchone()[0]
     _check(bad == 0, "oil prox_factor = pud_proximity.factor on every forecast location")
@@ -575,15 +723,39 @@ REL_TOL = 1e-9
 
 
 def priced(q: Any, run: int, basin: str) -> dict[str, Any]:
-    """Is `run` priced like the basin's current record? Every forecast location x every deck the outgoing record carries (or, with no
-    priced record yet, >= 1 deck covering every forecast location)."""
+    """Is `run` priced like the basin's current record? Every forecast location x every deck the outgoing record carries. A basin with
+    no record yet (the first Midland record) must carry the decks of the other basin's record — Steven prices both basins on one
+    deck set, and sql/69 shows only DEFAULT_DECK — and with no record anywhere, >= 1 deck covering every location, DEFAULT_DECK among them
+    (the 23b rehearsal: the old fallback let a one-deck Midland run flip and show nothing)."""
     n = q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND coverage IN ('covered', 'covered_provisional')", (run,)).fetchone()[0]
     rec = q("SELECT run_id FROM box.forecast_run WHERE basin = %s AND is_record", (basin,)).fetchone()
-    decks_rec = {r[0] for r in q("SELECT DISTINCT deck_id FROM box_econ.box_pud_econ WHERE run_id = %s", (rec[0],)).fetchall()} if rec else set()
+    ref = rec or q("SELECT run_id FROM box.forecast_run WHERE basin <> %s AND is_record ORDER BY run_id LIMIT 1", (basin,)).fetchone()
+    decks_ref = {r[0] for r in q("SELECT DISTINCT deck_id FROM box_econ.box_pud_econ WHERE run_id = %s", (ref[0],)).fetchall()} if ref else set()
     have = dict(q("SELECT deck_id, count(DISTINCT location_id) FROM box_econ.box_pud_econ WHERE run_id = %s GROUP BY 1", (run,)).fetchall())
-    need = decks_rec or set(have)
-    ok = bool(need) and all(have.get(dk, 0) == n for dk in need)
-    return {"forecast_locations": n, "outgoing_record": rec[0] if rec else None, "decks_required": sorted(need), "priced_by_deck": have, "ok": ok}
+    need = decks_ref or (set(have) | {DEFAULT_DECK})
+    ok = n > 0 and all(have.get(dk, 0) == n for dk in need)
+    return {"forecast_locations": n, "outgoing_record": rec[0] if rec else None, "deck_reference_run": ref[0] if ref else None,
+            "decks_required": sorted(need), "priced_by_deck": have, "ok": ok}
+
+
+DEFAULT_DECK = "wti70_hh3"  # sql/69's deck (apply_box_scout_locations._CASE)
+_SCOUT_BY_BASIN = "SELECT basin, count(*) FROM curated.box_scout_locations GROUP BY 1"
+# what sql/69 (v4) must hold per basin after the flip: the record run's forecast locations on the map, minus realized, priced or not
+_SCOUT_EXPECTED = ("SELECT count(*) FROM box.pud_forecast bp JOIN curated.erebor_locations el ON el.stick_id = bp.stick_id AND el.category <> 'PDP' "
+                   "WHERE bp.run_id = %(run)s AND bp.coverage IN ('covered', 'covered_provisional') "
+                   "AND el.recon_status IS DISTINCT FROM 'realized_drift' AND el.recon_status IS DISTINCT FROM 'realized_phantom'")
+_SCOUT_PRICED = "SELECT count(*) FILTER (WHERE pv10_mm IS NOT NULL), count(*) FROM curated.box_scout_locations WHERE box_run_id = %s"
+
+
+def flip_refusal(p: dict[str, Any], allow_unpriced: bool) -> str | None:
+    """Why the flip must not go ahead, or None. An unpriced run flips only with --allow-unpriced (Michael 2026-11-04: blank econ
+    beats an older run's econ; the record may go live before Steven prices it, then his push fills the screens)."""
+    if p["forecast_locations"] == 0:
+        return "the run has no forecast locations"
+    if not p["ok"] and not allow_unpriced:
+        return ("not priced like the record: flipping would show blank econ in erebor and curated.box_scout_locations until Steven "
+                "prices it (2026-10-30). Pass --allow-unpriced to choose that (2026-11-04), or wait for Steven.")
+    return None
 
 
 def cmd_flip(a: argparse.Namespace) -> int:
@@ -598,18 +770,27 @@ def cmd_flip(a: argparse.Namespace) -> int:
                 raise SystemExit(f"run {a.run} is not a stored {a.basin} run ({b})")
             p = priced(q, a.run, a.basin)
             print(json.dumps(p, indent=1))
+            why = flip_refusal(p, a.allow_unpriced)
+            if why:
+                raise SystemExit(f"REFUSED: run {a.run}: {why}")
             if not p["ok"]:
-                raise SystemExit(f"REFUSED: run {a.run} is not priced like the {a.basin} record — flipping now would blank erebor's econ and "
-                                 "curated.box_scout_locations (2026-10-30). Wait for Steven.")
-            before = q("SELECT count(*) FROM curated.box_scout_locations").fetchone()[0]
+                print(f"--allow-unpriced: run {a.run} is not priced; its econ stays blank until Steven prices it", flush=True)
+            before = dict(q(_SCOUT_BY_BASIN).fetchall())
             q("UPDATE box.forecast_run SET is_record = false, superseded_by = %s WHERE basin = %s AND is_record", (a.run, a.basin))
             q("UPDATE box.forecast_run SET is_record = true WHERE run_id = %s AND basin = %s", (a.run, a.basin))
             recs = q("SELECT basin, run_id FROM box.forecast_run WHERE is_record ORDER BY 1").fetchall()
-            after = q("SELECT count(*) FROM curated.box_scout_locations").fetchone()[0]
-            print(f"records {recs}; box_scout_locations {before:,} -> {after:,}")
-            if after == 0:
+            after = dict(q(_SCOUT_BY_BASIN).fetchall())
+            want = q(_SCOUT_EXPECTED, {"run": a.run}).fetchone()[0]
+            n_priced, n_rows = q(_SCOUT_PRICED, (a.run,)).fetchone()
+            print(f"records {recs}; box_scout_locations by basin {before} -> {after} ({a.basin} expected {want:,}; "
+                  f"econ on {n_priced:,} of {n_rows:,})")
+            if after.get(a.basin, 0) == 0 or after.get(a.basin, 0) != want:
                 conn.rollback()
-                raise SystemExit("box_scout_locations would be EMPTY after the flip: rolled back")
+                raise SystemExit(f"box_scout_locations would hold {after.get(a.basin, 0):,} {a.basin} rows, not {want:,}: rolled back")
+            for other, nb in before.items():
+                if other != a.basin and after.get(other, 0) != nb:
+                    conn.rollback()
+                    raise SystemExit(f"the flip moved the {other} rows ({nb:,} -> {after.get(other, 0):,}): rolled back")
         if a.commit:
             conn.commit()
             print(f"COMMITTED: run {a.run} is the {a.basin} record")
@@ -632,6 +813,8 @@ def main(argv: list[str] | None = None) -> int:
     m.add_argument("--src-run", type=int, default=rc.DELAWARE_SOURCE_RUN)
     m.add_argument("--prec-runs", type=Path, default=RUNS / "prox")
     m.add_argument("--from-cache", action="store_true")
+    m.add_argument("--box-db", choices=("live", "rehearsal"), default="live", help="where the source run's box rows are (curated: live)")
+    m.add_argument("--out", type=Path, default=None, help="default runs/step23/<basin>")
     s = sub.add_parser("store")
     s.add_argument("--basin", choices=(bsn.DELAWARE, bsn.MIDLAND), required=True)
     s.add_argument("--src-run", type=int, required=True)
@@ -642,12 +825,16 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--readmitted", choices=("refuse", "carry-refusal"), default="carry-refusal",  # D154 (d)
                    help="a stick the source refused that the re-measure would forecast (no source rows): refuse the store, or keep its refusal")
     s.add_argument("--method-block", type=Path, default=None, help="Midland: the stored method block (default box/record23.method_block())")
+    s.add_argument("--no-water", choices=("not-covered", "refuse"), default="not-covered",  # gate 23b
+                   help="a source forecast stick stored without water: not_covered_no_analogs in the record (disclosed), or refuse the store")
     s.add_argument("--commit", action="store_true")
     s.add_argument("--allow-dirty", action="store_true")
     f = sub.add_parser("flip")
     f.add_argument("--basin", choices=(bsn.DELAWARE, bsn.MIDLAND), required=True)
     f.add_argument("--run", type=int, required=True)
     f.add_argument("--commit", action="store_true")
+    f.add_argument("--allow-unpriced", action="store_true",
+                   help="flip a run Steven has not priced: erebor + box_scout_locations show its forecasts with blank econ (2026-11-04)")
     a = ap.parse_args(argv)
     rc_ = {"pack": cmd_pack, "measure": cmd_measure, "store": cmd_store, "flip": cmd_flip}[a.cmd](a)
     return rc_ or (1 if _failures else 0)

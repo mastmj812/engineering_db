@@ -19,10 +19,14 @@ from dealintake.decline import effective_from_nominal
 from dealintake.render import maps
 from dealintake.render.tables import (
     BUILDUP_HEADERS,
+    NORMALIZE_COHORT_HEADERS,
+    NORMALIZE_HEADERS,
+    NORMALIZE_INTRO,
     PROXIMITY_HEADERS,
     buildup_rows,
     di_pair,
     md,
+    normalize_rows,
     num,
     p_value,
     pct,
@@ -363,6 +367,18 @@ def render(run_dir: Path) -> Path:
                                         for f in qc["well_flags"]]))
             else:
                 s.append("_anduin not run (--no-anduin)._")
+        nz = B.get("normalize")
+        if nz:
+            s.append(f"\n### {bench} — proximity + lateral normalization (PROTOTYPE, report-only)\n")
+            if nz.get("error"):
+                s.append(f"> prototype failed: {nz['error']}")
+            else:
+                s.append(NORMALIZE_INTRO + "\n")
+                urows, wrows = normalize_rows(nz)
+                s.append(md(NORMALIZE_HEADERS, urows))
+                s.append(f"\n**Cohort B** — {len(wrows)} nearest wells, radius {nz['radius_mi']:g} mi, "
+                         f"{nz['cohort_b_rule']}, laterals {nz['lateral_window_ft'][0]:,.0f}–{nz['lateral_window_ft'][1]:,.0f} ft\n")
+                s.append(md(NORMALIZE_COHORT_HEADERS, wrows))
 
     s.append("\n## Decision log\n")
     s.append(md(["#", "Gate", "Bench", "Signal", "Decision", "By"],

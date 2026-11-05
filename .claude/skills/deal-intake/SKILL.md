@@ -410,7 +410,25 @@ shown beside it (WCB_2 deep-TVD context).
 ### Gate 5a — eligible pool
 
 Candidates = producing horizontals in the TVD-corrected bench within the
-radius. Excluded WITH REASONS (a well can carry several): first production
+radius. **Reviewer pool rule** (config v16, Michael 2026-11-04, Eggs Tyrone —
+deep rights under a developed WCA, WCB_1/WCB_2 tags unreliable, no underfill
+analogs exist): a deal-level `pools:` section in `benches.yaml`, one entry per
+bench —
+```
+pools:
+  WCB_2: {tags: [WCB_1, WCB_2], below: [WCA_1, WCA_2], min_standoff_ft: 400}
+```
+`tags` = the formation_blueox tags drawn into the pool; `below` +
+`min_standoff_ft` keep only wells at least that far below the MEDIAN TVD of the
+`below` benches' producers around each candidate (config `pool_standoff:` —
+1 mi, then 2 mi, ≥ 3 wells, round-100 permit TVDs never in the reference).
+Exclusions read `standoff<400`, `no_standoff_ref`, `permit_tvd` (a candidate at a
+round-100 TVD). The pool flags count the wells per tag, give the standoff range,
+and name the wells within 25 ft under the threshold (one pad can straddle it —
+TVD is a lateral median). The water cohort keeps the bench tag (BOX's rule;
+flagged). The buildup table carries each well's TVD and standoff. Set the
+planned bench's own `tvd_ft` to match (Eggs Tyrone: 11,150 ft ≈ 440 ft under
+the WCA). Excluded WITH REASONS (a well can carry several): first production
 before `first_prod_after`; lateral outside the pool band — shortest planned
 lateral × (1 − tol) to longest × (1 + tol), tol = the per-basin tolerance
 (delaware 25 % / midland 40 % — mirrors ledger §9), widened to
@@ -594,6 +612,25 @@ gas 3.6× the TC). The Novi representative-stick pull for generated legs ≥
 a deal-intake-specific reading of ledger §9 so 15,000-ft legs still get a
 Novi comparison; the other §9 consumers are unchanged. Which forecast goes
 to finance is Michael's call per bench — the dossier presents, never picks.
+
+### Proximity + lateral normalization — PROTOTYPE, report-only (config v17, `normalize:`)
+
+Michael 2026-11-04 (Eggs Tyrone): read BOX's own machinery on the deal. `dealintake/normalize.py` (lazy-imported; a
+failure is written to the section, never fails the run) computes per bench, per unit:
+- **stick factor** — D150 continuous proximity (`box/record23.d150`: level × F_rule, Delaware R2 / Midland R3) on each
+  generated row, counting every producer ≥ 12 months on at the production-vintage date (D115 stick side, BOX pair metric
+  in UTM-13N feet, BOX's exclusion list);
+- **analog factor** — the same model on each cohort well, drilled side (parents ≥ 12 months on at ITS first production,
+  permit TVDs out);
+- **Cui** — `box/lateral.relative` (D50): E(unit lateral) ÷ mean E(cohort laterals).
+
+Reading **A** = curve of record × (stick ÷ mean analog factor) × Cui. Reading **B** = the nearest `cohort_size` wells of
+the bench's pool rule WITHOUT its `scenario_classes`, analogs inside `lateral_window_ft` (5,000–15,000 ft, BOX 16b), with
+their own anduin TC preview, × the same ratio and Cui; "B per well" does the translation well by well (median). The ratio,
+not the absolute factor, is what applies: the cohort's own production already carries its depletion. Cohort B fits missing
+anduin forecasts (only_missing); nothing else is written, and nothing in the curve, cohort or handoff changes. Eggs Tyrone
+first read: 21-28 −3 % (stick 0.93), 9-16 −22 % (stick 0.75; WCB_1 producers within 150 ft of our landing count as
+same-depth neighbours).
 
 ### Gate 8 — handoff to narvi + anduin (`.\di handoff <deal> [--apply]`)
 

@@ -3,6 +3,7 @@
     python -m scripts.box_rehearsal up       # docker: postgis/postgis:16-3.4 as box-rehearsal on localhost:5437
     python -m scripts.box_rehearsal seed     # live box + box_econ SCHEMA (pg_dump --schema-only) + the small reference tables
     python -m scripts.box_rehearsal verify   # seeded row counts == live, per table
+    python -m scripts.box_rehearsal mirror [curated.x ...]   # step 23b: curated objects copied as plain tables + live's indexes
     python -m scripts.box_rehearsal env      # the DB_* lines that point the store scripts at the container
     python -m scripts.box_rehearsal down     # remove the container
 
@@ -22,6 +23,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from typing import Any
 
 from etl.db import _db_kwargs, get_connection
 
@@ -33,6 +35,11 @@ PG_BIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
 ROLES = ("analyst_ro", "box_econ_writer")
 SEED_TABLES = ("bench_scope", "extent", "extent_edge", "tc_area", "type_curve", "tc_member", "risk_factor", "location", "location_source",
                "forecast_run")
+# step 23b: what the derive store (realized / conflict join), sql/69 and erebor's BOX + econ screens read, copied as plain tables
+MIRROR = ("curated.reconciled_inventory", "curated.erebor_locations", "curated.intel_locations", "curated.producing_reference",
+          "curated.intel_pad_geom", "curated.intel_pad_member", "curated.intel_formation_blueox", "curated.wells",
+          "curated.formation_blueox_tvd", "raw_novi_intel.pads", "raw_novi_intel.basin_outline",
+          "curated.wells_enriched", "curated.production")
 PG17_ONLY = re.compile(r"^SET (transaction_timeout|idle_session_timeout)\b.*$", re.MULTILINE)
 
 
@@ -124,6 +131,57 @@ def cmd_verify(_: argparse.Namespace) -> int:
     return 1 if bad or seq != live_seq else 0
 
 
+def _box_conn() -> Any:
+    import psycopg
+
+    e = _box_env()
+    return psycopg.connect(host=e["PGHOST"], port=int(e["PGPORT"]), dbname=e["PGDATABASE"], user=e["PGUSER"], password=e["PGPASSWORD"])
+
+
+def cmd_mirror(a: argparse.Namespace) -> int:
+    """Copy curated / raw objects the step-23 rehearsal reads (the store's realized / conflict join, sql/69, erebor's BOX screens)
+    into the container as plain tables with live's indexes. Live is only READ."""
+    tables = a.tables or MIRROR
+    unknown = sorted(set(tables) - set(MIRROR))
+    if unknown:
+        raise SystemExit(f"not a mirror table: {unknown} (whitelist: {MIRROR})")
+    live = get_connection()
+    box = _box_conn()
+    try:
+        for t in tables:
+            t0 = time.time()
+            s, n = t.split(".")
+            with live.cursor() as lc:
+                lc.execute("SET TRANSACTION READ ONLY")
+                lc.execute("SET LOCAL statement_timeout = '1800s'")
+                cols = lc.execute("SELECT a.attname, format_type(a.atttypid, a.atttypmod) FROM pg_attribute a JOIN pg_class c ON c.oid = a.attrelid "
+                                  "JOIN pg_namespace ns ON ns.oid = c.relnamespace WHERE ns.nspname = %s AND c.relname = %s AND a.attnum > 0 "
+                                  "AND NOT a.attisdropped ORDER BY a.attnum", (s, n)).fetchall()
+                idx = [r[0] for r in lc.execute("SELECT indexdef FROM pg_indexes WHERE schemaname = %s AND tablename = %s", (s, n)).fetchall()]
+                with box.cursor() as bc:
+                    bc.execute(f"CREATE SCHEMA IF NOT EXISTS {s}")  # whitelisted names
+                    bc.execute(f"DROP TABLE IF EXISTS {t} CASCADE")
+                    bc.execute(f"CREATE TABLE {t} (" + ", ".join(f'"{c}" {ty}' for c, ty in cols) + ")")
+                    with lc.copy(f"COPY (SELECT * FROM {t}) TO STDOUT") as src, bc.copy(f"COPY {t} FROM STDIN") as dst:
+                        for block in src:
+                            dst.write(block)
+                    for d in idx:
+                        bc.execute(d)
+                    bc.execute(f"ANALYZE {t}")
+                    n_box = bc.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
+                n_live = lc.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
+            live.rollback()
+            if n_box != n_live:
+                box.rollback()
+                raise SystemExit(f"BAD {t}: live {n_live:,} / container {n_box:,}")
+            box.commit()
+            print(f"  ok  {t}: {n_box:,} rows, {len(idx)} indexes ({time.time() - t0:.0f} s)", flush=True)
+    finally:
+        live.close()
+        box.close()
+    return 0
+
+
 def cmd_env(_: argparse.Namespace) -> int:
     print(f"DB_HOST=localhost\nDB_PORT={PORT}\nDB_NAME=postgres\nDB_USER=postgres\nDB_PASSWORD={PASSWORD}\nDB_SSLMODE=disable")
     return 0
@@ -140,9 +198,11 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for n in ("up", "seed", "verify", "env", "down"):
         sub.add_parser(n)
+    m = sub.add_parser("mirror")
+    m.add_argument("tables", nargs="*", help=f"default: all of {MIRROR}")
     a = ap.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
-    return {"up": cmd_up, "seed": cmd_seed, "verify": cmd_verify, "env": cmd_env, "down": cmd_down}[a.cmd](a)
+    return {"up": cmd_up, "seed": cmd_seed, "verify": cmd_verify, "mirror": cmd_mirror, "env": cmd_env, "down": cmd_down}[a.cmd](a)
 
 
 if __name__ == "__main__":
