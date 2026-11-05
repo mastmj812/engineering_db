@@ -177,6 +177,43 @@ Caveats:
   moves nothing (1,113 vs 1,115 in Lea). Changing sql/30 is a warehouse change, if you want the rule applied
   there too.
 
+### 5a. Verdicts (Michael, 2026-11-05)
+
+All 18 cards were reviewed. 15 have a bench verdict and 3 are holds (free text).
+- **Every judged well leaves WCA (15 of 15).**
+- **13 of 15 land on the proposed rung.** The two that differ move one rung inside WCB, and in both the call
+  matches the geologist's grid interval rather than the NM ladder:
+  - SD EA 29 FEDERAL COM P8 #011H: proposed WCB_2, called WCB_1 (grid B1→B2).
+  - SEINFELD MH FEDERAL UNIT #224H: proposed WCB_1, called WCB_2 (grid B2→C).
+- **Holds:** BELL LAKE UNIT NORTH #407H and BILBREY 34 27 #001H ("lacking deep neighbors"), and JAMES RANCH UNIT DI 2
+  #111H (no well-defined TVD band for deeper targets; not a candidate for this screening).
+
+Class decisions use `box.tag_screen.decide`. A bench code that differs from the proposed one counts against its
+class, and holds are not counted.
+
+| Class | Flagged | Carded | Judged | Agree | State |
+|---|---|---|---|---|---|
+| WCA_1→WCB_2 | 4 | 4 | 4 | 3 | accept (full class) |
+| WCA_1→WCC | 1 | 1 | 0 | 0 | pending (hold) |
+| WCA_2→WCB_1 | 18 | 5 | 3 | 2 | pending: 13 wells uncarded |
+| WCA_2→WCB_2 | 3 | 3 | 3 | 3 | accept (full class) |
+| WCA_2→WCC | 5 | 5 | 5 | 5 | accept (full class) |
+
+**Seed.** `proposed_override_seed.csv` is now the 15 card-level calls (convention (a)): each card decides its own
+well. No accepted class has uncarded wells, so nothing moves without a card. The 13 uncarded WCA_2→WCB_1 wells
+and the 3 holds keep their tags. All 15 rows are ratified but **NOT applied**, and none is in
+`ref.formation_tag_overrides` today (checked live, read-only, 2026-11-05).
+- **Effect if applied:** 4 of the 15 are in Delaware record (run 32) oil pools, all WCA (api10 3001545999,
+  3001546491, 3001553606, 3002543270). An apply moves them out at the next Delaware build. The priced run-32
+  forecasts do not change until then.
+
+**Disposition.** These calls are held, not applied, as the labelled test set for the formation_blueox redesign under
+discussion (family from the vendor, sub-bench position from depth against the geologist's surfaces; tag-consistency
+audit 2026-11-05).
+- A redesigned rule should reproduce the 15 calls.
+- It should abstain on the 3 holds, which have no local deeper-bench control.
+- Applying them on their own remains a separate go.
+
 ## Files
 
 | File | What |
