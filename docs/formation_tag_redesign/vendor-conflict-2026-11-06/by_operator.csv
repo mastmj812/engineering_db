@@ -1,0 +1,19 @@
+basin,novi_coarse,operator,wells,decided_pct,novi_pct_of_decided,cannot_tell_pct,neither_pct,no_control_pct,live_right_pct_of_decided
+delaware,False,EOG,178.0,100.0,80.3,0.0,0.0,0.0,80.9
+midland,False,Exxon Mobil,112.0,100.0,27.7,0.0,0.0,0.0,26.8
+delaware,True,Devon,105.0,100.0,54.3,0.0,0.0,0.0,46.7
+midland,True,Exxon Mobil,93.0,100.0,71.0,0.0,0.0,0.0,39.8
+midland,True,Diamondback,85.0,100.0,70.6,0.0,0.0,0.0,40.0
+delaware,False,Devon,84.0,100.0,61.9,0.0,0.0,0.0,69.0
+delaware,True,EOG,71.0,100.0,62.0,0.0,0.0,0.0,47.9
+delaware,False,Permian Resources,60.0,100.0,73.3,0.0,0.0,0.0,73.3
+delaware,False,Occidental,46.0,100.0,23.9,0.0,0.0,0.0,23.9
+delaware,False,ConocoPhillips,45.0,100.0,68.9,0.0,0.0,0.0,68.9
+midland,True,Apache,37.0,100.0,37.8,0.0,0.0,0.0,62.2
+delaware,True,Occidental,36.0,100.0,52.8,0.0,0.0,0.0,50.0
+delaware,False,Exxon Mobil,33.0,100.0,39.4,0.0,0.0,0.0,45.5
+delaware,True,Apache,32.0,100.0,75.0,0.0,0.0,0.0,28.1
+delaware,False,Apache,31.0,100.0,32.3,0.0,0.0,0.0,32.3
+midland,False,Diamondback,31.0,100.0,61.3,0.0,0.0,0.0,61.3
+delaware,True,ConocoPhillips,27.0,100.0,70.4,0.0,0.0,0.0,33.3
+midland,True,Permian Resources,26.0,100.0,61.5,0.0,0.0,0.0,38.5
