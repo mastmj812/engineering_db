@@ -88,3 +88,33 @@ WCA_1 default, flagged. Leads there are 100, 87, 65 ft and one has no reference.
   measured sub-bench from a default.
 - Applying is the separate warehouse step (a new matview replacing sql/16's decision logic, off-hours), with Michael's
   explicit go.
+
+## Rev 1 — stratigraphic-order guard (2026-11-06, found while building the cards, before any were sent or marked)
+
+**What was found.** The plain-median pre-check disagreed on 4 of the 28 cards. On 3 of them the references were
+**inverted**:
+- card 22, STATE NEAL LETHCO 3405A-142 2H (Pecos): WCA_2 witnesses about 8,772 ft, above WCA_1's 9,062 ft;
+- UNIVERSITY 40 1408H (Crockett) and UNIVERSITY UNIT '5-20-21' 6H (Irion): WCB_2 witnesses about 6,496 ft, above
+  WCB_1's 6,663–6,856 ft.
+
+Calling a sub-bench against inverted references is meaningless.
+
+**The guard.** A row's referenced candidates must stand in stratigraphic order (`tag_scoreboard.bench_order`), each
+deeper sub-bench's reference deeper. Otherwise the vendor-default code is kept, flagged `subbench_inverted`.
+- The guard can only withdraw a depth call, never make one. The rev-1 changes are a subset of the frozen rule's.
+- No constant changed.
+
+**Rev 1 dev** (`v5_1r1-dev-2026-11-06/`; the first run kept as `v5_1-dev-2026-11-06-superseded/`):
+
+| | Delaware | Midland |
+|---|---|---|
+| Decided by depth | 30 | 126 |
+| Inverted references (kept, flagged) | 3 | **18** |
+| Default kept, flagged | 108 | 322 |
+| **Changes** | **25** | **0** |
+
+- **Midland:** the guard fires on 18 rows, so the vendor-specific WCB_1 / WCB_2 tags are themselves inverted in places.
+  Where depth does decide in Midland, it keeps WCB_1 everywhere.
+- **Crossing area:** Delaware 534 → 529 sq mi.
+- **Acceptance** is unchanged: a full review, now **25 cards**. MAKO STATE 3-6 1H is marked, because its plain median
+  is only 74 ft closer to WCXY.

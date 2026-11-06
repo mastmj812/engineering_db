@@ -172,3 +172,13 @@ def test_thin_split_without_margin_keeps_the_placeholder():
     rows += [("WOLFCAMP A", "WCA_1", None, None, 9_345, 0, 0, "WCA_1")]
     out = ts1.assign(_sb(rows), "tag").iloc[-1]
     assert out["sb_basis"] == "subbench_default" and out["sb_code"] == "WCA_1"
+
+
+def test_inverted_subbench_references_withdraw_the_call():
+    from box import tag_subbench as ts1
+
+    # WCA_2 witnesses SHALLOWER than WCA_1 (card 22, STATE NEAL LETHCO 3405A-142 2H): no depth call
+    rows = _wring("WOLFCAMP A UPPER", "WCA_1", 9_062) + _wring("WOLFCAMP A LOWER", "WCA_2", 8_772)
+    rows += [("WOLFCAMP A", "WCA_1", None, None, 8_708, 0, 0, "WCA_1")]
+    out = ts1.assign(_sb(rows), "tag").iloc[-1]
+    assert out["sb_basis"] == "subbench_inverted" and out["sb_code"] == "WCA_1"

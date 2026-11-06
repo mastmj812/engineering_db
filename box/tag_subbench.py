@@ -16,6 +16,10 @@ decided the sub-bench. v5.1 decides it by depth against SUB-BENCH WITNESSES (Mic
                    candidate and within far_ft  -> that code, basis 'subbench_depth' (may confirm the placeholder);
                    fewer than two referenced candidates, or no clear winner  -> the placeholder kept, basis
                    'subbench_default', flagged.
+  rev 1 (2026-11-06, found building the cards, before any verdict): the referenced candidates must stand in
+                   stratigraphic order (box.tag_scoreboard.bench_order: a deeper sub-bench's reference deeper). If any
+                   pair is inverted the references are wrong there -> the placeholder kept, basis 'subbench_inverted',
+                   flagged. The guard can only withdraw a depth call, never make one.
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ from scipy.spatial import cKDTree
 
 from box import landing_surfaces as ls
 from box import tag_precedence as tp
+from box import tag_scoreboard as sb
 
 # (basin, vendor, raw string): names the interval, not the sub-bench, where the column splits it. Pinned by a test.
 PLACEHOLDER: frozenset[tuple[str, str, str]] = frozenset({
@@ -80,7 +85,9 @@ def assign(d: pd.DataFrame, tag: str, r: tp.V5 = tp.RULE) -> pd.DataFrame:
     d["sb_code"], d["sb_basis"], d["sb_lead_ft"] = d[tag], None, np.nan
     rm = r.r_mi * ls.M_PER_MI
     for b in d["basin"].unique():
+        strat = sb.bench_order().get(b, [])
         for u, codes in unit_codes(b).items():
+            codes = sorted(codes, key=lambda c, strat=strat: strat.index(c) if c in strat else len(strat))
             rows = d.index[(d["basin"] == b) & d["placeholder"] & (d[tag].map(lambda c, b=b: tp.unit(b, c)) == u)]
             if not len(rows):
                 continue
@@ -103,6 +110,10 @@ def assign(d: pd.DataFrame, tag: str, r: tp.V5 = tp.RULE) -> pd.DataFrame:
                 ok = np.isfinite(dist[k])
                 if ok.sum() < 2:
                     d.at[i, "sb_basis"] = "subbench_default"
+                    continue
+                zk = Z[k][ok]  # codes are in stratigraphic order, so the references must increase
+                if np.any(np.diff(zk) <= 0):
+                    d.at[i, "sb_basis"] = "subbench_inverted"
                     continue
                 order = np.argsort(np.where(ok, dist[k], np.inf))
                 best, second = order[0], order[1]
