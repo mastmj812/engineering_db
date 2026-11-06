@@ -1,6 +1,7 @@
 """Score the rule v5 class cards (read-only) — docs/formation_tag_redesign/RULE_V5.md, "Verdict counting".
 
     python -m scripts.tag_v5_score --cards docs/formation_tag_redesign/v5-cards-2026-11-06
+    python -m scripts.tag_v5_score --cards <round-1 folder> <round-2 folder>   # pooled; outputs land in the LAST folder
 
 Counting, declared before any verdict: a bench code in the same UNIT as the proposed one agrees on the unit (the
 sub-bench is recorded separately); a code in another unit, or 'reject...', counts against; 'agree' agrees; blank or
@@ -50,8 +51,11 @@ def score(cards: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return c, cls
 
 
-def run(folder: Path) -> dict:
-    cards = pd.read_csv(folder / "cards_sample.csv", dtype={"api10": str})
+def run(folders: list[Path]) -> dict:
+    folder = folders[-1]
+    cards = pd.concat([pd.read_csv(f / "cards_sample.csv", dtype={"api10": str}) for f in folders], ignore_index=True)
+    if cards["api10"].duplicated().any() or cards["card"].duplicated().any():
+        raise SystemExit("a well or card number appears in more than one round")
     known = set(tp.UNIT["delaware"]) | {u for o in tp.UNIT_ORDER.values() for u in o} | set(cards["live"]) | set(cards["proposed"])
     bad = ts.unknown_bench_codes(cards["verdict"], known)
     if bad:
@@ -72,7 +76,7 @@ def run(folder: Path) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cards", type=Path, required=True)
+    ap.add_argument("--cards", type=Path, nargs="+", required=True)
     a = ap.parse_args(argv)
     print(json.dumps(run(a.cards), indent=1, default=str))
     return 0

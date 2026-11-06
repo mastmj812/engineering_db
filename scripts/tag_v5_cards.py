@@ -9,6 +9,11 @@ Each card shows the strike section of evidence wells by their LIVE tags (box.fla
 witness depths of both units at the well. The pre-check is the plain median of the same witnesses within 2 mi (>= 3).
 A card whose pre-check disagrees with the call is MARKED, not dropped, so the class sample stays random.
 Needs producers_v5.pkl in the cache (scripts.tag_precedence_dev).
+
+Round 2 (--round1 <scored round-1 folder>): every class whose round-1 decision is 'round 2' or 'pending' gets cards up to
+10 judged (box.tag_screen.CARDS_PER_CLASS), drawn the same way with seed 51107 and excluding every earlier card. A class
+still 'pending' after round 1 (a hold left it at 4 judged) goes straight to 10, since any fifth verdict leaves it in
+round 2. Class numbers carry over from round 1; card numbers continue after round 1's.
 """
 
 from __future__ import annotations
@@ -24,10 +29,12 @@ import pandas as pd
 
 from box import flag_cards as fc
 from box import tag_scoreboard as sb
+from box import tag_screen as ts
 from box.bench_qc import DEFAULT_PARAMS, _esc, _fmt, _project_xy_ft
 from scripts.box_family_qc import _scored
 
 SEED = 51106
+SEED_ROUND2 = 51107
 PER_CLASS = 5
 MIN_CLASS = 20
 DOCS = sb.ROOT / "docs" / "formation_tag_redesign"
@@ -43,7 +50,28 @@ def previously_carded() -> set[str]:
 def classes(d: pd.DataFrame) -> pd.DataFrame:
     ch = d[d["final"].fillna("~") != d["live"].fillna("~")]
     c = ch.groupby(["basin", "live", "final", "basis"]).size().rename("wells").reset_index()
-    return c[c["wells"] >= MIN_CLASS].sort_values("wells", ascending=False).reset_index(drop=True)
+    c = c[c["wells"] >= MIN_CLASS].sort_values("wells", ascending=False, kind="stable").reset_index(drop=True)
+    c["class_no"], c["n_cards"] = np.arange(1, len(c) + 1), PER_CLASS
+    return c
+
+
+def class_label(basin: str, live: str, final: str, basis: str) -> str:
+    return f"{basin} {live}->{final} ({basis})"
+
+
+def round2_classes(cls: pd.DataFrame, round1: Path) -> pd.DataFrame:
+    """The classes round 1 left open, with round-1 class numbers and the cards needed to reach 10 judged."""
+    dec = pd.read_csv(round1 / "class_decisions.csv")
+    dec = dec[dec["decision"].isin(["round 2", "pending"])].set_index("class")
+    c = cls.copy()
+    c["label"] = [class_label(*k) for k in zip(c["basin"], c["live"], c["final"], c["basis"], strict=True)]
+    c = c[c["label"].isin(dec.index)].copy()
+    missing = set(dec.index) - set(c["label"])
+    if missing:
+        raise SystemExit(f"round-1 classes not found in producers_v5.pkl: {sorted(missing)}")
+    c["class_no"] = c["label"].map(dec["class_no"]).astype(int)
+    c["n_cards"] = (ts.CARDS_PER_CLASS - c["label"].map(dec["judged"])).astype(int)
+    return c.sort_values("class_no").reset_index(drop=True)
 
 
 def plain_medians(d: pd.DataFrame, rows: pd.DataFrame, r_mi: float = 2.0) -> pd.DataFrame:
@@ -94,7 +122,7 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v: pd.Series, table:
     return f"<div class=card id=\"w{_esc(subj['api10'])}\"><div class=kv>{kv}</div><img src=\"{png}\"></div>"
 
 
-def run(cache: Path, out: Path) -> Path:
+def run(cache: Path, out: Path, round1: Path | None = None) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     sample = out / "cards_sample.csv"
     if sample.exists():
@@ -103,20 +131,25 @@ def run(cache: Path, out: Path) -> Path:
     table = pd.read_csv(DOCS / "v5-dev-2026-11-06" / "precedence_table.csv")
     excl = set(sb.labelled_set()["api10"]) | previously_carded()
     cls = classes(d)
-    rng = np.random.default_rng(SEED)
+    first_card = 1
+    if round1 is not None:
+        cls = round2_classes(cls, round1)
+        first_card = int(pd.read_csv(round1 / "cards_sample.csv")["card"].max()) + 1
+    rng = np.random.default_rng(SEED if round1 is None else SEED_ROUND2)
     picks = []
-    for k, c in enumerate(cls.itertuples(), start=1):
+    for c in cls.itertuples():
+        k = c.class_no
         pool = d[(d["basin"] == c.basin) & (d["live"] == c.live) & (d["final"] == c.final) & (d["basis"] == c.basis)
                  & d["override"].isna() & ~d["api10"].isin(excl)].sort_values("api10")
         if pool.empty:
             continue
-        sel = pool.iloc[np.sort(rng.choice(len(pool), size=min(PER_CLASS, len(pool)), replace=False))].copy()
+        sel = pool.iloc[np.sort(rng.choice(len(pool), size=min(c.n_cards, len(pool)), replace=False))].copy()
         sel["class_no"], sel["class_wells"] = k, c.wells
         picks.append(sel)
     p = pd.concat(picks)
     p = p.join(plain_medians(d, p))
     p["check"] = p.apply(check, axis=1)
-    p["card"] = np.arange(1, len(p) + 1)
+    p["card"] = np.arange(first_card, first_card + len(p))
     sections: dict[int, list[str]] = {}
     rows = []
     for b in ("delaware", "midland"):
@@ -134,14 +167,19 @@ def run(cache: Path, out: Path) -> Path:
                          "class_wells": int(v["class_wells"]), "basin": b, "api10": v["api10"], "well_name": subj["well_name"], "county": v["county"],
                          "live": v["live"], "proposed": v["final"], "check": v["check"], "verdict": "", "verdict_source": ""})
     pd.DataFrame(rows).sort_values("card").to_csv(sample, index=False)
-    heads = {k: f"{c.basin.title()} {c.live} → {c.final} ({c.basis}), {c.wells} wells" for k, c in enumerate(cls.itertuples(), start=1)}
+    rnd = "" if round1 is None else " — round 2"
+    heads = {c.class_no: f"{c.basin.title()} {c.live} → {c.final} ({c.basis}), {c.wells} wells{rnd}" for c in cls.itertuples()}
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     body = "".join(f"<h2>Class {k}: {_esc(heads[k])}</h2>" + "".join(v) for k, v in sorted(sections.items()))
     page = (f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Rule v5 class cards</title><style>{fc._CSS}</style></head><body>"
-            "<h1>Rule v5 — class review cards (vendors propose, depth decides)</h1>"
-            f"<div class=meta>Built {built}, read-only. {len(rows)} cards, 5 per class for every change class of >= {MIN_CLASS} wells, drawn at "
-            f"random (seed {SEED}) from wells that are not labelled, overridden or on any earlier card. Gate per class: 5/5 accepts, 0-1/5 rejects, "
-            "otherwise 5 more and 7/10. Neighbours are evidence wells only by their LIVE tags. A card whose plain-median check disagrees with "
+            f"<h1>Rule v5 — class review cards{rnd} (vendors propose, depth decides)</h1>"
+            f"<div class=meta>Built {built}, read-only. {len(rows)} cards, "
+            + (f"5 per class for every change class of >= {MIN_CLASS} wells, drawn at random (seed {SEED})" if round1 is None else
+               f"round 2: each open class topped up to 10 judged cards, drawn at random (seed {SEED_ROUND2})")
+            + " from wells that are not labelled, overridden or on any earlier card. "
+            + ("Gate per class: 5/5 accepts, 0-1/5 rejects, otherwise 5 more and 7/10. " if round1 is None else
+               "Each class is judged on 7/10 with its round-1 cards (a bench code in the proposed unit agrees on the unit). ")
+            + "Neighbours are evidence wells only by their LIVE tags. A card whose plain-median check disagrees with "
             "the call is marked, not dropped. Mark <code>cards_sample.csv</code>: agree / reject / a bench code / free text (a hold). "
             "Nothing is applied.</div>" + body + "</body></html>")
     (out / "cards.html").write_text(page, encoding="utf-8")
@@ -152,8 +190,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--round1", type=Path, help="scored round-1 folder (class_decisions.csv): draw round 2")
     a = ap.parse_args(argv)
-    print(run(a.cache, a.out))
+    print(run(a.cache, a.out, a.round1))
     return 0
 
 
