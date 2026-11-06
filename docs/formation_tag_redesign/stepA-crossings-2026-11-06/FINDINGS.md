@@ -1,88 +1,55 @@
-# Step A — landing-surface crossings in the BOX record extents (2026-11-06, read-only)
+# Step A — landing-surface crossings in the BOX record extents, estimator rev 1 (2026-11-06, read-only)
 
 ```
 python -m scripts.tag_landing_crossings --cache <scoreboard cache> --out <this folder>
 ```
 
-Code: `box/landing_surfaces.py` (tests: `tests/test_landing_surfaces.py`). Maps: `crossings.html`.
+**This replaces the first run, kept in `stepA-crossings-2026-11-06-superseded/`.**
 
-**How the surfaces are built.** One landing surface per BOX record extent and code, on a ¼-mi lattice, from live-tagged
-evidence wells:
-- the code's own wells within 2 mi (3 or more) where its nearest well is within 1 mi;
-- otherwise, structure from a thick anchor bench plus local thickness, out to 5 mi;
-- nothing beyond that.
+That run fitted tilted planes through a few one-sided wells. Michael's gunbarrel check of ART SMITH STATE #130H
+(3002555344, Lea) caught it:
+- the BS3_C "surface" there was 10,559 ft, extrapolated from four BS3_C wells at 10,020–10,110 ft, all on one side;
+- 61 of the 67 cards drawn from that run rested on a surface more than 150 ft off the plain local median;
+- crossings concentrate exactly where a surface misbehaves, so the first run's crossing areas were inflated.
 
-Every pair of codes is compared in stratigraphic order wherever both surfaces exist:
-- **crossing:** the deeper code's surface is at or above the shallower one;
-- **merged:** within 50 ft.
+**Estimator rev 1** (`box/landing_surfaces.estimate`):
+- a Gaussian distance-weighted median of the bench's wells;
+- replaced by a robust plane only when at least 6 wells surround the node, the fitted dip is at most 300 ft/mi, and
+  the plane stays within 150 ft of the weighted median;
+- thickness surfaces only where the target bench's samples sit on more than one side.
 
-**Pool sets.** The record runs' analog pools are the committed docs/box sets:
-- Delaware run 32: `pool-2026-10-15` plus the step-15 / 15a sets;
-- Midland run 30: `pool-midland-2026-10-31`.
+**Validation** (`surface-estimator-rev1-2026-11-06/`): held-out wells, the same hold-out as before.
 
-`box.tc_member` holds only the Delaware WCA pool. The step-2 blast-radius pool counts therefore covered WCA only, which
-does not change v3's verdict.
+| | Old P99 error | New P99 error | Misses > 300 ft, old → new |
+|---|---|---|---|
+| Delaware, all | 603 ft | 431 ft | 2.6 % → 1.9 % |
+| Delaware, one-sided remaining wells | 1,676 ft | 683 ft | 7.0 % → 4.1 % |
+| Midland, one-sided remaining wells | 603 ft | 311 ft | 3.5 % → 1.1 % |
 
-## Scoreboard number (the "before")
+The median error is unchanged (Delaware 42 ft, Midland 36 ft). In Delaware's outer mile it is about 5 ft worse
+(54 → 60 ft).
+
+## Corrected baseline (the scoreboard number)
 
 | Adjacent pairs | Shared area | Crossing | Merged (< 50 ft) | Non-adjacent crossing |
 |---|---|---|---|---|
-| Delaware | 18,207 sq mi | **722 sq mi (4.0 %)** | 792 sq mi (4.3 %) | 642 sq mi |
-| Midland | 16,323 sq mi | **328 sq mi (2.0 %)** | 314 sq mi (1.9 %) | 184 sq mi |
+| Delaware | 16,165 sq mi | **532 sq mi (3.3 %)** | 772 sq mi (4.8 %) | 171 sq mi |
+| Midland | 13,271 sq mi | **94 sq mi (0.7 %)** | 238 sq mi (1.8 %) | 5 sq mi |
 
-Every later tag change can be scored against this: crossing area should fall.
+The first run's figures were Delaware 722 sq mi / 4.0 % with 642 non-adjacent, and Midland 328 sq mi / 2.0 % with
+184 non-adjacent. The shared area is smaller now because one-sided thickness surfaces are refused.
 
-**Fringe (outer mile of the extents) against the interior**, adjacent-pair crossing share:
-- Delaware: 3.8 % vs 4.0 %;
-- Midland: **4.6 % vs 1.8 %**.
+What remains is the expected kind:
+- **Thin Delaware Wolfcamp A splits:** WCA_1 | WCA_2 6.0 % crossing, WCXY | WCA_1 6.2 %.
+- **Delaware WCB_2 | WCC:** 5.4 %.
+- **Delaware BS3_C | BS3_S:** 3.8 % at a 588-ft median gap, the BS3_C naming class.
+- **Midland:** WCB_2 | WCC 2.8 %, WCB_1 | WCB_2 1.5 %, DEAN | WCA_1 1.5 %; everything else ≤ 0.5 %.
 
-Per pair, the fringe crosses 2–3× more often for Midland DEAN|WCA_1 (10.2 vs 3.3 %), WCB_2|WCC (11.1 vs 3.9 %) and
-WCA_1|WCB_1 (4.7 vs 1.3 %), and for Delaware WCB_1|WCB_2 (5.7 vs 2.5 %).
+**Investigation list** (`wells_in_zones.csv`): Delaware 2,476 wells in crossing or merging nodes, 771 of them closer
+to the other bench's surface; Midland 614, 195 closer.
 
-## Where (pairs.csv; the map per pair is in crossings.html)
-
-**Delaware, adjacent pairs:**
-
-| Pair | Shared | Median gap | Crossing | Merged |
-|---|---|---|---|---|
-| WCXY \| WCA_1 | 1,286 sq mi | 111 ft | 6.1 % | 13.5 % |
-| WCA_1 \| WCA_2 | 2,908 | 122 | 5.7 % | 9.5 % |
-| WCB_2 \| WCC | 999 | 186 | 6.2 % | 4.4 % |
-| BS1_S \| BS2_C | 859 | 271 | 5.8 % | 1.7 % |
-| BS3_C \| BS3_S | 2,025 | **591** | **4.8 %** | 2.1 % |
-| AVA_1 \| AVA_2 | 464 | 267 | 4.5 % | 0.8 % |
-| BS3_S \| WCXY | 1,157 | 153 | 3.9 % | 4.6 % |
-| WCB_1 \| WCB_2 | 2,489 | 295 | 2.8 % | 2.5 % |
-| WCA_2 \| WCB_1 | 2,716 | 184 | 2.3 % | 2.9 % |
-| BS2_S \| BS3_C | 1,793 | 503 | 1.7 % | 1.6 % |
-
-The thin WCA splits cross and merge most, as expected. A 591-ft median gap crossing 4.8 % of the time (BS3_C | BS3_S)
-is not thin-bed noise. It is a naming problem: the BS3_C → BS2_S class the blind cards upheld (Novi "THIRD BONE SPRING
-LIME" on wells that sit at 2nd Bone Spring Sand depth).
-
-**Midland, adjacent pairs:** WCB_2 | WCC 5.3 %, DEAN | WCA_1 3.7 %, WCB_1 | WCB_2 2.6 %, the rest ≤ 1.5 %.
-
-**Largest non-adjacent crossings:** Delaware BS3_S | WCA_1 (53 sq mi) and BS3_S | WCA_2 (36 sq mi), BS1_S | BS2_S
-(35), BS2_S | BS3_S (30); Midland DEAN | WCB_1 (28).
-
-## The investigation list (`wells_in_zones.csv`)
-
-**Delaware:** 2,740 wells sit in a crossing or merging node; **861 of them** are closer to the other bench's surface
-than to their own (`suspect = this well`). **Midland:** 870 wells; **256** closer to the other surface. For the rest
-(`other bench here`), the well sits on its own surface and the suspect is the other bench's control nearby.
-
-The list is ranked fringe first, then likely mis-tags, then crossings before merges, then the deepest crossings.
-
-Likely mis-tags (`this well`):
-- **Delaware:** WCA_1→WCA_2 147, WCA_1→WCXY 130, WCA_2→WCA_1 125, WCXY→WCA_1 74, WCA_2→WCB_1 46, BS3_C→BS3_S 35,
-  WCA_1→BS3_S 23, BS3_S→WCXY 23, BS2_S→BS3_C 21.
-- **Midland:** WCA_1→DEAN 51, WCB_1→WCB_2 43, WCB_2→WCB_1 23, DEAN→WCA_1 23, WCB_2→WCC 20.
-- **In the fringe (0–1 mi):** 27 Delaware and 54 Midland likely mis-tags, the top of the list.
-
-## Caveats
-
-- **The surfaces are built from live tags.** A crossing says the tags and the depths disagree there; it does not say
-  which well is wrong. The `suspect` column is a pointer, not a verdict.
-- **Fringe surfaces are often extrapolated** (structure plus thickness). Some fringe crossings are surface error, not
-  tag error, which is why the list is for review.
-- Nothing is re-tagged. Step B, or a class review, is the next decision.
+**Cards** (`stepA-cards-2026-11-06/`): every card must also pass the plain-median check, i.e. ≥ 100 ft closer to the
+proposed bench on plain medians of both benches' wells within 2 mi, with ≥ 3 wells each.
+- 15 wells are ≥ 100 ft closer on the surfaces (thin WCA splits and already-ruled wells excluded);
+- 13 have enough wells to check;
+- **10 pass**, all Delaware. ART SMITH STATE #130H is not among them.

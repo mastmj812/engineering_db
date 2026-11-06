@@ -4,7 +4,11 @@ Pure core (no DB, no files). Michael's idea (2026-11-06): grid the landing TVD o
 stack the surfaces in stratigraphic order, and look where one surface meets or crosses another. Those are the places
 whose tags need investigating.
 
-Surface at a lattice node (method from surface-density-2026-11-06 and surface-fringe-2026-11-06):
+Surface at a lattice node (method from surface-density-2026-11-06 and surface-fringe-2026-11-06; estimator rev 1,
+2026-11-06: estimate() = distance-weighted median unless >= 6 wells SURROUND the node with a plausible dip, and
+thickness only where the target bench has samples on more than one side. The first version fit tilted planes through
+a few one-sided wells and swung hundreds of feet. Michael's check of ART SMITH STATE #130H caught it: 61 of 67 cards
+rested on such surfaces):
   * direct     the code's own evidence wells: robust plane through those within R_MI (>= N_MIN), used only where
                the nearest one is within DIRECT_MAX_MI;
   * thickness  where the code's nearest well is DIRECT_MAX_MI .. THICK_MAX_MI away: the plane of a thick, well-drilled
@@ -43,6 +47,11 @@ class SurfaceParams:
     thick_max_mi: float = 5.0
     merge_ft: float = 50.0
     fringe_mi: float = 1.0
+    # rev 1 (2026-11-06, Michael's ART SMITH STATE #130H check): a tilted plane only where it can be trusted
+    plane_min_n: int = 6             # wells needed to fit a plane at all
+    max_dip_ft_per_mi: float = 300.0  # a steeper fitted dip is an artefact here (Delaware WCA dips ran 71-225 ft/mi)
+    plane_max_dev_ft: float = 150.0   # a plane more than this off the local weighted median is rejected
+    wmed_sigma_mi: float = 1.0       # Gaussian distance weight of the weighted median
 
 
 PARAMS = SurfaceParams()
@@ -64,6 +73,45 @@ def robust_plane(xy: np.ndarray, z: np.ndarray, at: np.ndarray) -> float:
     if 4 <= ok.sum() < len(z):
         c, *_ = np.linalg.lstsq(X[ok], z[ok], rcond=None)
     return float(c[0])
+
+
+def _plane_fit(xy: np.ndarray, z: np.ndarray, at: np.ndarray) -> tuple[float, float, float]:
+    """(value at ``at``, dz/dx, dz/dy in ft per mi) of a robust plane (2.5-sigma MAD rejection, one refit)."""
+    X = np.column_stack([np.ones(len(z)), (xy[:, 0] - at[0]) / M_PER_MI, (xy[:, 1] - at[1]) / M_PER_MI])
+    c, *_ = np.linalg.lstsq(X, z, rcond=None)
+    r = z - X @ c
+    mad = np.median(np.abs(r - np.median(r))) or 1.0
+    ok = np.abs(r) <= 2.5 * 1.4826 * mad
+    if 4 <= ok.sum() < len(z):
+        c, *_ = np.linalg.lstsq(X[ok], z[ok], rcond=None)
+    return float(c[0]), float(c[1]), float(c[2])
+
+
+def weighted_median(z: np.ndarray, w: np.ndarray) -> float:
+    o = np.argsort(z)
+    cw = np.cumsum(w[o])
+    return float(z[o][np.searchsorted(cw, 0.5 * cw[-1])])
+
+
+def max_angular_gap_deg(xy: np.ndarray, at: np.ndarray) -> float:
+    """Largest empty sector (deg) around ``at``; < 180 means the points surround it (it lies inside their hull)."""
+    a = np.sort(np.degrees(np.arctan2(xy[:, 1] - at[1], xy[:, 0] - at[0])) % 360.0)
+    if len(a) < 2:
+        return 360.0
+    return float(max(np.max(np.diff(a)), 360.0 - a[-1] + a[0]))
+
+
+def estimate(xy: np.ndarray, z: np.ndarray, at: np.ndarray, p: SurfaceParams = PARAMS) -> tuple[float, str]:
+    """Rev 1 estimator: the Gaussian-distance-weighted median of the wells, replaced by a robust plane only when
+    >= plane_min_n wells SURROUND the point, the fitted dip is <= max_dip_ft_per_mi, and the plane stays within
+    plane_max_dev_ft of the weighted median. Returns (value, 'plane' | 'wmedian')."""
+    d = np.hypot(xy[:, 0] - at[0], xy[:, 1] - at[1]) / M_PER_MI
+    wm = weighted_median(z, np.exp(-0.5 * (d / p.wmed_sigma_mi) ** 2) + 1e-9)
+    if len(z) >= p.plane_min_n and max_angular_gap_deg(xy, at) < 180.0:
+        v, gx, gy = _plane_fit(xy, z, at)
+        if np.hypot(gx, gy) <= p.max_dip_ft_per_mi and abs(v - wm) <= p.plane_max_dev_ft:
+            return v, "plane"
+    return wm, "wmedian"
 
 
 def lattice(bounds: tuple[float, float, float, float], step_m: float) -> tuple[np.ndarray, np.ndarray]:
@@ -93,11 +141,11 @@ def surface(nodes: np.ndarray, code_xy: np.ndarray, code_z: np.ndarray, anchor_x
         A_at_code = np.full(len(code_z), np.nan)
         for k, js in enumerate(atree.query_ball_point(code_xy, r)):
             if len(js) >= p.n_min:
-                A_at_code[k] = robust_plane(anchor_xy[js], anchor_z[js], code_xy[k])
+                A_at_code[k] = estimate(anchor_xy[js], anchor_z[js], code_xy[k], p)[0]
     direct_idx = np.where(near <= dmax)[0]
     for i, js in zip(direct_idx, tree.query_ball_point(nodes[direct_idx], r), strict=True):
         if len(js) >= p.n_min:
-            out_z[i], basis[i] = robust_plane(code_xy[js], code_z[js], nodes[i]), "direct"
+            out_z[i], basis[i] = estimate(code_xy[js], code_z[js], nodes[i], p)[0], "direct"
     if atree is not None:
         t_idx = np.where(np.isnan(out_z) & (near <= tmax))[0]
         if len(t_idx):
@@ -108,9 +156,12 @@ def surface(nodes: np.ndarray, code_xy: np.ndarray, code_z: np.ndarray, anchor_x
                     continue
                 cjs = np.asarray(cjs, int)
                 cjs = cjs[np.isfinite(A_at_code[cjs])]
-                if len(cjs) < p.n_min:
+                # rev 1: thickness only where the target bench's samples sit on more than one side of the node
+                if len(cjs) < p.n_min or max_angular_gap_deg(code_xy[cjs], nodes[i]) >= 180.0:
                     continue
-                out_z[i] = robust_plane(anchor_xy[ajs], anchor_z[ajs], nodes[i]) + float(np.median(code_z[cjs] - A_at_code[cjs]))
+                dk = np.hypot(code_xy[cjs, 0] - nodes[i][0], code_xy[cjs, 1] - nodes[i][1]) / M_PER_MI
+                t = weighted_median(code_z[cjs] - A_at_code[cjs], np.exp(-0.5 * (dk / (2 * p.wmed_sigma_mi)) ** 2) + 1e-9)
+                out_z[i] = estimate(anchor_xy[ajs], anchor_z[ajs], nodes[i], p)[0] + t
                 basis[i] = "thickness"
     return pd.DataFrame({"z": out_z, "basis": basis, "near_mi": near / M_PER_MI})
 

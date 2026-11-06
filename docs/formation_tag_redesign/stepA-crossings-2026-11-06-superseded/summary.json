@@ -1,0 +1,30 @@
+{
+ "built_at": "2026-11-06T09:16:43-06:00",
+ "params": {
+  "node_mi": 0.25,
+  "r_mi": 2.0,
+  "n_min": 3,
+  "direct_max_mi": 1.0,
+  "thick_max_mi": 5.0,
+  "merge_ft": 50.0,
+  "fringe_mi": 1.0
+ },
+ "by_basin": {
+  "delaware": {
+   "adjacent_shared_sqmi": 18207,
+   "adjacent_crossing_sqmi": 722,
+   "adjacent_merged_sqmi": 792,
+   "nonadjacent_crossing_sqmi": 642,
+   "wells_in_zones": 2740,
+   "wells_in_zones_in_box_pool": 2708
+  },
+  "midland": {
+   "adjacent_shared_sqmi": 16323,
+   "adjacent_crossing_sqmi": 328,
+   "adjacent_merged_sqmi": 314,
+   "nonadjacent_crossing_sqmi": 184,
+   "wells_in_zones": 870,
+   "wells_in_zones_in_box_pool": 870
+  }
+ }
+}
