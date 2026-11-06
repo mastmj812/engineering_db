@@ -1,0 +1,1892 @@
+{
+ "built_at": "2026-11-05T11:23:50-06:00",
+ "git_sha": "4701667",
+ "params": {
+  "radius_mi": 1.0,
+  "pair_mi": 0.25,
+  "margin_ft": 25.0,
+  "inv_ft": 50.0,
+  "min_band_n": 3,
+  "min_sep_n": 50
+ },
+ "candidates": {
+  "live": "wells_enriched.formation_blueox: overrides + sql/23 correction (what downstream reads)",
+  "pre_sql23": "wells_enriched.formation_blueox_base: overrides, no sql/23 correction",
+  "vendor": "ref.formation_crosswalk on the sql/16 vendor string only (no override, no sql/23)"
+ },
+ "pulled_wells": 60686,
+ "labelled": {
+  "class_accepted": 232,
+  "carded": 217,
+  "hold": 3
+ },
+ "bases": {
+  "best": {
+   "clean": {
+    "midland": 28441,
+    "delaware": 28303
+   },
+   "depth_source": [
+    {
+     "basin": "delaware",
+     "depth_source": "survey",
+     "n": 23239
+    },
+    {
+     "basin": "delaware",
+     "depth_source": "tvd_ft",
+     "n": 5064
+    },
+    {
+     "basin": "midland",
+     "depth_source": "survey",
+     "n": 26445
+    },
+    {
+     "basin": "midland",
+     "depth_source": "tvd_ft",
+     "n": 1996
+    }
+   ],
+   "excluded_planned": 2664,
+   "candidates": {
+    "live": {
+     "band_r1.0": {
+      "delaware": 9.8,
+      "midland": 5.46
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 105683,
+       "inverted": 820,
+       "inverted_pct": 0.78
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26752,
+       "inverted": 986,
+       "inverted_pct": 3.69
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 109140,
+       "inverted": 100,
+       "inverted_pct": 0.09
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 44555,
+       "inverted": 386,
+       "inverted_pct": 0.87
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2110,
+       "median_gap_ft": 218.0,
+       "inverted_pct": 3.3,
+       "under_50ft_pct": 8.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3030,
+       "median_gap_ft": 284.1,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3129,
+       "median_gap_ft": 260.5,
+       "inverted_pct": 2.2,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 4045,
+       "median_gap_ft": 333.2,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 4.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4569,
+       "median_gap_ft": 445.5,
+       "inverted_pct": 0.2,
+       "under_50ft_pct": 0.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9579,
+       "median_gap_ft": 525.5,
+       "inverted_pct": 2.1,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6089,
+       "median_gap_ft": 572.8,
+       "inverted_pct": 1.2,
+       "under_50ft_pct": 3.3
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4623,
+       "median_gap_ft": 171.5,
+       "inverted_pct": 6.0,
+       "under_50ft_pct": 10.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10290,
+       "median_gap_ft": 104.0,
+       "inverted_pct": 11.3,
+       "under_50ft_pct": 23.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19440,
+       "median_gap_ft": 128.5,
+       "inverted_pct": 8.7,
+       "under_50ft_pct": 20.2
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 11020,
+       "median_gap_ft": 199.0,
+       "inverted_pct": 5.5,
+       "under_50ft_pct": 9.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5193,
+       "median_gap_ft": 250.0,
+       "inverted_pct": 6.3,
+       "under_50ft_pct": 12.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2897,
+       "median_gap_ft": 189.5,
+       "inverted_pct": 9.8,
+       "under_50ft_pct": 14.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 673,
+       "median_gap_ft": 192.5,
+       "inverted_pct": 4.0,
+       "under_50ft_pct": 10.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 565.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 69.5,
+       "inverted_pct": 28.1,
+       "under_50ft_pct": 49.1
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 302,
+       "median_gap_ft": 321.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10774,
+       "median_gap_ft": 336.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.5
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 14031,
+       "median_gap_ft": 354.8,
+       "inverted_pct": 0.7,
+       "under_50ft_pct": 0.9
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7286,
+       "median_gap_ft": 246.5,
+       "inverted_pct": 0.3,
+       "under_50ft_pct": 1.5
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 7020,
+       "median_gap_ft": 194.0,
+       "inverted_pct": 1.0,
+       "under_50ft_pct": 3.3
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 22097,
+       "median_gap_ft": 251.5,
+       "inverted_pct": 1.6,
+       "under_50ft_pct": 2.9
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 11851,
+       "median_gap_ft": 168.5,
+       "inverted_pct": 5.2,
+       "under_50ft_pct": 15.3
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2482,
+       "median_gap_ft": 171.5,
+       "inverted_pct": 9.7,
+       "under_50ft_pct": 19.4
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 527,
+       "median_gap_ft": 1031.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 93.0,
+       "reproduced_pct": 86.1
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 103,
+       "reproduced": 103.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 227,
+       "reproduced": 227.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.26,
+      "midland": 3.68
+     },
+     "grid_overall": [
+      {
+       "all": "all",
+       "scored": 25603,
+       "agree_pct": 85.16,
+       "controlled": 13817,
+       "agree_controlled_pct": 87.91,
+       "shallow_pct": 7.26,
+       "deep_pct": 7.58
+      }
+     ]
+    },
+    "pre_sql23": {
+     "band_r1.0": {
+      "delaware": 9.89,
+      "midland": 5.52
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 105595,
+       "inverted": 1080,
+       "inverted_pct": 1.02
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26748,
+       "inverted": 1041,
+       "inverted_pct": 3.89
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 109132,
+       "inverted": 190,
+       "inverted_pct": 0.17
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 44552,
+       "inverted": 420,
+       "inverted_pct": 0.94
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2112,
+       "median_gap_ft": 222.2,
+       "inverted_pct": 3.1,
+       "under_50ft_pct": 8.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3030,
+       "median_gap_ft": 280.8,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3129,
+       "median_gap_ft": 260.5,
+       "inverted_pct": 2.1,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 4045,
+       "median_gap_ft": 333.0,
+       "inverted_pct": 2.6,
+       "under_50ft_pct": 4.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4569,
+       "median_gap_ft": 446.8,
+       "inverted_pct": 0.2,
+       "under_50ft_pct": 0.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9571,
+       "median_gap_ft": 522.5,
+       "inverted_pct": 2.1,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6089,
+       "median_gap_ft": 571.0,
+       "inverted_pct": 1.3,
+       "under_50ft_pct": 3.3
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4624,
+       "median_gap_ft": 171.0,
+       "inverted_pct": 6.0,
+       "under_50ft_pct": 10.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10294,
+       "median_gap_ft": 104.8,
+       "inverted_pct": 11.2,
+       "under_50ft_pct": 23.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19431,
+       "median_gap_ft": 128.0,
+       "inverted_pct": 8.8,
+       "under_50ft_pct": 20.3
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 11018,
+       "median_gap_ft": 198.8,
+       "inverted_pct": 5.5,
+       "under_50ft_pct": 9.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5171,
+       "median_gap_ft": 250.5,
+       "inverted_pct": 6.2,
+       "under_50ft_pct": 12.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2874,
+       "median_gap_ft": 189.5,
+       "inverted_pct": 9.6,
+       "under_50ft_pct": 13.9
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 673,
+       "median_gap_ft": 192.5,
+       "inverted_pct": 4.0,
+       "under_50ft_pct": 10.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 565.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 69.5,
+       "inverted_pct": 28.1,
+       "under_50ft_pct": 49.1
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 302,
+       "median_gap_ft": 321.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10774,
+       "median_gap_ft": 336.5,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.5
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 14030,
+       "median_gap_ft": 355.0,
+       "inverted_pct": 0.7,
+       "under_50ft_pct": 0.9
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7286,
+       "median_gap_ft": 246.5,
+       "inverted_pct": 0.3,
+       "under_50ft_pct": 1.5
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 7020,
+       "median_gap_ft": 194.0,
+       "inverted_pct": 1.0,
+       "under_50ft_pct": 3.3
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 22097,
+       "median_gap_ft": 251.2,
+       "inverted_pct": 1.6,
+       "under_50ft_pct": 2.9
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 11840,
+       "median_gap_ft": 168.5,
+       "inverted_pct": 5.2,
+       "under_50ft_pct": 15.2
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2482,
+       "median_gap_ft": 172.9,
+       "inverted_pct": 9.7,
+       "under_50ft_pct": 19.4
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 527,
+       "median_gap_ft": 1031.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 93.0,
+       "reproduced_pct": 86.1
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 103,
+       "reproduced": 103.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 227,
+       "reproduced": 227.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.37,
+      "midland": 3.73
+     },
+     "grid_overall": [
+      {
+       "all": "all",
+       "scored": 25577,
+       "agree_pct": 85.11,
+       "controlled": 13801,
+       "agree_controlled_pct": 87.89,
+       "shallow_pct": 7.33,
+       "deep_pct": 7.56
+      }
+     ]
+    },
+    "vendor": {
+     "band_r1.0": {
+      "delaware": 10.01,
+      "midland": 5.86
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 105504,
+       "inverted": 1082,
+       "inverted_pct": 1.03
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26833,
+       "inverted": 1048,
+       "inverted_pct": 3.91
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 109053,
+       "inverted": 197,
+       "inverted_pct": 0.18
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 44499,
+       "inverted": 444,
+       "inverted_pct": 1.0
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2112,
+       "median_gap_ft": 222.2,
+       "inverted_pct": 3.1,
+       "under_50ft_pct": 8.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3030,
+       "median_gap_ft": 280.8,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3129,
+       "median_gap_ft": 260.5,
+       "inverted_pct": 2.1,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 4045,
+       "median_gap_ft": 333.0,
+       "inverted_pct": 2.6,
+       "under_50ft_pct": 4.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4569,
+       "median_gap_ft": 446.8,
+       "inverted_pct": 0.2,
+       "under_50ft_pct": 0.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9571,
+       "median_gap_ft": 522.5,
+       "inverted_pct": 2.1,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6089,
+       "median_gap_ft": 571.0,
+       "inverted_pct": 1.3,
+       "under_50ft_pct": 3.3
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4624,
+       "median_gap_ft": 171.0,
+       "inverted_pct": 6.0,
+       "under_50ft_pct": 10.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10294,
+       "median_gap_ft": 104.8,
+       "inverted_pct": 11.2,
+       "under_50ft_pct": 23.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19432,
+       "median_gap_ft": 128.0,
+       "inverted_pct": 8.5,
+       "under_50ft_pct": 20.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 11170,
+       "median_gap_ft": 201.0,
+       "inverted_pct": 5.3,
+       "under_50ft_pct": 9.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5313,
+       "median_gap_ft": 241.0,
+       "inverted_pct": 6.7,
+       "under_50ft_pct": 13.3
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2818,
+       "median_gap_ft": 188.5,
+       "inverted_pct": 9.3,
+       "under_50ft_pct": 14.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 684,
+       "median_gap_ft": 197.5,
+       "inverted_pct": 5.6,
+       "under_50ft_pct": 11.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 565.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 69.5,
+       "inverted_pct": 28.1,
+       "under_50ft_pct": 49.1
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 302,
+       "median_gap_ft": 321.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10774,
+       "median_gap_ft": 336.5,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.5
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 14030,
+       "median_gap_ft": 355.2,
+       "inverted_pct": 0.7,
+       "under_50ft_pct": 0.9
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7338,
+       "median_gap_ft": 246.8,
+       "inverted_pct": 0.3,
+       "under_50ft_pct": 1.5
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 7080,
+       "median_gap_ft": 193.2,
+       "inverted_pct": 1.0,
+       "under_50ft_pct": 3.9
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 22066,
+       "median_gap_ft": 251.5,
+       "inverted_pct": 1.5,
+       "under_50ft_pct": 2.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 12393,
+       "median_gap_ft": 157.0,
+       "inverted_pct": 4.4,
+       "under_50ft_pct": 16.3
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2702,
+       "median_gap_ft": 184.0,
+       "inverted_pct": 10.5,
+       "under_50ft_pct": 19.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 526,
+       "median_gap_ft": 1028.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 1.0,
+       "reproduced_pct": 0.9
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 103,
+       "reproduced": 12.0,
+       "reproduced_pct": 11.7
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 227,
+       "reproduced": 6.0,
+       "reproduced_pct": 2.6
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.44,
+      "midland": 4.03
+     },
+     "grid_overall": [
+      {
+       "all": "all",
+       "scored": 25577,
+       "agree_pct": 85.24,
+       "controlled": 13821,
+       "agree_controlled_pct": 87.96,
+       "shallow_pct": 7.18,
+       "deep_pct": 7.58
+      }
+     ]
+    }
+   }
+  },
+  "tvd_ft": {
+   "clean": {
+    "midland": 28185,
+    "delaware": 28060
+   },
+   "depth_source": [
+    {
+     "basin": "delaware",
+     "depth_source": "tvd_ft",
+     "n": 28060
+    },
+    {
+     "basin": "midland",
+     "depth_source": "tvd_ft",
+     "n": 28185
+    }
+   ],
+   "excluded_planned": 2664,
+   "candidates": {
+    "live": {
+     "band_r1.0": {
+      "delaware": 10.71,
+      "midland": 5.52
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 103921,
+       "inverted": 809,
+       "inverted_pct": 0.78
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26285,
+       "inverted": 1078,
+       "inverted_pct": 4.1
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 107316,
+       "inverted": 103,
+       "inverted_pct": 0.1
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 43695,
+       "inverted": 384,
+       "inverted_pct": 0.88
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2083,
+       "median_gap_ft": 236.0,
+       "inverted_pct": 4.4,
+       "under_50ft_pct": 8.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3005,
+       "median_gap_ft": 282.5,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3086,
+       "median_gap_ft": 256.0,
+       "inverted_pct": 2.8,
+       "under_50ft_pct": 6.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 3964,
+       "median_gap_ft": 337.5,
+       "inverted_pct": 2.4,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4524,
+       "median_gap_ft": 432.0,
+       "inverted_pct": 0.8,
+       "under_50ft_pct": 1.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9481,
+       "median_gap_ft": 537.0,
+       "inverted_pct": 2.3,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6007,
+       "median_gap_ft": 568.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 4.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4572,
+       "median_gap_ft": 175.5,
+       "inverted_pct": 6.4,
+       "under_50ft_pct": 11.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10174,
+       "median_gap_ft": 103.0,
+       "inverted_pct": 11.1,
+       "under_50ft_pct": 24.8
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19224,
+       "median_gap_ft": 128.0,
+       "inverted_pct": 9.1,
+       "under_50ft_pct": 20.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 10859,
+       "median_gap_ft": 198.5,
+       "inverted_pct": 5.3,
+       "under_50ft_pct": 9.9
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5046,
+       "median_gap_ft": 246.0,
+       "inverted_pct": 6.1,
+       "under_50ft_pct": 12.2
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2856,
+       "median_gap_ft": 191.5,
+       "inverted_pct": 8.0,
+       "under_50ft_pct": 13.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 667,
+       "median_gap_ft": 180.0,
+       "inverted_pct": 4.5,
+       "under_50ft_pct": 11.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 579.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 110.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 24.6
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 300,
+       "median_gap_ft": 315.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10615,
+       "median_gap_ft": 337.5,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.4
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 13860,
+       "median_gap_ft": 353.0,
+       "inverted_pct": 0.5,
+       "under_50ft_pct": 0.7
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7169,
+       "median_gap_ft": 247.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 1.7
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 6905,
+       "median_gap_ft": 193.0,
+       "inverted_pct": 1.0,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 21851,
+       "median_gap_ft": 252.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 3.0
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 11737,
+       "median_gap_ft": 171.0,
+       "inverted_pct": 4.9,
+       "under_50ft_pct": 16.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2442,
+       "median_gap_ft": 176.0,
+       "inverted_pct": 9.8,
+       "under_50ft_pct": 17.2
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 503,
+       "median_gap_ft": 1032.0,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 93.0,
+       "reproduced_pct": 86.1
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 100,
+       "reproduced": 100.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 226,
+       "reproduced": 226.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.73,
+      "midland": 3.65
+     }
+    },
+    "pre_sql23": {
+     "band_r1.0": {
+      "delaware": 10.79,
+      "midland": 5.57
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 103835,
+       "inverted": 1066,
+       "inverted_pct": 1.03
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26279,
+       "inverted": 1130,
+       "inverted_pct": 4.3
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 107308,
+       "inverted": 188,
+       "inverted_pct": 0.18
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 43693,
+       "inverted": 419,
+       "inverted_pct": 0.96
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2083,
+       "median_gap_ft": 237.0,
+       "inverted_pct": 4.1,
+       "under_50ft_pct": 8.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3005,
+       "median_gap_ft": 280.5,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3086,
+       "median_gap_ft": 256.0,
+       "inverted_pct": 2.8,
+       "under_50ft_pct": 6.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 3964,
+       "median_gap_ft": 337.5,
+       "inverted_pct": 2.4,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4524,
+       "median_gap_ft": 433.0,
+       "inverted_pct": 0.8,
+       "under_50ft_pct": 1.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9473,
+       "median_gap_ft": 532.5,
+       "inverted_pct": 2.4,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6007,
+       "median_gap_ft": 567.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 4.2
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4573,
+       "median_gap_ft": 175.0,
+       "inverted_pct": 6.4,
+       "under_50ft_pct": 11.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10178,
+       "median_gap_ft": 103.5,
+       "inverted_pct": 10.9,
+       "under_50ft_pct": 24.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19215,
+       "median_gap_ft": 128.0,
+       "inverted_pct": 9.2,
+       "under_50ft_pct": 20.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 10857,
+       "median_gap_ft": 198.0,
+       "inverted_pct": 5.3,
+       "under_50ft_pct": 9.9
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5025,
+       "median_gap_ft": 245.5,
+       "inverted_pct": 6.0,
+       "under_50ft_pct": 12.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2833,
+       "median_gap_ft": 191.5,
+       "inverted_pct": 7.5,
+       "under_50ft_pct": 13.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 667,
+       "median_gap_ft": 176.5,
+       "inverted_pct": 4.5,
+       "under_50ft_pct": 11.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 579.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 110.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 24.6
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 300,
+       "median_gap_ft": 315.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10615,
+       "median_gap_ft": 337.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.4
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 13859,
+       "median_gap_ft": 353.0,
+       "inverted_pct": 0.5,
+       "under_50ft_pct": 0.7
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7169,
+       "median_gap_ft": 247.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 1.7
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 6905,
+       "median_gap_ft": 193.0,
+       "inverted_pct": 1.0,
+       "under_50ft_pct": 3.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 21851,
+       "median_gap_ft": 252.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 2.9
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 11726,
+       "median_gap_ft": 171.0,
+       "inverted_pct": 4.9,
+       "under_50ft_pct": 16.6
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2442,
+       "median_gap_ft": 177.0,
+       "inverted_pct": 9.8,
+       "under_50ft_pct": 17.2
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 503,
+       "median_gap_ft": 1032.0,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 93.0,
+       "reproduced_pct": 86.1
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 100,
+       "reproduced": 100.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 226,
+       "reproduced": 226.0,
+       "reproduced_pct": 100.0
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.84,
+      "midland": 3.7
+     }
+    },
+    "vendor": {
+     "band_r1.0": {
+      "delaware": 10.95,
+      "midland": 6.02
+     },
+     "inversion": [
+      {
+       "basin": "delaware",
+       "span": "2+ apart",
+       "pairs": 103744,
+       "inverted": 1066,
+       "inverted_pct": 1.03
+      },
+      {
+       "basin": "delaware",
+       "span": "adjacent",
+       "pairs": 26367,
+       "inverted": 1134,
+       "inverted_pct": 4.3
+      },
+      {
+       "basin": "midland",
+       "span": "2+ apart",
+       "pairs": 107214,
+       "inverted": 193,
+       "inverted_pct": 0.18
+      },
+      {
+       "basin": "midland",
+       "span": "adjacent",
+       "pairs": 43651,
+       "inverted": 448,
+       "inverted_pct": 1.03
+      }
+     ],
+     "separation": [
+      {
+       "basin": "delaware",
+       "upper": "AVA_0",
+       "lower": "AVA_1",
+       "n_hoods": 2083,
+       "median_gap_ft": 237.0,
+       "inverted_pct": 4.1,
+       "under_50ft_pct": 8.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_1",
+       "lower": "AVA_2",
+       "n_hoods": 3005,
+       "median_gap_ft": 280.5,
+       "inverted_pct": 2.5,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "AVA_2",
+       "lower": "BS1_S",
+       "n_hoods": 3086,
+       "median_gap_ft": 256.0,
+       "inverted_pct": 2.8,
+       "under_50ft_pct": 6.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS1_S",
+       "lower": "BS2_C",
+       "n_hoods": 3964,
+       "median_gap_ft": 337.5,
+       "inverted_pct": 2.4,
+       "under_50ft_pct": 3.6
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_C",
+       "lower": "BS2_S",
+       "n_hoods": 4524,
+       "median_gap_ft": 433.0,
+       "inverted_pct": 0.8,
+       "under_50ft_pct": 1.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS2_S",
+       "lower": "BS3_C",
+       "n_hoods": 9473,
+       "median_gap_ft": 532.5,
+       "inverted_pct": 2.4,
+       "under_50ft_pct": 3.7
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_C",
+       "lower": "BS3_S",
+       "n_hoods": 6007,
+       "median_gap_ft": 567.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 4.2
+      },
+      {
+       "basin": "delaware",
+       "upper": "BS3_S",
+       "lower": "WCXY",
+       "n_hoods": 4573,
+       "median_gap_ft": 175.0,
+       "inverted_pct": 6.4,
+       "under_50ft_pct": 11.1
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCXY",
+       "lower": "WCA_1",
+       "n_hoods": 10178,
+       "median_gap_ft": 103.5,
+       "inverted_pct": 10.9,
+       "under_50ft_pct": 24.4
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_1",
+       "lower": "WCA_2",
+       "n_hoods": 19216,
+       "median_gap_ft": 128.0,
+       "inverted_pct": 9.0,
+       "under_50ft_pct": 20.5
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCA_2",
+       "lower": "WCB_1",
+       "n_hoods": 11007,
+       "median_gap_ft": 201.0,
+       "inverted_pct": 5.2,
+       "under_50ft_pct": 9.8
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 5157,
+       "median_gap_ft": 239.0,
+       "inverted_pct": 6.5,
+       "under_50ft_pct": 14.2
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2777,
+       "median_gap_ft": 190.5,
+       "inverted_pct": 7.6,
+       "under_50ft_pct": 14.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 678,
+       "median_gap_ft": 190.5,
+       "inverted_pct": 6.0,
+       "under_50ft_pct": 13.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "BRNT",
+       "lower": "MISS",
+       "n_hoods": 60,
+       "median_gap_ft": 579.0,
+       "inverted_pct": 5.0,
+       "under_50ft_pct": 5.0
+      },
+      {
+       "basin": "delaware",
+       "upper": "MISS",
+       "lower": "WDFD",
+       "n_hoods": 57,
+       "median_gap_ft": 110.0,
+       "inverted_pct": 1.8,
+       "under_50ft_pct": 24.6
+      },
+      {
+       "basin": "midland",
+       "upper": "US",
+       "lower": "MS",
+       "n_hoods": 300,
+       "median_gap_ft": 315.5,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      },
+      {
+       "basin": "midland",
+       "upper": "MS",
+       "lower": "JM",
+       "n_hoods": 10615,
+       "median_gap_ft": 337.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 0.4
+      },
+      {
+       "basin": "midland",
+       "upper": "JM",
+       "lower": "LSSH",
+       "n_hoods": 13859,
+       "median_gap_ft": 353.5,
+       "inverted_pct": 0.5,
+       "under_50ft_pct": 0.7
+      },
+      {
+       "basin": "midland",
+       "upper": "LSSH",
+       "lower": "DEAN",
+       "n_hoods": 7221,
+       "median_gap_ft": 248.0,
+       "inverted_pct": 0.1,
+       "under_50ft_pct": 1.7
+      },
+      {
+       "basin": "midland",
+       "upper": "DEAN",
+       "lower": "WCA_1",
+       "n_hoods": 6964,
+       "median_gap_ft": 192.5,
+       "inverted_pct": 0.9,
+       "under_50ft_pct": 3.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCA_1",
+       "lower": "WCB_1",
+       "n_hoods": 21823,
+       "median_gap_ft": 252.0,
+       "inverted_pct": 1.6,
+       "under_50ft_pct": 2.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_1",
+       "lower": "WCB_2",
+       "n_hoods": 12261,
+       "median_gap_ft": 157.5,
+       "inverted_pct": 4.2,
+       "under_50ft_pct": 17.6
+      },
+      {
+       "basin": "midland",
+       "upper": "WCB_2",
+       "lower": "WCC",
+       "n_hoods": 2660,
+       "median_gap_ft": 178.2,
+       "inverted_pct": 10.3,
+       "under_50ft_pct": 17.8
+      },
+      {
+       "basin": "midland",
+       "upper": "WCC",
+       "lower": "WCD",
+       "n_hoods": 502,
+       "median_gap_ft": 1032.0,
+       "inverted_pct": 0.0,
+       "under_50ft_pct": 0.0
+      }
+     ],
+     "labels": [
+      {
+       "tier": "carded",
+       "basin": "delaware",
+       "n": 108,
+       "reproduced": 1.0,
+       "reproduced_pct": 0.9
+      },
+      {
+       "tier": "carded",
+       "basin": "midland",
+       "n": 100,
+       "reproduced": 11.0,
+       "reproduced_pct": 11.0
+      },
+      {
+       "tier": "class_accepted",
+       "basin": "midland",
+       "n": 226,
+       "reproduced": 6.0,
+       "reproduced_pct": 2.7
+      },
+      {
+       "tier": "hold",
+       "basin": "delaware",
+       "n": 3,
+       "reproduced": NaN,
+       "reproduced_pct": NaN
+      }
+     ],
+     "band_r0.5": {
+      "delaware": 6.95,
+      "midland": 3.99
+     }
+    }
+   }
+  }
+ }
+}

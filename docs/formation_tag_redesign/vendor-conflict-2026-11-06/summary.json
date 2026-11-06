@@ -1,0 +1,9 @@
+{
+ "population": 51506,
+ "conflicts": 5914,
+ "params": {
+  "margin_ft": 100.0,
+  "far_ft": 300.0,
+  "r_mi": 2.0
+ }
+}

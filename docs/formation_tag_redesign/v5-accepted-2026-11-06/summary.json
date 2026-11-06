@@ -1,0 +1,107 @@
+{
+ "churn": [
+  {
+   "basin": "delaware",
+   "wells": 28303,
+   "changes": 188,
+   "unit_changes": 188,
+   "in_extents": 187
+  },
+  {
+   "basin": "midland",
+   "wells": 28441,
+   "changes": 725,
+   "unit_changes": 725,
+   "in_extents": 700
+  }
+ ],
+ "changes_by_basis": {
+  "delaware": {
+   "carded_call": 39,
+   "class_accepted": 149
+  },
+  "midland": {
+   "carded_call": 34,
+   "class_accepted": 691
+  }
+ },
+ "label_reproduction": [
+  {
+   "tier": "carded",
+   "basin": "delaware",
+   "n": 108,
+   "reproduced_live": 93.0,
+   "reproduced_pct_live": 86.11111111111111,
+   "reproduced_accepted": 93.0,
+   "reproduced_pct_accepted": 86.11111111111111
+  },
+  {
+   "tier": "carded",
+   "basin": "midland",
+   "n": 103,
+   "reproduced_live": 103.0,
+   "reproduced_pct_live": 100.0,
+   "reproduced_accepted": 103.0,
+   "reproduced_pct_accepted": 100.0
+  },
+  {
+   "tier": "class_accepted",
+   "basin": "midland",
+   "n": 227,
+   "reproduced_live": 227.0,
+   "reproduced_pct_live": 100.0,
+   "reproduced_accepted": 227.0,
+   "reproduced_pct_accepted": 100.0
+  },
+  {
+   "tier": "hold",
+   "basin": "delaware",
+   "n": 3,
+   "reproduced_live": NaN,
+   "reproduced_pct_live": NaN,
+   "reproduced_accepted": NaN,
+   "reproduced_pct_accepted": NaN
+  }
+ ],
+ "unresolved": {
+  "wells": 2830,
+  "neither_vendor": 52,
+  "in_extents": 2759
+ },
+ "sql23_corrected": {
+  "wells": 157,
+  "kept": 155
+ },
+ "crossings_live": {
+  "delaware": {
+   "adjacent_shared_sqmi": 16165,
+   "adjacent_crossing_sqmi": 532,
+   "adjacent_crossing_pct": 3.29,
+   "adjacent_merged_sqmi": 772,
+   "nonadjacent_crossing_sqmi": 171
+  },
+  "midland": {
+   "adjacent_shared_sqmi": 13271,
+   "adjacent_crossing_sqmi": 94,
+   "adjacent_crossing_pct": 0.71,
+   "adjacent_merged_sqmi": 238,
+   "nonadjacent_crossing_sqmi": 5
+  }
+ },
+ "crossings_accepted": {
+  "delaware": {
+   "adjacent_shared_sqmi": 16161,
+   "adjacent_crossing_sqmi": 534,
+   "adjacent_crossing_pct": 3.3,
+   "adjacent_merged_sqmi": 782,
+   "nonadjacent_crossing_sqmi": 164
+  },
+  "midland": {
+   "adjacent_shared_sqmi": 13200,
+   "adjacent_crossing_sqmi": 82,
+   "adjacent_crossing_pct": 0.62,
+   "adjacent_merged_sqmi": 232,
+   "nonadjacent_crossing_sqmi": 5
+  }
+ }
+}

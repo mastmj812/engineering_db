@@ -1,0 +1,12 @@
+class_no,class,class_wells,cards,agree,against,holds,subbench_differs,judged,decision,cards_to_add
+1,midland WCA_1->WCB_1 (pattern),296,5,4,1,0,0,5,round 2,5
+2,midland WCA_1->WCB_1 (depth),183,5,5,0,0,0,5,accept,0
+3,delaware WCB_1->WCA_1 (depth),163,5,4,1,0,4,5,round 2,5
+4,midland LSSH->JM (depth),115,5,5,0,0,0,5,accept,0
+5,midland LSSH->JM (pattern),82,5,4,1,0,0,5,round 2,5
+6,delaware BS3_C->BS2_S (depth),79,5,5,0,0,0,5,accept,0
+7,midland WCB_1->WCA_1 (depth),55,5,4,1,0,0,5,round 2,5
+8,delaware BS3_S->WCA_1 (pattern),30,5,3,1,1,0,4,pending,1
+9,delaware OTHER->AVA_0 (depth_vs_other),29,5,5,0,0,0,5,accept,0
+10,delaware WCA_2->WCB_1 (depth),29,5,3,2,0,0,5,round 2,5
+11,delaware BS2_C->BS1_S (depth),22,5,3,2,0,0,5,round 2,5
