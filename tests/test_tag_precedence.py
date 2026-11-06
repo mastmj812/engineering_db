@@ -117,3 +117,58 @@ def test_v5_card_counting_is_unit_level():
     assert unit_verdict("midland", "JM", "reject, too far") == ("reject", None)
     assert unit_verdict("delaware", "WCA_1", float("nan")) == ("", None)  # a skipped card is a hold
     assert unit_verdict("delaware", "WCA_1", "can't tell from this") == ("", None)
+
+
+# --- v5.1 sub-bench step (box.tag_subbench) ---------------------------------------------------------------------
+
+def _sb(rows, basin="delaware"):
+    """(novi_raw, novi_code, env_raw, env_code, depth, x_mi, y_mi, tag)"""
+    d = pd.DataFrame(rows, columns=["novi_raw", "novi_code", "env_raw", "env_code", "depth_ft", "x", "y", "tag"])
+    d["x"], d["y"] = d["x"] * MI, d["y"] * MI
+    d["basin"], d["evidence"], d["src"] = basin, True, None
+    return d
+
+
+def _wring(env_raw, env_code, z, n=6, rad=0.6):
+    return [("WOLFCAMP A", "WCA_1", env_raw, env_code, z + k, rad * np.cos(2 * np.pi * k / n), rad * np.sin(2 * np.pi * k / n), env_code)
+            for k in range(n)]
+
+
+def test_subbench_placeholder_list_is_pinned():
+    from box import tag_subbench as ts1
+
+    assert ts1.PLACEHOLDER == {("delaware", "novi", "WOLFCAMP A"), ("delaware", "novi", "WOLFCAMP B"), ("midland", "novi", "WOLFCAMP B"),
+                               ("delaware", "env", "2ND BONE SPRING"), ("delaware", "env", "3RD BONE SPRING")}
+    assert ts1.unit_codes("delaware")["WCA"] == ["WCA_1", "WCA_2", "WCXY"] and "WCA_1" not in ts1.unit_codes("midland")
+
+
+def test_card_62_placeholder_goes_to_wca2_by_depth():
+    from box import tag_subbench as ts1
+
+    # witnesses: Novi coarse WOLFCAMP A + Enverus specific UPPER (WCA_1, 9,226) / LOWER (WCA_2, 9,381)
+    rows = _wring("WOLFCAMP A UPPER", "WCA_1", 9_226) + _wring("WOLFCAMP A LOWER", "WCA_2", 9_381)
+    rows += [("WOLFCAMP A", "WCA_1", "WOLFCAMP B UPPER", "WCB_1", 9_461, 0, 0, "WCA_1")]  # v5 kept Novi's placeholder
+    out = ts1.assign(_sb(rows), "tag").iloc[-1]
+    assert out["placeholder"] and out["sb_basis"] == "subbench_depth" and out["sb_code"] == "WCA_2"
+
+
+def test_specific_or_human_codes_are_not_placeholders():
+    from box import tag_subbench as ts1
+
+    d = _sb([("WOLFCAMP A", "WCA_1", "WOLFCAMP A UPPER", "WCA_1", 9_300, 0, 0, "WCA_1"),   # Enverus names WCA_1
+             ("WOLFCAMP A", "WCA_1", None, None, 9_300, 0, 0, "WCA_1"),                     # placeholder, single vendor
+             ("WOLFCAMP A", "WCA_1", None, None, 9_300, 0, 0, "WCA_1"),                     # same, but carded
+             ("SECOND BONE SPRING", "BS2_S", "2ND BONE SPRING", "BS2_S", 9_000, 0, 0, "BS2_S")])  # Novi names the sand
+    d.loc[2, "src"] = "carded_call"
+    out = ts1.assign(d, "tag")
+    assert out["placeholder"].tolist() == [False, True, False, False]
+    assert out.loc[1, "sb_basis"] == "subbench_default" and out.loc[1, "sb_code"] == "WCA_1"  # no witnesses -> kept, flagged
+
+
+def test_thin_split_without_margin_keeps_the_placeholder():
+    from box import tag_subbench as ts1
+
+    rows = _wring("WOLFCAMP A UPPER", "WCA_1", 9_300) + _wring("WOLFCAMP A LOWER", "WCA_2", 9_380)
+    rows += [("WOLFCAMP A", "WCA_1", None, None, 9_345, 0, 0, "WCA_1")]
+    out = ts1.assign(_sb(rows), "tag").iloc[-1]
+    assert out["sb_basis"] == "subbench_default" and out["sb_code"] == "WCA_1"
