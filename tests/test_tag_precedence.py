@@ -105,3 +105,15 @@ def test_other_case_respects_the_protected_guard():
     d.loc[d.index[-1], ["novi_code", "sql16"]] = "OTHER"
     out, _ = tp.assign(d)
     assert out.iloc[-1]["basis"] == "guard" and out.iloc[-1]["v5"] == "OTHER"
+
+
+def test_v5_card_counting_is_unit_level():
+    from scripts.tag_v5_score import unit_verdict
+
+    assert unit_verdict("delaware", "WCA_1", "WCA_2") == ("agree", "WCA_2")  # same unit, other sub-bench
+    assert unit_verdict("delaware", "WCA_1", "WCA_1") == ("agree", None)
+    assert unit_verdict("delaware", "WCA_1", "WCB_1") == ("reject", None)
+    assert unit_verdict("midland", "WCB_1", "WCA_1") == ("reject", None)  # Midland WCA_1 is its own unit
+    assert unit_verdict("midland", "JM", "reject, too far") == ("reject", None)
+    assert unit_verdict("delaware", "WCA_1", float("nan")) == ("", None)  # a skipped card is a hold
+    assert unit_verdict("delaware", "WCA_1", "can't tell from this") == ("", None)
