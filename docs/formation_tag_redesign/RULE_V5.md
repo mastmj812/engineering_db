@@ -115,3 +115,23 @@ Ward.
 
 Applying any of it is a separate warehouse step (a new matview that replaces sql/16's logic), with Michael's explicit
 go.
+
+## Verdict counting (declared 2026-11-06, after the cards were built and before any verdict)
+
+v5 decides the **unit**. Where the backed vendor is coarse Novi, its code is a crosswalk placeholder sub-bench, as on
+card 11: DEEP ELEM 4 FEDERAL COM #733H, proposed WCA_1 while sitting nearer the WCA_2 / WCB_1 bands.
+
+So for these cards:
+- a **bench code in the same unit as the proposed one** counts as **agree on the unit**. The sub-bench is recorded
+  separately and does not count against the class;
+- a code in another unit, or "reject", counts against the class;
+- free text is a hold.
+
+Pre-check, observed when the cards were built:
+
+| Class | Plain-median check disagrees |
+|---|---|
+| Midland WCA_1 → WCB_1 (pattern) | 4 of 5 (depth can't separate there; the learned prior carries it) |
+| Midland WCB_1 → WCA_1 (depth) | 3 of 5 |
+| Delaware WCA_2 → WCB_1 (depth) | 2 of 5 |
+| Delaware OTHER → AVA_0 | no read on any card (the OTHER side has no witnesses) |
