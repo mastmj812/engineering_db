@@ -22,5 +22,5 @@ card,basin,api10,well_name,county,live,v5,proposed,lead_ft,check,verdict,verdict
 21,delaware,3001554573,OXBOW 23 23 W1EH FEDERAL COM #001H,Eddy,WCA_1,WCA_1,WCA_2,162,agrees (174 ft closer to WCA_2),ACCEPT,
 22,delaware,4230133134,BONGO 76-43 LOV UNIT 3H,Loving,BS3_S,WCA_1,WCXY,205,agrees (157 ft closer to WCXY),ACCEPT,
 23,delaware,4230134767,SAN SABA 76 2932 112H,Loving,BS3_S,WCA_1,WCXY,134,agrees (180 ft closer to WCXY),ACCEPT,
-24,delaware,4230135445,PERMIT 76-44 LOV UNIT 8H,Loving,BS3_S,WCA_1,WCXY,178,agrees (172 ft closer to WCXY),REJECT,
-25,delaware,4238932684,MAKO STATE 3-6 1H,Reeves,BS3_S,WCA_1,WCXY,114,DISAGREES (only 74 ft closer to WCXY),REJECT,
+24,delaware,4230135445,PERMIT 76-44 LOV UNIT 8H,Loving,BS3_S,WCA_1,WCXY,178,agrees (172 ft closer to WCXY),WCXY,Michael 2026-11-08: marked REJECT; meant WCXY over v5's WCA_1 (in line with offset WCXY wells)
+25,delaware,4238932684,MAKO STATE 3-6 1H,Reeves,BS3_S,WCA_1,WCXY,114,DISAGREES (only 74 ft closer to WCXY),BS3_S,Michael 2026-11-08: marked REJECT; meant keep BS3_S (just too shallow vs offset WCXY; thinner control)

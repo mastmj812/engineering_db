@@ -4,8 +4,8 @@
 
 Each card decides only its own well: agree / accept (a trailing comment is kept, not read) applies the proposed
 sub-bench; reject keeps the v5 code; a bench code is Michael's call on the well; any other text is a hold (v5 code kept,
-listed). clarifications.csv (card, api10, verdict, verdict_source), when present, replaces a card's verdict with what
-Michael said he meant; the marked file stays verbatim (verdict_marked keeps it). Writes cards_scored.csv (final_code per
+listed). An optional clarifications.csv (card, api10, verdict, verdict_source) replaces a card's verdict with what the
+reviewer said he meant, for when the marked file cannot be edited (verdict_marked keeps the original). Writes cards_scored.csv (final_code per
 well) and score.json into the cards folder.
 """
 

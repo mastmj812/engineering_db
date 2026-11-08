@@ -33,8 +33,8 @@ The step runs after v5's accepted tags: Michael's carded call, else v5 in an acc
 
 - Enverus has no lime string in the Bone Spring, so its unqualified string is a placeholder and its SAND string is
   specific.
-- **Assumption, open to Michael:** Novi's unqualified SECOND / THIRD BONE SPRING is read as Novi's sand claim, because
-  Novi names the lime separately.
+- **Assumption, confirmed by Michael on 2026-11-08:** Novi's unqualified SECOND / THIRD BONE SPRING is read as Novi's
+  sand claim, because Novi names the lime separately. He reads the Novi tags the same way.
 
 **Terms:**
 - **Placeholder row:** the tag's code lies in a multi-code unit, and every vendor string that maps to that code is a

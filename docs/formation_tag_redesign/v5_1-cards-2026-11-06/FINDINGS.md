@@ -9,8 +9,8 @@
 - A bench code is Michael's call.
 - Any other text is a hold.
 
-`clarifications.csv` records what Michael said he meant on two cards. `cards_sample.csv` stays as he marked it, and the
-`verdict_marked` column keeps the original.
+On cards 24 and 25, `cards_sample.csv` carries what Michael said he meant (2026-11-08). The `verdict_source` column
+records that he had marked both REJECT.
 
 ## Result: 24 of 25 agree with the proposal; one is Michael's own call
 
@@ -39,6 +39,8 @@ round 2. Each card showed today's tag, then v5's code, then v5.1's proposal.
   - This is a **class-8 unit miss**: the well stays in the Bone Spring.
   - v5.1 cannot see it, because it only moves sub-benches inside the unit v5 chose.
   - The class decision (8/10, made on its own cards) stands. This well is a carded call.
+  - **Class 8 tally.** These four wells were class-accepted, not carded. Their cards add 3 unit agrees and 1 unit
+    miss to class 8's own cards. On the unit, that is 11 of 14.
 
 **Lesson for future cards.** With three tags on a card, a bare REJECT is ambiguous: it can reject the proposal or
 v5's move. Ask the reviewer to write a bench code whenever the answer is neither the proposal nor v5's code.
