@@ -1,0 +1,26 @@
+card,basin,api10,well_name,county,live,v5,proposed,lead_ft,check,verdict,verdict_source,outcome,final_code,comment,move,check_agrees
+1,delaware,3002544356,VACA DRAW 20 17 FEDERAL #010H,Lea,BS2_S,BS2_S,BS2_C,338,agrees (292 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+2,delaware,3002546463,BLUE KRAIT 23 14 FEDERAL #027H,Lea,BS2_S,BS2_S,BS2_C,406,agrees (439 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+3,delaware,3002549185,MARGARITA 13 FEDERAL COM #012H,Lea,BS2_S,BS2_S,BS2_C,236,agrees (204 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+4,delaware,3002549314,VACA DRAW 9418 10 FEDERAL #034H,Lea,BS2_S,BS2_S,BS2_C,383,agrees (327 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+5,delaware,3002549844,RATTLESNAKE 28 FEDERAL COM #415H,Lea,BS2_S,BS2_S,BS2_C,286,agrees (280 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+6,delaware,3002549942,DAGGER STATE COM #518H,Lea,BS2_S,BS2_S,BS2_C,584,agrees (554 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+7,delaware,3002555175,NINA CORTELL FEDERAL COM #148H,Lea,BS2_S,BS2_S,BS2_C,530,agrees (512 ft closer to BS2_C),ACCEPT,,agree,BS2_C,,BS2_S -> BS2_C,True
+8,delaware,3001554773,JAMES RANCH UNIT DI 7 SAWTOOTH #805H,Eddy,BS3_S,BS3_S,BS3_C,526,agrees (503 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+9,delaware,3001554861,JAMES RANCH UNIT DI 7 SAWTOOTH #801H,Eddy,BS3_S,BS3_S,BS3_C,501,agrees (503 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+10,delaware,3001556023,JAMES RANCH UNIT APACHE #138H,Eddy,BS3_S,BS3_S,BS3_C,386,agrees (356 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+11,delaware,3002548900,DAGGER STATE COM #556H,Lea,BS3_S,BS3_S,BS3_C,225,agrees (227 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+12,delaware,3002549588,CHILES 28 21 STATE COM #004H,Lea,BS3_S,BS3_S,BS3_C,331,agrees (336 ft closer to BS3_C),ACCEPT. But live is showing BS2_S rather than BS3_S.,,agree,BS3_C,But live is showing BS2_S rather than BS3_S.,BS3_S -> BS3_C,True
+13,delaware,3002550117,DOS EQUIS 11 14 FEDERAL COM #026H,Lea,BS3_S,BS3_S,BS3_C,432,agrees (432 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+14,delaware,3002550118,DOS EQUIS 11 14 FEDERAL COM #027H,Lea,BS3_S,BS3_S,BS3_C,432,agrees (432 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+15,delaware,3002551426,FORGE FEDERAL COM #653H,Lea,BS3_S,BS3_S,BS3_C,217,agrees (218 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+16,delaware,3002551427,FORGE FEDERAL COM #654H,Lea,BS3_S,BS3_S,BS3_C,315,agrees (276 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+17,delaware,3002553415,LOBO 33 28 FEDERAL COM #568H,Lea,BS3_S,BS3_S,BS3_C,425,agrees (448 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+18,delaware,3002553422,LOBO 33 28 FEDERAL COM #564H,Lea,BS3_S,BS3_S,BS3_C,532,agrees (497 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+19,delaware,3002555207,DOS EQUIS 11 14 FEDERAL COM #303H,Lea,BS3_S,BS3_S,BS3_C,604,agrees (592 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+20,delaware,3002555209,DOS EQUIS 11 14 FEDERAL COM #304H,Lea,BS3_S,BS3_S,BS3_C,604,agrees (552 ft closer to BS3_C),ACCEPT,,agree,BS3_C,,BS3_S -> BS3_C,True
+21,delaware,3001554573,OXBOW 23 23 W1EH FEDERAL COM #001H,Eddy,WCA_1,WCA_1,WCA_2,162,agrees (174 ft closer to WCA_2),ACCEPT,,agree,WCA_2,,WCA_1 -> WCA_2,True
+22,delaware,4230133134,BONGO 76-43 LOV UNIT 3H,Loving,BS3_S,WCA_1,WCXY,205,agrees (157 ft closer to WCXY),ACCEPT,,agree,WCXY,,WCA_1 -> WCXY,True
+23,delaware,4230134767,SAN SABA 76 2932 112H,Loving,BS3_S,WCA_1,WCXY,134,agrees (180 ft closer to WCXY),ACCEPT,,agree,WCXY,,WCA_1 -> WCXY,True
+24,delaware,4230135445,PERMIT 76-44 LOV UNIT 8H,Loving,BS3_S,WCA_1,WCXY,178,agrees (172 ft closer to WCXY),REJECT,,reject,WCA_1,,WCA_1 -> WCXY,True
+25,delaware,4238932684,MAKO STATE 3-6 1H,Reeves,BS3_S,WCA_1,WCXY,114,DISAGREES (only 74 ft closer to WCXY),REJECT,,reject,WCA_1,,WCA_1 -> WCXY,False
