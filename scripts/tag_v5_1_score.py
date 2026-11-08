@@ -4,7 +4,9 @@
 
 Each card decides only its own well: agree / accept (a trailing comment is kept, not read) applies the proposed
 sub-bench; reject keeps the v5 code; a bench code is Michael's call on the well; any other text is a hold (v5 code kept,
-listed). Writes cards_scored.csv (final_code per well) and score.json into the cards folder.
+listed). clarifications.csv (card, api10, verdict, verdict_source), when present, replaces a card's verdict with what
+Michael said he meant; the marked file stays verbatim (verdict_marked keeps it). Writes cards_scored.csv (final_code per
+well) and score.json into the cards folder.
 """
 
 from __future__ import annotations
@@ -51,7 +53,16 @@ def score(cards: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
 
 def run(folder: Path) -> dict:
-    cards = pd.read_csv(folder / "cards_sample.csv", dtype={"api10": str})
+    cards = pd.read_csv(folder / "cards_sample.csv", dtype={"api10": str, "verdict_source": str})
+    cards["verdict_marked"] = cards["verdict"]
+    cl = folder / "clarifications.csv"
+    if cl.exists():
+        k = pd.read_csv(cl, dtype={"api10": str}).set_index("card")
+        hit = cards["card"].isin(k.index)
+        if (cards.loc[hit, "api10"].to_numpy() != k.loc[cards.loc[hit, "card"], "api10"].to_numpy()).any():
+            raise SystemExit("clarifications.csv: card / api10 mismatch")
+        cards.loc[hit, "verdict"] = cards.loc[hit, "card"].map(k["verdict"])
+        cards.loc[hit, "verdict_source"] = cards.loc[hit, "card"].map(k["verdict_source"])
     c, s = score(cards)
     c.to_csv(folder / "cards_scored.csv", index=False)
     (folder / "score.json").write_text(json.dumps(s, indent=1, default=str), encoding="utf-8")
