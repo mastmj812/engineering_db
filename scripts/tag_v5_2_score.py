@@ -11,6 +11,9 @@ Verdicts (a trailing ". comment" is kept, not read):
                      listed as a depth exclusion (evidence off for v5 / v5.2 and as a witness)
   anything else      a hold: the INPUT code is kept, listed
 
+An optional clarifications.csv (card, api10, verdict, verdict_source) replaces a card's verdict with what the reviewer
+said he meant, when the marked file should stay as marked (verdict_marked keeps the original).
+
 Section A is the class sample: the class (basin, input -> proposed) is accepted at >= 7 of 10 agree; then every well of
 the class in the dev run's changes.csv takes the proposal, except a carded well, which takes its own verdict. Sections
 B and C decide only their own well. Writes cards_scored.csv, final_v5_2.csv (one row per well that leaves its input
@@ -110,6 +113,15 @@ def score(cards: pd.DataFrame, changes: pd.DataFrame, extents: dict | None = Non
 
 def run(folder: Path, dev: Path) -> dict:
     cards = pd.read_csv(folder / "cards_sample.csv", dtype={"api10": str, "verdict_source": str})
+    cards["verdict_marked"] = cards["verdict"]
+    cl = folder / "clarifications.csv"
+    if cl.exists():
+        k = pd.read_csv(cl, dtype={"api10": str}).set_index("card")
+        hit = cards["card"].isin(k.index)
+        if (cards.loc[hit, "api10"].to_numpy() != k.loc[cards.loc[hit, "card"], "api10"].to_numpy()).any():
+            raise SystemExit("clarifications.csv: card / api10 mismatch")
+        cards.loc[hit, "verdict"] = cards.loc[hit, "card"].map(k["verdict"])
+        cards.loc[hit, "verdict_source"] = cards.loc[hit, "card"].map(k["verdict_source"])
     changes = pd.read_csv(dev / "changes.csv", dtype={"api10": str})
     s23 = pd.read_csv(dev / "sql23_wells.csv", dtype={"api10": str})
     c, fin, s = score(cards, changes, s23.set_index("api10")["in_box_extents"].to_dict())

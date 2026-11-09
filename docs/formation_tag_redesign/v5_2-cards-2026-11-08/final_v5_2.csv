@@ -37,7 +37,7 @@ api10,basin,county,well_name,input,final_code,basis,card,in_box_extents,changed
 3002553428,delaware,Lea,LACEY SWISS 1 FEDERAL COM #302H,OTHER,AVA_0,v5_2_carded_accept,8,True,True
 3002554043,delaware,Lea,STONEWALL 28 FEDERAL COM #505H,OTHER,AVA_0,v5_2_carded_accept,9,True,True
 3002554044,delaware,Lea,STONEWALL 28 FEDERAL COM #506H,OTHER,AVA_0,v5_2_carded_accept,10,True,True
-3001554499,delaware,Eddy,SQUINTS 4 5 FEE #715H,,,hold,11,True,False
+3001554499,delaware,Eddy,SQUINTS 4 5 FEE #715H,,WCA_1,v5_2_carded_accept,11,True,True
 3001537447,delaware,Eddy,COTTON DRAW UNIT #119H,AVA_0,WCB_2,v5_2_carded_accept,12,True,True
 3002553199,delaware,Lea,TWEETY BIRD 8 FEDERAL COM #712H,AVA_1,WCA_1,v5_2_carded_accept,13,True,True
 3002549069,delaware,Lea,MAGNOLIA 15 FEDERAL COM #205H,AVA_1,WCA_2,v5_2_carded_accept,14,True,True

@@ -1,28 +1,24 @@
 {
  "cards": 124,
  "outcomes": {
-  "agree": 98,
+  "agree": 99,
   "call": 13,
-  "suspect_depth": 12,
-  "hold": 1
+  "suspect_depth": 12
  },
  "by_section": {
   "A": {
    "agree": 10,
    "call": 0,
-   "hold": 0,
    "suspect_depth": 0
   },
   "B": {
-   "agree": 80,
+   "agree": 81,
    "call": 5,
-   "hold": 1,
    "suspect_depth": 1
   },
   "C": {
    "agree": 8,
    "call": 8,
-   "hold": 0,
    "suspect_depth": 11
   }
  },
@@ -30,13 +26,11 @@
   "False": {
    "agree": 4,
    "call": 0,
-   "hold": 0,
    "suspect_depth": 0
   },
   "True": {
-   "agree": 86,
+   "agree": 87,
    "call": 5,
-   "hold": 1,
    "suspect_depth": 1
   }
  },
@@ -48,7 +42,7 @@
   }
  },
  "final": {
-  "wells_changed": 139,
+  "wells_changed": 140,
   "by_basis": {
    "carded_call": {
     "size": 13,
@@ -58,17 +52,13 @@
     "size": 12,
     "sum": 0
    },
-   "hold": {
-    "size": 1,
-    "sum": 0
-   },
    "sql23_v5_2_carded_accept": {
     "size": 8,
     "sum": 8
    },
    "v5_2_carded_accept": {
-    "size": 90,
-    "sum": 90
+    "size": 91,
+    "sum": 91
    },
    "v5_2_class_accepted": {
     "size": 28,
@@ -76,10 +66,10 @@
    }
   },
   "by_basin_changed": {
-   "delaware": 110,
+   "delaware": 111,
    "midland": 29
   },
-  "in_box_extents_changed": 126,
+  "in_box_extents_changed": 127,
   "depth_excluded": [
    "4232945937",
    "3001537350",
@@ -94,13 +84,7 @@
    "4223535203",
    "4232945492"
   ],
-  "holds": [
-   {
-    "card": 11,
-    "api10": "3001554499",
-    "verdict": "can't find"
-   }
-  ]
+  "holds": []
  },
  "guard": {
   "rule_moves_into_or_out_of_protected": 0

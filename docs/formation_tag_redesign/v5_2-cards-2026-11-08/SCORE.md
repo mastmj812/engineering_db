@@ -9,18 +9,18 @@ applied.
 | Section | Cards | Agree | Bench-code call | SUSPECT TVD | Hold |
 |---|---|---|---|---|---|
 | A: class sample, Delaware OTHER → AVA_0 | 10 | **10** | 0 | 0 | 0 |
-| B: full review (other v5.2 moves) | 87 | 80 | 5 | 1 | 1 |
+| B: full review (other v5.2 moves) | 87 | 81 | 5 | 1 | 0 |
 | C: sql/23 unplaced (proposal = sql/23's code) | 27 | 8 | 8 | 11 | 0 |
 
 - **Class A is accepted (10/10, the bar is 7/10).** The 28 uncarded wells of the class take AVA_0.
-- **B: 80 of 87 accepted.** All four cards the plain-median pre-check marked (35, 37, 40, 45) were accepted.
+- **B: 81 of 87 accepted** (card 11 by clarification, below). All four cards the plain-median pre-check marked (35, 37, 40, 45) were accepted.
 - **Sub-bench basis in B:**
 
   | Basis | Agree | Overruled |
   |---|---|---|
   | `depth` | 20 | 0 |
   | `single` (a single-code unit) | 12 | 1 |
-  | `nearest` (low confidence) | 48 | 4 (+ 1 hold) |
+  | `nearest` (low confidence) | 49 | 4 |
 
 - **The five B calls:**
   - card 46, TEA OLIVE #128H (Lea): BS3_S → **WCA_1**. This changes the unit.
@@ -34,22 +34,21 @@ applied.
 
 ## The final v5.2 set (`final_v5_2.csv`)
 
-**139 wells leave their input tag** (Delaware 110, Midland 29). 126 of them are inside the BOX record extents.
+**140 wells leave their input tag** (Delaware 111, Midland 29). 127 of them are inside the BOX record extents.
 
 | Basis | Wells |
 |---|---|
 | `v5_2_class_accepted` (uncarded AVA_0 class wells) | 28 |
-| `v5_2_carded_accept` (A + B) | 90 |
+| `v5_2_carded_accept` (A + B) | 91 |
 | `sql23_v5_2_carded_accept` (C, sql/23's code confirmed) | 8 |
 | `carded_call` (B 5 + C 8) | 13 |
 | `depth_excluded` (keeps its input tag) | 12 |
-| `hold` (keeps its input tag) | 1 |
 
 - **Guard checks (gating):**
   - zero rule moves into or out of WDFD / BRNT / MISS;
   - zero human calls changed (the rule never judges them).
 - **Fixed-point check.** I re-ran v5.2 with every card verdict applied as a human call and the 12 suspect depths turned
-  off as evidence. It made no new move. The only moves left are the 28 class-accepted wells and the held card 11, so the
+  off as evidence. It made no new move. The only moves left are the 28 class-accepted wells and card 11 (then still held), so the
   verdicts don't shift anyone else's reference. Only one of the 12 suspect wells was a witness (card 92, a WCB_1
   witness), and removing it changed nothing.
 
@@ -63,9 +62,10 @@ applied.
      and NEAL 34GG 12HM. So "survey" alone doesn't prove a depth is clean.
    - **DECIDED (Michael, 2026-11-09):** they go in the rule table as depth exclusions. The rows are in
      `depth_exclusions.csv`; the design is in `../WAREHOUSE_STEP.md`, Q5.
-2. **Card 11, SQUINTS 4 5 FEE #715H (Eddy, Mewbourne): "can't find".**
-   - Novi's "WOLFCAMP A (XY)" has no crosswalk mapping here, so the well is untagged today. v5.2 places it at WCA_1:
-     67 ft off the WCA_1 reference, with a 519-ft lead.
-   - The card drew no WCA_1 band, because only 2 WCA_1 wells sit on the strike section and a band needs ≥ 3. So the
-     proposed bench wasn't visible.
-   - It's held (untagged) pending a re-card with a wider section, or Michael's call.
+2. **Card 11, SQUINTS 4 5 FEE #715H (Eddy, Mewbourne): RESOLVED, WCA_1.** "Can't find" meant the well was hard to
+   find in anduin, not a card problem. The well has no bench tag, so it draws as a grey dot, and it sat under the grey
+   "Carlsbad" map label. Michael called it WCA_1 in chat (2026-11-09), which is v5.2's proposal. The marked verdict stays
+   in `cards_sample.csv`; the call is in `clarifications.csv`.
+   - Novi's "WOLFCAMP A (XY)" is a coarse value that defers to Enverus, and Enverus has no interval for this well, so
+     the warehouse tag is NULL. anduin's Formation filter has no `(unmapped)` entry for such wells (2,421 of 70,228 in
+     anduin), so they show every bench at 0. That is an anduin follow-up, not part of this step.
