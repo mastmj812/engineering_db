@@ -21,9 +21,53 @@ From the Nov 5 snapshot, before the live rebuild in W1:
 - The 4 stale live override rows go in the same load (Gate 0 Q4). These are 4232943352, 4232945905, 4232946987 and
   4246139770, all WCB_2, removed from the seed by the §8.16 doublecheck calls.
 
-## The mechanism: override rows, not a sql/16 rewrite
+## Revision 2026-11-08: Q1 reversed, toward a sql/16 rewrite
 
-Earlier I described this step as "a new matview replacing sql/16's decision logic". **I now recommend against that.**
+Michael has the off-hours window, and he corrected a premise. The cadence below was tied to the "quarterly Novi
+reload", but that reload is **Novi Intelligence** (`raw_intel`). The formation strings come from **Novi Insights**,
+which updates **daily**: 51 producers changed tag in three days, 50 of them inside the BOX extents.
+
+With daily revisions, the override-row mechanism below has a correctness cost, not only a cost in convenience. It
+pins about 840 **rule outputs** as if they were **human calls**.
+- A human call should stand whatever the vendors do.
+- A rule output is a function of today's vendor strings plus neighbouring depths. It should not outlive those inputs.
+
+**Recommended design (Q1 = rewrite):**
+- **`ref.formation_tag_overrides` keeps only human calls:** today's 437 rows, plus the 73 v5 carded calls and the 25
+  v5.1 cards. Card 25 now needs a row, because otherwise the class-8 rule row would move MAKO to WCA_1. The seed stays
+  repo-reviewed.
+- **New `ref.formation_tag_rule`:** one row per class-accepted well. It holds the code, the rule version, the class,
+  and the inputs it was decided on: Novi `formation`, Enverus `env_interval` and basin. It is written whole by a script
+  (data, not a seed PR). Each write is an explicit go.
+- **sql/16 precedence:** override, then a rule row **only while its recorded inputs still equal the well's current
+  inputs**, then the crosswalk.
+  - A well whose vendor string has been revised since the run falls back to today's mapping until the next run. It is
+    never left on a stale pin.
+  - Source is `rule_v5`, distinct from `ratified_override`. This is the existing column, so the Q3 provenance columns
+    stay a later step.
+- **sql/23 exemption in the same window:** `corrected` is FALSE for override and rule rows. `formation_blueox_tvd` is
+  in sql/16's CASCADE anyway, so the change costs no extra window. Card 12 (CHILES #004H, a BS3_C call that sql/23
+  lifted to BS2_S) is the case it fixes. Every consumer reads `corrected_code` from sql/23, so this is one edit.
+- **Cost:** a chain-rebuild window. `apply_formation_tag_overrides --rebuild`, then the quarterly tail, then sql/26.
+  erebor and narvi are dark for a couple of hours (longest step `intel_pdp_support`). anduin is not affected; it reads
+  its own synced copy.
+  - Schema changes: one new ref table, so sql/31 comments are needed and the data dictionary is regenerated.
+  - erebor's "colour by source" legend knows neither `ratified_override` nor `rule_v5` today, and both fall to grey.
+    That is a small erebor follow-up.
+
+Under the rewrite, W1, W4 and W5 stand as written. W2 becomes:
+- the sql/NN table;
+- the sql/16 and sql/23 edits;
+- the writer script (`--dry-run` diff, `--write`);
+- the 98 carded seed rows;
+- tests.
+
+W3 becomes the chain window. The original override-row plan follows for the record.
+
+## The mechanism as first planned: override rows, not a sql/16 rewrite
+
+Earlier I described this step as "a new matview replacing sql/16's decision logic". **I recommended against that**
+(superseded above).
 
 - **The rule can't live in SQL.** v5 and v5.1 run in Python: witness depths, `landing_surfaces.estimate`, class
   precedence, card verdicts. A matview cannot recompute them. It could only join a table of the results.
@@ -121,17 +165,23 @@ The diff reports:
   sql23), including the flag on the 447 placeholder rows kept at their default.
   - Additive DDL: a new `ref.formation_tag_basis` table, plus `CREATE OR REPLACE VIEW curated.wells_enriched` with the
     columns appended (the sql/40 / sql/49 precedent). No drops.
-- **sql/23 override exemption.** This is a sql/23 logic change, which is a DROP CASCADE of `formation_blueox_tvd`, so it
+- **sql/23 override exemption.** (If Q1 = rewrite, this moves INTO the landing window; see the revision.) This is a
+  sql/23 logic change, which is a DROP CASCADE of `formation_blueox_tvd`, so it
   needs a chain-rebuild window. Bundle it with the next quarterly reload. PLAN.md step 3 already retires sql/23's
   role.
 - **Re-run cadence.** Each re-run produces new class-accepted rows for new wells, and new v5.1 changes that need cards.
 
-## Decisions for Michael
+## Decisions
 
-- **Q1 Mechanism.** Override rows through the existing applier (recommended): no drops, apps stay up, about 1 h. Or a
-  sql/16 rewrite: a chain DROP CASCADE, with apps dark for hours, and no gain.
-- **Q2 New wells in accepted classes** (found in W1). Seed them as class-accepted, which is what acceptance meant
-  under convention (a) (recommended). Or hold them for cards.
-- **Q3 Provenance columns.** Later, as above (recommended): the first landing stays write-only to one ref table. Or in
-  the same window.
-- **Q4 Re-run cadence.** With each quarterly Novi reload (recommended). Or on demand.
+- **Q2: DECIDED (Michael, 2026-11-08).** New wells in accepted classes are seeded as class-accepted.
+- **Q3: DECIDED (Michael, 2026-11-08).** Provenance columns come in a later, separate step.
+- **Q1 Mechanism: open.** Recommended: the sql/16 rewrite (revision above). The rule rows' staleness guard and the
+  sql/23 exemption are worth the window. The alternative is override rows: no drops, but ~840 rule outputs pinned as if
+  they were human calls.
+- **Q4 Re-run cadence: open.** The earlier "quarterly" option was wrong: Insights updates daily. Recommended:
+  - a **monthly** run, plus a **mandatory run before every BOX run**;
+  - each write on Michael's go for the first ~3 runs;
+  - then the writer moves into the nightly, once its diffs show only new wells in accepted classes.
+
+  With the staleness guard, the gap between runs is never a wrong pin. New or revised wells simply sit on the vendor
+  tag, which is today's state. New v5.1 sub-bench changes always queue for cards, whatever the cadence.
