@@ -8,6 +8,7 @@ delaware,enverus+novi,WOLFCAMP C,WCC,2233 wells
 delaware,enverus,WOLFCAMP B UPPER,WCB_1,2218 wells; REVIEW: _1=upper
 delaware,novi,THIRD BONE SPRING LIME,BS3_C,2028 wells
 delaware,novi,WOLFCAMP A XY,WCXY,"Novi 2026Q3 new tag; Enverus tags the same PDP wells WOLFCAMP XY (1370/2904 direct api10 joins); user call 2026-09-18; 14683 intel sticks"
+delaware,novi,WOLFCAMP A (XY),WCXY,"Novi Insights spelling of WOLFCAMP A XY (row above; same user call 2026-09-18, re-confirmed 2026-11-09). Coarse-list string in sql/16, so it maps only where Enverus ENVInterval is null (2 Delaware wells on 2026-11-09, e.g. 3001554499); the tag rule (box/tag_precedence) reads it for every well (2,545 producers)."
 delaware,novi,FIRST BONE SPRING LIME,AVA_2,"Novi 2026Q3 new tag; Enverus splits LOWER AVALON ~47% / 1ST BONE SPRING ~37% on direct joins; user call 2026-09-18 -> AVA_2 (Enverus plurality); 6129 intel sticks"
 delaware,novi,BONE SPRING LIME,OTHER,"Novi 2026Q3 new tag; NW-shelf shallow PDP only (avg TVD 4625 ft; Enverus PADDOCK/UPPER AVALON), no planned sticks; user call 2026-09-18"
 delaware,enverus,WOLFCAMP XY,WCXY,1992 wells
