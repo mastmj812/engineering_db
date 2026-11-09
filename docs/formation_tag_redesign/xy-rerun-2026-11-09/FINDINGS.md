@@ -17,7 +17,7 @@ to WCXY. The rule maps both vendor strings through the crosswalk. Until now it r
 |---|---|---|---|
 | WCXY | 1,293 | B, both agree | No change. These wells become **WCXY witnesses**: Delaware WCXY sub-bench witnesses go from 500 to 1,793. |
 | WCA_1 / WCA_2 | 953 | C, same unit, different sub-bench | Kept on Enverus's sub-bench (v5 `subbench_vendor`). v5.1 decides only placeholders, so **no step judges WCXY vs WCA_1 by depth on these wells.** |
-| BS3_S / other units | 292 | D, unit conflict | v5 makes 60 depth calls to WCXY: **BS3_S → WCXY, 55 wells** (one class of ≥ 20, so 10 cards), plus 5 wells in classes under 20 (left on today's tag). The rest are unresolved or guarded. |
+| BS3_S / other units | 292 | D, unit conflict | v5 makes 60 depth calls to WCXY on these wells (55 from BS3_S). The class **BS3_S → WCXY (depth)** grows from 12 to **75 wells** across all wells, so it needs 10 cards. The rest are unresolved or guarded. |
 | none | 3 (+4 'O') | A | sql/16 now gives WCXY (the 2 live NULLs are fixed). |
 
 ## The new row also changes wells that don't carry the XY string
@@ -68,7 +68,11 @@ were never applied.
    whatever other same-unit pairs exist. Today they keep Enverus's code. A depth decision for them would be a
    v5.1 extension.
 4. **New cards** if the frozen acceptance is kept as is:
-   - class BS3_S → WCXY: 10 cards, accepted at 7/10;
+   - class BS3_S → WCXY (75 wells): 10 cards, accepted at 7/10;
+   - class BS3_S → WCA_1 by depth crosses 20 wells (19 → 23): 10 cards;
    - HARACZ AMO #009H: 1 card;
    - card 50: a re-card;
    - SQUINTS: a confirmation.
+
+**Correction (same day):** the BS3_S → WCXY class is 75 wells in all (55 of them XY wells), not 55. BS3_S → WCA_1 by
+depth also crosses the 20-well bar. The string-keyed follow-up is `../string-key-dev-2026-11-09/`.

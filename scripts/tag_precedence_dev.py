@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import pandas as pd
@@ -21,13 +22,13 @@ from box import tag_scoreboard as sb
 from scripts.tag_surface_density import wells_frame
 
 
-def build(cache: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
+def build(cache: Path, rule: tp.V5 = tp.RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
     w = wells_frame(cache).assign(api10=lambda x: x["api10"].astype(str))
     w = w.rename(columns={"vendor": "sql16"})
     w["evidence"] = True  # wells_frame keeps clean evidence wells only
     w["sql23_code"] = w["live"].where(w["live_source"] == "tvd_corrected")
     v = pd.read_pickle(cache / "vendors.pkl").assign(api10=lambda x: x["api10"].astype(str))[["api10", "novi_raw", "env_raw", "novi_code", "env_code"]]
-    d, table = tp.assign(w.merge(v, on="api10", how="left"))
+    d, table = tp.assign(w.merge(v, on="api10", how="left"), rule)
     ovr = pd.read_csv(sb.OVERRIDE_SEED, dtype={"api10": str}).set_index("api10")["corrected_code"]
     d["override"] = d["api10"].map(ovr)
     d["final"] = d["override"].where(d["override"].notna(), d["v5"])
@@ -40,9 +41,9 @@ def build(cache: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     return d, table
 
 
-def run(cache: Path, out: Path) -> dict:
+def run(cache: Path, out: Path, rule: tp.V5 = tp.RULE) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    d, table = build(cache)
+    d, table = build(cache, rule)
     d.to_pickle(cache / "producers_v5.pkl")
     table.sort_values(["basin", "decided"], ascending=[True, False]).round(3).to_csv(out / "precedence_table.csv", index=False)
     d["changes"] = d["final"].fillna("~") != d["live"].fillna("~")
@@ -57,7 +58,7 @@ def run(cache: Path, out: Path) -> dict:
     s23 = d[d["live_source"] == "tvd_corrected"]
     s23_t = s23.groupby(["basin", "basis"]).agg(wells=("api10", "size"), keeps_sql23_tag=("changes", lambda c: int((~c).sum()))).reset_index()
     s23_t.to_csv(out / "sql23_corrected_wells.csv", index=False)
-    s = {"rule": tp.rule_record(), "wells": len(d), "churn": churn.reset_index().to_dict("records"),
+    s = {"rule": {**tp.rule_record(), "rule": asdict(rule)}, "wells": len(d), "churn": churn.reset_index().to_dict("records"),
          "basis": d.groupby(["basin", "basis"]).size().unstack(fill_value=0).to_dict("index"),
          "flags": d.groupby(["basin", "flag"]).size().unstack(fill_value=0).to_dict("index"),
          "learned_patterns": int(table["winner"].notna().sum()),
@@ -73,8 +74,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--pattern-key", choices=("unit", "string"), default=tp.RULE.pattern_key)
     a = ap.parse_args(argv)
-    run(a.cache, a.out)
+    run(a.cache, a.out, replace(tp.RULE, pattern_key=a.pattern_key))
     return 0
 
 

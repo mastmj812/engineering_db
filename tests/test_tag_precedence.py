@@ -182,3 +182,33 @@ def test_inverted_subbench_references_withdraw_the_call():
     rows += [("WOLFCAMP A", "WCA_1", None, None, 8_708, 0, 0, "WCA_1")]
     out = ts1.assign(_sb(rows), "tag").iloc[-1]
     assert out["sb_basis"] == "subbench_inverted" and out["sb_code"] == "WCA_1"
+
+
+def test_string_keyed_patterns_do_not_pool_strings_of_one_unit():
+    # Two Novi strings both map to LSSH. Against Enverus JM, depth backs string S1 every time and S2 about half the
+    # time. Pooled by unit, Novi's share is 37/50 = 0.74 < 0.75: no winner. Keyed by string, S1 learns Novi.
+    rows, raw = [], []
+    for k in range(50):
+        cx = 10.0 * k
+        s1 = k < 25
+        z = 8_395 if s1 or k >= 38 else 8_005  # S1: 25 Novi; S2: 13 Enverus (k 25..37) + 12 Novi (k 38..49)
+        block = _ring("JM", 8_000, cx) + _ring("LSSH", 8_400, cx) + [("LSSH", "JM", z, cx, 0)]
+        rows += block
+        raw += [("W", "W")] * (len(block) - 1) + [("S1" if s1 else "S2", "JM-STR")]
+    rows += [("LSSH", "JM", 9_000, 900.0, 0)]  # no control, string S1
+    raw += [("S1", "JM-STR")]
+    d = _w(rows, basin="midland", county="Martin")
+    d["novi_raw"], d["env_raw"] = [a for a, _ in raw], [b for _, b in raw]
+    by_unit, t_unit = tp.assign(d)
+    by_str, t_str = tp.assign(d, tp.V5(pattern_key="string"))
+    assert t_unit.loc[(t_unit["u_novi"] == "LSSH") & (t_unit["u_env"] == "JM"), "winner"].isna().all()
+    assert by_unit.iloc[-1]["basis"] == "unresolved"
+    s = t_str.set_index("novi_raw")
+    assert s.loc["S1", "winner"] == "Novi" and pd.isna(s.loc["S2", "winner"])
+    assert by_str.iloc[-1]["basis"] == "pattern" and by_str.iloc[-1]["v5"] == "LSSH"
+
+
+def test_pattern_key_is_validated():
+    import pytest
+    with pytest.raises(ValueError):
+        tp.pattern_keys(tp.V5(pattern_key="county"))

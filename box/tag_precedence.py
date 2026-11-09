@@ -62,6 +62,10 @@ class V5:
     pattern_share: float = 0.75
     gross_span: int = 2
     other_match_ft: float = 150.0     # a named vendor beats an OTHER call only this close to its witness depth
+    # What a learned pattern is keyed on: "unit" = (basin, Novi unit, Enverus unit), as frozen in v5; "string" = (basin,
+    # Novi string, Enverus string). Unit keying pools vendor strings that map to one unit but differ in reliability
+    # (Novi WOLFCAMP A vs WOLFCAMP A (XY) against Enverus 3rd Bone Spring, 2026-11-09).
+    pattern_key: str = "unit"
 
 
 RULE = V5()
@@ -108,10 +112,18 @@ def depth_call(depth: pd.Series, z_novi: pd.Series, z_env: pd.Series, r: V5 = RU
         ["no control", "neither", "Novi", "Enverus"], default="cannot tell"), index=depth.index)
 
 
+def pattern_keys(r: V5 = RULE) -> list[str]:
+    if r.pattern_key == "unit":
+        return ["basin", "u_novi", "u_env"]
+    if r.pattern_key == "string":
+        return ["basin", "novi_raw", "env_raw", "u_novi", "u_env"]
+    raise ValueError(f"pattern_key must be 'unit' or 'string', not {r.pattern_key!r}")
+
+
 def learn_patterns(d: pd.DataFrame, r: V5 = RULE) -> pd.DataFrame:
-    """The precedence table: per (basin, Novi unit, Enverus unit), depth-decided counts and the learned winner."""
+    """The precedence table: per pattern key (r.pattern_key), depth-decided counts and the learned winner."""
     c = d[d["case"] == "D"]
-    g = c.groupby(["basin", "u_novi", "u_env"])["call"].agg(
+    g = c.groupby(pattern_keys(r))["call"].agg(
         conflicts="size", novi=lambda s: int((s == "Novi").sum()), enverus=lambda s: int((s == "Enverus").sum())).reset_index()
     g["decided"] = g["novi"] + g["enverus"]
     g["novi_share"] = np.where(g["decided"] > 0, g["novi"] / g["decided"].where(g["decided"] > 0), np.nan)
@@ -135,7 +147,8 @@ def assign(d: pd.DataFrame, r: V5 = RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
     d = d.join(unit_depths(d, r))
     d["call"] = np.where(d["case"] == "D", depth_call(d["depth_ft"], d["z_novi"], d["z_env"], r), None)
     table = learn_patterns(d, r)
-    win = {(b, a, e): w for b, a, e, w in zip(table["basin"], table["u_novi"], table["u_env"], table["winner"], strict=True)}
+    keys = pattern_keys(r)
+    win = {tuple(k): w for k, w in zip(table[keys].itertuples(index=False, name=None), table["winner"], strict=True)}
     v5, basis, flag, conf = [], [], [], []
     for row in d.itertuples():
         f, cf = None, "low"
@@ -161,8 +174,8 @@ def assign(d: pd.DataFrame, r: V5 = RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
                 code, bs, f = row.sql16, "guard", "protected" if ({row.u_novi, row.u_env} & PROTECTED_UNITS) else "rule_b_pending"
             elif row.call in ("Novi", "Enverus"):
                 code, bs, cf = (row.novi_code if row.call == "Novi" else row.env_code), "depth", "high"
-            elif win.get((row.basin, row.u_novi, row.u_env)) in ("Novi", "Enverus"):
-                w = win[(row.basin, row.u_novi, row.u_env)]
+            elif win.get(tuple(getattr(row, k) for k in keys)) in ("Novi", "Enverus"):
+                w = win[tuple(getattr(row, k) for k in keys)]
                 code, bs = (row.novi_code if w == "Novi" else row.env_code), "pattern"
             else:
                 code, bs, f = row.sql16, "unresolved", "unresolved"
