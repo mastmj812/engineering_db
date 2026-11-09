@@ -54,6 +54,43 @@ here.
 reference that includes itself, it could hide a miss. A cluster of wells that both vendors mis-name together still
 builds its own reference. That limit is shared with v5, and is the reason the guard and the cards exist.
 
+## Rev 1: code-level references (2026-11-08)
+
+Found in the first dev run, before any card or label was seen. No constant changed. The first run is kept as
+`v5_2-dev-2026-11-08-superseded/`.
+
+**What was found.**
+1. **A bug.** A move into the Delaware BS1 unit wrote the unit name "BS1", not the code BS1_S (18 wells).
+2. **A design flaw.** The 59 BS3_S → WCXY / WCA_1 moves (the two largest classes; Loving 30, Eddy 26) were artifacts
+   of a mixed reference. The BS3 unit reference blends lime and sand: of its 3,004 witnesses, 1,356 are lime-vs-sand
+   split wells. A sand well at the base of the 3rd sand therefore read "700 ft off BS3". Where a BS3_S sand reference
+   exists, those wells sit a median 185 ft from it, which is not a gross miss.
+   - Many of them are v5 D-case conflicts (Novi "WOLFCAMP A (XY)" vs Enverus "3RD BONE SPRING SAND") that v5
+     deliberately left unresolved.
+   - In the first run they also pushed Delaware adjacent crossing area **up**: 521 → 545 sq mi.
+
+**The fix.** Every reference is a code reference:
+- a multi-code unit's codes use v5.1's sub-bench witnesses;
+- a single-code unit's code uses v5's unit witnesses.
+
+A unit's distance from a well is its nearest referenced code. If the well lies beyond the unit's outermost referenced
+code, on a side whose end code has no reference, the unit's extent there is unknown, so the well is `gm_no_control`
+and kept. For example, a well below the BS3 lime with no BS3 sand reference can't be called a miss. The order guard
+runs over codes. Unlike v5.1's rev 1, this one can also **add** moves: a well that sits between two sub-bench
+references is nearer the unit blend than to either code. The rev-1 run compares the two move sets.
+
+**Rev 1b (labelling only).** The unknown-extent test applies only when the well is more than 600 ft beyond the unit's
+outermost referenced code. Within 600 ft of a referenced code, the well is not a miss on either side. The first rev-1
+run labelled a well 50 ft above WCA_1 as "no control" whenever WCXY lacked a reference. The move set is identical
+(125 = 125); only kept wells move from `gm_no_control` to `gm_ok`.
+
+**Rev 1 result** (`v5_2r1-dev-2026-11-08/FINDINGS.md`):
+- 125 moves (Delaware 96, Midland 29), every one a unit change, 112 inside the BOX extents.
+- One class of 20 or more wells: Delaware OTHER → AVA_0, 38 wells. The other 87 moves each get a card.
+- Of today's 234 sql/23 wells: 36 stay moved; 24 revert because v5.2 says sql/23 was wrong; 77 revert because they are
+  outside the evidence frame; 97 revert with nothing confirming either way.
+- Delaware non-adjacent crossing area: 166 → 146 sq mi.
+
 ## sql/23 retirement (part of this proposal)
 
 - **Inside the evidence frame:** every well sql/23 corrects today is re-decided by v5 (its own depth call or an accepted

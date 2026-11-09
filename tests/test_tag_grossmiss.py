@@ -14,6 +14,8 @@ BS3 = ("THIRD BONE SPRING", "BS3_S", "3RD BONE SPRING SAND", "BS3_S")
 WCA1 = ("WOLFCAMP A", "WCA_1", "WOLFCAMP A UPPER", "WCA_1")
 WCA2 = ("WOLFCAMP A", "WCA_1", "WOLFCAMP A LOWER", "WCA_2")
 WDFD = ("WOODFORD", "WDFD", "WOODFORD", "WDFD")
+BS1 = ("FIRST BONE SPRING", "BS1_S", "1ST BONE SPRING SAND", "BS1_S")
+BS2C = ("SECOND BONE SPRING CARBONATE", "BS2_C", "2ND BONE SPRING", "BS2_S")
 
 
 def _ring(v: tuple, z: float, n: int = 6, rad: float = 0.6) -> list:
@@ -69,7 +71,7 @@ def test_inverted_references_withdraw_the_move():
 
 
 def test_protected_units_are_guarded():
-    rows = _ring(WCA1, 10_000) + _ring(WDFD, 11_000) + [(*WCA1, 11_010, 0, 0, "WCA_1")]
+    rows = _ring(WCA1, 10_000) + _ring(WCA2, 10_200) + _ring(WDFD, 11_000) + [(*WCA1, 11_010, 0, 0, "WCA_1")]
     out = gm.assign(_d(rows), "tag").iloc[-1]
     assert out["gm_target"] == "WDFD" and out["gm_basis"] == "gm_guard" and out["gm_code"] == "WCA_1"
 
@@ -91,3 +93,20 @@ def test_other_tag_placed_only_within_150_ft():
 def test_no_own_reference_is_reported_not_moved():
     out = gm.assign(_d(_ring(BS3, 9_500) + [(*BS2, 10_020, 0, 0, "BS2_S")]), "tag").iloc[-1]
     assert out["gm_basis"] == "gm_no_control" and out["gm_code"] == "BS2_S"
+
+
+def test_single_code_unit_writes_its_code_not_the_unit():
+    # rev 1 bug: a move into the Delaware BS1 unit wrote "BS1"; the code is BS1_S
+    rows = _ring(BS1, 8_000) + _ring(BS2C, 8_700) + _ring(BS2, 9_000) + [(*BS2C, 8_020, 0, 0, "BS2_C")]
+    out = gm.assign(_d(rows), "tag").iloc[-1]
+    assert out["gm_basis"] == "gm_move" and out["gm_code"] == "BS1_S" and out["gm_sub"] == "single"
+
+
+def test_own_gap_is_to_the_nearest_sub_bench_and_unknown_past_an_unreferenced_end():
+    # rev 1: a BS3 sand well is judged against the sand, not a lime-heavy unit mixture
+    assert gm.own_gap(11_842, ["BS3_C", "BS3_S"], {"BS3_C": 10_858, "BS3_S": 11_745}) == 97
+    # far below the lime with no sand reference: the unit's base is unknown there, so no miss can be called
+    assert np.isnan(gm.own_gap(11_842, ["BS3_C", "BS3_S"], {"BS3_C": 10_858}))
+    assert np.isnan(gm.own_gap(10_100, ["BS3_C", "BS3_S"], {"BS3_S": 11_000}))  # far above the sand, lime unreferenced
+    assert gm.own_gap(10_950, ["BS3_C", "BS3_S"], {"BS3_S": 11_000}) == 50     # within the miss distance: judged, not a miss
+    assert gm.own_gap(12_000, ["BS3_C", "BS3_S"], {"BS3_S": 11_000}) == 1_000  # deeper than the sand: the base is referenced
