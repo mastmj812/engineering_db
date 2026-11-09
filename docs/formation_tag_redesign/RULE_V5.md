@@ -135,3 +135,36 @@ Pre-check, observed when the cards were built:
 | Midland WCB_1 → WCA_1 (depth) | 3 of 5 |
 | Delaware WCA_2 → WCB_1 (depth) | 2 of 5 |
 | Delaware OTHER → AVA_0 | no read on any card (the OTHER side has no witnesses) |
+
+## Policy v1: string-keyed, frozen learned winners (Michael, 2026-11-09)
+
+**What changed in D2 (the learned precedence).** Two changes were adopted together after the XY crosswalk re-run
+(`xy-rerun-2026-11-09/`) and the string-keyed dev run (`string-key-dev-2026-11-09/`).
+
+1. **Keyed on vendor STRING pairs:** (basin, Novi string, Enverus string), not (basin, Novi unit, Enverus unit).
+   - Unit keying pooled strings that map to one unit but differ in reliability. Against Enverus 3RD BONE SPRING SAND,
+     depth backs Novi `WOLFCAMP A` ~9 in 10 but Novi `WOLFCAMP A (XY)` ~2 in 3. Adding the XY row erased the pooled
+     winner and reversed 20 reviewed decisions.
+   - Thresholds are unchanged: ≥ 75 % share, ≥ 20 decided wells (≥ 5 when the units are two or more apart).
+2. **Winners are FROZEN at review:**
+   - A run applies `box/policy/step1_patterns_v1.csv` (19 winners). The table it learns from the day's data is only a
+     drift report (`tag_precedence.drift`: gained / lost / flipped), for review and never applied.
+   - **Reference depths are evidence** and update every run. **Winners, thresholds and guards are policy** and change
+     only on review, as a new policy version.
+
+**Code.** `V5.pattern_key = "string"` (the default). `assign(d, r, policy)` takes the frozen table, and
+`load_policy()` reads it. `scripts.tag_precedence_dev` applies policy v1 by default; `--policy learn` re-learns it
+(development only) and writes `policy_drift.csv` otherwise.
+
+**Verified.** Step 1 with the frozen v1 table on the XY snapshot reproduces the string-keyed dev run exactly (0 wells
+differ in code, basis or final). The drift report is empty.
+
+**Effect against the reviewed set** (`string-key-dev-2026-11-09/FINDINGS.md`):
+- no reviewed winner flips;
+- 16 accepted tags differ (unit keying with the XY row: 29);
+- four change classes of ≥ 20 wells need cards: BS3_C → BS2_S pattern (100), BS3_S → WCXY depth (75), BS2_C → BS1_S
+  pattern (34), BS3_S → WCA_1 depth (23).
+
+**Naming.** "v5 / v5.1 / v5.2" are the three steps of one rule, run in order, not releases. Going forward: **Step 1
+vendor choice** (this file), **Step 2 sub-bench** (RULE_V5_1.md), **Step 3 depth check** (RULE_V5_2.md), under one rule
+version.

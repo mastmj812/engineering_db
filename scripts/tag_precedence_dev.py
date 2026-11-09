@@ -1,6 +1,7 @@
 """Rule v5 development run (read-only) — docs/formation_tag_redesign/RULE_V5.md.
 
     python -m scripts.tag_precedence_dev --cache <scoreboard cache> --out docs/formation_tag_redesign/v5-dev-<date>
+        [--policy box/policy/step1_patterns_v1.csv | --policy learn] [--pattern-key string|unit]
 
 Reports the learned precedence table, the churn against today's tag, the change classes (what would be carded), the
 guards, and what happens to the sql/23-corrected wells. It computes no labelled-set score and draws no cards.
@@ -22,13 +23,13 @@ from box import tag_scoreboard as sb
 from scripts.tag_surface_density import wells_frame
 
 
-def build(cache: Path, rule: tp.V5 = tp.RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
+def build(cache: Path, rule: tp.V5 = tp.RULE, policy: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
     w = wells_frame(cache).assign(api10=lambda x: x["api10"].astype(str))
     w = w.rename(columns={"vendor": "sql16"})
     w["evidence"] = True  # wells_frame keeps clean evidence wells only
     w["sql23_code"] = w["live"].where(w["live_source"] == "tvd_corrected")
     v = pd.read_pickle(cache / "vendors.pkl").assign(api10=lambda x: x["api10"].astype(str))[["api10", "novi_raw", "env_raw", "novi_code", "env_code"]]
-    d, table = tp.assign(w.merge(v, on="api10", how="left"), rule)
+    d, table = tp.assign(w.merge(v, on="api10", how="left"), rule, policy)
     ovr = pd.read_csv(sb.OVERRIDE_SEED, dtype={"api10": str}).set_index("api10")["corrected_code"]
     d["override"] = d["api10"].map(ovr)
     d["final"] = d["override"].where(d["override"].notna(), d["v5"])
@@ -41,9 +42,11 @@ def build(cache: Path, rule: tp.V5 = tp.RULE) -> tuple[pd.DataFrame, pd.DataFram
     return d, table
 
 
-def run(cache: Path, out: Path, rule: tp.V5 = tp.RULE) -> dict:
+def run(cache: Path, out: Path, rule: tp.V5 = tp.RULE, policy: pd.DataFrame | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    d, table = build(cache, rule)
+    d, table = build(cache, rule, policy)
+    if policy is not None:
+        tp.drift(table, policy, rule).round(3).to_csv(out / "policy_drift.csv", index=False)
     d.to_pickle(cache / "producers_v5.pkl")
     table.sort_values(["basin", "decided"], ascending=[True, False]).round(3).to_csv(out / "precedence_table.csv", index=False)
     d["changes"] = d["final"].fillna("~") != d["live"].fillna("~")
@@ -58,7 +61,7 @@ def run(cache: Path, out: Path, rule: tp.V5 = tp.RULE) -> dict:
     s23 = d[d["live_source"] == "tvd_corrected"]
     s23_t = s23.groupby(["basin", "basis"]).agg(wells=("api10", "size"), keeps_sql23_tag=("changes", lambda c: int((~c).sum()))).reset_index()
     s23_t.to_csv(out / "sql23_corrected_wells.csv", index=False)
-    s = {"rule": {**tp.rule_record(), "rule": asdict(rule)}, "wells": len(d), "churn": churn.reset_index().to_dict("records"),
+    s = {"rule": {**tp.rule_record(), "rule": asdict(rule), "policy": "learned (dev)" if policy is None else "frozen"}, "wells": len(d), "churn": churn.reset_index().to_dict("records"),
          "basis": d.groupby(["basin", "basis"]).size().unstack(fill_value=0).to_dict("index"),
          "flags": d.groupby(["basin", "flag"]).size().unstack(fill_value=0).to_dict("index"),
          "learned_patterns": int(table["winner"].notna().sum()),
@@ -75,8 +78,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--pattern-key", choices=("unit", "string"), default=tp.RULE.pattern_key)
+    ap.add_argument("--policy", default=str(tp.POLICY_V1),
+                    help="frozen Step 1 winners (default: policy v1); 'learn' re-learns them from the data (development only)")
     a = ap.parse_args(argv)
-    run(a.cache, a.out, replace(tp.RULE, pattern_key=a.pattern_key))
+    policy = None if a.policy == "learn" else tp.load_policy(Path(a.policy))
+    run(a.cache, a.out, replace(tp.RULE, pattern_key=a.pattern_key), policy)
     return 0
 
 

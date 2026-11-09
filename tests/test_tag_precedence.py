@@ -16,6 +16,7 @@ def _w(rows: list[tuple[str, str, float, float, float]], county: str = "Reeves",
     d["x"], d["y"] = d["x"] * MI, d["y"] * MI
     d["basin"], d["county"], d["evidence"] = basin, county, True
     d["sql16"] = d["novi_code"].where(d["novi_code"].notna(), d["env_code"])
+    d["novi_raw"], d["env_raw"] = d["novi_code"], d["env_code"]  # one string per code unless a test says otherwise
     return d
 
 
@@ -199,8 +200,8 @@ def test_string_keyed_patterns_do_not_pool_strings_of_one_unit():
     raw += [("S1", "JM-STR")]
     d = _w(rows, basin="midland", county="Martin")
     d["novi_raw"], d["env_raw"] = [a for a, _ in raw], [b for _, b in raw]
-    by_unit, t_unit = tp.assign(d)
-    by_str, t_str = tp.assign(d, tp.V5(pattern_key="string"))
+    by_unit, t_unit = tp.assign(d, tp.V5(pattern_key="unit"))
+    by_str, t_str = tp.assign(d)
     assert t_unit.loc[(t_unit["u_novi"] == "LSSH") & (t_unit["u_env"] == "JM"), "winner"].isna().all()
     assert by_unit.iloc[-1]["basis"] == "unresolved"
     s = t_str.set_index("novi_raw")
@@ -212,3 +213,26 @@ def test_pattern_key_is_validated():
     import pytest
     with pytest.raises(ValueError):
         tp.pattern_keys(tp.V5(pattern_key="county"))
+
+
+def test_policy_v1_is_string_keyed_and_complete():
+    p = tp.load_policy()
+    assert tp.RULE.pattern_key == "string" and len(p) == 19
+    assert set(tp.pattern_keys()) <= set(p.columns) and p["winner"].isin(["Novi", "Enverus"]).all()
+    assert not p.duplicated(tp.pattern_keys()).any()
+
+
+def test_frozen_policy_wins_over_the_data_and_drift_reports_it():
+    rows = []
+    for k in range(25):  # the data learns Enverus (JM) for LSSH vs JM ...
+        cx = 10.0 * k
+        rows += _ring("JM", 8_000, cx) + _ring("LSSH", 8_400, cx) + [("LSSH", "JM", 8_005, cx, 0)]
+    rows += [("LSSH", "JM", 8_005, 900.0, 0)]
+    d = _w(rows, basin="midland", county="Martin")
+    frozen = pd.DataFrame([{"basin": "midland", "novi_raw": "LSSH", "env_raw": "JM", "u_novi": "LSSH", "u_env": "JM",
+                            "winner": "Novi"}])  # ... but the frozen policy says Novi
+    out, learned = tp.assign(d, policy=frozen)
+    assert out.iloc[-1]["basis"] == "pattern" and out.iloc[-1]["v5"] == "LSSH"
+    dr = tp.drift(learned, frozen)
+    assert len(dr) == 1 and dr.iloc[0]["change"] == "flipped" and dr.iloc[0]["learned"] == "Enverus"
+    assert len(tp.drift(learned, frozen.iloc[0:0])) == 1 and tp.drift(learned, frozen.iloc[0:0]).iloc[0]["change"] == "gained"

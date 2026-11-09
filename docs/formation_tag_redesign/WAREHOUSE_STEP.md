@@ -188,6 +188,13 @@ The diff reports:
 
 - **Q2: DECIDED (Michael, 2026-11-08).** New wells in accepted classes are seeded as class-accepted.
 - **Q3: DECIDED (Michael, 2026-11-08).** Provenance columns come in a later, separate step.
+- **Q6: DECIDED (Michael, 2026-11-09).** Step 1's learned precedence is keyed on vendor string pairs and FROZEN as
+  policy v1 (`box/policy/step1_patterns_v1.csv`; RULE_V5.md, Policy v1). In the warehouse it lands with the rule as a
+  versioned policy table. The nightly applies it and reports drift; it never re-learns winners.
+- **Crosswalk fix, applied live 2026-11-09:** Novi Insights `WOLFCAMP A (XY)` → WCXY, PR #234.
+- **Still to be redesigned here:** the rule runs inside the nightly, not monthly (Michael, 2026-11-09: the vendor inputs
+  change nightly; "retire sql/23" means replacing its method while keeping a nightly depth check). This plan is revised
+  for that, plus Q5 / Q6, before the warehouse PR.
 - **Q5: DECIDED (Michael, 2026-11-09).** SUSPECT TVD wells go in the rule table as depth exclusions (design above). They
   keep the vendor tag and are never depth evidence while the recorded depth stands.
 - **Q1 Mechanism: open.** Recommended: the sql/16 rewrite (revision above). The rule rows' staleness guard and the

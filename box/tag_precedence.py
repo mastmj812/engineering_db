@@ -33,12 +33,18 @@ manufacture the reference it is judged against (the Magnolia 15 / Calm Breeze 2 
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.spatial import cKDTree
 
 from box import landing_surfaces as ls
+
+# Step 1 policy of record: the learned winners FROZEN at review (Michael, 2026-11-09). A run applies these winners; the
+# table it learns from the day's data is only a drift report (see drift()). Reference depths are evidence and update
+# with every run; winners, thresholds and guards are policy and change only on review.
+POLICY_V1 = Path(__file__).resolve().parent / "policy" / "step1_patterns_v1.csv"
 
 UNIT = {
     "delaware": {"AVA_0": "AVA", "AVA_1": "AVA", "AVA_2": "AVA", "BS1_S": "BS1", "BS2_C": "BS2", "BS2_S": "BS2", "BS3_C": "BS3",
@@ -62,10 +68,11 @@ class V5:
     pattern_share: float = 0.75
     gross_span: int = 2
     other_match_ft: float = 150.0     # a named vendor beats an OTHER call only this close to its witness depth
-    # What a learned pattern is keyed on: "unit" = (basin, Novi unit, Enverus unit), as frozen in v5; "string" = (basin,
-    # Novi string, Enverus string). Unit keying pools vendor strings that map to one unit but differ in reliability
-    # (Novi WOLFCAMP A vs WOLFCAMP A (XY) against Enverus 3rd Bone Spring, 2026-11-09).
-    pattern_key: str = "unit"
+    # What a learned pattern is keyed on: "string" = (basin, Novi string, Enverus string), adopted as Step 1 policy v1
+    # (Michael, 2026-11-09); "unit" = (basin, Novi unit, Enverus unit), as v5 was first frozen. Unit keying pools vendor
+    # strings that map to one unit but differ in reliability (Novi WOLFCAMP A vs WOLFCAMP A (XY) against Enverus 3rd
+    # Bone Spring: one crosswalk row reversed 20 reviewed decisions).
+    pattern_key: str = "string"
 
 
 RULE = V5()
@@ -134,9 +141,30 @@ def learn_patterns(d: pd.DataFrame, r: V5 = RULE) -> pd.DataFrame:
     return g
 
 
-def assign(d: pd.DataFrame, r: V5 = RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """d needs basin, county, x, y, depth_ft, evidence, novi_code, env_code, sql16 (today's pre-override, pre-sql/23
-    code). Returns (per-row frame with v5, basis, flag, confidence, call, case, units, depths) and the precedence table."""
+def load_policy(path: Path = POLICY_V1) -> pd.DataFrame:
+    """A frozen precedence table: one row per learned winner (the pattern-key columns + winner)."""
+    p = pd.read_csv(path)
+    if p["winner"].isna().any() or not p["winner"].isin(["Novi", "Enverus"]).all():
+        raise ValueError(f"{path}: every policy row needs a winner of Novi / Enverus")
+    return p
+
+
+def drift(learned: pd.DataFrame, policy: pd.DataFrame, r: V5 = RULE) -> pd.DataFrame:
+    """Pattern keys whose winner learned from today's data differs from the frozen policy (gained, lost or flipped).
+    Reported for review; a run never applies it."""
+    keys = pattern_keys(r)
+    m = learned.merge(policy[keys + ["winner"]].rename(columns={"winner": "frozen"}), on=keys, how="outer")
+    m["learned"] = m["winner"].where(m["winner"].isin(["Novi", "Enverus"]))
+    out = m[m["learned"].fillna("-") != m["frozen"].fillna("-")].copy()
+    out["change"] = np.select([out["frozen"].isna(), out["learned"].isna()], ["gained", "lost"], default="flipped")
+    return out.drop(columns=["winner"])
+
+
+def assign(d: pd.DataFrame, r: V5 = RULE, policy: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """d needs basin, county, x, y, depth_ft, evidence, novi_code, env_code, novi_raw, env_raw (string keying), sql16
+    (today's pre-override, pre-sql/23 code). Pattern winners come from `policy` (a frozen table, load_policy) when given,
+    else from the table learned here (development only). Returns (per-row frame with v5, basis, flag, confidence, call,
+    case, units, depths) and the table LEARNED from d (the drift report's input)."""
     d = d.copy()
     d["u_novi"] = [unit(b, c) for b, c in zip(d["basin"], d["novi_code"], strict=True)]
     d["u_env"] = [unit(b, c) for b, c in zip(d["basin"], d["env_code"], strict=True)]
@@ -148,7 +176,8 @@ def assign(d: pd.DataFrame, r: V5 = RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
     d["call"] = np.where(d["case"] == "D", depth_call(d["depth_ft"], d["z_novi"], d["z_env"], r), None)
     table = learn_patterns(d, r)
     keys = pattern_keys(r)
-    win = {tuple(k): w for k, w in zip(table[keys].itertuples(index=False, name=None), table["winner"], strict=True)}
+    src = table if policy is None else policy
+    win = {tuple(k): w for k, w in zip(src[keys].itertuples(index=False, name=None), src["winner"], strict=True)}
     v5, basis, flag, conf = [], [], [], []
     for row in d.itertuples():
         f, cf = None, "low"
@@ -193,5 +222,5 @@ def assign(d: pd.DataFrame, r: V5 = RULE) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def rule_record() -> dict:
-    return {"rule": asdict(RULE), "unit": UNIT, "unit_order": UNIT_ORDER, "protected_units": sorted(PROTECTED_UNITS),
+    return {"rule": asdict(RULE), "policy": POLICY_V1.name, "unit": UNIT, "unit_order": UNIT_ORDER, "protected_units": sorted(PROTECTED_UNITS),
             "rule_b_counties": sorted(RULE_B_COUNTIES)}
