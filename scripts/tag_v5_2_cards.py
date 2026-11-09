@@ -84,7 +84,8 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v: pd.Series, refs: 
     v5 = (f"v5 <b>{_esc(v['v5'])}</b> ({_esc(v['basis'])}, {_esc(v['accepted_basis'])}) · "
           if v["v5"] != v["base52"] and v["basis"] != "sql23_kept" else "")
     s23 = f"sql/23 today <b>{_esc(v['sql23_code'])}</b> · " if isinstance(v["sql23_code"], str) else ""
-    why = ("v5.2 gross miss, unplaced: proposal = sql/23's code" if v["section"] == "C"
+    why = (_esc(v["note"]) if isinstance(v.get("note"), str) and v["note"]
+           else "v5.2 gross miss, unplaced: proposal = sql/23's code" if v["section"] == "C"
            else f"v5.2 gross miss: input unit {_fmt(v['gm_own_gap_ft'], 0)} ft off, {_esc(v['proposed'])} {_fmt(v['gm_target_gap_ft'], 0)} ft, "
                 f"lead {_fmt(v['gm_lead_ft'], 0)} ft, sub-bench {_esc(v['gm_sub'])}")
     kv = (
@@ -114,16 +115,29 @@ def select(d: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def run(cache: Path, out: Path) -> Path:
+def select_listed(d: pd.DataFrame, listed: pd.DataFrame, first_card: int) -> pd.DataFrame:
+    """Follow-up cards for named wells (section D): listed has api10, proposed, note."""
+    ch = d[d["api10"].isin(listed["api10"])].copy()
+    missing = set(listed["api10"]) - set(ch["api10"])
+    if missing:
+        raise SystemExit(f"--listed wells not in producers_v5_2.pkl: {sorted(missing)}")
+    li = listed.set_index("api10")
+    ch["proposed"], ch["note"], ch["section"] = ch["api10"].map(li["proposed"]), ch["api10"].map(li["note"]), "D"
+    ch = ch.set_index("api10").loc[listed["api10"]].reset_index()
+    ch["card"] = np.arange(first_card, first_card + len(ch))
+    return ch
+
+
+def run(cache: Path, out: Path, listed: pd.DataFrame | None = None, first_card: int = 1, title: str | None = None) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     sample = out / "cards_sample.csv"
     fc.guard_verdict_file(sample)
     d = pd.read_pickle(cache / "producers_v5_2.pkl")
     cw = gm.code_witness(d)
-    ch = select(d)
+    ch = select(d) if listed is None else select_listed(d, listed, first_card)
     refs = {i: refs_at(d, cw, v) for i, v in ch.iterrows()}
     ch["check"] = [plain_check(v, refs[i], v["proposed"]) for i, v in ch.iterrows()]
-    heads = {"A": "A · class sample", "B": "B · full review", "C": "C · sql/23 wells v5.2 cannot place"}
+    heads = {"A": "A · class sample", "B": "B · full review", "C": "C · sql/23 wells v5.2 cannot place", "D": "D · follow-up"}
     sections: dict[str, list[str]] = {}
     rows = []
     for b in ("delaware", "midland"):
@@ -145,6 +159,15 @@ def run(cache: Path, out: Path) -> Path:
     body = "".join(f"<h2>{_esc(h)} ({len(v)})</h2>" + "".join(c for _, c in sorted(v))
                    for h, v in sorted(sections.items(), key=lambda kv: min(k for k, _ in kv[1])))
     n = ch["section"].value_counts().to_dict()
+    if listed is not None:
+        page = (f"<!doctype html><html><head><meta charset=\"utf-8\"><title>{_esc(title or 'Step 3 follow-up cards')}</title>"
+                f"<style>{fc._CSS}</style></head><body><h1>{_esc(title or 'Step 3 follow-up cards')}</h1>"
+                f"<div class=meta>Built {built}, read-only. {len(rows)} follow-up cards; each decides only its own well and says why it "
+                "is here. <b>Input</b> = the accepted tag without sql/23; the subject is drawn with it. Neighbours are evidence wells by "
+                "their LIVE tags. Mark <code>cards_sample.csv</code>: <b>ACCEPT</b> (the proposed code) / <b>REJECT</b> (keep the INPUT "
+                "code) / <b>a bench code</b>. Nothing is applied.</div>" + body + "</body></html>")
+        (out / "cards.html").write_text(page, encoding="utf-8")
+        return out / "cards.html"
     page = (f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Rule v5.2 cards</title><style>{fc._CSS}</style></head><body>"
             "<h1>Rule v5.2 — gross-miss review cards</h1>"
             f"<div class=meta>Built {built}, read-only. {len(rows)} cards. <b>A</b> ({n.get('A', 0)}): a seeded sample of the one class of "
@@ -165,8 +188,12 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--listed", type=Path, help="CSV of follow-up wells (api10, proposed, note): card only these (section D)")
+    ap.add_argument("--first-card", type=int, default=1)
+    ap.add_argument("--title")
     a = ap.parse_args(argv)
-    print(run(a.cache, a.out))
+    listed = None if a.listed is None else pd.read_csv(a.listed, dtype={"api10": str})
+    print(run(a.cache, a.out, listed, a.first_card, a.title))
     return 0
 
 

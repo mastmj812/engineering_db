@@ -106,10 +106,16 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v: pd.Series, table:
                             section=fc.strike_section(subj, wide))
     pat = ""
     if v["basis"] == "pattern":
-        t = table[(table["basin"] == v["basin"]) & (table["u_novi"] == v["u_novi"]) & (table["u_env"] == v["u_env"])]
+        by_str = "novi_raw" in table.columns
+        m = (table["basin"] == v["basin"]) & ((table["novi_raw"] == v["novi_raw"]) & (table["env_raw"] == v["env_raw"]) if by_str
+                                               else (table["u_novi"] == v["u_novi"]) & (table["u_env"] == v["u_env"]))
+        t = table[m]
         if len(t):
             t = t.iloc[0]
-            pat = f" · learned pattern {_esc(v['u_novi'])} (Novi) vs {_esc(v['u_env'])} (Enverus): Novi backed in {int(t['novi'])} / {int(t['decided'])} decided"
+            who = (f"Novi '{_esc(v['novi_raw'])}' vs Enverus '{_esc(v['env_raw'])}'" if by_str
+                   else f"{_esc(v['u_novi'])} (Novi) vs {_esc(v['u_env'])} (Enverus)")
+            pat = (f" · learned pattern {who}: Novi backed in {t['novi_share']:.0%} of {int(t['decided'])} depth-decided wells"
+                   f" → {_esc(t['winner'])}")
     kv = (
         f"<b>card {int(v['card'])}</b> · class {int(v['class_no'])}: {_esc(v['live'])} → {_esc(v['final'])} ({_esc(v['basis'])}) · "
         f"<b>{_esc(subj['api10'])}</b> {_esc(subj['well_name'])} · {_esc(subj['operator'])} · {_esc(v['county'])} · fp {_esc(subj['first_production_date'])}<br>"
@@ -122,20 +128,27 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v: pd.Series, table:
     return f"<div class=card id=\"w{_esc(subj['api10'])}\"><div class=kv>{kv}</div><img src=\"{png}\"></div>"
 
 
-def run(cache: Path, out: Path, round1: Path | None = None) -> Path:
+def run(cache: Path, out: Path, round1: Path | None = None, only: list[str] | None = None, table_path: Path | None = None,
+        first_card: int = 1, first_class: int = 1, seed: int = SEED, title: str = "Rule v5 — class review cards") -> Path:
     out.mkdir(parents=True, exist_ok=True)
     sample = out / "cards_sample.csv"
     if sample.exists():
         fc.guard_verdict_file(sample)
     d = pd.read_pickle(cache / "producers_v5.pkl")
-    table = pd.read_csv(DOCS / "v5-dev-2026-11-06" / "precedence_table.csv")
+    table = pd.read_csv(table_path or DOCS / "v5-dev-2026-11-06" / "precedence_table.csv")
     excl = set(sb.labelled_set()["api10"]) | previously_carded()
     cls = classes(d)
-    first_card = 1
+    if only:
+        lab = [class_label(*k) for k in zip(cls["basin"], cls["live"], cls["final"], cls["basis"], strict=True)]
+        missing = set(only) - set(lab)
+        if missing:
+            raise SystemExit(f"--only classes not found (>= {MIN_CLASS} wells): {sorted(missing)}")
+        cls = cls[pd.Series(lab, index=cls.index).isin(only)].reset_index(drop=True)
+        cls["class_no"] = np.arange(first_class, first_class + len(cls))
     if round1 is not None:
         cls = round2_classes(cls, round1)
         first_card = int(pd.read_csv(round1 / "cards_sample.csv")["card"].max()) + 1
-    rng = np.random.default_rng(SEED if round1 is None else SEED_ROUND2)
+    rng = np.random.default_rng(seed if round1 is None else SEED_ROUND2)
     picks = []
     for c in cls.itertuples():
         k = c.class_no
@@ -171,10 +184,10 @@ def run(cache: Path, out: Path, round1: Path | None = None) -> Path:
     heads = {c.class_no: f"{c.basin.title()} {c.live} → {c.final} ({c.basis}), {c.wells} wells{rnd}" for c in cls.itertuples()}
     built = dt.datetime.now(tz=dt.UTC).astimezone().isoformat(timespec="seconds")
     body = "".join(f"<h2>Class {k}: {_esc(heads[k])}</h2>" + "".join(v) for k, v in sorted(sections.items()))
-    page = (f"<!doctype html><html><head><meta charset=\"utf-8\"><title>Rule v5 class cards</title><style>{fc._CSS}</style></head><body>"
-            f"<h1>Rule v5 — class review cards{rnd} (vendors propose, depth decides)</h1>"
+    page = (f"<!doctype html><html><head><meta charset=\"utf-8\"><title>{_esc(title)}</title><style>{fc._CSS}</style></head><body>"
+            f"<h1>{_esc(title)}{rnd} (vendors propose, depth decides)</h1>"
             f"<div class=meta>Built {built}, read-only. {len(rows)} cards, "
-            + (f"5 per class for every change class of >= {MIN_CLASS} wells, drawn at random (seed {SEED})" if round1 is None else
+            + (f"5 per class for every change class of >= {MIN_CLASS} wells, drawn at random (seed {seed})" if round1 is None else
                f"round 2: each open class topped up to 10 judged cards, drawn at random (seed {SEED_ROUND2})")
             + " from wells that are not labelled, overridden or on any earlier card. "
             + ("Gate per class: 5/5 accepts, 0-1/5 rejects, otherwise 5 more and 7/10. " if round1 is None else
@@ -191,8 +204,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--round1", type=Path, help="scored round-1 folder (class_decisions.csv): draw round 2")
+    ap.add_argument("--only", nargs="+", help="card only these classes, e.g. 'delaware BS3_C->BS2_S (pattern)'")
+    ap.add_argument("--table", type=Path, help="precedence table shown on pattern cards (default: the v5 dev run's)")
+    ap.add_argument("--first-card", type=int, default=1)
+    ap.add_argument("--first-class", type=int, default=1)
+    ap.add_argument("--seed", type=int, default=SEED)
+    ap.add_argument("--title", default="Rule v5 — class review cards")
     a = ap.parse_args(argv)
-    print(run(a.cache, a.out, a.round1))
+    print(run(a.cache, a.out, a.round1, a.only, a.table, a.first_card, a.first_class, a.seed, a.title))
     return 0
 
 
