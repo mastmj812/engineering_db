@@ -61,7 +61,8 @@ applied.
      new data re-proposes them.
    - Four are survey depths, not `tvd_ft`-only: BUTTER CRUNCH J 4WB, PRESTON-FREEMAN 15F 106H, PUTNAM THE PIO 32 7LS
      and NEAL 34GG 12HM. So "survey" alone doesn't prove a depth is clean.
-   - The proposal is to hold them in the rule table (or a sibling `ref` table) with reason `depth_suspect`.
+   - **DECIDED (Michael, 2026-11-09):** they go in the rule table as depth exclusions. The rows are in
+     `depth_exclusions.csv`; the design is in `../WAREHOUSE_STEP.md`, Q5.
 2. **Card 11, SQUINTS 4 5 FEE #715H (Eddy, Mewbourne): "can't find".**
    - Novi's "WOLFCAMP A (XY)" has no crosswalk mapping here, so the well is untagged today. v5.2 places it at WCA_1:
      67 ft off the WCA_1 reference, with a 519-ft lead.

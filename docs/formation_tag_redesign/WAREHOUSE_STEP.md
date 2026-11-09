@@ -48,6 +48,19 @@ pins about 840 **rule outputs** as if they were **human calls**.
 - **sql/23 exemption in the same window:** `corrected` is FALSE for override and rule rows. `formation_blueox_tvd` is
   in sql/16's CASCADE anyway, so the change costs no extra window. Card 12 (CHILES #004H, a BS3_C call that sql/23
   lifted to BS2_S) is the case it fixes. Every consumer reads `corrected_code` from sql/23, so this is one edit.
+- **Depth exclusions live in the rule table too (Q5, decided 2026-11-09).** These are wells whose depth Michael
+  judged untrustworthy on a card (verdict SUSPECT TVD). The first 12 are in
+  `v5_2-cards-2026-11-08/depth_exclusions.csv`.
+  - **Row shape:** `kind = 'depth_excluded'`, a NULL code, reason `depth_suspect`, and the depth and depth source it
+    was judged on.
+  - **sql/16:** ignores these rows. A NULL code falls through to the crosswalk, so the well keeps its vendor tag.
+  - **The rule run (v5 / v5.1 / v5.2):** reads them and turns the well's depth off as evidence, both as a judged well
+    and as a witness. Otherwise the next run re-proposes them.
+  - **They are human rows:** the writer's whole-table rewrite keeps them and never adds or drops one. A new exclusion
+    comes only from a card verdict.
+  - **Staleness:** an exclusion lapses when the well's live depth or depth source differs from the recorded one, and the
+    well is judged again. This is the same inputs-match guard as the rule rows. A corrected vendor depth isn't
+    excluded forever.
 - **Cost:** a chain-rebuild window. `apply_formation_tag_overrides --rebuild`, then the quarterly tail, then sql/26.
   erebor and narvi are dark for a couple of hours (longest step `intel_pdp_support`). anduin is not affected; it reads
   its own synced copy.
@@ -175,6 +188,8 @@ The diff reports:
 
 - **Q2: DECIDED (Michael, 2026-11-08).** New wells in accepted classes are seeded as class-accepted.
 - **Q3: DECIDED (Michael, 2026-11-08).** Provenance columns come in a later, separate step.
+- **Q5: DECIDED (Michael, 2026-11-09).** SUSPECT TVD wells go in the rule table as depth exclusions (design above). They
+  keep the vendor tag and are never depth evidence while the recorded depth stands.
 - **Q1 Mechanism: open.** Recommended: the sql/16 rewrite (revision above). The rule rows' staleness guard and the
   sql/23 exemption are worth the window. The alternative is override rows: no drops, but ~840 rule outputs pinned as if
   they were human calls.
