@@ -1,0 +1,17 @@
+step,basin,from_code,to_code,basis,decision,agree,judged,class_wells,card_set
+1,delaware,BS2_C,BS1_S,depth,accept,7,10,22,v5-cards-r2-2026-11-06
+1,delaware,BS2_C,BS1_S,pattern,reject,6,10,34,policy-v1-cards-2026-11-09/step1_round2
+1,delaware,BS3_C,BS2_S,depth,accept,5,5,79,v5-cards-r2-2026-11-06
+1,delaware,BS3_C,BS2_S,pattern,accept,7,10,100,policy-v1-cards-2026-11-09/step1_round2
+1,delaware,BS3_S,WCA_1,depth,accept,8,10,23,policy-v1-cards-2026-11-09/step1_round2
+1,delaware,BS3_S,WCA_1,pattern,accept,8,10,30,v5-cards-r2-2026-11-06
+1,delaware,BS3_S,WCXY,depth,accept,8,10,75,policy-v1-cards-2026-11-09/step1_round2
+1,delaware,OTHER,AVA_0,depth_vs_other,accept,5,5,29,v5-cards-r2-2026-11-06
+1,delaware,WCA_2,WCB_1,depth,accept,8,10,29,v5-cards-r2-2026-11-06
+1,delaware,WCB_1,WCA_1,depth,reject,6,10,163,v5-cards-r2-2026-11-06
+1,midland,LSSH,JM,depth,accept,5,5,115,v5-cards-r2-2026-11-06
+1,midland,LSSH,JM,pattern,accept,7,10,82,v5-cards-r2-2026-11-06
+1,midland,WCA_1,WCB_1,depth,accept,5,5,183,v5-cards-r2-2026-11-06
+1,midland,WCA_1,WCB_1,pattern,accept,9,10,296,v5-cards-r2-2026-11-06
+1,midland,WCB_1,WCA_1,depth,accept,7,10,55,v5-cards-r2-2026-11-06
+3,delaware,OTHER,AVA_0,gm_move,accept,10,10,,v5_2-cards-2026-11-08

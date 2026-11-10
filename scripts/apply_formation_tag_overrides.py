@@ -98,6 +98,21 @@ WHERE pd.classid = 'pg_rewrite'::regclass
 """
 
 
+# sql/16 joins these (the nightly tag rule, sql/72): a sql/16 rebuild before sql/72 is applied would fail mid-window.
+SQL72_OBJECTS = ("ref.formation_tag_switch", "curated.formation_tag_rule")
+
+
+def require_sql72(cur=None) -> None:
+    """Refuse to start a rebuild that runs sql/16 while sql/72's tables are absent (checked BEFORE any drop)."""
+    if cur is None:
+        with get_connection() as conn, conn.cursor() as c:
+            return require_sql72(c)
+    missing = [t for t in SQL72_OBJECTS if cur.execute("SELECT to_regclass(%s)", (t,)).fetchone()[0] is None]
+    if missing:
+        raise SystemExit(f"sql/16 reads {', '.join(missing)} (sql/72), which is not applied: run "
+                         "`python -m scripts.apply_formation_tag_rule --structure` (W3) first - nothing was dropped")
+
+
 def split_copy(sql_text: str) -> tuple[str, str]:
     """sql/44 around its one psql \\copy meta-command -> (before, after)."""
     lines = sql_text.splitlines()
@@ -324,6 +339,7 @@ def rebuild() -> None:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
+            require_sql72(cur)
             print(f"[1/3] load {TABLE} ({len(expected)} rows, sql/44)", flush=True)
             with conn.transaction():
                 _load_seed(cur, len(expected))

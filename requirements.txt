@@ -7,3 +7,6 @@ tenacity==9.0.0
 enverus-developer-api>=3.0.0
 pyshp>=2.3            # pure-Python shapefile reader for Novi Intelligence loads (no GDAL)
 snowflake-connector-python>=3.12   # Novi INTEL share (etl/intel_sf); PAT auth needs >=3.10
+scipy>=1.11          # tag rule (box/landing_surfaces, cKDTree) — the nightly tag-rule step (etl/tag_rule)
+shapely>=2.0         # tag rule: BOX-extent flag + midpoints
+pyyaml>=6.0          # tag rule: bench order config (box/tag_scoreboard)

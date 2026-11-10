@@ -42,8 +42,12 @@ def test_codes_in_known_vocabulary():
 
 
 def test_every_row_is_a_real_change_with_provenance():
+    # The tag-rule block (notes "tagrule carded ...", scripts/tag_rule_seeds) may equal `was` (today's warehouse
+    # tag on the card): a card that CONFIRMS a tag is still a human call. It pins the well against the nightly rule
+    # (and keeps a confirmed sql/23 correction once sql/23 retires). Every older row is a real change.
     for r in _rows():
-        assert r["corrected_code"] != r["was"], f"{r['api10']}: override equals prior tag"
+        if not r["note"].startswith("tagrule carded "):
+            assert r["corrected_code"] != r["was"], f"{r['api10']}: override equals prior tag"
         assert r["note"].strip(), f"{r['api10']}: missing ratification note"
 
 
