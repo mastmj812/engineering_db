@@ -1,0 +1,153 @@
+api10,basin,county,well_name,input,final_code,basis,card,in_box_extents,changed
+3002542458,delaware,Lea,ROJO C 7811 JV-P #001H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002542918,delaware,Lea,ROJO D 7811 JV P COM #002H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002554362,delaware,Lea,LACEY SWISS 1 FEDERAL COM #516H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002539327,delaware,Lea,VACA 14 FEDERAL #003,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002539943,delaware,Lea,VACA 14 FEDERAL #006H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002539944,delaware,Lea,VACA 14 FEDERAL COM #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540371,delaware,Lea,BROWN BEAR 36 STATE #001H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002541621,delaware,Lea,VACA DRAW 9418 JV-P #002H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002541624,delaware,Lea,VACA DRAW 9418 JV-P #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540537,delaware,Lea,VACA 24 FEDERAL COM #006H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002539703,delaware,Lea,LOMAS ROJAS 26 STATE COM #004H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540529,delaware,Lea,VACA 24 FEDERAL COM #004H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540053,delaware,Lea,CABALLO 23 FEDERAL #004H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540247,delaware,Lea,CABALLO 23 FEDERAL #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540248,delaware,Lea,CABALLO 23 FEDERAL #006H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002542899,delaware,Lea,ROJO D 7811 JV P COM #003H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002552704,delaware,Lea,STONEWALL 28 FEDERAL COM #405H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002554046,delaware,Lea,STONEWALL 28 FEDERAL COM #508H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540536,delaware,Lea,VACA 24 FEDERAL COM #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540927,delaware,Lea,DRAGON 36 STATE #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002539892,delaware,Lea,VACA 14 FEDERAL #004H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540189,delaware,Lea,DIAMOND 8 FEDERAL COM #004H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540552,delaware,Lea,DIAMOND 8 FEDERAL COM #005H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002540528,delaware,Lea,VACA 24 FEDERAL COM #002H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002541848,delaware,Lea,RED HILLS 11 25 33 FEDERAL COM #001H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002553429,delaware,Lea,LACEY SWISS 1 FEDERAL COM #303H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002555101,delaware,Lea,LACEY SWISS 1 FEDERAL COM #313H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3002553434,delaware,Lea,LACEY SWISS 1 FEDERAL COM #404H,OTHER,AVA_0,v5_2_class_accepted,,True,True
+3001539308,delaware,Eddy,RDX 17 FEDERAL COM #006H,OTHER,AVA_0,v5_2_carded_accept,1,True,True
+3002540052,delaware,Lea,CABALLO 23 FEDERAL #003H,OTHER,AVA_0,v5_2_carded_accept,2,True,True
+3002540124,delaware,Lea,SALADO DRAW 10 FEDERAL COM #001H,OTHER,AVA_0,v5_2_carded_accept,3,True,True
+3002540188,delaware,Lea,DIAMOND 8 FEDERAL COM #003H,OTHER,AVA_0,v5_2_carded_accept,4,True,True
+3002540530,delaware,Lea,VACA 24 FEDERAL COM #003H,OTHER,AVA_0,v5_2_carded_accept,5,True,True
+3002542414,delaware,Lea,ROJO 7811 JV-P FEDERAL COM #002H,OTHER,AVA_0,v5_2_carded_accept,6,True,True
+3002542897,delaware,Lea,ROJO B 7811 JV P #001H,OTHER,AVA_0,v5_2_carded_accept,7,True,True
+3002553428,delaware,Lea,LACEY SWISS 1 FEDERAL COM #302H,OTHER,AVA_0,v5_2_carded_accept,8,True,True
+3002554043,delaware,Lea,STONEWALL 28 FEDERAL COM #505H,OTHER,AVA_0,v5_2_carded_accept,9,True,True
+3002554044,delaware,Lea,STONEWALL 28 FEDERAL COM #506H,OTHER,AVA_0,v5_2_carded_accept,10,True,True
+3001554499,delaware,Eddy,SQUINTS 4 5 FEE #715H,,WCA_1,v5_2_carded_accept,11,True,True
+3001537447,delaware,Eddy,COTTON DRAW UNIT #119H,AVA_0,WCB_2,v5_2_carded_accept,12,True,True
+3002553199,delaware,Lea,TWEETY BIRD 8 FEDERAL COM #712H,AVA_1,WCA_1,v5_2_carded_accept,13,True,True
+3002549069,delaware,Lea,MAGNOLIA 15 FEDERAL COM #205H,AVA_1,WCA_2,v5_2_carded_accept,14,True,True
+3002553202,delaware,Lea,TWEETY BIRD 17 FEDERAL COM #201H,AVA_1,WCA_2,v5_2_carded_accept,15,True,True
+3002549068,delaware,Lea,MAGNOLIA 15 FEDERAL COM #204H,AVA_1,WCB_1,v5_2_carded_accept,16,True,True
+3002551222,delaware,Lea,DAUNTLESS 7 FEDERAL #206H,AVA_2,WCB_1,v5_2_carded_accept,17,True,True
+3002555825,delaware,Lea,CALM BREEZE 2 FEDERAL COM #202H,AVA_2,WCB_1,v5_2_carded_accept,18,True,True
+3002555827,delaware,Lea,CALM BREEZE 2 FEDERAL COM #201H,AVA_2,WCB_1,v5_2_carded_accept,19,True,True
+3002548088,delaware,Lea,HAWK 35 FEDERAL #103H,BS1_S,AVA_0,v5_2_carded_accept,20,True,True
+3002555823,delaware,Lea,CALM BREEZE 2 FEDERAL COM #303H,BS1_S,WCA_2,v5_2_carded_accept,21,True,True
+3001533822,delaware,Eddy,HARROUN 15 #017,BS1_S,WCB_2,v5_2_carded_accept,22,True,True
+3001548117,delaware,Eddy,ATLAS 18 STATE FED COM #122H,BS2_S,BS3_S,v5_2_carded_accept,23,True,True
+3002551556,delaware,Lea,RAGIN CAJUN 12 13 FEDERAL COM #019H,BS2_S,WCA_1,v5_2_carded_accept,24,True,True
+4230136928,delaware,Loving,MOOSEHORN 54-1-41-44 G 61H,BS2_S,WCA_1,v5_2_carded_accept,25,True,True
+3001553753,delaware,Eddy,WHISTLE PIG 9 4 FEDERAL COM 21 #002H,BS2_S,WCA_2,v5_2_carded_accept,26,True,True
+3001554428,delaware,Eddy,BONDI 24 FEDERAL COM #123H,BS2_S,WCA_2,v5_2_carded_accept,27,True,True
+3001556565,delaware,Eddy,CORRAL 22 34 FEDERAL COM #105H,BS2_S,WCA_2,v5_2_carded_accept,28,True,True
+3002547729,delaware,Lea,BELL LAKE UNIT SOUTH #222H,BS2_S,WCA_2,v5_2_carded_accept,29,True,True
+3002549229,delaware,Lea,MAGNOLIA 15 FEDERAL COM #404H,BS2_S,WCB_1,v5_2_carded_accept,30,True,True
+3001556261,delaware,Eddy,HOLLYWOOD STAR FEE 17 18 #801H,BS2_S,WCB_2,v5_2_carded_accept,31,True,True
+3002555535,delaware,Lea,STREETCAR 15 FEDERAL #512H,BS2_S,WCB_2,v5_2_carded_accept,32,True,True
+3002555828,delaware,Lea,CALM BREEZE 2 FEDERAL COM #401H,BS2_S,WCB_2,v5_2_carded_accept,33,True,True
+3001553438,delaware,Eddy,POKER LAKE UNIT 30 19 BS #124H,BS3_C,BS2_S,v5_2_carded_accept,34,True,True
+4230135520,delaware,Loving,MAHOGANY 24-13N-56-1 32 325H,BS3_C,BS2_S,v5_2_carded_accept,35,True,True
+4230136424,delaware,Loving,LINDSAY 9-4Q-55-1 32 324H,BS3_C,BS2_S,v5_2_carded_accept,36,True,True
+4230136571,delaware,Loving,CBR 12-1B-56-1 32 321H,BS3_C,BS2_S,v5_2_carded_accept,37,True,True
+4230136685,delaware,Loving,CBR 12-1U-56-1 32 323RD,BS3_C,BS2_S,v5_2_carded_accept,38,True,True
+3002555116,delaware,Lea,LACEY SWISS 1 FEDERAL COM #593H,BS3_S,AVA_0,v5_2_carded_accept,39,True,True
+3001554107,delaware,Eddy,GEMINI 36 35 FEDERAL COM #516H,OTHER,BS2_S,v5_2_carded_accept,40,False,True
+3001555204,delaware,Eddy,CEDAR 32 31 FEDERAL COM #122H,OTHER,BS2_S,v5_2_carded_accept,41,True,True
+3001555205,delaware,Eddy,CEDAR 32 31 FEDERAL COM #123H,OTHER,BS2_S,v5_2_carded_accept,42,True,True
+3001557515,delaware,Eddy,RIVERBEND 14 FEDERAL COM #003H,OTHER,BS2_S,v5_2_carded_accept,43,True,True
+3001557517,delaware,Eddy,RIVERBEND 14 FEDERAL COM #008H,OTHER,BS3_C,v5_2_carded_accept,44,True,True
+3002550408,delaware,Lea,DEERSTALKER FEDERAL COM #601H,OTHER,BS3_S,v5_2_carded_accept,45,True,True
+3002550886,delaware,Lea,TEA OLIVE 25 36 33 FEDERAL COM #128H,OTHER,WCA_1,carded_call,46,True,True
+3002551026,delaware,Lea,CACHE RIVER 29 32 STATE COM #302H,OTHER,BS3_S,v5_2_carded_accept,47,True,True
+4210933440,delaware,Culberson,GALLANT FOX 337 UNIT 6H,OTHER,WCA_1,v5_2_carded_accept,48,True,True
+3001553754,delaware,Eddy,WHISTLE PIG 9 4 FEDERAL COM 21 #003H,OTHER,WCA_1,v5_2_carded_accept,49,True,True
+3002544497,delaware,Lea,SALADO DRAW 9 16 W0BO FEDERAL COM #002H,OTHER,WCA_1,v5_2_carded_accept,50,True,True
+4237140022,delaware,Pecos,STATE LINCOLN 8-1 UNIT 1WA,OTHER,WCA_1,v5_2_carded_accept,51,False,True
+4238939884,delaware,Reeves,MCGARY-TUDOR WEST 4H,OTHER,WCA_1,v5_2_carded_accept,52,True,True
+4238941901,delaware,Reeves,TETON 56-2-35-23 L 17H,OTHER,WCA_1,v5_2_carded_accept,53,True,True
+4247537313,delaware,Ward,SEALY RANCH 5902H,OTHER,WCA_1,v5_2_carded_accept,54,True,True
+4210933439,delaware,Culberson,GALLANT FOX 37 UNIT 5H,OTHER,WCA_2,v5_2_carded_accept,55,True,True
+3001545988,delaware,Eddy,HH SO 8 5 FEDERAL 004 #002H,OTHER,WCA_2,v5_2_carded_accept,56,True,True
+3001557516,delaware,Eddy,RIVERBEND 14 FEDERAL COM #004H,OTHER,WCA_2,v5_2_carded_accept,57,True,True
+3002546247,delaware,Lea,FEZ FEDERAL COM #710H,OTHER,WCA_2,v5_2_carded_accept,58,True,True
+3002553671,delaware,Lea,JOHN CALLAHAN FEDERAL COM #202H,OTHER,WCA_2,v5_2_carded_accept,59,True,True
+4237139585,delaware,Pecos,WHISKEY RIVER 6-8 2H,OTHER,WCA_2,v5_2_carded_accept,60,True,True
+4247537346,delaware,Ward,CATMAN 6263B-34 1H,OTHER,WCA_2,v5_2_carded_accept,61,True,True
+4238941898,delaware,Reeves,TETON 56-2-35-23 I 24H,OTHER,WCB_1,v5_2_carded_accept,62,True,True
+4247537907,delaware,Ward,VENOM 6261C-34 63H,OTHER,WCB_1,v5_2_carded_accept,63,True,True
+4247538086,delaware,Ward,STATE 5913A GG HOUSTON 22H,OTHER,WCB_1,v5_2_carded_accept,64,True,True
+3001542852,delaware,Eddy,WEST LOVING 12 W2EH STATE COM #001H,OTHER,WCB_2,v5_2_carded_accept,65,True,True
+3002550841,delaware,Lea,LOE FEDERAL #803H,OTHER,WCB_2,carded_call,66,True,True
+3002546029,delaware,Lea,QUIJOTE 2 STATE COM #715H,WCA_2,WCB_2,v5_2_carded_accept,67,True,True
+4238937327,delaware,Reeves,BOWFIN STATE 57-1-48 UNIT 2H,WCA_2,WCB_2,v5_2_carded_accept,68,True,True
+4232946400,midland,Midland,RAY-WINKLEMAN C43F 106H,JM,WCA_1,v5_2_carded_accept,69,True,True
+4246141975,midland,Upton,RAB 34D 4HD,JM,WCA_1,v5_2_carded_accept,70,True,True
+4232945434,midland,Midland,STIMSON-NAIL E17R 118H,JM,WCB_1,v5_2_carded_accept,71,True,True
+4231741880,midland,Martin,HALL A6 06LB,JM,WCB_2,v5_2_carded_accept,72,True,True
+4231744278,midland,Martin,VANDENBERG EAST 12-24 UNIT 5LS,LSSH,WCB_1,v5_2_carded_accept,73,True,True
+4232944376,midland,Midland,ALKALINE EARTH I 8LL,LSSH,WCB_1,v5_2_carded_accept,74,True,True
+4231743431,midland,Martin,HSE 320T 2108HN,LSSH,WCB_1,carded_call,75,True,True
+4232945702,midland,Midland,KYLE 2600 UNIT 2 2626SH,LSSH,WCB_1,carded_call,76,True,True
+4232942307,midland,Midland,GWENDOLYN 2646MS,MS,WCA_1,v5_2_carded_accept,77,True,True
+4232945648,midland,Midland,JOHN BRAUN A UNIT 4 2537SH,MS,WCB_1,v5_2_carded_accept,78,True,True
+4231744848,midland,Martin,MABEE B 4-3 2402H,MS,WCB_1,carded_call,79,True,True
+4232934481,midland,Midland,INTERSTATE B 503H,OTHER,WCB_1,v5_2_carded_accept,80,True,True
+4241332871,midland,Schleicher,UNIVERSITY 52-24 5H,OTHER,WCB_1,v5_2_carded_accept,81,False,True
+4241332875,midland,Schleicher,UNIVERSITY 52-24 4H,OTHER,WCB_1,v5_2_carded_accept,82,False,True
+4241332876,midland,Schleicher,UNIVERSITY 52-24 10H,OTHER,WCB_1,v5_2_carded_accept,83,False,True
+4241332877,midland,Schleicher,UNIVERSITY 52-24 12H,OTHER,WCB_1,v5_2_carded_accept,84,False,True
+4241332878,midland,Schleicher,UNIVERSITY 52-24 11H,OTHER,WCB_1,v5_2_carded_accept,85,False,True
+4241332952,midland,Schleicher,UNIVERSITY 52-7 1HC,OTHER,WCB_1,v5_2_carded_accept,86,False,True
+4246134113,midland,Upton,ZINN 9501H,OTHER,WCB_1,v5_2_carded_accept,87,True,True
+4217335544,midland,Glasscock,BARRACUDA 45 6H,OTHER,WCD,v5_2_carded_accept,88,False,True
+4217335735,midland,Glasscock,BALLENGER 7H,OTHER,WCD,v5_2_carded_accept,89,False,True
+4217335740,midland,Glasscock,BALLENGER 3108H,OTHER,WCD,v5_2_carded_accept,90,False,True
+4217336047,midland,Glasscock,GREATWHITE 44 3H,OTHER,WCD,v5_2_carded_accept,91,False,True
+4232945937,midland,Midland,BUTTER CRUNCH J 4WB,WCB_1,WCB_1,depth_excluded,92,True,False
+4200348795,midland,Andrews,HILLTOP 37D 7HN,WCB_2,JM,v5_2_carded_accept,93,True,True
+4231743993,midland,Martin,EPLEY-ROGERS 43D 105H,WCB_2,JM,v5_2_carded_accept,94,True,True
+4246143333,midland,Upton,HANKS 01 E 602HU,WCB_2,LSSH,v5_2_carded_accept,95,True,True
+4217335941,midland,Glasscock,CURRY 15-10 (ALLOC-F) 6NU,WCD,WCA_1,v5_2_carded_accept,96,False,True
+4232945965,midland,Midland,FRANK-SALLY 11K 111H,WCD,WCA_1,v5_2_carded_accept,97,True,True
+3001534444,delaware,Eddy,H BUCK STATE #004H,BS1_S,WCC,sql23_v5_2_carded_accept,98,True,True
+3001537350,delaware,Eddy,WEST SHUGART 31 FEDERAL COM #003,BS2_S,BS2_S,depth_excluded,99,True,False
+3002551447,delaware,Lea,PAKSE 4 SOUTH FEDERAL COM #433H,BS2_S,BS3_S,sql23_v5_2_carded_accept,100,True,True
+3001553640,delaware,Eddy,FULLER 13 12 W2HA FEDERAL COM #001H,BS2_S,WCC,carded_call,101,True,True
+3001553714,delaware,Eddy,FULLER 13 24 W2JO FEDERAL COM #001H,BS2_S,WCC,carded_call,102,True,True
+3001553718,delaware,Eddy,FULLER 13 24 W2IP FEDERAL COM #002H,BS2_S,WCB_2,carded_call,103,True,True
+3001553953,delaware,Eddy,FULLER 13 12 W2HA FEDERAL COM #002H,BS2_S,WCB_2,carded_call,104,True,True
+3001553954,delaware,Eddy,FULLER 13 12 W2GB FEDERAL COM #002H,BS2_S,WCC,carded_call,105,True,True
+3001556386,delaware,Eddy,STEEL GUITAR 35 26 FEDERAL COM #452H,BS2_S,WCC,sql23_v5_2_carded_accept,106,True,True
+3001547299,delaware,Eddy,COTTON DRAW UNIT #601H,BS2_S,WCXY,sql23_v5_2_carded_accept,107,True,True
+4230136577,delaware,Loving,CBR 12-1H-56-1 32 324H,BS3_C,BS2_S,sql23_v5_2_carded_accept,108,True,True
+3002548007,delaware,Lea,ANDERSON FEDERAL COM #558H,BS3_S,BS3_S,depth_excluded,109,True,False
+3002553151,delaware,Lea,SKY DWELLER 14 STATE COM #102H,BS3_S,BS2_C,sql23_v5_2_carded_accept,110,True,True
+4247534459,delaware,Ward,"WARWINK UNIVERSITY ""18-34"" -A- 3H",BS3_S,WCC,carded_call,111,True,True
+4247534460,delaware,Ward,"WARWINK UNIVERSITY ""18-34"" -A- 2H",BS3_S,WCC,carded_call,112,True,True
+4230133915,delaware,Loving,ROCAZOLLER STATE 54-1-12 LOV 7H,WCA_1,WCA_1,depth_excluded,113,True,False
+3001554423,delaware,Eddy,POKER LAKE UNIT 23 DTD FEDERAL COM #178H,WCA_1,WCB_2,sql23_v5_2_carded_accept,114,True,True
+4238934064,delaware,Reeves,BLACK FLAG STATE UNIT 253-254E 5H,WCA_1,WCA_1,depth_excluded,115,True,False
+3001554424,delaware,Eddy,POKER LAKE UNIT 23 DTD FEDERAL COM #179H,WCA_1,WCB_2,carded_call,116,True,True
+3001544401,delaware,Eddy,REMUDA NORTH 30 STATE #122H,WCA_2,WCA_2,depth_excluded,117,True,False
+3001548924,delaware,Eddy,FOREIGNER 33 4 W0IP FEDERAL COM #001H,WCXY,WCXY,depth_excluded,118,True,False
+4232945437,midland,Midland,STIMSON-NAIL E17N 114H,JM,WCA_1,sql23_v5_2_carded_accept,119,True,True
+4200348755,midland,Andrews,PUTNAM THE PIO 32 7LS,LSSH,LSSH,depth_excluded,120,True,False
+4222738913,midland,Howard,MIDLAND 15-10 1WA,WCA_1,WCA_1,depth_excluded,121,True,False
+4246141768,midland,Upton,NEAL 34GG 12HM,WCB_1,WCB_1,depth_excluded,122,True,False
+4223535203,midland,Irion,SUGG STRIP 6H,WCB_1,WCB_1,depth_excluded,123,True,False
+4232945492,midland,Midland,PRESTON-FREEMAN 15F 106H,WCB_2,WCB_2,depth_excluded,124,True,False

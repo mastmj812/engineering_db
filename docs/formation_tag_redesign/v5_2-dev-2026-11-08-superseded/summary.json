@@ -1,0 +1,131 @@
+{
+ "rule": {
+  "v5_2": {
+   "miss_ft": 600.0
+  },
+  "v5": {
+   "r_mi": 2.0,
+   "n_min": 3,
+   "margin_ft": 100.0,
+   "far_ft": 300.0,
+   "pattern_min_n": 20,
+   "pattern_min_n_gross": 5,
+   "pattern_share": 0.75,
+   "gross_span": 2,
+   "other_match_ft": 150.0
+  }
+ },
+ "wells": 56744,
+ "judged": 56202,
+ "gm_basis": {
+  "delaware": {
+   "gm_guard": 64,
+   "gm_move": 177,
+   "gm_no_control": 3119,
+   "gm_no_subbench": 3,
+   "gm_ok": 23511,
+   "gm_other_kept": 1051,
+   "gm_unplaced": 210
+  },
+  "midland": {
+   "gm_guard": 0,
+   "gm_move": 29,
+   "gm_no_control": 2007,
+   "gm_no_subbench": 0,
+   "gm_ok": 25786,
+   "gm_other_kept": 234,
+   "gm_unplaced": 11
+  }
+ },
+ "moves": {
+  "delaware": 177,
+  "midland": 29
+ },
+ "moves_in_extents": {
+  "delaware": 175,
+  "midland": 18
+ },
+ "moves_unit_change": 206,
+ "moves_sub": {
+  "nearest": 128,
+  "depth": 46,
+  "single": 32
+ },
+ "moves_from_other_or_unmapped": 47,
+ "classes_ge_20": 2,
+ "wells_in_classes_ge_20": 59,
+ "sql23_in_frame": {
+  "reverts to sql/16 (gm_unplaced)": 38,
+  "reverts to sql/16 (gm_other_kept)": 34,
+  "v5.2 = sql/23": 33,
+  "reverts to sql/16 (gm_ok)": 22,
+  "reverts to sql/16 (gm_no_control)": 16,
+  "v5.2 other bench": 14
+ },
+ "sql23_outside_frame": {
+  "delaware": {
+   "< 4,000 ft": 20,
+   "permit-round depth": 6,
+   "planned survey": 43
+  },
+  "midland": {
+   "< 4,000 ft": 4,
+   "permit-round depth": 4,
+   "planned survey": 0
+  }
+ },
+ "changes_vs_live": {
+  "delaware": 451,
+  "midland": 763
+ },
+ "crossings": {
+  "live": {
+   "delaware": {
+    "adjacent_shared_sqmi": 16165,
+    "adjacent_crossing_sqmi": 532,
+    "adjacent_crossing_pct": 3.29,
+    "adjacent_merged_sqmi": 772,
+    "nonadjacent_crossing_sqmi": 171
+   },
+   "midland": {
+    "adjacent_shared_sqmi": 13271,
+    "adjacent_crossing_sqmi": 94,
+    "adjacent_crossing_pct": 0.71,
+    "adjacent_merged_sqmi": 238,
+    "nonadjacent_crossing_sqmi": 5
+   }
+  },
+  "base52": {
+   "delaware": {
+    "adjacent_shared_sqmi": 16155,
+    "adjacent_crossing_sqmi": 521,
+    "adjacent_crossing_pct": 3.22,
+    "adjacent_merged_sqmi": 778,
+    "nonadjacent_crossing_sqmi": 166
+   },
+   "midland": {
+    "adjacent_shared_sqmi": 13199,
+    "adjacent_crossing_sqmi": 83,
+    "adjacent_crossing_pct": 0.63,
+    "adjacent_merged_sqmi": 232,
+    "nonadjacent_crossing_sqmi": 5
+   }
+  },
+  "gm_code": {
+   "delaware": {
+    "adjacent_shared_sqmi": 16023,
+    "adjacent_crossing_sqmi": 545,
+    "adjacent_crossing_pct": 3.4,
+    "adjacent_merged_sqmi": 774,
+    "nonadjacent_crossing_sqmi": 136
+   },
+   "midland": {
+    "adjacent_shared_sqmi": 13202,
+    "adjacent_crossing_sqmi": 81,
+    "adjacent_crossing_pct": 0.62,
+    "adjacent_merged_sqmi": 231,
+    "nonadjacent_crossing_sqmi": 5
+   }
+  }
+ }
+}

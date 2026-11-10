@@ -1,0 +1,169 @@
+{
+ "cards": 55,
+ "judged": 54,
+ "agree": 45,
+ "classes": [
+  {
+   "class_no": 1,
+   "class": "midland WCA_1->WCB_1 (pattern)",
+   "class_wells": 296,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 2,
+   "class": "midland WCA_1->WCB_1 (depth)",
+   "class_wells": 183,
+   "cards": 5,
+   "agree": 5,
+   "against": 0,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "accept",
+   "cards_to_add": 0
+  },
+  {
+   "class_no": 3,
+   "class": "delaware WCB_1->WCA_1 (depth)",
+   "class_wells": 163,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 4,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 4,
+   "class": "midland LSSH->JM (depth)",
+   "class_wells": 115,
+   "cards": 5,
+   "agree": 5,
+   "against": 0,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "accept",
+   "cards_to_add": 0
+  },
+  {
+   "class_no": 5,
+   "class": "midland LSSH->JM (pattern)",
+   "class_wells": 82,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 6,
+   "class": "delaware BS3_C->BS2_S (depth)",
+   "class_wells": 79,
+   "cards": 5,
+   "agree": 5,
+   "against": 0,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "accept",
+   "cards_to_add": 0
+  },
+  {
+   "class_no": 7,
+   "class": "midland WCB_1->WCA_1 (depth)",
+   "class_wells": 55,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 8,
+   "class": "delaware BS3_S->WCA_1 (pattern)",
+   "class_wells": 30,
+   "cards": 5,
+   "agree": 3,
+   "against": 1,
+   "holds": 1,
+   "subbench_differs": 0,
+   "judged": 4,
+   "decision": "pending",
+   "cards_to_add": 1
+  },
+  {
+   "class_no": 9,
+   "class": "delaware OTHER->AVA_0 (depth_vs_other)",
+   "class_wells": 29,
+   "cards": 5,
+   "agree": 5,
+   "against": 0,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "accept",
+   "cards_to_add": 0
+  },
+  {
+   "class_no": 10,
+   "class": "delaware WCA_2->WCB_1 (depth)",
+   "class_wells": 29,
+   "cards": 5,
+   "agree": 3,
+   "against": 2,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 11,
+   "class": "delaware BS2_C->BS1_S (depth)",
+   "class_wells": 22,
+   "cards": 5,
+   "agree": 3,
+   "against": 2,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  }
+ ],
+ "precheck_vs_verdict": [
+  {
+   "precheck": "check agrees",
+   "judged": 30,
+   "agree": 27
+  },
+  {
+   "precheck": "check disagrees",
+   "judged": 13,
+   "agree": 9
+  },
+  {
+   "precheck": "no read",
+   "judged": 11,
+   "agree": 9
+  }
+ ],
+ "wells_in_accepted_classes": 406,
+ "wells_in_rejected_classes": 0
+}

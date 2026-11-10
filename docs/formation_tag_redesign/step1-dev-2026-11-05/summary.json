@@ -1,0 +1,118 @@
+{
+ "rule": {
+  "rule": {
+   "fam_radius_mi": 1.5,
+   "fam_min_n": 5,
+   "fam_margin_ft": 100.0,
+   "fam_min_off_ft": 150.0,
+   "fam_min_sep_ft": 150.0,
+   "grid_min_miss_ft": 50.0,
+   "grid_min_share": 0.5,
+   "pos_radius_mi": 1.0,
+   "pos_radius2_mi": 1.5,
+   "pos_min_n": 3,
+   "pos_min_sep_ft": 75.0,
+   "conf_frac": 0.25,
+   "conf_min_ft": 30.0,
+   "passes": 2
+  },
+  "family": {
+   "delaware": {
+    "AVA_0": "AVA",
+    "AVA_1": "AVA",
+    "AVA_2": "AVA",
+    "WCXY": "WCA",
+    "WCA_1": "WCA",
+    "WCA_2": "WCA",
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   },
+   "midland": {
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   }
+  },
+  "protected": [
+   "BRNT",
+   "MISS",
+   "WDFD"
+  ],
+  "interval_codes": {
+   "AVALON1": [
+    "AVA_0",
+    "AVA_1"
+   ],
+   "AVALON2": [
+    "AVA_2"
+   ],
+   "1BSPGS": [
+    "BS1_S"
+   ],
+   "2BSPGC": [
+    "BS2_C"
+   ],
+   "2BSPGS": [
+    "BS2_S"
+   ],
+   "3BSPGC": [
+    "BS3_C"
+   ],
+   "3BSPGS": [
+    "BS3_S"
+   ],
+   "WOLFCAMP_XY": [
+    "WCXY",
+    "WCA_1",
+    "WCA_2"
+   ],
+   "WOLFCAMP_A": [
+    "WCXY",
+    "WCA_1",
+    "WCA_2"
+   ],
+   "WOLFCAMP-B1": [
+    "WCB_1"
+   ],
+   "WOLFCAMP-B2": [
+    "WCB_2",
+    "WCC"
+   ]
+  }
+ },
+ "wells": 60686,
+ "evidence": 56744,
+ "churn": [
+  {
+   "basin": "delaware",
+   "wells": 31821,
+   "moved": 2571,
+   "family_moved": 852,
+   "moved_pct": 8.08,
+   "family_moved_pct": 2.68
+  },
+  {
+   "basin": "midland",
+   "wells": 28865,
+   "moved": 1251,
+   "family_moved": 723,
+   "moved_pct": 4.33,
+   "family_moved_pct": 2.5
+  }
+ ],
+ "guards": {
+  "protected_moves": 0,
+  "lithology_swaps": 0,
+  "xy_crossings_lea_ward": 0
+ },
+ "dev_fold_band_disagree_pct": {
+  "vendor": {
+   "delaware": 9.71,
+   "midland": 6.03
+  },
+  "rule": {
+   "delaware": 5.61,
+   "midland": 3.1
+  }
+ },
+ "dev_fold_wells": 28812
+}

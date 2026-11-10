@@ -1,0 +1,43 @@
+{
+ "cards": 25,
+ "outcomes": {
+  "agree": 24,
+  "call": 1
+ },
+ "by_move": {
+  "BS2_S -> BS2_C": {
+   "agree": 7,
+   "call": 0
+  },
+  "BS3_S -> BS3_C": {
+   "agree": 13,
+   "call": 0
+  },
+  "WCA_1 -> WCA_2": {
+   "agree": 1,
+   "call": 0
+  },
+  "WCA_1 -> WCXY": {
+   "agree": 3,
+   "call": 1
+  }
+ },
+ "by_precheck_agrees": {
+  "False": {
+   "agree": 0,
+   "call": 1
+  },
+  "True": {
+   "agree": 24,
+   "call": 0
+  }
+ },
+ "applied": 25,
+ "comments": [
+  {
+   "card": 12,
+   "api10": "3002549588",
+   "comment": "But live is showing BS2_S rather than BS3_S."
+  }
+ ]
+}

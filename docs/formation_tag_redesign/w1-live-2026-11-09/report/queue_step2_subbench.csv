@@ -1,0 +1,5 @@
+api10,basin,county,well_name,accepted,sb_code,sb_basis,sb_lead_ft,in_box_extents
+3001557423,delaware,Eddy,MEZCAL 10 FEDERAL COM #124H,BS2_S,BS2_C,subbench_depth,314.2275632353685,True
+4230135441,delaware,Loving,PERMIT 76-44 LOV UNIT 4H,WCA_1,WCXY,subbench_depth,190.41592625478006,True
+4230136019,delaware,Loving,SMALL EYED 54-1-36-25 UNIT 15H,WCA_1,WCXY,subbench_depth,130.3746606815621,True
+4230134223,delaware,Loving,KUDU 53-2-6 LOV E UNIT 6H,WCA_1,WCXY,subbench_depth,108.72557572964433,True

@@ -1,0 +1,5 @@
+class_no,class,class_wells,cards,agree,against,holds,subbench_differs,judged,decision,cards_to_add
+12,delaware BS3_C->BS2_S (pattern),100,10,7,3,0,0,10,accept,0
+13,delaware BS3_S->WCXY (depth),75,10,8,2,0,3,10,accept,0
+14,delaware BS2_C->BS1_S (pattern),34,10,6,4,0,0,10,reject,0
+15,delaware BS3_S->WCA_1 (depth),23,10,8,2,0,0,10,accept,0

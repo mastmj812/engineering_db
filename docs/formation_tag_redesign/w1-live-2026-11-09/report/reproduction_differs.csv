@@ -1,0 +1,35 @@
+api10,basin,county,well_name,live,applied,applied_basis,in_box_extents,applied_ref,applied_basis_ref,inputs_moved,novi_raw_moved,env_raw_moved,tvd_ft_moved,lat_tvd_p50_ft_moved,planned_moved,differs,why
+3002541962,delaware,Lea,COACHWHIP 26 FEDERAL #002H,BS3_C,BS2_S,step1_class,True,BS3_C,vendor,False,False,False,False,False,False,True,evidence only (neighbours)
+4246142170,midland,Upton,JUNIPER WEST 3H,WCA_1,WCA_1,vendor,True,WCB_1,step1_class,False,False,False,False,False,False,True,evidence only (neighbours)
+3001540936,delaware,Eddy,POKER LAKE CVX JV BS #018H,BS2_C,BS2_C,vendor,True,BS1_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3001541424,delaware,Eddy,JAMES RANCH UNIT #144H,BS1_S,BS1_S,vendor,True,BS2_C,vendor,True,True,False,True,True,False,True,own inputs moved
+3001541897,delaware,Eddy,SAVAGE 5 EH FEDERAL #001H,AVA_2,AVA_2,vendor,True,BS1_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3001542169,delaware,Eddy,HORNSBY 35 FEDERAL COM #008H,BS2_S,BS2_S,vendor,True,BS2_C,vendor,True,True,False,True,True,False,True,own inputs moved
+3001556591,delaware,Eddy,CLAWHAMMER 33 28 21 FEDERAL COM #336H,BS3_C,BS3_C,vendor,True,BS3_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3001553998,delaware,Eddy,JIM BEAM 25 36 STATE COM #540H,WCC,WCC,vendor,True,OTHER,vendor,True,False,True,False,False,False,True,own inputs moved
+3002540814,delaware,Lea,CONDOR STATE #001H,BS3_C,BS2_S,step1_class,True,BS3_S,vendor,True,True,False,False,True,False,True,own inputs moved
+3002541181,delaware,Lea,GUNNER 8 FEDERAL COM #006H,AVA_1,AVA_1,vendor,True,AVA_0,vendor,True,True,False,True,True,False,True,own inputs moved
+3002541419,delaware,Lea,HAWK 25 FEDERAL #002H,AVA_0,AVA_0,vendor,True,AVA_1,vendor,True,True,False,False,True,False,True,own inputs moved
+3002541696,delaware,Lea,IRONHOUSE 24 STATE COM #004H,BS3_S,BS3_S,vendor,True,BS2_S,step1_class,True,True,False,True,True,False,True,own inputs moved
+3002542212,delaware,Lea,MALLON 27 FEDERAL COM #001H,WCXY,WCXY,vendor,True,BS3_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3002542600,delaware,Lea,CHILES 28 STATE #001Y,BS2_S,BS2_S,vendor,True,BS3_C,vendor,True,True,False,True,True,False,True,own inputs moved
+3002543037,delaware,Lea,FASCINATOR FEE #001H,WCA_1,WCA_1,vendor,True,BS3_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3002540687,delaware,Lea,RED HILLS WEST UNIT #004H,AVA_2,AVA_2,vendor,True,AVA_1,vendor,True,True,False,True,True,False,True,own inputs moved
+3002540861,delaware,Lea,MR 2 STATE COM #004H,AVA_2,AVA_2,vendor,True,AVA_1,vendor,True,True,False,True,True,False,True,own inputs moved
+3002541494,delaware,Lea,HAWK 25 FEDERAL #001H,AVA_0,AVA_0,vendor,True,AVA_1,vendor,True,True,False,True,True,False,True,own inputs moved
+3002541862,delaware,Lea,PERLA VERDE 31 STATE COM #003H,BS3_S,BS3_S,vendor,True,BS3_C,vendor,True,True,False,True,True,False,True,own inputs moved
+3002542279,delaware,Lea,SALADO DRAW 18 26 33 FEDERAL #004H,AVA_1,AVA_1,vendor,True,AVA_0,vendor,True,True,False,False,False,False,True,own inputs moved
+3002550336,delaware,Lea,DOLLY PURRTON WC FEDERAL COM #702H,WCA_2,WCA_2,vendor,True,BS3_S,vendor,True,True,False,False,False,False,True,own inputs moved
+3002543517,delaware,Lea,WINDWARD FEDERAL #008H,AVA_1,AVA_1,vendor,True,AVA_2,vendor,True,True,False,True,True,False,True,own inputs moved
+3002544723,delaware,Lea,CANYONLANDS 2 STATE COM #002H,WCA_1,WCA_1,vendor,True,BS3_S,vendor,True,True,False,False,False,False,True,own inputs moved
+3002553023,delaware,Lea,LA ROCA 14 11 B2MD FEDERAL COM #001H,BS2_S,BS2_S,vendor,True,BS3_S,vendor,True,True,False,False,False,False,True,own inputs moved
+3002555436,delaware,Lea,NOEL FEDERAL COM #123H,BS2_S,BS2_S,vendor,True,BS3_S,vendor,True,True,False,False,False,False,True,own inputs moved
+3002547760,delaware,Lea,DESERT ROSE 17 8 FEDERAL COM #012H,BS3_S,BS3_S,vendor,True,WCA_1,vendor,True,True,False,False,False,False,True,own inputs moved
+3002549000,delaware,Lea,ANDERSON FEDERAL COM #556H,BS3_C,BS3_C,vendor,True,BS3_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3002551528,delaware,Lea,SKY DWELLER 14 STATE COM #607H,BS3_S,BS3_S,vendor,True,BS2_S,vendor,True,True,False,True,True,False,True,own inputs moved
+3002551608,delaware,Lea,CORIANDER 1 12 FEDERAL COM #006H,BS3_S,BS3_S,vendor,True,WCA_1,vendor,True,True,False,True,True,False,True,own inputs moved
+3002554864,delaware,Lea,VACA 24 FEDERAL COM #743H,BS2_S,BS2_S,vendor,True,WCB_2,vendor,True,True,False,True,True,False,True,own inputs moved
+3002555437,delaware,Lea,NOEL FEDERAL COM #124H,BS2_S,BS2_S,vendor,True,BS3_S,vendor,True,True,False,False,False,False,True,own inputs moved
+3002555740,delaware,Lea,TWINKLE 26 FEDERAL COM #131H,BS3_S,BS3_S,vendor,True,WCA_1,vendor,True,True,False,False,True,False,True,own inputs moved
+4217336336,midland,Glasscock,SAN SABA SN 37-36 03 103H,OTHER,OTHER,vendor,True,,vendor,True,True,False,False,False,False,True,own inputs moved
+4231740709,midland,Martin,DICKENSON 18-7ESL 3LB,OTHER,OTHER,vendor,True,DEAN,vendor,True,True,False,False,False,False,True,own inputs moved

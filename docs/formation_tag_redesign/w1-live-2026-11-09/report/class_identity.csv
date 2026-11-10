@@ -1,0 +1,100 @@
+api10,basin,county,well_name,live,live_source,pre_sql23,final,basis,label,label_vendor,live_label_accepted,vendor_label_accepted,applied
+3001521126,delaware,Eddy,SANDY FEDERAL #001,WCA_1,tvd_corrected,OTHER,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware OTHER->WCA_1 (sql23_kept),False,False,OTHER
+3001525956,delaware,Eddy,EASTERN SHORE QW FEDERAL COM #002Y,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3001531152,delaware,Eddy,OLD RANCH CANYON 7 FEDERAL #003,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3001532181,delaware,Eddy,LOWE STAPLE AMR FEDERAL COM #002,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3001533625,delaware,Eddy,RIGHTHAND CANYON 35 FEDERAL #005,WCA_2,tvd_corrected,OTHER,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware OTHER->WCA_2 (sql23_kept),False,False,OTHER
+3001537272,delaware,Eddy,HUDSON 1 FEDERAL COM #008H,WCA_2,tvd_corrected,OTHER,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware OTHER->WCA_2 (sql23_kept),False,False,OTHER
+3001535921,delaware,Eddy,DARK CANYON 19 FEDERAL #001,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3001537063,delaware,Eddy,JAMES RANCH UNIT #106H,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3001540793,delaware,Eddy,OGDEN STATE #008H,WCC,tvd_corrected,OTHER,WCC,sql23_kept,delaware WCC->WCC (sql23_kept),delaware OTHER->WCC (sql23_kept),False,False,OTHER
+3001539733,delaware,Eddy,MARTHA AIK FEDERAL #008H,AVA_1,tvd_corrected,OTHER,AVA_1,sql23_kept,delaware AVA_1->AVA_1 (sql23_kept),delaware OTHER->AVA_1 (sql23_kept),False,False,OTHER
+3001540755,delaware,Eddy,AQUILA 22 FEDERAL #002H,BS1_S,tvd_corrected,BS2_S,BS1_S,sql23_kept,delaware BS1_S->BS1_S (sql23_kept),delaware BS2_S->BS1_S (sql23_kept),False,False,BS2_S
+3001540775,delaware,Eddy,LOST TANK 4 FEDERAL #023,WCXY,tvd_corrected,OTHER,WCXY,sql23_kept,delaware WCXY->WCXY (sql23_kept),delaware OTHER->WCXY (sql23_kept),False,False,OTHER
+3001541521,delaware,Eddy,MYOX 32 FEE #002H,AVA_2,tvd_corrected,BS2_S,AVA_2,sql23_kept,delaware AVA_2->AVA_2 (sql23_kept),delaware BS2_S->AVA_2 (sql23_kept),False,False,BS2_S
+3001543291,delaware,Eddy,CAVERNS FEDERAL COM #004H,BS3_C,tvd_corrected,WCA_1,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware WCA_1->BS3_C (sql23_kept),False,False,WCA_1
+3001545749,delaware,Eddy,RUMBLE STATE #004H,BS2_C,tvd_corrected,OTHER,BS2_C,sql23_kept,delaware BS2_C->BS2_C (sql23_kept),delaware OTHER->BS2_C (sql23_kept),False,False,OTHER
+3001544900,delaware,Eddy,POKER LAKE UNIT 18 BD #163H,WCA_1,tvd_corrected,WCC,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware WCC->WCA_1 (sql23_kept),False,False,WCC
+3001547580,delaware,Eddy,ROCK JELLY FEDERAL COM #704H,BS2_S,tvd_corrected,WCA_1,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware WCA_1->BS2_S (sql23_kept),False,False,WCA_1
+3001545579,delaware,Eddy,ROCK SPUR 27 W0BO STATE #004H,WCXY,tvd_corrected,WCC,WCXY,sql23_kept,delaware WCXY->WCXY (sql23_kept),delaware WCC->WCXY (sql23_kept),False,False,WCC
+3001546344,delaware,Eddy,CICADA UNIT #035H,WCA_2,tvd_corrected,WCB_2,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware WCB_2->WCA_2 (sql23_kept),False,False,WCB_2
+3001546378,delaware,Eddy,JAMES RANCH UNIT DI 12 ELKHORN #702H,BS2_S,tvd_corrected,BS3_C,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware BS3_C->BS2_S (sql23_kept),False,False,BS3_C
+3001553770,delaware,Eddy,POKER LAKE UNIT 19 DTD #218H,WCXY,tvd_corrected,WCA_1,WCXY,sql23_kept,delaware WCXY->WCXY (sql23_kept),delaware WCA_1->WCXY (sql23_kept),False,False,WCA_1
+3001553773,delaware,Eddy,POKER LAKE UNIT 19 DTD #411H,WCA_1,tvd_corrected,WCXY,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware WCXY->WCA_1 (sql23_kept),False,False,WCXY
+3001553836,delaware,Eddy,POKER LAKE UNIT 19 DTD #323H,WCXY,tvd_corrected,WCA_1,WCXY,sql23_kept,delaware WCXY->WCXY (sql23_kept),delaware WCA_1->WCXY (sql23_kept),False,False,WCA_1
+3001554219,delaware,Eddy,GEMINI 36 35 FEDERAL COM #513H,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3001547434,delaware,Eddy,CREEDENCE 21 16 W0OB FEDERAL COM #002H,WCC,tvd_corrected,WCA_1,WCB_1,depth,delaware WCC->WCB_1 (depth),delaware WCA_1->WCB_1 (depth),False,False,WCA_1
+3001555952,delaware,Eddy,POKER LAKE UNIT 30 BS #110H,BS2_S,tvd_corrected,BS3_C,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_C->BS2_S (depth),False,True,BS3_C
+3001548504,delaware,Eddy,RIPPLE 32 FEDERAL COM #717H,BS3_C,tvd_corrected,WCXY,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware WCXY->BS3_C (sql23_kept),False,False,WCXY
+3002534945,delaware,Lea,STATE BA #015H,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3002538612,delaware,Lea,LANGLEY GREER COM #003H,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3002541146,delaware,Lea,TAYLOR DRAW 7 FEDERAL #001H,BS1_S,tvd_corrected,BS2_S,BS1_S,sql23_kept,delaware BS1_S->BS1_S (sql23_kept),delaware BS2_S->BS1_S (sql23_kept),False,False,BS2_S
+3001553322,delaware,Eddy,COLD SNACK FEDERAL COM #231H,WCA_1,tvd_corrected,WCC,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware WCC->WCA_1 (sql23_kept),False,False,WCC
+3001553440,delaware,Eddy,POKER LAKE UNIT 30 19 BS #155H,WCA_1,tvd_corrected,WCC,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware WCC->WCA_1 (sql23_kept),False,False,WCC
+3002545844,delaware,Lea,ZEUS STATE #173H,AVA_0,tvd_corrected,AVA_1,AVA_0,sql23_kept,delaware AVA_0->AVA_0 (sql23_kept),delaware AVA_1->AVA_0 (sql23_kept),False,False,AVA_1
+3001554556,delaware,Eddy,CB AMILYN 10 3 FEDERAL COM P13 #401H,WCC,tvd_corrected,WCA_1,WCC,sql23_kept,delaware WCC->WCC (sql23_kept),delaware WCA_1->WCC (sql23_kept),False,False,WCA_1
+3001554561,delaware,Eddy,CB AMILYN 10 3 FEDERAL COM P13 #403H,WCC,tvd_corrected,WCA_1,WCC,sql23_kept,delaware WCC->WCC (sql23_kept),delaware WCA_1->WCC (sql23_kept),False,False,WCA_1
+3002548277,delaware,Lea,MANDELBAUM FEE #132H,WCA_2,tvd_corrected,BS3_S,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware BS3_S->WCA_2 (sql23_kept),False,False,BS3_S
+3001556506,delaware,Eddy,POKER LAKE UNIT 27 BD #509H,BS2_S,tvd_corrected,BS3_C,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_C->BS2_S (depth),False,True,BS3_C
+3002548997,delaware,Lea,ANDERSON FEDERAL COM #553H,BS3_C,tvd_corrected,BS2_S,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware BS2_S->BS3_C (sql23_kept),False,False,BS2_S
+3002503027,delaware,Lea,PRE-ONGARD WELL #002,BS3_C,tvd_corrected,OTHER,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware OTHER->BS3_C (sql23_kept),False,False,OTHER
+3002503097,delaware,Lea,PRE-ONGARD WELL #001,BS2_C,tvd_corrected,BS3_S,BS2_C,sql23_kept,delaware BS2_C->BS2_C (sql23_kept),delaware BS3_S->BS2_C (sql23_kept),False,False,BS3_S
+3002503429,delaware,Lea,PRE-ONGARD WELL #009,BS1_S,tvd_corrected,OTHER,BS1_S,sql23_kept,delaware BS1_S->BS1_S (sql23_kept),delaware OTHER->BS1_S (sql23_kept),False,False,OTHER
+3002505513,delaware,Lea,PRE-ONGARD WELL #001,BS3_C,tvd_corrected,OTHER,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware OTHER->BS3_C (sql23_kept),False,False,OTHER
+3002505936,delaware,Lea,PRE-ONGARD WELL #007,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3002520086,delaware,Lea,NEW MEXICO AE STATE #005,BS2_C,tvd_corrected,BS3_S,BS2_C,sql23_kept,delaware BS2_C->BS2_C (sql23_kept),delaware BS3_S->BS2_C (sql23_kept),False,False,BS3_S
+3002520503,delaware,Lea,NEW MEXICO R STATE NCT 1 #007,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3002520508,delaware,Lea,NEW MEXICO AE STATE #017,BS2_C,tvd_corrected,BS3_S,BS2_C,sql23_kept,delaware BS2_C->BS2_C (sql23_kept),delaware BS3_S->BS2_C (sql23_kept),False,False,BS3_S
+3002520687,delaware,Lea,PRE-ONGARD WELL #001,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3002520773,delaware,Lea,PRE-ONGARD WELL #004,BS3_C,tvd_corrected,OTHER,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware OTHER->BS3_C (sql23_kept),False,False,OTHER
+3002522679,delaware,Lea,PRE-ONGARD WELL #001,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3002526824,delaware,Lea,STATE AP #001,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3002536675,delaware,Lea,V LAUGHLIN #005H,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3002541575,delaware,Lea,MARATHON ROAD 15 PA FEDERAL #001H,AVA_1,tvd_corrected,BS3_S,AVA_1,sql23_kept,delaware AVA_1->AVA_1 (sql23_kept),delaware BS3_S->AVA_1 (sql23_kept),False,False,BS3_S
+3002550158,delaware,Lea,BRIDGE STATE UNIT 29 #505H,BS2_S,tvd_corrected,BS3_S,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware BS3_S->BS2_S (sql23_kept),False,False,BS3_S
+3002550371,delaware,Lea,CARNIVAL FEDERAL COM #304H,BS1_S,tvd_corrected,BS3_S,BS1_S,depth,delaware BS1_S->BS1_S (depth),delaware BS3_S->BS1_S (depth),False,False,BS3_S
+3002543547,delaware,Lea,VAST STATE #026H,AVA_0,tvd_corrected,WCA_2,AVA_0,sql23_kept,delaware AVA_0->AVA_0 (sql23_kept),delaware WCA_2->AVA_0 (sql23_kept),False,False,WCA_2
+3002551684,delaware,Lea,DANJER 22 10 STATE COM #004H,BS2_S,tvd_corrected,OTHER,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware OTHER->BS2_S (sql23_kept),False,False,OTHER
+3002552262,delaware,Lea,PAKSE 3 SOUTH FEDERAL COM #432H,BS3_S,tvd_corrected,BS1_S,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware BS1_S->BS3_S (sql23_kept),False,False,BS1_S
+3002546483,delaware,Lea,WOOL HEAD 20 STATE COM #554H,BS2_S,tvd_corrected,BS3_S,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware BS3_S->BS2_S (sql23_kept),False,False,BS3_S
+3002555690,delaware,Lea,BOND 32 34 FEDERAL COM #205H,BS2_S,tvd_corrected,BS3_S,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_S->BS2_S (depth),False,False,BS3_S
+3002549264,delaware,Lea,BROADSIDE 13 24 FEDERAL COM #025H,BS2_S,tvd_corrected,WCA_2,BS2_S,sql23_kept,delaware BS2_S->BS2_S (sql23_kept),delaware WCA_2->BS2_S (sql23_kept),False,False,WCA_2
+3002549287,delaware,Lea,EIDER 35 FEDERAL #501H,WCA_2,tvd_corrected,BS2_S,WCA_1,depth,delaware WCA_2->WCA_1 (depth),delaware BS2_S->WCA_1 (depth),False,False,BS2_S
+3002550354,delaware,Lea,PINE STRAW 25 36 05 FEDERAL COM #107H,BS3_S,tvd_corrected,OTHER,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware OTHER->BS3_S (sql23_kept),False,False,OTHER
+3002551332,delaware,Lea,DAUNTLESS 7 FEDERAL #103H,WCB_1,tvd_corrected,AVA_1,WCB_1,depth,delaware WCB_1->WCB_1 (depth),delaware AVA_1->WCB_1 (depth),False,False,AVA_1
+3002551776,delaware,Lea,FRODERICK 33 FEDERAL COM #501H,WCA_2,tvd_corrected,BS1_S,WCB_1,depth,delaware WCA_2->WCB_1 (depth),delaware BS1_S->WCB_1 (depth),True,False,WCB_1
+3002552087,delaware,Lea,NORTH WILSON DEEP UNIT #005H,BS1_S,tvd_corrected,OTHER,BS1_S,sql23_kept,delaware BS1_S->BS1_S (sql23_kept),delaware OTHER->BS1_S (sql23_kept),False,False,OTHER
+3002553349,delaware,Lea,MERCILESS 13 FEDERAL COM #101H,WCB_1,tvd_corrected,AVA_1,WCB_1,depth,delaware WCB_1->WCB_1 (depth),delaware AVA_1->WCB_1 (depth),False,False,AVA_1
+3002555688,delaware,Lea,BOND 32 34 FEDERAL COM #201H,BS2_S,tvd_corrected,BS3_S,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_S->BS2_S (depth),False,False,BS3_S
+3002555689,delaware,Lea,BOND 32 34 FEDERAL COM #301H,BS1_S,tvd_corrected,BS3_S,BS1_S,depth,delaware BS1_S->BS1_S (depth),delaware BS3_S->BS1_S (depth),False,False,BS3_S
+3002555721,delaware,Lea,BOND 33 34 FEDERAL COM #207H,BS2_S,tvd_corrected,BS3_S,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_S->BS2_S (depth),False,False,BS3_S
+4200345969,midland,Andrews,UL DIGGER 502H,MS,tvd_corrected,OTHER,MS,sql23_kept,midland MS->MS (sql23_kept),midland OTHER->MS (sql23_kept),False,False,OTHER
+4200348504,midland,Andrews,UNIVERSITY 5-35 N3 H 3MS,LSSH,tvd_corrected,MS,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland MS->LSSH (sql23_kept),False,False,MS
+4210337719,midland,Crane,EDWARDS B 2H,MS,tvd_corrected,LSSH,MS,sql23_kept,midland MS->MS (sql23_kept),midland LSSH->MS (sql23_kept),False,False,LSSH
+4210541359,midland,Crockett,SHANNON ESTATE 01-36 3H,WCA_1,tvd_corrected,WCB_1,WCA_1,sql23_kept,midland WCA_1->WCA_1 (sql23_kept),midland WCB_1->WCA_1 (sql23_kept),False,False,WCB_1
+4203331672,midland,Borden,JO-MILL UNIT LP 2520H,DEAN,tvd_corrected,JM,DEAN,sql23_kept,midland DEAN->DEAN (sql23_kept),midland JM->DEAN (sql23_kept),False,False,JM
+4210932700,delaware,Culberson,GEORGETTE STATE 2H,WCC,tvd_corrected,WCA_2,WCC,sql23_kept,delaware WCC->WCC (sql23_kept),delaware WCA_2->WCC (sql23_kept),False,False,WCA_2
+4210932978,delaware,Culberson,HAY BOWEN 29/32 001 0012WD,WCA_2,tvd_corrected,WCC,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware WCC->WCA_2 (sql23_kept),False,False,WCC
+4210932986,delaware,Culberson,W A STATE 5H,WCC,tvd_corrected,WCA_2,WCC,sql23_kept,delaware WCC->WCC (sql23_kept),delaware WCA_2->WCC (sql23_kept),False,False,WCA_2
+4213544173,midland,Ector,SOCO 1907 B 401H,LSSH,tvd_corrected,OTHER,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland OTHER->LSSH (sql23_kept),False,False,OTHER
+4213544174,midland,Ector,SOCO 1907 C 201H,LSSH,tvd_corrected,OTHER,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland OTHER->LSSH (sql23_kept),False,False,OTHER
+4222739733,midland,Howard,GARDNER UNIT 15-10 3MH,WCA_1,tvd_corrected,MS,WCB_1,depth,midland WCA_1->WCB_1 (depth),midland MS->WCB_1 (depth),True,False,WCB_1
+4223536438,midland,Irion,"HOYT, JOAN CREWS 1CH",WCA_1,tvd_corrected,OTHER,WCA_1,sql23_kept,midland WCA_1->WCA_1 (sql23_kept),midland OTHER->WCA_1 (sql23_kept),False,False,OTHER
+4230135521,delaware,Loving,MAHOGANY 24-13Q-56-1 32 323H,BS2_S,tvd_corrected,BS3_C,BS2_S,depth,delaware BS2_S->BS2_S (depth),delaware BS3_C->BS2_S (depth),False,True,BS3_C
+4231742707,midland,Martin,T Y RANCH WEST 2451JM,LSSH,tvd_corrected,JM,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland JM->LSSH (sql23_kept),False,False,JM
+4231742713,midland,Martin,T Y RANCH WEST 2453JM,LSSH,tvd_corrected,JM,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland JM->LSSH (sql23_kept),False,False,JM
+4231744984,midland,Martin,JOHNSON RANCH WEST A 13-1 4301H,WCB_1,tvd_corrected,WCD,WCB_1,sql23_kept,midland WCB_1->WCB_1 (sql23_kept),midland WCD->WCB_1 (sql23_kept),False,False,WCD
+4231744985,midland,Martin,JOHNSON RANCH WEST B 13-1 2602H,JM,tvd_corrected,WCD,JM,sql23_kept,midland JM->JM (sql23_kept),midland WCD->JM (sql23_kept),False,False,WCD
+4232946206,midland,Midland,ONEAL-ANNIE 15R 18H,WCA_1,tvd_corrected,LSSH,WCA_1,depth,midland WCA_1->WCA_1 (depth),midland LSSH->WCA_1 (depth),False,False,LSSH
+4237139276,delaware,Pecos,PUCKETT TRUSTS C STATE 1H,BS3_C,tvd_corrected,OTHER,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware OTHER->BS3_C (sql23_kept),False,False,OTHER
+4237139298,delaware,Pecos,STATE NEAL LETHCO 3405-142 1H,BS3_S,tvd_corrected,WCA_2,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware WCA_2->BS3_S (sql23_kept),False,False,WCA_2
+4237139397,delaware,Pecos,STATE NEAL LETHCO 'A' 3427-142 1H,BS3_S,tvd_corrected,WCA_1,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware WCA_1->BS3_S (sql23_kept),False,False,WCA_1
+4237139436,delaware,Pecos,STATE NEAL LETHCO 3405-142 2H,BS3_S,tvd_corrected,WCA_1,BS3_S,sql23_kept,delaware BS3_S->BS3_S (sql23_kept),delaware WCA_1->BS3_S (sql23_kept),False,False,WCA_1
+4237139995,delaware,Pecos,MILOW 14 UNIT E001,WCA_2,tvd_corrected,WCA_1,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware WCA_1->WCA_2 (sql23_kept),False,False,WCA_1
+4237140047,delaware,Pecos,OSPREY STATE WEST UNIT 1H,BS3_C,tvd_corrected,OTHER,BS3_C,sql23_kept,delaware BS3_C->BS3_C (sql23_kept),delaware OTHER->BS3_C (sql23_kept),False,False,OTHER
+4238339841,midland,Reagan,UNIVERSITY CENTRAL 0803DH,WCA_1,tvd_corrected,WCB_2,WCA_1,depth,midland WCA_1->WCA_1 (depth),midland WCB_2->WCA_1 (depth),False,False,WCB_2
+4238933058,delaware,Reeves,COTTONMOUTH 58-47 1H,WCA_2,tvd_corrected,WCB_2,WCA_2,sql23_kept,delaware WCA_2->WCA_2 (sql23_kept),delaware WCB_2->WCA_2 (sql23_kept),False,False,WCB_2
+4238934442,delaware,Reeves,JETT RINK STATE 59-25 1H,WCA_1,tvd_corrected,WCB_2,WCA_1,sql23_kept,delaware WCA_1->WCA_1 (sql23_kept),delaware WCB_2->WCA_1 (sql23_kept),False,False,WCB_2
+4238936101,delaware,Reeves,PEDERNALES 293 1H,WCB_2,tvd_corrected,WCA_1,WCB_2,sql23_kept,delaware WCB_2->WCB_2 (sql23_kept),delaware WCA_1->WCB_2 (sql23_kept),False,False,WCA_1
+4246139501,midland,Upton,PEMBROOK X-1 5H,WCA_1,tvd_corrected,WCB_2,WCA_1,depth,midland WCA_1->WCA_1 (depth),midland WCB_2->WCA_1 (depth),False,False,WCB_2
+4246140642,midland,Upton,UNIVERSITY RED 5154B,LSSH,tvd_corrected,WCB_1,LSSH,sql23_kept,midland LSSH->LSSH (sql23_kept),midland WCB_1->LSSH (sql23_kept),False,False,WCB_1

@@ -1,0 +1,93 @@
+{
+ "cards": 124,
+ "outcomes": {
+  "agree": 99,
+  "call": 13,
+  "suspect_depth": 12
+ },
+ "by_section": {
+  "A": {
+   "agree": 10,
+   "call": 0,
+   "suspect_depth": 0
+  },
+  "B": {
+   "agree": 81,
+   "call": 5,
+   "suspect_depth": 1
+  },
+  "C": {
+   "agree": 8,
+   "call": 8,
+   "suspect_depth": 11
+  }
+ },
+ "by_precheck_agrees_AB": {
+  "False": {
+   "agree": 4,
+   "call": 0,
+   "suspect_depth": 0
+  },
+  "True": {
+   "agree": 87,
+   "call": 5,
+   "suspect_depth": 1
+  }
+ },
+ "classes": {
+  "delaware OTHER -> AVA_0": {
+   "cards": 10,
+   "agree": 10,
+   "accepted": true
+  }
+ },
+ "final": {
+  "wells_changed": 140,
+  "by_basis": {
+   "carded_call": {
+    "size": 13,
+    "sum": 13
+   },
+   "depth_excluded": {
+    "size": 12,
+    "sum": 0
+   },
+   "sql23_v5_2_carded_accept": {
+    "size": 8,
+    "sum": 8
+   },
+   "v5_2_carded_accept": {
+    "size": 91,
+    "sum": 91
+   },
+   "v5_2_class_accepted": {
+    "size": 28,
+    "sum": 28
+   }
+  },
+  "by_basin_changed": {
+   "delaware": 111,
+   "midland": 29
+  },
+  "in_box_extents_changed": 127,
+  "depth_excluded": [
+   "4232945937",
+   "3001537350",
+   "3002548007",
+   "4230133915",
+   "4238934064",
+   "3001544401",
+   "3001548924",
+   "4200348755",
+   "4222738913",
+   "4246141768",
+   "4223535203",
+   "4232945492"
+  ],
+  "holds": []
+ },
+ "guard": {
+  "rule_moves_into_or_out_of_protected": 0
+ },
+ "comments": []
+}

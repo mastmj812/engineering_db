@@ -1,0 +1,5 @@
+tier,basin,n,reproduced_live,reproduced_pct_live,reproduced_accepted,reproduced_pct_accepted
+carded,delaware,108,93.0,86.11111111111111,93.0,86.11111111111111
+carded,midland,103,103.0,100.0,103.0,100.0
+class_accepted,midland,227,227.0,100.0,227.0,100.0
+hold,delaware,3,,,,

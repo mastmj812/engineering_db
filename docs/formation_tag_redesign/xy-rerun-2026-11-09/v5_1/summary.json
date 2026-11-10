@@ -1,0 +1,80 @@
+{
+ "wells": 56744,
+ "placeholders": {
+  "delaware": 132,
+  "midland": 466
+ },
+ "placeholders_in_extents": {
+  "delaware": 131,
+  "midland": 443
+ },
+ "sb_basis": {
+  "delaware": {
+   "subbench_default": 105,
+   "subbench_depth": 26,
+   "subbench_inverted": 1
+  },
+  "midland": {
+   "subbench_default": 322,
+   "subbench_depth": 126,
+   "subbench_inverted": 18
+  }
+ },
+ "changes": {
+  "delaware": 21
+ },
+ "changes_in_extents": {
+  "delaware": 21
+ },
+ "unit_changes": 0,
+ "witnesses": {
+  "delaware AVA_0": 253,
+  "delaware AVA_1": 315,
+  "delaware AVA_2": 310,
+  "delaware BS2_C": 447,
+  "delaware BS2_S": 3308,
+  "delaware BS3_C": 1300,
+  "delaware BS3_S": 1648,
+  "delaware WCA_1": 4249,
+  "delaware WCA_2": 3911,
+  "delaware WCB_1": 1057,
+  "delaware WCB_2": 986,
+  "delaware WCXY": 1793,
+  "midland WCB_1": 5824,
+  "midland WCB_2": 2382
+ },
+ "classes_ge_20": 0,
+ "wells_in_classes_ge_20": 0,
+ "crossings_accepted": {
+  "delaware": {
+   "adjacent_shared_sqmi": 16140,
+   "adjacent_crossing_sqmi": 530,
+   "adjacent_crossing_pct": 3.29,
+   "adjacent_merged_sqmi": 779,
+   "nonadjacent_crossing_sqmi": 165
+  },
+  "midland": {
+   "adjacent_shared_sqmi": 13200,
+   "adjacent_crossing_sqmi": 82,
+   "adjacent_crossing_pct": 0.62,
+   "adjacent_merged_sqmi": 232,
+   "nonadjacent_crossing_sqmi": 5
+  }
+ },
+ "crossings_v5_1": {
+  "delaware": {
+   "adjacent_shared_sqmi": 16145,
+   "adjacent_crossing_sqmi": 530,
+   "adjacent_crossing_pct": 3.28,
+   "adjacent_merged_sqmi": 779,
+   "nonadjacent_crossing_sqmi": 166
+  },
+  "midland": {
+   "adjacent_shared_sqmi": 13200,
+   "adjacent_crossing_sqmi": 82,
+   "adjacent_crossing_pct": 0.62,
+   "adjacent_merged_sqmi": 232,
+   "nonadjacent_crossing_sqmi": 5
+  }
+ }
+}

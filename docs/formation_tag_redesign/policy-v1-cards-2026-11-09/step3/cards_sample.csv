@@ -1,0 +1,4 @@
+card,section,basin,api10,well_name,county,live,sql23,input,v5,proposed,check,verdict,verdict_source
+21,D,delaware,3001537153,HARACZ AMO FEDERAL #009H,Eddy,AVA_0,,AVA_0,WCXY,WCXY,"agrees (input unit 2944 ft off; WCXY's unit 6 ft, lead 330 ft)",ACCEPT,
+22,D,delaware,3002544497,SALADO DRAW 9 16 W0BO FEDERAL COM #002H,Lea,OTHER,,OTHER,WCXY,WCXY,"agrees (input is OTHER / unmapped; WCXY's unit 23 ft, lead 638 ft)",ACCEPT,
+23,D,delaware,3001554499,SQUINTS 4 5 FEE #715H,Eddy,,,WCXY,WCXY,WCA_1,"DISAGREES (input unit 140 ft off; WCA_1's unit 140 ft, lead 418 ft)",ACCEPT,

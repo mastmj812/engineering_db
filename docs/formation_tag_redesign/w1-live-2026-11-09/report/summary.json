@@ -1,0 +1,125 @@
+{
+ "reproduction": {
+  "wells_in_both": 56713,
+  "by_why": {
+   "same": 56679,
+   "own inputs moved": 32,
+   "evidence only (neighbours)": 2
+  },
+  "differs_by_basis_pair": [
+   {
+    "applied_basis_ref": "step1_class",
+    "applied_basis": "vendor",
+    "wells": 2
+   },
+   {
+    "applied_basis_ref": "vendor",
+    "applied_basis": "step1_class",
+    "wells": 2
+   },
+   {
+    "applied_basis_ref": "vendor",
+    "applied_basis": "vendor",
+    "wells": 30
+   }
+  ]
+ },
+ "cutover_vs_today": {
+  "wells": 1353,
+  "by_basin": {
+   "midland": 768,
+   "delaware": 585
+  },
+  "in_box_extents": 1285,
+  "by_basis": {
+   "step1_class": 1009,
+   "carded_step1_2": 124,
+   "vendor": 97,
+   "carded_step3": 95,
+   "step3_class": 28
+  },
+  "today_was_sql23_flip": 131
+ },
+ "sql23_flips_today": {
+  "wells_in_frame": 161,
+  "kept_by_rule": 30
+ },
+ "new_wells": {
+  "wells": 195,
+  "by_basin": {
+   "delaware": 105,
+   "midland": 90
+  },
+  "by_applied_basis": {
+   "vendor": 187,
+   "step1_class": 8
+  }
+ },
+ "left_frame": 31,
+ "card_queue": {
+  "step1_classes_ge_20_undecided": [],
+  "step2_uncarded_subbench_changes": 4,
+  "step2_by_class": [
+   {
+    "basin": "delaware",
+    "accepted": "WCA_1",
+    "sb_code": "WCXY",
+    "wells": 3
+   },
+   {
+    "basin": "delaware",
+    "accepted": "BS2_S",
+    "sb_code": "BS2_C",
+    "wells": 1
+   }
+  ],
+  "step3_unapplied_moves": 5,
+  "step3_by_class": [
+   {
+    "basin": "delaware",
+    "base52": "BS2_S",
+    "gm_code": "BS3_C",
+    "wells": 3
+   },
+   {
+    "basin": "delaware",
+    "base52": "OTHER",
+    "gm_code": "WCA_1",
+    "wells": 1
+   },
+   {
+    "basin": "delaware",
+    "base52": "OTHER",
+    "gm_code": "WCXY",
+    "wells": 1
+   }
+  ]
+ },
+ "class_identity": {
+  "wells_where_today_differs_from_vendor_and_rule_moves": 99,
+  "by_live_source": {
+   "tvd_corrected": 99
+  },
+  "accepted_under_today_label": 2,
+  "accepted_under_vendor_label": 3,
+  "accepted_under_both": 0
+ },
+ "human_calls_inputs_moved": {
+  "carded_wells": 281,
+  "inputs_moved": 10,
+  "by_input": {
+   "novi_raw": 3,
+   "env_raw": 0,
+   "tvd_ft": 7,
+   "lat_tvd_p50_ft": 9,
+   "planned": 0
+  }
+ },
+ "policy_drift_rows": 2,
+ "runtime": {
+  "step1_s": 5,
+  "step2_s": 346,
+  "step3_s": 548,
+  "total_s": 899
+ }
+}

@@ -1,0 +1,5 @@
+basin,novi_coarse,wells,decided_pct,novi_pct_of_decided,cannot_tell_pct,neither_pct,no_control_pct,live_right_pct_of_decided
+delaware,False,1540.0,39.5,62.7,9.1,5.9,45.5,64.8
+delaware,True,2273.0,19.8,63.6,15.6,0.9,63.7,39.8
+midland,False,919.0,26.0,50.6,6.0,0.2,67.8,50.6
+midland,True,1182.0,37.8,65.5,24.7,0.0,37.5,40.9

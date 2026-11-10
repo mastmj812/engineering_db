@@ -159,13 +159,16 @@ def sample(cls: pd.DataFrame, n: int = CARDS_PER_CLASS) -> pd.DataFrame:
 ROUND1 = 5  # cards per class in round 1 (sequential, below)
 
 
+AGREE_WORDS = ("agree", "accept")
+
+
 def clear_verdict(text: Any, dest: str | None = None) -> str:
     """A card verdict as the class count reads it: 'agree' / 'reject' / '' (not counted). 'reject...' with a comment is a
     reject; a bare bench code is the reviewer's own destination (agree when it is the proposed one, else reject for the
     class — the well-level call is kept verbatim in the file); any other free text is a hold, never counted."""
     v = "" if text is None or (isinstance(text, float) and np.isnan(text)) else str(text).strip()
     low = v.lower()
-    if low == "agree":
+    if low in AGREE_WORDS:  # 'ACCEPT' is what the policy-v1 cards asked for
         return "agree"
     if low.startswith("reject"):
         return "reject"
@@ -190,7 +193,7 @@ def unknown_bench_codes(texts: Any, known: set[str]) -> list[str]:
     out = []
     for t in texts:
         v = "" if t is None or (isinstance(t, float) and np.isnan(t)) else str(t).strip()
-        if v and v.lower() != "agree" and not v.lower().startswith("reject") and v == v.upper() and " " not in v                 and any(ch.isalpha() for ch in v) and v not in known:
+        if v and v.lower() not in AGREE_WORDS and not v.lower().startswith("reject") and v == v.upper() and " " not in v                 and any(ch.isalpha() for ch in v) and v not in known:
             out.append(v)
     return sorted(set(out))
 

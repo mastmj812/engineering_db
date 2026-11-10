@@ -1,0 +1,78 @@
+{
+ "cards": 20,
+ "judged": 20,
+ "agree": 15,
+ "classes": [
+  {
+   "class_no": 12,
+   "class": "delaware BS3_C->BS2_S (pattern)",
+   "class_wells": 100,
+   "cards": 5,
+   "agree": 3,
+   "against": 2,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 13,
+   "class": "delaware BS3_S->WCXY (depth)",
+   "class_wells": 75,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 1,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 14,
+   "class": "delaware BS2_C->BS1_S (pattern)",
+   "class_wells": 34,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  },
+  {
+   "class_no": 15,
+   "class": "delaware BS3_S->WCA_1 (depth)",
+   "class_wells": 23,
+   "cards": 5,
+   "agree": 4,
+   "against": 1,
+   "holds": 0,
+   "subbench_differs": 0,
+   "judged": 5,
+   "decision": "round 2",
+   "cards_to_add": 5
+  }
+ ],
+ "precheck_vs_verdict": [
+  {
+   "precheck": "check agrees",
+   "judged": 9,
+   "agree": 8
+  },
+  {
+   "precheck": "check disagrees",
+   "judged": 3,
+   "agree": 1
+  },
+  {
+   "precheck": "no read",
+   "judged": 8,
+   "agree": 6
+  }
+ ],
+ "wells_in_accepted_classes": 0,
+ "wells_in_rejected_classes": 0
+}

@@ -1,0 +1,4 @@
+api10,proposed,note
+3001537153,WCXY,"NEW Step 3 move after the XY crosswalk row: input AVA_0 (Enverus UPPER AVALON) is 2,944 ft off its unit; Novi says WOLFCAMP A (XY); the WCA unit is 29 ft away, lead 172 ft, sub-bench nearest (WCXY)"
+3002544497,WCXY,"RE-CARD of v5.2 card 50 (you accepted WCA_1): with the XY row there is now a WCXY reference here, 32 ft away (lead 629 ft, sub-bench nearest), and Enverus itself says WOLFCAMP XY. Write WCA_1 to keep your earlier call"
+3001554499,WCA_1,"CONFIRM your card-11 call: you called WCA_1; since the XY crosswalk row the vendor tag (input) is WCXY (Novi WOLFCAMP A (XY), no Enverus interval) and Step 3 finds it 67 ft from the Wolfcamp A unit. ACCEPT keeps WCA_1, REJECT takes WCXY"

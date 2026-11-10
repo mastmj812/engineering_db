@@ -1,0 +1,145 @@
+{
+ "rule": {
+  "rule": {
+   "r_mi": 2.0,
+   "n_min": 3,
+   "margin_ft": 100.0,
+   "far_ft": 300.0,
+   "pattern_min_n": 20,
+   "pattern_min_n_gross": 5,
+   "pattern_share": 0.75,
+   "gross_span": 2,
+   "other_match_ft": 150.0,
+   "pattern_key": "string"
+  },
+  "policy": "frozen",
+  "unit": {
+   "delaware": {
+    "AVA_0": "AVA",
+    "AVA_1": "AVA",
+    "AVA_2": "AVA",
+    "BS1_S": "BS1",
+    "BS2_C": "BS2",
+    "BS2_S": "BS2",
+    "BS3_C": "BS3",
+    "BS3_S": "BS3",
+    "WCXY": "WCA",
+    "WCA_1": "WCA",
+    "WCA_2": "WCA",
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   },
+   "midland": {
+    "WCB_1": "WCB",
+    "WCB_2": "WCB"
+   }
+  },
+  "unit_order": {
+   "delaware": [
+    "AVA",
+    "BS1",
+    "BS2",
+    "BS3",
+    "WCA",
+    "WCB",
+    "WCC",
+    "WCD",
+    "STRN",
+    "BRNT",
+    "MISS",
+    "WDFD"
+   ],
+   "midland": [
+    "US",
+    "MS",
+    "JM",
+    "LSSH",
+    "DEAN",
+    "WCA_1",
+    "WCB",
+    "WCC",
+    "WCD",
+    "STRN",
+    "BRNT",
+    "MRMC",
+    "MISS",
+    "WDFD"
+   ]
+  },
+  "protected_units": [
+   "BRNT",
+   "MISS",
+   "WDFD"
+  ],
+  "rule_b_counties": [
+   "Lea",
+   "Ward"
+  ]
+ },
+ "wells": 56908,
+ "churn": [
+  {
+   "basin": "delaware",
+   "wells": 28377,
+   "changes": 663,
+   "unit_changes": 656,
+   "changes_pct": 2.336399196532403
+  },
+  {
+   "basin": "midland",
+   "wells": 28531,
+   "changes": 801,
+   "unit_changes": 794,
+   "changes_pct": 2.807472573691774
+  }
+ ],
+ "basis": {
+  "delaware": {
+   "agree": 13363,
+   "depth": 988,
+   "depth_vs_other": 485,
+   "guard": 653,
+   "other_vendor_kept": 947,
+   "pattern": 287,
+   "single_vendor": 36,
+   "sql23_kept": 91,
+   "subbench_vendor": 8680,
+   "unmapped": 531,
+   "unresolved": 2316
+  },
+  "midland": {
+   "agree": 23566,
+   "depth": 693,
+   "depth_vs_other": 32,
+   "guard": 191,
+   "other_vendor_kept": 153,
+   "pattern": 616,
+   "single_vendor": 21,
+   "sql23_kept": 21,
+   "subbench_vendor": 2388,
+   "unmapped": 177,
+   "unresolved": 673
+  }
+ },
+ "flags": {
+  "delaware": {
+   "protected": 218,
+   "rule_b_pending": 436,
+   "unresolved": 2338,
+   "vs_other": 984
+  },
+  "midland": {
+   "protected": 191,
+   "rule_b_pending": 0,
+   "unresolved": 678,
+   "vs_other": 162
+  }
+ },
+ "learned_patterns": 21,
+ "change_classes_ge_20": 14,
+ "wells_in_classes_ge_20": 1267,
+ "sql23_corrected": {
+  "wells": 161,
+  "kept": 141
+ }
+}
