@@ -1,0 +1,1354 @@
+api10,basin,county,well_name,operator,live,live_source,pre_sql23,applied,applied_basis,in_box_extents
+3001540781,delaware,Eddy,PERIDOT 13 STATE #007H,Devon,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3001541230,delaware,Eddy,GOLDEN SPUR 25 FBS #003H,ConocoPhillips,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3001546192,delaware,Eddy,PLATINUM MDP1 34 3 FEDERAL COM #023H,Occidental,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3001556974,delaware,Eddy,HOSS 2 11 FEDERAL COM #458H,Mewbourne,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3002550361,delaware,Lea,HYPERION STATE COM #144H,Jonah Energy,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3002555328,delaware,Lea,MAD ADDER 31 STATE COM #402H,EOG,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3002555834,delaware,Lea,SEINFELD FEDERAL UNIT #614H,SM Energy,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3002555835,delaware,Lea,SEINFELD FEDERAL UNIT #613H,SM Energy,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+4230134971,delaware,Loving,ST JOHN 76 2734 TG 602H,Exxon Mobil,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+4230135813,delaware,Loving,WEBER 26 L601,Lime Rock Resources,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+4230136290,delaware,Loving,SAN QUENTIN 76 2932 TG 601H,Exxon Mobil,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+4238938966,delaware,Reeves,STATE ARMSTRONG 9-4 D 8BS,Blue Arrow Operating,BS2_C,novi,BS2_C,BS1_S,carded_step1_2,True
+3002544356,delaware,Lea,VACA DRAW 20 17 FEDERAL #010H,Devon,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002549588,delaware,Lea,CHILES 28 21 STATE COM #004H,Devon,BS2_S,tvd_corrected,BS3_S,BS3_C,carded_step1_2,True
+3002549942,delaware,Lea,DAGGER STATE COM #518H,Matador,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002546463,delaware,Lea,BLUE KRAIT 23 14 FEDERAL #027H,Devon,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002549185,delaware,Lea,MARGARITA 13 FEDERAL COM #012H,Matador,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002549314,delaware,Lea,VACA DRAW 9418 10 FEDERAL #034H,BTA Oil,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002549844,delaware,Lea,RATTLESNAKE 28 FEDERAL COM #415H,EOG,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3002555175,delaware,Lea,NINA CORTELL FEDERAL COM #148H,Matador,BS2_S,enverus,BS2_S,BS2_C,carded_step1_2,True
+3001541457,delaware,Eddy,BIG EDDY UNIT #256H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001542487,delaware,Eddy,MARQUARDT FEDERAL #016H,Devon,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001542665,delaware,Eddy,FEDERAL 13 COM #010H,Devon,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001546938,delaware,Eddy,BIG EDDY UNIT 30E SKYWALKER #105H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001554808,delaware,Eddy,HEADS CC 9 4 FEDERAL COM #073H,Occidental,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001556135,delaware,Eddy,BIG EDDY UNIT DI 5 WEST 22 20 #003H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3002540142,delaware,Lea,OCELOT 34 FEDERAL COM #001H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3002544270,delaware,Lea,BOBWHITE 12 STATE COM #012H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001555791,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 17 #001H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3002544504,delaware,Lea,CHISTERA 32 STATE #007H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3002552916,delaware,Lea,BELGIAN BLUE 28 21 STATE COM #526H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,carded_step1_2,True
+3001547599,delaware,Eddy,KANGAROO 12 FEDERAL COM #203H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001550191,delaware,Eddy,JAVELINA UNIT #509H,Chevron,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+3001554861,delaware,Eddy,JAMES RANCH UNIT DI 7 SAWTOOTH #801H,Exxon Mobil,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3001555524,delaware,Eddy,POKER LAKE UNIT 22 DTD #402H,Exxon Mobil,BS3_S,novi,BS3_S,WCXY,carded_step1_2,True
+3001556009,delaware,Eddy,PADRON 3 STATE WC UNIT #703H,EOG,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001556017,delaware,Eddy,PADRON 3 STATE WC UNIT #713H,EOG,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001556034,delaware,Eddy,FNR FEDERAL UNIT #038H,Mewbourne,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001554773,delaware,Eddy,JAMES RANCH UNIT DI 7 SAWTOOTH #805H,Exxon Mobil,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3001556006,delaware,Eddy,PADRON 3 STATE WC UNIT #702H,EOG,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001556008,delaware,Eddy,PADRON 3 STATE WC UNIT #701H,EOG,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3001556023,delaware,Eddy,JAMES RANCH UNIT APACHE #138H,Exxon Mobil,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002550117,delaware,Lea,DOS EQUIS 11 14 FEDERAL COM #026H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002550118,delaware,Lea,DOS EQUIS 11 14 FEDERAL COM #027H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002553415,delaware,Lea,LOBO 33 28 FEDERAL COM #568H,Mewbourne,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002555207,delaware,Lea,DOS EQUIS 11 14 FEDERAL COM #303H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002548900,delaware,Lea,DAGGER STATE COM #556H,Matador,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002551426,delaware,Lea,FORGE FEDERAL COM #653H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002551427,delaware,Lea,FORGE FEDERAL COM #654H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002553422,delaware,Lea,LOBO 33 28 FEDERAL COM #564H,Mewbourne,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+3002555209,delaware,Lea,DOS EQUIS 11 14 FEDERAL COM #304H,Devon,BS3_S,enverus,BS3_S,BS3_C,carded_step1_2,True
+4230135446,delaware,Loving,PERMIT 76-44 LOV UNIT 1H,ConocoPhillips,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4230135849,delaware,Loving,PYTHON 54-1-37-48 UNIT 11H,Occidental,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+4230135863,delaware,Loving,PYTHON 54-1-37-48 UNIT 18H,Occidental,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4230133134,delaware,Loving,BONGO 76-43 LOV UNIT 3H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+4230137104,delaware,Loving,RATTLER 54-2-1-12 UNIT 13H,Occidental,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+4230134767,delaware,Loving,SAN SABA 76 2932 112H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+4230135445,delaware,Loving,PERMIT 76-44 LOV UNIT 8H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,carded_step1_2,True
+4230135622,delaware,Loving,KING CANYON STATE 54-1-8-5 B 1 18H,Occidental,BS3_S,novi,BS3_S,WCXY,carded_step1_2,True
+4238934804,delaware,Reeves,EVERGREEN 1 1H,VTX Energy,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4238935150,delaware,Reeves,WAHA P905H,VTX Energy,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4237139858,delaware,Pecos,STATE BIG TEX SOUTH 7673-8 11H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4237140014,delaware,Pecos,STATE BIG TEX SOUTH 7673-8B 81H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4237140074,delaware,Pecos,STATE ELBERT 7-8 UNIT 2WA,Diamondback,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4238937964,delaware,Reeves,BLAZER UNIT 14 3WA,Diamondback,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4238934980,delaware,Reeves,EVERGREEN UNIT 12 P 1H,VTX Energy,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4238936715,delaware,Reeves,STEPHENS A U 18H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4249533577,delaware,Winkler,UNIVERSITY BLK 21 1803H,Exxon Mobil,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4249534255,delaware,Winkler,MULLIGAN UNIT 100 1001H,ConocoPhillips,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+4249534506,delaware,Winkler,UL BALDWIN 352623-21 C 3H,Devon,BS3_S,enverus,BS3_S,WCA_1,carded_step1_2,True
+3002542992,delaware,Lea,RED RAIDER BKS STATE #004H,ConocoPhillips,OTHER,novi,OTHER,AVA_0,carded_step1_2,True
+3002539716,delaware,Lea,RED RAIDER BKS STATE #002H,ConocoPhillips,OTHER,novi,OTHER,AVA_0,carded_step1_2,True
+3002541310,delaware,Lea,DILLON 31 #003H,EOG,OTHER,novi,OTHER,AVA_0,carded_step1_2,True
+3002542946,delaware,Lea,VAST STATE #005H,ConocoPhillips,OTHER,novi,OTHER,AVA_0,carded_step1_2,True
+4230131695,delaware,Loving,SEVENGILLS 55-2-1 3H,Occidental,OTHER,novi,OTHER,AVA_0,carded_step1_2,True
+3001554573,delaware,Eddy,OXBOW 23 23 W1EH FEDERAL COM #001H,Mewbourne,WCA_1,novi,WCA_1,WCA_2,carded_step1_2,True
+3002554419,delaware,Lea,ROBERNE FEDERAL #221H,Matador,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238934772,delaware,Reeves,WHISKEY RIVER 0927B-7 1H,Continental Resources,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238937097,delaware,Reeves,CORSAIR STATE UNIT 2 20H,1920 Energy,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238937099,delaware,Reeves,CORSAIR STATE UNIT 2 22H,1920 Energy,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238937102,delaware,Reeves,VIPER 14N5 25H,VTX Energy,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238938296,delaware,Reeves,PERKINS 2-1S 31H,Permian Resources,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4238938972,delaware,Reeves,HERC STATE 6-15-54-4B 43 433H,Devon,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+4247538801,delaware,Ward,STOCKYARDS STATE B 347 3471H,Jetta,WCA_2,enverus,WCA_2,WCB_1,carded_step1_2,True
+3001548259,delaware,Eddy,DEEP ELEM 4 FEDERAL COM #733H,EOG,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+4210933563,delaware,Culberson,HAY EVELYNN 17/20 002 0023WA,Chevron,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+4210934243,delaware,Culberson,HAY YENGLIK 001 0014WA,Chevron,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+4238934239,delaware,Reeves,BIG PINEY 57-2-41 1H,Occidental,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+4238939990,delaware,Reeves,MAROON BELLS 13-14 UNIT F 6H,Devon,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+4247538749,delaware,Ward,FLYING FORTRESS 98-83 401H,Iron Orchard Operating,WCB_1,enverus,WCB_1,WCA_2,carded_step1_2,True
+3001537153,delaware,Eddy,HARACZ AMO FEDERAL #009H,EOG,AVA_0,enverus,AVA_0,WCXY,carded_step3,True
+3001537447,delaware,Eddy,COTTON DRAW UNIT #119H,Devon,AVA_0,enverus,AVA_0,WCB_2,carded_step3,True
+3002549068,delaware,Lea,MAGNOLIA 15 FEDERAL COM #204H,EOG,AVA_1,enverus,AVA_1,WCB_1,carded_step3,True
+3002549069,delaware,Lea,MAGNOLIA 15 FEDERAL COM #205H,EOG,AVA_1,enverus,AVA_1,WCA_2,carded_step3,True
+3002551222,delaware,Lea,DAUNTLESS 7 FEDERAL #206H,EOG,AVA_2,enverus,AVA_2,WCB_1,carded_step3,True
+3002555825,delaware,Lea,CALM BREEZE 2 FEDERAL COM #202H,EOG,AVA_2,enverus,AVA_2,WCB_1,carded_step3,True
+3002555827,delaware,Lea,CALM BREEZE 2 FEDERAL COM #201H,EOG,AVA_2,enverus,AVA_2,WCB_1,carded_step3,True
+3002548007,delaware,Lea,ANDERSON FEDERAL COM #558H,Matador,BS1_S,tvd_corrected,BS3_S,BS3_S,carded_step3,True
+3002555823,delaware,Lea,CALM BREEZE 2 FEDERAL COM #303H,EOG,BS1_S,enverus,BS1_S,WCA_2,carded_step3,True
+3002549229,delaware,Lea,MAGNOLIA 15 FEDERAL COM #404H,EOG,BS2_S,enverus,BS2_S,WCB_1,carded_step3,True
+3002555828,delaware,Lea,CALM BREEZE 2 FEDERAL COM #401H,EOG,BS2_S,enverus,BS2_S,WCB_2,carded_step3,True
+3001537350,delaware,Eddy,WEST SHUGART 31 FEDERAL COM #003,Devon,BS3_S,tvd_corrected,BS2_S,BS2_S,carded_step3,True
+3001554107,delaware,Eddy,GEMINI 36 35 FEDERAL COM #516H,Mewbourne,BS3_S,tvd_corrected,OTHER,BS2_S,carded_step3,False
+3001555204,delaware,Eddy,CEDAR 32 31 FEDERAL COM #122H,Matador,BS3_S,tvd_corrected,OTHER,BS2_S,carded_step3,True
+3001555205,delaware,Eddy,CEDAR 32 31 FEDERAL COM #123H,Matador,BS3_S,tvd_corrected,OTHER,BS2_S,carded_step3,True
+3002555116,delaware,Lea,LACEY SWISS 1 FEDERAL COM #593H,EOG,BS3_S,novi,BS3_S,AVA_0,carded_step3,True
+3001539308,delaware,Eddy,RDX 17 FEDERAL COM #006H,Devon,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3001542852,delaware,Eddy,WEST LOVING 12 W2EH STATE COM #001H,Mewbourne,OTHER,enverus,OTHER,WCB_2,carded_step3,True
+3001545988,delaware,Eddy,HH SO 8 5 FEDERAL 004 #002H,Chevron,OTHER,enverus,OTHER,WCA_2,carded_step3,True
+3001557517,delaware,Eddy,RIVERBEND 14 FEDERAL COM #008H,Devon,OTHER,enverus,OTHER,BS3_C,carded_step3,True
+3002540052,delaware,Lea,CABALLO 23 FEDERAL #003H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002540124,delaware,Lea,SALADO DRAW 10 FEDERAL COM #001H,Mewbourne,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002540188,delaware,Lea,DIAMOND 8 FEDERAL COM #003H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002542897,delaware,Lea,ROJO B 7811 JV P #001H,BTA Oil,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002544497,delaware,Lea,SALADO DRAW 9 16 W0BO FEDERAL COM #002H,Mewbourne,OTHER,novi,OTHER,WCXY,carded_step3,True
+3001553754,delaware,Eddy,WHISTLE PIG 9 4 FEDERAL COM 21 #003H,Chevron,OTHER,enverus,OTHER,WCA_1,carded_step3,True
+3001557515,delaware,Eddy,RIVERBEND 14 FEDERAL COM #003H,Devon,OTHER,enverus,OTHER,BS2_S,carded_step3,True
+3001557516,delaware,Eddy,RIVERBEND 14 FEDERAL COM #004H,Devon,OTHER,enverus,OTHER,WCA_2,carded_step3,True
+3002540530,delaware,Lea,VACA 24 FEDERAL COM #003H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002542414,delaware,Lea,ROJO 7811 JV-P FEDERAL COM #002H,BTA Oil,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002550408,delaware,Lea,DEERSTALKER FEDERAL COM #601H,ConocoPhillips,OTHER,novi,OTHER,BS3_S,carded_step3,True
+3002550886,delaware,Lea,TEA OLIVE 25 36 33 FEDERAL COM #128H,Matador,OTHER,novi,OTHER,WCA_1,carded_step3,True
+3002553428,delaware,Lea,LACEY SWISS 1 FEDERAL COM #302H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002546247,delaware,Lea,FEZ FEDERAL COM #710H,ConocoPhillips,OTHER,novi,OTHER,WCA_2,carded_step3,True
+3002550841,delaware,Lea,LOE FEDERAL #803H,Devon,OTHER,novi,OTHER,WCB_2,carded_step3,True
+3002551026,delaware,Lea,CACHE RIVER 29 32 STATE COM #302H,V-F Petroleum,OTHER,novi,OTHER,BS3_S,carded_step3,True
+3002553671,delaware,Lea,JOHN CALLAHAN FEDERAL COM #202H,Matador,OTHER,novi,OTHER,WCA_2,carded_step3,True
+3002554043,delaware,Lea,STONEWALL 28 FEDERAL COM #505H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+3002554044,delaware,Lea,STONEWALL 28 FEDERAL COM #506H,EOG,OTHER,novi,OTHER,AVA_0,carded_step3,True
+4210933439,delaware,Culberson,GALLANT FOX 37 UNIT 5H,Devon,OTHER,enverus,OTHER,WCA_2,carded_step3,True
+4210933440,delaware,Culberson,GALLANT FOX 337 UNIT 6H,Devon,OTHER,enverus,OTHER,WCA_1,carded_step3,True
+4230133915,delaware,Loving,ROCAZOLLER STATE 54-1-12 LOV 7H,ConocoPhillips,OTHER,novi,OTHER,WCA_1,carded_step3,True
+4237139585,delaware,Pecos,WHISKEY RIVER 6-8 2H,Continental Resources,OTHER,novi,OTHER,WCA_2,carded_step3,True
+4237140022,delaware,Pecos,STATE LINCOLN 8-1 UNIT 1WA,Diamondback,OTHER,enverus,OTHER,WCA_1,carded_step3,False
+4238939884,delaware,Reeves,MCGARY-TUDOR WEST 4H,Upcurve Energy,OTHER,enverus,OTHER,WCA_1,carded_step3,True
+4238941898,delaware,Reeves,TETON 56-2-35-23 I 24H,Occidental,OTHER,enverus,OTHER,WCB_1,carded_step3,True
+4247537313,delaware,Ward,SEALY RANCH 5902H,Battalion Oil,OTHER,enverus,OTHER,WCA_1,carded_step3,True
+4247537346,delaware,Ward,CATMAN 6263B-34 1H,Continental Resources,OTHER,novi,OTHER,WCA_2,carded_step3,True
+4247537907,delaware,Ward,VENOM 6261C-34 63H,Continental Resources,OTHER,novi,OTHER,WCB_1,carded_step3,True
+4247538086,delaware,Ward,STATE 5913A GG HOUSTON 22H,Continental Resources,OTHER,novi,OTHER,WCB_1,carded_step3,True
+4238941901,delaware,Reeves,TETON 56-2-35-23 L 17H,Occidental,OTHER,enverus,OTHER,WCA_1,carded_step3,True
+3001533822,delaware,Eddy,HARROUN 15 #017,Occidental,WCA_1,tvd_corrected,BS1_S,WCB_2,carded_step3,True
+3001554423,delaware,Eddy,POKER LAKE UNIT 23 DTD FEDERAL COM #178H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_2,carded_step3,True
+3002547729,delaware,Lea,BELL LAKE UNIT SOUTH #222H,Kaiser Francis,WCA_1,tvd_corrected,BS2_S,WCA_2,carded_step3,True
+3002553202,delaware,Lea,TWEETY BIRD 17 FEDERAL COM #201H,EOG,WCA_1,tvd_corrected,AVA_1,WCA_2,carded_step3,True
+3001553954,delaware,Eddy,FULLER 13 12 W2GB FEDERAL COM #002H,Mewbourne,WCA_2,tvd_corrected,BS2_S,WCC,carded_step3,True
+3001553640,delaware,Eddy,FULLER 13 12 W2HA FEDERAL COM #001H,Mewbourne,WCA_2,tvd_corrected,BS2_S,WCC,carded_step3,True
+3001553714,delaware,Eddy,FULLER 13 24 W2JO FEDERAL COM #001H,Mewbourne,WCA_2,tvd_corrected,BS2_S,WCC,carded_step3,True
+3001553718,delaware,Eddy,FULLER 13 24 W2IP FEDERAL COM #002H,Mewbourne,WCA_2,tvd_corrected,BS2_S,WCB_2,carded_step3,True
+3001553953,delaware,Eddy,FULLER 13 12 W2HA FEDERAL COM #002H,Mewbourne,WCA_2,tvd_corrected,BS2_S,WCB_2,carded_step3,True
+3002551556,delaware,Lea,RAGIN CAJUN 12 13 FEDERAL COM #019H,Devon,WCA_2,tvd_corrected,BS2_S,WCA_1,carded_step3,True
+3002555535,delaware,Lea,STREETCAR 15 FEDERAL #512H,EOG,WCB_1,tvd_corrected,BS2_S,WCB_2,carded_step3,True
+4247534459,delaware,Ward,"WARWINK UNIVERSITY ""18-34"" -A- 3H",Apache,WCB_1,tvd_corrected,BS3_S,WCC,carded_step3,True
+4247534460,delaware,Ward,"WARWINK UNIVERSITY ""18-34"" -A- 2H",Apache,WCB_1,tvd_corrected,BS3_S,WCC,carded_step3,True
+4238934064,delaware,Reeves,BLACK FLAG STATE UNIT 253-254E 5H,Apache,WCB_2,tvd_corrected,WCA_1,WCA_1,carded_step3,True
+3001544401,delaware,Eddy,REMUDA NORTH 30 STATE #122H,Exxon Mobil,WCC,tvd_corrected,WCA_2,WCA_2,carded_step3,True
+3001548924,delaware,Eddy,FOREIGNER 33 4 W0IP FEDERAL COM #001H,Mewbourne,WCC,tvd_corrected,WCXY,WCXY,carded_step3,True
+3001554424,delaware,Eddy,POKER LAKE UNIT 23 DTD FEDERAL COM #179H,Exxon Mobil,WCC,tvd_corrected,WCA_1,WCB_2,carded_step3,True
+3001556261,delaware,Eddy,HOLLYWOOD STAR FEE 17 18 #801H,Matador,WCC,tvd_corrected,BS2_S,WCB_2,carded_step3,True
+3001554499,delaware,Eddy,SQUINTS 4 5 FEE #715H,Mewbourne,WCXY,novi,WCXY,WCA_1,carded_step3,True
+3002548122,delaware,Lea,CATTLEMEN FEDERAL COM #123H,Permian Resources,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+3002552113,delaware,Lea,SENILE FELINES 18 7 STATE COM #001H,Occidental,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+3002553807,delaware,Lea,GOLD LOG 4 9 FEDERAL COM #002H,Occidental,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+3002553808,delaware,Lea,GOLD LOG 4 9 FEDERAL COM #003H,Occidental,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+3002554506,delaware,Lea,MORAN 9 FEDERAL COM #406H,Permian Resources,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+4230135480,delaware,Loving,MCGREGOR C 5 UNIT 401H,EOG,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+4230135814,delaware,Loving,WEBER 26 L60 L602,Lime Rock Resources,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+4230136245,delaware,Loving,COPPERHEAD 53-14 B103HC,Petro-Hunt,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+4230136371,delaware,Loving,ST LUCIA 76 2833 TG 601H,Exxon Mobil,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+4230136375,delaware,Loving,ST LUCIA 76 2833 TG 602H,Exxon Mobil,BS2_C,novi,BS2_C,BS1_S,step1_class,True
+3001534289,delaware,Eddy,SAND TANK 7 FEDERAL COM #002H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001534417,delaware,Eddy,RANGER 7 FEDERAL #003H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001535956,delaware,Eddy,SAND TANK 7 FEDERAL COM #003H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001536028,delaware,Eddy,OATMEAL 8 FEDERAL #003H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001534290,delaware,Eddy,SAND TANK 7 FEDERAL #003H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001534418,delaware,Eddy,RANGER 7 FEDERAL #004H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001534516,delaware,Eddy,HOLLY 8A FED #002H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001536411,delaware,Eddy,HOLLY 5 FEDERAL #002H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001538613,delaware,Eddy,ALDABRA 25 FEDERAL COM #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001539027,delaware,Eddy,PALMILLO 14 STATE #001H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001539169,delaware,Eddy,SAND TANK 17 FEDERAL COM #004H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541145,delaware,Eddy,DOC HOLLIDAY 32 STATE COM #001,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541528,delaware,Eddy,QUIEN SABE 25 FEDERAL #001H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541937,delaware,Eddy,COINFLIP STATE COM #002H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542082,delaware,Eddy,ARK 36 STATE #001H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542260,delaware,Eddy,SCOTER 6 FEDERAL #004H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001540404,delaware,Eddy,ZIA AHZ FEDERAL COM #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001540731,delaware,Eddy,ANTHILL AAK STATE COM #004H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542670,delaware,Eddy,RUSTLER BLUFF 33 24 29 FEDERAL #001H,Chevron,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542671,delaware,Eddy,RUSTLER BLUFF 34 24 29 FEDERAL #002H,Chevron,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543158,delaware,Eddy,CRAPSHOOT 13 FEDERAL COM #002H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543284,delaware,Eddy,BIG EDDY UNIT DI4 #267H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543390,delaware,Eddy,LAJITAS BWQ STATE COM #001H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541296,delaware,Eddy,TRANQUIL 13 STATE #004H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543819,delaware,Eddy,CEDAR CANYON 28 FEDERAL COM #008H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543906,delaware,Eddy,CEDAR CANYON 22 FEDERAL COM #006Y,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001544016,delaware,Eddy,CEDAR CANYON 28 FEDERAL #009H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001544045,delaware,Eddy,PALMILLO 14 15 STATE #003H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001544070,delaware,Eddy,BLACK RIVER 15 10 STATE COM X #005H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541850,delaware,Eddy,MARQUARDT FEDERAL #012H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001541938,delaware,Eddy,COINFLIP STATE COM #003H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542063,delaware,Eddy,CEDAR CANYON 27 STATE COM #004H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001544648,delaware,Eddy,COTTONWOOD 28 33 FEDERAL 2BS #005H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542220,delaware,Eddy,NORTH BRUSHY DRAW FEDERAL 35 #009H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542421,delaware,Eddy,CEDAR CANYON 15 FEDERAL COM #005H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542629,delaware,Eddy,BURTON FLAT DEEP UNIT #062H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542735,delaware,Eddy,MOSSY FEDERAL #001H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542897,delaware,Eddy,BELLOQ 2 STATE #006H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542919,delaware,Eddy,ROBINSON 36 STATE #001H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542931,delaware,Eddy,DEVON 6 FEE #002H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001542970,delaware,Eddy,PERAZZI 9 B2EH FEDERAL #001H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543227,delaware,Eddy,SOLUTION FEDERAL COM #003H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543232,delaware,Eddy,CEDAR CANYON 27 FEDERAL #006H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543233,delaware,Eddy,CEDAR CANYON 27 FEDERAL #007H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543238,delaware,Eddy,CEDAR CANYON 28 FEDERAL #007H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543281,delaware,Eddy,CEDAR CANYON 23 FEDERAL #004H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543282,delaware,Eddy,CEDAR CANYON 23 FEDERAL #005H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543646,delaware,Eddy,BIG EDDY UNIT DI4B #273H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543691,delaware,Eddy,COTTONWOOD 28 33 FEDERAL 2BS #001H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543692,delaware,Eddy,COTTONWOOD 28 33 FEDERAL 2BS #002H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543709,delaware,Eddy,CORRAL CANYON FEDERAL #008H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001543775,delaware,Eddy,CEDAR CANYON 27 FEDERAL COM #005H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545802,delaware,Eddy,PALMILLO 3 STATE COM #244H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001544650,delaware,Eddy,COTTONWOOD 28 33 FEDERAL COM 2BS #007H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001547710,delaware,Eddy,POKER LAKE UNIT 26 BD #124H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545272,delaware,Eddy,RATTLESNAKE 13 18 B2LK STATE COM #001H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545279,delaware,Eddy,PALMILLO 21 STATE COM #227H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545280,delaware,Eddy,PALMILLO 21 STATE COM #228H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545606,delaware,Eddy,SWEET TEA 31 SB FEDERAL COM #007H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545800,delaware,Eddy,PALMILLO 3 STATE #242H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001545801,delaware,Eddy,PALMILLO 3 STATE COM #243H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001546829,delaware,Eddy,BIG EDDY UNIT 5E HAN SOLO #100H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001546831,delaware,Eddy,BIG EDDY UNIT 5E HAN SOLO #105H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001546834,delaware,Eddy,BIG EDDY UNIT 5E HAN SOLO #104H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001553835,delaware,Eddy,POKER LAKE UNIT 19 DTD #322H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554804,delaware,Eddy,HEADS CC 9 4 FEDERAL COM #074H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554885,delaware,Eddy,JAMES RANCH UNIT DI 7 SAWTOOTH FEDERAL C #804H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554975,delaware,Eddy,MAKERS MARK FEDERAL COM #206H,Chevron,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555044,delaware,Eddy,POKER LAKE UNIT 20 DTD #321H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555463,delaware,Eddy,CORRAL BLUFF 11 14 FEDERAL COM #071H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001547980,delaware,Eddy,POKER LAKE UNIT 26 BD #127H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555743,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 20 #008H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555793,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 17 #004H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555795,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 20 #007H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555796,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 17 #003H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001556491,delaware,Eddy,POKER LAKE UNIT 27 BD #511H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540166,delaware,Lea,LUSK 23 FEDERAL #003H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540693,delaware,Lea,LUSK 34 FEDERAL #002H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540748,delaware,Lea,IRONHOUSE 20 STATE #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540814,delaware,Lea,CONDOR STATE #001H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540828,delaware,Lea,GREEN FROG CAFE FEDERAL #001H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540990,delaware,Lea,LUSK AHB FEDERAL #010H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541163,delaware,Lea,IRONHOUSE 24 STATE COM #001H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541695,delaware,Lea,IRONHOUSE 24 STATE COM #003H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541962,delaware,Lea,COACHWHIP 26 FEDERAL #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002542230,delaware,Lea,ABE STATE #003H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002542472,delaware,Lea,KINGFISHER STATE COM #005H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001550201,delaware,Eddy,PALMILLO 29 30 STATE COM #271H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554187,delaware,Eddy,POKER LAKE UNIT 15 TWIN WELLS RANCH #304H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554188,delaware,Eddy,POKER LAKE UNIT 15 TWIN WELLS RANCH #305H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554383,delaware,Eddy,POKER LAKE UNIT 23 DTD FEDERAL COM #107H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554644,delaware,Eddy,SANDLOT 9 8 FEE #552H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001554978,delaware,Eddy,MAKERS MARK FEDERAL COM #210H,Chevron,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555009,delaware,Eddy,POKER LAKE UNIT 20 DTD #423H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555203,delaware,Eddy,OLD INDIAN DRAW UNIT #008H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555337,delaware,Eddy,COACH JOE FEDERAL COM #124H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555398,delaware,Eddy,SWANSON 2 3 FEDERAL COM #511H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555460,delaware,Eddy,CORRAL BLUFF 11 14 FEDERAL COM #075H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555462,delaware,Eddy,CORRAL BLUFF 11 14 FEDERAL COM #072H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555848,delaware,Eddy,BIG EDDY UNIT DI 30 WEST 15 17 #005H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001555991,delaware,Eddy,BIG EDDY UNIT DI 5 WEST 27 29 #007H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001556407,delaware,Eddy,POKER LAKE UNIT 21 BD #502H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001556980,delaware,Eddy,TRAVIS STATE #120H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002527417,delaware,Lea,STATE HH #001H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540611,delaware,Lea,IRONHOUSE 20 STATE COM #001,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002540889,delaware,Lea,ASADERO STATE COM #001H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541025,delaware,Lea,CONDOR STATE #002H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541094,delaware,Lea,IRONHOUSE 19 STATE COM #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541595,delaware,Lea,IRONHOUSE 24 STATE COM #002H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541836,delaware,Lea,KINGFISHER STATE COM #002H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002541961,delaware,Lea,COACHWHIP 26 FEDERAL #001H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002550325,delaware,Lea,SANTA VACA 19 18 B2OB FEE #001H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002550429,delaware,Lea,THUNDERBALL FEDERAL COM #224H,Permian Resources,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002550525,delaware,Lea,PERLA VERDE 31 STATE COM #402H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002543240,delaware,Lea,BLACK HORSE FEDERAL COM 20 33 07 SB #001H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002543676,delaware,Lea,EK 29 BS2 FEDERAL COM #002H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002543687,delaware,Lea,EK 29 BS2 FEDERAL COM #001H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002543812,delaware,Lea,PERLA NEGRA FEDERAL COM #007H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002554173,delaware,Lea,VACA 24 FEDERAL COM #507H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002554174,delaware,Lea,VACA 24 FEDERAL COM #508H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002546804,delaware,Lea,SANTA VACA 19 18 B2MD STATE COM #001H,Mewbourne,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002554801,delaware,Lea,SAGE BRUSH 22302 25 24 13 STATE COM #004H,BTA Oil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002555225,delaware,Lea,JAMES 29 32 FEDERAL COM #024H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002555498,delaware,Lea,PEACHTREE 24 FEDERAL COM #572H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002550528,delaware,Lea,PERLA VERDE 31 STATE COM #401H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002552326,delaware,Lea,QUEENIE FEDERAL COM #503H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3002553139,delaware,Lea,IGGLES STATE COM #122H,Matador,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210932624,delaware,Culberson,GLENN 200 2001H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210932640,delaware,Culberson,CITATION 32 FEE 2H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210932507,delaware,Culberson,DONERAIL 8 STATE 1H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210932534,delaware,Culberson,ALDRIN STATE 2801H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210932634,delaware,Culberson,ARMSTRONG N STATE UNIT 280 2802H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210933931,delaware,Culberson,MDJ MINERALS 58-T2-22X27 2D B20 B204H,BP,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4210933947,delaware,Culberson,HAY GIA 21/16 0062SB,Chevron,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230132253,delaware,Loving,STATE MAGELLAN 7H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230132711,delaware,Loving,STATE MAGELLAN 8H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230132712,delaware,Loving,STATE MAGELLAN 9H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230133394,delaware,Loving,APOLLO 1 14H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230133716,delaware,Loving,STATE VIKING E 1 14H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134192,delaware,Loving,VOYAGER W 1 10H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134194,delaware,Loving,VOYAGER W 1 12H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134535,delaware,Loving,APOLLO 14H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230135173,delaware,Loving,LINDSAY 9-4A-55-1 32 321H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230135268,delaware,Loving,MAHOGANY 24-13O-56-1 32 321H,Devon,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230135747,delaware,Loving,ZION 55-1-17-20 A 6 62H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230136547,delaware,Loving,KING CANYON STATE 54-1-8-5 N 63H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230136549,delaware,Loving,KING CANYON STATE 54-1-8-5 R 65H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230133720,delaware,Loving,STATE VIKING E 1 18H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134193,delaware,Loving,VOYAGER W 1 11H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230137365,delaware,Loving,MAMMOTH 54-1-18-19 Q 61H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134534,delaware,Loving,APOLLO 1 13H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134536,delaware,Loving,APOLLO 1 15H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230137369,delaware,Loving,MAMMOTH 54-1-18-19 U 63H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230137418,delaware,Loving,DUSK 54-1-39-34 B 61HA,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230134877,delaware,Loving,STATE MERCURY 2 27H,EOG,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230135336,delaware,Loving,DREADNAUGHT D 240H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230136382,delaware,Loving,CHERRY 56-2-13-1 F 68H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230136597,delaware,Loving,DREADNAUGHT G 243H,ConocoPhillips,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230137312,delaware,Loving,SILVERTIP 76-9 UNIT E 64H,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4230137472,delaware,Loving,HAWKS 55-1-33-28 O 6 63HA,Occidental,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4237139934,delaware,Pecos,KRITI C3-6-7 TB4 504H,Exxon Mobil,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4238937659,delaware,Reeves,HYPERION 50 501H,Apache,BS3_C,novi,BS3_C,BS2_S,step1_class,False
+4238941492,delaware,Reeves,PEACEMAKER STATE 10C 13BS,Blue Arrow Operating,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+4238939251,delaware,Reeves,STATE PONY 57-T2-16X9 B20 B202H,BP,BS3_C,novi,BS3_C,BS2_S,step1_class,True
+3001538614,delaware,Eddy,ALDABRA 25 FEDERAL #003H,Devon,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001538612,delaware,Eddy,ALDABRA 25 FEDERAL COM #001H,Devon,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001538624,delaware,Eddy,ALDABRA 26 FEDERAL #008H,Devon,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001545776,delaware,Eddy,SALT DRAW 10 STATE COM 3BS #004H,Permian Resources,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001543751,delaware,Eddy,CYPRESS 33 FEDERAL COM #009H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001544096,delaware,Eddy,CYPRESS 33 FEDERAL COM #010H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001544133,delaware,Eddy,CEDAR CANYON 21 22 FEDERAL COM #033H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001544176,delaware,Eddy,CEDAR CANYON 21 22 FEDERAL COM #032H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001544425,delaware,Eddy,LUSITANO 27 34 FEDERAL COM #336H,Devon,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001547597,delaware,Eddy,KANGAROO 12 FEDERAL COM #202H,Permian Resources,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001549243,delaware,Eddy,CASSIUS FEDERAL COM 1510 #133H,Permian Resources,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001549919,delaware,Eddy,RIVERBEND 11 14 FEDERAL COM #015H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001553257,delaware,Eddy,POKER LAKE UNIT 21 DTD #158H,Exxon Mobil,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001546759,delaware,Eddy,BELLOQ 11 2 FEDERAL STATE COM #613H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001553985,delaware,Eddy,POKER LAKE UNIT 19 DTD #309H,Exxon Mobil,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001555673,delaware,Eddy,CAVEMAN #221H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001555675,delaware,Eddy,CAVEMAN #223H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001555676,delaware,Eddy,CAVEMAN #224H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001548214,delaware,Eddy,KANGAROO 12 FEDERAL COM #201H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001553603,delaware,Eddy,FORTY NINER RIDGE UNIT #128H,Mewbourne,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001553798,delaware,Eddy,JAVELINA UNIT #501H,Chevron,BS3_S,novi,BS3_S,WCXY,step1_class,True
+3001555473,delaware,Eddy,BONDI 24 FEDERAL COM #132H,Permian Resources,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001555674,delaware,Eddy,CAVEMAN #222H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001556012,delaware,Eddy,PADRON 3 STATE WC UNIT #711H,EOG,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+3001557448,delaware,Eddy,ALPINE 7 11 STATE #202H,Permian Resources,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4210933565,delaware,Culberson,HAY EVELYNN 17/20 002 0025TB,Chevron,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4210933247,delaware,Culberson,HAY BOWEN 29/32 002 0024TB,Chevron,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4210933343,delaware,Culberson,SIR BARTON 4 STATE UNIT 4H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4210933511,delaware,Culberson,DR STATE WISE UNIT 1 022 0221TB,Chevron,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230132237,delaware,Loving,"HALEY, J. E. 28-33 UNIT C 2H",Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230132352,delaware,Loving,BILLY BURT 90-TTT-B33 WF 203H,Matador,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230133415,delaware,Loving,NYALA 53-2-5 LOV W UNIT 8H,ConocoPhillips,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230133446,delaware,Loving,CROSS MOUNTAIN 4045-28 2H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134141,delaware,Loving,Z&T 20 E00 E002,Lime Rock Resources,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230134310,delaware,Loving,SASSAFRAS 55-1-24 UNIT 3H,Occidental,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230134313,delaware,Loving,MCGREGOR D UNIT 7H,EOG,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134507,delaware,Loving,MCGREGOR D UNIT 5H,EOG,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134870,delaware,Loving,BONGO 76-43 LOV UNIT 9H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135083,delaware,Loving,ST CLOUD 76 3031 101H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135085,delaware,Loving,ST BRIDES 76 3031 102H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135094,delaware,Loving,ST CLOUD 76 3031 102H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135096,delaware,Loving,ST CLOUD 76 3031 112H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135157,delaware,Loving,BONEFISH 76-45 LOV UNIT 5H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135159,delaware,Loving,BONEFISH 76-45 LOV UNIT 7H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230132033,delaware,Loving,CHAPARRAL 89 10 103H,Apache,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135441,delaware,Loving,PERMIT 76-44 LOV UNIT 4H,ConocoPhillips,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230135443,delaware,Loving,PERMIT 76-44 LOV UNIT 6H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135625,delaware,Loving,KING CANYON STATE 54-1-8-5 C 1 19H,Occidental,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230132344,delaware,Loving,BILLY BURT 90-TTT-B33 WF 202H,Matador,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135852,delaware,Loving,PYTHON 54-1-37-48 UNIT 13H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135853,delaware,Loving,PYTHON 54-1-37-48 UNIT 14H,Occidental,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230135860,delaware,Loving,PYTHON 54-1-37-48 UNIT 15H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135861,delaware,Loving,PYTHON 54-1-37-48 UNIT 16H,Occidental,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230135862,delaware,Loving,PYTHON 54-1-37-48 UNIT 17H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230136015,delaware,Loving,SMALL EYED 54-1-36-25 UNIT 13H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230136019,delaware,Loving,SMALL EYED 54-1-36-25 UNIT 15H,Occidental,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230133062,delaware,Loving,HAMMERHEAD 54-1-47 1H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230136265,delaware,Loving,BENNY 54-1-47-2 I 17H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230133440,delaware,Loving,STATE RUDD DRAW 26-25 2H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230133826,delaware,Loving,YELLOWJACKET UL UNIT 19-3 12H,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230133971,delaware,Loving,ASH 55-1-32 UNIT 2H,Occidental,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230134004,delaware,Loving,MCGREGOR B UNIT 10H,EOG,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134007,delaware,Loving,MCGREGOR C UNIT 9H,EOG,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134037,delaware,Loving,ASPEN 55-1-30 UNIT 3H,Occidental,BS3_S,novi,BS3_S,WCXY,step1_class,True
+4230134074,delaware,Loving,PISTOL 21801 1H,BTA Oil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134223,delaware,Loving,KUDU 53-2-6 LOV E UNIT 6H,ConocoPhillips,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4230134311,delaware,Loving,MCGREGOR C UNIT 8H,EOG,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230134868,delaware,Loving,BONGO 76-43 LOV UNIT 11H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135084,delaware,Loving,ST BRIDES 76 3031 101H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135086,delaware,Loving,ST BRIDES 76 3031 111H,Exxon Mobil,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135114,delaware,Loving,TARPON 53-2-10 LOV UNIT 6H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135155,delaware,Loving,BONEFISH 76-45 LOV UNIT 3H,ConocoPhillips,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135928,delaware,Loving,AMETHYST STATE 29-0-20-17 I 82HA,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4230135929,delaware,Loving,AMETHYST STATE 29-0-20-17 J 83HA,Occidental,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4237139507,delaware,Pecos,STATE NEAL LETHCO 3405A-142 2H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4237139729,delaware,Pecos,STATE BUBBLIN' CRUDE 0807B-143 81HX,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4237140371,delaware,Pecos,WILLIAM B. TRAVIS 2H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4237140372,delaware,Pecos,WILLIAM B. TRAVIS 3H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4237139495,delaware,Pecos,STATE B&B SISTERS 0833B-143 1H,Swordfish Energy Operating,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4238935924,delaware,Reeves,TREES RANCH 14 4101H,Continental Resources,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4237140131,delaware,Pecos,JOLLY JUMPER 48-21-28 2B10 310H,Exxon Mobil,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4238937995,delaware,Reeves,STATE BARB 10-5 B 2WA,Diamondback,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4238938731,delaware,Reeves,CASPIAN 19-20 A 1WA,Diamondback,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4238941248,delaware,Reeves,LEGACY 2623A-C3 3H,Continental Resources,BS3_S,novi,BS3_S,WCA_1,step1_class,True
+4238937623,delaware,Reeves,TIGER UNIT 21A14 14H,VTX Energy,BS3_S,novi,BS3_S,WCA_1,step1_class,True
+4238938438,delaware,Reeves,STATE DIAGON ALLEY B 2H,EOG,BS3_S,novi,BS3_S,WCA_1,step1_class,True
+4249534486,delaware,Winkler,BRIDAL VEIL STATE W 4132-27 M 13H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4238940800,delaware,Reeves,RAMONES UNIT 267-266W 9BS,Apache,BS3_S,enverus,BS3_S,WCA_1,step1_class,True
+4249533230,delaware,Winkler,VALLECITO 37-28 2H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+4249533933,delaware,Winkler,BRIDAL VEIL STATE 4132-27 A 2H,Devon,BS3_S,enverus,BS3_S,WCXY,step1_class,True
+3001539262,delaware,Eddy,ROSS DRAW UNIT #076H,Devon,OTHER,novi,OTHER,AVA_0,step1_class,True
+3001546994,delaware,Eddy,VONI FEDERAL COM #023H,Matador,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540369,delaware,Lea,BLACK BEAR 36 STATE #002H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540817,delaware,Lea,VANGUARD 30 STATE COM #001H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540928,delaware,Lea,DRAGON 36 STATE #006H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540929,delaware,Lea,DRAGON 36 STATE #007H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540930,delaware,Lea,DRAGON 36 STATE #008H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002541309,delaware,Lea,DILLON 31 #002H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002541990,delaware,Lea,DIAMOND 5 FEDERAL COM #006H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002541991,delaware,Lea,DIAMOND 5 FEDERAL COM #007H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002541992,delaware,Lea,DIAMOND 5 FEDERAL COM #008H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002542758,delaware,Lea,RED RAIDER BKS STATE #005H,ConocoPhillips,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002547281,delaware,Lea,GALLEON 21 FEDERAL COM #102H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002539560,delaware,Lea,FALCON 25 FEDERAL #001,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002539983,delaware,Lea,JOLY 16 STATE COM #001H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540370,delaware,Lea,BLACK BEAR 36 STATE #003H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002540485,delaware,Lea,DIAMOND 31 FEDERAL COM #003H,EOG,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002541370,delaware,Lea,BATTLE AXE FEDERAL COM #002H,ConocoPhillips,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002543408,delaware,Lea,RAIDER FEDERAL COM #101H,Permian Resources,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002543843,delaware,Lea,ROJO AE 7811 JV-P FEDERAL COM #002H,BTA Oil,OTHER,novi,OTHER,AVA_0,step1_class,True
+3002551621,delaware,Lea,RAIDER FEDERAL COM #102H,Permian Resources,OTHER,novi,OTHER,AVA_0,step1_class,True
+4230131697,delaware,Loving,SEVENGILLS 55-2-1 1H,Occidental,OTHER,novi,OTHER,AVA_0,step1_class,True
+4230131717,delaware,Loving,SEVENGILLS 55-2-1 4H,Occidental,OTHER,novi,OTHER,AVA_0,step1_class,True
+4230131711,delaware,Loving,SEVENGILLS 55-2-1 2H,Occidental,OTHER,novi,OTHER,AVA_0,step1_class,True
+3001547303,delaware,Eddy,COTTON DRAW UNIT #607H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+3001548366,delaware,Eddy,RIPPLE 32 FEDERAL COM #737H,EOG,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+3002551760,delaware,Lea,PRETTY GOOD 20 FEDERAL COM #301H,EOG,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+3002551776,delaware,Lea,FRODERICK 33 FEDERAL COM #501H,EOG,WCA_2,tvd_corrected,BS1_S,WCB_1,step1_class,True
+3002554434,delaware,Lea,ROBERNE FEDERAL #229H,Matador,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4210932829,delaware,Culberson,JAMES FEE 6 1H,Capitan Energy,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4230133449,delaware,Loving,PISTOL 25-9 4H,ConocoPhillips,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4230133613,delaware,Loving,RUDD DRAW 26-2 6H,ConocoPhillips,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4230133696,delaware,Loving,TAYLOR CC26-17 3H,ConocoPhillips,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4230132983,delaware,Loving,CBR 22 1 15H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4230134034,delaware,Loving,TAYLOR FC26-17 6H,ConocoPhillips,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238934157,delaware,Reeves,KLIPSPRINGER STATE 24 W2 2H,Crescent Energy,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238937156,delaware,Reeves,ROADRUNNER STATE 2 3H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238939577,delaware,Reeves,THUNDERBALL STATE 4-67 UG 4WB,TRP Energy,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238934823,delaware,Reeves,WHISKEY RIVER 0927A-7 2H,Continental Resources,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238935588,delaware,Reeves,IVY MOUNTAIN 53-4-3 UNIT 1H,Occidental,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238936650,delaware,Reeves,HATTIE 3 1H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238938974,delaware,Reeves,HERC STATE 6-15-54-4E 43 434H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238939789,delaware,Reeves,IRON MIKE WA5 5H,Crescent Energy,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238940400,delaware,Reeves,TITAN STATE 16-5D-54-4 43 433H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238940403,delaware,Reeves,TITAN STATE 16-5A-54-4 43 432H,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238941280,delaware,Reeves,RIO LOBO STATE F 31 313H,Permian Resources,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238941652,delaware,Reeves,SOLSTICE 56-2-31-19 D 2 21HB,Occidental,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238941656,delaware,Reeves,SOLSTICE 56-2-31-19 G 22HB,Occidental,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4238941661,delaware,Reeves,SOLSTICE 56-2-31-19 L 24HB,Occidental,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4247535889,delaware,Ward,UNIVERSITY 19-17 1,Devon,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4247538418,delaware,Ward,UTL WAR UNIVERSITY 2324O 2215H,Continental Resources,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+4247538636,delaware,Ward,ROCK GARDEN A7 5LA,Apache,WCA_2,enverus,WCA_2,WCB_1,step1_class,True
+3002540053,delaware,Lea,CABALLO 23 FEDERAL #004H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540371,delaware,Lea,BROWN BEAR 36 STATE #001H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540927,delaware,Lea,DRAGON 36 STATE #005H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002541848,delaware,Lea,RED HILLS 11 25 33 FEDERAL COM #001H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002542899,delaware,Lea,ROJO D 7811 JV P COM #003H,BTA Oil,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002542918,delaware,Lea,ROJO D 7811 JV P COM #002H,BTA Oil,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002539327,delaware,Lea,VACA 14 FEDERAL #003,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002539703,delaware,Lea,LOMAS ROJAS 26 STATE COM #004H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002539892,delaware,Lea,VACA 14 FEDERAL #004H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002539943,delaware,Lea,VACA 14 FEDERAL #006H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002539944,delaware,Lea,VACA 14 FEDERAL COM #005H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540189,delaware,Lea,DIAMOND 8 FEDERAL COM #004H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540247,delaware,Lea,CABALLO 23 FEDERAL #005H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540248,delaware,Lea,CABALLO 23 FEDERAL #006H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540528,delaware,Lea,VACA 24 FEDERAL COM #002H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540529,delaware,Lea,VACA 24 FEDERAL COM #004H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540536,delaware,Lea,VACA 24 FEDERAL COM #005H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540537,delaware,Lea,VACA 24 FEDERAL COM #006H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002540552,delaware,Lea,DIAMOND 8 FEDERAL COM #005H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002541621,delaware,Lea,VACA DRAW 9418 JV-P #002H,BTA Oil,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002541624,delaware,Lea,VACA DRAW 9418 JV-P #005H,BTA Oil,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002542458,delaware,Lea,ROJO C 7811 JV-P #001H,BTA Oil,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002552704,delaware,Lea,STONEWALL 28 FEDERAL COM #405H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002553429,delaware,Lea,LACEY SWISS 1 FEDERAL COM #303H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002553434,delaware,Lea,LACEY SWISS 1 FEDERAL COM #404H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002555101,delaware,Lea,LACEY SWISS 1 FEDERAL COM #313H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002554046,delaware,Lea,STONEWALL 28 FEDERAL COM #508H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002554362,delaware,Lea,LACEY SWISS 1 FEDERAL COM #516H,EOG,OTHER,novi,OTHER,AVA_0,step3_class,True
+3002545844,delaware,Lea,ZEUS STATE #173H,Jonah Energy,AVA_0,tvd_corrected,AVA_1,AVA_1,vendor,True
+3002543547,delaware,Lea,VAST STATE #026H,ConocoPhillips,AVA_0,tvd_corrected,WCA_2,WCA_2,vendor,True
+3001539733,delaware,Eddy,MARTHA AIK FEDERAL #008H,EOG,AVA_1,tvd_corrected,OTHER,OTHER,vendor,True
+3002541575,delaware,Lea,MARATHON ROAD 15 PA FEDERAL #001H,Mewbourne,AVA_1,tvd_corrected,BS3_S,BS3_S,vendor,True
+3001541521,delaware,Eddy,MYOX 32 FEE #002H,ConocoPhillips,AVA_2,tvd_corrected,BS2_S,BS2_S,vendor,True
+3001540755,delaware,Eddy,AQUILA 22 FEDERAL #002H,Devon,BS1_S,tvd_corrected,BS2_S,BS2_S,vendor,True
+3002541146,delaware,Lea,TAYLOR DRAW 7 FEDERAL #001H,Devon,BS1_S,tvd_corrected,BS2_S,BS2_S,vendor,True
+3002503429,delaware,Lea,PRE-ONGARD WELL #009,,BS1_S,tvd_corrected,OTHER,OTHER,vendor,True
+3002550371,delaware,Lea,CARNIVAL FEDERAL COM #304H,Devon,BS1_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002552087,delaware,Lea,NORTH WILSON DEEP UNIT #005H,Mewbourne,BS1_S,tvd_corrected,OTHER,OTHER,vendor,True
+3002555689,delaware,Lea,BOND 32 34 FEDERAL COM #301H,PBX,BS1_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3001545749,delaware,Eddy,RUMBLE STATE #004H,Riley Permian,BS2_C,tvd_corrected,OTHER,OTHER,vendor,False
+3002503097,delaware,Lea,PRE-ONGARD WELL #001,,BS2_C,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002520086,delaware,Lea,NEW MEXICO AE STATE #005,Chevron,BS2_C,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002520508,delaware,Lea,NEW MEXICO AE STATE #017,Chevron,BS2_C,tvd_corrected,BS3_S,BS3_S,vendor,True
+3001535921,delaware,Eddy,DARK CANYON 19 FEDERAL #001,ConocoPhillips,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3001547580,delaware,Eddy,ROCK JELLY FEDERAL COM #704H,ConocoPhillips,BS2_S,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001546378,delaware,Eddy,JAMES RANCH UNIT DI 12 ELKHORN #702H,Exxon Mobil,BS2_S,tvd_corrected,BS3_C,BS3_C,vendor,True
+3001555952,delaware,Eddy,POKER LAKE UNIT 30 BS #110H,Exxon Mobil,BS2_S,tvd_corrected,BS3_C,BS3_C,vendor,True
+3002538612,delaware,Lea,LANGLEY GREER COM #003H,Southwest Royalties,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3001556506,delaware,Eddy,POKER LAKE UNIT 27 BD #509H,Exxon Mobil,BS2_S,tvd_corrected,BS3_C,BS3_C,vendor,True
+3002505936,delaware,Lea,PRE-ONGARD WELL #007,,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002526824,delaware,Lea,STATE AP #001,Penroc Oil,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002536675,delaware,Lea,V LAUGHLIN #005H,Hilcorp Energy,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002550158,delaware,Lea,BRIDGE STATE UNIT 29 #505H,Permian Resources,BS2_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002551684,delaware,Lea,DANJER 22 10 STATE COM #004H,Manzano,BS2_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002546483,delaware,Lea,WOOL HEAD 20 STATE COM #554H,Matador,BS2_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002555690,delaware,Lea,BOND 32 34 FEDERAL COM #205H,PBX,BS2_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002549264,delaware,Lea,BROADSIDE 13 24 FEDERAL COM #025H,Devon,BS2_S,tvd_corrected,WCA_2,WCA_2,vendor,True
+3002555688,delaware,Lea,BOND 32 34 FEDERAL COM #201H,PBX,BS2_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002555721,delaware,Lea,BOND 33 34 FEDERAL COM #207H,PBX,BS2_S,tvd_corrected,BS3_S,BS3_S,vendor,True
+4230135521,delaware,Loving,MAHOGANY 24-13Q-56-1 32 323H,Devon,BS2_S,tvd_corrected,BS3_C,BS3_C,vendor,True
+3001543291,delaware,Eddy,CAVERNS FEDERAL COM #004H,ConocoPhillips,BS3_C,tvd_corrected,WCA_1,WCA_1,vendor,False
+3001548504,delaware,Eddy,RIPPLE 32 FEDERAL COM #717H,EOG,BS3_C,tvd_corrected,WCXY,WCXY,vendor,True
+3002548997,delaware,Lea,ANDERSON FEDERAL COM #553H,Matador,BS3_C,tvd_corrected,BS2_S,BS2_S,vendor,True
+3002503027,delaware,Lea,PRE-ONGARD WELL #002,,BS3_C,tvd_corrected,OTHER,OTHER,vendor,False
+3002505513,delaware,Lea,PRE-ONGARD WELL #001,,BS3_C,tvd_corrected,OTHER,OTHER,vendor,False
+3002520773,delaware,Lea,PRE-ONGARD WELL #004,,BS3_C,tvd_corrected,OTHER,OTHER,vendor,False
+4237139276,delaware,Pecos,PUCKETT TRUSTS C STATE 1H,Contrast Energy,BS3_C,tvd_corrected,OTHER,OTHER,vendor,False
+4237140047,delaware,Pecos,OSPREY STATE WEST UNIT 1H,Mongoose Energy,BS3_C,tvd_corrected,OTHER,OTHER,vendor,False
+3001525956,delaware,Eddy,EASTERN SHORE QW FEDERAL COM #002Y,EOG,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3001531152,delaware,Eddy,OLD RANCH CANYON 7 FEDERAL #003,Occidental,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3001532181,delaware,Eddy,LOWE STAPLE AMR FEDERAL COM #002,EOG,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3001537063,delaware,Eddy,JAMES RANCH UNIT #106H,Exxon Mobil,BS3_S,tvd_corrected,OTHER,OTHER,vendor,True
+3001554219,delaware,Eddy,GEMINI 36 35 FEDERAL COM #513H,Mewbourne,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002534945,delaware,Lea,STATE BA #015H,TXO Partners,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002520503,delaware,Lea,NEW MEXICO R STATE NCT 1 #007,Chevron,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002520687,delaware,Lea,PRE-ONGARD WELL #001,,BS3_S,tvd_corrected,OTHER,OTHER,vendor,False
+3002522679,delaware,Lea,PRE-ONGARD WELL #001,,BS3_S,tvd_corrected,OTHER,OTHER,vendor,True
+3002552262,delaware,Lea,PAKSE 3 SOUTH FEDERAL COM #432H,Permian Resources,BS3_S,tvd_corrected,BS1_S,BS1_S,vendor,True
+3002550354,delaware,Lea,PINE STRAW 25 36 05 FEDERAL COM #107H,Matador,BS3_S,tvd_corrected,OTHER,OTHER,vendor,True
+4237139298,delaware,Pecos,STATE NEAL LETHCO 3405-142 1H,Swordfish Energy Operating,BS3_S,tvd_corrected,WCA_2,WCA_2,vendor,True
+4237139397,delaware,Pecos,STATE NEAL LETHCO 'A' 3427-142 1H,Swordfish Energy Operating,BS3_S,tvd_corrected,WCA_1,WCA_1,vendor,True
+4237139436,delaware,Pecos,STATE NEAL LETHCO 3405-142 2H,Swordfish Energy Operating,BS3_S,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001521126,delaware,Eddy,SANDY FEDERAL #001,Strata,WCA_1,tvd_corrected,OTHER,OTHER,vendor,True
+3001544900,delaware,Eddy,POKER LAKE UNIT 18 BD #163H,Exxon Mobil,WCA_1,tvd_corrected,WCC,WCC,vendor,True
+3001553773,delaware,Eddy,POKER LAKE UNIT 19 DTD #411H,Exxon Mobil,WCA_1,tvd_corrected,WCXY,WCXY,vendor,True
+3001553322,delaware,Eddy,COLD SNACK FEDERAL COM #231H,SM Energy,WCA_1,tvd_corrected,WCC,WCC,vendor,True
+3001553440,delaware,Eddy,POKER LAKE UNIT 30 19 BS #155H,Exxon Mobil,WCA_1,tvd_corrected,WCC,WCC,vendor,True
+4238934442,delaware,Reeves,JETT RINK STATE 59-25 1H,Elevation Resources,WCA_1,tvd_corrected,WCB_2,WCB_2,vendor,False
+3001533625,delaware,Eddy,RIGHTHAND CANYON 35 FEDERAL #005,Occidental,WCA_2,tvd_corrected,OTHER,OTHER,vendor,False
+3001537272,delaware,Eddy,HUDSON 1 FEDERAL COM #008H,Exxon Mobil,WCA_2,tvd_corrected,OTHER,OTHER,vendor,True
+3001546344,delaware,Eddy,CICADA UNIT #035H,Chevron,WCA_2,tvd_corrected,WCB_2,WCB_2,vendor,True
+3002548277,delaware,Lea,MANDELBAUM FEE #132H,SM Energy,WCA_2,tvd_corrected,BS3_S,BS3_S,vendor,True
+3002549287,delaware,Lea,EIDER 35 FEDERAL #501H,ConocoPhillips,WCA_2,tvd_corrected,BS2_S,BS2_S,vendor,True
+4210932978,delaware,Culberson,HAY BOWEN 29/32 001 0012WD,Chevron,WCA_2,tvd_corrected,WCC,WCC,vendor,True
+4237139995,delaware,Pecos,MILOW 14 UNIT E001,Swordfish Energy Operating,WCA_2,tvd_corrected,WCA_1,WCA_1,vendor,True
+4238933058,delaware,Reeves,COTTONMOUTH 58-47 1H,Permian Resources,WCA_2,tvd_corrected,WCB_2,WCB_2,vendor,False
+3002551332,delaware,Lea,DAUNTLESS 7 FEDERAL #103H,EOG,WCB_1,tvd_corrected,AVA_1,AVA_1,vendor,True
+3002553349,delaware,Lea,MERCILESS 13 FEDERAL COM #101H,EOG,WCB_1,tvd_corrected,AVA_1,AVA_1,vendor,True
+4238936101,delaware,Reeves,PEDERNALES 293 1H,Apache,WCB_2,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001540793,delaware,Eddy,OGDEN STATE #008H,3r Operating,WCC,tvd_corrected,OTHER,OTHER,vendor,True
+3001547434,delaware,Eddy,CREEDENCE 21 16 W0OB FEDERAL COM #002H,Mewbourne,WCC,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001554556,delaware,Eddy,CB AMILYN 10 3 FEDERAL COM P13 #401H,Chevron,WCC,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001554561,delaware,Eddy,CB AMILYN 10 3 FEDERAL COM P13 #403H,Chevron,WCC,tvd_corrected,WCA_1,WCA_1,vendor,True
+4210932700,delaware,Culberson,GEORGETTE STATE 2H,Capitan Energy,WCC,tvd_corrected,WCA_2,WCA_2,vendor,True
+4210932986,delaware,Culberson,W A STATE 5H,Capitan Energy,WCC,tvd_corrected,WCA_2,WCA_2,vendor,True
+3001540775,delaware,Eddy,LOST TANK 4 FEDERAL #023,Occidental,WCXY,tvd_corrected,OTHER,OTHER,vendor,True
+3001545579,delaware,Eddy,ROCK SPUR 27 W0BO STATE #004H,Mewbourne,WCXY,tvd_corrected,WCC,WCC,vendor,True
+3001553770,delaware,Eddy,POKER LAKE UNIT 19 DTD #218H,Exxon Mobil,WCXY,tvd_corrected,WCA_1,WCA_1,vendor,True
+3001553836,delaware,Eddy,POKER LAKE UNIT 19 DTD #323H,Exxon Mobil,WCXY,tvd_corrected,WCA_1,WCA_1,vendor,True
+4200348257,midland,Andrews,UL CARNIOLAN 7-49 A 1LS,Diamondback,LSSH,enverus,LSSH,JM,carded_step1_2,True
+4222742458,midland,Howard,K2 25D 2HF,Ovintiv,LSSH,novi,LSSH,JM,carded_step1_2,True
+4222742837,midland,Howard,MORGAN RANCH 35-47 B UNIT L 5H,Highpeak Energy,LSSH,novi,LSSH,WCA_1,carded_step1_2,True
+4231742270,midland,Martin,PATRICIA UNIT 2 4878JH,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4231744630,midland,Martin,SCARLET UNIT 1 2972JH,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4231744645,midland,Martin,SCARLET UNIT 2 2976JH,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4231745224,midland,Martin,VISERION UNIT 2 4671JH,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4232941804,midland,Midland,CHARGER H155SS,Permian Deep Rock,LSSH,novi,LSSH,JM,carded_step1_2,True
+4232943009,midland,Midland,"HUTT, DONALD L.'C' 3679H",Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4232946930,midland,Midland,LELA 18-6 F 163,Diamondback,LSSH,novi,LSSH,JM,carded_step1_2,True
+4232946947,midland,Midland,DWIGHT-MIDKIFF 25A 1H,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4232947842,midland,Midland,WINKLEMAN-DONOVAN 9H 108H,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4246139321,midland,Upton,PEMBROOK UNIT 1401H,Exxon Mobil,LSSH,novi,LSSH,JM,carded_step1_2,True
+4210541803,midland,Crockett,UNIVERSITY EAST 4109CH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4210542347,midland,Crockett,UNIVERSITY SALT DRAW 3820FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4217337727,midland,Glasscock,CALVERLEY 37-36 6H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4217339145,midland,Glasscock,BRANDYWINE E 10HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4223534818,midland,Irion,UNIVERSITY EAST 4323BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4231740787,midland,Martin,G.W. GLASS B 1001H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4231745711,midland,Martin,ELIAS 16-9 UNIT 1 223,Diamondback,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4231745798,midland,Martin,HERA 55-46 UNIT 2 251R,Diamondback,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4231746572,midland,Martin,HERCULES 55-64 UNIT 1WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4232944775,midland,Midland,EARLY 592-591 UNIT 1 223,Diamondback,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4232945289,midland,Midland,INTERSTATE 8-32 A 211,Diamondback,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4238340221,midland,Reagan,RCR 180-197 ALLOC 03 32HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4238339926,midland,Reagan,MUSTANG DRAW 24NH,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4246143121,midland,Upton,ARIA 9 17BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,carded_step1_2,True
+4223536546,midland,Irion,OMAHA N433H,Triple Crown Resources,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4231742175,midland,Martin,MOTT 4 402,Diamondback,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4238339624,midland,Reagan,WOODS 218 12HA,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4238341094,midland,Reagan,TEICHMAN D 4H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4238341372,midland,Reagan,ALEXIS RAE H 8H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4238341819,midland,Reagan,UNIVERSITY 09C 1110WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4238341116,midland,Reagan,CAMILLE K 11H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,carded_step1_2,True
+4232946400,midland,Midland,RAY-WINKLEMAN C43F 106H,Exxon Mobil,JM,enverus,JM,WCA_1,carded_step3,True
+4246141768,midland,Upton,NEAL 34GG 12HM,Ovintiv,JM,tvd_corrected,WCB_1,WCB_1,carded_step3,True
+4232945937,midland,Midland,BUTTER CRUNCH J 4WB,Discovery Operating,LSSH,tvd_corrected,WCB_1,WCB_1,carded_step3,True
+4200348755,midland,Andrews,PUTNAM THE PIO 32 7LS,Scout Energy Partners,MS,tvd_corrected,LSSH,LSSH,carded_step3,True
+4222738913,midland,Howard,MIDLAND 15-10 1WA,Highpeak Energy,MS,tvd_corrected,WCA_1,WCA_1,carded_step3,True
+4232945648,midland,Midland,JOHN BRAUN A UNIT 4 2537SH,Exxon Mobil,MS,enverus,MS,WCB_1,carded_step3,True
+4217335544,midland,Glasscock,BARRACUDA 45 6H,Apache,OTHER,novi,OTHER,WCD,carded_step3,False
+4217335740,midland,Glasscock,BALLENGER 3108H,Apache,OTHER,novi,OTHER,WCD,carded_step3,False
+4217335735,midland,Glasscock,BALLENGER 7H,Apache,OTHER,novi,OTHER,WCD,carded_step3,False
+4217336047,midland,Glasscock,GREATWHITE 44 3H,Apache,OTHER,novi,OTHER,WCD,carded_step3,False
+4232934481,midland,Midland,INTERSTATE B 503H,Diamondback,OTHER,enverus,OTHER,WCB_1,carded_step3,True
+4241332871,midland,Schleicher,UNIVERSITY 52-24 5H,Permian Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4241332877,midland,Schleicher,UNIVERSITY 52-24 12H,Permian Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4241332878,midland,Schleicher,UNIVERSITY 52-24 11H,Permian Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4241332952,midland,Schleicher,UNIVERSITY 52-7 1HC,Ridgeline Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4241332875,midland,Schleicher,UNIVERSITY 52-24 4H,Permian Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4241332876,midland,Schleicher,UNIVERSITY 52-24 10H,Permian Resources,OTHER,enverus,OTHER,WCB_1,carded_step3,False
+4246134113,midland,Upton,ZINN 9501H,Diamondback,OTHER,enverus,OTHER,WCB_1,carded_step3,True
+4200348795,midland,Andrews,HILLTOP 37D 7HN,Ovintiv,WCB_2,enverus,WCB_2,JM,carded_step3,True
+4223535203,midland,Irion,SUGG STRIP 6H,Apache,WCB_2,tvd_corrected,WCB_1,WCB_1,carded_step3,True
+4231743431,midland,Martin,HSE 320T 2108HN,Ovintiv,WCB_2,tvd_corrected,LSSH,WCB_1,carded_step3,True
+4231743993,midland,Martin,EPLEY-ROGERS 43D 105H,Exxon Mobil,WCB_2,enverus,WCB_2,JM,carded_step3,True
+4231744848,midland,Martin,MABEE B 4-3 2402H,Diamondback,WCB_2,tvd_corrected,MS,WCB_1,carded_step3,True
+4232945702,midland,Midland,KYLE 2600 UNIT 2 2626SH,Exxon Mobil,WCB_2,tvd_corrected,LSSH,WCB_1,carded_step3,True
+4232945492,midland,Midland,PRESTON-FREEMAN 15F 106H,Exxon Mobil,WCD,tvd_corrected,WCB_2,WCB_2,carded_step3,True
+4203331410,midland,Borden,JO-MILL UNIT LP 1430H,Jo Mill Oil,LSSH,novi,LSSH,JM,step1_class,False
+4203331811,midland,Borden,JO-MILL UNIT LP 5220H,Jo Mill Oil,LSSH,novi,LSSH,JM,step1_class,True
+4217337920,midland,Glasscock,CALVERLEY 22-27 401H,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4213543880,midland,Ector,FOUR CORNERS 1729 A 101H,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4217337319,midland,Glasscock,CALVERLEY 9-4 5H,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4222739553,midland,Howard,TAGGERT B 0927LS,SM Energy,LSSH,novi,LSSH,JM,step1_class,True
+4217338896,midland,Glasscock,BIGBY-TXL E15 G 107H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4222736049,midland,Howard,ADAMS 38 2H,Cobra,LSSH,novi,LSSH,JM,step1_class,True
+4222739078,midland,Howard,ALLAR 19A-30 1LS,Highpeak Energy,LSSH,novi,LSSH,JM,step1_class,True
+4222741380,midland,Howard,ROCKET 3529SP 2H,Occidental,LSSH,enverus,LSSH,JM,step1_class,True
+4222741397,midland,Howard,GAMORA 3525SP 2H,Occidental,LSSH,enverus,LSSH,JM,step1_class,True
+4222742808,midland,Howard,MORGAN CHEVRON 36-48 D UNIT L 7H,Highpeak Energy,LSSH,novi,LSSH,JM,step1_class,True
+4222742840,midland,Howard,MORGAN RANCH 35-47 B UNIT L 6H,Highpeak Energy,LSSH,novi,LSSH,JM,step1_class,True
+4231741137,midland,Martin,NORTHEAST SCHARBAUER 1126H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231742127,midland,Martin,CASSIDY UNIT 2 3076JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231742176,midland,Martin,CYPERT D 57-51 141,Diamondback,LSSH,enverus,LSSH,JM,step1_class,True
+4231742290,midland,Martin,NORRIS UNIT 32-H 3374JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231742296,midland,Martin,NORRIS UNIT 32-H 3373JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231742302,midland,Martin,NORRIS UNIT 32-H 3371JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231742852,midland,Martin,SOUTH CURTIS RANCH 3411LP 11H,Occidental,LSSH,novi,LSSH,JM,step1_class,True
+4231743062,midland,Martin,MABEE DDA J13 1705JH,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4231743430,midland,Martin,HSE 320SS 2107HD,Ovintiv,LSSH,novi,LSSH,JM,step1_class,True
+4231743480,midland,Martin,FOREMAN-JONES 40D 307H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231743509,midland,Martin,WOODY 31FF 106H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231741005,midland,Martin,STRAIN 20 UNIT 2 2048SH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231743923,midland,Martin,SAND STORM UNIT 2 0877JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744006,midland,Martin,SAND STORM UNIT 1 0873JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744073,midland,Martin,MABEE DDA K14 802JH,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4231744079,midland,Martin,MABEE DDA K20 807JH,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4231744167,midland,Martin,RIVERS UNIT 1 1972JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744171,midland,Martin,RIVERS UNIT 1 1973JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231741603,midland,Martin,FORTRESS C2 04SA,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231744181,midland,Martin,RIVERS UNIT 2 1974JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744185,midland,Martin,RIVERS UNIT 2 1975JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231741669,midland,Martin,DUPREE A 16SA,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231741676,midland,Martin,DUPREE C 13SA,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231741688,midland,Martin,DUPREE E 10SA,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231741797,midland,Martin,STRAIN 20 UNIT 2 2075JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744881,midland,Martin,MABEE 7D 4H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745222,midland,Martin,VISERION UNIT 2 4673JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745454,midland,Martin,RHAEGAL UNIT 2 4677JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745509,midland,Martin,TARZAN UNIT 1 2072JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745550,midland,Martin,RHAEGAL UNIT 1 4674JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745553,midland,Martin,RHAEGAL UNIT 1 4672JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745569,midland,Martin,HILL UNIT 1 2571JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745580,midland,Martin,HILL UNIT 2 2576JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745582,midland,Martin,HILL UNIT 2 2575JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745644,midland,Martin,SMUGGLER 3 2015H,FourPoint Energy,LSSH,novi,LSSH,JM,step1_class,True
+4231743611,midland,Martin,STRAIN 19 UNIT 1 1971JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746018,midland,Martin,RIPPLE UNIT 2 3776JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746025,midland,Martin,SCHARBAUER RANCH 10A 101H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746126,midland,Martin,WILLIAMS-NAIL 5H 8H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231743931,midland,Martin,SAND STORM UNIT 2 0875JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744003,midland,Martin,SAND STORM UNIT 1 0872JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746331,midland,Martin,DICKENSON-JACKSON 19L 12H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746735,midland,Martin,DAVIS-FORTUNE 44D 304H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231744838,midland,Martin,MABEE A 4-3 2601H,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231744841,midland,Martin,PINKERTON-LOUDER 10D 4H,Exxon Mobil,LSSH,enverus,LSSH,JM,step1_class,True
+4231744851,midland,Martin,MABEE D 4-3 2604H,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231744856,midland,Martin,MABEE F 4-3 2606H,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4231744924,midland,Martin,DR ORSON N 3JH,Hibernia Resources IV,LSSH,novi,LSSH,JM,step1_class,True
+4231745312,midland,Martin,MEEK-LINDSAY 6C 3H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745459,midland,Martin,RHAEGAL UNIT 2 4675JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745482,midland,Martin,PANAMINT E 8LM,Occidental,LSSH,novi,LSSH,JM,step1_class,True
+4231745516,midland,Martin,TARZAN ALLOC 1&2 2075JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745556,midland,Martin,RHAEGAL UNIT 1 4671JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745564,midland,Martin,HILL UNIT 1 2574JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745567,midland,Martin,HILL UNIT 1 2572JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745679,midland,Martin,SMUGGLER 3 2008H,FourPoint Energy,LSSH,novi,LSSH,JM,step1_class,True
+4231745989,midland,Martin,BRUNER-WEBB 16B 2H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231745994,midland,Martin,BRUNER-WEBB 16G 7H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746009,midland,Martin,RIPPLE UNIT 1 3772JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746029,midland,Martin,SCHARBAUER RANCH 10E 105H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746031,midland,Martin,SCHARBAUER RANCH 10G 107H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746039,midland,Martin,RIPPLE UNIT 2 3774JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746087,midland,Martin,MEEK-LINDSAY 6N 14H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746296,midland,Martin,DICKENSON-JACKSON 19O 15H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746808,midland,Martin,DOVE-SCHARBAUER W9F 6H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231746916,midland,Martin,DROGON U1-MERAXES 38B 6H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231747132,midland,Martin,CURTIS-SCHARBAUER 8A 1H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231747137,midland,Martin,CURTIS-SCHARBAUER 8D 4H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231747140,midland,Martin,CURTIS-SCHARBAUER 8G 7H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231747155,midland,Martin,MABEE E1O 115H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4231747156,midland,Martin,MABEE E1K 111H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232939410,midland,Midland,TEXAS TEN Y PU 19H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232943536,midland,Midland,PERSEPHONE 42/31 C 0134LS,Chevron,LSSH,novi,LSSH,JM,step1_class,True
+4232943792,midland,Midland,LYNCH-JUNE T 4837 A 15HJ,Apache,LSSH,novi,LSSH,JM,step1_class,True
+4232943987,midland,Midland,ATKINS 47-02 UNIT 2 0276JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232944312,midland,Midland,TEXAS TEN 'AA' 612H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232944313,midland,Midland,TEXAS TEN 'AA' 613H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232944369,midland,Midland,TEXAS TEN 'AA' 620H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232944842,midland,Midland,DIAMOND RIO 9-16N 2815H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945082,midland,Midland,BOB MIDKIFF 37-48 WEST UNIT 4874JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945087,midland,Midland,BOB MIDKIFF 37-48 WEST UNIT 4875JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945150,midland,Midland,MIDKIFF 42-43 EAST UNIT 4376JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945154,midland,Midland,MIDKIFF 42-43 EAST UNIT 4377JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945282,midland,Midland,MENDELEEV J 105LS,Occidental,LSSH,novi,LSSH,JM,step1_class,True
+4232945283,midland,Midland,MENDELEEV L 107LS,Occidental,LSSH,novi,LSSH,JM,step1_class,True
+4232941772,midland,Midland,WAFFLE IRON H235SS,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232945529,midland,Midland,MUSTANG 110 MIPA UNIT H110SS,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232942115,midland,Midland,WAFFLE IRON H115SS,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232945928,midland,Midland,CASS-COUNTISS 20E 5H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945930,midland,Midland,CASS-COUNTISS 20I 9H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945932,midland,Midland,CASS-COUNTISS 20K 11H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946308,midland,Midland,MBE 201H,FireBird Energy II,LSSH,novi,LSSH,JM,step1_class,True
+4232946599,midland,Midland,BROOKS-CRESPI 30K 11H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946674,midland,Midland,DONOVAN-WILLIS E32Q 217H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946678,midland,Midland,DONOVAN-WILLIS E32C 203H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946681,midland,Midland,DONOVAN-WILLIS W32L 112H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946718,midland,Midland,DONOVAN 2M 113H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946734,midland,Midland,BUCHANAN W17B 2H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946780,midland,Midland,STOUT-HUNTER 25G 207H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946782,midland,Midland,STOUT-HUNTER 25I 209H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946790,midland,Midland,MCALISTER 33G 7H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946951,midland,Midland,DWIGHT-MIDKIFF 25E 5H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947063,midland,Midland,MCC HZ UNIT 1106JH,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4232947146,midland,Midland,FISCHER-ERWIN 10I 109H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947202,midland,Midland,PRATT-VAUGHN 15I 109H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947235,midland,Midland,YELLOW BELLY 13HJ,Apache,LSSH,novi,LSSH,JM,step1_class,True
+4232947304,midland,Midland,TEXAS TEN-ONEAL 39Q 218H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947315,midland,Midland,ERWIN-MURRAY 45P 116H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947324,midland,Midland,BABB 25P 16H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947830,midland,Midland,SPOONBILL-DONOVAN 10J 10H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947896,midland,Midland,ALLEDER-WELCH 33P 216H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947899,midland,Midland,ALLEDER-WELCH 33M 213H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947902,midland,Midland,ALLEDER-WELCH 33I 209H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232944956,midland,Midland,HILL 30-19 F 161,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232945091,midland,Midland,BOB MIDKIFF 37-48 WEST UNIT 4876JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945147,midland,Midland,MIDKIFF 42-43 EAST UNIT 4375JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945616,midland,Midland,REBEL 130 MIPA UNIT H130SS,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232945621,midland,Midland,MUSTANG 150 MIPA UNIT H150SX,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232945681,midland,Midland,TEX-HARVEY SPRABERRY 2123,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232945743,midland,Midland,VIBRANIUM E 13LM,Occidental,LSSH,novi,LSSH,JM,step1_class,True
+4232945774,midland,Midland,LOCKLAR-HOLIMAN 28H 108H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232945793,midland,Midland,KNIGHT 130 MIPA UNIT H130SS,Permian Deep Rock,LSSH,novi,LSSH,JM,step1_class,True
+4232945956,midland,Midland,FRANK 11B 102H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946186,midland,Midland,LELA 7-18 B 121,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232946196,midland,Midland,LELA 7-18 D 244,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232946200,midland,Midland,LELA 18-7 A 112,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232946289,midland,Midland,GUY COWDEN UNIT 1 2571JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946425,midland,Midland,SHULL-MIDKIFF 15G 7H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946533,midland,Midland,CRAWFORD-WELCHEST 27E 5H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946789,midland,Midland,MCALISTER 33A 1H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946791,midland,Midland,MCALISTER 33J 10H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946802,midland,Midland,MCALISTER 33C 3H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946803,midland,Midland,MCALISTER 33F 6H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946804,midland,Midland,MCALISTER 33O 15H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946939,midland,Midland,LELA 18-6 H 181,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232946949,midland,Midland,DWIGHT-MIDKIFF 25C 3H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232946956,midland,Midland,LELA 18-6 E 151,Diamondback,LSSH,novi,LSSH,JM,step1_class,True
+4232947152,midland,Midland,FISCHER-ERWIN 10O 115H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947279,midland,Midland,SHULL-HANKS 15F 206H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947300,midland,Midland,TEXAS TEN-ONEAL 39I 210H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947307,midland,Midland,ONEAL-DAVIS 15C 304H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947310,midland,Midland,ERWIN-MURRAY 45L 112H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947481,midland,Midland,TURNER E41D 4H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947704,midland,Midland,JCF-DAVIDSON 11O 15H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947708,midland,Midland,JCF-DAVIDSON 11S 19H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947746,midland,Midland,JAVAID CENTRAL 40A 1H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947751,midland,Midland,JAVAID CENTRAL 40F 6H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947795,midland,Midland,PIGG-CRESPI 33M 113H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947807,midland,Midland,PIGG-CRESPI 33I 109H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947808,midland,Midland,PIGG-CRESPI 33R 118H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947832,midland,Midland,SPOONBILL-DONOVAN 10G 7H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4232947844,midland,Midland,WINKLEMAN-DONOVAN 9E 105H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4238341098,midland,Reagan,TEICHMAN G 7H,SM Energy,LSSH,novi,LSSH,JM,step1_class,True
+4246140394,midland,Upton,PEMBROOK UNIT 905H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246141452,midland,Upton,DAVIDSON UNIT 2 3673JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246141457,midland,Upton,DAVIDSON UNIT 2 3674JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246141462,midland,Upton,DAVIDSON UNIT 2 3675JH,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246142989,midland,Upton,DRILLY IDOL A7 5502JH,ConocoPhillips,LSSH,novi,LSSH,JM,step1_class,True
+4246143019,midland,Upton,NEAL RANCH 97 A UNIT 9703JH,ConocoPhillips,LSSH,enverus,LSSH,JM,step1_class,True
+4246143152,midland,Upton,BARBARA 136 A 201H,FireBird Energy II,LSSH,novi,LSSH,JM,step1_class,True
+4246143192,midland,Upton,BROOK UNIT O-1H 8H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246140395,midland,Upton,PEMBROOK UNIT 906H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246141066,midland,Upton,PEMBROOK UNIT 1429H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246141554,midland,Upton,PEMBROOK UNIT 321H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246143189,midland,Upton,BROOK UNIT O-1C 3H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246143190,midland,Upton,BROOK UNIT O-1D 4H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4246143191,midland,Upton,BROOK UNIT O-1E 5H,Exxon Mobil,LSSH,novi,LSSH,JM,step1_class,True
+4200345018,midland,Andrews,UNIVERSITY 6-13 UNIT 2H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4200347067,midland,Andrews,CROSS BAR RANCH H 1724H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4200349074,midland,Andrews,FASKEN GT 14B 107HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4203332318,midland,Borden,HIGGINBOTHAM UNIT B 30-19 1H,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4203332623,midland,Borden,GR WEST 49-62 B UNIT A 7H,Highpeak Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4203332640,midland,Borden,MILLER RANCH C302H,Lap Energy Solutions,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541326,midland,Crockett,UNIVERSITY 40 1303H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541423,midland,Crockett,UNIVERSITY 40 1407H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541430,midland,Crockett,UNIVERSITY 40 1408H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541431,midland,Crockett,UNIVERSITY 40 1409H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541673,midland,Crockett,UNIVERSITY EAST 4417CH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541677,midland,Crockett,UNIVERSITY EAST 4417DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541708,midland,Crockett,UNIVERSITY 40 EP 2501H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541710,midland,Crockett,UNIVERSITY 40 EP 2503H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541715,midland,Crockett,UNIVERSITY EAST 4425AH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541716,midland,Crockett,UNIVERSITY EAST 4425BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541717,midland,Crockett,UNIVERSITY EAST 4425CH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541718,midland,Crockett,UNIVERSITY EAST 4425DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541719,midland,Crockett,UNIVERSITY EAST 4425EH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541724,midland,Crockett,UNIVERSITY EAST 4118AH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541726,midland,Crockett,UNIVERSITY EAST 4118CH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541727,midland,Crockett,UNIVERSITY EAST 4118DH,EP Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541728,midland,Crockett,UNIVERSITY EAST 4118EH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541730,midland,Crockett,UNIVERSITY EAST 4118GH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541761,midland,Crockett,UNIVERSITY 52-23 11H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541801,midland,Crockett,UNIVERSITY EAST 4109AH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541805,midland,Crockett,UNIVERSITY EAST 4109EH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541818,midland,Crockett,UNIVERSITY EAST 4109GH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542076,midland,Crockett,UNIVERSITY EAST 4108KH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542077,midland,Crockett,UNIVERSITY EAST 4109MH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542105,midland,Crockett,BEAN RANCH 341NA,Carson Buckles Exploration,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210542373,midland,Crockett,UNIVERSITY STONEGATE 3819FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542377,midland,Crockett,UNIVERSITY STONEGATE 3819NH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541670,midland,Crockett,UNIVERSITY EAST 4417GH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541672,midland,Crockett,UNIVERSITY EAST 4417BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541678,midland,Crockett,UNIVERSITY EAST 4417EH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541681,midland,Crockett,UNIVERSITY EAST 4417FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541720,midland,Crockett,UNIVERSITY EAST 4425FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541725,midland,Crockett,UNIVERSITY EAST 4118BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541729,midland,Crockett,UNIVERSITY EAST 4118FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541731,midland,Crockett,UNIVERSITY EAST 4118HH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541760,midland,Crockett,UNIVERSITY 52-23 10H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210541789,midland,Crockett,UNIVERSITY EAST 4108AH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541790,midland,Crockett,UNIVERSITY EAST 4108BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541791,midland,Crockett,UNIVERSITY EAST 4108CH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541795,midland,Crockett,UNIVERSITY EAST 4108DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541797,midland,Crockett,UNIVERSITY EAST 4108FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541820,midland,Crockett,UNIVERSITY EAST 4109IH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210541904,midland,Crockett,UNIVERSITY EAST 4413MH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4210542042,midland,Crockett,UNIVERSITY EAST 4110BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542067,midland,Crockett,UNIVERSITY EAST 4108HH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542079,midland,Crockett,UNIVERSITY EAST 4109QH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542190,midland,Crockett,UNIVERSITY SALT DRAW 4102DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542271,midland,Crockett,UNIVERSITY SALT DRAW 4101DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542309,midland,Crockett,UNIVERSITY EAST 4110MH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542314,midland,Crockett,UNIVERSITY SALT DRAW 4101HH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542343,midland,Crockett,UNIVERSITY SALT DRAW 3820BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542350,midland,Crockett,UNIVERSITY SALT DRAW 3820JH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542357,midland,Crockett,UNIVERSITY SALT DRAW 3820NH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542363,midland,Crockett,UNIVERSITY STONEGATE 3819JH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542366,midland,Crockett,UNIVERSITY 38 BLOCK UNIT 3819IH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213542427,midland,Ector,AVERITT 1522 B 19H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213542521,midland,Ector,MILLIE B (ALLOC) 33H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213542865,midland,Ector,LEON (AW) 19H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213544063,midland,Ector,GARDENDALE 12-01 01WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4216538492,midland,Gaines,SCHLEICHER CSL 286-14 1H,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4217335995,midland,Glasscock,FLANAGAN 14-LLOYD B 1H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336219,midland,Glasscock,SAN SABA SN 37-36 04 104H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336510,midland,Glasscock,LUMBERJACK 32 3H,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336821,midland,Glasscock,SHACKELTON 31 6HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336825,midland,Glasscock,SHACKELTON 31 4HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336835,midland,Glasscock,TRINITY -16- 201H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336842,midland,Glasscock,TRINITY -16- 203H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336844,midland,Glasscock,TRINITY -16- 204H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336857,midland,Glasscock,TRINITY -16- 208H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336867,midland,Glasscock,FLANAGAN 14-LLOYD A 8H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336869,midland,Glasscock,HARRIS-HUTCHISON UNIT 108HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336962,midland,Glasscock,COLORADO 202H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336966,midland,Glasscock,COLORADO 204H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336972,midland,Glasscock,COLORADO 206H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337080,midland,Glasscock,EDMONDSON A U294H,Burk Royalty,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4217337201,midland,Glasscock,HARRIS-HUTCHISON UNIT 107HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337202,midland,Glasscock,HARRIS-HUTCHISON UNIT 106HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337227,midland,Glasscock,BUCKNER BB 17B 1702L,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337311,midland,Glasscock,DANIEL SN 7-6 UNIT 204H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337572,midland,Glasscock,SEM NS 14-23 01 201H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337580,midland,Glasscock,PATTERSON 5-8 4301H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337740,midland,Glasscock,ZANT 3805BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337835,midland,Glasscock,CURRIE 41-44F 4311H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337862,midland,Glasscock,BARBEE B 47-38 (ALLOC-C) 3NM,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337959,midland,Glasscock,AUGUST 27-22-H 4315H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337967,midland,Glasscock,JERSEY 38-47-D 4407H,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337968,midland,Glasscock,JERSEY 38-47-F 4411H,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213541343,midland,Ector,AVERITT 17H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338004,midland,Glasscock,PATTERSON 5-8-G 4313H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338010,midland,Glasscock,CROUCH 16 4304H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213542837,midland,Ector,MILLIE A 17H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338037,midland,Glasscock,HOUSTON-HERZOG E12E 405H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338063,midland,Glasscock,CROUCH 16 4314H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338074,midland,Glasscock,CROUCH 16 4306H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213544066,midland,Ector,GARDENDALE 12-01 02WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338160,midland,Glasscock,CURRIE 41-29-G 4313H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338167,midland,Glasscock,CURRIE 41-29-E 4310H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4213544198,midland,Ector,RATLIFF C6 1801BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338559,midland,Glasscock,KOONCE WEST 46-34 UNIT 1 262,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338566,midland,Glasscock,KOONCE WEST 46-34 UNIT 1 282,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338577,midland,Glasscock,TOMAHAWK 2425 N 6WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338593,midland,Glasscock,GLENN RILEY 30-42 L 6WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336340,midland,Glasscock,SAN SABA SN 37-36 03 203H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336407,midland,Glasscock,ANGELINA SN 33-28 01 201H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336472,midland,Glasscock,FLANAGAN 14-LLOYD A 3H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338709,midland,Glasscock,KOONCE WEST 46-34 UNIT 1 271R,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336811,midland,Glasscock,LUMBERJACK 32 5HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336831,midland,Glasscock,HARRIS-HUTCHISON UNIT 105HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336840,midland,Glasscock,TRINITY -16- 202H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338732,midland,Glasscock,TROPICANA EAST N 14-26 4414H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336964,midland,Glasscock,COLORADO 203H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336969,midland,Glasscock,COLORADO 205H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217336974,midland,Glasscock,COLORADO 207H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337120,midland,Glasscock,LUMBERJACK 32 14HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337271,midland,Glasscock,CRAIG (ALLOC) 1HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337284,midland,Glasscock,PECOS SN 43-31 01 20 201H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337390,midland,Glasscock,FLANAGAN 14-LLOYD B 12H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337422,midland,Glasscock,BERRY 2007BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338870,midland,Glasscock,TROPICANA WEST 23-14U 21H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337575,midland,Glasscock,SEM NS 14-23 02 202H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339149,midland,Glasscock,BRANDYWINE G 14HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339157,midland,Glasscock,EDWIN WILDE 10-15 C 3WB,Black Swan Opco,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339161,midland,Glasscock,DALE WILDE 10-15 B 2WB,Black Swan Opco,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339164,midland,Glasscock,DALE WILDE 10-15 E 5WB,Black Swan Opco,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337583,midland,Glasscock,FOXTROT NS 30-31 01 201H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339177,midland,Glasscock,YORKTOWN H 12HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339178,midland,Glasscock,MOLLIE 44-41 04 4H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339180,midland,Glasscock,MOLLIE 44-41 06 6H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339183,midland,Glasscock,MOLLIE 44-32 02 2H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339211,midland,Glasscock,GLASS 45-33 02 2H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339215,midland,Glasscock,GLASS 45-33 06 6H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339220,midland,Glasscock,FLINTLOCK 3BB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337713,midland,Glasscock,COLT 45 5HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337715,midland,Glasscock,HUBBARD 26-35 4309H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339280,midland,Glasscock,CALVERLEY-MCDANIELS 23D 304H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339441,midland,Glasscock,COUNTY LINE EAST 27-22 C 4WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339444,midland,Glasscock,COUNTY LINE EAST 27-22 E 5WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222737569,midland,Howard,HAMLIN UNIT 19-18 1H,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738213,midland,Howard,WRIGHT UNIT 40-33 7BH,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738245,midland,Howard,MCCRARY 18BB 1806E,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738454,midland,Howard,GUITAR 15BB 1505D,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217337931,midland,Glasscock,SEM WEST 14-23 B 202WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338008,midland,Glasscock,CROUCH 16 4302H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338039,midland,Glasscock,HOUSTON-HERZOG E12F 406H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338069,midland,Glasscock,CROUCH 16 4311H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738750,midland,Howard,GUITAR 8F 1H,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738752,midland,Howard,GUITAR 8G 3H,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738755,midland,Howard,GUITAR 8X 7H,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738780,midland,Howard,WOLFE-BROPHY UNIT 45-04 8BH,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222738879,midland,Howard,GIANT SACATON 1612 1AA,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338466,midland,Glasscock,KOONCE NORTH 39-34 UNIT 1A 242,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739427,midland,Howard,VAN HALEN 2928WB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338872,midland,Glasscock,TROPICANA WEST 23-14W 23H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338874,midland,Glasscock,TROPICANA WEST 23-14Y 25H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338978,midland,Glasscock,RILEY 26B 128H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338979,midland,Glasscock,RILEY 26I 109H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217338984,midland,Glasscock,RILEY 26F 106H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739835,midland,Howard,ALLRED UNIT A 08-05 3BH,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739877,midland,Howard,BLACK PEARL 11-14 UNIT 1 221,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739881,midland,Howard,BLACK PEARL 11-14 UNIT 1 231,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739883,midland,Howard,BLACK PEARL 11-14 UNIT 1 241,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339003,midland,Glasscock,BRUNSON 3160BP 2H,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339014,midland,Glasscock,BODINE T 17-29 2 2H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339016,midland,Glasscock,BODINE T 17-29 4 4H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339031,midland,Glasscock,BODINE T 17-29 8 8H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339033,midland,Glasscock,BODINE T 17-29 6 6H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339129,midland,Glasscock,SHERMINATOR 12-13 C 5WB,Black Swan Opco,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339159,midland,Glasscock,EDWIN WILDE 10-15 E 5WB,Black Swan Opco,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339213,midland,Glasscock,GLASS 45-33 04 4H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339217,midland,Glasscock,GLASS 45-33 08 8H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339230,midland,Glasscock,FLINTLOCK F 14HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339285,midland,Glasscock,CALVERLEY-MCDANIELS 26I 309H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339378,midland,Glasscock,CUDA 46-3 L 4WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339379,midland,Glasscock,CUDA 46-3 M 5WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339423,midland,Glasscock,COUNTY LINE WEST 34-22 D 2WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4217339429,midland,Glasscock,CUDA 46-3 N R6WB R 6WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222737667,midland,Howard,HAMLIN UNIT 20-29 1H,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740400,midland,Howard,GRANT 18A 4HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740419,midland,Howard,KRAKEN 10-3 UNIT 2 252,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740538,midland,Howard,GILBERT 25-24 (ALLOC-F) 6NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740553,midland,Howard,GILBERT 25-24 (ALLOC-G) 7NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740584,midland,Howard,GILBERT 25-24 (ALLOC-H) 8NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740606,midland,Howard,PASSOW 25-24 (ALLOC-B) 2NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740620,midland,Howard,PASSOW 25-24 (ALLOC-D) 4NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739072,midland,Howard,FLETCH A 1350WB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739126,midland,Howard,ALLRED UNIT A 08-05 4BH,Surge Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739152,midland,Howard,GARRETT UNIT 37-48 17H,Spirit O&G,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740950,midland,Howard,BUCHANAN B 13-12 (ALLOC-F) 6NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740954,midland,Howard,WORTHY 13-12 (ALLOC-B) 2NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739494,midland,Howard,GARRETT-REED UNIT 37-48 22H,Spirit O&G,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739500,midland,Howard,MUSGROVE MILLER 0904 2HM,Bayswater,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739733,midland,Howard,GARDNER UNIT 15-10 3MH,Surge Energy,WCA_1,tvd_corrected,MS,WCB_1,step1_class,True
+4222741390,midland,Howard,ROCKET 3569BP 10H,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222741392,midland,Howard,ROCKET 3567BP 9H,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222739925,midland,Howard,GUITAR SOUTH 1-5-F 4311H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222741557,midland,Howard,FLEEMAN 51-9 B UNIT B 5H,Highpeak Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740382,midland,Howard,BLACK PEARL 11-14 UNIT 2 262,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740471,midland,Howard,SMAILS C 2369WB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740610,midland,Howard,PASSOW 25-24 (ALLOC-C) 3NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740810,midland,Howard,WORTHY 13-12 (ALLOC-D) 4NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222740955,midland,Howard,BUCHANAN B 13-12 (ALLOC-H) 8NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222742566,midland,Howard,EL REY 28-16 1WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223534679,midland,Irion,UNIVERSITY 40 1308H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223534732,midland,Irion,UNIVERSITY 40 1305H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223534733,midland,Irion,UNIVERSITY 40 1306H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223534734,midland,Irion,UNIVERSITY 40 1307H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223534831,midland,Irion,UNIVERSITY 40 1304H,Sequitur Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222741230,midland,Howard,CONNER 15-3 (ALLOC-H) 8NB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535069,midland,Irion,UNIVERSITY EAST 4322DH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535602,midland,Irion,FARMAR B S496HU,Triple Crown Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535658,midland,Irion,BODEGA 4H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4223535889,midland,Irion,DEVACA 25H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4223535943,midland,Irion,FARMAR B N497HU,Triple Crown Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223536219,midland,Irion,BARNHART 61S59 6LU,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223536422,midland,Irion,ROCKER B 148H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223536423,midland,Irion,ROCKER B 149H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223536577,midland,Irion,"HOYT, JOAN CREWS 3CH",Lode Holdings,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4222742505,midland,Howard,BROKEN ARROW 55-54-1-12 H 2WB,Bayswater,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4222742532,midland,Howard,BROKEN ARROW 55-54-1-12 H 1WB,Bayswater,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535070,midland,Irion,UNIVERSITY EAST 4322FH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535100,midland,Irion,UNIVERSITY UNIT '5-20-21' 8H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535141,midland,Irion,UNIVERSITY UNIT '5-20-21' 6H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535306,midland,Irion,SCOTT SUGG 0504 H 71U,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535325,midland,Irion,SUGG STRIP H 41U,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535379,midland,Irion,BODEGA 1H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4223535532,midland,Irion,FARMAR B N492HU,Triple Crown Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535689,midland,Irion,ROCKER B 73H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535690,midland,Irion,ROCKER B 71H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535787,midland,Irion,ROCKER B 54H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223535879,midland,Irion,ELMIRA 34 DIAMOND A 3H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4223536526,midland,Irion,SUGG 7A-1910 1H,Compass Production Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4223536564,midland,Irion,"HOYT, JOAN CREWS 2CH",Lode Holdings,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4231740027,midland,Martin,MCMURRY-CRIM 10 101HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740204,midland,Martin,MCMURRY-CRIM 40 104HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740382,midland,Martin,GLASSCOCK 5A 1H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740383,midland,Martin,GLASSCOCK 5B 2H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740386,midland,Martin,RAYMOND GLASSCOCK 5D 4H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740424,midland,Martin,DICKENSON 7C 3H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740859,midland,Martin,ACT E 04BU,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231741064,midland,Martin,JONES-HOLTON 124SH,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231741768,midland,Martin,LIBERTY BELLE 23-18 UNIT 2 261,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231741773,midland,Martin,LIBERTY BELLE 23-18 UNIT 2 282,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742058,midland,Martin,KENTEX-HARRISON 35B 2H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742305,midland,Martin,MARIENFELD 13-24-F 4311H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743284,midland,Martin,BLAGRAVE K 31-43 4411H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740384,midland,Martin,GLASSCOCK 5C 3H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740422,midland,Martin,DICKENSON 7A 1H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231740423,midland,Martin,DICKENSON 7B 2H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743460,midland,Martin,ARES 27-26 UNIT 1 221,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743463,midland,Martin,ARES 27-26 UNIT 1 232,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743519,midland,Martin,ARES 27-26 UNIT 2 272,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743861,midland,Martin,HUGHES 43-47 UNIT 1 233,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231741766,midland,Martin,LIBERTY BELLE 23-18 UNIT 1 242,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231741770,midland,Martin,LIBERTY BELLE 23-18 UNIT 2 271,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231744404,midland,Martin,CERBERUS 11-23 UNIT 2 262,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231744406,midland,Martin,CERBERUS 11-23 UNIT 2 272,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742059,midland,Martin,KENTEX-HARRISON 35D 4H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742105,midland,Martin,CYPERT 57-51 UNIT 2 272,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742409,midland,Martin,ZEUS 7-6 UNIT 1 232,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231742678,midland,Martin,YELLOW PINE E 6AA,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745161,midland,Martin,APOLLO 38-1 UNIT 2 282,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745370,midland,Martin,HERA 56-46 UNIT 1 221,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743187,midland,Martin,CERBERUS 11-23 UNIT 2 271,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743312,midland,Martin,HYDRA 45-4 UNIT 1 221,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745736,midland,Martin,ELIAS 16-9 UNIT 2 262,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743615,midland,Martin,AMOCO-BLANCHE 2-28 UNIT 2 261,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743618,midland,Martin,AMOCO-BLANCHE 2-28 UNIT 2 272,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745822,midland,Martin,ELIAS 16-9 UNIT 1 233,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743788,midland,Martin,HUGHES 43-47 UNIT 2 273,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743794,midland,Martin,HUGHES 43-47 UNIT 2 261,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743803,midland,Martin,HUGHES 43-47 E 243,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743913,midland,Martin,ATHENA 44-36 UNIT 2 261,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743922,midland,Martin,ATHENA 44-36 E 243,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743961,midland,Martin,ATHENA 44-36 UNIT 1 221,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231743966,midland,Martin,ATHENA 44-36 UNIT 1 231,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231746578,midland,Martin,HERCULES 55-64 UNIT 2WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231746669,midland,Martin,STREETS OF LAREDO E 5HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231744492,midland,Martin,CERBERUS 23-14 UNIT 1 213,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231744503,midland,Martin,CERBERUS 23-14 UNIT 1 243,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231746975,midland,Martin,TYPHON EAST 27-10 UNIT 2WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231746980,midland,Martin,TYPHON EAST 27-10 UNIT 1WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232938737,midland,Midland,MIDKIFF 1818H,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232939631,midland,Midland,LHS RANCH 1607BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745135,midland,Martin,APOLLO 38-1 UNIT 1 233,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745375,midland,Martin,HERA 56-46 UNIT 1 241,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940691,midland,Midland,BOONE-COFFEE 10 101HB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940764,midland,Midland,PARKS FIELD UNIT 2 1863BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745518,midland,Martin,HERA 55-46 UNIT 2 251,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940935,midland,Midland,SPANISH TRAIL 3-10 A6 3442H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940938,midland,Midland,RIO GRANDE 25-20SL UNIT 2 8HB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231745651,midland,Martin,ELIAS 16-9 UNIT 2 281,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4231746568,midland,Martin,TOMBSTONE 8-25 I 9WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232942601,midland,Midland,EICOFF 29 1H,Fasken Oil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943141,midland,Midland,MIDKIFF NES11O 115H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943307,midland,Midland,TIMMERMAN J11 2206BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232939031,midland,Midland,DORA ROBERTS RANCH UNIT 4613H,Continental Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232939177,midland,Midland,ST 4407H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232939178,midland,Midland,ST 4408H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943520,midland,Midland,AVOGADRO C 3HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943587,midland,Midland,DENISE 2038WB,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943606,midland,Midland,AVOGADRO I 12HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943978,midland,Midland,BRAUN C W6 2108BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232944267,midland,Midland,WTH 24-13 H 281,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940595,midland,Midland,MIDLAND 'AV' FEE 13HA,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232940990,midland,Midland,PEGASUS FIELD UNIT 3 118BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232941026,midland,Midland,MCC HZ UNIT 1104H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232941103,midland,Midland,ARTEMIS 42 06 A 4225H,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232944974,midland,Midland,HILL 30-19 G 275,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232941398,midland,Midland,RIO FRIO 25-32SL UNIT 2 7UA,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232941484,midland,Midland,SPANISH TRAIL 3332H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945303,midland,Midland,A.B. HARRINGTON H20 601BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232941868,midland,Midland,LEONARD REVOCABLE TRUST UNIT 2 2317AH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945537,midland,Midland,FISCHER-COULSON W10A 1H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945711,midland,Midland,SILVER BULLET 4HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945812,midland,Midland,YELLOW BELLY 1HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232942338,midland,Midland,FR UNOBTANIUM 1411 31BR,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945962,midland,Midland,FRANK 11H 108H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232943139,midland,Midland,MIDKIFF NEN11F 106H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946764,midland,Midland,BUSBY 4HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947153,midland,Midland,FASKEN 17E 1HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947164,midland,Midland,FASKEN 17X 12HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947289,midland,Midland,DAVIDSON 42F 1HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947433,midland,Midland,SOA SCHARBAUER SE 6011WB,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947538,midland,Midland,ANTIETAM E 6HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947744,midland,Midland,MIDNIGHT BOURBON H 29HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947745,midland,Midland,MIDNIGHT BOURBON 6HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947983,midland,Midland,MIDNIGHT BOURBON I 30HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232944749,midland,Midland,WTH 24-13 F 261,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232944957,midland,Midland,HILL 30-19 E 253,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232945359,midland,Midland,HEADLEE 2821 D 301H,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338484,midland,Reagan,SRH NORTH 1333HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338517,midland,Reagan,WEATHERBY 1231 2HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338787,midland,Reagan,"ROCKER, B. -N- 91H",Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339414,midland,Reagan,SRH A 9-8 (PSA-M) 13SM,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339415,midland,Reagan,SRH A 9-8 (PSA-N) 14SM,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339546,midland,Reagan,UNIVERSITY SR 23-26 06HS,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339549,midland,Reagan,HOLT C 132-133 (ALLOC-H) 8SM,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339568,midland,Reagan,HOLT C 132-130 (ALLOC-D) 4NM,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339663,midland,Reagan,BATES 31-43 4301H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339674,midland,Reagan,UNIVERSITY 11 RE WEST 1007HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339684,midland,Reagan,COPE 79-80 22HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339688,midland,Reagan,WTG UNIT 5-234 1HM,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339708,midland,Reagan,BATES 43 AND 42 4314H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339893,midland,Reagan,COPE 82-81 32HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340175,midland,Reagan,NORTH CREEK B 431UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340301,midland,Reagan,ALDWELL 0544 12HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340525,midland,Reagan,NORTH CREEK B 482UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340584,midland,Reagan,ALDWELL 0544 14HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340587,midland,Reagan,ALDWELL 0544 16HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340589,midland,Reagan,ALDWELL 0544 20HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946416,midland,Midland,KOLACHE 3HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946424,midland,Midland,KOLACHE F 7HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946438,midland,Midland,KOLACHE G 10HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340669,midland,Reagan,BULLHEAD 724UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340717,midland,Reagan,BULLHEAD 491US,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946751,midland,Midland,TIMMERMAN A5 402BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232946760,midland,Midland,TIMMERMAN A1 403BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340950,midland,Reagan,CAUBLE 22-29 UNIT 1 231,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340986,midland,Reagan,GRACE F 6H,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341019,midland,Reagan,NORTH CREEK B 492UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947018,midland,Midland,FREDERICKSBURG F 10HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341608,midland,Reagan,BULLHEAD 0752UB,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341610,midland,Reagan,BULLHEAD 0755UB,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341612,midland,Reagan,BULLHEAD 0758UB,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947292,midland,Midland,DAVIDSON 42X 4HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341704,midland,Reagan,BODINE A1 04 4H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341730,midland,Reagan,BODINE A2 08 8H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341735,midland,Reagan,UL WTG 3-233 A 331H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947432,midland,Midland,SOA SCHARBAUER SE 6012WB,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947434,midland,Midland,SOA SCHARBAUER SE 6013WB,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947453,midland,Midland,DAVIDSON B 34D 203HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947543,midland,Midland,ANTIETAM F 11HB,Occidental,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947723,midland,Midland,JW G 474WB,Discovery Operating,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947737,midland,Midland,FRASER 2HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232947738,midland,Midland,FRASER U1HM 1HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4232948167,midland,Midland,MARION WEST 36-25 E 2WB,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238337669,midland,Reagan,UNIVERSITY 09 1801H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338278,midland,Reagan,CHICO WEST 2-1 0101H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338499,midland,Reagan,WEATHERBY 1231 8HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338505,midland,Reagan,WEATHERBY 1231 6HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338788,midland,Reagan,"ROCKER, B. -N- 88H",Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338856,midland,Reagan,SRH NORTH 1441HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238338871,midland,Reagan,UNIVERSITY CENTRAL 0829BH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,False
+4238338982,midland,Reagan,DIVIDE DRAW 1251SH,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339416,midland,Reagan,SRH E 7-8 (PSA-A) 1SM,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339604,midland,Reagan,COPE 82-81 22HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339609,midland,Reagan,SUGG E 208-207 (ALLOC-A) 1NM,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339739,midland,Reagan,UNIVERSITY CENTRAL 0112NH,Rushmore Resource Partners,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238339931,midland,Reagan,ALEXANDER BIRD 43-6 241,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340000,midland,Reagan,COPE 79-80 32HA,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340322,midland,Reagan,WTG 5-233 1BU,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340508,midland,Reagan,ALDWELL 0611 E 3HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340510,midland,Reagan,ALDWELL 0611 E 6HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340512,midland,Reagan,ALDWELL 0611 E 11HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340529,midland,Reagan,NORTH CREEK B AL04 483UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340658,midland,Reagan,ULANDS 48 2-12 A 441 H,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340714,midland,Reagan,NORTH CREEK B 484UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340715,midland,Reagan,BULLHEAD 482US,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340716,midland,Reagan,NORTH CREEK B 485UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340718,midland,Reagan,BULLHEAD 492US,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238340719,midland,Reagan,NORTH CREEK B 491UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341130,midland,Reagan,BULLHEAD 733UN,Discovery Natural Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341168,midland,Reagan,DRIVER PROCTOR 33-40F 6H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341791,midland,Reagan,BODINE B2 06 6H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341806,midland,Reagan,BODINE B1 04 4H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238341808,midland,Reagan,BODINE B1 02 2H,Hannathon Petroleum II,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4238342126,midland,Reagan,WILDCAT WEST G 17-6 4307H,Double Eagle Energy IV,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139461,midland,Upton,NEAL RANCH '77' A UNIT 28H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139753,midland,Upton,LHS RANCH 1704BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139796,midland,Upton,PEGASUS FIELD UNIT 3 4314H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140692,midland,Upton,WINDHAM TXL B10 3006BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140843,midland,Upton,SEBASTIAN 19-18-A 4301H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140949,midland,Upton,BLACK DOG 4231 E 9HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141200,midland,Upton,HIRSCH E 29-17-B 4304H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141207,midland,Upton,MARY 18-7A-D 4307H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141657,midland,Upton,MIDKIFF NW11E 5H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141858,midland,Upton,CLARISSA 2 04WB,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141905,midland,Upton,BENEDUM 3-6 C 7BU,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142086,midland,Upton,JRS FARMS 13-25C 3H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142088,midland,Upton,JRS FARMS 13-25E 5H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142475,midland,Upton,DAVY JONES C 5014HU,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142619,midland,Upton,DAVIDSON 34C 108HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142635,midland,Upton,RATLIFF J 2HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142693,midland,Upton,SUSAN CR KIRA (SA) A 4670WB,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142732,midland,Upton,HELLFIRE EAST E 8HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142963,midland,Upton,RWT BUFFALO BAYOU 16-4 1502WB,Chevron,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142964,midland,Upton,HERBERT P 102A 201HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143081,midland,Upton,WHIRLAWAY N101H,Triple Crown Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143097,midland,Upton,KYLIE 7 14BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143285,midland,Upton,HERBERT 101E 304HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139224,midland,Upton,NEAL RANCH '57' UNIT 32H,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139700,midland,Upton,LILLIE MIDKIFF 5 4402BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139702,midland,Upton,LILLIE MIDKIFF 5 4404BH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246139794,midland,Upton,CEMETERY '28' 2H,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140236,midland,Upton,CC 4132D 1HM,Prime Operating,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140587,midland,Upton,UNIVERSITY RED 5101B,Zarvona Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140589,midland,Upton,UNIVERSITY RED 5111B,Zarvona Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140834,midland,Upton,SHACKELFORD 7-6A-A 4301H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246140943,midland,Upton,BLACK DOG 4231 A 1HM,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141093,midland,Upton,AMACKER 67C 6701BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141183,midland,Upton,JOSHUA 32-51 C 14AL,Crescent Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141291,midland,Upton,RATLIFF 9-7 D 6BU,Permian Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141332,midland,Upton,SHAQ O 38-14 4315H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141336,midland,Upton,SHAQ L 38-14 4312H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141466,midland,Upton,SEBASTIAN 19-18-D 4308H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141595,midland,Upton,JACK 25C-13-A 4301VH,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141597,midland,Upton,JACK 25C-13A-C 4305H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246141736,midland,Upton,MIDKIFF 12-13E-H 8H,Exxon Mobil,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142411,midland,Upton,BLAZE M4 502BH,ConocoPhillips,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142439,midland,Upton,UNIVERSITY 14-11G 7B,SM Energy,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142562,midland,Upton,PENNYWISE A 5013HU,Diamondback,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142639,midland,Upton,RATLIFF E 6HU,Apache,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142872,midland,Upton,HENSLEY 41E 1HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142874,midland,Upton,HENSLEY 41G 3HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246142967,midland,Upton,HERBERT P 102C 204HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143069,midland,Upton,ARIA 5 09BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143083,midland,Upton,WHIRLAWAY N103H,Triple Crown Resources,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143102,midland,Upton,KYLIE 11 22BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143193,midland,Upton,ALLIE 6 11BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143196,midland,Upton,ALLIE 9 17BU,Summit Petroleum,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143375,midland,Upton,NEAL 38E 2HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4246143382,midland,Upton,NEAL 38F 4HL,Ovintiv,WCA_1,enverus,WCA_1,WCB_1,step1_class,True
+4210542123,midland,Crockett,PANGEA WEST 6525HA,Zarvona Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4210541692,midland,Crockett,PANGEA WEST 6533H,Zarvona Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,False
+4210542120,midland,Crockett,PANGEA WEST 6513HA,Zarvona Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4210542325,midland,Crockett,UNIVERSITY SALT DRAW 4114AH,Rushmore Resource Partners,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4222740037,midland,Howard,MORTAL STORM 12-13-24 H 1W,Bayswater,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4222740055,midland,Howard,FAR COUNTRY 12-13-24 H 4W,Bayswater,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223535617,midland,Irion,SSH UNIT H 81U,Apache,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223536496,midland,Irion,WAR ADMIRAL POOLED UNIT S441H,Triple Crown Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223535608,midland,Irion,SSH UNIT H 61U,Apache,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223535619,midland,Irion,SCOTT SUGG SE UNIT H 21U,Apache,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223535628,midland,Irion,SCOTT SUGG SE UNIT H 11U,Apache,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4223535821,midland,Irion,UNIVERSITY 43-4 1H,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231741278,midland,Martin,DAVIDSON-HALE O 65-37 4215H,Exxon Mobil,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231742834,midland,Martin,SOTO 43-7 (ALLOC-3SH) 3LB,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231740972,midland,Martin,PEELER B 12WA,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231741412,midland,Martin,MOTT 7 104,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231742450,midland,Martin,MOTT 12 301,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231742513,midland,Martin,WASHINGTON 3 203,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4231743826,midland,Martin,PETERS 1102A 2A,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238339477,midland,Reagan,UNIVERSITY SR 23-26 36HS,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238339480,midland,Reagan,UNIVERSITY CENTRAL 0824HH,Rushmore Resource Partners,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238339645,midland,Reagan,UNIVERSITY CENTRAL 0824LH,Rushmore Resource Partners,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340134,midland,Reagan,HICKMAN 206-223 ALLOC D3 7HA,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340400,midland,Reagan,SUGG B 163-162 (ALLOC-A) N011MA,Crescent Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341079,midland,Reagan,UNIVERSITY 09C 3605WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341106,midland,Reagan,CAMILLE A 1H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341110,midland,Reagan,CAMILLE E 5H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341112,midland,Reagan,CAMILLE G 7H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341348,midland,Reagan,UL BOET F 6H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341367,midland,Reagan,ALEXIS RAE C 3H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341374,midland,Reagan,AINSLEY JEANNE B 2H,SM Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341911,midland,Reagan,UNIVERSITY 9 2207WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238342093,midland,Reagan,MILTON C 9-20 4203H,Double Eagle Energy IV,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238338452,midland,Reagan,UNIVERSITY 09 1814H,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238339894,midland,Reagan,BOOTHE 236-6 1H,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340624,midland,Reagan,BLOXOM SOUTH 210-219 ALLOC 02 02HA,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340843,midland,Reagan,UNIVERSITY 09C 3603WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340912,midland,Reagan,CLARKSON 7-26 E 251,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238340913,midland,Reagan,CLARKSON 7-26 B 221,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341056,midland,Reagan,CLARKSON 7-26 F 261,Diamondback,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341091,midland,Reagan,TSRH EAST 18-20 G 7A,Permian Resources,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341912,midland,Reagan,UNIVERSITY 9 2213WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341913,midland,Reagan,UNIVERSITY 9 2219WA,Sequitur Energy,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4238341944,midland,Reagan,TAT O 8-9 4215H,Double Eagle Energy IV,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4246141434,midland,Upton,SEBASTIAN 19-18-B 4304VH,Exxon Mobil,WCB_1,enverus,WCB_1,WCA_1,step1_class,True
+4203331672,midland,Borden,JO-MILL UNIT LP 2520H,Jo Mill Oil,DEAN,tvd_corrected,JM,JM,vendor,False
+4231744985,midland,Martin,JOHNSON RANCH WEST B 13-1 2602H,Diamondback,JM,tvd_corrected,WCD,WCD,vendor,True
+4200348504,midland,Andrews,UNIVERSITY 5-35 N3 H 3MS,Ovintiv,LSSH,tvd_corrected,MS,MS,vendor,True
+4213544173,midland,Ector,SOCO 1907 B 401H,FireBird Energy II,LSSH,tvd_corrected,OTHER,OTHER,vendor,False
+4213544174,midland,Ector,SOCO 1907 C 201H,FireBird Energy II,LSSH,tvd_corrected,OTHER,OTHER,vendor,False
+4231742707,midland,Martin,T Y RANCH WEST 2451JM,Diamondback,LSSH,tvd_corrected,JM,JM,vendor,True
+4231742713,midland,Martin,T Y RANCH WEST 2453JM,Diamondback,LSSH,tvd_corrected,JM,JM,vendor,True
+4246140642,midland,Upton,UNIVERSITY RED 5154B,Zarvona Energy,LSSH,tvd_corrected,WCB_1,WCB_1,vendor,True
+4200345969,midland,Andrews,UL DIGGER 502H,Diamondback,MS,tvd_corrected,OTHER,OTHER,vendor,False
+4210337719,midland,Crane,EDWARDS B 2H,Slant Operating,MS,tvd_corrected,LSSH,LSSH,vendor,False
+4210541359,midland,Crockett,SHANNON ESTATE 01-36 3H,Devon,WCA_1,tvd_corrected,WCB_1,WCB_1,vendor,False
+4223536438,midland,Irion,"HOYT, JOAN CREWS 1CH",Lode Holdings,WCA_1,tvd_corrected,OTHER,OTHER,vendor,False
+4232946206,midland,Midland,ONEAL-ANNIE 15R 18H,Exxon Mobil,WCA_1,tvd_corrected,LSSH,LSSH,vendor,True
+4238339841,midland,Reagan,UNIVERSITY CENTRAL 0803DH,Rushmore Resource Partners,WCA_1,tvd_corrected,WCB_2,WCB_2,vendor,True
+4246139501,midland,Upton,PEMBROOK X-1 5H,Exxon Mobil,WCA_1,tvd_corrected,WCB_2,WCB_2,vendor,True
+4231744984,midland,Martin,JOHNSON RANCH WEST A 13-1 4301H,Diamondback,WCB_1,tvd_corrected,WCD,WCD,vendor,True

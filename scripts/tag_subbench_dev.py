@@ -19,7 +19,7 @@ import pandas as pd
 from box import tag_precedence as tp
 from box import tag_subbench as ts1
 from scripts.tag_surface_density import wells_frame
-from scripts.tag_v5_accepted import accepted_tags, crossings
+from scripts.tag_v5_accepted import accepted_tags, class_decisions, crossings
 
 MIN_CLASS = 20
 
@@ -27,7 +27,7 @@ MIN_CLASS = 20
 def build(cache: Path, folders: list[Path]) -> pd.DataFrame:
     d = pd.read_pickle(cache / "producers_v5.pkl")
     cards = pd.concat([pd.read_csv(f / "cards_sample.csv", dtype={"api10": str}) for f in folders], ignore_index=True)
-    a = accepted_tags(d, cards, pd.read_csv(folders[-1] / "class_decisions.csv"))
+    a = accepted_tags(d, cards, class_decisions(folders))
     a["src"] = None
     a.loc[(a["live_source"] == "tvd_corrected") & (a["accepted"] == a["live"]), "src"] = "sql23_kept"
     a.loc[a["override"].notna() & (a["accepted"] == a["live"]), "src"] = "override"
@@ -55,7 +55,8 @@ def run(cache: Path, folders: list[Path], out: Path) -> dict:
             "novi_raw", "env_raw", "in_box_extents"] + sorted(c for c in d.columns if c.startswith("z_") and c not in ("z_novi", "z_env"))
     ch[cols].to_csv(out / "changes.csv", index=False)
     # Michael's carded sub-bench calls (not blind: he called these before the rule existed; reported, not tuned)
-    cards = pd.read_csv(folders[-1] / "cards_scored.csv", dtype={"api10": str})
+    cards = pd.concat([pd.read_csv(f / "cards_scored.csv", dtype={"api10": str}) for f in folders if (f / "cards_scored.csv").exists()],
+                      ignore_index=True).drop_duplicates("api10", keep="last")
     sub = probe_carded(d, cards)
     sub.to_csv(out / "carded_subbench_check.csv", index=False)
     w = wells_frame(cache).assign(api10=lambda x: x["api10"].astype(str)).merge(d[["api10", "accepted", "sb_code"]], on="api10", how="left")

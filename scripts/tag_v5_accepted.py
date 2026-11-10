@@ -22,9 +22,18 @@ import pandas as pd
 
 from box import tag_precedence as tp
 from box import tag_scoreboard as sb
+from box import tag_screen as ts
 from scripts import tag_landing_crossings as lc
 from scripts.tag_surface_density import wells_frame
 from scripts.tag_v5_cards import class_label
+
+
+def class_decisions(folders: list[Path]) -> pd.DataFrame:
+    """Every round's class decisions, one row per class; a later folder (a later round) wins."""
+    fs = [f / "class_decisions.csv" for f in folders if (f / "class_decisions.csv").exists()]
+    if not fs:
+        raise SystemExit("no class_decisions.csv in the card folders")
+    return pd.concat([pd.read_csv(f) for f in fs], ignore_index=True).drop_duplicates("class", keep="last")
 
 
 def accepted_tags(d: pd.DataFrame, cards: pd.DataFrame, decisions: pd.DataFrame) -> pd.DataFrame:
@@ -37,8 +46,8 @@ def accepted_tags(d: pd.DataFrame, cards: pd.DataFrame, decisions: pd.DataFrame)
     d["accepted_basis"] = np.where(in_acc, "class_accepted", np.where(changes, "class_not_accepted", "unchanged"))
     v = cards.dropna(subset=["verdict"]).copy()
     v["verdict"] = v["verdict"].astype(str).str.strip()
-    v["call"] = np.where(v["verdict"].str.lower() == "agree", v["proposed"], v["verdict"])
-    is_code = v["call"].str.fullmatch(r"[A-Z0-9_]+")
+    v["call"] = np.where(v["verdict"].str.lower().isin(ts.AGREE_WORDS), v["proposed"], v["verdict"])  # ACCEPT = agree
+    is_code = v["call"].str.fullmatch(r"[A-Z0-9_]+") & ~v["call"].str.startswith("REJECT")
     calls = v[is_code].set_index("api10")["call"]
     m = d["api10"].isin(calls.index)
     d.loc[m, "accepted"] = d.loc[m, "api10"].map(calls)
@@ -63,7 +72,7 @@ def run(cache: Path, folders: list[Path], out: Path) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     d = pd.read_pickle(cache / "producers_v5.pkl")
     cards = pd.concat([pd.read_csv(f / "cards_sample.csv", dtype={"api10": str}) for f in folders], ignore_index=True)
-    decisions = pd.read_csv(folders[-1] / "class_decisions.csv")
+    decisions = class_decisions(folders)
     a = accepted_tags(d, cards, decisions)
     a["changes"] = a["accepted"].fillna("~") != a["live"].fillna("~")
     a["unit_changes"] = [tp.unit(b, x) != tp.unit(b, y) for b, x, y in zip(a["basin"], a["live"], a["accepted"], strict=True)]

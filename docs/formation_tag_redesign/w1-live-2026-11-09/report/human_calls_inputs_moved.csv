@@ -1,0 +1,11 @@
+api10,card_set,card,inputs_moved,novi_raw_moved,env_raw_moved,tvd_ft_moved,lat_tvd_p50_ft_moved,planned_moved
+3001544862,v5-cards-2026-11-06,27,True,True,False,True,True,False
+3002542992,v5-cards-2026-11-06,44,True,False,False,True,True,False
+3001540509,v5-cards-2026-11-06,51,True,True,False,True,True,False
+3001541230,policy-v1-cards-2026-11-09/step1,12,True,False,False,True,True,False
+3002541050,policy-v1-cards-2026-11-09/step1_round2,27,True,False,False,True,True,False
+3002540124,v5_2-cards-2026-11-08,3,True,False,False,True,True,False
+3001553640,v5_2-cards-2026-11-08,101,True,False,False,False,True,False
+4230133915,v5_2-cards-2026-11-08,113,True,True,False,False,False,False
+3001554423,v5_2-cards-2026-11-08,114,True,False,False,True,True,False
+3002544497,policy-v1-cards-2026-11-09/step3,22,True,False,False,False,True,False

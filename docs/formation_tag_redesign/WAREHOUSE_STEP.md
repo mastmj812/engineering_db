@@ -176,6 +176,15 @@ with the same wells. Any well that moves class because sql/23 had flipped it get
 
 **Gate W1:** Michael reviews the report and cards whatever the queue holds before cutover.
 
+**W1 run 2026-11-09:** `w1-live-2026-11-09/REPORT.md`.
+- The vendor-only pull reproduces sql/16 on all 60,832 wells.
+- The rule on live reproduces the reviewed decisions on 99.94 % of 56,713 wells; every difference is the well's own
+  inputs or its neighbours moving.
+- The cutover would change 1,353 frame wells; 78 more outside the frame lose a sql/23 flip.
+- The queue is 11 single cards: 4 Step 2, 5 Step 3, and the 2 class-identity wells.
+- 10 human calls are flagged because their inputs moved.
+- The chain takes 15 min.
+
 ### W2: Repo (one PR off `main`, after PR #233 merges; no stacking)
 
 - **`sql/NN_formation_tag_rule.sql`:**
@@ -275,18 +284,15 @@ including the intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_loc
   WCA_1 calls.
 - **Crosswalk fix (2026-11-09, applied live):** Novi Insights `WOLFCAMP A (XY)` → WCXY (PR #234).
 
-**Open, for Michael before W2:**
-- **Q1 mechanism (recommended: the sql/16 rewrite, not yet confirmed):**
-  - The nightly decision effectively requires it, because pinned override rows can't follow nightly inputs.
-  - With the switch, it costs one structural window (W3); cutover and rollback after that need no drop.
-  - The alternative is ~840 rule outputs pinned as override rows plus a periodic re-run, which is what this revision
-    replaces.
-- **D1, standing write:** the nightly writes `curated.formation_tag_rule` and `meta.formation_tag_run` every night
-  without a per-run go. The scope is exactly those two tables, behind the circuit breaker; all policy changes stay PR +
-  explicit apply. This is a new standing authorization, of the same narrow kind as the Novi drift auto-add.
-- **D2, the Q5 storage refinement:** depth exclusions get their own seeded table instead of rows inside the rule table.
-- **D3, circuit-breaker threshold and shadow length:** proposed 200 wells / 1 %, and at least 10 runs.
-- **D4, survey refresh:** move `well_lateral_survey` ahead of the rule step (recommended), or accept a one-day lag.
+**Decided 2026-11-09 (Michael: "Confirm as recommended"):**
+- **Q1, mechanism:** the sql/16 rewrite with the switch. Rule outputs are never pinned as override rows.
+- **D1, standing write:** the nightly may write `curated.formation_tag_rule` and `meta.formation_tag_run` every night
+  without a per-run go. The scope is exactly those two tables, behind the circuit breaker. Every policy or seed change
+  stays a PR plus an explicit apply. W3 and W5 still need their own explicit go.
+- **D2, Q5 storage:** depth exclusions go in their own seeded table, `ref.formation_tag_depth_exclusions`.
+- **D3, circuit breaker and shadow:** 200 wells or 1 % of judged producers, whichever is larger; at least 10 shadow
+  runs.
+- **D4, survey refresh:** `well_lateral_survey` moves ahead of the rule step in the nightly.
 
 **Still open in the rule itself (not blocking the warehouse step):**
 - **Step 1's unit-blend reference:** it uses unit-level, not code-level, references, as Step 3 rev 1 does. This is
