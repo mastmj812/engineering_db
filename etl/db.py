@@ -402,6 +402,9 @@ def settle(seconds: int | None = None) -> int:
 _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.enverus_lateral_lines",
     "curated.wells",
+    # sql/64 — raw_novi.DirectionalSurveys only (no curated deps); gated below. Refreshed BEFORE the tag-rule step
+    # (D4, 2026-11-09): the rule reads its survey depths (etl/tag_rule.py runs as the hook before formation_blueox).
+    "curated.well_lateral_survey",
     "curated.formation_blueox",
     "curated.producing_reference",
     "curated.formation_blueox_tvd",
@@ -415,8 +418,6 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.intel_forecast_accuracy",
     "curated.intel_forecast_accuracy_vintage",
     "curated.production_forecast",
-    # sql/64 — raw_novi.DirectionalSurveys only (no curated deps); gated below.
-    "curated.well_lateral_survey",
 )
 
 # Matviews allowed to be absent mid-quarterly-rebuild (the intel reload
@@ -487,7 +488,7 @@ def _matview_is_stale(conn: PGConnection, matview: str, source_like: str) -> boo
     return _needs_refresh(last_refresh, last_change)
 
 
-def refresh_curated(*, force: bool = False) -> None:
+def refresh_curated(*, force: bool = False, hooks: Mapping[str, Callable[[], None]] | None = None) -> None:
     """Refresh the curated materialized views CONCURRENTLY, one at a time, in
     dependency order, with a settle between each.
 
@@ -504,9 +505,14 @@ def refresh_curated(*, force: bool = False) -> None:
     refresh is recorded in meta.etl_log ("curated", <matview>) so the gate can
     read the last successful refresh. Pass ``force=True`` to refresh everything
     regardless — do this after a full_reconcile_table (deletes aren't flagged by
-    the incremental watermark) or a schema change."""
+    the incremental watermark) or a schema change.
+
+    ``hooks`` maps a matview to a callable run just BEFORE it refreshes (etl.refresh passes the tag-rule step for
+    curated.formation_blueox). A hook must not raise; it is called once per run."""
     n = len(_CURATED_MATVIEWS)
     for i, mv in enumerate(_CURATED_MATVIEWS):
+        if hooks and mv in hooks:
+            hooks[mv]()
         source_like = _GATED_REFRESH.get(mv)
         if source_like is not None and not force:
             def _probe(mv: str = mv, source_like: str = source_like) -> bool:

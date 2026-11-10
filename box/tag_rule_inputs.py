@@ -29,7 +29,6 @@ from typing import Any
 import pandas as pd
 
 from box import tag_scoreboard as sb
-from box import tops_qc_report as rep
 
 # sql/16's coarse Novi values (defer to Enverus ENVInterval). Must match sql/16 exactly; check_identity catches drift.
 SQL16_TRIGGERS = ("WOLFCAMP A", "WOLFCAMP A (XY)", "WOLFCAMP A (XY) SHELF", "WOLFCAMP B", "LOWER SPRABERRY SAND", "WOLFCAMP",
@@ -97,9 +96,30 @@ WHERE e.basin_blueox IN ('delaware', 'midland') AND e.is_horizontal AND e.first_
 
 VENDOR_COLS = ["api10", "novi_raw", "env_raw", "basin", "novi_code", "env_code"]
 
+# Survey stations (the dev scoreboard's cache; the rule itself never reads them).
+STATIONS_SQL = """
+SELECT s.api10, (s.dp).path[1] AS i,
+       extensions.ST_X((s.dp).geom) AS lon, extensions.ST_Y((s.dp).geom) AS lat, extensions.ST_Z((s.dp).geom) AS tvd,
+       s.kb_elev_ft
+FROM (SELECT api10, kb_elev_ft, extensions.ST_DumpPoints(lateral_geom) AS dp
+      FROM curated.well_lateral_survey
+      WHERE api10 = ANY(%(a)s) AND lateral_geom IS NOT NULL) s
+"""
 
-def pull(conn: Any) -> dict[str, pd.DataFrame]:
-    d = rep._read(conn, WELLS_SQL, {"frac": 1.0 / sb.NPTS, "trig": list(SQL16_TRIGGERS)})
+
+def _read(conn: Any, sql: str, params: dict[str, Any]) -> pd.DataFrame:
+    """One read-only transaction (box.tops_qc_report's pattern, without its plotting imports)."""
+    with conn.cursor() as cur:
+        cur.execute("SET TRANSACTION READ ONLY")
+        cur.execute(sql, params)
+        cols = [c.name for c in cur.description]
+        rows = cur.fetchall()
+    conn.rollback()
+    return pd.DataFrame(rows, columns=cols)
+
+
+def pull(conn: Any, stations: bool = True) -> dict[str, pd.DataFrame]:
+    d = _read(conn, WELLS_SQL, {"frac": 1.0 / sb.NPTS, "trig": list(SQL16_TRIGGERS)})
     for c in ("tvd_ft", "lat_tvd_p50_ft", "lateral_length_ft", "midpoint_lon", "midpoint_lat"):
         d[c] = pd.to_numeric(d[c], errors="coerce")
     d["api10"] = d["api10"].astype(str)
@@ -108,14 +128,16 @@ def pull(conn: Any) -> dict[str, pd.DataFrame]:
     d["pts"] = [sb.parse_points(w, m[0] if m else None) for w, m in zip(d["pts_wkt"], mids, strict=True)]
     vendors = d[VENDOR_COLS].copy()
     wells = d.drop(columns=["pts_wkt", "mid_wkt", "novi_raw", "env_raw", "novi_code", "env_code"])
-    ids = wells.loc[(wells["basin"] == "delaware") & wells["lat_tvd_p50_ft"].notna(), "api10"].tolist()
-    st = rep._read(conn, rep._STATIONS_SQL, {"a": ids})
-    for c in ("lon", "lat", "tvd"):
-        st[c] = pd.to_numeric(st[c], errors="coerce")
-    st["api10"] = st["api10"].astype(str)
-    ex = rep._read(conn, EXTENTS_SQL, {})
+    st = pd.DataFrame(columns=["api10", "i", "lon", "lat", "tvd", "kb_elev_ft"])
+    if stations:
+        ids = wells.loc[(wells["basin"] == "delaware") & wells["lat_tvd_p50_ft"].notna(), "api10"].tolist()
+        st = _read(conn, STATIONS_SQL, {"a": ids})
+        for c in ("lon", "lat", "tvd"):
+            st[c] = pd.to_numeric(st[c], errors="coerce")
+        st["api10"] = st["api10"].astype(str)
+    ex = _read(conn, EXTENTS_SQL, {})
     ex["area_sqmi"] = ex["area_sqmi"].astype(float)
-    ident = rep._read(conn, IDENTITY_SQL, {}).assign(api10=lambda x: x["api10"].astype(str))
+    ident = _read(conn, IDENTITY_SQL, {}).assign(api10=lambda x: x["api10"].astype(str))
     return {"wells": wells, "stations": st, "vendors": vendors, "extents": ex, "identity": ident}
 
 

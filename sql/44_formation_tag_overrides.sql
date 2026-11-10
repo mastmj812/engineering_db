@@ -31,6 +31,14 @@
 -- scripts/box_tag_seed, every note ends "tag screen step 20a"): 231
 -- class-accepted, 93 carded, 12 direct / what-if / inspection calls (§8.16: 4 doublecheck calls back to the vendor tag removed their rows).
 --
+-- Batch 4 (2026-11-09, formation-tag redesign; docs/formation_tag_redesign/WAREHOUSE_STEP.md W2): 279 rows, every
+-- carded verdict with a code from the tag-rule review rounds (Step 1 v5 / policy v1, Step 2 v5.1, Step 3 v5.2, the W1
+-- queue), built by scripts/tag_rule_seeds (every note starts "tagrule carded"; regenerate, never hand-edit). From
+-- here on this table holds HUMAN calls only: class-accepted rule output lives in curated.formation_tag_rule (sql/72),
+-- written nightly, not here. A tagrule row may equal `was` (the warehouse tag on the card, possibly a sql/23 flip): a
+-- confirming card still pins the well against the nightly rule. SUSPECT TVD verdicts are depth exclusions
+-- (ref.formation_tag_depth_exclusions), not overrides. The same load drops the 4 stale WCB_2 rows (§8.16).
+--
 -- Consumed by curated.formation_blueox (sql/16): an override wins over the
 -- crosswalk result, and formation_blueox_source becomes 'ratified_override'.
 -- Because the override arrives via a JOINed table, editing THIS CSV is a

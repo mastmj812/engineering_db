@@ -17,6 +17,12 @@
 --     (ref.formation_tag_overrides is likewise a JOINed table). An override is a
 --     human-ratified re-tag (gunbarrel review); it WINS over the crosswalk and
 --     stamps formation_blueox_source = 'ratified_override'.
+--   * Tag RULE output (sql/72, nightly; docs/formation_tag_redesign/WAREHOUSE_STEP.md) -> the nightly
+--     replaces curated.formation_tag_rule BEFORE this refresh. A rule row applies only while
+--     ref.formation_tag_switch.use_rule is TRUE and the row's recorded inputs (Novi formation,
+--     Enverus env_interval, tvd_ft, planned flag) still equal the well's current ones; otherwise the
+--     well keeps its crosswalk (vendor) tag until the next run. Precedence: override > rule > crosswalk;
+--     source 'rule_step1' / 'rule_step3' marks a rule tag. Switch OFF = this file's pre-2026-11 output.
 --   * Mapping LOGIC change (this file) -> DROP ... CASCADE + re-create. NOT cheap
 --     any more: live dependents (pg_depend, 2026-10-27) are bench_reference,
 --     codev_context, intel_formation_blueox, intel_pdp_support,
@@ -64,6 +70,7 @@ SELECT
     w.api10,
     bx.raw_value                                               AS formation_blueox_raw,
     CASE WHEN ovr.api10 IS NOT NULL THEN 'ratified_override'
+         WHEN rr.api10  IS NOT NULL THEN 'rule_step' || rr.applied_step
          ELSE bx.source END                                    AS formation_blueox_source,
     bx.basin_token                                             AS basin_blueox,
     -- Ratified per-well override (sql/44) wins over the crosswalk: a human
@@ -73,10 +80,11 @@ SELECT
     -- targets (Woodford/Barnett/Mississippian); the conventional shelf is
     -- deliberately bucketed to OTHER, not treated as a gap to chase.
     COALESCE(ovr.corrected_code,
+             rr.applied_code,
              CASE WHEN bx.basin_token = 'cbp' THEN COALESCE(fx.canonical_code, 'OTHER')
                   ELSE fx.canonical_code
              END)                                              AS formation_blueox,
-    (ovr.api10 IS NOT NULL OR fx.canonical_code IS NOT NULL)   AS formation_blueox_is_mapped
+    (ovr.api10 IS NOT NULL OR rr.api10 IS NOT NULL OR fx.canonical_code IS NOT NULL) AS formation_blueox_is_mapped
 FROM curated.wells w
 LEFT JOIN LATERAL (
     WITH base AS (
@@ -123,6 +131,17 @@ LEFT JOIN ref.formation_crosswalk fx
       AND fx.raw_value = bx.raw_value
 LEFT JOIN ref.formation_tag_overrides ovr
        ON ovr.api10 = w.api10
+-- Tag rule (sql/72): only behind the switch, only while the recorded inputs still match.
+LEFT JOIN ref.formation_tag_switch sw
+       ON TRUE
+LEFT JOIN curated.formation_tag_rule rr
+       ON rr.api10 = w.api10
+      AND rr.applied
+      AND sw.use_rule
+      AND rr.novi_raw IS NOT DISTINCT FROM w.formation
+      AND rr.env_raw  IS NOT DISTINCT FROM w.env_interval
+      AND ((rr.tvd_ft IS NULL AND w.tvd_ft IS NULL) OR abs(rr.tvd_ft - w.tvd_ft::numeric) <= 0.5)
+      AND rr.planned = COALESCE(w.directional_survey_is_planned, FALSE)
 ;
 
 
@@ -135,4 +154,4 @@ CREATE INDEX idx_curated_formation_blueox_code
 
 
 COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS
-'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / ratified re-tags) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: ref.formation_tag_overrides (human-ratified gunbarrel re-tags, source=ratified_override, sql/44) wins outright; otherwise Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD) that defer to Enverus ENVInterval, with the raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';
+'Blue Ox standardized formation, keyed by api10. Factored out of curated.wells so the mapping can be iterated (crosswalk edits / ratified re-tags) with a ~90k-row REFRESH instead of a DROP-CASCADE rebuild of the production chain. Precedence: ref.formation_tag_overrides (human-ratified re-tags and card calls, source=ratified_override, sql/44) wins outright; then the nightly tag rule (curated.formation_tag_rule, sql/72: source rule_step1 / rule_step3), only while ref.formation_tag_switch.use_rule is TRUE and the rule row''s recorded inputs still match the well; otherwise Novi formation, except coarse/unreliable Novi values (WOLFCAMP A / A(XY) / A(XY) SHELF / B / LOWER SPRABERRY SAND; generic WOLFCAMP / BONE SPRING(S) / SPRABERRY / UNKNOWN; SUB-WOODFORD) that defer to Enverus ENVInterval, with the raw string mapped via ref.formation_crosswalk on (basin_blueox, raw_value). Basin from Novi Subbasin -> Enverus ENVBasin; basins delaware/midland/cbp. NULL when unmapped (delaware/midland gap), OTHER for unmapped cbp (conventional shelf). Join into curated.wells_enriched.';

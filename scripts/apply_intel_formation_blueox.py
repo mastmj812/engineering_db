@@ -33,7 +33,9 @@ def reload_crosswalk() -> None:
     conn = get_connection()
     try:
         conn.autocommit = True
-        with conn.cursor() as cur:
+        # One transaction (TRUNCATE + COPY + COMMENT): a failed COPY rolls back instead of leaving the crosswalk
+        # empty (the 2026-11-09 incident, memory crosswalk-loader-not-atomic).
+        with conn.transaction(), conn.cursor() as cur:
             cur.execute(pre)
             copy_sql = (
                 "COPY ref.formation_crosswalk "

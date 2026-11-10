@@ -1,6 +1,14 @@
 -- =============================================================================
 -- 23 — curated.formation_blueox_tvd  (TVD-sanity audit + recolor for producers)
 --
+-- RETIREMENT IN PROGRESS (sql/72, 2026-11; docs/formation_tag_redesign/WAREHOUSE_STEP.md): the nightly tag rule's
+-- Step 3 depth check replaces this method. Two guards were added to `corrected`:
+--   * a human call (ref.formation_tag_overrides) is never flipped;
+--   * while ref.formation_tag_switch.use_rule is TRUE the flip is off entirely, so this matview is a pass-through
+--     (corrected FALSE, corrected_code = assigned_code) and every consumer keeps its columns. The Step 3 provenance
+--     then shows as formation_blueox_source = 'rule_step3' (sql/16), not as tvd_corrected.
+-- The 40-NN profile below still computes in pass-through mode; dropping it is a later cleanup.
+--
 -- The formation_blueox precedence rule (sql/16) substitutes Enverus env_interval
 -- for four coarse Novi formations (AVALON / WOLFCAMP A / WOLFCAMP B / LOWER
 -- SPRABERRY SAND). When Enverus's call disagrees with Novi by a whole play group
@@ -167,6 +175,11 @@ decided AS (
                 AND right(nearest_code, 1) IN ('S', 'C')
                 AND right(assigned_code, 1) <> right(nearest_code, 1)
             )
+            -- sql/72 (2026-11): never flip a human call (ref.formation_tag_overrides), and retire the flip
+            -- entirely once the tag rule is switched on (its Step 3 depth check replaces this method; the
+            -- matview is then a pass-through: corrected FALSE, corrected_code = assigned_code).
+            AND NOT EXISTS (SELECT 1 FROM ref.formation_tag_overrides o WHERE o.api10 = scored.api10)
+            AND NOT COALESCE((SELECT sw.use_rule FROM ref.formation_tag_switch sw), FALSE)
         )                                                       AS corrected
     FROM scored
 )

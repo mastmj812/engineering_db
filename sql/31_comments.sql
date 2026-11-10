@@ -248,7 +248,7 @@ COMMENT ON COLUMN curated.wells_enriched.novi_synthetic_api IS 'TRUE = Novi mint
 COMMENT ON COLUMN curated.wells_enriched.formation_blueox IS 'Blue Ox canonical bench code WITH the TVD-outlier correction applied (sql/23 flips gross depth outliers). THE grouping/filter key - never raw formation. NULL = unmapped (report as (unmapped)); OTHER = CBP conventional shelf by design.';
 COMMENT ON COLUMN curated.wells_enriched.formation_blueox_base IS 'Pre-correction Blue Ox code straight from curated.formation_blueox; kept for audit of TVD-corrected flips. Differs from formation_blueox only when formation_blueox_tvd_corrected.';
 COMMENT ON COLUMN curated.wells_enriched.formation_blueox_raw IS 'Raw formation string that fed the crosswalk (Novi formation or Enverus ENVInterval, per the sql/16 precedence rule).';
-COMMENT ON COLUMN curated.wells_enriched.formation_blueox_source IS 'Winning source for the bench code: novi, enverus, or tvd_corrected when the sql/23 depth audit overrode both.';
+COMMENT ON COLUMN curated.wells_enriched.formation_blueox_source IS 'Winning source for the bench code: ratified_override (human call), rule_step1 / rule_step3 (nightly tag rule, sql/72), novi, enverus, or tvd_corrected when the legacy sql/23 depth audit overrode them (only while the tag rule switch is off).';
 COMMENT ON COLUMN curated.wells_enriched.basin_blueox IS 'Blue Ox basin token: delaware, midland or cbp (from Novi Subbasin, Enverus ENVBasin fallback); NULL when the well is outside all three.';
 COMMENT ON COLUMN curated.wells_enriched.formation_blueox_is_mapped IS 'TRUE = the raw string matched ref.formation_crosswalk. FALSE = genuine crosswalk gap in delaware/midland, but intentional OTHER bucketing in cbp (not a gap).';
 COMMENT ON COLUMN curated.wells_enriched.formation_blueox_tvd_corrected IS 'TRUE = curated.formation_blueox_tvd flipped the bench because the well is a gross local depth outlier (~0.4% of producers); base value preserved in formation_blueox_base.';
@@ -269,16 +269,16 @@ COMMENT ON COLUMN curated.wells_enriched.stagger_closer_tangent_ft IS 'Novi Well
 COMMENT ON COLUMN curated.wells_enriched.parent_days_online IS 'Novi WellSpacing ParentDaysOnline: days the parent well(s) had been producing when this well came online. -1 exactly on the IsChild = FALSE / parent_count = 0 rows (verified 2026-09-18) - a flag value, not a duration. sql/49.';
 
 -- curated.formation_blueox -------------------------------------------------
-COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS 'Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Sources: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values; mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk edits are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh / curated.refresh_all().';
+COMMENT ON MATERIALIZED VIEW curated.formation_blueox IS 'Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Precedence: human call (ref.formation_tag_overrides) > nightly tag rule (curated.formation_tag_rule, sql/72; only while ref.formation_tag_switch.use_rule is TRUE and the rule row''s recorded inputs still match) > crosswalk: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values, mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk / override / rule changes are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh right after the tag-rule step.';
 COMMENT ON COLUMN curated.formation_blueox.api10 IS 'Universal well key (Novi 10-digit API); unique index supports REFRESH CONCURRENTLY.';
 COMMENT ON COLUMN curated.formation_blueox.formation_blueox_raw IS 'Raw formation string selected by the precedence rule - Novi formation normally, Enverus ENVInterval when the Novi value is coarse/unreliable - before crosswalk mapping.';
-COMMENT ON COLUMN curated.formation_blueox.formation_blueox_source IS 'Source of the selected raw string: novi or enverus. Enverus wins on trigger values (WOLFCAMP A/B variants, LOWER SPRABERRY SAND, generic WOLFCAMP/BONE SPRING(S)/SPRABERRY/UNKNOWN, SUB-WOODFORD); NULL when both sources are empty.';
+COMMENT ON COLUMN curated.formation_blueox.formation_blueox_source IS 'Where the code came from: ratified_override (a human call, ref.formation_tag_overrides), rule_step1 / rule_step3 (the nightly tag rule, sql/72), else the source of the raw string: novi or enverus (Enverus wins on trigger values: WOLFCAMP A/B variants, LOWER SPRABERRY SAND, generic WOLFCAMP/BONE SPRING(S)/SPRABERRY/UNKNOWN, SUB-WOODFORD); NULL when both sources are empty.';
 COMMENT ON COLUMN curated.formation_blueox.basin_blueox IS 'Blue Ox basin token: delaware, midland or cbp - from Novi Subbasin, falling back to Enverus ENVBasin; NULL outside the three nomenclature basins.';
 COMMENT ON COLUMN curated.formation_blueox.formation_blueox IS 'Blue Ox canonical bench code mapped via ref.formation_crosswalk on (basin_blueox, raw_value). NULL = crosswalk gap (delaware/midland, review); OTHER = unmapped CBP conventional shelf by design. Group/filter on this, never raw formation.';
 COMMENT ON COLUMN curated.formation_blueox.formation_blueox_is_mapped IS 'TRUE = the crosswalk matched the raw string. FALSE rows are genuine gaps in delaware/midland but intentional in cbp (bucketed to OTHER).';
 
 -- curated.formation_blueox_tvd ---------------------------------------------
-COMMENT ON MATERIALIZED VIEW curated.formation_blueox_tvd IS 'TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers (e.g. Enverus-substitution mis-tags). Audit object - the override is applied downstream in curated.wells_enriched. Refreshed nightly by etl.refresh / curated.refresh_all() after producing_reference.';
+COMMENT ON MATERIALIZED VIEW curated.formation_blueox_tvd IS 'TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-bench depth bands vs the assigned formation_blueox, flipping only gross depth outliers. Being retired (sql/72): never flips a human call, and is a pass-through (corrected FALSE) while ref.formation_tag_switch.use_rule is TRUE, the tag rule''s Step 3 depth check having replaced it. Consumed by curated.wells_enriched. Refreshed nightly after producing_reference.';
 COMMENT ON COLUMN curated.formation_blueox_tvd.api10 IS 'Universal well key (Novi 10-digit API); one row per producing horizontal in curated.producing_reference with TVD and a bench code.';
 COMMENT ON COLUMN curated.formation_blueox_tvd.basin IS 'Blue Ox basin token (delaware/midland) carried from curated.producing_reference.';
 COMMENT ON COLUMN curated.formation_blueox_tvd.assigned_code IS 'Blue Ox bench assigned by curated.formation_blueox (sql/16) BEFORE this depth audit.';
@@ -293,7 +293,7 @@ COMMENT ON COLUMN curated.formation_blueox_tvd.tvd_round IS 'TRUE = TVD is an ex
 COMMENT ON COLUMN curated.formation_blueox_tvd.permit_suspect IS 'tvd_round OR survey_planned: the depth is likely a permit number, so the outlier gap required to flip widens to 1000 ft (vs 600 ft for a trusted survey depth).';
 COMMENT ON COLUMN curated.formation_blueox_tvd.assigned_gap IS 'abs(tvd - assigned_med), ft: how far the well sits from its own bench''s local depth band.';
 COMMENT ON COLUMN curated.formation_blueox_tvd.nearest_gap IS 'abs(tvd - nearest_med), ft: distance to the depth-nearest bench''s local band.';
-COMMENT ON COLUMN curated.formation_blueox_tvd.corrected IS 'TRUE = all flip guards passed: gap > 600/1000 ft, target band >= 400 ft closer, band support (5/3), no flips into/out of WDFD/BRNT/MISS or to OTHER, no sand<->carb swaps.';
+COMMENT ON COLUMN curated.formation_blueox_tvd.corrected IS 'TRUE = all flip guards passed: gap > 600/1000 ft, target band >= 400 ft closer, band support (5/3), no flips into/out of WDFD/BRNT/MISS or to OTHER, no sand<->carb swaps, not a human call, and the tag rule switch is off (sql/72). Always FALSE after the rule cutover.';
 COMMENT ON COLUMN curated.formation_blueox_tvd.corrected_code IS 'Bench of record after the audit: nearest_code when corrected, else assigned_code. Consumed by curated.wells_enriched as the canonical formation_blueox.';
 
 -- curated.bench_reference --------------------------------------------------
@@ -973,3 +973,17 @@ BEGIN
     EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.is_uturn IS 'TRUE when Novi ships a U-turn far point (LocationType -1): the span covers both legs.'$c$;
     EXECUTE $c$COMMENT ON COLUMN curated.well_lateral_survey.lateral_geom IS 'LINESTRING Z, SRID 4326: X/Y = lon/lat degrees, Z = TVD in FEET below KB, stations in Path order over the lateral span. Mixed units by design — never ST_3DLength it. NULL when < 2 stations in span.'$c$;
 END $$;
+
+-- sql/72 — tag rule tables -----------------------------------------------
+COMMENT ON TABLE ref.formation_tag_policy IS
+'Step 1 (vendor choice) frozen pattern winners, keyed on (basin, Novi string, Enverus string), versioned (policy v1 = box/policy/step1_patterns_v1.csv, adopted 2026-11-09). Seeded from seeds/formation_tag_policy.csv; the nightly applies it and only REPORTS drift against what the data would learn. sql/72.';
+COMMENT ON TABLE ref.formation_tag_class IS
+'Every decided change class of the tag rule (Step 1 card rounds, Step 3 class A): (step, basin, vendor tag -> rule code, basis), accept/reject with the card count. A rule change is applied only in an accepted class; an undecided class queues for cards. Seeded from seeds/formation_tag_class.csv (scripts/tag_rule_seeds). sql/72.';
+COMMENT ON TABLE ref.formation_tag_depth_exclusions IS
+'Wells whose depth Michael judged untrustworthy on a card (SUSPECT TVD, Q5): never judged and never a witness while the recorded depth and depth source stand; the exclusion lapses when either changes. sql/16 ignores them (the well keeps its vendor tag). Seeded from seeds/formation_tag_depth_exclusions.csv. sql/72.';
+COMMENT ON TABLE ref.formation_tag_switch IS
+'One row. use_rule FALSE (shadow): sql/16 ignores curated.formation_tag_rule and sql/23 keeps its legacy flip. TRUE (after cutover): sql/16 applies rule rows whose inputs still match and sql/23 is a pass-through. Flip with scripts/apply_formation_tag_rule --cutover / --rollback. sql/72.';
+COMMENT ON TABLE curated.formation_tag_rule IS
+'Nightly tag-rule output, one row per judged producing horizontal (etl/tag_rule.py, replaced whole in one transaction behind the circuit breaker). applied_code is what sql/16 uses while the switch is on AND novi_raw / env_raw / tvd_ft / planned still equal the well''s current inputs; otherwise the well keeps its vendor tag until the next run. Queue flags list what needs cards. sql/72.';
+COMMENT ON TABLE meta.formation_tag_run IS
+'One row per tag-rule run: status (written / tripped / dry_run / failed), counts, circuit-breaker result, policy version + digest, rule git sha, and a summary (card queue, policy drift, lapsed exclusions, human calls whose inputs moved). sql/72.';

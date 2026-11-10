@@ -51,9 +51,11 @@ It never makes a human call; anything new **queues for cards** and sits on its v
 
 **`curated.formation_blueox_tvd` (sql/23) becomes a pass-through.** It keeps its columns, so no consumer changes:
 - `corrected_code` = the sql/16 code;
-- `corrected` = TRUE exactly where Step 3 moved the well.
+- `corrected` = FALSE. (Revised in W2: TRUE on Step 3 moves would make `wells_enriched` relabel them `tvd_corrected`
+  and lose the `rule_step3` source. Step 3 provenance shows as `formation_blueox_source = 'rule_step3'` instead.)
 
-Its own 40-neighbour flip is gone. Every consumer already reads `corrected_code` through `wells_enriched`, so the
+Until cutover (switch off) sql/23 keeps its legacy flip, except that it never flips a human call. After cutover its
+own 40-neighbour flip is gone. Every consumer already reads `corrected_code` through `wells_enriched`, so the
 pass-through is invisible to anduin, erebor and narvi.
 
 **`source` values.** sql/16 writes:
@@ -215,6 +217,56 @@ with the same wells. Any well that moves class because sql/23 had flipped it get
   `novi-quarterly-reload` skills updated if the CASCADE graph changed, and CLAUDE.md's nightly description.
 
 **Gate W2:** Michael reviews the PR and merges it. Merged still means nothing applied.
+
+**W2 as built (2026-11-09, branch `claude/tag-rule-nightly`; its PR opens once PR #233 is merged):**
+- **`sql/72_formation_tag_rule.sql`:** the six tables (switch inserted OFF), all additive. Table comments are in sql/31.
+- **`sql/16`:** human call > rule row > crosswalk. A rule row applies only behind the switch and while the well's Novi
+  formation, Enverus interval, tvd_ft and planned flag equal the recorded ones. Sources are `rule_step1` /
+  `rule_step3`.
+- **`sql/23`:** never flips a human call; a pass-through with the switch on.
+- **`scripts/tag_rule_seeds.py`:** builds the four seeds from the card folders. `--check` is a CI test.
+  - Overrides: +279 human calls, notes "tagrule carded …". 66 of them confirm the tag on the card, which pins the
+    well against the nightly rule; 30 of those keep a sql/23 flip that you confirmed.
+  - Depth exclusions: 12. Policy v1: 19 rows. Decided classes: 16 (Step 1: 13 accepted, 2 rejected; Step 3: class A).
+  - The first load also removes the 4 stale rows and catches 5 note-only rows up with the repo (the 263bc6b §8.16
+    doublecheck was merged but never reloaded live).
+- **`box/tag_rule_run.py`:** Steps 1 → 2 → 3 from tables, with class gating on the vendor tag. Step 1's `sql23_kept`
+  branch is dormant, because sql/23 output is never an input.
+  - **Verified on the W1 live cache:** 56,896 judged wells. Against the W1 dev chain, every difference is an intended
+    one: the 10 W1-queue calls, the 4 stale overrides, the 3 vendor-gated Bone Spring wells, and the 12 depth
+    exclusions now out of the frame.
+- **`etl/tag_rule.py`:**
+  - pull → rule → breaker → TRUNCATE + COPY + run row in one transaction;
+  - soft as the nightly hook;
+  - a no-op until sql/72 exists;
+  - `--dry-run [--from-seeds]` / `--write [--allow-breaker]`.
+  - **Live dry run 2026-11-09:** 75 s; 1,032 applied (Step 1 1,004, Step 3 28); breaker limit 568; the queue holds
+    1 Step 2 well (3002546483, BS3_S → BS3_C, lead 441 ft); drift is the 2 small pairs.
+- **The nightly (`etl/db.py`, `etl/refresh.py`):**
+  - `well_lateral_survey` moves right after `curated.wells` (D4);
+  - `refresh_curated(hooks=…)` runs the rule step just before `formation_blueox`;
+  - `--no-tag-rule` is for manual refreshes;
+  - `requirements.txt` gains scipy / shapely / pyyaml (the nightly installs only that file).
+- **`scripts/apply_formation_tag_rule.py`:**
+  - `--structure` (W3), with the chain tail and the switch-off verification;
+  - `--seeds`;
+  - `--cutover` / `--rollback` (W5);
+  - `--dry-run` with any mode. The structure dry run passed live.
+- **SQL behaviour check (`scripts/tag_rule_sqlcheck.py`, a throwaway PostGIS container, never Supabase):**
+  - sql/72 applies twice, so it is idempotent;
+  - switch off = vendor tags plus overrides;
+  - switch on = a matching rule row applies, while a stale TVD, a changed planned flag, a human call and a well without
+    a row keep their tags;
+  - sql/23 flips a depth outlier with the switch off but not a human call, and nothing with the switch on;
+  - REFRESH CONCURRENTLY works on both.
+
+  It caught an unescaped apostrophe in sql/16's new COMMENT, which would have failed W3.
+- **Safety:**
+  - `require_sql72` makes the three sql/16 rebuild scripts refuse before dropping anything while sql/72 is absent;
+  - both crosswalk loaders are now one transaction (the 11-09 trap).
+- **Not in W2:**
+  - the data dictionary is regenerated at W3, because the generator reads the live catalog;
+  - CLAUDE.md's nightly paragraph is updated after merge (that file is outside this repo).
 
 ### W3: Structural window (off-hours, explicit go)
 

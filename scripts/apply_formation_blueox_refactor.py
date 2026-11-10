@@ -75,7 +75,9 @@ def _load_crosswalk() -> None:
     conn = get_connection()
     try:
         conn.autocommit = True
-        with conn.cursor() as cur:
+        # One transaction (TRUNCATE + COPY + COMMENT): a failed COPY rolls back instead of leaving the crosswalk
+        # empty (the 2026-11-09 incident: mixed CRLF/LF in the seed, the table was empty for ~1 min).
+        with conn.transaction(), conn.cursor() as cur:
             cur.execute(pre)  # CREATE SCHEMA / TABLE / TRUNCATE
             copy_sql = (
                 "COPY ref.formation_crosswalk "
@@ -96,6 +98,9 @@ def _load_crosswalk() -> None:
 
 def main() -> None:
     print("=== formation_blueox refactor apply (hardened) ===", flush=True)
+    from scripts.apply_formation_tag_overrides import require_sql72
+
+    require_sql72()  # sql/16 reads sql/72's tables: refuse before sql/04 drops anything
     t_start = time.monotonic()
     _load_crosswalk()
     settle()

@@ -125,3 +125,5 @@ lost on drop-recreate · `REFRESH CONCURRENTLY` on a never-populated matview (ne
 first) · renaming `meta.etl_log` labels (breaks the refresh gate + Enverus cursor) · deletions
 never trip the refresh gate (`--force`) · editing generated sql/02/03 by hand · touching
 `narvi.*` · running the apply during the nightly window · declaring done from repo state.
+
+**Tag rule (sql/72, 2026-11):** curated.formation_blueox (sql/16) joins ref.formation_tag_switch and the nightly-written table curated.formation_tag_rule, so sql/72 must exist before any sql/16 rebuild (the rebuild scripts refuse otherwise: `require_sql72`). The nightly runs `etl/tag_rule.py` as a hook just before formation_blueox refreshes; a seed/policy change goes through `scripts.apply_formation_tag_rule --seeds`, the switch through `--cutover` / `--rollback` (docs/formation_tag_redesign/WAREHOUSE_STEP.md).

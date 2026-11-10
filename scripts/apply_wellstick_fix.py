@@ -161,6 +161,9 @@ def _exec_raw(label: str, statements: str) -> None:
 
 
 def main() -> None:
+    from scripts.apply_formation_tag_overrides import require_sql72
+
+    require_sql72()  # step 3 re-runs sql/16, which reads sql/72's tables: refuse before sql/04 drops anything
     t = time.monotonic()
     n = 14
     print(f"[1/{n}] curated.wells (sql/04 — the CASCADE drop + new wellstick)", flush=True)
