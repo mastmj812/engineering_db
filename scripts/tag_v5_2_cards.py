@@ -116,13 +116,16 @@ def select(d: pd.DataFrame) -> pd.DataFrame:
 
 
 def select_listed(d: pd.DataFrame, listed: pd.DataFrame, first_card: int) -> pd.DataFrame:
-    """Follow-up cards for named wells (section D): listed has api10, proposed, note."""
+    """Follow-up cards for named wells (section D): listed has api10, proposed, note and optionally input."""
     ch = d[d["api10"].isin(listed["api10"])].copy()
     missing = set(listed["api10"]) - set(ch["api10"])
     if missing:
         raise SystemExit(f"--listed wells not in producers_v5_2.pkl: {sorted(missing)}")
     li = listed.set_index("api10")
     ch["proposed"], ch["note"], ch["section"] = ch["api10"].map(li["proposed"]), ch["api10"].map(li["note"]), "D"
+    if "input" in li.columns:  # the card's starting tag when it is not the frame's (e.g. the vendor tag, W1 class identity)
+        inp = ch["api10"].map(li["input"])
+        ch["base52"] = inp.where(inp.notna(), ch["base52"])
     ch = ch.set_index("api10").loc[listed["api10"]].reset_index()
     ch["card"] = np.arange(first_card, first_card + len(ch))
     return ch
