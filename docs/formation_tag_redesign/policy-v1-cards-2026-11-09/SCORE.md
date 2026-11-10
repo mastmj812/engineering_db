@@ -73,6 +73,8 @@ Every carded call is kept on its well. The round 2 calls:
 - where it disagreed, 1 of 3;
 - where there was no read, 12 of 18.
 
+**Michael, 2026-11-09: decisions taken as they stand** (no county subsets carded).
+
 **What the gate does not see (for Michael's call; nothing is changed):**
 1. **Class 12 rejects are all in Lea** (3 of 5 Lea cards; Eddy 5/5). As frozen, accepting puts BS2_S on all 32 Lea wells.
 2. **Class 14 rejects are all in Loving** (0/4; elsewhere 6/6). As frozen, the class is rejected, so the non-Loving wells keep BS2_C too.

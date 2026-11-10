@@ -1,209 +1,299 @@
-# Warehouse step: landing rule v5 + v5.1 (plan, 2026-11-08)
+# Warehouse step: the tag rule runs in the nightly (plan, revised 2026-11-09)
 
-**Status: PLAN.** Nothing is written to Supabase. Each W-step below ends at a gate. The write in W3 needs Michael's
-explicit, specific go.
+**Status: PLAN.** Nothing is written to Supabase.
+- Each W-step ends at a gate.
+- W3 and W5 write to the warehouse, and each needs Michael's explicit, specific go.
+- The 2026-11-08 version of this plan (rule outputs pinned as override rows, then a monthly re-run) is superseded. It
+  is kept in git history (`git log -p -- docs/formation_tag_redesign/WAREHOUSE_STEP.md`), and its decisions are carried
+  below.
 
-## What lands
+**Names.** The rule is one chain of three steps: **Step 1** vendor choice (files and code say "v5"), **Step 2**
+sub-bench (v5.1), **Step 3** depth check (v5.2). Renaming the code is a separate, cosmetic follow-up.
 
-From the Nov 5 snapshot, before the live rebuild in W1:
+## Why the rule has to run nightly
 
-| | Delaware | Midland | Total |
+- **Both inputs change every night.**
+  - The vendor strings change: Novi Insights is a daily feed, and 51 producers changed tag in three days (50 of them
+    inside the BOX extents).
+  - So do the depths: vendor TVD, surveys, and new witnesses.
+- **A tag is a function of those inputs.** Computed once and pinned, it goes stale silently.
+- **This is the job sql/23 does today, nightly.** "Retiring sql/23" means replacing its *method* (40 nearest producers'
+  own tags) while keeping a nightly depth check. Step 3 is that check.
+
+**Three kinds of thing feed a tag. Only the first is recomputed nightly.**
+
+| Kind | Examples | Changes when | Lives in |
 |---|---|---|---|
-| v5 unit changes, carded calls | 39 | 34 | 73 |
-| v5 unit changes, class-accepted | 149 | 691 | 840 |
-| v5.1 sub-bench changes (all carded) | 25 | 0 | 25 |
-| overlap: cards 22–25 are class-8 wells already counted above | −4 | | −4 |
-| card 25 (MAKO) returns to its live tag, so no row is needed | −1 | | −1 |
-| **override rows to add** | **208** | **725** | **≈ 933** |
+| **Evidence** | vendor strings, TVD, surveys, witness reference depths | every night | the vendor tables, `curated.wells`, `curated.well_lateral_survey` |
+| **Policy** | Step 1's frozen winners (policy v1), thresholds, guards, the list of accepted change classes | only on review: a PR plus a card round | repo-seeded `ref.*` tables |
+| **Human calls** | carded well calls, depth exclusions (SUSPECT TVD) | only on a card verdict | repo-seeded `ref.*` tables |
 
-- 887 of the 913 v5 changes (DE 187, MID 700) sit inside the BOX record extents; 26 sit outside.
-- None of these wells is already an override.
-- The 4 stale live override rows go in the same load (Gate 0 Q4). These are 4232943352, 4232945905, 4232946987 and
-  4246139770, all WCB_2, removed from the seed by the §8.16 doublecheck calls.
+The nightly applies policy to evidence. It never learns policy: it re-learns Step 1's winners only to **report drift**.
+It never makes a human call; anything new **queues for cards** and sits on its vendor tag meanwhile.
 
-## Revision 2026-11-08: Q1 reversed, toward a sql/16 rewrite
+## What the tag becomes
 
-Michael has the off-hours window, and he corrected a premise. The cadence below was tied to the "quarterly Novi
-reload", but that reload is **Novi Intelligence** (`raw_intel`). The formation strings come from **Novi Insights**,
-which updates **daily**: 51 producers changed tag in three days, 50 of them inside the BOX extents.
+`curated.formation_blueox` (sql/16, rewritten) resolves each well in this order:
 
-With daily revisions, the override-row mechanism below has a correctness cost, not only a cost in convenience. It
-pins about 840 **rule outputs** as if they were **human calls**.
-- A human call should stand whatever the vendors do.
-- A rule output is a function of today's vendor strings plus neighbouring depths. It should not outlive those inputs.
+1. **Human call** (`ref.formation_tag_overrides`). Always wins, whatever the vendors do. Since 2026-11-09 this table
+   holds only human calls:
+   - today's 437 rows;
+   - every carded call from the Step 1/2/3 rounds, policy v1 included.
 
-**Recommended design (Q1 = rewrite):**
-- **`ref.formation_tag_overrides` keeps only human calls:** today's 437 rows, plus the 73 v5 carded calls and the 25
-  v5.1 cards. Card 25 now needs a row, because otherwise the class-8 rule row would move MAKO to WCA_1. The seed stays
-  repo-reviewed.
-- **New `ref.formation_tag_rule`:** one row per class-accepted well. It holds the code, the rule version, the class,
-  and the inputs it was decided on: Novi `formation`, Enverus `env_interval` and basin. It is written whole by a script
-  (data, not a seed PR). Each write is an explicit go.
-- **sql/16 precedence:** override, then a rule row **only while its recorded inputs still equal the well's current
-  inputs**, then the crosswalk.
-  - A well whose vendor string has been revised since the run falls back to today's mapping until the next run. It is
-    never left on a stale pin.
-  - Source is `rule_v5`, distinct from `ratified_override`. This is the existing column, so the Q3 provenance columns
-    stay a later step.
-- **sql/23 exemption in the same window:** `corrected` is FALSE for override and rule rows. `formation_blueox_tvd` is
-  in sql/16's CASCADE anyway, so the change costs no extra window. Card 12 (CHILES #004H, a BS3_C call that sql/23
-  lifted to BS2_S) is the case it fixes. Every consumer reads `corrected_code` from sql/23, so this is one edit.
-- **Depth exclusions live in the rule table too (Q5, decided 2026-11-09).** These are wells whose depth Michael
-  judged untrustworthy on a card (verdict SUSPECT TVD). The first 12 are in
-  `v5_2-cards-2026-11-08/depth_exclusions.csv`.
-  - **Row shape:** `kind = 'depth_excluded'`, a NULL code, reason `depth_suspect`, and the depth and depth source it
-    was judged on.
-  - **sql/16:** ignores these rows. A NULL code falls through to the crosswalk, so the well keeps its vendor tag.
-  - **The rule run (v5 / v5.1 / v5.2):** reads them and turns the well's depth off as evidence, both as a judged well
-    and as a witness. Otherwise the next run re-proposes them.
-  - **They are human rows:** the writer's whole-table rewrite keeps them and never adds or drops one. A new exclusion
-    comes only from a card verdict.
-  - **Staleness:** an exclusion lapses when the well's live depth or depth source differs from the recorded one, and the
-    well is judged again. This is the same inputs-match guard as the rule rows. A corrected vendor depth isn't
-    excluded forever.
-- **Cost:** a chain-rebuild window. `apply_formation_tag_overrides --rebuild`, then the quarterly tail, then sql/26.
-  erebor and narvi are dark for a couple of hours (longest step `intel_pdp_support`). anduin is not affected; it reads
-  its own synced copy.
-  - Schema changes: one new ref table, so sql/31 comments are needed and the data dictionary is regenerated.
-  - erebor's "colour by source" legend knows neither `ratified_override` nor `rule_v5` today, and both fall to grey.
-    That is a small erebor follow-up.
+   No class-accepted rows go here (Q1, revision of 2026-11-08).
+2. **Rule output** (`curated.formation_tag_rule`, written by the nightly). Used **only while the well's recorded inputs
+   still equal its current inputs**: Novi string, Enverus string, TVD and depth source. Otherwise the well falls through
+   to its vendor tag until the next run.
+   - Only rows in an **accepted change class** (or a Step 2 sub-bench change that was carded) carry a code.
+   - Everything else the rule decides is recorded with `applied = false`, for the report.
+3. **Vendor tag:** the crosswalk mapping, as today (Novi string unless coarse, then Enverus).
+4. **Unmapped:** NULL in Delaware and Midland, OTHER in CBP, as today.
 
-Under the rewrite, W1, W4 and W5 stand as written. W2 becomes:
-- the sql/NN table;
-- the sql/16 and sql/23 edits;
-- the writer script (`--dry-run` diff, `--write`);
-- the 98 carded seed rows;
-- tests.
+**`curated.formation_blueox_tvd` (sql/23) becomes a pass-through.** It keeps its columns, so no consumer changes:
+- `corrected_code` = the sql/16 code;
+- `corrected` = TRUE exactly where Step 3 moved the well.
 
-W3 becomes the chain window. The original override-row plan follows for the record.
+Its own 40-neighbour flip is gone. Every consumer already reads `corrected_code` through `wells_enriched`, so the
+pass-through is invisible to anduin, erebor and narvi.
 
-## The mechanism as first planned: override rows, not a sql/16 rewrite
+**`source` values.** sql/16 writes:
+- `ratified_override` (a human call);
+- `rule_step1`, `rule_step2` or `rule_step3` (a rule output);
+- the existing vendor sources.
 
-Earlier I described this step as "a new matview replacing sql/16's decision logic". **I recommended against that**
-(superseded above).
+erebor's "colour by source" legend needs those added (a small erebor follow-up; today both of the new kinds fall to grey).
+The full provenance columns are still a later step (Q3).
 
-- **The rule can't live in SQL.** v5 and v5.1 run in Python: witness depths, `landing_surfaces.estimate`, class
-  precedence, card verdicts. A matview cannot recompute them. It could only join a table of the results.
-- **A sql/16 rewrite is expensive.** Rewriting sql/16 is a `DROP … CASCADE`. Live `pg_depend` (2026-11-08) shows it
-  drops 12 matviews and 3 views: the whole intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_locations`
-  and `box_scout_locations`. erebor and narvi go dark until the quarterly tail rebuilds them.
-- **A mechanism already exists for exactly this.** `ref.formation_tag_overrides` (sql/44) was amended 2026-10-28,
-  convention (a), to take both kinds of ratification: well-by-well **carded** calls and **class-accepted** wells
-  ("class-accepted <class> k/n cards <date>"). That is how the BOX step-20a Midland screen landed (231 class-accepted,
-  93 carded). sql/16 joins that table, so a seed change is a CONTENT change. It is loaded with
-  `scripts/apply_formation_tag_overrides --refresh`: TRUNCATE + COPY in one transaction, then
-  `REFRESH … CONCURRENTLY` down the chain in pg_depend order, with `erebor_locations` last. That run:
-  - drops nothing;
-  - keeps every object readable throughout;
-  - takes about 55–60 min, mostly `intel_pdp_support`.
+## The tables
 
-**Consequence: the tags are pinned until the rule is re-run.**
-- The rule doesn't recompute nightly. New wells get today's vendor mapping plus sql/23 until the next rule run.
-- An override always wins (Gate 0 Q4), so a pinned well doesn't move when vendors revise it.
-- Every row's `note` carries its provenance (carded vs class-accepted, and which round).
+| Table | Written by | Holds |
+|---|---|---|
+| `ref.formation_tag_overrides` (exists, sql/44) | seed PR + `apply_formation_tag_overrides` | human calls only |
+| `ref.formation_tag_depth_exclusions` (new) | seed PR | Q5 SUSPECT TVD wells: api10, the depth and depth source judged, card, date |
+| `ref.formation_tag_policy` (new) | seed PR | Step 1 frozen winners by (basin, Novi string, Enverus string), `policy_version` = 1 |
+| `ref.formation_tag_class` (new) | seed PR | every reviewed change class: step, basin, from → to, basis, decision (accept / reject), cards k/n, card folder |
+| `curated.formation_tag_rule` (new **table**, not a matview) | the nightly rule step, whole-table replace in one transaction | per well: code, step, basis, class, `applied`, recorded inputs, `policy_version`, rule git sha, `run_id` |
+| `meta.formation_tag_run` (new) | the nightly rule step | one row per run: counts by step/basis/class, drift report, queue sizes, circuit-breaker result, runtime |
+
+- **The split is by who writes:** `ref.*` is reviewed in the repo; `curated.formation_tag_rule` is computed by the ETL.
+- **This refines Q5's storage.** Q5 put depth exclusions in "the rule table" as rows the writer never touches. Here they
+  get their own seeded table, so the nightly can replace its table whole without special cases. Q5's substance is
+  unchanged:
+  - sql/16 ignores exclusions (the well keeps its vendor tag);
+  - the rule turns the well's depth off as evidence;
+  - an exclusion lapses when the well's live depth or depth source differs from the recorded one.
+
+  Flagged for Michael below.
+
+## The nightly
+
+`etl-nightly.yml` → `scripts.run_daily`, after the vendor loads:
+
+1. Refresh `curated.wells` (as today).
+2. **Rule step (new):** `python -m scripts.tag_rule_nightly`. The order matters:
+   1. Read the inputs: `curated.wells`, `curated.well_lateral_survey`, the crosswalk, and the four `ref.formation_tag_*`
+      tables.
+   2. Run Step 1 → 2 → 3 under the frozen policy and the accepted-class list.
+   3. Write `curated.formation_tag_rule` and `meta.formation_tag_run`.
+   - **It must not read** `formation_blueox` / `wells_enriched` for its inputs. Today's pull reads `wells_enriched`,
+     which is the rule's own output one night later, a feedback loop. The input query is rewritten to vendor-only
+     columns (W2). Reading yesterday's `formation_blueox` for the **report** (what would change) is fine.
+   - **Survey lag:** `well_lateral_survey` refreshes last in the nightly (and is gated), so the rule sees the previous
+     night's surveys. Accept the one-day lag, or move that refresh ahead of the rule step (it has no curated
+     dependencies). Recommended: move it.
+3. Refresh `formation_blueox` → `producing_reference` → `formation_blueox_tvd` → … (the existing order).
+
+**Runtime:** about 15 min on the laptop (Step 1 seconds, Step 2 ~6 min, Step 3 ~9 min). The 05:00 CT dispatch currently
+finishes by ~06:30, so this adds roughly 15–25 min on a runner. W2 measures it on Actions before anything goes live.
+
+**Safety rails. A bad night must not move tags:**
+- **One transaction:** TRUNCATE + COPY + the run row commit together, or nothing changes. That's the lesson of the
+  11-09 crosswalk loader, which emptied a table for a minute.
+- **Failure is soft.** If the rule step errors, the nightly logs it, keeps yesterday's table, and continues. The
+  staleness guard drops any rows whose inputs changed overnight to their vendor tag. The run summary email says so.
+- **Circuit breaker:** if more than **N** wells (proposed: 200, or 1 % of judged producers) would change their applied
+  code versus the previous run, the step writes nothing and alerts. Excluded from the count:
+  - new wells;
+  - wells whose own inputs changed.
+
+  A crosswalk change, a policy PR or a vendor bulk re-tag should trip it on purpose, so Michael sees the effect first.
+- **The switch:** `ref.formation_tag_switch` (one row: `use_rule boolean`). sql/16 reads rule rows only when it is on.
+  This makes cutover and rollback a content change plus a `REFRESH … CONCURRENTLY`, not a drop.
+
+**What the run reports** (in `meta.formation_tag_run` and the summary email):
+- **Applied changes** versus yesterday, by class: new wells, and wells whose inputs moved.
+- **Card queue:**
+  - change classes of 20 or more wells that are not in `ref.formation_tag_class`;
+  - Step 2 sub-bench changes that were never carded.
+
+  These stay on the vendor tag until carded.
+- **Policy drift:** the learned Step 1 table versus the frozen policy (gained, lost or flipped winners). It is report
+  only; a flip means a policy review, never an automatic change.
+- **Human calls to re-check:** carded calls whose vendor strings or depth changed since the card. The call still
+  stands; it is flagged for a look.
+- **Lapsed depth exclusions:** the depth changed, so the well is judged again.
+
+## What lands at cutover
+
+Counts come from W1's live run. From the reviewed snapshots:
+
+- **Step 1 accepted classes (13):**
+  - Midland: WCA_1 → WCB_1 (pattern 296, depth 183), LSSH → JM (depth 115, pattern 82), WCB_1 → WCA_1 (depth 55);
+  - Delaware: BS3_C → BS2_S (depth 79, pattern 100), BS3_S → WCA_1 (pattern 30, depth 23), OTHER → AVA_0 (29),
+    WCA_2 → WCB_1 (depth 29), BS2_C → BS1_S (depth 22), BS3_S → WCXY (depth 75).
+
+  These counts are the class sizes when each class was reviewed. Policy v1 moved several of them; for example,
+  BS3_S → WCA_1 (pattern) is now 25 and LSSH → JM (pattern) 77.
+- **Step 1 rejected classes:** Delaware WCB_1 → WCA_1 (depth) and Delaware BS2_C → BS1_S (pattern). They stay on the
+  vendor tag.
+- **Step 2:** the 25 carded sub-bench changes.
+- **Step 3:** class A accepted. The final set is 141 wells: SALADO DRAW → WCXY superseding card 50, SQUINTS on WCA_1,
+  and HARACZ AMO added.
+- **Human calls:** every carded call, including the policy-v1 calls (cards 4, 5, 6, 10, 14, 20, 27, 29, 32, 33,
+  36–38, 41).
+- **Depth exclusions:** the 12 from v5.2 cards.
+- **Stale override rows:** the 4 stale rows leave in the same load (Gate 0 Q4): 4232943352, 4232945905, 4232946987 and
+  4246139770.
+
+**Class identity across the baseline change.** The reviewed classes are written "live → final", and "live" was
+today's warehouse tag: the vendor tag plus overrides plus sql/23 flips. Under the new resolution the rule's starting
+point is the **vendor tag**. W1 must show that each reviewed class maps onto (step, basin, vendor tag → final, basis)
+with the same wells. Any well that moves class because sql/23 had flipped it gets listed, not silently re-labelled.
 
 ## Steps
 
-### W1 — Rebuild from live (read-only)
+### W1: Rebuild from live, as it would run nightly (read-only)
 
-The snapshot is three days old, and 51 producers have changed tag since.
-1. Re-pull the scoreboard frame.
-2. Re-run v5, the accepted tags and v5.1 on live data.
-3. Diff against what was reviewed.
+1. Rewrite the input pull to vendor-only columns (no `wells_enriched`).
+2. Run Steps 1–3 on live data under policy v1, the class list and the exclusions.
+3. Report:
+   - **reproduction:** the reviewed decisions, re-derived on live;
+   - **drift since review:** wells whose vendor tag moved, e.g. a Novi revision now agreeing with the call;
+   - **new wells in accepted classes;**
+   - **the card queue** (unreviewed classes of 20 or more, uncarded Step 2 changes);
+   - **the class-identity check** above;
+   - **runtime.**
 
-The diff reports:
-- **still applies:** the live tag still equals the reviewed `was`;
-- **dropped by drift:** the live tag moved since the review (for example, a Novi revision now agrees with the call).
-  These rows are not seeded;
-- **new class-accepted wells:** new producers, or drifted ones, that fall in an accepted class (Q2 below);
-- **new v5.1 changes outside the 25 reviewed:** each gets a card, or keeps its vendor default.
+**Gate W1:** Michael reviews the report and cards whatever the queue holds before cutover.
 
-**Gate W1:** Michael reviews the diff and cards any new v5.1 changes.
+### W2: Repo (one PR off `main`, after PR #233 merges; no stacking)
 
-### W2 — Seed rows (repo only)
-
-- `scripts/tag_v5_seed.py`, in the `scripts/box_tag_seed.py` pattern, writes its own block into
-  `seeds/formation_tag_overrides.csv`. Every note ends "rule v5". `--write` replaces only that block.
-- Notes follow convention (a):
-  - "carded <date> v5 r1 / r2 / v5.1 card N …";
-  - "class-accepted <class> k/n cards <date> rule v5".
-- Michael's direct well calls win over a class. Cards 24 and 25 are recorded as he clarified them.
-- `--check-live` asserts, read-only, that each row's `was` is the live tag and that no row is already an override.
-- Tests pin:
-  - every row is unique by api10;
-  - no row would set the tag the well already has (so card 25 is not seeded);
-  - every carded call is present;
-  - every class-accepted row's class was accepted.
-- The sql/44 header gets a **Batch 4** paragraph.
-- Commit, then a PR off `main` **after PR #233 merges** (the seed imports `box/tag_*`; no stacking).
+- **`sql/NN_formation_tag_rule.sql`:**
+  - the four new `ref` tables, `curated.formation_tag_rule`, `meta.formation_tag_run` and the switch;
+  - the sql/16 rewrite (precedence above, switch **off**);
+  - sql/23 rewritten as a pass-through.
+- **Seeds:**
+  - `formation_tag_overrides.csv`: carded calls added; the 4 stale rows removed;
+  - `formation_tag_depth_exclusions.csv`;
+  - `formation_tag_policy.csv` (= `box/policy/step1_patterns_v1.csv`);
+  - `formation_tag_class.csv`, from the `class_decisions.csv` files.
+- **`scripts/tag_rule_nightly.py`:**
+  - `--dry-run` prints the report and writes nothing;
+  - `--write` does the single-transaction replace;
+  - also the circuit breaker, and the run row.
+- **The nightly:** the `run_daily` hook (soft-fail), the `etl-nightly.yml` timing check, and `well_lateral_survey`
+  moved ahead of the rule step.
+- **The appliers:** `apply_formation_tag_rule.py` (the structural window: CASCADE rebuild order, sql/26, sql/31) and
+  `--cutover` / `--rollback` (switch + concurrent refresh down the chain).
+- **Tests:**
+  - the reproduction test pins the reviewed decisions on a fixture;
+  - the staleness guard;
+  - the class gating;
+  - the circuit breaker;
+  - the switch;
+  - the SQL lint (UNIQUE index on every matview).
+- **Docs and the dictionary:** sql/31 comments, the data dictionary regenerated, the `warehouse-change` /
+  `novi-quarterly-reload` skills updated if the CASCADE graph changed, and CLAUDE.md's nightly description.
 
 **Gate W2:** Michael reviews the PR and merges it. Merged still means nothing applied.
 
-### W3 — Apply, off-hours, on explicit go
+### W3: Structural window (off-hours, explicit go)
+
+The sql/16 rewrite is a `DROP … CASCADE`. Live `pg_depend` (2026-11-08) shows it drops 12 matviews and 3 views,
+including the intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_locations` and `box_scout_locations`.
 
 1. Check that no nightly is running (`gh run list --workflow etl-nightly.yml`). The window is outside 05:00–06:30 CT.
-2. `python -m scripts.apply_formation_tag_overrides --refresh --dry-run`. This checks `CHAIN` against live pg_depend
-   and prints the seed diff (≈ +933 / −4). It writes nothing.
-3. On the go: `python -m scripts.apply_formation_tag_overrides --refresh` (about 1 h, apps stay up).
+2. `apply_formation_tag_rule --dry-run`: the live pg_depend check plus the seed diff.
+3. On the go: rebuild the chain in the quarterly order, then sql/26, then sql/31. erebor and narvi are dark for a
+   couple of hours (the longest step is `intel_pdp_support`). anduin is unaffected.
+4. **Verify that the switch is off and the tags are unchanged:** `formation_blueox` and `wells_enriched` are
+   row-for-row identical to the pre-window snapshot. The only expected exception is the overrides seed (carded calls
+   in, 4 stale rows out), and that diff is listed. The EXPLAIN assertions on the geography indexes run too.
 
-### W4 — Verify live (read-only)
+**Gate W3:** structure live, tags unchanged.
 
-- **The applier's own checks:** every row landed, every PDP tag change is an override row, and stick-tag and recon
-  status moves are reported.
-- **sql/23 vs overrides.** sql/23 has no exemption for overrides. It has flipped none of the 437 today, but about 933
-  new rows shift its bands. Assert 0 overrides flipped, and compare the `tvd_corrected` count before and after.
-- **Re-score live.** Crossing area should fall to about 529 sq mi Delaware and about 82 Midland. Label reproduction
-  should match the v5-accepted numbers.
-- **Sticks.** PUD/RES stick benches move through sql/19, which copies neighbour producer tags. Count:
-  - stick moves by basin and bench;
-  - `reconciled_inventory` status moves;
-  - erebor `box_locations` class counts before and after. A stick whose bench moves away from its BOX record bench
-    changes coverage class.
+### W4: Shadow period (nightly writes, nobody reads)
 
-**Gate W4:** live state confirmed.
+- The nightly runs the rule step with the switch off. `curated.formation_tag_rule` fills; tags don't move.
+- **Length:** at least 10 nightly runs. Exit criteria:
+  - no circuit-breaker trips that weren't explained;
+  - a runtime that fits the window;
+  - day-over-day changes that are only new wells, input-moved wells and queued classes.
+- Michael cards the queue as it grows.
 
-### W5 — Propagate
+**Gate W4:** Michael reviews the shadow reports.
 
-- **BOX:** records run 32 (Delaware) and run 30 (Midland) stay on their old benches until the next BOX run (Gate 0
-  Q5). State that in the step-23 memory and in #eng-updates only if Michael wants a post.
-- **anduin:** header re-sync. Saved type curves keep their members; only new cohort builds see new tags.
+### W5: Cutover (explicit go)
+
+1. `apply_formation_tag_rule --cutover`: switch on, then `REFRESH … CONCURRENTLY` down the chain (~1 h, apps stay up,
+   `erebor_locations` last).
+2. **Verify live:**
+   - applied-row count = the rule table's `applied` rows whose inputs match;
+   - 0 human calls overridden;
+   - the sql/23 pass-through is clean;
+   - crossing area falls toward ~529 sq mi Delaware / ~82 Midland;
+   - stick bench moves through sql/19, `reconciled_inventory` status moves and erebor `box_locations` class counts,
+     each before and after.
+3. **Rollback** is `--rollback`: switch off plus the same refresh.
+
+**Gate W5:** live state confirmed.
+
+### W6: Propagate
+
+- **BOX:** records run 32 (Delaware) and run 30 (Midland) stay on their old benches until the next BOX run (Gate 0 Q5).
+  This goes in the step-23 memory, and in #eng-updates only if Michael wants a post.
+- **anduin:** header re-sync. Saved type curves keep their members; only new cohort builds see the new tags.
 - **narvi:** list the saved scenarios whose benches moved, and re-save them.
-- **Blue Ox:** no vocabulary or column change, so the ledger only gets a note that drops already shipped keep their
-  old benches.
-- **Data dictionary:** no schema change, so no regeneration is needed.
-
-## Later, separate go: not in this landing
-
-- **Provenance columns** (`unit_basis`, `subbench_basis`: vendor / depth / vendor default / inverted / human /
-  sql23), including the flag on the 447 placeholder rows kept at their default.
-  - Additive DDL: a new `ref.formation_tag_basis` table, plus `CREATE OR REPLACE VIEW curated.wells_enriched` with the
-    columns appended (the sql/40 / sql/49 precedent). No drops.
-- **sql/23 override exemption.** (If Q1 = rewrite, this moves INTO the landing window; see the revision.) This is a
-  sql/23 logic change, which is a DROP CASCADE of `formation_blueox_tvd`, so it
-  needs a chain-rebuild window. Bundle it with the next quarterly reload. PLAN.md step 3 already retires sql/23's
-  role.
-- **Re-run cadence.** Each re-run produces new class-accepted rows for new wells, and new v5.1 changes that need cards.
+- **erebor:** the source legend gets `ratified_override` and `rule_step1/2/3`.
+- **Blue Ox:** no vocabulary or column change, so the ledger only gets a note that drops already shipped keep their old
+  benches.
 
 ## Decisions
 
-- **Q2: DECIDED (Michael, 2026-11-08).** New wells in accepted classes are seeded as class-accepted.
-- **Q3: DECIDED (Michael, 2026-11-08).** Provenance columns come in a later, separate step.
-- **Q6: DECIDED (Michael, 2026-11-09).** Step 1's learned precedence is keyed on vendor string pairs and FROZEN as
-  policy v1 (`box/policy/step1_patterns_v1.csv`; RULE_V5.md, Policy v1). In the warehouse it lands with the rule as a
-  versioned policy table. The nightly applies it and reports drift; it never re-learns winners.
-- **Crosswalk fix, applied live 2026-11-09:** Novi Insights `WOLFCAMP A (XY)` → WCXY, PR #234.
-- **Still to be redesigned here:** the rule runs inside the nightly, not monthly (Michael, 2026-11-09: the vendor inputs
-  change nightly; "retire sql/23" means replacing its method while keeping a nightly depth check). This plan is revised
-  for that, plus Q5 / Q6, before the warehouse PR.
-- **Q5: DECIDED (Michael, 2026-11-09).** SUSPECT TVD wells go in the rule table as depth exclusions (design above). They
-  keep the vendor tag and are never depth evidence while the recorded depth stands.
-- **Q1 Mechanism: open.** Recommended: the sql/16 rewrite (revision above). The rule rows' staleness guard and the
-  sql/23 exemption are worth the window. The alternative is override rows: no drops, but ~840 rule outputs pinned as if
-  they were human calls.
-- **Q4 Re-run cadence: open.** The earlier "quarterly" option was wrong: Insights updates daily. Recommended:
-  - a **monthly** run, plus a **mandatory run before every BOX run**;
-  - each write on Michael's go for the first ~3 runs;
-  - then the writer moves into the nightly, once its diffs show only new wells in accepted classes.
+**Decided:**
+- **Q2 (2026-11-08):** new wells in accepted classes take the class's answer. In the nightly this is automatic.
+- **Q3 (2026-11-08):** provenance columns come later, as a separate additive step (the `wells_enriched`
+  `CREATE OR REPLACE VIEW` precedent).
+- **Q4 cadence: superseded.** The rule runs nightly (Michael, 2026-11-09).
+- **Q5 (2026-11-09):** SUSPECT TVD wells are depth exclusions. Storage is refined above.
+- **Q6 (2026-11-09):** Step 1 policy v1: string-keyed, frozen winners; the nightly reports drift and never re-learns.
+- **Policy-v1 classes (2026-11-09):** decisions taken as they stand:
+  - 12, 13 and 15 accepted;
+  - 14 rejected.
 
-  With the staleness guard, the gap between runs is never a wrong pin. New or revised wells simply sit on the vendor
-  tag, which is today's state. New v5.1 sub-bench changes always queue for cards, whatever the cadence.
+  Noted, not acted on: class 12's rejects are all in Lea, class 14's all in Loving, and 3 of class 13's 10 cards were
+  WCA_1 calls.
+- **Crosswalk fix (2026-11-09, applied live):** Novi Insights `WOLFCAMP A (XY)` → WCXY (PR #234).
+
+**Open, for Michael before W2:**
+- **Q1 mechanism (recommended: the sql/16 rewrite, not yet confirmed):**
+  - The nightly decision effectively requires it, because pinned override rows can't follow nightly inputs.
+  - With the switch, it costs one structural window (W3); cutover and rollback after that need no drop.
+  - The alternative is ~840 rule outputs pinned as override rows plus a periodic re-run, which is what this revision
+    replaces.
+- **D1, standing write:** the nightly writes `curated.formation_tag_rule` and `meta.formation_tag_run` every night
+  without a per-run go. The scope is exactly those two tables, behind the circuit breaker; all policy changes stay PR +
+  explicit apply. This is a new standing authorization, of the same narrow kind as the Novi drift auto-add.
+- **D2, the Q5 storage refinement:** depth exclusions get their own seeded table instead of rows inside the rule table.
+- **D3, circuit-breaker threshold and shadow length:** proposed 200 wells / 1 %, and at least 10 runs.
+- **D4, survey refresh:** move `well_lateral_survey` ahead of the rule step (recommended), or accept a one-day lag.
+
+**Still open in the rule itself (not blocking the warehouse step):**
+- **Step 1's unit-blend reference:** it uses unit-level, not code-level, references, as Step 3 rev 1 does. This is
+  where the 9 WCB_1 gains came from.
+- **Same-unit sub-bench conflicts:** about 953 Novi WCXY vs Enverus WCA_1 / WCA_2 wells, now joined by class 13's three
+  WCA_1 calls. No step adjudicates them; they keep Enverus's code.
+
+**Smaller follow-ups:**
+- making `_load_crosswalk` transactional;
+- renaming v5/v5.1/v5.2 to Step 1/2/3 in the code.
