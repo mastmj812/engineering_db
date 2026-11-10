@@ -42,7 +42,7 @@ DOCS = sb.ROOT / "docs" / "formation_tag_redesign"
 
 def previously_carded() -> set[str]:
     out: set[str] = set()
-    for f in DOCS.glob("*cards*/cards_sample.csv"):
+    for f in DOCS.glob("*cards*/**/cards_sample.csv"):  # card sets may hold step subfolders
         out |= set(pd.read_csv(f, dtype={"api10": str})["api10"])
     return out
 
@@ -147,7 +147,7 @@ def run(cache: Path, out: Path, round1: Path | None = None, only: list[str] | No
         cls["class_no"] = np.arange(first_class, first_class + len(cls))
     if round1 is not None:
         cls = round2_classes(cls, round1)
-        first_card = int(pd.read_csv(round1 / "cards_sample.csv")["card"].max()) + 1
+        first_card = max(first_card, int(pd.read_csv(round1 / "cards_sample.csv")["card"].max()) + 1)  # keep clear of other card sets
     rng = np.random.default_rng(seed if round1 is None else SEED_ROUND2)
     picks = []
     for c in cls.itertuples():

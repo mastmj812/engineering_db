@@ -352,6 +352,7 @@ def test_tag_screen_clear_verdict():
     from box import tag_screen as ts
 
     assert ts.clear_verdict("agree") == "agree"
+    assert ts.clear_verdict("ACCEPT", "WCXY") == "agree" and ts.unknown_bench_codes(["ACCEPT"], set()) == []
     assert ts.clear_verdict("reject. Canyon sands, out of scope") == "reject"
     assert ts.clear_verdict("WCD", "WCB_1") == "reject" and ts.clear_verdict("WCD", "WCD") == "agree"
     assert ts.clear_verdict("bad tvd") == "" and ts.clear_verdict("Lets discuss") == "" and ts.clear_verdict(np.nan) == ""
