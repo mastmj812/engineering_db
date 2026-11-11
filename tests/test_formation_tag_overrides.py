@@ -141,6 +141,9 @@ def test_seed_diff_and_tag_moves():
     live = [("3", "WCC", "WCB_2", "old note"), ("4", "WCA_1", "LSSH", "n"),
             ("1", "WCB_1", "WCB_2", "n")]
     assert afo.seed_diff(seed, live) == {"add": ["2"], "change": ["3"], "remove": ["4"]}
+    # empty `was` in the CSV loads as NULL: not a change (3001554499, 2026-11-10 dry run)
+    blank = [{"api10": "5", "corrected_code": "WCA_1", "was": "", "note": "n"}]
+    assert afo.seed_diff(blank, [("5", "WCA_1", None, "n")])["change"] == []
     moves = afo.tag_moves({"a": "WCB_1", "b": "WCC", "c": "WCD"},
                           {"a": "WCB_2", "b": "WCC", "d": "WCA_1"})
     assert moves == {("WCB_1", "WCB_2"): 1}

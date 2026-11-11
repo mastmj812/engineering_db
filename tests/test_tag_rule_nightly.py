@@ -201,3 +201,54 @@ def test_refresh_hook_runs_before_its_matview(monkeypatch):
     monkeypatch.setattr(db, "log_etl_run", _Log)
     db.refresh_curated(hooks={"b": lambda: calls.append("hook")})
     assert calls == ["refresh a", "hook", "refresh b"]
+
+
+# ---------------------------------------------------------------------------- W3 verifier + CASCADE check
+
+
+def test_sql23_ripple_is_only_an_enriched_move_with_formation_blueox_unchanged():
+    from scripts import apply_formation_tag_rule as atr
+
+    before = {"blueox": {"r1": ("BS2_S", "novi"), "r2": ("WCB_1", "enverus"), "x1": ("WCA_1", "novi"),
+                         "x2": ("BS3_S", "novi"), "x3": ("WCB_1", "novi")},
+              "enriched": {"r1": ("BS2_S", "tvd_corrected"), "r2": ("WCB_1", "enverus"), "x1": ("WCA_1", "novi"),
+                           "x2": ("BS3_S", "tvd_corrected"), "x3": ("WCB_1", "novi")}}
+    after = {"blueox": {"r1": ("BS2_S", "novi"), "r2": ("WCB_1", "enverus"), "x1": ("WCA_1", "novi"),
+                        "x2": ("BS3_C", "ratified_override"), "x3": ("WCB_1", "novi")},
+             "enriched": {"r1": ("BS3_C", "novi"),               # correction dropped (W3: SCOTER 6 FED #004H)
+                          "r2": ("AVA_0", "tvd_corrected"),      # correction gained (W3: STREETCAR)
+                          "x1": ("WCA_2", "novi"),               # moved with no sql/23 on either side
+                          "x2": ("BS3_C", "ratified_override"),  # its formation_blueox row moved
+                          }}                                     # x3 vanished
+    assert atr.sql23_ripple({"r1", "r2", "x1", "x2", "x3"}, before, after) == {"r1", "r2"}
+
+
+def _edges(*pairs):
+    return [(c, ck, p, pk) for c, ck, p, pk in pairs]
+
+
+def test_cascade_closure_and_problems():
+    from scripts import apply_formation_tag_rule as atr
+
+    root = "curated.formation_blueox"
+    edges = _edges(("curated.formation_blueox_tvd", "m", root, "m"),
+                   ("curated.wells_enriched", "v", "curated.formation_blueox_tvd", "m"),
+                   ("curated.new_thing", "v", "curated.wells_enriched", "v"))
+    closure = atr.cascade_closure(edges)
+    assert closure == {root: "m", "curated.formation_blueox_tvd": "m", "curated.wells_enriched": "v",
+                       "curated.new_thing": "v"}
+    blocking, notes = atr.cascade_problems(closure)
+    assert blocking == ["CASCADE drops curated.new_thing (view) but no tail step re-creates it"]
+    assert len(notes) == len(atr.RECREATED_BY) - 3          # listed objects not below root in this toy graph
+
+
+def test_recreated_by_covers_the_refresh_chain_and_the_three_views():
+    from scripts import apply_formation_tag_overrides as afo
+    from scripts import apply_formation_tag_rule as atr
+
+    views = {"curated.wells_enriched", "curated.dev_scenario", "curated.box_scout_locations"}
+    assert set(atr.RECREATED_BY) == set(afo.CHAIN) | views
+    tail = " ".join(" ".join(c) for c in atr.TAIL)
+    for step in set(atr.RECREATED_BY.values()) - {"sql/16", "sql/25"}:
+        assert step in tail
+    assert "25_net_new_pdp.sql" in tail

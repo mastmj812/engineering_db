@@ -12,7 +12,10 @@ can run in the afternoon: `gh run list --workflow etl-nightly.yml`). Each mode r
          wells_enriched, 47, 50, 21) -> sql/25 -> apply_intel_pdp_support -> apply_intel_forecast_accuracy
          -> apply_erebor_locations (FINAL, re-applies sql/31) -> sql/26 -> sql/31;
     5. verify with the switch OFF: formation_blueox differs from the snapshot only on the override seed diff, and
-       wells_enriched only there plus wells where sql/23 no longer flips a human call.
+       wells_enriched only there, plus wells where sql/23 no longer flips a human call, plus sql/23's neighbour
+       ripple (formation_blueox row unchanged, tvd_corrected on one side; reported apart, capped at the seed diff).
+    The preflight (dry run too) checks the live pg_depend closure of formation_blueox against RECREATED_BY and
+    refuses before any drop if the CASCADE would take an object no tail step re-creates.
 --seeds      reload the four seeds only (a reviewed seed PR), then REFRESH CONCURRENTLY down the chain.
 --cutover    (W5) switch ON + REFRESH CONCURRENTLY down the chain (~1 h, apps stay up); verify.
 --rollback   switch OFF + the same refresh.
@@ -84,6 +87,75 @@ def unexplained(diff: dict[str, set[str]], allowed: set[str]) -> set[str]:
     return (diff["moved"] | diff["added"] | diff["removed"]) - allowed
 
 
+def sql23_ripple(candidates: set[str], before: dict[str, dict], after: dict[str, dict]) -> set[str]:
+    """The wells_enriched moves that are only sql/23's neighbour ripple.
+
+    sql/23 corrects a well's tag against its NEIGHBOURS' depth profile (producing_reference), so new human calls
+    shift the correction of nearby wells nobody carded. Such a well keeps its formation_blueox row exactly (code and
+    source) and has `tvd_corrected` on one side of its wells_enriched move. W3 found 10 (2026-11-10); they go away at
+    cutover, when sql/23 becomes a pass-through. `before`/`after` are {"blueox": snap, "enriched": snap}.
+    """
+    out = set()
+    for a in candidates:
+        bx0, bx1 = before["blueox"].get(a), after["blueox"].get(a)
+        en0, en1 = before["enriched"].get(a), after["enriched"].get(a)
+        if bx0 is None or bx0 != bx1 or en0 is None or en1 is None:
+            continue
+        if "tvd_corrected" in (en0[1], en1[1]):
+            out.add(a)
+    return out
+
+
+# Everything sql/16's DROP ... CASCADE takes with it, and the TAIL step that re-creates each (pg_depend, 2026-11-08:
+# 12 matviews + 3 views). The dry run checks the live closure against this BEFORE anything is dropped.
+RECREATED_BY: dict[str, str] = {
+    "curated.formation_blueox": "sql/16",
+    "curated.bench_reference": "apply_intel_formation_blueox",
+    "curated.intel_formation_blueox": "apply_intel_formation_blueox",
+    "curated.producing_reference": "apply_reconciled_inventory",
+    "curated.formation_blueox_tvd": "apply_reconciled_inventory",
+    "curated.wells_enriched": "apply_reconciled_inventory",
+    "curated.codev_context": "apply_reconciled_inventory",
+    "curated.dev_scenario": "apply_reconciled_inventory",
+    "curated.reconciled_inventory": "apply_reconciled_inventory",
+    "curated.net_new_pdp": "sql/25",
+    "curated.intel_pdp_support": "apply_intel_pdp_support",
+    "curated.intel_forecast_accuracy": "apply_intel_forecast_accuracy",
+    "curated.intel_forecast_accuracy_vintage": "apply_intel_forecast_accuracy",
+    "curated.erebor_locations": "apply_erebor_locations",
+    "curated.box_scout_locations": "apply_erebor_locations",
+}
+
+
+def cascade_closure(edges) -> dict[str, str]:
+    """{object: relkind} for every view/matview in the rewrite closure of ROOT (ROOT included).
+    `edges` are (child, child_kind, parent, parent_kind) rows from apply_formation_tag_overrides._DEPS_SQL."""
+    out: dict[str, str] = {afo.ROOT: "m"}
+    for child, ck, parent, pk in edges:
+        out[child], out[parent] = ck, pk
+    return out
+
+
+def cascade_problems(closure: dict[str, str], recreated: dict[str, str] = RECREATED_BY) -> tuple[list[str], list[str]]:
+    """(blocking, notes): objects the CASCADE would drop that no TAIL step re-creates block the window; listed
+    objects no longer below ROOT are only a stale-list note."""
+    blocking = [f"CASCADE drops {o} ({'matview' if k == 'm' else 'view'}) but no tail step re-creates it"
+                for o, k in sorted(closure.items()) if o not in recreated]
+    notes = [f"{o} is listed as re-created but is no longer below {afo.ROOT}" for o in sorted(set(recreated) - set(closure))]
+    return blocking, notes
+
+
+def _cascade_check(cur) -> list[str]:
+    closure = cascade_closure(cur.execute(afo._DEPS_SQL, {"root": afo.ROOT}).fetchall())
+    blocking, notes = cascade_problems(closure)
+    n_m = sum(k == "m" for k in closure.values())
+    _p(f"    CASCADE closure (live pg_depend): {n_m} matviews + {len(closure) - n_m} views; "
+       f"re-created by the tail {len(closure) - len(blocking)}/{len(closure)}  [{'OK' if not blocking else 'FAIL'}]")
+    for n in notes:
+        _p(f"    note: {n}")
+    return blocking
+
+
 def _snapshot(cur, which: str) -> dict:
     return {a: (c, s) for a, c, s in cur.execute(_TAGS_SQL[which]).fetchall()}
 
@@ -134,7 +206,7 @@ def structure(dry_run: bool) -> None:
         conn.read_only = dry_run
         with conn.cursor() as cur:
             _p("[1/5] preflight + seed diff")
-            problems = _preflight(cur)
+            problems = _preflight(cur) + _cascade_check(cur)
             for p in problems:
                 _p(f"    FAIL: {p}")
             if problems:
@@ -175,11 +247,21 @@ def structure(dry_run: bool) -> None:
             for k in _TAGS_SQL:
                 d = tag_diff(before[k], after[k])
                 u = unexplained(d, allowed[k])
+                ripple = sql23_ripple(u, before, after) if k == "enriched" else set()
+                u -= ripple
                 _p(f"    {k}: moved {len(d['moved'])}, added {len(d['added'])}, removed {len(d['removed'])}; "
                    f"unexplained {len(u)}  [{'OK' if not u else 'CHECK'}]")
                 for a in sorted(u)[:20]:
                     _p(f"      {a}: {before[k].get(a)} -> {after[k].get(a)}")
                 bad += len(u)
+                if ripple:
+                    # a ripple wider than the call set itself means sql/23 changed, not just its neighbours' tags
+                    ok = len(ripple) <= max(len(touched), 1)
+                    _p(f"    {k}: sql/23 neighbour ripple {len(ripple)} (formation_blueox unchanged; cap {len(touched)})"
+                       f"  [{'OK' if ok else 'CHECK'}]")
+                    for a in sorted(ripple)[:20]:
+                        _p(f"      {a}: {before[k].get(a)} -> {after[k].get(a)}")
+                    bad += not ok
             _p(f"    switch use_rule = {sw}  [{'OK' if sw is False else 'CHECK'}]")
             if bad or sw is not False:
                 raise SystemExit("verification needs a look - see above")
