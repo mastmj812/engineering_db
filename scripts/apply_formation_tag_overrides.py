@@ -194,17 +194,31 @@ def _load_seed(cur, expected: int) -> None:
         raise SystemExit(f"seed row count {n} != csv {expected}")
 
 
+def classify_overrides(rows) -> tuple[list, list]:
+    """(mismatched, orphans) from (api10, want, got, source, in_wells) rows. An orphan is a human call whose well is no
+    longer in curated.wells (Novi deleted or re-numbered it): nothing can carry the tag, so it is reported, not failed,
+    and the call is kept in case the api10 comes back (4232941326, found 2026-11-11)."""
+    orphans = [r[:4] for r in rows if not r[4]]
+    bad = [r[:4] for r in rows if r[4] and (r[2] != r[1] or r[3] != "ratified_override")]
+    return bad, orphans
+
+
 def _verify_overrides(cur) -> int:
     rows = cur.execute(f"""
-        SELECT o.api10, o.corrected_code, fb.formation_blueox, fb.formation_blueox_source
+        SELECT o.api10, o.corrected_code, fb.formation_blueox, fb.formation_blueox_source, w.api10 IS NOT NULL
         FROM {TABLE} o
         LEFT JOIN curated.formation_blueox fb USING (api10)
+        LEFT JOIN curated.wells w USING (api10)
     """).fetchall()
-    bad = [r for r in rows if r[2] != r[1] or r[3] != "ratified_override"]
-    print(f"    overrides applied: {len(rows) - len(bad)}/{len(rows)}"
-          f"  [{'OK' if not bad else 'MISMATCH'}]", flush=True)
+    bad, orphans = classify_overrides(rows)
+    n = len(rows) - len(orphans)
+    print(f"    overrides applied: {n - len(bad)}/{n}  [{'OK' if not bad else 'MISMATCH'}]", flush=True)
     for api, want, got, src in bad:
         print(f"      {api}: want {want}, got {got} (source {src})", flush=True)
+    if orphans:
+        print(f"    overrides whose well is not in curated.wells (kept, not failed): {len(orphans)}", flush=True)
+        for api, want, _, _ in orphans:
+            print(f"      {api}: {want}", flush=True)
     return len(bad)
 
 

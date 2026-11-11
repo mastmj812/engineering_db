@@ -156,3 +156,14 @@ def test_mode_must_be_named():
         afo.main(["--rebuild", "--dry-run"])
     with pytest.raises(SystemExit):
         afo.main(["--refresh", "--rebuild"])
+
+
+def test_orphan_overrides_are_reported_not_failed():
+    rows = [("1", "WCB_1", "WCB_1", "ratified_override", True),     # applied
+            ("2", "WCA_1", "WCA_2", "novi", True),                  # a real mismatch
+            ("3", "WCB_1", None, None, False)]                       # well gone from curated.wells (4232941326)
+    bad, orphans = afo.classify_overrides(rows)
+    assert bad == [("2", "WCA_1", "WCA_2", "novi")]
+    assert orphans == [("3", "WCB_1", None, None)]
+    # a well present in curated.wells but missing from formation_blueox is still a mismatch
+    assert afo.classify_overrides([("4", "WCC", None, None, True)])[0] == [("4", "WCC", None, None)]
