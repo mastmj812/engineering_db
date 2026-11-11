@@ -96,7 +96,9 @@ _CONSUMERS = {
     "box_econ.box_pud_econ_tie": "tie-out of the EUR Steven priced vs the BOX EUR: QC before any screen (step 8)",
     "box_econ.pud_econ": "Steven's sandbox econ on Novi sticks (his table): the BOX-vs-Novi exhibit",
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
-    "curated.box_scout_locations": "land team / analyst_ro QGIS: undrilled locations with a BOX record-run forecast, Steven's default-deck econ for that run where priced (blank until then), minimal columns (sql/69 v4)",
+    "curated.formation_tag_rule": "curated.formation_blueox (sql/16) reads applied rows only while ref.formation_tag_switch.use_rule is ON (shadow until cutover W5); tag-rule queue/drift review",
+    "meta.formation_tag_run": "nightly tag-rule run log + circuit breaker (etl/tag_rule.py); W4 shadow review",
+    "curated.box_scout_locations":"land team / analyst_ro QGIS: undrilled locations with a BOX record-run forecast, Steven's default-deck econ for that run where priced (blank until then), minimal columns (sql/69 v4)",
 }
 
 
