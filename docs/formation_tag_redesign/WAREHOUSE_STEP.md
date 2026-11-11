@@ -290,13 +290,15 @@ including the intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_loc
 ### W4: Shadow period (nightly writes, nobody reads)
 
 - The nightly runs the rule step with the switch off. `curated.formation_tag_rule` fills; tags don't move.
-- **Length:** at least 10 nightly runs. Exit criteria:
+- **Length:** reviewed at run 6, the 2026-11-16 nightly (D3, revised 2026-11-11). Run 1 was the 2026-11-11 nightly.
+  Runs 2–6 give five day-over-day comparisons, with weekdays on both sides of a weekend. If the exit criteria hold at
+  run 6, Michael can call the cutover. If not, the shadow runs on to run 10 (2026-11-20). Exit criteria:
   - no circuit-breaker trips that weren't explained;
   - a runtime that fits the window;
   - day-over-day changes that are only new wells, input-moved wells and queued classes.
 - Michael cards the queue as it grows.
 
-**Gate W4:** Michael reviews the shadow reports.
+**Gate W4:** Michael reviews the shadow reports at run 6. The cutover still needs his explicit go (W5).
 
 ### W5: Cutover (explicit go)
 
@@ -347,7 +349,12 @@ including the intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_loc
   stays a PR plus an explicit apply. W3 and W5 still need their own explicit go.
 - **D2, Q5 storage:** depth exclusions go in their own seeded table, `ref.formation_tag_depth_exclusions`.
 - **D3, circuit breaker and shadow:** 200 wells or 1 % of judged producers, whichever is larger; at least 10 shadow
-  runs.
+  runs. **Shadow length revised 2026-11-11 (Michael: "Decide at run 6"):**
+  - The cutover decision moves to run 6, the 2026-11-16 nightly.
+  - Up to 10 runs only if run 6 doesn't meet the W4 exit criteria.
+  - Reason: the cards already reviewed the tags well by well. The shadow tests only the nightly mechanics, and
+    `--rollback` costs about 1 h with the apps up.
+  - The breaker is unchanged.
 - **D4, survey refresh:** `well_lateral_survey` moves ahead of the rule step in the nightly.
 
 **Still open in the rule itself (not blocking the warehouse step):**
