@@ -180,14 +180,16 @@ def _png(fig: Any, dpi: int = 85) -> str:
 
 
 def card_figure(subj: pd.Series, nb: pd.DataFrame, p: ConsensusParams, *, dest: str | None = None,
-                section: tuple[pd.DataFrame, dict[str, Any]] | None = None) -> tuple[str, dict[str, Any]]:
+                section: tuple[pd.DataFrame, dict[str, Any]] | None = None,
+                also_show: tuple[str, ...] = ()) -> tuple[str, dict[str, Any]]:
     """``nb`` = the detector's radius neighbourhood (bands, performance, GOR); ``section`` = ``strike_section`` output,
-    plotted in place of the radius scatter when given. ``dest`` = the proposed bench (default: the consensus suggestion)."""
+    plotted in place of the radius scatter when given. ``dest`` = the proposed bench (default: the consensus suggestion).
+    ``also_show`` = extra benches to draw, for a card whose real alternative is not adjacent to the subject's tag."""
     dest = dest if dest is not None else subj.get("cons_suggest")
     wit = nb[nb["cons_witness"]]
     bands = local_bands({b: g["tvd_ft"].values for b, g in wit.groupby("formation_blueox")}, p)
     tag = str(subj["formation_blueox"])
-    show = shown_benches(tag, dest, float(subj["tvd_ft"]), bands)
+    show = shown_benches(tag, dest, float(subj["tvd_ft"]), bands) | set(also_show)
     fig = plt.figure(figsize=(11.5, 4.9))
     gs = fig.add_gridspec(1, 4, width_ratios=[2.2, 1.0, 1.0, 1.0], wspace=0.4)
     ax = fig.add_subplot(gs[0, 0])

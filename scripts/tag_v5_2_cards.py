@@ -74,8 +74,10 @@ def card(dd: pd.DataFrame, xy: np.ndarray, subj: pd.Series, v: pd.Series, refs: 
     s = subj.copy()
     s["formation_blueox"] = v["base52"] if isinstance(v["base52"], str) else "(unmapped)"
     wide = fc._neighbourhood(dd, xy, i, replace(DEFAULT_PARAMS, radius_ft=fc.SECTION_PREFILTER_FT))
+    also = v.get("also_show")
+    also = tuple(c.strip() for c in also.split(";") if c.strip()) if isinstance(also, str) else ()
     png, _ = fc.card_figure(s, fc._neighbourhood(dd, xy, i, DEFAULT_PARAMS), DEFAULT_PARAMS, dest=v["proposed"],
-                            section=fc.strike_section(s, wide))
+                            section=fc.strike_section(s, wide), also_show=also)
     col = gm.column(v["basin"])
     idx = [col.index(c) for c in (v["base52"], v["proposed"]) if c in col]
     lo, hi = (max(min(idx) - 1, 0), min(max(idx) + 1, len(col) - 1)) if idx else (0, len(col) - 1)
@@ -116,13 +118,15 @@ def select(d: pd.DataFrame) -> pd.DataFrame:
 
 
 def select_listed(d: pd.DataFrame, listed: pd.DataFrame, first_card: int) -> pd.DataFrame:
-    """Follow-up cards for named wells (section D): listed has api10, proposed, note and optionally input."""
+    """Follow-up cards for named wells (section D): listed has api10, proposed, note and optionally input, also_show."""
     ch = d[d["api10"].isin(listed["api10"])].copy()
     missing = set(listed["api10"]) - set(ch["api10"])
     if missing:
         raise SystemExit(f"--listed wells not in producers_v5_2.pkl: {sorted(missing)}")
     li = listed.set_index("api10")
     ch["proposed"], ch["note"], ch["section"] = ch["api10"].map(li["proposed"]), ch["api10"].map(li["note"]), "D"
+    if "also_show" in li.columns:  # extra benches drawn on the section (';'-separated), e.g. a non-adjacent alternative
+        ch["also_show"] = ch["api10"].map(li["also_show"])
     if "input" in li.columns:  # the card's starting tag when it is not the frame's (e.g. the vendor tag, W1 class identity)
         inp = ch["api10"].map(li["input"])
         ch["base52"] = inp.where(inp.notna(), ch["base52"])
