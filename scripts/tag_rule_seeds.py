@@ -44,7 +44,7 @@ UNMAPPED = "(unmapped)"
 CARD_SETS: list[tuple[str, int]] = [
     ("v5-cards-2026-11-06", 1), ("v5-cards-r2-2026-11-06", 1), ("v5_1-cards-2026-11-06", 2),
     ("v5_2-cards-2026-11-08", 3), ("policy-v1-cards-2026-11-09/step1", 1), ("policy-v1-cards-2026-11-09/step1_round2", 1),
-    ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3),
+    ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3), ("shadow1-queue-cards-2026-11-11", 3),
 ]
 STEP1_DECISIONS = ["v5-cards-2026-11-06", "v5-cards-r2-2026-11-06", "policy-v1-cards-2026-11-09/step1",
                    "policy-v1-cards-2026-11-09/step1_round2"]
