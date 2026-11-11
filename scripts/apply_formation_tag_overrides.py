@@ -158,9 +158,13 @@ def chain_problems(order, parents: dict[str, set[str]]) -> list[str]:
 
 
 def seed_diff(seed_rows, live_rows) -> dict[str, list[str]]:
-    """api10s the reload adds, changes (code or note) and removes."""
-    seed = {r["api10"]: (r["corrected_code"], r["was"], r["note"]) for r in seed_rows}
-    live = {r[0]: tuple(r[1:]) for r in live_rows}
+    """api10s the reload adds, changes (code or note) and removes. An empty CSV field loads as NULL (COPY csv), so
+    '' and None compare equal."""
+    def norm(vals) -> tuple:
+        return tuple(None if v == "" else v for v in vals)
+
+    seed = {r["api10"]: norm((r["corrected_code"], r["was"], r["note"])) for r in seed_rows}
+    live = {r[0]: norm(r[1:]) for r in live_rows}
     return {
         "add": sorted(seed.keys() - live.keys()),
         "change": sorted(a for a in seed.keys() & live.keys() if seed[a] != live[a]),

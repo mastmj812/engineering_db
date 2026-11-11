@@ -280,6 +280,10 @@ including the intel chain, `wells_enriched`, `reconciled_inventory`, `erebor_loc
 4. **Verify that the switch is off and the tags are unchanged:** `formation_blueox` and `wells_enriched` are
    row-for-row identical to the pre-window snapshot. The only expected exception is the overrides seed (carded calls
    in, 4 stale rows out), and that diff is listed. The EXPLAIN assertions on the geography indexes run too.
+   *Learned at W3 (2026-11-10):* `wells_enriched` also moves on sql/23's neighbour ripple. New human calls shift
+   the depth profile sql/23 corrects against, so 10 uncarded wells changed their correction while their
+   `formation_blueox` row stayed identical. The verifier now reports that class apart, capped at the size of the
+   seed diff. It ends at cutover, when sql/23 becomes a pass-through.
 
 **Gate W3:** structure live, tags unchanged.
 
