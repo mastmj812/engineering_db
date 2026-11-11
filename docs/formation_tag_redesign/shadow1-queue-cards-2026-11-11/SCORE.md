@@ -48,5 +48,7 @@ The unit was developed in three tiers, and the well numbers follow them:
 | 11x | **111H**, 112H | 11,842 / 11,835 | 11,964 / 11,905 | BS3_S |
 | 12x | 121H, 122H | 12,058 / 12,050 | 12,105 / 12,102 | WCA_1 |
 
-**Open:** the 112H (4230135087) is the 111H's twin in the same tier. It stays BS3_S, because the rule didn't queue it
-and so it was never carded.
+**The 112H (4230135087), the 111H's twin:** an earlier version of this note said it "stays BS3_S, because the rule
+didn't queue it". That was wrong. The rule already takes it to WCXY through the accepted Step 1 class BS3_S → WCXY;
+it is BS3_S today only because the switch is off. Michael then called it WCXY directly, with three neighbours; see
+`../shadow1-direct-calls-2026-11-11/`.

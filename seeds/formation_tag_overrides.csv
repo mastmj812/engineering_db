@@ -615,9 +615,12 @@ api10,corrected_code,was,note
 4230134220,BS3_S,BS3_S,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 78 (Step 1): BS3_S on proposed WCA_1
 4230134223,BS3_S,BS3_S,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 4 (Step 3): BS3_S on proposed WCXY
 4230134652,WCB_1,WCB_1,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 13 (Step 1): WCB_1 on proposed WCA_1
+4230134686,WCXY,BS3_S,tagrule carded 2026-11-11 shadow1-direct-calls-2026-11-11 card 4 (Step 3): WCXY on proposed WCXY
 4230134767,WCXY,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 23 (Step 2): ACCEPT on proposed WCXY
 4230134971,BS1_S,BS2_C,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 53 (Step 1): BS1_S on proposed BS1_S
 4230135086,WCXY,BS3_S,tagrule carded 2026-11-11 shadow1-queue-cards-2026-11-11 card 2 (Step 3): WCXY on proposed WCXY
+4230135087,WCXY,BS3_S,tagrule carded 2026-11-11 shadow1-direct-calls-2026-11-11 card 2 (Step 3): WCXY on proposed WCXY
+4230135096,WCXY,BS3_S,tagrule carded 2026-11-11 shadow1-direct-calls-2026-11-11 card 3 (Step 3): WCXY on proposed WCXY
 4230135439,BS3_S,BS3_S,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 41 (Step 1): BS3_S on proposed WCA_1
 4230135441,BS3_S,BS3_S,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 2 (Step 3): BS3_S on proposed WCXY
 4230135445,WCXY,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 24 (Step 2): WCXY on proposed WCXY
@@ -628,6 +631,7 @@ api10,corrected_code,was,note
 4230135849,WCXY,BS3_S,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 8 (Step 1): ACCEPT on proposed WCXY
 4230135863,WCA_1,BS3_S,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 79 (Step 1): WCA_1 on proposed WCA_1
 4230136019,BS3_S,BS3_S,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 3 (Step 3): BS3_S on proposed WCXY
+4230136022,BS3_S,WCXY,tagrule carded 2026-11-11 shadow1-direct-calls-2026-11-11 card 1 (Step 3): BS3_S on proposed BS3_S
 4230136236,BS2_C,BS2_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 36 (Step 1): BS2_C on proposed BS1_S
 4230136283,BS2_C,BS2_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 37 (Step 1): BS2_C on proposed BS1_S
 4230136290,BS1_S,BS2_C,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 54 (Step 1): BS1_S on proposed BS1_S
