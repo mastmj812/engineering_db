@@ -31,6 +31,9 @@ stick chain is retired.
 | Landing depth without direct control (2026-11-12, after phase 0) | Allowed for non-pooled benches: depth carried from a neighbour bench by thickness (existing method, to 5 mi), flagged `tvd_basis = 'thickness'` as lower confidence, hold-out error reported separately. WCA_1 / WCA_2 / WCXY still need direct control. Reason: only 17 % of today's stick positions have a same-bench producer within 1 mi |
 | Focus benches (2026-11-12) | Delaware BS1_S and Midland DEAN: thin own control over a large extent, dense neighbours. DEAN sits between LSSH above and WCA_1 below, so it is also the test case for topfill / underfill / sandwich no-place logic (phase 2b). Generator pilot AREAS (all benches per DSU) are picked inside these two extents |
 | Landing-depth chain (2026-11-12, after phase 1b) | direct -> local thickness (own wells within 5 mi) -> bracket between a bench above and a bench below -> single-neighbour offset -> none. **No error ceiling: weak carried depths are still placed, flagged low confidence.** Every stick records its rung (`tvd_basis`) and that rung's held-out error |
+| WCA_1 / WCA_2 depth (2026-11-12, after phase 1c) | Both take the full landing-depth chain (supersedes "direct control only" for these two; WCXY stays direct-only until it has its own extent) |
+| WCA_1 / WCA_2 under the floor (2026-11-12) | Where the two landings are closer than the minimum separation (75 ft) or out of order in a DSU, that DSU gets ONE WCA landing. Detail to settle in the generator: it takes the code and depth of the member with the more trusted depth there |
+| Stack reconciliation (2026-11-12) | Benches are estimated independently, then each conflicting adjacent pair in a DSU is reconciled: the less trusted depth gives way (carried before direct; among carried, the higher held-out error). It moves to the minimum separation if that stays inside its own error band; otherwise that bench gets no stick in that DSU, with the reason recorded |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
@@ -90,10 +93,12 @@ configuration; `box.landing_surfaces.ANCHOR` is shared with the tag code and is 
 
 **Phase 1c (2026-11-12, `phase1c-2026-11-12/`): benches are estimated independently, the stack is reconciled per
 DSU.** A carried depth uses only neighbours' direct surfaces, so there is no circularity. With the full chain,
-adjacent benches conflict (out of order or under 75 ft) on 4-6 % of pairs whether the depths are direct or carried;
-no joint surface fit is needed. Open at Gate 1: the reconciliation rule, WCA_1 / WCA_2 (median gap 122 ft, 25 %
-under 75 ft), whether WCA_1 / WCA_2 take the chain (38-40 % of their DSUs have no direct control), and the 300 ft
-outlier screen (702 wells).
+adjacent benches conflict (out of order or under 75 ft) on 4-6 % of pairs in Midland whether the depths are direct
+or carried; Delaware's conflicts are mostly the WCA family (two halves of one bench about 115 ft apart). No joint
+surface fit is needed. Decided the same day: WCA_1 / WCA_2 on the full chain (their no-depth share falls from
+38-40 % to about 10 %), one WCA landing under the floor (1,204 of 3,886 DSUs), and the reconciliation rule. With
+those, 11.9 % of DSU x bench pairs have no depth (6.4 points are WCXY, waiting on its extent) and 14.8 % are low
+confidence. Open at Gate 1: the 300 ft outlier screen (702 wells).
 
 ## Phase 1b - WCXY extent (Delaware)
 

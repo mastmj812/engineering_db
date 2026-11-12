@@ -12,7 +12,7 @@ BOX extent the polygon intersects:
                their held-out error at 5 mi (phase 1b holdout_far.csv);
   4 offset     one neighbour's DIRECT surface + the thickness from the 30 nearest same-bench wells;
   5 none.
-WCXY / WCA_1 / WCA_2 take rung 1 only (plan decision: direct control). A carried depth never rests on another
+Delaware WCXY takes rung 1 only until it has its own extent; WCA_1 / WCA_2 take the full chain. A carried depth never rests on another
 carried depth, so every bench is computed independently; the STACK is then checked per DSU: adjacent benches out of
 stratigraphic order or closer than MIN_SEP_FT, by which rungs the two depths came from.
 
@@ -44,7 +44,8 @@ MIN_SEP_FT = 75.0
 SCREEN_FT = 300.0
 SCREEN_MIN_N = 5
 SCREEN_LEVELS = (200.0, 300.0, 400.0, 500.0)
-DIRECT_ONLY = set(ls.WCA_FAM)
+DIRECT_ONLY = set(ls.WCA_FAM)                # the Delaware WCA family, for the stack tables
+CHAIN_DIRECT_ONLY = {("delaware", "WCXY")}   # Michael 2026-11-12: WCA_1 / WCA_2 take the full chain; WCXY waits on its extent
 DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
 THICK_RANK = DOCS / "phase1-2026-11-12" / "holdout_thickness.csv"
 FAR_RANK = DOCS / "phase1b-2026-11-12" / "holdout_far.csv"
@@ -158,7 +159,7 @@ def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, orde
             hit = np.sort(tree.query(eg, predicate="intersects"))
             for code in ls.extent_codes(basin, e.bench):
                 cm = (bw["live"] == code).to_numpy()
-                r = chain_for_code((basin, code) in p1.POOLED_DIRECT_ONLY, ppts[hit], bw.loc[cm, ["x", "y"]].to_numpy(float), bw.loc[cm, "depth_ft"].to_numpy(float),
+                r = chain_for_code((basin, code) in CHAIN_DIRECT_ONLY, ppts[hit], bw.loc[cm, ["x", "y"]].to_numpy(float), bw.loc[cm, "depth_ft"].to_numpy(float),
                                    {n: f[cm] for n, f in Fw.items()}, {n: f[hit] for n, f in Fp_all.items()},
                                    thick.get((basin, code), []), far.get((basin, code), []))
                 r.insert(0, "pad_id", pb["pad_id"].to_numpy()[hit])
@@ -230,8 +231,12 @@ def run(out: Path, cache: Path | None) -> dict:
     screen = {"evidence_wells": len(w), "judged": int(judged.sum()),
               "beyond": {str(int(t)): int((w["loo_resid_ft"].abs() > t).sum()) for t in SCREEN_LEVELS}}
     drop = w["loo_resid_ft"].abs() > SCREEN_FT
-    w.loc[drop, ["api10", "well_name", "operator", "county", "basin", "live", "depth_ft", "depth_source", "tvd_ft", "loo_resid_ft"]] \
-        .sort_values("loo_resid_ft", key=np.abs, ascending=False).to_csv(out / "outliers_300ft.csv", index=False)
+    listing = w.loc[drop, ["api10", "well_name", "operator", "county", "basin", "live", "depth_ft", "depth_source", "tvd_ft", "loo_resid_ft"]] \
+        .sort_values("loo_resid_ft", key=np.abs, ascending=False)
+    try:
+        listing.to_csv(out / "outliers_300ft.csv", index=False)
+    except PermissionError:   # open in Excel; the list does not depend on the chain settings
+        print("outliers_300ft.csv is open elsewhere; left as it is", flush=True)
     by_code = w[drop].groupby(["basin", "live"]).size().rename("dropped").reset_index().merge(
         w.groupby(["basin", "live"]).size().rename("wells").reset_index(), on=["basin", "live"])
     by_code["dropped_pct"] = 100 * by_code["dropped"] / by_code["wells"]

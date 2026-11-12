@@ -1,7 +1,7 @@
 basin,rungs,pairs,out_of_order,under_min_sep,violation_pct
-delaware,carried + carried,4042,66,105,4.230578921326076
-delaware,direct + carried,8342,122,247,4.423399664349077
-delaware,direct + direct,8461,263,935,14.159082850726865
+delaware,carried + carried,5535,183,337,9.39476061427281
+delaware,direct + carried,9843,298,644,9.570252971654984
+delaware,direct + direct,7952,259,926,14.901911468812877
 midland,carried + carried,2381,31,114,6.089878202435951
 midland,direct + carried,6622,49,251,4.53035336756267
 midland,direct + direct,5776,50,153,3.5145429362880884
