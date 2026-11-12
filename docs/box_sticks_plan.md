@@ -34,6 +34,7 @@ stick chain is retired.
 | WCA_1 / WCA_2 depth (2026-11-12, after phase 1c) | Both take the full landing-depth chain (supersedes "direct control only" for these two; WCXY stays direct-only until it has its own extent) |
 | WCA_1 / WCA_2 under the floor (2026-11-12) | Where the two landings are closer than the minimum separation (75 ft) or out of order in a DSU, that DSU gets ONE WCA landing. Detail to settle in the generator: it takes the code and depth of the member with the more trusted depth there |
 | Stack reconciliation (2026-11-12) | Benches are estimated independently, then each conflicting adjacent pair in a DSU is reconciled: the less trusted depth gives way (carried before direct; among carried, the higher held-out error). It moves to the minimum separation if that stays inside its own error band; otherwise that bench gets no stick in that DSU, with the reason recorded |
+| Evidence screen (2026-11-12) | Two-part, replacing a fixed cutoff. **Likely mis-tag**: a well closer to another bench's direct surface than to its own and more than max(150 ft, half the local gap) off its own is removed from its tagged bench's evidence and listed for formation-tag review; the surface builder never re-tags. **Bad depth**: more than 300 ft off its own surface and not a mis-tag is dropped. Live tags: 1,499 + 377 wells |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
@@ -98,7 +99,8 @@ or carried; Delaware's conflicts are mostly the WCA family (two halves of one be
 surface fit is needed. Decided the same day: WCA_1 / WCA_2 on the full chain (their no-depth share falls from
 38-40 % to about 10 %), one WCA landing under the floor (1,204 of 3,886 DSUs), and the reconciliation rule. With
 those, 11.9 % of DSU x bench pairs have no depth (6.4 points are WCXY, waiting on its extent) and 14.8 % are low
-confidence. Open at Gate 1: the 300 ft outlier screen (702 wells).
+confidence. Gate 1 decisions are complete (evidence screen decided the same day). Before a surface is stored: the
+WCXY extent (phase 1b), a re-run on post-cutover tags, an explicit go for the write.
 
 ## Phase 1b - WCXY extent (Delaware)
 

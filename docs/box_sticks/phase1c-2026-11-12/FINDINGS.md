@@ -10,7 +10,10 @@ whether the resulting stack is consistent per DSU. This runs the adopted chain (
 
 **Revision (same day).** The first run kept the whole Delaware WCA family on direct control only. Michael then
 decided WCA_1 and WCA_2 take the full chain; WCXY stays direct-only until it has its own extent. The numbers below
-are from the re-run with that decision, outlier screen on. First-run figures are quoted where the change matters.
+are from the re-run with that decision, with the earlier fixed 300 ft screen on. First-run figures are quoted where
+the change matters. The CSVs and `summary.json` in this folder are from the final run with the two-part screen
+(section 4); against the figures quoted in sections 1-3 they differ by under a point (none 11.9 %, low confidence
+15.0 %, WCA_1 / WCA_2 under the floor in 1,222 of 3,883 DSUs).
 
 ## 1. Coverage with the full chain
 
@@ -65,21 +68,34 @@ Adjacent benches in a DSU, out of order or under 75 ft apart, by where the two d
 With the one-landing rule at 75 ft, 1,204 of the 3,886 DSUs get a single WCA landing.
 WCXY / WCA_1: 1,071 DSUs, median gap 110 ft, 32 % out of order or under 75 ft.
 
-## 4. Outlier screen
+## 4. Evidence screen (two-part, adopted 2026-11-12)
 
-Each evidence well against the landing depth of its same-bench neighbours within 2 mi, itself left out (>= 5
-neighbours; 49,201 of 56,842 wells can be judged):
+The first version was a fixed cutoff: drop a well more than 300 ft from its same-bench neighbours (702 wells).
+Michael's example showed it aims at the wrong failure. JCF-DAVIDSON 11O 15H (42-329-47704) is tagged LSSH, lands at
+8,502 ft, 322 ft above the LSSH surface there (8,824 ft) and 9 ft off the JM surface (8,493 ft): a good depth with
+the wrong label, and right at the cutoff. The screen is now two tests against the leave-one-out landing depth of a
+well's same-bench neighbours within 2 mi (>= 5 of them; 49,201 of 56,842 wells can be judged):
 
-| More than | 200 ft | 300 ft | 400 ft | 500 ft |
-|---|---|---|---|---|
-| Wells | 1,897 | 702 | 383 | 258 |
+| Test | Rule | Wells |
+|---|---|---|
+| Likely mis-tag | closer to another bench's direct surface than to its own, and more than max(150 ft, half the local gap between the two surfaces) off its own | 1,499 |
+| Bad depth | more than 300 ft off its own surface and not a mis-tag (fits no bench) | 377 |
 
-- At 300 ft: 0.1-0.7 % of the Wolfcamp benches, 1-4 % of the Bone Spring / Avalon benches, 15-18 % of the
-  out-of-scope WDFD / BRNT / OTHER tags (`outliers_by_bench.csv`, list `outliers_300ft.csv`).
-- The largest are not landing depths at all: 21,930 ft and 21,961 ft "TVD" in Lea, WCC wells at 15,000-18,000 ft,
-  Bone Spring tags at 4,800 ft.
-- The screen barely changes coverage or the stack counts. Its value is removing bad nodes from a stored surface.
-  The 7,641 wells with too few neighbours cannot be judged this way.
+- A mis-tag candidate is removed from its tagged bench's evidence and listed (`screen_mistag_candidates.csv`).
+  **It is not re-tagged here**; corrections go through the formation-tag review (cards and seeds).
+- The shadow rule already moves 394 of the 1,499 (the Davidson well among them, to JM). 1,105 would survive the
+  11-16 cutover.
+- Largest classes: Midland WCA_1 on WCB_1 287, Midland LSSH on JM 218, Midland WCB_1 on WCB_2 75, Delaware BS3_S on
+  the WCA family 71, BS3_C on BS2_S 63. By bench: Delaware AVA_1 13.6 % removed, BS3_C 5.9 %, WCC 5.3 %, Midland
+  LSSH 4.6 %, WCA_1 4.0 %; most others 1-4 % (`screen_by_bench.csv`).
+- Bad depths are mostly out-of-scope tags (OTHER, WDFD, BRNT) and unit errors: 21,930 ft "TVD" in Lea, Bone Spring
+  tags at 4,800 ft (`screen_bad_depth.csv`).
+- WCA_1 / WCA_2 / WCXY are not tested against each other (about 115 ft apart).
+- **Effect on the results above: small.** Direct coverage 48.8 % -> 48.2 %; conflicting pairs Delaware 2,648 ->
+  2,635, Midland 624 -> 655. The stack conflicts are not caused by these wells. The screen's value is a cleaner
+  stored surface (no single pad of mis-tagged wells defining a bench) and the review list.
+- Limits: single pass (the surfaces used for the test still contain the wells being tested); the 7,641 wells with
+  too few same-bench neighbours cannot be judged.
 
 ## Decisions (Michael, 2026-11-12)
 
@@ -89,4 +105,8 @@ neighbours; 49,201 of 56,842 wells can be judged):
    the higher held-out error); it moves to the minimum separation if that stays inside its own error band,
    otherwise no stick for that bench in that DSU.
 
-Still open: the outlier screen at 300 ft for the surface of record.
+4. Two-part evidence screen (section 4) in place of the fixed 300 ft cutoff.
+
+Gate 1 decisions are complete. Before a surface is stored: the WCXY extent (plan phase 1b), a re-run on the
+post-cutover tags, and an explicit go for the `box.landing_surface` write. The 1,105 mis-tag candidates the shadow
+rule does not move are an input for the formation-tag review after the 11-16 decision, not before.

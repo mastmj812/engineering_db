@@ -16,8 +16,8 @@ Delaware WCXY takes rung 1 only until it has its own extent; WCA_1 / WCA_2 take 
 carried depth, so every bench is computed independently; the STACK is then checked per DSU: adjacent benches out of
 stratigraphic order or closer than MIN_SEP_FT, by which rungs the two depths came from.
 
-Run twice: all evidence wells, and with an outlier screen (a well more than SCREEN_FT from the leave-one-out landing
-depth of its same-bench neighbours within 2 mi, >= 5 of them, is dropped). Live tags. Nothing is written to the
+Run twice: all evidence wells, and with the two-part screen (two_part_screen: depths that fit no bench are dropped;
+wells sitting on another bench's surface are removed from their tagged bench's evidence). Live tags. Nothing is written to the
 warehouse.
 """
 
@@ -43,7 +43,7 @@ MI = ls.M_PER_MI
 MIN_SEP_FT = 75.0
 SCREEN_FT = 300.0
 SCREEN_MIN_N = 5
-SCREEN_LEVELS = (200.0, 300.0, 400.0, 500.0)
+MISTAG_MIN_FT = 150.0
 DIRECT_ONLY = set(ls.WCA_FAM)                # the Delaware WCA family, for the stack tables
 CHAIN_DIRECT_ONLY = {("delaware", "WCXY")}   # Michael 2026-11-12: WCA_1 / WCA_2 take the full chain; WCXY waits on its extent
 DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
@@ -65,6 +65,44 @@ def loo_residual(w: pd.DataFrame) -> pd.Series:
                 out[i] = z[i] - ls.estimate(xy[js], z[js], xy[i], P)[0]
         res.loc[g.index] = out
     return res
+
+
+def two_part_screen(w: pd.DataFrame, extents: pd.DataFrame) -> pd.DataFrame:
+    """Adds ``screen`` = keep / bad_depth / mistag (Michael 2026-11-12, after JCF-DAVIDSON 11O 15H: an LSSH tag landed
+    on the JM surface, 9 ft off it and about 300 ft above its LSSH neighbours).
+
+    own    the leave-one-out landing depth of the well's same-bench neighbours (loo_residual);
+    other  the nearest DIRECT surface of any other bench at the well (pooled-family members are not compared).
+      mistag     closer to another bench's surface than to its own, and more than max(MISTAG_MIN_FT, half the local
+                 gap between the two surfaces) off its own. Removed from its tagged bench's evidence; NOT re-tagged
+                 here (the list goes to the formation-tag review queue).
+      bad_depth  more than SCREEN_FT off its own surface and not a mistag: a depth that fits no bench. Dropped.
+    Single pass: the surfaces used for the test are built from the unscreened wells.
+    """
+    w = w.copy()
+    w["loo_resid_ft"] = loo_residual(w)
+    w["own_surface_ft"] = w["depth_ft"] - w["loo_resid_ft"]
+    w["other_bench"], w["other_surface_ft"], w["other_dist_ft"] = None, np.nan, np.nan
+    for basin in sorted(extents["basin"].unique()):
+        m = (w["basin"] == basin).to_numpy()
+        bw = w[m]
+        sets = p1.anchor_sets(extents, basin)
+        F = pd.DataFrame({n: p1b.field_at(bw, cs, bw[["x", "y"]].to_numpy(float)) for n, cs in sets.items()}, index=bw.index)
+        for n, cs in sets.items():
+            F.loc[bw["live"].isin(cs), n] = np.nan
+        dist = F.sub(bw["depth_ft"], axis=0).abs()
+        has = dist.notna().any(axis=1)
+        other = dist.fillna(np.inf).idxmin(axis=1).where(has)
+        w.loc[bw.index, "other_bench"] = other
+        w.loc[bw.index, "other_dist_ft"] = dist.min(axis=1)
+        w.loc[bw.index[has], "other_surface_ft"] = [F.at[i, o] for i, o in other[has].items()]
+        print(f"  {basin} screen fields built", flush=True)
+    resid = w["loo_resid_ft"].abs()
+    gap = (w["own_surface_ft"] - w["other_surface_ft"]).abs()
+    mistag = (w["other_dist_ft"] < resid) & (resid > np.maximum(MISTAG_MIN_FT, 0.5 * gap))
+    w["screen"] = np.where(mistag, "mistag", np.where(resid > SCREEN_FT, "bad_depth", "keep"))
+    w["rule_moves"] = w["shadow"] != w["live"]
+    return w
 
 
 def rankings() -> tuple[dict, dict]:
@@ -226,24 +264,32 @@ def run(out: Path, cache: Path | None) -> dict:
     pads = pads.assign(cx=shapely.get_x(cen), cy=shapely.get_y(cen))
     thick, far = rankings()
 
-    w["loo_resid_ft"] = loo_residual(w)
+    w = two_part_screen(w, extents)
     judged = w["loo_resid_ft"].notna()
-    screen = {"evidence_wells": len(w), "judged": int(judged.sum()),
-              "beyond": {str(int(t)): int((w["loo_resid_ft"].abs() > t).sum()) for t in SCREEN_LEVELS}}
-    drop = w["loo_resid_ft"].abs() > SCREEN_FT
-    listing = w.loc[drop, ["api10", "well_name", "operator", "county", "basin", "live", "depth_ft", "depth_source", "tvd_ft", "loo_resid_ft"]] \
-        .sort_values("loo_resid_ft", key=np.abs, ascending=False)
-    try:
-        listing.to_csv(out / "outliers_300ft.csv", index=False)
-    except PermissionError:   # open in Excel; the list does not depend on the chain settings
-        print("outliers_300ft.csv is open elsewhere; left as it is", flush=True)
-    by_code = w[drop].groupby(["basin", "live"]).size().rename("dropped").reset_index().merge(
-        w.groupby(["basin", "live"]).size().rename("wells").reset_index(), on=["basin", "live"])
-    by_code["dropped_pct"] = 100 * by_code["dropped"] / by_code["wells"]
-    by_code.to_csv(out / "outliers_by_bench.csv", index=False)
-    print(json.dumps(screen), flush=True)
+    drop = (w["screen"] != "keep").to_numpy()
+    cols = ["api10", "well_name", "operator", "county", "basin", "live", "shadow", "rule_moves", "depth_ft", "depth_source", "own_surface_ft",
+            "loo_resid_ft", "other_bench", "other_surface_ft", "other_dist_ft"]
+    for kind, name in (("bad_depth", "screen_bad_depth.csv"), ("mistag", "screen_mistag_candidates.csv")):
+        listing = w.loc[w["screen"] == kind, cols].sort_values("loo_resid_ft", key=np.abs, ascending=False)
+        try:
+            listing.to_csv(out / name, index=False)
+        except PermissionError:   # open in Excel
+            print(f"{name} is open elsewhere; left as it is", flush=True)
+    by_code = pd.crosstab([w["basin"], w["live"]], w["screen"]).reset_index()
+    for c in ("keep", "bad_depth", "mistag"):
+        if c not in by_code:
+            by_code[c] = 0
+    by_code["removed_pct"] = 100 * (by_code["bad_depth"] + by_code["mistag"]) / (by_code["keep"] + by_code["bad_depth"] + by_code["mistag"])
+    by_code.to_csv(out / "screen_by_bench.csv", index=False)
+    mt = w[w["screen"] == "mistag"]
+    screen = {"evidence_wells": len(w), "judged": int(judged.sum()), "bad_depth": int((w["screen"] == "bad_depth").sum()),
+              "mistag": len(mt), "mistag_rule_already_moves": int(mt["rule_moves"].sum()),
+              "mistag_top_classes": {f"{b} {a} on {o}": int(n) for (b, a, o), n in mt.groupby(["basin", "live", "other_bench"]).size().nlargest(10).items()},
+              "fixed_300ft_would_remove": int((w["loo_resid_ft"].abs() > SCREEN_FT).sum())}
+    print(json.dumps(screen, indent=1), flush=True)
 
-    summary = {"code_sha": p0._git_sha(), "tags": "live", "min_sep_ft": MIN_SEP_FT, "screen_ft": SCREEN_FT, "screen": screen, "runs": {}}
+    summary = {"code_sha": p0._git_sha(), "tags": "live", "min_sep_ft": MIN_SEP_FT, "bad_depth_ft": SCREEN_FT, "mistag_min_ft": MISTAG_MIN_FT,
+               "screen": screen, "runs": {}}
     for label, ww in (("all_wells", w), ("screened", w[~drop].reset_index(drop=True))):
         print(label, flush=True)
         ch = build_chain(ww, extents, pads, order, thick, far)
