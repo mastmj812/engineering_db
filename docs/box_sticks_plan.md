@@ -30,6 +30,7 @@ stick chain is retired.
 | Landing TVD | Surface from same-bench PDP TVDs per extent, not structure grids; never out of stratigraphic order in a DSU |
 | Landing depth without direct control (2026-11-12, after phase 0) | Allowed for non-pooled benches: depth carried from a neighbour bench by thickness (existing method, to 5 mi), flagged `tvd_basis = 'thickness'` as lower confidence, hold-out error reported separately. WCA_1 / WCA_2 / WCXY still need direct control. Reason: only 17 % of today's stick positions have a same-bench producer within 1 mi |
 | Focus benches (2026-11-12) | Delaware BS1_S and Midland DEAN: thin own control over a large extent, dense neighbours. DEAN sits between LSSH above and WCA_1 below, so it is also the test case for topfill / underfill / sandwich no-place logic (phase 2b). Generator pilot AREAS (all benches per DSU) are picked inside these two extents |
+| Landing-depth chain (2026-11-12, after phase 1b) | direct -> local thickness (own wells within 5 mi) -> bracket between a bench above and a bench below -> single-neighbour offset -> none. **No error ceiling: weak carried depths are still placed, flagged low confidence.** Every stick records its rung (`tvd_basis`) and that rung's held-out error |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
@@ -81,7 +82,7 @@ names pilot areas (proposal: one Delaware TX, one Delaware NM, one Midland).
 
 **Phase 1 / 1b evidence (2026-11-12, live tags; `docs/box_sticks/phase1-2026-11-12/`, `phase1b-2026-11-12/`).**
 Direct + 5-mi thickness leaves 35.5 % of DSU x bench pairs with no depth. Michael's requirement: that gap must be
-closed. Proposed chain, pending his decision on an error ceiling: direct -> local thickness -> **bracket** between
+closed. Chain adopted (no error ceiling; weak rungs placed and flagged low confidence): direct -> local thickness -> **bracket** between
 a bench above and a bench below (Michael's idea; DEAN between LSSH and WCA_1 holds 40 ft median / 135 ft P90 with
 no DEAN well within 5 mi) -> single-neighbour offset -> none. The chain leaves 6.7 % with no depth. Weak where a
 bench has no dense neighbour on one side (Delaware BS1_S, Midland WCC / WCD). BOX sticks get their own anchor
