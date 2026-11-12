@@ -88,6 +88,13 @@ no DEAN well within 5 mi) -> single-neighbour offset -> none. The chain leaves 6
 bench has no dense neighbour on one side (Delaware BS1_S, Midland WCC / WCD). BOX sticks get their own anchor
 configuration; `box.landing_surfaces.ANCHOR` is shared with the tag code and is not edited.
 
+**Phase 1c (2026-11-12, `phase1c-2026-11-12/`): benches are estimated independently, the stack is reconciled per
+DSU.** A carried depth uses only neighbours' direct surfaces, so there is no circularity. With the full chain,
+adjacent benches conflict (out of order or under 75 ft) on 4-6 % of pairs whether the depths are direct or carried;
+no joint surface fit is needed. Open at Gate 1: the reconciliation rule, WCA_1 / WCA_2 (median gap 122 ft, 25 %
+under 75 ft), whether WCA_1 / WCA_2 take the chain (38-40 % of their DSUs have no direct control), and the 300 ft
+outlier screen (702 wells).
+
 ## Phase 1b - WCXY extent (Delaware)
 
 Why: WCXY means a well landed in the XY sands of the Wolfcamp A, which are essentially only present north of

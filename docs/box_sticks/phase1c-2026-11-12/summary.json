@@ -1,0 +1,102 @@
+{
+  "code_sha": "551ed5b",
+  "tags": "live",
+  "min_sep_ft": 75.0,
+  "screen_ft": 300.0,
+  "screen": {
+    "evidence_wells": 56842,
+    "judged": 49201,
+    "beyond": {
+      "200": 1897,
+      "300": 702,
+      "400": 383,
+      "500": 258
+    }
+  },
+  "runs": {
+    "all_wells": {
+      "rung_pct": {
+        "direct": 48.8,
+        "thickness": 22.5,
+        "none": 16.6,
+        "offset": 8.7,
+        "bracket": 3.5
+      },
+      "low_conf_pct_of_all_pairs": 12.344437699195629,
+      "stack": {
+        "delaware": {
+          "dsu_with_2plus_benches": 4312,
+          "adjacent_pairs": 20860,
+          "dsu_with_violation": 1460,
+          "dsu_out_of_order": 413,
+          "violating_pairs": 1750,
+          "violating_pairs_wca_family": 814,
+          "dsu_with_violation_outside_wca_family": 835,
+          "violating_pairs_carried_involved": 544,
+          "violating_pairs_direct_direct_outside_family": 392
+        },
+        "midland": {
+          "dsu_with_2plus_benches": 3482,
+          "adjacent_pairs": 14781,
+          "dsu_with_violation": 592,
+          "dsu_out_of_order": 128,
+          "violating_pairs": 624,
+          "violating_pairs_wca_family": 0,
+          "dsu_with_violation_outside_wca_family": 592,
+          "violating_pairs_carried_involved": 426,
+          "violating_pairs_direct_direct_outside_family": 198
+        }
+      },
+      "wca1_wca2": {
+        "dsu_with_both": 2049,
+        "median_gap_ft": 121.53019243926246,
+        "out_of_order_pct": 4.978038067349927,
+        "under_50_ft_pct": 14.299658369936555,
+        "under_75_ft_pct": 25.183016105417277,
+        "under_100_ft_pct": 36.94485114690092
+      }
+    },
+    "screened": {
+      "rung_pct": {
+        "direct": 48.6,
+        "thickness": 22.6,
+        "none": 16.6,
+        "offset": 8.7,
+        "bracket": 3.5
+      },
+      "low_conf_pct_of_all_pairs": 12.43929276066171,
+      "stack": {
+        "delaware": {
+          "dsu_with_2plus_benches": 4311,
+          "adjacent_pairs": 20845,
+          "dsu_with_violation": 1441,
+          "dsu_out_of_order": 404,
+          "violating_pairs": 1738,
+          "violating_pairs_wca_family": 816,
+          "dsu_with_violation_outside_wca_family": 816,
+          "violating_pairs_carried_involved": 540,
+          "violating_pairs_direct_direct_outside_family": 382
+        },
+        "midland": {
+          "dsu_with_2plus_benches": 3482,
+          "adjacent_pairs": 14779,
+          "dsu_with_violation": 615,
+          "dsu_out_of_order": 129,
+          "violating_pairs": 648,
+          "violating_pairs_wca_family": 0,
+          "dsu_with_violation_outside_wca_family": 615,
+          "violating_pairs_carried_involved": 445,
+          "violating_pairs_direct_direct_outside_family": 203
+        }
+      },
+      "wca1_wca2": {
+        "dsu_with_both": 2040,
+        "median_gap_ft": 121.94386693757042,
+        "out_of_order_pct": 4.950980392156863,
+        "under_50_ft_pct": 14.068627450980392,
+        "under_75_ft_pct": 25.19607843137255,
+        "under_100_ft_pct": 36.911764705882355
+      }
+    }
+  }
+}
