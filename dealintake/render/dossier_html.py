@@ -34,6 +34,7 @@ from dealintake.render.tables import (
     NORMALIZE_HEADERS,
     NORMALIZE_INTRO,
     PROXIMITY_HEADERS,
+    bench_tvd_label,
     buildup_rows,
     cohort_rows,
     di_pair,
@@ -339,7 +340,7 @@ def render(run_dir: Path) -> Path:
     # ---- per bench x class -------------------------------------------------------
     for key, B in sig["benches"].items():
         pool = B["pool"]
-        p.append(f'<h2 id="{_slug(key)}">{_esc(key)} <span class="meta">TVD {B["tvd_ft"]:,.0f} ft · spacing {B["spacing_ft"]:,.0f} ft '
+        p.append(f'<h2 id="{_slug(key)}">{_esc(key)} <span class="meta">{_esc(bench_tvd_label(B))} · spacing {B["spacing_ft"]:,.0f} ft '
                  f'({_esc(B["spacing_source"])}) · basin {_esc(B.get("basin"))}</span></h2>')
         if B.get("class_units"):
             band = B.get("lateral_band_ft")
