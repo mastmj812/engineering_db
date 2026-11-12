@@ -30,6 +30,18 @@ def num(v: float | None, spec: str = ",.2f") -> str:
     return "—" if v is None else format(v, spec)
 
 
+def bench_tvd_label(B: dict[str, Any]) -> str:
+    """Section-header landing TVD for a dossier bench: the placed bench-level
+    value, with the source named whenever a unit's TVD is the reviewer's
+    (benches.yaml tvd_ft) rather than an offset median."""
+    units = list((B.get("units") or {}).values())
+    n_rev = sum(1 for v in units if str(v.get("tvd_source") or "").startswith("reviewer"))
+    label = f"TVD {B['tvd_ft']:,.0f} ft"
+    if not n_rev:
+        return label
+    return label + (" (reviewer)" if n_rev == len(units) else f" (reviewer in {n_rev} of {len(units)} units)")
+
+
 def p_value(p: float | None) -> str:
     """3 significant figures; tiny values as '<0.0001' (never 0.002373333787193668)."""
     if p is None:

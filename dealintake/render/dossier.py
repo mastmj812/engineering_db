@@ -23,6 +23,7 @@ from dealintake.render.tables import (
     NORMALIZE_HEADERS,
     NORMALIZE_INTRO,
     PROXIMITY_HEADERS,
+    bench_tvd_label,
     buildup_rows,
     di_pair,
     md,
@@ -208,7 +209,7 @@ def render(run_dir: Path) -> Path:
 
     sticks = maps.load_sticks(run_dir)
     for bench, B in sig["benches"].items():            # key: "WCB_1" or "WCB_1 @ 12,620 ft" (lateral class)
-        s.append(f"\n## {bench} — TVD {B['tvd_ft']:,.0f} ft, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
+        s.append(f"\n## {bench} — {bench_tvd_label(B)}, spacing {B['spacing_ft']:,.0f} ft ({B['spacing_source']}), basin {B.get('basin')}\n")
         cls = B.get("class_units")
         if cls:
             band = B.get("lateral_band_ft")
