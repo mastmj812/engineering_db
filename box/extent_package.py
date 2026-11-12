@@ -55,6 +55,16 @@ GRID_ROOT = grid_root(bsn.DELAWARE)
 assert GRID_ROOT is not None
 GRID_DIR = GRID_ROOT / "Grids_10-19-26"
 ORIGINAL_GRID_DIR = GRID_ROOT / "Original"
+# Surfaces we DERIVE rather than receive: name -> (delivered base surface, constant ft added to its Z). A derived
+# surface has no file of its own; tops_qc.load_stack builds it on the base's lattice, and dist_to_control resolves
+# to the base (its control IS the base's picks).
+# * WCB2_NAMING (rule D, Michael 2026-11-10): the Delaware WCB_1 | WCB_2 NAMING boundary = the geologist's
+#   WOLFCAMP-B1 top + 214 ft — the depth below B1 where operators / Enverus switch the name, measured on 2,152
+#   producers of consistently-naming operators (class-balanced cut; 9.3 % wrong-side leave-pad-out; a mapped offset
+#   gained only 1.4 pt and was rejected). Not a log pick and not his WOLFCAMP-B2 (at the WCB producers it sits
+#   ~110 ft deeper and does not separate the names; over the whole V5 lattice it is SHALLOWER than B1 + 214 at
+#   55 % of nodes, median 22 ft — tops_qc.surface_crossings reports it). Naming / membership only — never a landing target (rule 10).
+DERIVED_SURFACES: dict[str, tuple[str, float]] = {"WCB2_NAMING": ("WOLFCAMP-B1", 214.0)}
 # file name of a surface's grid, newest scheme first: 10-19 set, then the September set's two schemes
 GRID_NAME_PATTERNS = ("HCA_{s}_STRUCTURE_MD_grid.xyz", "HCA_{s}_STRUCTURE_MDXYZ_grid.xyz", "{s}-STRUCTUREXYZ_grid.xyz")
 # 2026-10-20 the geologist added a distance-to-well-control grid per surface (10-19 set only; the September set has
@@ -168,6 +178,7 @@ def dist_to_control(surface: str, points: Any, grid_dir: Path = GRID_DIR) -> np.
     Bilinear on the lattice, the same RegularGridInterpolator the structure loaders use: NaN outside the lattice
     and in any cell touching a null node. All-NaN (after the resolver's warning) when the surface has no DIST grid."""
     xy = np.asarray(points, dtype=float).reshape(-1, 2)
+    surface = DERIVED_SURFACES.get(surface, (surface, 0.0))[0]  # a derived surface is controlled by its base's picks
     path = grid_path(surface, grid_dir, kind="dist_to_control")
     if path is None:
         return np.full(len(xy), np.nan)

@@ -22,11 +22,15 @@ from scipy.interpolate import RegularGridInterpolator
 
 from box import extent_package as pkg
 
-# Surfaces in stratigraphic order, shallow -> deep (all 17 exist in both the 10-19 and September sets).
+# Surfaces in stratigraphic order, shallow -> deep: the 17 delivered surfaces (all exist in both the 10-19 and
+# September sets) plus WCB2_NAMING, DERIVED as WOLFCAMP-B1 + 214 ft (extent_package.DERIVED_SURFACES; rule D below).
+# Where his WOLFCAMP-B2 sits shallower than B1 + 214 the two cross; surface_crossings() reports it.
+WCB2_NAMING = "WCB2_NAMING"
+WCB2_NAMING_OFFSET_FT: float = pkg.DERIVED_SURFACES[WCB2_NAMING][1]
 STACK: tuple[str, ...] = (
     "BELL_CANYON", "CHERRY_CANYON", "BRUSHY_CANYON",
     "AVALON1", "AVALON2", "1BSPGS", "2BSPGC", "2BSPGS", "3BSPGC", "3BSPGS",
-    "WOLFCAMP_XY", "WOLFCAMP_A", "WOLFCAMP-B1", "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "STRAWN",
+    "WOLFCAMP_XY", "WOLFCAMP_A", "WOLFCAMP-B1", WCB2_NAMING, "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "STRAWN",
 )
 INTERVALS: tuple[str, ...] = (f"ABOVE_{STACK[0]}", *STACK)  # interval k labelled by its top surface
 
@@ -41,12 +45,19 @@ INTERVALS: tuple[str, ...] = (f"ABOVE_{STACK[0]}", *STACK)  # interval k labelle
 #     That interval also holds most WCB_2 landings (straddling his B2 top) and much of WCD: operators split
 #     WCB_2 / WCC ~180 ft below his B2 top, so it cannot separate WCB_2 from WCC (flagged, step 3 'wbc' family).
 #   - WCD: his WOLFCAMP-C -> WOLFCAMP_D under the same relabel, but HELD (unscored) for his log review.
+# * Rule D DECIDED 2026-11-10 (Michael; held since 2026-10-22): the WCB_1 | WCB_2 boundary is a NAMING boundary,
+#   not a log surface — WCB2_NAMING = WOLFCAMP-B1 + 214 ft (constant; measured on the geologist's B1 picks + V5
+#   grid). WCB_1 = B1 -> B1 + 214; WCB_2 = B1 + 214 -> WOLFCAMP-C (no WCB_2 base: the WCC top is not trusted, so
+#   WCB_2 and WCC still share the C base and overlap below his B2). His WOLFCAMP-B2 stays in the stack as WCC's top.
+#   Before: WCB_1 = B1 -> B2, WCB_2 = B2 -> C (at the WCB producers his B2 is ~110 ft below where operators
+#   switch the name). Effect on the 10-19 grids (2,873 evidence wells, 2026-11-12): WCB_2 agree 52.7 -> 87.4 %,
+#   WCB_1 66.8 -> 63.0 % (deep calls 7.1 -> 10.7 %; the 26 % shallow = above B1, the WCA_2 | WCB_1 edge, unchanged).
 TAG_INTERVAL: dict[str, tuple[str, str]] = {
     "AVA_0": ("AVALON1", "AVALON2"), "AVA_1": ("AVALON1", "AVALON2"), "AVA_2": ("AVALON2", "1BSPGS"),
     "BS1_S": ("1BSPGS", "2BSPGC"), "BS2_C": ("2BSPGC", "2BSPGS"), "BS2_S": ("2BSPGS", "3BSPGC"),
     "BS3_C": ("3BSPGC", "3BSPGS"), "BS3_S": ("3BSPGS", "WOLFCAMP_XY"),
     "WCXY": ("WOLFCAMP_XY", "WOLFCAMP-B1"), "WCA_1": ("WOLFCAMP_XY", "WOLFCAMP-B1"), "WCA_2": ("WOLFCAMP_XY", "WOLFCAMP-B1"),
-    "WCB_1": ("WOLFCAMP-B1", "WOLFCAMP-B2"), "WCB_2": ("WOLFCAMP-B2", "WOLFCAMP-C"),
+    "WCB_1": ("WOLFCAMP-B1", WCB2_NAMING), "WCB_2": (WCB2_NAMING, "WOLFCAMP-C"),
     "WCC": ("WOLFCAMP-B2", "WOLFCAMP-C"), "WCD": ("WOLFCAMP-C", "WOLFCAMP_D"),
 }
 TAG_TOP: dict[str, str] = {t: tb[0] for t, tb in TAG_INTERVAL.items()}
@@ -83,7 +94,7 @@ NO_SURFACE_TAGS: frozenset[str] = frozenset({"AVA_1"})
 #   out of agreement and attribution (a modelled surface cannot be wrong or right), but shown on every map and
 #   counted in picks_needed() — tagged wells with no picks nearby are exactly where tops need picking.
 NO_CONTROL_SURFACES_BY_COUNTY: dict[str, frozenset[str]] = {
-    "Pecos": frozenset({"WOLFCAMP_A", "WOLFCAMP-B1", "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "AVALON2"}),
+    "Pecos": frozenset({"WOLFCAMP_A", "WOLFCAMP-B1", WCB2_NAMING, "WOLFCAMP-B2", "WOLFCAMP-C", "WOLFCAMP_D", "AVALON2"}),
 }
 CAUTION_COUNTIES: frozenset[str] = frozenset({"Pecos"})
 SCORED_VERDICTS: tuple[str, ...] = ("agree", "shallow", "deep")
@@ -120,10 +131,13 @@ class Grid:
 
 
 def load_stack(grid_dir: Path, surfaces: tuple[str, ...] = STACK) -> dict[str, Grid]:
+    """Load ``surfaces`` from ``grid_dir``; a derived surface (pkg.DERIVED_SURFACES) = its base's grid + the offset,
+    on the base's lattice (nulls stay null)."""
     out = {}
     for s in surfaces:
-        xs, ys, z = pkg._grid(pkg.require_grid(s, grid_dir))
-        out[s] = Grid(s, xs, ys, z)
+        base, add = pkg.DERIVED_SURFACES.get(s, (s, 0.0))
+        xs, ys, z = pkg._grid(pkg.require_grid(base, grid_dir))
+        out[s] = Grid(s, xs, ys, z + add)
     return out
 
 
