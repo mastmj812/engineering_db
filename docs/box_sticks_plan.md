@@ -29,6 +29,7 @@ stick chain is retired.
 | Orientation | DSU long axis; square DSU -> surrounding PDP; a U-turn's orientation is its legs |
 | Landing TVD | Surface from same-bench PDP TVDs per extent, not structure grids; never out of stratigraphic order in a DSU |
 | Landing depth without direct control (2026-11-12, after phase 0) | Allowed for non-pooled benches: depth carried from a neighbour bench by thickness (existing method, to 5 mi), flagged `tvd_basis = 'thickness'` as lower confidence, hold-out error reported separately. WCA_1 / WCA_2 / WCXY still need direct control. Reason: only 17 % of today's stick positions have a same-bench producer within 1 mi |
+| Focus benches (2026-11-12) | Delaware BS1_S and Midland DEAN: thin own control over a large extent, dense neighbours. DEAN sits between LSSH above and WCA_1 below, so it is also the test case for topfill / underfill / sandwich no-place logic (phase 2b). Generator pilot AREAS (all benches per DSU) are picked inside these two extents |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 

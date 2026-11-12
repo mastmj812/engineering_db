@@ -1,0 +1,40 @@
+{
+  "code_sha": "f6bbec9",
+  "tags": "live",
+  "params": {
+    "node_mi": 0.25,
+    "r_mi": 2.0,
+    "n_min": 3,
+    "direct_max_mi": 1.0,
+    "thick_max_mi": 5.0,
+    "merge_ft": 50.0,
+    "fringe_mi": 1.0,
+    "plane_min_n": 6,
+    "max_dip_ft_per_mi": 300.0,
+    "plane_max_dev_ft": 150.0,
+    "wmed_sigma_mi": 1.0
+  },
+  "min_sep_ft": 75.0,
+  "order": {
+    "delaware": {
+      "dsu_with_2plus_benches": 3876,
+      "dsu_with_violation": 1274,
+      "dsu_with_out_of_order": 327
+    },
+    "midland": {
+      "dsu_with_2plus_benches": 3037,
+      "dsu_with_violation": 382,
+      "dsu_with_out_of_order": 84
+    }
+  },
+  "maps": [
+    "surface_delaware_BS1_S.png",
+    "surface_midland_DEAN.png"
+  ],
+  "dsu_bench_rows": 52712,
+  "dsu_bench_basis_pct": {
+    "direct": 48.2,
+    "none": 35.5,
+    "thickness": 16.3
+  }
+}
