@@ -1,0 +1,26 @@
+{
+  "built_at": "2026-11-12T19:24:18+00:00",
+  "code_sha": "6603870",
+  "wcxy_wells": 1806,
+  "candidate": {
+    "how": "BOX construction of record (er.build_pool), performance class unknown on every edge",
+    "sqmi": 2336.4062729866987
+  },
+  "xy_interval_at_wells_ft": {
+    "wells_on_grid": 1806,
+    "p10": 107.53289700000096,
+    "median": 156.57826899999964,
+    "p90": 224.33436149999943
+  },
+  "corr_interval_vs_separation": 0.1285690200218524,
+  "cards": {
+    "xy_interval_ft_median_by_verdict": {
+      "ONE": 168.5920180000012,
+      "XY": 140.78225100000054
+    },
+    "best_interval_cutoff": [
+      0.0,
+      19
+    ]
+  }
+}
