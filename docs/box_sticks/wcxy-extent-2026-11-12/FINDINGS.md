@@ -48,6 +48,26 @@ map-to-pixel frame, so the PNG must not be cropped or re-rendered.
 The edited outline is then read with `box/family_extent.pptx_freeforms` / `pptx_ink`, reported (area, WCXY-tagged
 wells and card calls inside and outside), and stored as the WCXY extent of record only on an explicit go.
 
+## Michael's hand-drawn extent (2026-11-12, `visual_wcxy.pptx`) - read, NOT stored
+
+`python -m scripts.box_sticks_wcxy_edit --dir docs/box_sticks/wcxy-extent-2026-11-12 --pptx .../visual_wcxy.pptx`.
+The picture in the pptx is byte-identical to `visual_WCXY.png` (the 100-ft version), uncropped. One closed pen
+loop (ends 4 px apart). It crossed itself by a few feet near the south edge; cleaned with a zero-width buffer.
+`reading_WCXY.png` shows the loop as read (red) over the map he drew on; `extent_WCXY_edited.geojson` is the
+outline in lon / lat.
+
+| | |
+|---|---|
+| Area | 1,730 sq mi, one piece (candidate 1,577 sq mi; 1,533 sq mi in common) |
+| WCXY-tagged evidence wells inside / outside | 1,483 / 323 |
+| ... of the 925 at least 100 ft above WCA_1 | 867 / 58 |
+| Median ft above WCA_1, inside / outside | 120 / 47 |
+| Card calls "XY" inside | 18 of 19 (card 6, Winkler, is outside) |
+| Card calls "one landing" inside | 10 of 12 (cards 8 and 25 are outside) |
+
+Outside by county: Eddy 129, Culberson 68 (all of them), Lea 62, Reeves 48, Ward 10, Winkler 6; Loving has none
+outside. By state: New Mexico 191 of 610 outside, Texas 132 of 1,196. Wells outside: `wcxy_wells_outside_edited.csv`.
+
 ## Still to decide after the outline exists
 
 - WCXY-tagged wells INSIDE the extent that sit at upper-WCA depth (the "one landing" pads): proposal, they are
