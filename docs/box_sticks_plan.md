@@ -35,6 +35,9 @@ stick chain is retired.
 | WCA_1 / WCA_2 under the floor (2026-11-12) | Where the two landings are closer than the minimum separation (75 ft) or out of order in a DSU, that DSU gets ONE WCA landing. Detail to settle in the generator: it takes the code and depth of the member with the more trusted depth there |
 | Stack reconciliation (2026-11-12) | Benches are estimated independently, then each conflicting adjacent pair in a DSU is reconciled: the less trusted depth gives way (carried before direct; among carried, the higher held-out error). It moves to the minimum separation if that stays inside its own error band; otherwise that bench gets no stick in that DSU, with the reason recorded |
 | Evidence screen (2026-11-12) | Two-part, replacing a fixed cutoff. **Likely mis-tag**: a well closer to another bench's direct surface than to its own and more than max(150 ft, half the local gap) off its own is removed from its tagged bench's evidence and listed for formation-tag review; the surface builder never re-tags. **Bad depth**: more than 300 ft off its own surface and not a mis-tag is dropped. Live tags: 1,499 + 377 wells |
+| Spacing floor and tight cap (2026-11-12, after phase 2a) | Floor **1,320 ft** (4 WPS), not 1,540 ft: realized gaps peak at 660, 880 and 1,320 ft and show nothing at 1,540 ft. Tight cap **660 ft** (8 WPS): the tightest spacing operators repeat |
+| Spacing is per landing (2026-11-12, after phase 2a) | A same-bench neighbour landed more than 75 ft from the well is the other landing of a staggered pattern, not this row's neighbour. The tag-level gap failed its cross-check against Novi `lateral_closer_xy_ft` in the Delaware (65 % against a 70 % bar) for that reason. Open for the pilot cards: a second landing inside one tag (BS2_S, Delaware WCC, LSSH, BS3_C) |
+| Spacing control radius (2026-11-12, after phase 2a) | Local median gap of same-bench wells within 1 -> 2 -> 3 mi of the DSU, first radius with >= 6 gaps (the deal-intake chain); none -> 1,320 ft. Every stick records the radius its spacing came from (`spacing_basis`). Known: in the Delaware Bone Spring a 2-3 mi value is no better than the default (both within about 80 ft) |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
@@ -184,6 +187,13 @@ from the corrected tags; it stays Michael's call, revised by him when the geolog
   Outside the envelope a stick is placed and the existing D150 proximity factor discounts its forecast;
   the envelope must not double-count that.
 
+**Phase 2a outcome (2026-11-12, `docs/box_sticks/phase2a-2026-11-12/`, `scripts/box_sticks_phase2a.py`).** Per
+landing, 30,870 wells measured (Delaware 12,836, median 1,133 ft = 4.7 WPS; Midland 18,034, median 863 ft = 6.1 WPS).
+59 % of Delaware and 72 % of Midland DSU x bench have local control within 3 mi; the rest take 1,320 ft. Decided:
+floor 1,320 ft, tight cap 660 ft, per-landing spacing, 1 -> 2 -> 3 mi control chain (decision table). Against Novi:
+mean spacing 1,276 -> 1,226 ft Delaware, 1,224 -> 1,089 ft Midland; wider on Delaware BS2_S, AVA_2 and the WCA
+family, tighter on Midland WCC / WCD / JM / MS. 2b (no-place calibration) is not started.
+
 **Gate 2:** spacing table and maps; proposed envelope per bench pair with the share of historical children
 it would have excluded. Michael freezes both.
 
@@ -286,7 +296,8 @@ whatever the tag).
 ## Open items to settle at the gates
 
 - Polygon coverage gaps and overlaps (0b) - what happens inside an extent where Novi drew no DSU.
-- Tight-spacing cap and whether the 4 WPS floor is 1,320 or 1,540 ft.
+- Second landing inside one tag (BS2_S, Delaware WCC, LSSH, BS3_C): per-landing spacing with one row under-counts there. Pilot cards.
+- 35,929 of 87,182 Midland Novi sticks have their midpoint outside every 2026Q3 polygon (phase 2a); explain before gate 3b.
 - U-turn leg separation where bench spacing is under 990 ft.
 - Lithology-pair handling (BS2_C/S, BS3_C/S).
 - WCXY: source for the Grisham fault complex line; whether WCXY becomes its own forecast pool; the tag
