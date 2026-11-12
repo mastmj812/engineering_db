@@ -55,7 +55,50 @@ in the bands from 31.6 to 32.0 N, 28-43 % from 32.0 to 32.4 N (`by_lat_band.csv`
 - 41 wells sit below WCA_1 and are simply wrong as WCXY.
 - The class is stable through time (same-depth share 37-44 % for 2016+ vintages), so it is not an old-data artefact.
 
+## Revision: Michael's two wells, and a second test (same day)
+
+Michael could not call Eddy or Lea as a whole, and gave two wells (both are in Loving County, just south of the
+state line):
+
+| Well | Michael's read | Above local WCA_1 surface | First test (75 ft) |
+|---|---|---|---|
+| ST BRIDES 76 3031 112H (42-301-35087) | real shallower landing, WCXY appropriate | 238 ft | stacked |
+| POLARIS 7 702H (42-301-35238) | just a WCA_1 landing, no differentiated shallower landing nearby | 81 ft | stacked (wrong) |
+
+The Polaris pad shows the fixed cutoff failing: 702H and 704H at 81 and 75 ft were "stacked", pad-mates 703H / 705H
+/ 706H at 71-74 ft were "same depth". One pad, one landing, split by the threshold. The separation is also a
+continuum with no natural break: wells per 25-ft bin run 189, 223, 186, 202, 189, 149, 118, 116 from 25 ft to
+225 ft, New Mexico peaking at 25-50 ft and Texas at 100-150 ft.
+
+**Second test (tag-blind, in the CSVs and the map now).** Take every WCXY- or WCA_1-tagged well within 1 mi,
+whatever its tag, remove the local dip, and walk down from the well: is there an empty band of at least 50 ft with
+at least 3 wells beyond it, within 300 ft?
+
+| Result | Wells |
+|---|---|
+| distinct_upper (a landing separated from a deeper one) | 630 |
+| single_landing (continuous with the wells below it) | 799 |
+| undetermined (fewer than 3 wells below it) | 386 |
+
+- It gets both of Michael's wells right: St Brides 111H / 112H distinct (deeper landing 203-227 ft below),
+  Polaris 702H single.
+- **It still splits the Polaris pad**: 703H-706H come out distinct on 54-57 ft empty bands with the "deeper
+  landing" only 75-88 ft below. 25 of 96 same-operator groups of three or more wells get mixed answers.
+- It is sensitive to the band width: 748 distinct at 40 ft, 630 at 50, 535 at 60, 385 at 75.
+- Geography is the same story either way: Reeves 52 % distinct, Loving 41 %, Eddy 28 %, Lea 14 %; Texas 41 %,
+  New Mexico 22 %.
+
+**Honest position: neither automated test reproduces Michael's eye in the 75-175 ft range, where about 700 wells
+sit.** His two examples are 238 ft (yes) and 81 ft (no). What separates them is how far below the next landing
+is, judged per pad on a gunbarrel, and two labelled wells are not enough to set that rule.
+
 ## For Gate 1b (Michael)
+
+0. **Proposal: label a sample, then fit the rule.** The method already used for formation tags: strike-section
+   cards for about 30 pads spread across the separation range (50-250 ft) and the counties, each showing the
+   WCXY-tagged wells with their WCA_1 / WCA_2 / BS3_S neighbours. Michael marks each "distinct XY landing" or
+   "one landing". The rule (pad-level separation, or the empty band) is then set to match those calls and reported
+   with its miss rate. The classification should be per pad, not per well.
 
 1. **Is the New Mexico same-depth population XY or upper WCA?** A geological call. It decides whether the WCXY
    extent stops near the state line / Loving-Eddy trend or runs up into Eddy and Lea.
