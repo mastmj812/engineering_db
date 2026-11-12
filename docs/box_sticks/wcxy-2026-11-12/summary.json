@@ -1,0 +1,20 @@
+{
+  "code_sha": "3763d17",
+  "tags": "live",
+  "min_sep_ft": 75.0,
+  "wcxy_evidence_wells": 1815,
+  "classes": {
+    "stacked": 1114,
+    "same_depth": 598,
+    "no_wca1": 62,
+    "below": 41
+  },
+  "above_wca1_ft": {
+    "wells": 1753,
+    "p10": 16.928416824762827,
+    "median": 106.7183899780448,
+    "p90": 218.2182095570344
+  },
+  "rule_moves": {},
+  "map": "wcxy_evidence_map.png"
+}
