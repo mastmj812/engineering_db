@@ -54,7 +54,9 @@ FAMILIES = (
            "Since 2026-10-22 WCXY + WCA_1 + WCA_2 are scored as ONE WCA bench, XY → B1 (rule A); this panel is kept as the "
            "naming evidence for that decision and for a possible WCA_1 / WCA_2 surface (rule C, later)."),
     Family("wcb", "Wolfcamp A2 / B1 / B2", "WOLFCAMP-B1", ("WCA_2", "WCB_1", "WCB_2"),
-           ("WOLFCAMP_A", "WOLFCAMP-B2", "WOLFCAMP-C"), (-300.0, 500.0)),
+           ("WOLFCAMP_A", tq.WCB2_NAMING, "WOLFCAMP-B2", "WOLFCAMP-C"), (-300.0, 500.0),
+           "Rule D (2026-11-10): WCB_1 | WCB_2 is scored at the NAMING boundary WCB2_NAMING = B1 + 214 ft (the line at "
+           "+214), not at his B2, which at the WCB producers sits ~110 ft deeper than where operators switch the name."),
     Family("wbc", "Wolfcamp B2 / C / D — what the B2 → C interval holds", "WOLFCAMP-B2", ("WCB_1", "WCB_2", "WCC", "WCD"),
            ("WOLFCAMP-B1", "WOLFCAMP-C", "WOLFCAMP_D"), (-450.0, 900.0),
            "WCC is scored against B2 → C (relabel, 2026-10-22). This panel shows the same interval also holds WCB_2 "

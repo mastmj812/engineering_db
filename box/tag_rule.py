@@ -57,7 +57,7 @@ RULE_B_COUNTIES = frozenset({"Lea", "Ward"})
 INTERVAL_CODES: dict[str, tuple[str, ...]] = {
     "AVALON1": ("AVA_0", "AVA_1"), "AVALON2": ("AVA_2",), "1BSPGS": ("BS1_S",), "2BSPGC": ("BS2_C",), "2BSPGS": ("BS2_S",),
     "3BSPGC": ("BS3_C",), "3BSPGS": ("BS3_S",), "WOLFCAMP_XY": ("WCXY", "WCA_1", "WCA_2"), "WOLFCAMP_A": ("WCXY", "WCA_1", "WCA_2"),
-    "WOLFCAMP-B1": ("WCB_1",), "WOLFCAMP-B2": ("WCB_2", "WCC"),
+    "WOLFCAMP-B1": ("WCB_1",), "WCB2_NAMING": ("WCB_2",), "WOLFCAMP-B2": ("WCB_2", "WCC"),  # WCB2_NAMING = B1 + 214 ft (rule D)
 }
 
 

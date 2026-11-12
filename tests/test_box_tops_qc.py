@@ -27,12 +27,50 @@ def test_tag_intervals_run_top_down_and_follow_the_geology_decisions():
     for tag, (top, base) in tq.TAG_INTERVAL.items():
         assert tq.STACK.index(top) < tq.STACK.index(base), tag
         assert tq.TAG_TOP[tag] == top and tq.tag_base(tag) == base
-    for pool, (top, base) in pkg.GRIDS.items():   # Bone Spring / Avalon / WCB_1 still match the BOX map context
-        if pool in tq.TAG_INTERVAL and pool not in ("WCB_2", "WCC", "WCD"):
+    for pool, (top, base) in pkg.GRIDS.items():   # Bone Spring / Avalon still match the BOX map context
+        if pool in tq.TAG_INTERVAL and pool not in ("WCB_1", "WCB_2", "WCC", "WCD"):
             assert tq.TAG_INTERVAL[pool] == (top, base), pool
     # 2026-10-22: one WCA bench XY -> B1 (rule A); WCC = his B2 -> C (relabel); WCD = his C -> D (held)
     assert tq.TAG_INTERVAL["WCXY"] == tq.TAG_INTERVAL["WCA_1"] == tq.TAG_INTERVAL["WCA_2"] == ("WOLFCAMP_XY", "WOLFCAMP-B1")
     assert tq.TAG_INTERVAL["WCC"] == ("WOLFCAMP-B2", "WOLFCAMP-C") and tq.TAG_INTERVAL["WCD"] == ("WOLFCAMP-C", "WOLFCAMP_D")
+    # 2026-11-10 rule D: WCB_1 | WCB_2 = the naming boundary B1 + 214 ft; WCB_2 keeps the C base (no WCB_2 base yet)
+    assert tq.WCB2_NAMING_OFFSET_FT == 214.0 and pkg.DERIVED_SURFACES[tq.WCB2_NAMING] == ("WOLFCAMP-B1", 214.0)
+    assert tq.TAG_INTERVAL["WCB_1"] == ("WOLFCAMP-B1", tq.WCB2_NAMING)
+    assert tq.TAG_INTERVAL["WCB_2"] == (tq.WCB2_NAMING, "WOLFCAMP-C")
+    assert tq.STACK.index(tq.WCB2_NAMING) == tq.STACK.index("WOLFCAMP-B1") + 1 == tq.STACK.index("WOLFCAMP-B2") - 1
+    # BOX map context is deliberately NOT moved by rule D (extents stay on his B1 -> B2)
+    assert pkg.GRIDS["WCB_1"] == ("WOLFCAMP-B1", "WOLFCAMP-B2")
+
+
+def test_rule_d_scores_wcb_at_b1_plus_214():
+    stack = _stack(gap=100.0)
+    b1 = stack["WOLFCAMP-B1"].z
+    stack[tq.WCB2_NAMING] = tq.Grid(tq.WCB2_NAMING, XS, YS, b1 + 214.0)
+    stack["WOLFCAMP-B2"] = tq.Grid("WOLFCAMP-B2", XS, YS, b1 + 330.0)   # his B2 ~110 ft below the naming line
+    stack["WOLFCAMP-C"] = tq.Grid("WOLFCAMP-C", XS, YS, b1 + 900.0)
+    top = 8_000.0 + tq.STACK.index("WOLFCAMP-B1") * 100.0  # B1 at x = 0
+    st = pd.DataFrame({"api10": ["a", "b", "c", "d"], "tag": ["WCB_1", "WCB_1", "WCB_2", "WCB_2"],
+                       "x": 0.0, "y": 0.0, "tvd": [top + 100.0, top + 250.0, top + 250.0, top + 150.0]})
+    sf = tq.station_frame(st, stack).set_index("api10")
+    # 250 ft below B1 is between the naming line (+214) and his B2 (+330): WCB_2 now, WCB_1 under the old B1 -> B2 rule
+    assert sf["in_tag"].tolist() == [True, False, True, False]
+    assert sf.loc["b", "miss"] == pytest.approx(36.0) and sf.loc["d", "miss"] == pytest.approx(-64.0)
+    assert sf.loc["c", "interval"] == tq.WCB2_NAMING
+
+
+def test_load_stack_derives_the_naming_surface(tmp_path):
+    z = np.full((3, 3), 10_000.0)
+    z[1, 1] = 9_999_999_999.99   # null stays null
+    X, Y = np.meshgrid(np.arange(3) * 5000.0, np.arange(3) * 5000.0)
+    np.savetxt(tmp_path / "HCA_WOLFCAMP-B1_STRUCTURE_MD_grid.xyz", np.column_stack([X.ravel(), Y.ravel(), z.ravel()]),
+               delimiter=",", fmt="%.6f")
+    s = tq.load_stack(tmp_path, ("WOLFCAMP-B1", tq.WCB2_NAMING))
+    np.testing.assert_allclose(s[tq.WCB2_NAMING].z[0], 10_214.0)
+    assert np.isnan(s[tq.WCB2_NAMING].z[1, 1]) and s[tq.WCB2_NAMING].surface == tq.WCB2_NAMING
+    np.savetxt(tmp_path / "HCA_WOLFCAMP-B1_DIST_TO_CONTROL_ft_grid.xyz", np.column_stack([X.ravel(), Y.ravel(), X.ravel()]),
+               delimiter=",", fmt="%.6f")
+    # its control is B1's picks
+    np.testing.assert_allclose(pkg.dist_to_control(tq.WCB2_NAMING, [(2500.0, 0.0)], tmp_path), [2500.0])
 
 
 def test_bilinear_sampling_is_exact_on_a_plane():
@@ -103,10 +141,11 @@ def test_station_frame_and_well_verdicts():
 def test_surface_crossings():
     stack = _stack(gap=100.0)
     z = stack["WOLFCAMP-B2"].z.copy()
-    z[0, :] = stack["WOLFCAMP-B1"].z[0, :] - 10.0  # one row of nodes where B2 sits above B1
+    z[0, :] = stack[tq.WCB2_NAMING].z[0, :] - 10.0  # one row of nodes where his B2 sits above the B1 + 214 line
     stack["WOLFCAMP-B2"] = tq.Grid("WOLFCAMP-B2", XS, YS, z)
     c = tq.surface_crossings(stack).set_index("top")
-    assert c.loc["WOLFCAMP-B1", "pct_crossing"] == pytest.approx(1 / len(YS))
+    assert c.loc[tq.WCB2_NAMING, "pct_crossing"] == pytest.approx(1 / len(YS))
+    assert c.loc["WOLFCAMP-B1", "pct_crossing"] == 0.0
     assert c.loc["WOLFCAMP_A", "pct_crossing"] == 0.0
     assert c.loc["WOLFCAMP_A", "iso_p50_ft"] == pytest.approx(100.0)
 
