@@ -6,7 +6,13 @@ pytest.importorskip("shapely")
 pytest.importorskip("yaml")
 
 from dealintake.config import load
-from dealintake.pipeline import _edge_fired, _novi_summary
+from dealintake.pipeline import (
+    _edge_fired,
+    _novi_summary,
+    placed_bench_tvd,
+    unit_landing_tvd,
+)
+from dealintake.render.tables import bench_tvd_label
 
 CFG = load()
 
@@ -511,3 +517,45 @@ def test_reviewer_cohort_size_replaces_the_cap():
     for bad in ("BS3_C=0", "BS3_C=-3", "BS3_C=lots"):
         with pytest.raises(SystemExit):
             _cohort([bad])
+
+
+# ---- bench section header TVD (alchemist 2026-10-06: BS3_C header printed the
+# one-well local median 10,279 ft while rows/standoffs used the reviewer's 10,200)
+
+def _header_bench(units, cross_unit_tvd):
+    """units = {label: (bench_opts, unit local median or None)} -> the bench dict
+    slice the header reads, built the way evaluate builds it."""
+    ub = {}
+    for label, (opts, local) in units.items():
+        tvd, src = unit_landing_tvd(opts, local, cross_unit_tvd)
+        ub[label] = {"tvd_ft": tvd, "tvd_source": src}
+    return {"units": ub, "tvd_ft": placed_bench_tvd(ub, cross_unit_tvd)}
+
+
+def test_unit_landing_tvd_precedence():
+    assert unit_landing_tvd({"tvd_ft": 10200}, 10279.0, 10300.0) == (10200.0, "reviewer (benches.yaml)")
+    assert unit_landing_tvd({}, 10279.0, 10300.0) == (10279.0, "unit local median")
+    assert unit_landing_tvd({}, None, 10300.0) == (10300.0, "cross-unit median (no local control)")
+
+
+def test_header_tvd_is_reviewer_value_when_local_median_exists():
+    B = _header_bench({"U1": ({"tvd_ft": 10200}, 10279.0)}, cross_unit_tvd=10279.0)
+    assert B["tvd_ft"] == 10200.0
+    assert bench_tvd_label(B) == "TVD 10,200 ft (reviewer)"
+
+
+def test_header_tvd_reviewer_value_without_local_control():
+    B = _header_bench({"U1": ({"tvd_ft": 9000}, None)}, cross_unit_tvd=9000.0)
+    assert bench_tvd_label(B) == "TVD 9,000 ft (reviewer)"
+
+
+def test_header_tvd_local_medians_carry_no_source_note():
+    B = _header_bench({"U1": ({}, 9735.0), "U2": ({}, 10852.0), "U3": ({}, None)}, cross_unit_tvd=10293.5)
+    assert B["tvd_ft"] == pytest.approx(10293.5)        # median of 9,735 / 10,852 / fallback 10,293.5
+    assert bench_tvd_label(B) == "TVD 10,294 ft"
+
+
+def test_header_tvd_mixed_units_names_the_reviewer_share():
+    B = _header_bench({"U1": ({"tvd_ft": 11550}, 11621.0), "U2": ({}, 11600.0)}, cross_unit_tvd=11610.5)
+    assert B["tvd_ft"] == pytest.approx(11575.0)        # median of the PLACED 11,550 and 11,600
+    assert bench_tvd_label(B) == "TVD 11,575 ft (reviewer in 1 of 2 units)"

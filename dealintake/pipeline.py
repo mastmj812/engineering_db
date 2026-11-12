@@ -702,6 +702,26 @@ def _median(vals: list[float]) -> float | None:
     return statistics.median(vals) if vals else None
 
 
+REVIEWER_TVD_SOURCE = "reviewer (benches.yaml)"
+
+
+def unit_landing_tvd(opts: dict[str, Any], local_tvd: float | None, cross_unit_tvd: float) -> tuple[float, str]:
+    """One unit's landing TVD for a bench and where it came from: the reviewer's
+    benches.yaml tvd_ft wins, else the unit's local offset median, else the
+    cross-unit median (no local control)."""
+    if "tvd_ft" in opts:
+        return float(opts["tvd_ft"]), REVIEWER_TVD_SOURCE
+    if local_tvd is not None:
+        return float(local_tvd), "unit local median"
+    return float(cross_unit_tvd), "cross-unit median (no local control)"
+
+
+def placed_bench_tvd(units: dict[str, dict[str, Any]], fallback: float) -> float:
+    """Bench-level TVD for the dossier section header and the handoff's tab
+    order: the median of the per-unit landing TVDs actually placed."""
+    return _median([UB["tvd_ft"] for UB in units.values()]) or fallback
+
+
 def _edge_fired(support_rows: list[dict[str, Any]], cfg: Config) -> tuple[bool, dict[str, Any]]:
     et = cfg["edge_trigger"]
     dn = _median([r.get("dist_nearest_ft") for r in support_rows])
@@ -1271,11 +1291,7 @@ def evaluate(
                 local_tvd = next((r["median_tvd_ft"] for r in u["bench_proposal"]
                                   if bench_code(r["bench"]) == bench and r["median_tvd_ft"] is not None), None)
                 opts = plan[label]["bench_opts"].get(bench) or {}
-                if "tvd_ft" in opts:
-                    tvd_u, tvd_src = float(opts["tvd_ft"]), "reviewer (benches.yaml)"
-                else:
-                    tvd_u = float(local_tvd if local_tvd is not None else bench_tvd[bench])
-                    tvd_src = "unit local median" if local_tvd is not None else "cross-unit median (no local control)"
+                tvd_u, tvd_src = unit_landing_tvd(opts, local_tvd, bench_tvd[bench])
                 sp_u, sp_u_src = sp_unit[(label, bench)]
                 g2 = location_source(u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
                                                                 "pud_inside": 0, "pud_crossing": 0}, opts)
@@ -1397,7 +1413,9 @@ def evaluate(
             # The bench header shows the landing TVD actually PLACED (reviewer tvd_ft
             # where set) — not the propose medians, which can carry a permit depth
             # (Eggs Tyrone 9-16 WCB_2: 11,572 = 11,145 and a 12,000-ft permit TVD).
-            B["tvd_ft"] = _median([UB["tvd_ft"] for UB in B["units"].values()]) or B["tvd_ft"]
+            # The header names the source when a unit's TVD is the reviewer's
+            # (render.tables.bench_tvd_label reads the per-unit tvd_source).
+            B["tvd_ft"] = placed_bench_tvd(B["units"], B["tvd_ft"])
 
             # ---- Gate 5a: eligible POOL (no cap yet) ------------------------------
             edge, edge_sig = _edge_fired(support_all, cfg)
