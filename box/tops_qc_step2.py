@@ -104,6 +104,8 @@ def picks_fields(W: pd.DataFrame) -> dict[str, pd.DataFrame]:
     bases = pos["tag"].map(tq.tag_base)
     out = {}
     for srf in tq.STACK:
+        if srf in pkg.DERIVED_SURFACES:  # picked on its base surface (B1 for WCB2_NAMING), not on its own
+            continue
         g = pos[(tops == srf) | (bases == srf)]
         if g.empty:
             continue
