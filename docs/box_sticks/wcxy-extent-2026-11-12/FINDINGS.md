@@ -6,6 +6,13 @@ Read-only; nothing stored. `python -m scripts.box_sticks_wcxy_extent --out docs/
 Why hand-drawn: three automated rules were tested against Michael's 31 card calls and none beat calling every pad
 XY (`../wcxy-tiers-2026-11-12/FINDINGS.md`).
 
+**Revision (same day, Michael's request): the map now plots only WCXY-tagged wells at least 100 ft above the local
+WCA_1 landing surface** (`--min-sep 100`): 925 of the 1,806 wells (Loving 536, Reeves 151, Eddy 123, Lea 49,
+Culberson 38, Ward 25, Winkler 3). Wells with no WCA_1 control drop out with the rest. The dashed candidate is
+rebuilt from those 925 wells and shrinks from 2,336 to 1,577 sq mi; it pulls back from western Eddy, Culberson
+and northern Lea. The map window, and so the pen-edit frame, is unchanged. The description below is of the first
+version (all wells); card markers and the background are the same on both.
+
 ## What is on `visual_WCXY.png`
 
 - **Background**: the geologist's XY interval thickness, WOLFCAMP_A top minus WOLFCAMP_XY top (HCA structure

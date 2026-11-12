@@ -1,10 +1,21 @@
 {
-  "built_at": "2026-11-12T19:24:18+00:00",
-  "code_sha": "6603870",
+  "built_at": "2026-11-12T19:50:51+00:00",
+  "code_sha": "43a68eb",
   "wcxy_wells": 1806,
+  "min_sep_ft": 100.0,
+  "wells_shown": 925,
+  "wells_shown_by_county": {
+    "Loving": 536,
+    "Reeves": 151,
+    "Eddy": 123,
+    "Lea": 49,
+    "Culberson": 38,
+    "Ward": 25,
+    "Winkler": 3
+  },
   "candidate": {
     "how": "BOX construction of record (er.build_pool), performance class unknown on every edge",
-    "sqmi": 2336.4062729866987
+    "sqmi": 1576.7478097088347
   },
   "xy_interval_at_wells_ft": {
     "wells_on_grid": 1806,

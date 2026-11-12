@@ -89,10 +89,11 @@ def candidate(x: pd.DataFrame) -> tuple[object | None, str]:
         return ex.as_multi(u), "FALLBACK: wells buffered 4 mi, eroded 2.5 mi (not the construction of record)"
 
 
-def draw(x: pd.DataFrame, cards: pd.DataFrame | None, ext, iso: tuple, out: Path) -> dict:
+def draw(x: pd.DataFrame, cards: pd.DataFrame | None, ext, iso: tuple, out: Path, view: pd.DataFrame, note: str) -> dict:
+    """``view`` fixes the map window (all WCXY-tagged wells), so a filtered map keeps the same frame."""
     xs, ys, Z = iso
     pad = 6 * 5280.0
-    x0, y0, x1, y1 = x["gx"].min() - pad, x["gy"].min() - pad, x["gx"].max() + pad, x["gy"].max() + pad
+    x0, y0, x1, y1 = view["gx"].min() - pad, view["gy"].min() - pad, view["gx"].max() + pad, view["gy"].max() + pad
     fig, ax = plt.subplots(figsize=(14, 14))
     mx, my = (xs >= x0) & (xs <= x1), (ys >= y0) & (ys <= y1)
     Zc = np.ma.masked_invalid(Z[np.ix_(my, mx)])
@@ -130,8 +131,9 @@ def draw(x: pd.DataFrame, cards: pd.DataFrame | None, ext, iso: tuple, out: Path
     ax.set_xticks([])
     ax.set_yticks([])
     area = ext.area / eg.FT_PER_MI ** 2 if ext is not None else float("nan")
-    ax.set_title(f"WCXY evidence map for a hand-drawn extent. Dashed black = candidate from every WCXY-tagged well ({area:,.0f} sq mi, a guide only); "
-                 f"dotted = TX / NM line.\nDraw the extent as one or more closed RED loops; the loops become the extent.", fontsize=10)
+    ax.set_title(f"WCXY evidence map for a hand-drawn extent: {note} (n = {len(x):,})\n"
+                 f"Dashed black = candidate from those wells ({area:,.0f} sq mi, a guide only); dotted = TX / NM line\n"
+                 "Draw the extent as one or more closed RED loops; the loops become the extent", fontsize=10)
     fig.tight_layout()
     dpi = 110
     fig.set_dpi(dpi)
@@ -146,7 +148,7 @@ def draw(x: pd.DataFrame, cards: pd.DataFrame | None, ext, iso: tuple, out: Path
     return frame
 
 
-def run(out: Path, cache: Path | None, verdict_dir: Path | None) -> dict:
+def run(out: Path, cache: Path | None, verdict_dir: Path | None, min_sep_ft: float | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     d = p0.pull(cache)
     w = p0.evidence(d["wells"], d["rule"])
@@ -157,8 +159,11 @@ def run(out: Path, cache: Path | None, verdict_dir: Path | None) -> dict:
     x["gx"], x["gy"] = g[:, 0], g[:, 1]
     iso = isopach()
     x["xy_interval_ft"] = sample(*iso, g)
-    ext, how = candidate(x)
     p, x = wc.pads(x)
+    shown, note = x, "every WCXY-tagged well"
+    if min_sep_ft is not None:   # Michael 2026-11-12: only the wells clearly above the WCA_1 landing (no-control wells drop out too)
+        shown, note = x[x["above_wca1_ft"] >= min_sep_ft], f"WCXY-tagged wells at least {min_sep_ft:.0f} ft above the local WCA_1 landing surface"
+    ext, how = candidate(shown)
     cards = None
     if verdict_dir:
         v = pd.read_csv(verdict_dir / "verdicts.csv")
@@ -166,7 +171,7 @@ def run(out: Path, cache: Path | None, verdict_dir: Path | None) -> dict:
         c = x.groupby("group")[["gx", "gy", "xy_interval_ft", "above_wca1_ft"]].median()
         cards = cards.join(c, on="group")
         cards.drop(columns=["group"]).sort_values("card").to_csv(out / "cards_on_map.csv", index=False)
-    draw(x, cards, ext, iso, out)
+    draw(shown, cards, ext, iso, out, x, note)
     if ext is not None:
         (out / "candidate_WCXY.geojson").write_text(json.dumps({"type": "FeatureCollection", "name": "box_extent_WCXY_candidate", "crs_note": "EPSG:4326",
             "features": [{"type": "Feature", "properties": {"layer": "extent", "pool": POOL, "source": "candidate, not stored", "note": how},
@@ -174,6 +179,7 @@ def run(out: Path, cache: Path | None, verdict_dir: Path | None) -> dict:
     x[["api10", "well_name", "operator", "county", "state_code", "midpoint_lat", "midpoint_lon", "depth_ft", "above_wca1_ft", "xy_interval_ft"]].to_csv(out / "wcxy_wells.csv", index=False)
     has = x["xy_interval_ft"].notna()
     summary = {"built_at": dt.datetime.now(tz=dt.UTC).isoformat(timespec="seconds"), "code_sha": p0._git_sha(), "wcxy_wells": len(x),
+               "min_sep_ft": min_sep_ft, "wells_shown": len(shown), "wells_shown_by_county": shown["county"].value_counts().to_dict(),
                "candidate": {"how": how, "sqmi": float(ext.area / eg.FT_PER_MI ** 2) if ext is not None else None},
                "xy_interval_at_wells_ft": {"wells_on_grid": int(has.sum()), "p10": float(x.loc[has, "xy_interval_ft"].quantile(0.1)),
                                            "median": float(x.loc[has, "xy_interval_ft"].median()), "p90": float(x.loc[has, "xy_interval_ft"].quantile(0.9))},
@@ -194,8 +200,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--cache", type=Path, default=None)
     ap.add_argument("--verdicts", type=Path, default=None)
+    ap.add_argument("--min-sep", type=float, default=None, help="plot (and build the candidate from) only wells at least this many ft above WCA_1")
     a = ap.parse_args(argv)
-    run(a.out, a.cache, a.verdicts)
+    run(a.out, a.cache, a.verdicts, a.min_sep)
     return 0
 
 
