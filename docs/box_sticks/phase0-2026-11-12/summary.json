@@ -1,0 +1,50 @@
+{
+  "generated": "2026-11-12T16:34:40+00:00",
+  "code_sha": "5f719e1",
+  "pad_vintage": "2026Q3",
+  "evidence_wells": 56842,
+  "sticks": 257397,
+  "sticks_with_control": 42810,
+  "bust_all": {
+    "delaware": {
+      "median_ft": 20.944666432140366,
+      "median_abs_ft": 94.0,
+      "beyond_150_pct": 35.194525904203324,
+      "beyond_300_pct": 16.359726295210166
+    },
+    "midland": {
+      "median_ft": 40.0,
+      "median_abs_ft": 56.0,
+      "beyond_150_pct": 16.269219611256165,
+      "beyond_300_pct": 3.3304322599361766
+    }
+  },
+  "pads": {
+    "delaware": {
+      "polygons": 8256,
+      "no_novi_wells": 3772,
+      "median_acres": 960.0515778597746,
+      "near_square_pct_aspect_lt_1_15": 25.811531007751938,
+      "irregular_pct_fill_lt_0_90": 0.0,
+      "uturn_pct": 33.17587209302326,
+      "overlapped_10_pct": 0.24224806201550386,
+      "duplicated_90_pct": 0.0,
+      "median_overlapping_polygons": 0.0
+    },
+    "midland": {
+      "polygons": 8329,
+      "no_novi_wells": 3809,
+      "median_acres": 1265.2788696368948,
+      "near_square_pct_aspect_lt_1_15": 17.313002761435946,
+      "irregular_pct_fill_lt_0_90": 0.0,
+      "uturn_pct": 20.25453235682555,
+      "overlapped_10_pct": 0.3001560811622043,
+      "duplicated_90_pct": 0.048024972985952694,
+      "median_overlapping_polygons": 0.0
+    }
+  },
+  "maps": [
+    "bust_map_delaware.png",
+    "bust_map_midland.png"
+  ]
+}

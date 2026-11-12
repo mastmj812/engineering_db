@@ -1,0 +1,279 @@
+{
+  "code_sha": "8d1db45",
+  "tags": "live",
+  "pads": 1192,
+  "wcxy_wells": 1815,
+  "fit": {
+    "gap_ft": 40.0,
+    "half_width_mi": 1.5,
+    "min_n": 2,
+    "agree": 18,
+    "cards": 31,
+    "misses": [
+      {
+        "card": 1,
+        "name": "GOLD LOG 4 9 FEDERAL COM #032H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 3,
+        "name": "ATLAS 7 UNIT 1H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 6,
+        "name": "BRIDAL VEIL STATE 4132-27 B 3H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 1,
+        "pad_tier": 1,
+        "tiers_below": 0
+      },
+      {
+        "card": 9,
+        "name": "ST BRIDES 76 3031 111H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 11,
+        "name": "POKER LAKE UNIT 28 BS #125H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 15,
+        "name": "OXBOW CC 17 8 FEDERAL COM #031H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 3,
+        "pad_tier": 2,
+        "tiers_below": 1
+      },
+      {
+        "card": 16,
+        "name": "CORRAL GORGE 12 13 FEDERAL COM #035H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 17,
+        "name": "CORRAL BLUFF 11 14 FEDERAL COM #035H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 2,
+        "pad_tier": 1,
+        "tiers_below": 1
+      },
+      {
+        "card": 18,
+        "name": "JAYHAWK 7 6 FEDERAL FEE COM #008H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 1,
+        "pad_tier": 1,
+        "tiers_below": 0
+      },
+      {
+        "card": 19,
+        "name": "JAVELINA 30 FEDERAL COM #705H",
+        "verdict": "ONE",
+        "call": "XY",
+        "tiers": 3,
+        "pad_tier": 1,
+        "tiers_below": 2
+      },
+      {
+        "card": 21,
+        "name": "LOBO BLANCO 9 FEDERAL #701H",
+        "verdict": "XY",
+        "call": "ONE",
+        "tiers": 1,
+        "pad_tier": 1,
+        "tiers_below": 0
+      },
+      {
+        "card": 27,
+        "name": "BRASWELL 16 STATE #707H",
+        "verdict": "ONE",
+        "call": "XY",
+        "tiers": 4,
+        "pad_tier": 2,
+        "tiers_below": 2
+      },
+      {
+        "card": 30,
+        "name": "REMUDA SOUTH 25 STATE #105H",
+        "verdict": "ONE",
+        "call": "XY",
+        "tiers": 3,
+        "pad_tier": 1,
+        "tiers_below": 2
+      }
+    ],
+    "grid_top": [
+      {
+        "gap_ft": 40.0,
+        "half_width_mi": 1.5,
+        "min_n": 2,
+        "agree": 18,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 10,
+        "one_called_xy": 3
+      },
+      {
+        "gap_ft": 50.0,
+        "half_width_mi": 1.5,
+        "min_n": 2,
+        "agree": 18,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 12,
+        "one_called_xy": 1
+      },
+      {
+        "gap_ft": 40.0,
+        "half_width_mi": 1.5,
+        "min_n": 3,
+        "agree": 17,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 12,
+        "one_called_xy": 2
+      },
+      {
+        "gap_ft": 50.0,
+        "half_width_mi": 1.5,
+        "min_n": 3,
+        "agree": 17,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 14,
+        "one_called_xy": 0
+      },
+      {
+        "gap_ft": 40.0,
+        "half_width_mi": 3.0,
+        "min_n": 3,
+        "agree": 16,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 15,
+        "one_called_xy": 0
+      },
+      {
+        "gap_ft": 40.0,
+        "half_width_mi": 1.5,
+        "min_n": 4,
+        "agree": 15,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 15,
+        "one_called_xy": 1
+      },
+      {
+        "gap_ft": 60.0,
+        "half_width_mi": 1.5,
+        "min_n": 2,
+        "agree": 15,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 15,
+        "one_called_xy": 1
+      },
+      {
+        "gap_ft": 60.0,
+        "half_width_mi": 1.5,
+        "min_n": 3,
+        "agree": 15,
+        "cards": 31,
+        "undetermined": 0,
+        "xy_called_one": 16,
+        "one_called_xy": 0
+      }
+    ],
+    "grid_agree_range": [
+      10,
+      18
+    ]
+  },
+  "all_pads": {
+    "pads": {
+      "ONE": 816,
+      "XY": 355,
+      "UNDETERMINED": 21
+    },
+    "wells": {
+      "ONE": 1229,
+      "XY": 555,
+      "UNDETERMINED": 22
+    },
+    "wells_by_state": {
+      "30": {
+        "ONE": 447,
+        "UNDETERMINED": 17,
+        "XY": 146
+      },
+      "42": {
+        "ONE": 782,
+        "UNDETERMINED": 5,
+        "XY": 409
+      }
+    },
+    "wells_by_county": {
+      "Culberson": {
+        "ONE": 55,
+        "UNDETERMINED": 3,
+        "XY": 10
+      },
+      "Eddy": {
+        "ONE": 276,
+        "UNDETERMINED": 8,
+        "XY": 79
+      },
+      "Lea": {
+        "ONE": 171,
+        "UNDETERMINED": 9,
+        "XY": 67
+      },
+      "Loving": {
+        "ONE": 568,
+        "UNDETERMINED": 0,
+        "XY": 241
+      },
+      "Reeves": {
+        "ONE": 101,
+        "UNDETERMINED": 1,
+        "XY": 144
+      },
+      "Ward": {
+        "ONE": 41,
+        "UNDETERMINED": 1,
+        "XY": 14
+      },
+      "Winkler": {
+        "ONE": 17,
+        "UNDETERMINED": 0,
+        "XY": 0
+      }
+    }
+  }
+}

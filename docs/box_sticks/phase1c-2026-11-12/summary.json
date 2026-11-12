@@ -1,0 +1,113 @@
+{
+  "code_sha": "fb82d4c",
+  "tags": "live",
+  "min_sep_ft": 75.0,
+  "bad_depth_ft": 300.0,
+  "mistag_min_ft": 150.0,
+  "screen": {
+    "evidence_wells": 56842,
+    "judged": 49201,
+    "bad_depth": 377,
+    "mistag": 1499,
+    "mistag_rule_already_moves": 394,
+    "mistag_top_classes": {
+      "midland WCA_1 on WCB_1": 287,
+      "midland LSSH on JM": 218,
+      "midland WCB_1 on WCB_2": 75,
+      "delaware BS3_S on WCA": 71,
+      "delaware BS3_C on BS2_S": 63,
+      "midland WCB_1 on WCA_1": 56,
+      "delaware AVA_1 on AVA_2": 49,
+      "delaware BS2_S on BS2_C": 49,
+      "delaware WCA_2 on WCB_1": 37,
+      "midland JM on MS": 36
+    },
+    "fixed_300ft_would_remove": 702
+  },
+  "runs": {
+    "all_wells": {
+      "rung_pct": {
+        "direct": 48.8,
+        "thickness": 25.4,
+        "none": 11.8,
+        "offset": 10.3,
+        "bracket": 3.7
+      },
+      "low_conf_pct_of_all_pairs": 14.725299741994233,
+      "stack": {
+        "delaware": {
+          "dsu_with_2plus_benches": 4400,
+          "adjacent_pairs": 23337,
+          "dsu_with_violation": 2198,
+          "dsu_out_of_order": 684,
+          "violating_pairs": 2648,
+          "violating_pairs_wca_family": 1532,
+          "dsu_with_violation_outside_wca_family": 988,
+          "violating_pairs_carried_involved": 735,
+          "violating_pairs_direct_direct_outside_family": 381
+        },
+        "midland": {
+          "dsu_with_2plus_benches": 3482,
+          "adjacent_pairs": 14781,
+          "dsu_with_violation": 592,
+          "dsu_out_of_order": 128,
+          "violating_pairs": 624,
+          "violating_pairs_wca_family": 0,
+          "dsu_with_violation_outside_wca_family": 592,
+          "violating_pairs_carried_involved": 426,
+          "violating_pairs_direct_direct_outside_family": 198
+        }
+      },
+      "wca1_wca2": {
+        "dsu_with_both": 3888,
+        "median_gap_ft": 114.86489825238823,
+        "out_of_order_pct": 8.410493827160494,
+        "under_50_ft_pct": 19.90740740740741,
+        "under_75_ft_pct": 30.787037037037035,
+        "under_100_ft_pct": 41.76954732510288
+      }
+    },
+    "screened": {
+      "rung_pct": {
+        "direct": 48.2,
+        "thickness": 25.8,
+        "none": 11.9,
+        "offset": 10.4,
+        "bracket": 3.7
+      },
+      "low_conf_pct_of_all_pairs": 14.973820003035362,
+      "stack": {
+        "delaware": {
+          "dsu_with_2plus_benches": 4399,
+          "adjacent_pairs": 23311,
+          "dsu_with_violation": 2194,
+          "dsu_out_of_order": 685,
+          "violating_pairs": 2635,
+          "violating_pairs_wca_family": 1556,
+          "dsu_with_violation_outside_wca_family": 949,
+          "violating_pairs_carried_involved": 729,
+          "violating_pairs_direct_direct_outside_family": 350
+        },
+        "midland": {
+          "dsu_with_2plus_benches": 3478,
+          "adjacent_pairs": 14772,
+          "dsu_with_violation": 622,
+          "dsu_out_of_order": 133,
+          "violating_pairs": 655,
+          "violating_pairs_wca_family": 0,
+          "dsu_with_violation_outside_wca_family": 622,
+          "violating_pairs_carried_involved": 458,
+          "violating_pairs_direct_direct_outside_family": 197
+        }
+      },
+      "wca1_wca2": {
+        "dsu_with_both": 3883,
+        "median_gap_ft": 113.86834859561168,
+        "out_of_order_pct": 8.395570435230491,
+        "under_50_ft_pct": 20.13906773113572,
+        "under_75_ft_pct": 31.470512490342518,
+        "under_100_ft_pct": 42.41565799639454
+      }
+    }
+  }
+}

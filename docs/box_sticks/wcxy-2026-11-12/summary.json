@@ -1,0 +1,71 @@
+{
+  "code_sha": "6a5441d",
+  "tags": "live",
+  "min_sep_ft": 75.0,
+  "wcxy_evidence_wells": 1815,
+  "landing": {
+    "single_landing": 799,
+    "distinct_upper": 630,
+    "undetermined": 386
+  },
+  "moat_ft": 50.0,
+  "landing_by_moat_ft": {
+    "40": {
+      "distinct_upper": 748,
+      "single_landing": 681,
+      "undetermined": 386
+    },
+    "50": {
+      "single_landing": 799,
+      "distinct_upper": 630,
+      "undetermined": 386
+    },
+    "60": {
+      "single_landing": 894,
+      "distinct_upper": 535,
+      "undetermined": 386
+    },
+    "75": {
+      "single_landing": 1044,
+      "undetermined": 386,
+      "distinct_upper": 385
+    }
+  },
+  "groups_of_3plus": 96,
+  "groups_with_mixed_landing": 25,
+  "lower_landing_below_ft_median": 151.12950612472923,
+  "first_test_fixed_75ft": {
+    "stacked": 1114,
+    "same_depth": 598,
+    "no_wca1": 62,
+    "below": 41
+  },
+  "first_vs_landing": {
+    "distinct_upper": {
+      "below": 0,
+      "no_wca1": 3,
+      "same_depth": 49,
+      "stacked": 578
+    },
+    "single_landing": {
+      "below": 10,
+      "no_wca1": 23,
+      "same_depth": 390,
+      "stacked": 376
+    },
+    "undetermined": {
+      "below": 31,
+      "no_wca1": 36,
+      "same_depth": 159,
+      "stacked": 160
+    }
+  },
+  "above_wca1_ft": {
+    "wells": 1753,
+    "p10": 16.928416824762827,
+    "median": 106.7183899780448,
+    "p90": 218.2182095570344
+  },
+  "rule_moves": {},
+  "map": "wcxy_evidence_map.png"
+}
