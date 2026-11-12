@@ -79,6 +79,14 @@ names pilot areas (proposal: one Delaware TX, one Delaware NM, one Midland).
 
 **Gate 1:** hold-out error by bench and basin, map of direct vs thickness coverage, list of order violations.
 
+**Phase 1 / 1b evidence (2026-11-12, live tags; `docs/box_sticks/phase1-2026-11-12/`, `phase1b-2026-11-12/`).**
+Direct + 5-mi thickness leaves 35.5 % of DSU x bench pairs with no depth. Michael's requirement: that gap must be
+closed. Proposed chain, pending his decision on an error ceiling: direct -> local thickness -> **bracket** between
+a bench above and a bench below (Michael's idea; DEAN between LSSH and WCA_1 holds 40 ft median / 135 ft P90 with
+no DEAN well within 5 mi) -> single-neighbour offset -> none. The chain leaves 6.7 % with no depth. Weak where a
+bench has no dense neighbour on one side (Delaware BS1_S, Midland WCC / WCD). BOX sticks get their own anchor
+configuration; `box.landing_surfaces.ANCHOR` is shared with the tag code and is not edited.
+
 ## Phase 1b - WCXY extent (Delaware)
 
 Why: WCXY means a well landed in the XY sands of the Wolfcamp A, which are essentially only present north of
