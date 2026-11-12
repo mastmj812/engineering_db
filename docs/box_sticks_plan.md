@@ -131,6 +131,17 @@ sand exists. A tag-derived extent would inherit those mistakes, so the extent is
 **Gate 1b:** evidence map (stacked-pair vs lone-tag wells), candidate vs edited extent, count of WCXY-tagged
 wells left outside it by county.
 
+**Phase 1b outcome (2026-11-12).** The evidence pass and three automated rules (fixed separation, empty band, tier
+count) were tested against 31 blind card calls by Michael; none beat calling every pad XY, so the extent was drawn
+by hand (`docs/box_sticks/wcxy-*-2026-11-12/`). **Michael's hand-drawn WCXY extent, reading confirmed by him:
+`docs/box_sticks/wcxy-extent-2026-11-12/extent_WCXY_edited.geojson`, 1,730 sq mi, one piece; 1,483 of 1,806
+WCXY-tagged evidence wells inside.** It is the WCXY extent for the generator pilot as a FILE. Not stored: a
+`box.extent` row needs a `box.bench_scope` row for WCXY, and how the BOX forecast run reads that table must be
+checked first (the WCXY forecast-pool decision, phase 6); store with the phase 4 writes on an explicit go.
+The extent says where an XY landing is a target. Inside it, a WCXY-tagged well at upper-WCA depth is evidence for
+the landing surface it is nearest in depth; outside it, WCXY-tagged wells are treated as upper WCA (WCA_1). Tag
+corrections go to the formation-tag review after the 11-16 decision; the surface builder never re-tags.
+
 ## Phase 2 - Density and the no-place envelope (studies; read-only)
 
 - **2a. Realized spacing per bench per neighbourhood.** Perpendicular gap between same-bench, co-developed
