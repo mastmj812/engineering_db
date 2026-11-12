@@ -142,6 +142,33 @@ The extent says where an XY landing is a target. Inside it, a WCXY-tagged well a
 the landing surface it is nearest in depth; outside it, WCXY-tagged wells are treated as upper WCA (WCA_1). Tag
 corrections go to the formation-tag review after the 11-16 decision; the surface builder never re-tags.
 
+### Follow-up for the formation-tag workflow: use the WCXY extent (Michael, 2026-11-12)
+
+The tag rule treats WCXY / WCA_1 / WCA_2 as one family and lets depth decide the position; a vendor "Wolfcamp XY"
+label is taken at face value anywhere (the shadow rule moves none of the 1,815 WCXY-tagged evidence wells). The
+record extents are already in the rule's inputs for reporting only (`box/tag_rule_inputs.py`). The hand-drawn
+WCXY extent adds what the rule lacks: where an XY landing can exist at all. Not before the 11-16 decision; the
+shadow comparison stays on the rule as frozen.
+
+1. **2026-11-16**: cutover decision on the current rule, unchanged.
+2. **Store the WCXY extent** in `box.extent` (explicit go). Needs a `box.bench_scope` row for WCXY: first check how
+   the BOX forecast run reads that table, so a new row does not change a forecast pool.
+3. **Class 1, outside the extent: WCXY -> WCA_1.** A rule revision through the usual gates (class, sample cards
+   for Michael, accept / reject, seed via `scripts/tag_rule_seeds.py`, reload). Never a hand-edited rule row.
+   Covers the 323 evidence wells outside (`wcxy-extent-2026-11-12/wcxy_wells_outside_edited.csv`) plus
+   WCXY-tagged wells that are not depth evidence (planned surveys, permit depths; not yet counted).
+4. **Class 2, inside the extent: pads at upper-WCA depth.** The extent does not settle these (XY and one-landing
+   pads sit side by side); the extent only tells the depth step that WCXY is an allowed answer inside and not
+   outside. Starting labels: Michael's 31 card calls (`wcxy-cards-2026-11-12/verdicts.csv`). Three automated
+   rules failed against them (`wcxy-tiers-2026-11-12/FINDINGS.md`), so expect cards, not a formula.
+
+Blast radius: small. BOX pools WCXY + WCA_1 + WCA_2 in the Delaware (D19 / D20 / D95), so moves between the three
+change no forecast pool and no record run. They do change what reads the individual code: the BOX stick landing
+surfaces (the point), anduin formation filters and cohorts, deal-intake bench menus near the Loving - Eddy line.
+
+Guard: the extent was drawn on today's tags and depths. After tags are corrected from it, it is NOT re-derived
+from the corrected tags; it stays Michael's call, revised by him when the geology warrants.
+
 ## Phase 2 - Density and the no-place envelope (studies; read-only)
 
 - **2a. Realized spacing per bench per neighbourhood.** Perpendicular gap between same-bench, co-developed
