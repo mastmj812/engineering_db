@@ -35,9 +35,9 @@ stick chain is retired.
 | WCA_1 / WCA_2 under the floor (2026-11-12) | Where the two landings are closer than the minimum separation (75 ft) or out of order in a DSU, that DSU gets ONE WCA landing. Detail to settle in the generator: it takes the code and depth of the member with the more trusted depth there |
 | Stack reconciliation (2026-11-12) | Benches are estimated independently, then each conflicting adjacent pair in a DSU is reconciled: the less trusted depth gives way (carried before direct; among carried, the higher held-out error). It moves to the minimum separation if that stays inside its own error band; otherwise that bench gets no stick in that DSU, with the reason recorded |
 | Evidence screen (2026-11-12) | Two-part, replacing a fixed cutoff. **Likely mis-tag**: a well closer to another bench's direct surface than to its own and more than max(150 ft, half the local gap) off its own is removed from its tagged bench's evidence and listed for formation-tag review; the surface builder never re-tags. **Bad depth**: more than 300 ft off its own surface and not a mis-tag is dropped. Live tags: 1,499 + 377 wells |
-| Spacing floor and tight cap (2026-11-12, after phase 2a) | Floor **1,320 ft** (4 WPS), not 1,540 ft: realized gaps peak at 660, 880 and 1,320 ft and show nothing at 1,540 ft. Tight cap **660 ft** (8 WPS): the tightest spacing operators repeat |
-| Spacing is per landing (2026-11-12, after phase 2a) | A same-bench neighbour landed more than 75 ft from the well is the other landing of a staggered pattern, not this row's neighbour. The tag-level gap failed its cross-check against Novi `lateral_closer_xy_ft` in the Delaware (65 % against a 70 % bar) for that reason. Open for the pilot cards: a second landing inside one tag (BS2_S, Delaware WCC, LSSH, BS3_C) |
-| Spacing map (2026-11-13, after phase 2a; supersedes the 1 -> 2 -> 3 mi radius chain decided 2026-11-12) | **Blended surface.** Per bench, the Gaussian-weighted median of per-landing well gaps around the DSU (sigma 3 mi, wells out to 7.5 mi, weight by distance DSU polygon to well), relaxed toward the bench's extent-band median as control thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + 2), n_eff = sum of weights. Bands are distance inside the bench's BOX extent edge (0-2, 2-5, 5-10, 10+ mi); a band with fewer than 20 wells -> 1,320 ft. Clamped to 660-1,320 ft. Every stick records `spacing_basis` (n_eff, weighted median, band value). Reason (Michael): a mature bench should read as nested contours, densest in the core and thinning outward, and a gap in development inside the core must not drop to the default. Evidence: beats the chain-then-band rule on the hold-out (2 mi hidden: Delaware 145 -> 129 ft, Midland 93 -> 80 ft) and cuts adjacent-DSU steps over 200 ft from 13 % to under 2 %. Known: it fails one pre-set line, the Delaware outer 0-2 mi band with 1 mi hidden (35 vs 23 ft, 99 targets), and it smooths small 8 WPS pockets to 6-7 WPS |
+| Spacing floor and tight cap (2026-11-12 / 13, phase 2a) | Floor **1,320 ft** (4 WPS), not 1,540 ft: realized gaps peak at 660, 880 and 1,320 ft and show nothing at 1,540 ft. Tight cap **440 ft** (12 WPS), revised from 660 ft on 2026-11-13 when density went back to per bench: a 660 ft cap would hold an 11 WPS development at 8 |
+| Density is per bench (2026-11-13, phase 2a; reverses the per-landing choice of 2026-11-12) | Bench density is the count of same-bench wells across a section, however the operator staggered them vertically. Reference case: Ruthless 11 Federal COM (Lea), 11 BS2_S wells across a mile at two landings 350 ft apart = 11 WPS, not 5-6 per landing. Known: this measure fails the cross-check against Novi `lateral_closer_xy_ft` in the Delaware (65 % against a 70 % bar) because Novi counts per zone; kept deliberately. The vertical arrangement is the generator's job: where local wells show two landings, sticks alternate between them (open item) |
+| Spacing map (2026-11-13, phase 2a; supersedes the 1 -> 2 -> 3 mi radius chain and the hard band default merged in PR #244) | **Blended surface.** Per bench, the Gaussian-weighted median of per-bench well gaps around the DSU (sigma 3 mi, wells out to 7.5 mi, weight by distance DSU polygon to well), relaxed toward the bench's extent-band median as control thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + 1), n_eff = sum of weights. Bands are distance inside the bench's BOX extent edge (0-2, 2-5, 5-10, 10+ mi); a band with fewer than 20 wells -> 1,320 ft. Clamped to 440-1,320 ft. Every stick records `spacing_basis` (n_eff, weighted median, band value). Reason (Michael): a mature bench reads as nested contours, densest in the core and thinning outward, because operators drilled the best rock first; a gap in development inside the core must not drop to a default. Evidence: passes its pre-set adoption test in both basins; with wells within 2 mi hidden the median error is 137 ft Delaware / 87 ft Midland against 161 / 104 ft for the chain; adjacent-DSU steps over 200 ft fall from about 15 % to about 2 % |
 | No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
@@ -187,12 +187,14 @@ from the corrected tags; it stays Michael's call, revised by him when the geolog
   Outside the envelope a stick is placed and the existing D150 proximity factor discounts its forecast;
   the envelope must not double-count that.
 
-**Phase 2a outcome (2026-11-12, `docs/box_sticks/phase2a-2026-11-12/`, `scripts/box_sticks_phase2a.py`).** Per
-landing, 30,870 wells measured (Delaware 12,836, median 1,133 ft = 4.7 WPS; Midland 18,034, median 863 ft = 6.1 WPS).
-59 % of Delaware and 72 % of Midland DSU x bench have local control within 3 mi; the rest take the bench's extent-band median (addendum 2). Final spacing map, decided 2026-11-13: the blended surface relaxing to the band (addendum 3), which replaces the radius chain; the floor-relaxing surface of addendum 1 was not adopted. Decided:
-floor 1,320 ft, tight cap 660 ft, per-landing spacing, blended spacing surface (decision table). Against Novi:
-mean spacing 1,276 -> 1,226 ft Delaware, 1,224 -> 1,089 ft Midland; wider on Delaware BS2_S, AVA_2 and the WCA
-family, tighter on Midland WCC / WCD / JM / MS. 2b (no-place calibration) is not started.
+**Phase 2a outcome (2026-11-12 / 13, `docs/box_sticks/phase2a-2026-11-12/`, `scripts/box_sticks_phase2a*.py`).** Per
+bench, 32,124 wells measured (Delaware 13,899, median 1,005 ft = 5.3 WPS; Midland 18,225, median 825 ft = 6.4 WPS).
+Decided: floor 1,320 ft, tight cap 440 ft, per-bench density, blended spacing surface relaxing to extent bands
+(decision table; the per-landing measure, the radius chain and the hard band default were each decided and then
+superseded during the review, see the findings' decision history). The map averages 1,088 ft (4.9 WPS) over 29,719
+Delaware DSU x bench and 949 ft (5.6 WPS) over 19,835 Midland. Against Novi: mean spacing 1,276 -> 1,124 ft
+Delaware, 1,224 -> 960 ft Midland; wider on Delaware AVA_2, BS2_S and the WCA family, tighter on Midland WCC / WCD
+/ DEAN / JM / MS. 2b (no-place calibration) is not started.
 
 **Gate 2:** spacing table and maps; proposed envelope per bench pair with the share of historical children
 it would have excluded. Michael freezes both.
@@ -297,7 +299,7 @@ whatever the tag).
 
 - Polygon coverage gaps and overlaps (0b) - what happens inside an extent where Novi drew no DSU.
 - Spacing bands by SIDE of an extent (Central Basin Platform edge vs the eastern shelf): distance to the nearest edge treats them alike. Not tested.
-- Second landing inside one tag (BS2_S, Delaware WCC, LSSH, BS3_C): per-landing spacing with one row under-counts there. Pilot cards.
+- Vertical arrangement inside a bench (BS2_S, Delaware WCC, BS3_C, LSSH): per-bench density with one landing surface puts every stick in one plane; the generator should alternate between landings where local wells show two. Ruthless 11: a single BS2_S surface lands near 10,700 ft, between the real landings (10,540 and 10,890 ft). Second row or second bench is a tag question. Pilot cards.
 - 35,929 of 87,182 Midland Novi sticks have their midpoint outside every 2026Q3 polygon (phase 2a); explain before gate 3b.
 - U-turn leg separation where bench spacing is under 990 ft.
 - Lithology-pair handling (BS2_C/S, BS3_C/S).

@@ -1,5 +1,5 @@
 {
-  "code_sha": "dcb4c70",
+  "code_sha": "d790b56",
   "bands_mi": [
     2.0,
     5.0,
@@ -7,7 +7,7 @@
   ],
   "band_min_wells": 20,
   "along_mi": 10.0,
-  "targets": 11695,
+  "targets": 12146,
   "verdict": {
     "band": {
       "delaware": {
@@ -39,15 +39,15 @@
     },
     "chain_band": {
       "delaware": {
-        "median_better_1_and_2mi": false,
+        "median_better_1_and_2mi": true,
         "p90_within_slack": true,
         "fringe_no_worse": true,
-        "pass": false
+        "pass": true
       },
       "midland": {
         "median_better_1_and_2mi": false,
         "p90_within_slack": true,
-        "fringe_no_worse": false,
+        "fringe_no_worse": true,
         "pass": false
       }
     }
@@ -59,14 +59,14 @@
     "density_basis_midland.png"
   ],
   "blend": {
-    "picked": "blend_s3_k2",
-    "train_score_ft": 103.46372391351103,
+    "picked": "blend_s3_k1",
+    "train_score_ft": 113.18930315000215,
     "verdict_vs_chain": {
       "delaware": {
         "median_better_1_and_2mi": true,
         "p90_within_slack": true,
-        "fringe_no_worse": false,
-        "pass": false
+        "fringe_no_worse": true,
+        "pass": true
       },
       "midland": {
         "median_better_1_and_2mi": true,

@@ -212,6 +212,23 @@ def blend_study(hold: pd.DataFrame, app: pd.DataFrame, m: pd.DataFrame, pads: pd
                      "abs_diff_median_ft": float((x["blend"] - x["chain_band"]).abs().median()), "differ_over_100ft_pct": 100 * float(((x["blend"] - x["chain_band"]).abs() > 100).mean()),
                      "record_rows": int(x["record_rows"].sum()), "blend_rows": int(x["blend_rows"].sum()), "rows_change_pct": 100 * (x["blend_rows"].sum() / x["record_rows"].sum() - 1)})
     pd.DataFrame(rows).to_csv(out / "blend_vs_record.csv", index=False)
+    a[["basin", "bench", "code", "pad_id", "edge_mi", "edge_band", "chain_band", "blend"]].to_csv(out / "spacing_dsu_bench_blend.csv.gz", index=False, compression="gzip")
+    novi_f = out / "novi_vs_box_dsu_bench.csv.gz"       # written by box_sticks_phase2a: Novi stick gap and counts per DSU x bench
+    if novi_f.exists():
+        nv = pd.read_csv(novi_f)[["basin", "code", "pad_id", "novi_sticks", "novi_gap_ft", "existing_wells", "short_ft"]]
+        c = nv.merge(a.drop_duplicates(["basin", "code", "pad_id"])[["basin", "code", "pad_id", "blend"]], on=["basin", "code", "pad_id"], how="inner")
+        c["novi_rows"] = c["novi_sticks"] + c["existing_wells"]
+        c["blend_rows"] = np.floor((c["short_ft"] - 2 * p2.SETBACK_FT).clip(lower=0) / c["blend"]) + 1
+        rows = []
+        for key, x in [(("all", "all"), c)] + [((bs, "all"), x) for bs, x in c.groupby("basin")] + list(c.groupby(["basin", "code"])):
+            h = x[x["novi_gap_ft"].notna()]
+            d = h["blend"] - h["novi_gap_ft"]
+            rows.append({"basin": key[0], "code": key[1], "dsu_bench": len(x), "with_novi_gap": len(h), "novi_mean_ft": float(h["novi_gap_ft"].mean()),
+                         "novi_median_ft": float(h["novi_gap_ft"].median()), "box_mean_ft": float(h["blend"].mean()), "box_median_ft": float(h["blend"].median()),
+                         "box_tighter_10pct": 100 * float((d < -0.10 * h["novi_gap_ft"]).mean()), "within_10pct": 100 * float((d.abs() <= 0.10 * h["novi_gap_ft"]).mean()),
+                         "box_wider_10pct": 100 * float((d > 0.10 * h["novi_gap_ft"]).mean()),
+                         "novi_rows": int(x["novi_rows"].sum()), "box_rows": int(x["blend_rows"].sum()), "rows_change_pct": 100 * (x["blend_rows"].sum() / x["novi_rows"].sum() - 1)})
+        pd.DataFrame(rows).to_csv(out / "novi_vs_blend_summary.csv", index=False)
     files = density_maps(a.assign(chain_band=a["blend"]), m, pads, ext, out, prefix="density_blend", kinds=("wps",), label=f"blended ({col})")
     pg = pads.set_index("pad_id")["geom"]
     for basin, code in (("delaware", "BS2_S"), ("midland", "DEAN")):
@@ -234,7 +251,7 @@ def blend_study(hold: pd.DataFrame, app: pd.DataFrame, m: pd.DataFrame, pads: pd
             fig.colorbar(pc, ax=ax, shrink=0.6).set_label(lab)
         fig.suptitle(f"{basin} {code}: planned density, rule of record vs blended (dots = measured wells)", fontsize=13)
         f = out / f"blend_map_{basin}_{code}.png"
-        fig.savefig(f, dpi=110, bbox_inches="tight")
+        p2.save_fig(fig, f)
         plt.close(fig)
         files.append(f.name)
     return {"picked": col, "train_score_ft": float(grid.at[0, "train_score_ft"]), "verdict_vs_chain": verdict(sc, "blend"), "figures": files}

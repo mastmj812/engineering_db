@@ -16,7 +16,7 @@ Hold-out: targets are DSU x bench with their own value (>= min_gaps gaps within 
 target from wells FARTHER than an exclusion distance (1, 2, 3 mi) from the polygon. At 3 mi the chain can only answer
 FLOOR_FT, which is the "hole in the core" case. sigma and k are picked on the pad_id-even half of the targets and
 every reported number is from the pad_id-odd half. The adoption test (ADOPT_*) was fixed before the first run.
-Gaps are the per-landing gaps of scripts/box_sticks_phase2a.py. Nothing is written to the warehouse.
+Gaps are the per-bench gaps of scripts/box_sticks_phase2a.py (the density of record). Nothing is written to the warehouse.
 """
 
 from __future__ import annotations
@@ -249,7 +249,7 @@ def maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: list, col:
             fig.colorbar(pc, ax=ax, shrink=0.6).set_label(cb)
         fig.suptitle(f"{basin} {code}: spacing by DSU, radius chain vs smooth surface (dots = measured wells; outline = BOX extent)", fontsize=13)
         f = out / f"surface_map_{basin}_{code}.png"
-        fig.savefig(f, dpi=110, bbox_inches="tight")
+        p2.save_fig(fig, f)
         plt.close(fig)
         files.append(f.name)
     return files
