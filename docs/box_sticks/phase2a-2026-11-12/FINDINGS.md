@@ -179,6 +179,66 @@ from the 2-3 mi ring alone, against assuming 1,320 ft. All clamped to 660-1,320 
 - The test is biased toward developed areas: a DSU with its own 1 mi control sits in a drilled fairway. At extent
   edges the default would do better than this table suggests.
 
+## Addendum: does spacing follow position in the bench, and would a smooth surface beat the chain?
+
+Michael, 2026-11-12: wells per section should follow reservoir quality, densest in the core of a bench and thinning
+outward, so the map should be a gradient and not the step the radius chain makes. `scripts/box_sticks_phase2a_surface.py`.
+**The control-radius decision above is unchanged; this section is evidence for revisiting it.**
+
+**Spacing does widen outward.** Measured wells by distance of the lateral midpoint inside its bench's BOX extent edge:
+
+| Inside the edge by | Delaware median gap | Midland median gap |
+|---|---|---|
+| 10+ mi | 1,034 ft (5.1 WPS), 5,619 wells | 830 ft (6.4 WPS), 9,158 wells |
+| 5-10 mi | 1,151 ft (4.6 WPS), 3,501 | 871 ft (6.1 WPS), 5,310 |
+| 2-5 mi | 1,258 ft (4.2 WPS), 2,259 | 966 ft (5.5 WPS), 2,345 |
+| 0-2 mi | 1,283 ft (4.1 WPS), 1,212 | 1,069 ft (4.9 WPS), 1,062 |
+
+Most benches show it individually (Delaware WCA_1 930 -> 1,321 ft, Midland WCA_1 800 -> 1,214 ft, DEAN 886 ->
+1,189 ft); BS3_S, WCB_2 and AVA_1 do not. Well-level rank correlation is only -0.1 to -0.3. The extent is an
+envelope of drilling, so this is a proxy for "outward from the sweet spot", not a reservoir-quality measure.
+
+**The surface tested.** Gaussian-weighted median of a bench's per-well gaps (distance DSU polygon to well, cut at
+2.5 sigma), optionally relaxed toward 1,320 ft as control thins (c = n_eff / (n_eff + k)). Targets: 11,695 DSU x
+bench with their own value inside 1 mi; each method predicts them from wells farther than 1, 2 or 3 mi. sigma and
+k were picked on half the targets (sigma 3 mi, k 0, i.e. no relaxation); every number below is from the other half
+(5,873). The adoption test was fixed before the first run.
+
+| Median error, ft (chain -> surface) | Delaware | Midland |
+|---|---|---|
+| Wells within 1 mi hidden | 118 -> 111 | 75 -> 71 |
+| Within 2 mi hidden | 146 -> 128 | 91 -> 79 |
+| Within 3 mi hidden (chain can only say 1,320 ft) | 279 -> 142 | 467 -> 85 |
+| P90 error, 2 mi hidden | 473 -> 391 | 396 -> 320 |
+| Adjacent DSUs differing by more than 200 ft (all 49,554) | 12.6 % -> 2.9 % | 13.9 % -> 2.9 % |
+
+| Adoption test | Delaware | Midland |
+|---|---|---|
+| Median error below the chain's at 1 and 2 mi | yes | yes |
+| P90 error within 10 % of the chain's | yes | yes |
+| Fringe (0-2 mi inside the edge, 1 mi hidden) no worse than the chain + 10 ft | **no** (37 vs 23 ft, 99 DSU x bench) | yes (71 vs 91 ft, 95) |
+| Verdict | **fails** | passes |
+
+- **Where the surface is clearly better: holes inside developed ground.** With everything inside 3 mi hidden the
+  chain answers 1,320 ft and is 280-470 ft off; the surface is 85-140 ft off. Under the chain, 26 % of Delaware and
+  11 % of Midland DSU x bench more than 10 mi inside the edge take 1,320 ft.
+- **At 1-2 mi the gain is modest**, and in the Delaware Bone Spring the chain is still better (2 mi hidden: BS1_S
+  79 vs 111 ft, BS2_C 30 vs 62 ft, BS3_C 95 vs 113 ft, WCB_2 68 vs 116 ft). Those benches sit near 1,320 ft.
+- **It failed its fringe test in the Delaware.** Narrowly and on 99 targets, but it failed.
+- **The picked surface does the opposite of the reservoir-quality expectation at the fringe.** With no relaxation
+  it carries a few wells' spacing up to 7.5 mi: gross rows in the outer 0-2 mi band rise 6.6 % (Delaware) and
+  12.4 % (Midland) against the chain, DEAN +13.7 % overall. On `surface_map_midland_DEAN.png` a handful of wells in
+  the south of the extent paint a large area at 660-800 ft.
+- **The relaxed variant (sigma 3 mi, k 2)** scores within 2 ft of the picked one on the training half, halves the
+  fringe increase (+2.4 % / +5.9 %), and fails the same Delaware fringe test by more (51 vs 23 ft). Files `*_relaxed.csv`.
+- **What this hold-out cannot see:** every target has six or more of its own wells within a mile, so it sits in
+  drilled ground. Whether undrilled fringe should be looser than its nearest fairway is exactly the part it cannot
+  judge, and that is why tuning chose no relaxation.
+
+Conclusion: a smooth surface is the better tool inside developed ground and removes the steps, but as tested it is
+not ready to replace the chain: it fails in the Delaware fringe and over-extends thin control. A fair test of the
+outward-thinning idea needs a hold-out that hides the OUTER wells of a bench and predicts them from the inner ones.
+
 ## What changes against Novi's sticks
 
 Novi spacing is quantized by bench (medians of exactly 660, 754, 880, 1,320 or about 2,640 ft) and essentially
