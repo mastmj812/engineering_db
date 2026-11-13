@@ -1,5 +1,5 @@
 {
-  "code_sha": "76d4bc6",
+  "code_sha": "486d4b8",
   "bands_mi": [
     2.0,
     5.0,
@@ -51,5 +51,11 @@
         "pass": false
       }
     }
-  }
+  },
+  "figures": [
+    "density_wps_delaware.png",
+    "density_basis_delaware.png",
+    "density_wps_midland.png",
+    "density_basis_midland.png"
+  ]
 }

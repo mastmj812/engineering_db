@@ -24,9 +24,15 @@ import argparse
 import json
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import shapely
+from matplotlib.collections import PolyCollection
+from matplotlib.colors import ListedColormap
 
 from scripts import box_sticks_phase0 as p0
 from scripts import box_sticks_phase2a as p2
@@ -170,6 +176,63 @@ def application(app: pd.DataFrame, pads: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: list, out: Path) -> list[str]:
+    """Per basin, one panel per bench: wells per section by DSU under the rule of record (radius chain, then the
+    extent-band median, then FLOOR), and a second figure showing which of the three each DSU's spacing came from."""
+    pg = pads.set_index("pad_id")["geom"]
+    app = app.assign(wps=5280.0 / app["chain_band"],
+                     basis=np.where(app["chain_has_control"], 0, np.where(app["band_has_value"], 1, 2)))
+    files = []
+    for basin, gb in app.groupby("basin"):
+        codes = list(dict.fromkeys(gb["code"]))
+        ncol = 4
+        nrow = int(np.ceil(len(codes) / ncol))
+        for kind in ("wps", "basis"):
+            fig, axes = plt.subplots(nrow, ncol, figsize=(5.2 * ncol, 5.6 * nrow), squeeze=False)
+            pc = None
+            for ax, code in zip(axes.ravel(), codes, strict=False):
+                g = gb[gb["code"] == code]
+                polys = [np.asarray(x.exterior.coords) / MI for x in pg.loc[g["pad_id"]]]
+                if kind == "wps":
+                    pc = PolyCollection(polys, array=g["wps"].to_numpy(float), cmap="viridis", linewidths=0)
+                    pc.set_clim(5280 / FLOOR, 5280 / CAP)
+                    w = m[(m["basin"] == basin) & (m["live"] == code)]
+                    ax.add_collection(pc)
+                    ax.scatter(w["x"] / MI, w["y"] / MI, s=0.6, c="black", linewidths=0, alpha=0.6)
+                    title = f"{code}: mean {g['wps'].mean():.1f} WPS ({5280 / g['wps'].mean():,.0f} ft)" + chr(10) + f"{len(g):,} DSUs, {len(w):,} measured wells"
+                else:
+                    pc = PolyCollection(polys, array=g["basis"].to_numpy(float), cmap=ListedColormap(["#2563eb", "#f59e0b", "#d1d5db"]), linewidths=0)
+                    pc.set_clim(-0.5, 2.5)
+                    ax.add_collection(pc)
+                    sh = [100 * float((g["basis"] == k).mean()) for k in range(3)]
+                    title = f"{code}: wells within 3 mi {sh[0]:.0f} %, band {sh[1]:.0f} %, floor {sh[2]:.0f} %"
+                eg = next(e[3] for e in ext if e[0] == basin and e[2] == code)
+                for poly in shapely.get_parts(eg):
+                    if poly.geom_type == "Polygon":
+                        ex, ey = poly.exterior.xy
+                        ax.plot(np.asarray(ex) / MI, np.asarray(ey) / MI, color="#111827", lw=0.7)
+                ax.autoscale()
+                ax.set_aspect("equal")
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.set_title(title, fontsize=9)
+            for ax in axes.ravel()[len(codes):]:
+                ax.axis("off")
+            if kind == "wps":
+                cb = fig.colorbar(pc, ax=axes, shrink=0.5, pad=0.01)
+                cb.set_label("wells per section per landing (5,280 / spacing): 4 = 1,320 ft, 6 = 880 ft, 8 = 660 ft")
+                fig.suptitle(f"{basin}: planned density by DSU and bench, rule of record 2026-11-13 (dots = measured wells, outline = BOX extent)", fontsize=13)
+            else:
+                cb = fig.colorbar(pc, ax=axes, shrink=0.3, pad=0.01, ticks=[0, 1, 2])
+                cb.ax.set_yticklabels(["wells within 3 mi", "extent band", "floor 1,320 ft"])
+                fig.suptitle(f"{basin}: where each DSU's spacing comes from", fontsize=13)
+            f = out / f"density_{kind}_{basin}.png"
+            fig.savefig(f, dpi=105, bbox_inches="tight")
+            plt.close(fig)
+            files.append(f.name)
+    return files
+
+
 def run(out: Path, cache: Path) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     m = sf.measured(cache)
@@ -182,7 +245,7 @@ def run(out: Path, cache: Path) -> dict:
     sc.to_csv(out / "bands_holdout.csv", index=False)
     application(app, pads).to_csv(out / "bands_vs_chain.csv", index=False)
     summary = {"code_sha": p0._git_sha(), "bands_mi": BANDS_MI, "band_min_wells": BAND_MIN, "along_mi": ALONG_MI, "targets": int(len(hold) / len(sf.EXCLUDE_MI)),
-               "verdict": {mth: verdict(sc, mth) for mth in METHODS[1:]}}
+               "verdict": {mth: verdict(sc, mth) for mth in METHODS[1:]}, "figures": density_maps(app, m, pads, ext, out)}
     (out / "bands_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return summary
