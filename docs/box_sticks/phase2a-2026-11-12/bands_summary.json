@@ -1,0 +1,55 @@
+{
+  "code_sha": "76d4bc6",
+  "bands_mi": [
+    2.0,
+    5.0,
+    10.0
+  ],
+  "band_min_wells": 20,
+  "along_mi": 10.0,
+  "targets": 11695,
+  "verdict": {
+    "band": {
+      "delaware": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      },
+      "midland": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      }
+    },
+    "band_local": {
+      "delaware": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      },
+      "midland": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      }
+    },
+    "chain_band": {
+      "delaware": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": true,
+        "pass": false
+      },
+      "midland": {
+        "median_better_1_and_2mi": false,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      }
+    }
+  }
+}

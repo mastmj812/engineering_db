@@ -239,6 +239,65 @@ Conclusion: a smooth surface is the better tool inside developed ground and remo
 not ready to replace the chain: it fails in the Delaware fringe and over-extends thin control. A fair test of the
 outward-thinning idea needs a hold-out that hides the OUTER wells of a bench and predicts them from the inner ones.
 
+## Addendum 2: spacing by extent band
+
+Michael, 2026-11-13: the envelope of a bench is governed by structure or reservoir, not by a circle around a well.
+Contour each extent into bands by distance inside its edge, and let a well inform spacing ALONG its band. Expected
+to hold best on the mature primary benches (the WCA, developed outward from the best rock) and least on add-on
+zones such as DEAN. `scripts/box_sticks_phase2a_bands.py`. **The control-radius decision is still unchanged.**
+
+**The band pattern is real, and it has the shapes described.** Median gap by band (miles inside the extent edge):
+
+| Bench | 10+ mi | 5-10 mi | 2-5 mi | 0-2 mi | Shape |
+|---|---|---|---|---|---|
+| Delaware WCA_1 | 930 ft | 1,013 | 1,196 | 1,321 | steady widening outward |
+| Delaware WCA_2 | 1,020 | 1,105 | 1,096 | 1,306 | widening outward |
+| Delaware BS1_S | 1,108 | 1,274 | 1,291 | 1,323 | tight core only |
+| Midland WCA_1 | 800 | 838 | 874 | 1,214 | flat, then a cliff in the last 2 mi |
+| Midland LSSH | 813 | 815 | 861 | 1,228 | flat, then a cliff in the last 2 mi |
+| Midland WCB_1 | 848 | 880 | 905 | 1,029 | gentle |
+| Midland DEAN | 886 | 1,239 | 1,220 | 1,189 | tight core, no trend outside it |
+| Delaware BS3_S | 1,293 | 1,286 | 1,304 | 1,305 | none |
+
+Full table with well counts and quartiles: `bands_spacing.csv`. The outer band is thin on some benches (LSSH 41
+wells, Delaware WCA_1 47, DEAN 26).
+
+**As a predictor it loses to nearby wells.** Same hold-out as the surface, all 11,695 targets (nothing tuned).
+Median error, ft:
+
+| Wells hidden within | Basin | Chain | Band (whole extent) | Band within 10 mi | Chain, band where no control |
+|---|---|---|---|---|---|
+| 1 mi | Delaware | 120 | 168 | 132 | 122 |
+| 1 mi | Midland | 76 | 108 | 92 | 78 |
+| 2 mi | Delaware | 143 | 173 | 138 | 144 |
+| 2 mi | Midland | 92 | 108 | 98 | 93 |
+| 3 mi (chain can only say 1,320 ft) | Delaware | 275 | 176 | 145 | 176 |
+| 3 mi | Midland | 467 | 109 | 102 | 109 |
+
+- Bands on their own fail the adoption test in both basins, and worst on the WCA, the benches the idea fits best
+  geologically (2 mi hidden: Delaware WCA_1 179 vs 134 ft, Midland WCA_1 86 vs 70 ft). Those benches have dense
+  control, and wells 1-3 mi away say more about a DSU than its band does.
+- Bands beat the chain on benches with sparse control: BS1_S 69 vs 82 ft, BS3_S 59 vs 87 ft, DEAN 102 vs 131 ft.
+- In the outer band the band median reads about 150-180 ft too wide for the targets there. Those targets are the
+  drilled pockets of the fringe (six wells within a mile), not typical fringe ground.
+
+**Where bands help: as the default.** On targets where the chain finds no control and falls back to 1,320 ft:
+
+| Wells hidden within | Delaware: 1,320 ft -> band | Midland: 1,320 ft -> band |
+|---|---|---|
+| 1 mi | 128 -> 153 ft (324 targets, worse) | 270 -> 171 ft (210) |
+| 2 mi | 195 -> 161 ft (1,050) | 311 -> 170 ft (647) |
+| 3 mi | 275 -> 176 ft (4,974) | 467 -> 109 ft (6,721) |
+
+- "Chain, band where no control" ties the chain on the overall median (it changes few targets) and improves the P90
+  error (Delaware 468 -> 425 ft, Midland 397 -> 337 ft at 2 mi). By the letter of the pre-set test it does not pass:
+  its overall median is not below the chain's.
+- Applied to all 49,554 DSU x bench: the 41 % of Delaware and 28 % of Midland that take 1,320 ft today would take a
+  band value averaging 1,232 ft and 1,132 ft; the outer 0-2 mi band stays loose (1,274 / 1,190 ft). Gross rows
+  +1.7 % Delaware, +3.2 % Midland (`bands_vs_chain.csv`). Unlike the smooth surface, this does not densify the fringe.
+- Not tested: bands by side of the extent. Distance to the nearest edge treats the Central Basin Platform edge and
+  the eastern shelf edge alike.
+
 ## What changes against Novi's sticks
 
 Novi spacing is quantized by bench (medians of exactly 660, 754, 880, 1,320 or about 2,640 ft) and essentially
