@@ -1,0 +1,19 @@
+basin,record_state,sticks,mean_record_factor
+delaware,covered_provisional,1678,0.8853891695316014
+delaware,factor_multi_parent,1451,0.7881812321704381
+delaware,factor_single_parent,73,0.9963912346088712
+delaware,level_unexposed,70,1.04597984837311
+delaware,not in a record run,161,
+delaware,not_covered_conflict,1223,
+delaware,not_covered_emerging,71,
+delaware,not_covered_no_precedent,3144,0.726265209124168
+delaware,not_covered_outside_extent,3832,
+midland,covered_provisional,1674,0.7669774344958281
+midland,factor_multi_parent,1299,0.7537497779691031
+midland,factor_single_parent,10,0.8650336468550464
+midland,level_unexposed,7,1.06739478458233
+midland,not in a record run,24,
+midland,not_covered_conflict,607,
+midland,not_covered_emerging,245,
+midland,not_covered_no_precedent,1802,0.6471916847680803
+midland,not_covered_outside_extent,1575,
