@@ -16,6 +16,7 @@ numbers below are per-landing unless marked "first pass"; the first-pass values 
 | 2 | Tight cap **660 ft** (8 WPS) |
 | 3 | Spacing is **per landing**: a neighbour landed more than 75 ft from the well is the other landing of a staggered pattern, not this row's neighbour. "Second landing inside a tag" is an open item for the pilot cards (BS2_S, Delaware WCC, LSSH, BS3_C) |
 | 4 | Control radius stays **1 -> 2 -> 3 mi with >= 6 gaps**; every stick records the radius its spacing came from |
+| 5 | (2026-11-13) **No local control -> the bench's extent-band median**, not a flat 1,320 ft: bands 0-2, 2-5, 5-10, 10+ mi inside the extent edge, clamped to 660-1,320 ft; a band with fewer than 20 wells -> 1,320 ft. See addendum 2. The smooth surface (addendum 1) is not adopted |
 
 Decision 4 was taken on the first-pass hold-out. The per-landing hold-out is weaker for the Delaware Bone Spring
 benches: see "Control radius".
@@ -183,7 +184,7 @@ from the 2-3 mi ring alone, against assuming 1,320 ft. All clamped to 660-1,320 
 
 Michael, 2026-11-12: wells per section should follow reservoir quality, densest in the core of a bench and thinning
 outward, so the map should be a gradient and not the step the radius chain makes. `scripts/box_sticks_phase2a_surface.py`.
-**The control-radius decision above is unchanged; this section is evidence for revisiting it.**
+**Outcome: not adopted (decision 5 takes the band default instead).**
 
 **Spacing does widen outward.** Measured wells by distance of the lateral midpoint inside its bench's BOX extent edge:
 
@@ -244,7 +245,7 @@ outward-thinning idea needs a hold-out that hides the OUTER wells of a bench and
 Michael, 2026-11-13: the envelope of a bench is governed by structure or reservoir, not by a circle around a well.
 Contour each extent into bands by distance inside its edge, and let a well inform spacing ALONG its band. Expected
 to hold best on the mature primary benches (the WCA, developed outward from the best rock) and least on add-on
-zones such as DEAN. `scripts/box_sticks_phase2a_bands.py`. **The control-radius decision is still unchanged.**
+zones such as DEAN. `scripts/box_sticks_phase2a_bands.py`. **Outcome: Michael adopted the band as the no-control default (decision 5); the chain stays first.**
 
 **The band pattern is real, and it has the shapes described.** Median gap by band (miles inside the extent edge):
 
