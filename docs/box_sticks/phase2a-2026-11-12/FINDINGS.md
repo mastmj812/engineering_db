@@ -17,8 +17,9 @@ numbers below are per-landing unless marked "first pass"; the first-pass values 
 | 3 | Spacing is **per landing**: a neighbour landed more than 75 ft from the well is the other landing of a staggered pattern, not this row's neighbour. "Second landing inside a tag" is an open item for the pilot cards (BS2_S, Delaware WCC, LSSH, BS3_C) |
 | 4 | Control radius stays **1 -> 2 -> 3 mi with >= 6 gaps**; every stick records the radius its spacing came from |
 | 5 | (2026-11-13) **No local control -> the bench's extent-band median**, not a flat 1,320 ft: bands 0-2, 2-5, 5-10, 10+ mi inside the extent edge, clamped to 660-1,320 ft; a band with fewer than 20 wells -> 1,320 ft. See addendum 2. The smooth surface (addendum 1) is not adopted |
+| 6 | (2026-11-13) **Spacing map = the blended surface** (addendum 3): Gaussian-weighted median of well gaps, sigma 3 mi, relaxed toward the band median as control thins (k 2). Supersedes the radius chain of decision 4 and the hard band default of decision 5; the band survives as what the surface relaxes to |
 
-Decision 4 was taken on the first-pass hold-out. The per-landing hold-out is weaker for the Delaware Bone Spring
+Decisions 4 and 5 are superseded by decision 6. Decision 4 was taken on the first-pass hold-out. The per-landing hold-out is weaker for the Delaware Bone Spring
 benches: see "Control radius".
 
 ## Headline
@@ -245,7 +246,7 @@ outward-thinning idea needs a hold-out that hides the OUTER wells of a bench and
 Michael, 2026-11-13: the envelope of a bench is governed by structure or reservoir, not by a circle around a well.
 Contour each extent into bands by distance inside its edge, and let a well inform spacing ALONG its band. Expected
 to hold best on the mature primary benches (the WCA, developed outward from the best rock) and least on add-on
-zones such as DEAN. `scripts/box_sticks_phase2a_bands.py`. **Outcome: Michael adopted the band as the no-control default (decision 5); the chain stays first.**
+zones such as DEAN. `scripts/box_sticks_phase2a_bands.py`. **Outcome: Michael adopted the band as the no-control default (decision 5), then replaced chain + band with the blended surface (decision 6, addendum 3).**
 
 **The band pattern is real, and it has the shapes described.** Median gap by band (miles inside the extent edge):
 
@@ -304,7 +305,7 @@ Median error, ft:
 Michael, 2026-11-13, after the density maps (`density_wps_*.png`): on a mature bench the picture should be nested
 contours, about 8 WPS in the core, 6 around it, 4 at the fringe; the rule of record nearly shows that but drops to
 the band value at a hard step wherever development has a gap, even in the middle of the proven core.
-**Not adopted yet; decision 5 is the rule of record until Michael says.**
+**Outcome: adopted by Michael 2026-11-13 (decision 6). "Record" in the table below means the superseded decision 5 rule.**
 
 The blend: the Gaussian-weighted median of addendum 1, relaxed toward the BAND value (not the floor) as control
 thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + k). sigma and k picked on half the
