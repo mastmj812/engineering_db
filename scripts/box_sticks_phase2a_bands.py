@@ -236,9 +236,9 @@ def blend_study(hold: pd.DataFrame, app: pd.DataFrame, m: pd.DataFrame, pads: pd
         polys = [np.asarray(v.exterior.coords) / MI for v in pg.loc[x["pad_id"]]]
         w = m[(m["basin"] == basin) & (m["live"] == code)]
         fig, axes = plt.subplots(1, 3, figsize=(22, 9))
-        for ax, vals, cmap, lim, title, lab in ((axes[0], 5280 / x["chain_band"], "viridis", (4, 8), "Rule of record: wells within 3 mi, else band", "WPS per landing"),
-                                                (axes[1], 5280 / x["blend"], "viridis", (4, 8), "Blended: smooth surface relaxing to the band", "WPS per landing"),
-                                                (axes[2], 5280 / x["blend"] - 5280 / x["chain_band"], "RdBu_r", (-2, 2), "Blended minus record", "WPS (red = blended denser)")):
+        for ax, vals, cmap, lim, title, lab in ((axes[0], 5280 / x["chain_band"], "viridis", (4, 12), "Superseded: wells within 3 mi, else band", "WPS per bench"),
+                                                (axes[1], 5280 / x["blend"], "viridis", (4, 12), "Rule of record: blended surface relaxing to the band", "WPS per bench"),
+                                                (axes[2], 5280 / x["blend"] - 5280 / x["chain_band"], "RdBu_r", (-2, 2), "Blended minus superseded", "WPS (red = blended denser)")):
             pc = PolyCollection(polys, array=np.asarray(vals, float), cmap=cmap, linewidths=0)
             pc.set_clim(*lim)
             ax.add_collection(pc)
@@ -249,7 +249,7 @@ def blend_study(hold: pd.DataFrame, app: pd.DataFrame, m: pd.DataFrame, pads: pd
             ax.set_yticks([])
             ax.set_title(title, fontsize=11)
             fig.colorbar(pc, ax=ax, shrink=0.6).set_label(lab)
-        fig.suptitle(f"{basin} {code}: planned density, rule of record vs blended (dots = measured wells)", fontsize=13)
+        fig.suptitle(f"{basin} {code}: planned density, superseded chain rule vs blended rule of record (dots = measured wells)", fontsize=13)
         f = out / f"blend_map_{basin}_{code}.png"
         p2.save_fig(fig, f)
         plt.close(fig)
@@ -302,7 +302,7 @@ def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: li
                 ax.axis("off")
             if kind == "wps":
                 cb = fig.colorbar(pc, ax=axes, shrink=0.5, pad=0.01)
-                cb.set_label("wells per section per landing (5,280 / spacing): 4 = 1,320 ft, 6 = 880 ft, 8 = 660 ft")
+                cb.set_label("wells per section per bench (5,280 / spacing): 4 = 1,320 ft, 6 = 880 ft, 8 = 660 ft, 12 = 440 ft")
                 fig.suptitle(f"{basin}: planned density by DSU and bench, {label} (dots = measured wells, outline = BOX extent)", fontsize=13)
             else:
                 cb = fig.colorbar(pc, ax=axes, shrink=0.3, pad=0.01, ticks=[0, 1, 2])
