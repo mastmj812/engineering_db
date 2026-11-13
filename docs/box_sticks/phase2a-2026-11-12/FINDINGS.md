@@ -299,6 +299,38 @@ Median error, ft:
 - Not tested: bands by side of the extent. Distance to the nearest edge treats the Central Basin Platform edge and
   the eastern shelf edge alike.
 
+## Addendum 3: blending (smooth surface relaxing to the band)
+
+Michael, 2026-11-13, after the density maps (`density_wps_*.png`): on a mature bench the picture should be nested
+contours, about 8 WPS in the core, 6 around it, 4 at the fringe; the rule of record nearly shows that but drops to
+the band value at a hard step wherever development has a gap, even in the middle of the proven core.
+**Not adopted yet; decision 5 is the rule of record until Michael says.**
+
+The blend: the Gaussian-weighted median of addendum 1, relaxed toward the BAND value (not the floor) as control
+thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + k). sigma and k picked on half the
+hold-out targets (sigma 3 mi, k 2); numbers below are from the other half (5,873).
+
+| Median error, ft | Delaware: chain / record / blend | Midland: chain / record / blend |
+|---|---|---|
+| Wells within 1 mi hidden | 118 / 120 / 110 | 75 / 77 / 72 |
+| Within 2 mi hidden | 146 / 145 / 129 | 91 / 93 / 80 |
+| Within 3 mi hidden | 279 / 175 / 141 | 467 / 108 / 84 |
+| Where the chain has no control, 2 mi hidden | 230 / 163 / 136 | 304 / 178 / 139 |
+| P90 error, 2 mi hidden | 473 / 431 / 384 | 396 / 333 / 312 |
+| Adjacent DSUs differing by more than 200 ft (all 49,554) | - / 13.2 % / 1.5 % | - / 13.5 % / 1.8 % |
+
+("record" = decision 5: wells within 3 mi, else band.)
+
+- The blend beats the rule of record on every aggregate line and removes the steps.
+- **Adoption test (the one fixed for addendum 1, against the chain): Midland passes; Delaware fails the fringe
+  line again**, 35 vs 23 ft in the outer 0-2 mi band with 1 mi hidden (bar 33 ft, 99 targets). With 2 mi hidden
+  the same band reads 58 vs 117 ft in the blend's favour.
+- Cost: the blend smooths peaks as well as holes. Small 8 WPS pockets under the rule of record come out at 6-7 WPS
+  (`blend_map_delaware_BS2_S.png`); broad dense cores keep 8 WPS (Midland WCA_1, LSSH on `density_blend_wps_midland.png`).
+- Gross rows against the rule of record: Delaware -0.5 %, Midland +1.0 %; outer 0-2 mi band +2.3 % / +4.9 %.
+- Files: `blend_holdout.csv`, `blend_tuning.csv`, `blend_smoothness.csv`, `blend_vs_record.csv`,
+  `density_blend_wps_*.png`, `blend_map_*.png`.
+
 ## What changes against Novi's sticks
 
 Novi spacing is quantized by bench (medians of exactly 660, 754, 880, 1,320 or about 2,640 ft) and essentially

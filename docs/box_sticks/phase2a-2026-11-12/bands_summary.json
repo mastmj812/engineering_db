@@ -1,5 +1,5 @@
 {
-  "code_sha": "486d4b8",
+  "code_sha": "dcb4c70",
   "bands_mi": [
     2.0,
     5.0,
@@ -57,5 +57,29 @@
     "density_basis_delaware.png",
     "density_wps_midland.png",
     "density_basis_midland.png"
-  ]
+  ],
+  "blend": {
+    "picked": "blend_s3_k2",
+    "train_score_ft": 103.46372391351103,
+    "verdict_vs_chain": {
+      "delaware": {
+        "median_better_1_and_2mi": true,
+        "p90_within_slack": true,
+        "fringe_no_worse": false,
+        "pass": false
+      },
+      "midland": {
+        "median_better_1_and_2mi": true,
+        "p90_within_slack": true,
+        "fringe_no_worse": true,
+        "pass": true
+      }
+    },
+    "figures": [
+      "density_blend_wps_delaware.png",
+      "density_blend_wps_midland.png",
+      "blend_map_delaware_BS2_S.png",
+      "blend_map_midland_DEAN.png"
+    ]
+  }
 }
