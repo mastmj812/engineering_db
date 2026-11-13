@@ -1,20 +1,20 @@
 {
-  "code_sha": "6673851",
+  "code_sha": "d790b56",
   "picked": {
     "sigma_mi": 3.0,
     "k": 0.0,
-    "train_score_ft": 103.97368941887932
+    "train_score_ft": 113.34797729683534
   },
   "targets": {
-    "train": 5822,
-    "test": 5873
+    "train": 6050,
+    "test": 6096
   },
   "verdict": {
     "delaware": {
       "median_better_1_and_2mi": true,
       "p90_within_slack": true,
-      "fringe_no_worse": false,
-      "pass": false
+      "fringe_no_worse": true,
+      "pass": true
     },
     "midland": {
       "median_better_1_and_2mi": true,
@@ -26,13 +26,13 @@
   "relaxed_variant": {
     "sigma_mi": 3.0,
     "k": 2.0,
-    "train_score_ft": 105.85108567894095,
+    "train_score_ft": 117.26914277630114,
     "verdict": {
       "delaware": {
         "median_better_1_and_2mi": true,
         "p90_within_slack": true,
-        "fringe_no_worse": false,
-        "pass": false
+        "fringe_no_worse": true,
+        "pass": true
       },
       "midland": {
         "median_better_1_and_2mi": true,

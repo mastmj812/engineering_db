@@ -15,9 +15,10 @@ Populations (live tags):
   measured   evidence wells (phase 0 rules) that pass the two-part screen (phase 1c), first production >= 2016.
   primary gap  a measured well whose NEAREST same-bench neighbour (>= same_slot_ft, < UNBOUNDED_FT) is itself
              measured and came on within CODEV_DAYS of it. Otherwise the well is not measured, reason recorded.
-Per-landing (Michael 2026-11-12, after the first pass): a neighbour landed more than STAGGER_FT from the well is the
-other landing of a staggered pattern and is not a candidate; the tag-level ("flattened") gap of the first pass is kept
-in the *_flat_* columns. The cross-check verdict of record is the first-pass one, on the flattened gap.
+PER BENCH is the density of record (Michael 2026-11-13, reversing the per-landing choice of 2026-11-12): bench density
+is the count of same-bench wells across a section however the operator staggered them vertically (Ruthless 11 Federal
+COM: 11 BS2_S wells across a mile at two landings 350 ft apart is 11 WPS, not 5-6). The per-landing gap, where a
+neighbour landed more than STAGGER_FT from the well is not a candidate, is kept in the *_landing_* columns.
 Cross-check: wells_enriched.lateral_closer_xy_ft (NULL and exactly 2800.0 excluded) against this method's nearest
 same-bench neighbour that was on production when the well came on. The pass thresholds (CHECK_*) were fixed before
 the first run.
@@ -66,7 +67,7 @@ ASOF_SLACK_DAYS = 31          # "on production when the well came on": first pro
 STAGGER_FT = 75.0             # pair landing depths further apart than this = two landings inside one tag
 FLOOR_FT = 1320.0
 FLOOR_ALT_FT = 1540.0
-CAP_GUESS_FT = 660.0
+CAP_GUESS_FT = 440.0             # tight cap of record (12 WPS, Michael 2026-11-13); the name is historical
 SETBACK_FT = p0.SETBACK_FT
 FOCUS = (("delaware", "BS1_S"), ("midland", "DEAN"))
 WCXY_FILE = ROOT / "docs/box_sticks/wcxy-extent-2026-11-12/extent_WCXY_edited.geojson"
@@ -246,17 +247,16 @@ def _measure(u: pd.DataFrame, t: pd.DataFrame) -> pd.DataFrame:
 
 
 def measure(u: pd.DataFrame, t: pd.DataFrame) -> pd.DataFrame:
-    """Per-landing gaps (Michael 2026-11-12): a neighbour landed more than STAGGER_FT from the well is the other
-    landing of a staggered pattern, not this row's neighbour, and is dropped BEFORE the nearest is chosen. A neighbour
-    whose depth is not evidence cannot be ruled out and stays (the well is then not measured). The flattened,
-    tag-level result of the first pass is kept in the *_flat_* columns."""
-    flat = _measure(u, t)
+    """Per-bench gaps (the density of record), plus the per-landing gaps in *_landing_* columns: there a neighbour
+    landed more than STAGGER_FT from the well is dropped BEFORE the nearest is chosen (a neighbour whose depth is not
+    evidence cannot be ruled out and stays)."""
+    m = _measure(u, t)
     z, clean = u["depth_ft"].to_numpy(float), u["clean"].to_numpy(bool)
     i, j = t["i"].to_numpy(), t["j"].to_numpy()
     same = ~(clean[i] & clean[j]) | (np.abs(z[i] - z[j]) <= STAGGER_FT)
-    m = _measure(u, t[same])
-    for c in ("gap_ft", "dz_ft", "asof_ft", "status"):
-        m[c.replace("_ft", "") + "_flat" + ("_ft" if c.endswith("_ft") else "")] = flat[c]
+    land = _measure(u, t[same])
+    for c in ("gap_ft", "asof_ft", "status"):
+        m[c.replace("_ft", "") + "_landing" + ("_ft" if c.endswith("_ft") else "")] = land[c]
     return m
 
 
@@ -270,7 +270,7 @@ def bench_table(m: pd.DataFrame) -> pd.DataFrame:
         v = g["gap_ft"].dropna()
         mm = g[g["gap_ft"].notna()]
         pairs = len({tuple(sorted(p)) for p in zip(mm["api10"], mm["nb_api10"], strict=True)})
-        fl = g[g["gap_flat_ft"].notna()]
+        ld = g["gap_landing_ft"].dropna()
         cx = g.loc[g["lateral_closer_xy_ft"].notna() & (g["lateral_closer_xy_ft"] != SENTINEL_FT), "lateral_closer_xy_ft"]
         o = {"basin": basin, "code": code, "wells_2016plus": len(g), "wells_measured": len(v), "pairs": pairs,
              "median_ft": q(v, .5), "p10_wide_ft": q(v, .9), "p90_tight_ft": q(v, .1), "p25_ft": q(v, .25), "p75_ft": q(v, .75),
@@ -279,8 +279,9 @@ def bench_table(m: pd.DataFrame) -> pd.DataFrame:
              "over_1386_pct": 100 * float((v > 1.05 * FLOOR_FT).mean()) if len(v) else np.nan,
              "near_1320_pct": 100 * float(v.between(0.95 * FLOOR_FT, 1.05 * FLOOR_FT).mean()) if len(v) else np.nan,
              "near_1540_pct": 100 * float(v.between(0.95 * FLOOR_ALT_FT, 1.05 * FLOOR_ALT_FT).mean()) if len(v) else np.nan,
-             "flat_wells_measured": len(fl), "flat_median_ft": q(fl["gap_flat_ft"], .5),
-             "flat_two_landings_pct": 100 * float((fl["dz_flat_ft"] > STAGGER_FT).mean()) if len(fl) else np.nan,
+             "under_440_pct": 100 * float((v < 440).mean()) if len(v) else np.nan,
+             "landing_wells_measured": len(ld), "landing_median_ft": q(ld, .5),
+             "two_landings_pct": 100 * float((mm["dz_ft"] > STAGGER_FT).mean()) if len(mm) else np.nan,
              "median_any_neighbour_ft": q(g["gap_any_ft"].dropna(), .5),
              "novi_closer_xy_wells": len(cx), "novi_closer_xy_median_ft": q(cx, .5)}
         for dd in CODEV_SENS_DAYS:
@@ -401,6 +402,13 @@ def radius_holdout(m: pd.DataFrame, pads: pd.DataFrame, ext: list, cap: float) -
     return pd.DataFrame(rows)
 
 
+def save_fig(fig, f: Path, dpi: int = 110) -> None:
+    try:
+        fig.savefig(f, dpi=dpi, bbox_inches="tight")
+    except OSError:   # open in a viewer
+        print(f"{f.name} is open elsewhere; left as it is", flush=True)
+
+
 def clamp(raw: pd.Series, cap: float, floor: float = FLOOR_FT) -> pd.Series:
     return raw.clip(lower=cap, upper=floor).fillna(floor)
 
@@ -419,7 +427,7 @@ def extent_table(ds: pd.DataFrame) -> pd.DataFrame:
                      "local_over_1320_pct": 100 * float((v > FLOOR_FT).mean()) if len(v) else np.nan,
                      "local_over_1430_pct": 100 * float((v > 1430).mean()) if len(v) else np.nan,
                      "mixed_pct": 100 * float(loc["mixed"].mean()) if len(loc) else np.nan,
-                     "mean_spacing_cap660_ft": float(clamp(g["raw_median_ft"], CAP_GUESS_FT).mean())})
+                     "mean_spacing_capped_ft": float(clamp(g["raw_median_ft"], CAP_GUESS_FT).mean())})
     return pd.DataFrame(rows)
 
 
@@ -476,7 +484,7 @@ def choice_table(ds: pd.DataFrame, pads: pd.DataFrame) -> pd.DataFrame:
                              "mean_spacing_ft": float(sp_.mean()), "gross_rows": int((np.floor(w / sp_) + 1).sum())})
     t = pd.DataFrame(rows)
     base = t[(t["cap_ft"] == CAP_GUESS_FT) & (t["floor_ft"] == FLOOR_FT)].set_index("basin")["gross_rows"]
-    t["rows_vs_660_1320_pct"] = 100 * (t["gross_rows"] / t["basin"].map(base) - 1)
+    t["rows_vs_record_pct"] = 100 * (t["gross_rows"] / t["basin"].map(base) - 1)
     return t
 
 
@@ -588,7 +596,7 @@ def focus_maps(ds: pd.DataFrame, cmp_: pd.DataFrame, m: pd.DataFrame, pads: pd.D
             ax.autoscale()
         fig.suptitle(f"{basin} {code}: realized spacing by DSU (tight cap {cap:,.0f} ft shown; black outline = BOX record extent)", fontsize=13)
         f = out / f"spacing_map_{basin}_{code}.png"
-        fig.savefig(f, dpi=110, bbox_inches="tight")
+        save_fig(fig, f)
         plt.close(fig)
         files.append(f.name)
     return files
@@ -612,7 +620,7 @@ def hist_fig(m: pd.DataFrame, ds: pd.DataFrame, out: Path) -> str:
                 ax.text(x, ax.get_ylim()[1] * 0.95, lab, color="#dc2626", fontsize=7, ha="center")
             ax.set_xlabel("ft (dashed: wells per section = 5,280 / spacing)")
     f = out / "gap_histograms.png"
-    fig.savefig(f, dpi=110, bbox_inches="tight")
+    save_fig(fig, f)
     plt.close(fig)
     return f.name
 
@@ -633,9 +641,9 @@ def run(out: Path, cache: Path, cap: float) -> dict:
     m = measure(u, t)
     bt = bench_table(m)
     bt.to_csv(out / "spacing_by_bench.csv", index=False)
-    xc, verdict = cross_check(m, "asof_flat_ft")          # the check as fixed before the first run (tag-level gap)
+    xc, verdict = cross_check(m)                          # the check as fixed before the first run (per-bench gap)
     xc.to_csv(out / "crosscheck_closer_xy.csv", index=False)
-    xc2, verdict2 = cross_check(m)                        # the same comparison on the per-landing gap (a new check)
+    xc2, verdict2 = cross_check(m, "asof_landing_ft")     # the same comparison on the per-landing gap (diagnostic)
     xc2.to_csv(out / "crosscheck_closer_xy_per_landing.csv", index=False)
     m.drop(columns=["x", "y"]).to_csv(out / "well_gaps.csv.gz", index=False, compression="gzip")
 
@@ -665,8 +673,9 @@ def run(out: Path, cache: Path, cap: float) -> dict:
                 "median_ft": q(v, .5), "p10_wide_ft": q(v, .9), "p90_tight_ft": q(v, .1),
                 "gap_quantiles_ft": {str(p): q(v, p) for p in (.01, .02, .05, .10, .25, .5, .75, .9, .95)},
                 "under_660_pct": 100 * float((v < 660).mean()), "under_500_pct": 100 * float((v < 500).mean()), "under_440_pct": 100 * float((v < 440).mean()),
-                "flat_wells_measured": int(g["gap_flat_ft"].notna().sum()), "flat_median_ft": q(g["gap_flat_ft"].dropna(), .5),
-                "flat_under_660_pct": 100 * float((g["gap_flat_ft"].dropna() < 660).mean()),
+                "two_landings_pct": 100 * float((mm["dz_ft"] > STAGGER_FT).mean()),
+                "under_660_two_landings_pct": 100 * float((mm.loc[mm["gap_ft"] < 660, "dz_ft"] > STAGGER_FT).mean()),
+                "landing_wells_measured": int(g["gap_landing_ft"].notna().sum()), "landing_median_ft": q(g["gap_landing_ft"].dropna(), .5),
                 "near_1320_pct": 100 * float(v.between(1254, 1386).mean()), "near_1540_pct": 100 * float(v.between(1463, 1617).mean()),
                 "between_1386_1463_pct": 100 * float(v.between(1386, 1463).mean()), "over_1617_pct": 100 * float((v > 1617).mean()),
                 "dsu_bench": len(dsg), "dsu_bench_local_pct": 100 * float((dsg["basis"] == "local").mean()),
@@ -679,7 +688,7 @@ def run(out: Path, cache: Path, cap: float) -> dict:
 
     summary = {"generated": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"), "code_sha": p0._git_sha(), "tags": "live",
                "params": {"parallel_tol_deg": TOL_DEG, "overlap_min_frac": OVERLAP_MIN, "same_slot_ft": SAME_SLOT_FT, "search_ft": SEARCH_FT, "min_gaps": MIN_GAPS,
-                          "radii_mi": RADII_MI, "landing": "per-landing", "codev_days": CODEV_DAYS, "unbounded_ft": UNBOUNDED_FT, "stagger_ft": STAGGER_FT, "cap_shown_ft": cap},
+                          "radii_mi": RADII_MI, "density_basis": "per bench", "codev_days": CODEV_DAYS, "unbounded_ft": UNBOUNDED_FT, "stagger_ft": STAGGER_FT, "cap_shown_ft": cap},
                "universe_wells": len(u), "geometry_check": {"median_line_len_over_lateral_length": float((shapely.length(u["geom"].to_numpy()) * FT_PER_M / u["lateral_length_ft"]).median())},
                "method_reproduction": repro, "crosscheck": verdict, "crosscheck_per_landing": verdict2,
                "basins": {b: basin_summary(g, ds[ds["basin"] == b]) for b, g in m.groupby("basin")}, "figures": maps}

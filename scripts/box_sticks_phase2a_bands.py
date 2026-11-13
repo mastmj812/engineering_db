@@ -45,6 +45,12 @@ BAND_NAMES = ["0-2 mi", "2-5 mi", "5-10 mi", "10+ mi"]
 BAND_MIN = 20
 ALONG_MI = 10.0
 METHODS = ("chain", "band", "band_local", "chain_band")
+# blend (Michael 2026-11-13, after the density maps: dense pockets separated by a thin "channel" should not drop to the
+# band value at a hard step): the smooth surface of box_sticks_phase2a_surface, relaxed toward the BAND value instead
+# of toward the floor as control thins:  spacing = band - c (band - weighted median),  c = n_eff / (n_eff + k).
+BLEND_SIGMAS_MI = (1.0, 2.0, 3.0)
+BLEND_KS = (1.0, 2.0, 4.0)
+BLEND_COLS = tuple(f"blend_s{sg:g}_k{kk:g}" for sg in BLEND_SIGMAS_MI for kk in BLEND_KS)
 
 
 def _cl(v: np.ndarray) -> np.ndarray:
@@ -118,7 +124,15 @@ def build(m: pd.DataFrame, pads: pd.DataFrame, ext: list) -> tuple[pd.DataFrame,
             s = s[s["size"] >= p2.MIN_GAPS]
             bl = band.copy()
             bl[s.index.to_numpy()] = s["median"].to_numpy()
-            return pd.DataFrame({"chain": _cl(chain_raw), "band": _cl(band), "band_local": _cl(bl), "chain_band": _cl(np.where(np.isnan(chain_raw), band, chain_raw)),
+            bl_cols = {}
+            bfill = np.where(np.isnan(band), FLOOR, np.clip(band, CAP, FLOOR))
+            for sg in BLEND_SIGMAS_MI:
+                qq = q[q["d"] <= sf.CUT_SIGMA * sg]
+                med, neff = sf.wmedian(qq["k"].to_numpy(), qq["gap"].to_numpy(), np.exp(-0.5 * (qq["d"].to_numpy() / sg) ** 2), n)
+                med = np.where(np.isnan(med), bfill, np.clip(med, CAP, FLOOR))
+                for kk in BLEND_KS:
+                    bl_cols[f"blend_s{sg:g}_k{kk:g}"] = np.clip(bfill - neff / (neff + kk) * (bfill - med), CAP, FLOOR)
+            return pd.DataFrame({**bl_cols, "chain": _cl(chain_raw), "band": _cl(band), "band_local": _cl(bl), "chain_band": _cl(np.where(np.isnan(chain_raw), band, chain_raw)),
                                  "chain_has_control": ~np.isnan(chain_raw), "band_has_value": ~np.isnan(band)}).iloc[idx]
 
         base = pd.DataFrame({"basin": basin, "bench": bench, "code": code, "pad_id": pid[hit], "edge_mi": edge, "edge_band": np.asarray(BAND_NAMES)[dband]})
@@ -131,7 +145,7 @@ def build(m: pd.DataFrame, pads: pd.DataFrame, ext: list) -> tuple[pd.DataFrame,
     return pd.concat(hold, ignore_index=True), pd.concat(app, ignore_index=True), pd.DataFrame(bands)
 
 
-def score(h: pd.DataFrame) -> pd.DataFrame:
+def score(h: pd.DataFrame, methods: tuple[str, ...] = METHODS) -> pd.DataFrame:
     rows = []
     groups = [(("all", b, ex), g) for (b, ex), g in h.groupby(["basin", "exclude_mi"])]
     groups += [((bd, b, ex), g) for (bd, b, ex), g in h.groupby(["edge_band", "basin", "exclude_mi"])]
@@ -141,7 +155,7 @@ def score(h: pd.DataFrame) -> pd.DataFrame:
         if len(g) < 30:
             continue
         o = {"basin": basin, "where": where, "exclude_mi": ex, "dsu_bench": len(g)}
-        for mth in METHODS:
+        for mth in methods:
             e = g[mth] - g["truth_ft"]
             o |= {f"{mth}_median_err_ft": float(e.abs().median()), f"{mth}_p90_err_ft": float(e.abs().quantile(.9)), f"{mth}_bias_ft": float(e.median())}
         rows.append(o)
@@ -176,7 +190,75 @@ def application(app: pd.DataFrame, pads: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: list, out: Path) -> list[str]:
+def blend_study(hold: pd.DataFrame, app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: list, out: Path) -> dict:
+    """Pick sigma and k on the pad_id-even targets, score on the odd ones against the chain and the rule of record."""
+    train, test = hold[hold["pad_id"] % 2 == 0], hold[hold["pad_id"] % 2 == 1]
+    grid = pd.DataFrame([{"col": c, "train_score_ft": float((train[c] - train["truth_ft"]).abs().groupby([train["basin"], train["exclude_mi"]]).median().mean())}
+                         for c in BLEND_COLS]).sort_values("train_score_ft").reset_index(drop=True)
+    grid.to_csv(out / "blend_tuning.csv", index=False)
+    col = grid.at[0, "col"]
+    sc = score(test.rename(columns={col: "blend"}), ("chain", "chain_band", "blend"))
+    sc.to_csv(out / "blend_holdout.csv", index=False)
+    a = app.rename(columns={col: "blend"})
+    sm = sf.smoothness(a.rename(columns={"chain_band": "chain_ft"}), pads, "blend")
+    sm.columns = [c.replace("chain_", "record_").replace("surface_", "blend_") for c in sm.columns]
+    sm.to_csv(out / "blend_smoothness.csv", index=False)
+    g = a.merge(pads[["pad_id", "short_ft"]], on="pad_id")
+    width = (g["short_ft"] - 2 * p2.SETBACK_FT).clip(lower=0)
+    g["record_rows"], g["blend_rows"] = np.floor(width / g["chain_band"]) + 1, np.floor(width / g["blend"]) + 1
+    rows = []
+    for key, x in [((b, "all"), x) for b, x in g.groupby("basin")] + list(g.groupby(["basin", "edge_band"])) + [((b, f"code {c}"), x) for (b, c), x in g.groupby(["basin", "code"])]:
+        rows.append({"basin": key[0], "where": key[1], "dsu_bench": len(x), "record_mean_ft": float(x["chain_band"].mean()), "blend_mean_ft": float(x["blend"].mean()),
+                     "abs_diff_median_ft": float((x["blend"] - x["chain_band"]).abs().median()), "differ_over_100ft_pct": 100 * float(((x["blend"] - x["chain_band"]).abs() > 100).mean()),
+                     "record_rows": int(x["record_rows"].sum()), "blend_rows": int(x["blend_rows"].sum()), "rows_change_pct": 100 * (x["blend_rows"].sum() / x["record_rows"].sum() - 1)})
+    pd.DataFrame(rows).to_csv(out / "blend_vs_record.csv", index=False)
+    a[["basin", "bench", "code", "pad_id", "edge_mi", "edge_band", "chain_band", "blend"]].to_csv(out / "spacing_dsu_bench_blend.csv.gz", index=False, compression="gzip")
+    novi_f = out / "novi_vs_box_dsu_bench.csv.gz"       # written by box_sticks_phase2a: Novi stick gap and counts per DSU x bench
+    if novi_f.exists():
+        nv = pd.read_csv(novi_f)[["basin", "code", "pad_id", "novi_sticks", "novi_gap_ft", "existing_wells", "short_ft"]]
+        c = nv.merge(a.drop_duplicates(["basin", "code", "pad_id"])[["basin", "code", "pad_id", "blend"]], on=["basin", "code", "pad_id"], how="inner")
+        c["novi_rows"] = c["novi_sticks"] + c["existing_wells"]
+        c["blend_rows"] = np.floor((c["short_ft"] - 2 * p2.SETBACK_FT).clip(lower=0) / c["blend"]) + 1
+        rows = []
+        for key, x in [(("all", "all"), c)] + [((bs, "all"), x) for bs, x in c.groupby("basin")] + list(c.groupby(["basin", "code"])):
+            h = x[x["novi_gap_ft"].notna()]
+            d = h["blend"] - h["novi_gap_ft"]
+            rows.append({"basin": key[0], "code": key[1], "dsu_bench": len(x), "with_novi_gap": len(h), "novi_mean_ft": float(h["novi_gap_ft"].mean()),
+                         "novi_median_ft": float(h["novi_gap_ft"].median()), "box_mean_ft": float(h["blend"].mean()), "box_median_ft": float(h["blend"].median()),
+                         "box_tighter_10pct": 100 * float((d < -0.10 * h["novi_gap_ft"]).mean()), "within_10pct": 100 * float((d.abs() <= 0.10 * h["novi_gap_ft"]).mean()),
+                         "box_wider_10pct": 100 * float((d > 0.10 * h["novi_gap_ft"]).mean()),
+                         "novi_rows": int(x["novi_rows"].sum()), "box_rows": int(x["blend_rows"].sum()), "rows_change_pct": 100 * (x["blend_rows"].sum() / x["novi_rows"].sum() - 1)})
+        pd.DataFrame(rows).to_csv(out / "novi_vs_blend_summary.csv", index=False)
+    files = density_maps(a.assign(chain_band=a["blend"]), m, pads, ext, out, prefix="density_blend", kinds=("wps",), label=f"blended ({col})")
+    pg = pads.set_index("pad_id")["geom"]
+    for basin, code in (("delaware", "BS2_S"), ("midland", "DEAN")):
+        x = a[(a["basin"] == basin) & (a["code"] == code)]
+        polys = [np.asarray(v.exterior.coords) / MI for v in pg.loc[x["pad_id"]]]
+        w = m[(m["basin"] == basin) & (m["live"] == code)]
+        fig, axes = plt.subplots(1, 3, figsize=(22, 9))
+        for ax, vals, cmap, lim, title, lab in ((axes[0], 5280 / x["chain_band"], "viridis", (4, 12), "Superseded: wells within 3 mi, else band", "WPS per bench"),
+                                                (axes[1], 5280 / x["blend"], "viridis", (4, 12), "Rule of record: blended surface relaxing to the band", "WPS per bench"),
+                                                (axes[2], 5280 / x["blend"] - 5280 / x["chain_band"], "RdBu_r", (-2, 2), "Blended minus superseded", "WPS (red = blended denser)")):
+            pc = PolyCollection(polys, array=np.asarray(vals, float), cmap=cmap, linewidths=0)
+            pc.set_clim(*lim)
+            ax.add_collection(pc)
+            ax.scatter(w["x"] / MI, w["y"] / MI, s=2.0, c="black", linewidths=0)
+            ax.autoscale()
+            ax.set_aspect("equal")
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.set_title(title, fontsize=11)
+            fig.colorbar(pc, ax=ax, shrink=0.6).set_label(lab)
+        fig.suptitle(f"{basin} {code}: planned density, superseded chain rule vs blended rule of record (dots = measured wells)", fontsize=13)
+        f = out / f"blend_map_{basin}_{code}.png"
+        p2.save_fig(fig, f)
+        plt.close(fig)
+        files.append(f.name)
+    return {"picked": col, "train_score_ft": float(grid.at[0, "train_score_ft"]), "verdict_vs_chain": verdict(sc, "blend"), "figures": files}
+
+
+def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: list, out: Path, prefix: str = "density",
+                 kinds: tuple[str, ...] = ("wps", "basis"), label: str = "rule of record 2026-11-13") -> list[str]:
     """Per basin, one panel per bench: wells per section by DSU under the rule of record (radius chain, then the
     extent-band median, then FLOOR), and a second figure showing which of the three each DSU's spacing came from."""
     pg = pads.set_index("pad_id")["geom"]
@@ -187,7 +269,7 @@ def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: li
         codes = list(dict.fromkeys(gb["code"]))
         ncol = 4
         nrow = int(np.ceil(len(codes) / ncol))
-        for kind in ("wps", "basis"):
+        for kind in kinds:
             fig, axes = plt.subplots(nrow, ncol, figsize=(5.2 * ncol, 5.6 * nrow), squeeze=False)
             pc = None
             for ax, code in zip(axes.ravel(), codes, strict=False):
@@ -220,14 +302,17 @@ def density_maps(app: pd.DataFrame, m: pd.DataFrame, pads: pd.DataFrame, ext: li
                 ax.axis("off")
             if kind == "wps":
                 cb = fig.colorbar(pc, ax=axes, shrink=0.5, pad=0.01)
-                cb.set_label("wells per section per landing (5,280 / spacing): 4 = 1,320 ft, 6 = 880 ft, 8 = 660 ft")
-                fig.suptitle(f"{basin}: planned density by DSU and bench, rule of record 2026-11-13 (dots = measured wells, outline = BOX extent)", fontsize=13)
+                cb.set_label("wells per section per bench (5,280 / spacing): 4 = 1,320 ft, 6 = 880 ft, 8 = 660 ft, 12 = 440 ft")
+                fig.suptitle(f"{basin}: planned density by DSU and bench, {label} (dots = measured wells, outline = BOX extent)", fontsize=13)
             else:
                 cb = fig.colorbar(pc, ax=axes, shrink=0.3, pad=0.01, ticks=[0, 1, 2])
                 cb.ax.set_yticklabels(["wells within 3 mi", "extent band", "floor 1,320 ft"])
                 fig.suptitle(f"{basin}: where each DSU's spacing comes from", fontsize=13)
-            f = out / f"density_{kind}_{basin}.png"
-            fig.savefig(f, dpi=105, bbox_inches="tight")
+            f = out / f"{prefix}_{kind}_{basin}.png"
+            try:
+                fig.savefig(f, dpi=105, bbox_inches="tight")
+            except OSError:   # open in a viewer
+                print(f"{f.name} is open elsewhere; left as it is", flush=True)
             plt.close(fig)
             files.append(f.name)
     return files
@@ -245,7 +330,8 @@ def run(out: Path, cache: Path) -> dict:
     sc.to_csv(out / "bands_holdout.csv", index=False)
     application(app, pads).to_csv(out / "bands_vs_chain.csv", index=False)
     summary = {"code_sha": p0._git_sha(), "bands_mi": BANDS_MI, "band_min_wells": BAND_MIN, "along_mi": ALONG_MI, "targets": int(len(hold) / len(sf.EXCLUDE_MI)),
-               "verdict": {mth: verdict(sc, mth) for mth in METHODS[1:]}, "figures": density_maps(app, m, pads, ext, out)}
+               "verdict": {mth: verdict(sc, mth) for mth in METHODS[1:]}, "figures": density_maps(app, m, pads, ext, out),
+               "blend": blend_study(hold, app, m, pads, ext, out)}
     (out / "bands_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return summary
