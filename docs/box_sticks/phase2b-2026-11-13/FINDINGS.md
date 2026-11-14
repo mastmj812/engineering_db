@@ -2,7 +2,13 @@
 
 Read-only. Plan: `docs/box_sticks_plan.md`. Live tags, cache pulled 2026-11-13 (60,834 horizontal producers, 257,397
 Novi sticks). Nothing was written to the warehouse. Definitions and pass/fail bars: `BARS.md`, committed before the
-first run (`ca1718e`). **Awaiting Michael's decision; nothing here is decided.**
+first run (`ca1718e`).
+
+**Decision of record (Michael, 2026-11-14): candidate D.** Same landing (within 150 ft vertically): no stick within
+400 ft sideways, both basins. Stacked: no stick within 300 ft sideways of a producer 150-350 ft deeper (both basins),
+or shallower by 150-250 ft (Delaware) / 150-350 ft (Midland). At least 30 % alongside in every part. Decided with the
+two failed bars (B1, Midland B4) stated as they are below. The rest of this document is the study as it was put to
+him.
 
     python -m scripts.box_sticks_phase2b --out docs/box_sticks/phase2b-2026-11-13 --cache <phase 0 cache> --prox-runs <main checkout>/runs
 
@@ -317,7 +323,7 @@ evidence, whatever its age. Stick depth is Novi's TVD (`novi_cull_by_basin.csv`,
 - **75-150 ft landings** (WCA_1 / WCA_2) count as one landing for the 400 ft test.
 - Novi stick counts use Novi TVD; they will be re-run on BOX sticks at gate 3b.
 
-## Decisions asked of Michael
+## Decisions asked of Michael (answered 2026-11-14: D)
 
 1. The envelope: **D** (recommended), A (the 21a floor in both basins), B, or C with its 2.3-2.6 % exclusion accepted.
 2. Whether the Delaware adopts the Midland's 400 ft same-landing floor as its own (part of A and D).
