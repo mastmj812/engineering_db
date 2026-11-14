@@ -1,0 +1,1089 @@
+{
+  "generated": "2026-11-13T19:29:32+00:00",
+  "code_sha": "ca1718e",
+  "tags": "live",
+  "params": {
+    "gate_ft": 2640.0,
+    "store_dv_ft": 1500.0,
+    "min_overlap": 0.3,
+    "parallel_tol_deg": 15.0,
+    "same_dv_ft": 150.0,
+    "parent_min_days": 365,
+    "codev_days": 180,
+    "ref_ft": [
+      1000.0,
+      2000.0
+    ],
+    "rare": 0.25,
+    "min_expected": 30.0
+  },
+  "proposed": {
+    "delaware": {
+      "same_landing_dh_ft": 400.0,
+      "vertical_rects": [
+        [
+          -250.0,
+          -150.0,
+          300.0
+        ],
+        [
+          150.0,
+          350.0,
+          300.0
+        ]
+      ]
+    },
+    "midland": {
+      "same_landing_dh_ft": 400.0,
+      "vertical_rects": [
+        [
+          -350.0,
+          -150.0,
+          300.0
+        ],
+        [
+          150.0,
+          350.0,
+          300.0
+        ]
+      ]
+    }
+  },
+  "population": {
+    "delaware": {
+      "children": 22610,
+      "links_stored": 286385,
+      "qualifying_parent_links": 57478,
+      "children_with_parent_2640_1000": 13175,
+      "children_with_parent_1400_1000": 8507,
+      "children_with_unjudged_older_neighbour_le_400": 907,
+      "children_with_unjudged_older_neighbour_le_1400": 2564,
+      "by_class_links": {
+        "topfill": 23871,
+        "underfill": 21083,
+        "same": 12524
+      },
+      "by_class_children": {
+        "same": 7581,
+        "topfill": 7543,
+        "underfill": 7365
+      }
+    },
+    "midland": {
+      "children": 23988,
+      "links_stored": 494267,
+      "qualifying_parent_links": 82948,
+      "children_with_parent_2640_1000": 14498,
+      "children_with_parent_1400_1000": 8996,
+      "children_with_unjudged_older_neighbour_le_400": 161,
+      "children_with_unjudged_older_neighbour_le_1400": 480,
+      "by_class_links": {
+        "topfill": 39896,
+        "underfill": 23688,
+        "same": 19364
+      },
+      "by_class_children": {
+        "same": 9562,
+        "topfill": 9899,
+        "underfill": 7389
+      }
+    }
+  },
+  "B1": [
+    {
+      "basin": "delaware",
+      "same_side_of_30pct_alongside_pct": 98.7,
+      "qualifying_gap_within_25ft_pct": 97.4937343358396,
+      "qualifying_same_side_of_200ft_pct": 99.93734335839599,
+      "qualifying_same_side_of_300ft_pct": 99.81203007518798,
+      "qualifying_same_side_of_400ft_pct": 99.93734335839599,
+      "qualifying_same_side_of_600ft_pct": 99.87468671679198,
+      "overlap_abs_diff_p95": 0.10288304899611861,
+      "gap_abs_diff_p95_ft": 33.911312703578474,
+      "links_sampled": 2000,
+      "agree_pct": 53.849999999999994,
+      "gap_agree_pct": 86.8,
+      "median_gap_diff_ft": 1.305124897044152e-10,
+      "median_overlap_diff": 0.0019571148407035166,
+      "pass_agree": false,
+      "recall_children": 300,
+      "recall_links": 1232,
+      "recall_pct": 97.6461038961039,
+      "recall_lost_not_parallel": 29,
+      "pass_recall": true
+    },
+    {
+      "basin": "midland",
+      "same_side_of_30pct_alongside_pct": 99.35000000000001,
+      "qualifying_gap_within_25ft_pct": 98.5425101214575,
+      "qualifying_same_side_of_200ft_pct": 99.91902834008097,
+      "qualifying_same_side_of_300ft_pct": 100.0,
+      "qualifying_same_side_of_400ft_pct": 100.0,
+      "qualifying_same_side_of_600ft_pct": 100.0,
+      "overlap_abs_diff_p95": 0.07461779382206296,
+      "gap_abs_diff_p95_ft": 54.02612456476313,
+      "links_sampled": 2000,
+      "agree_pct": 65.5,
+      "gap_agree_pct": 86.65,
+      "median_gap_diff_ft": 1.865601007011719e-10,
+      "median_overlap_diff": 0.00014974065672559989,
+      "pass_agree": false,
+      "recall_children": 300,
+      "recall_links": 2016,
+      "recall_pct": 99.85119047619048,
+      "recall_lost_not_parallel": 3,
+      "pass_recall": true
+    }
+  ],
+  "B1_envelope_sensitivity": [
+    {
+      "basin": "delaware",
+      "links_remeasured": 5200,
+      "excluded_array_metric": 260,
+      "excluded_prox_study_metric": 258,
+      "in_both": 256
+    },
+    {
+      "basin": "midland",
+      "links_remeasured": 6943,
+      "excluded_array_metric": 377,
+      "excluded_prox_study_metric": 379,
+      "in_both": 376
+    }
+  ],
+  "envelopes": [
+    {
+      "envelope": "21a floor (<=150 ft vt, <=400 ft hz)",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 127,
+      "excluded_pct": 0.5616983635559487,
+      "worst_bench": "AVA_1",
+      "worst_bench_pct": 1.4749262536873156,
+      "region_r": 0.054572515296841415,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "21a floor (<=150 ft vt, <=400 ft hz)",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 127,
+      "excluded_pct": 0.5294313823578456,
+      "worst_bench": "DEAN",
+      "worst_bench_pct": 1.0405827263267429,
+      "region_r": 0.03571812224728757,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 4743,
+      "excluded_pct": 20.977443609022554,
+      "worst_bench": "BS3_C",
+      "worst_bench_pct": 42.6367461430575,
+      "region_r": 2.5858369098712446,
+      "rare": false,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 6708,
+      "excluded_pct": 27.963981990995496,
+      "worst_bench": "LSSH",
+      "worst_bench_pct": 39.481323785562225,
+      "region_r": 2.0759184412137297,
+      "rare": false,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "D112 vertical at <=400 ft hz (extra, not in the bars)",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 1267,
+      "excluded_pct": 5.603715170278638,
+      "worst_bench": "BS3_C",
+      "worst_bench_pct": 17.67180925666199,
+      "region_r": 0.4982564377682403,
+      "rare": false,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "D112 vertical at <=400 ft hz (extra, not in the bars)",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 1732,
+      "excluded_pct": 7.220276805069201,
+      "worst_bench": "LSSH",
+      "worst_bench_pct": 13.373330752854654,
+      "region_r": 0.33133256922241655,
+      "rare": false,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "deal-intake v14 (<=300 ft vt, <=800 ft hz)",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 1687,
+      "excluded_pct": 7.461300309597524,
+      "worst_bench": "OTHER",
+      "worst_bench_pct": 11.428571428571429,
+      "region_r": 0.27544235630289043,
+      "rare": false,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "deal-intake v14 (<=300 ft vt, <=800 ft hz)",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 1937,
+      "excluded_pct": 8.074870768717691,
+      "worst_bench": "DEAN",
+      "worst_bench_pct": 13.31945889698231,
+      "region_r": 0.21452846219201357,
+      "rare": true,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "A same landing 400 ft",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 127,
+      "excluded_pct": 0.5616983635559487,
+      "worst_bench": "AVA_1",
+      "worst_bench_pct": 1.4749262536873156,
+      "region_r": 0.054572515296841415,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "A same landing 400 ft",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 127,
+      "excluded_pct": 0.5294313823578456,
+      "worst_bench": "DEAN",
+      "worst_bench_pct": 1.0405827263267429,
+      "region_r": 0.03571812224728757,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "B same landing 600 ft",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 294,
+      "excluded_pct": 1.3003095975232197,
+      "worst_bench": "OTHER",
+      "worst_bench_pct": 4.857142857142857,
+      "region_r": 0.08654429193539497,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "B same landing 600 ft",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 404,
+      "excluded_pct": 1.6841754210438553,
+      "worst_bench": "LSSH",
+      "worst_bench_pct": 2.3611379910973485,
+      "region_r": 0.07716546711068142,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "C same landing 600 ft + stacked 150-350 ft within 300 ft",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 521,
+      "excluded_pct": 2.3042901371074747,
+      "worst_bench": "OTHER",
+      "worst_bench_pct": 5.142857142857143,
+      "region_r": 0.11777010772931702,
+      "rare": true,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    },
+    {
+      "envelope": "C same landing 600 ft + stacked 150-350 ft within 300 ft",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 633,
+      "excluded_pct": 2.6388194097048525,
+      "worst_bench": "WCA_1",
+      "worst_bench_pct": 4.415700267618198,
+      "region_r": 0.0933891037276721,
+      "rare": true,
+      "pass_basin": false,
+      "pass_bench": true,
+      "B3": false
+    },
+    {
+      "envelope": "D same landing 400 ft + stacked within 300 ft (B2 cells)",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 260,
+      "excluded_pct": 1.149933657673596,
+      "worst_bench": "AVA_2",
+      "worst_bench_pct": 2.3255813953488373,
+      "region_r": 0.08351876123997928,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "D same landing 400 ft + stacked within 300 ft (B2 cells)",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 377,
+      "excluded_pct": 1.5716191429047857,
+      "worst_bench": "WCA_1",
+      "worst_bench_pct": 3.1222123104371096,
+      "region_r": 0.0717670011148272,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "E same landing 600 ft + every B2 stacked cell",
+      "basin": "delaware",
+      "children": 22610,
+      "excluded": 422,
+      "excluded_pct": 1.8664307828394515,
+      "worst_bench": "OTHER",
+      "worst_bench_pct": 4.857142857142857,
+      "region_r": 0.10155675820137636,
+      "rare": true,
+      "pass_basin": true,
+      "pass_bench": true,
+      "B3": true
+    },
+    {
+      "envelope": "E same landing 600 ft + every B2 stacked cell",
+      "basin": "midland",
+      "children": 23988,
+      "excluded": 723,
+      "excluded_pct": 3.0140070035017508,
+      "worst_bench": "WCA_1",
+      "worst_bench_pct": 5.144216473386857,
+      "region_r": 0.09953486130190634,
+      "rare": true,
+      "pass_basin": false,
+      "pass_bench": false,
+      "B3": false
+    }
+  ],
+  "B4": [
+    {
+      "candidate": "A same landing 400 ft",
+      "basin": "delaware",
+      "rule": "R2",
+      "children_scored": 10394,
+      "children_inside_envelope": 71,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.9115509409068117,
+        "d50": 1259.4144688073982,
+        "k": 4.548781220571725,
+        "a_below": 1.509260796487555,
+        "a_above": 2.7051500039379315,
+        "level": 1.0455185622804823
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.9116109065793788,
+        "d50": 1259.9484179049805,
+        "k": 4.553589423690754,
+        "a_below": 1.5087957882473342,
+        "a_above": 2.7049888482601934,
+        "level": 1.0455145640427244
+      },
+      "max_dF_outside": 0.0027301935684155287,
+      "max_dF_outside_warm_start": 0.002712534680297418,
+      "d_level": -0.00046128609263051956,
+      "pass_F": true,
+      "pass_level": true,
+      "B4": true,
+      "inside_envelope": {
+        "n": 71,
+        "factor": 0.8240595412805946,
+        "actual_vs_mix": 0.8134865652707169,
+        "residual_after_factor": 0.987169645541089
+      },
+      "exposed_outside_envelope": {
+        "n": 6510,
+        "factor": 0.975196925986263,
+        "actual_vs_mix": 0.9748663332768887,
+        "residual_after_factor": 0.9996609990243356
+      },
+      "unexposed": {
+        "n": 3813,
+        "factor": 1.0459798483731129,
+        "actual_vs_mix": 1.046837461917589,
+        "residual_after_factor": 1.0008199140220628
+      }
+    },
+    {
+      "candidate": "A same landing 400 ft",
+      "basin": "midland",
+      "rule": "R3",
+      "children_scored": 8834,
+      "children_inside_envelope": 46,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.7195304198267564,
+        "d50": 485.108159824318,
+        "k": 1.9552065903775868,
+        "a_below": 0.5000000002105544,
+        "a_above": 0.5000000000000001,
+        "level": 1.0673947845823253
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.6410811238415837,
+        "d50": 423.8601610448818,
+        "k": 2.001096591041185,
+        "a_below": 0.6044852269057366,
+        "a_above": 0.5284353821183095,
+        "level": 1.0663106383047085
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.6406299735969478,
+        "d50": 423.2980441598709,
+        "k": 1.9998273419858583,
+        "a_below": 0.6044363240136623,
+        "a_above": 0.528667550394978,
+        "level": 1.066313851132684
+      },
+      "max_dF_outside": 0.06970444957132715,
+      "max_dF_outside_warm_start": 0.07002426018053654,
+      "d_level": -0.001084146277616771,
+      "pass_F": false,
+      "pass_level": true,
+      "B4": false,
+      "inside_envelope": {
+        "n": 46,
+        "factor": 0.6979327979095532,
+        "actual_vs_mix": 0.8273036963303855,
+        "residual_after_factor": 1.1853629730660655
+      },
+      "exposed_outside_envelope": {
+        "n": 5745,
+        "factor": 0.9685739632207339,
+        "actual_vs_mix": 0.9656139897300781,
+        "residual_after_factor": 0.99694398816915
+      },
+      "unexposed": {
+        "n": 3043,
+        "factor": 1.0673947845823253,
+        "actual_vs_mix": 1.0708242988533008,
+        "residual_after_factor": 1.003212976417453
+      }
+    },
+    {
+      "candidate": "B same landing 600 ft",
+      "basin": "delaware",
+      "rule": "R2",
+      "children_scored": 10394,
+      "children_inside_envelope": 156,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.909710020276206,
+        "d50": 1240.4435570855876,
+        "k": 4.410943385431235,
+        "a_below": 1.505741150234488,
+        "a_above": 2.7506698106225738,
+        "level": 1.044261846435649
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.9098660774845806,
+        "d50": 1241.6894224858518,
+        "k": 4.420352349458807,
+        "a_below": 1.5045449742461117,
+        "a_above": 2.7502177888653287,
+        "level": 1.0442541746331326
+      },
+      "max_dF_outside": 0.004935375839202338,
+      "max_dF_outside_warm_start": 0.004896962751408274,
+      "d_level": -0.0017180019374638533,
+      "pass_F": true,
+      "pass_level": true,
+      "B4": true,
+      "inside_envelope": {
+        "n": 156,
+        "factor": 0.8448817346963584,
+        "actual_vs_mix": 0.8578778972057661,
+        "residual_after_factor": 1.0153822268557842
+      },
+      "exposed_outside_envelope": {
+        "n": 6425,
+        "factor": 0.976779912059035,
+        "actual_vs_mix": 0.9759432836199672,
+        "residual_after_factor": 0.9991434831646934
+      },
+      "unexposed": {
+        "n": 3813,
+        "factor": 1.0459798483731129,
+        "actual_vs_mix": 1.046837461917589,
+        "residual_after_factor": 1.0008199140220628
+      }
+    },
+    {
+      "candidate": "B same landing 600 ft",
+      "basin": "midland",
+      "rule": "R3",
+      "children_scored": 8834,
+      "children_inside_envelope": 153,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.7195304198267564,
+        "d50": 485.108159824318,
+        "k": 1.9552065903775868,
+        "a_below": 0.5000000002105544,
+        "a_above": 0.5000000000000001,
+        "level": 1.0673947845823253
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.6376802399899663,
+        "d50": 445.1726523585145,
+        "k": 2.1139637710206935,
+        "a_below": 0.674986617604955,
+        "a_above": 0.566349404660438,
+        "level": 1.062933186632309
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.6372297500496145,
+        "d50": 429.18634695515516,
+        "k": 2.0380964390806082,
+        "a_below": 0.6181377360262083,
+        "a_above": 0.541841197545878,
+        "level": 1.0635354008461164
+      },
+      "max_dF_outside": 0.0750683878116668,
+      "max_dF_outside_warm_start": 0.0738396038404715,
+      "d_level": -0.004461597950016216,
+      "pass_F": false,
+      "pass_level": true,
+      "B4": false,
+      "inside_envelope": {
+        "n": 153,
+        "factor": 0.7788408730298687,
+        "actual_vs_mix": 0.8016672542119848,
+        "residual_after_factor": 1.0293081449273667
+      },
+      "exposed_outside_envelope": {
+        "n": 5638,
+        "factor": 0.9717198786931189,
+        "actual_vs_mix": 0.9692788098042617,
+        "residual_after_factor": 0.9974878882871675
+      },
+      "unexposed": {
+        "n": 3043,
+        "factor": 1.0673947845823253,
+        "actual_vs_mix": 1.0708242988533008,
+        "residual_after_factor": 1.003212976417453
+      }
+    },
+    {
+      "candidate": "C same landing 600 ft + stacked 150-350 ft within 300 ft",
+      "basin": "delaware",
+      "rule": "R2",
+      "children_scored": 10394,
+      "children_inside_envelope": 254,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.8927792129317634,
+        "d50": 1139.3157490215397,
+        "k": 4.237184737975932,
+        "a_below": 1.4735188401934878,
+        "a_above": 2.5668641175426496,
+        "level": 1.0437745147775992
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.8928135595559334,
+        "d50": 1139.883385685336,
+        "k": 4.239612983364133,
+        "a_below": 1.4748178981553506,
+        "a_above": 2.56764860899884,
+        "level": 1.0437780267485632
+      },
+      "max_dF_outside": 0.015702672891323433,
+      "max_dF_outside_warm_start": 0.015670169769996578,
+      "d_level": -0.00220533359551367,
+      "pass_F": true,
+      "pass_level": true,
+      "B4": true,
+      "inside_envelope": {
+        "n": 254,
+        "factor": 0.843610263453904,
+        "actual_vs_mix": 0.8838541181683466,
+        "residual_after_factor": 1.0477043208906403
+      },
+      "exposed_outside_envelope": {
+        "n": 6327,
+        "factor": 0.9790363294284066,
+        "actual_vs_mix": 0.9767240267051859,
+        "residual_after_factor": 0.9976381849644225
+      },
+      "unexposed": {
+        "n": 3813,
+        "factor": 1.0459798483731129,
+        "actual_vs_mix": 1.046837461917589,
+        "residual_after_factor": 1.0008199140220628
+      }
+    },
+    {
+      "candidate": "C same landing 600 ft + stacked 150-350 ft within 300 ft",
+      "basin": "midland",
+      "rule": "R3",
+      "children_scored": 8834,
+      "children_inside_envelope": 231,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.7195304198267564,
+        "d50": 485.108159824318,
+        "k": 1.9552065903775868,
+        "a_below": 0.5000000002105544,
+        "a_above": 0.5000000000000001,
+        "level": 1.0673947845823253
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.492373279889276,
+        "d50": 312.50636783741135,
+        "k": 1.8130622044087252,
+        "a_below": 0.6058143301153458,
+        "a_above": 0.5545937858532567,
+        "level": 1.0621692831311658
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.49664519051177364,
+        "d50": 314.6140814518496,
+        "k": 1.8159254993743852,
+        "a_below": 0.6044596601870926,
+        "a_above": 0.5544510236227793,
+        "level": 1.062132746806752
+      },
+      "max_dF_outside": 0.11020476127305245,
+      "max_dF_outside_warm_start": 0.10867002683598415,
+      "d_level": -0.00522550145115952,
+      "pass_F": false,
+      "pass_level": true,
+      "B4": false,
+      "inside_envelope": {
+        "n": 231,
+        "factor": 0.77554483516545,
+        "actual_vs_mix": 0.7791025999205924,
+        "residual_after_factor": 1.004587439170275
+      },
+      "exposed_outside_envelope": {
+        "n": 5560,
+        "factor": 0.9749125640279216,
+        "actual_vs_mix": 0.973017416319733,
+        "residual_after_factor": 0.9980560844345275
+      },
+      "unexposed": {
+        "n": 3043,
+        "factor": 1.0673947845823253,
+        "actual_vs_mix": 1.0708242988533008,
+        "residual_after_factor": 1.003212976417453
+      }
+    },
+    {
+      "candidate": "D same landing 400 ft + stacked within 300 ft (B2 cells)",
+      "basin": "delaware",
+      "rule": "R2",
+      "children_scored": 10394,
+      "children_inside_envelope": 130,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.9041585958392305,
+        "d50": 1205.982434399399,
+        "k": 4.414450089950193,
+        "a_below": 1.491017303140225,
+        "a_above": 2.655439466983344,
+        "level": 1.0447841520525996
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.9040564342170371,
+        "d50": 1205.2484588285529,
+        "k": 4.4084252914729385,
+        "a_below": 1.491821338637478,
+        "a_above": 2.6558810419772776,
+        "level": 1.0447901230627417
+      },
+      "max_dF_outside": 0.007564019362420904,
+      "max_dF_outside_warm_start": 0.007654447887874727,
+      "d_level": -0.0011956963205133064,
+      "pass_F": true,
+      "pass_level": true,
+      "B4": true,
+      "inside_envelope": {
+        "n": 130,
+        "factor": 0.8288723765747014,
+        "actual_vs_mix": 0.8596940134558447,
+        "residual_after_factor": 1.0371850211832527
+      },
+      "exposed_outside_envelope": {
+        "n": 6451,
+        "factor": 0.9765854049203467,
+        "actual_vs_mix": 0.9753946604076676,
+        "residual_after_factor": 0.9987807062171113
+      },
+      "unexposed": {
+        "n": 3813,
+        "factor": 1.0459798483731129,
+        "actual_vs_mix": 1.046837461917589,
+        "residual_after_factor": 1.0008199140220628
+      }
+    },
+    {
+      "candidate": "D same landing 400 ft + stacked within 300 ft (B2 cells)",
+      "basin": "midland",
+      "rule": "R3",
+      "children_scored": 8834,
+      "children_inside_envelope": 131,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.7195304198267564,
+        "d50": 485.108159824318,
+        "k": 1.9552065903775868,
+        "a_below": 0.5000000002105544,
+        "a_above": 0.5000000000000001,
+        "level": 1.0673947845823253
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.46702267512511675,
+        "d50": 317.0936464385646,
+        "k": 1.879585416399428,
+        "a_below": 0.6684707060819118,
+        "a_above": 0.5900749461118282,
+        "level": 1.064031589716582
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.48221702868088306,
+        "d50": 310.77554979595504,
+        "k": 1.8268579043302868,
+        "a_below": 0.6163299846668936,
+        "a_above": 0.5589878685720087,
+        "level": 1.0645728033016797
+      },
+      "max_dF_outside": 0.12156877380868347,
+      "max_dF_outside_warm_start": 0.11539740496228323,
+      "d_level": -0.003363194865743324,
+      "pass_F": false,
+      "pass_level": true,
+      "B4": false,
+      "inside_envelope": {
+        "n": 131,
+        "factor": 0.7391772763582901,
+        "actual_vs_mix": 0.7705127567111769,
+        "residual_after_factor": 1.0423923750839144
+      },
+      "exposed_outside_envelope": {
+        "n": 5660,
+        "factor": 0.9720597821761695,
+        "actual_vs_mix": 0.9694527494174067,
+        "residual_after_factor": 0.9973180324846622
+      },
+      "unexposed": {
+        "n": 3043,
+        "factor": 1.0673947845823253,
+        "actual_vs_mix": 1.0708242988533008,
+        "residual_after_factor": 1.003212976417453
+      }
+    },
+    {
+      "candidate": "E same landing 600 ft + every B2 stacked cell",
+      "basin": "delaware",
+      "rule": "R2",
+      "children_scored": 10394,
+      "children_inside_envelope": 211,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.9123165666619888,
+        "d50": 1258.7231163642628,
+        "k": 4.799053622746606,
+        "a_below": 1.4893085236924757,
+        "a_above": 2.629611042314597,
+        "level": 1.0459798483731129
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.8846381570005454,
+        "d50": 1064.9849338282731,
+        "k": 3.736492563494962,
+        "a_below": 1.4474830918569137,
+        "a_above": 2.704448458317938,
+        "level": 1.0441313526201212
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.8849065957838705,
+        "d50": 1066.903517278032,
+        "k": 3.7449067143659795,
+        "a_below": 1.4482514790822123,
+        "a_above": 2.7044089849345934,
+        "level": 1.044128858532025
+      },
+      "max_dF_outside": 0.01930035612707426,
+      "max_dF_outside_warm_start": 0.019152465527072948,
+      "d_level": -0.001848495752991619,
+      "pass_F": true,
+      "pass_level": true,
+      "B4": true,
+      "inside_envelope": {
+        "n": 211,
+        "factor": 0.8448479108911311,
+        "actual_vs_mix": 0.8829149804595365,
+        "residual_after_factor": 1.0450578963120747
+      },
+      "exposed_outside_envelope": {
+        "n": 6370,
+        "factor": 0.9780054128091499,
+        "actual_vs_mix": 0.976099873525133,
+        "residual_after_factor": 0.9980516066076327
+      },
+      "unexposed": {
+        "n": 3813,
+        "factor": 1.0459798483731129,
+        "actual_vs_mix": 1.046837461917589,
+        "residual_after_factor": 1.0008199140220628
+      }
+    },
+    {
+      "candidate": "E same landing 600 ft + every B2 stacked cell",
+      "basin": "midland",
+      "rule": "R3",
+      "children_scored": 8834,
+      "children_inside_envelope": 261,
+      "record_fit": {
+        "surface": true,
+        "f_min": 0.7195304198267564,
+        "d50": 485.108159824318,
+        "k": 1.9552065903775868,
+        "a_below": 0.5000000002105544,
+        "a_above": 0.5000000000000001,
+        "level": 1.0673947845823253
+      },
+      "without_envelope_children": {
+        "surface": true,
+        "f_min": 0.41420045956052676,
+        "d50": 306.6733768708085,
+        "k": 1.9038198325563254,
+        "a_below": 0.7069437422950232,
+        "a_above": 0.5919920728379019,
+        "level": 1.0605301834377854
+      },
+      "without_warm_start": {
+        "surface": true,
+        "f_min": 0.44847017577975284,
+        "d50": 305.09646580241764,
+        "k": 1.849222555733999,
+        "a_below": 0.646353628582413,
+        "a_above": 0.561321505669135,
+        "level": 1.0610516101010423
+      },
+      "max_dF_outside": 0.07715205990569007,
+      "max_dF_outside_warm_start": 0.07933386679796517,
+      "d_level": -0.006864601144539906,
+      "pass_F": false,
+      "pass_level": true,
+      "B4": false,
+      "inside_envelope": {
+        "n": 261,
+        "factor": 0.7791939896642099,
+        "actual_vs_mix": 0.7790703680765944,
+        "residual_after_factor": 0.9998413468414087
+      },
+      "exposed_outside_envelope": {
+        "n": 5530,
+        "factor": 0.9759070696178868,
+        "actual_vs_mix": 0.9741932382801914,
+        "residual_after_factor": 0.9982438580567242
+      },
+      "unexposed": {
+        "n": 3043,
+        "factor": 1.0673947845823253,
+        "actual_vs_mix": 1.0708242988533008,
+        "residual_after_factor": 1.003212976417453
+      }
+    }
+  ],
+  "novi": {
+    "sticks": 257397,
+    "remaining": 252447,
+    "by_basin": [
+      {
+        "basin": "delaware",
+        "remaining_sticks": 166636,
+        "21a floor (<=150 ft vt, <=400 ft hz)": 5706,
+        "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)": 42800,
+        "deal-intake v14 (<=300 ft vt, <=800 ft hz)": 21153,
+        "A same landing 400 ft": 5706,
+        "B same landing 600 ft": 8722,
+        "C same landing 600 ft + stacked 150-350 ft within 300 ft": 15563,
+        "D same landing 400 ft + stacked within 300 ft (B2 cells)": 11703,
+        "E same landing 600 ft + every B2 stacked cell": 14121,
+        "proposed": 11703,
+        "proposed, by tag instead of Novi TVD": 2930,
+        "21a floor (<=150 ft vt, <=400 ft hz) %": 3.424230058330733,
+        "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz) %": 25.684725989582084,
+        "deal-intake v14 (<=300 ft vt, <=800 ft hz) %": 12.69413572097266,
+        "A same landing 400 ft %": 3.424230058330733,
+        "B same landing 600 ft %": 5.234163086007825,
+        "C same landing 600 ft + stacked 150-350 ft within 300 ft %": 9.339518471398737,
+        "D same landing 400 ft + stacked within 300 ft (B2 cells) %": 7.0230922489738115,
+        "E same landing 600 ft + every B2 stacked cell %": 8.474159245301136,
+        "proposed %": 7.0230922489738115,
+        "proposed, by tag instead of Novi TVD %": 1.7583235315298016
+      },
+      {
+        "basin": "midland",
+        "remaining_sticks": 85811,
+        "21a floor (<=150 ft vt, <=400 ft hz)": 2055,
+        "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)": 27336,
+        "deal-intake v14 (<=300 ft vt, <=800 ft hz)": 11345,
+        "A same landing 400 ft": 2055,
+        "B same landing 600 ft": 3307,
+        "C same landing 600 ft + stacked 150-350 ft within 300 ft": 8125,
+        "D same landing 400 ft + stacked within 300 ft (B2 cells)": 7243,
+        "E same landing 600 ft + every B2 stacked cell": 10363,
+        "proposed": 7243,
+        "proposed, by tag instead of Novi TVD": 936,
+        "21a floor (<=150 ft vt, <=400 ft hz) %": 2.3947978697369803,
+        "D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz) %": 31.85605575042827,
+        "deal-intake v14 (<=300 ft vt, <=800 ft hz) %": 13.220915733414133,
+        "A same landing 400 ft %": 2.3947978697369803,
+        "B same landing 600 ft %": 3.853818275046323,
+        "C same landing 600 ft + stacked 150-350 ft within 300 ft %": 9.468483061612147,
+        "D same landing 400 ft + stacked within 300 ft (B2 cells) %": 8.440642808031603,
+        "E same landing 600 ft + every B2 stacked cell %": 12.076540303690669,
+        "proposed %": 8.440642808031603,
+        "proposed, by tag instead of Novi TVD %": 1.0907692486977194
+      }
+    ]
+  },
+  "figures": [
+    "rate_profiles.png",
+    "rate_heatmap.png",
+    "gunbarrel_parents_delaware_BS1_S.png",
+    "gunbarrel_parents_midland_DEAN.png",
+    "map_delaware_BS1_S.png",
+    "map_midland_DEAN.png",
+    "pad_delaware_BS3C_over_WCA1.png",
+    "pad_midland_DEAN_sandwich.png",
+    "pad_midland_same_landing_400_600.png",
+    "pad_delaware_stacked_tier.png",
+    "pad_ruthless_11.png"
+  ],
+  "examples": [
+    {
+      "api10": "3002555415",
+      "well": "DAUNTLESS 7 FEDERAL #752H",
+      "title": "Delaware BS3_C drilled 869 ft above a WCA_1 parent, 56 ft sideways: the D112 vertical rule would not place it; every candidate would (r about 0.95 for this pair)",
+      "file": "pad_delaware_BS3C_over_WCA1.png"
+    },
+    {
+      "api10": "4222740919",
+      "well": "BLASTER THE BURRO 13-19 A 1DN",
+      "title": "Midland DEAN drilled as a sandwich: nearest parent above 64 ft sideways, nearest below 448 ft (one of 17 such DEAN wells out of 961)",
+      "file": "pad_midland_DEAN_sandwich.png"
+    },
+    {
+      "api10": "4200347818",
+      "well": "UL MASON EAST UNIT 12LS",
+      "title": "Midland LSSH drilled 524 ft from a same-landing parent: a 600 ft limit would not place it, a 400 ft limit would",
+      "file": "pad_midland_same_landing_400_600.png"
+    },
+    {
+      "api10": "3002554861",
+      "well": "VACA 24 FEDERAL COM #756H",
+      "title": "Delaware BS2_S drilled 243 ft above a BS2_S parent, 108 ft sideways: inside the stacked tier; a same-landing-only envelope would place it",
+      "file": "pad_delaware_stacked_tier.png"
+    },
+    {
+      "api10": "3002547722",
+      "well": "RUTHLESS 11 FEDERAL COM #509H",
+      "title": "Ruthless 11 Federal COM (Lea): 11 BS2_S wells at two landings, all co-developed. No well is a parent of another, so no envelope touches the pad",
+      "file": "pad_ruthless_11.png"
+    }
+  ]
+}

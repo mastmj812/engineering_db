@@ -1,0 +1,19 @@
+envelope,basin,children,excluded,excluded_pct,worst_bench,worst_bench_pct,region_r,rare,pass_basin,pass_bench,B3
+"21a floor (<=150 ft vt, <=400 ft hz)",delaware,22610,127,0.5616983635559487,AVA_1,1.4749262536873156,0.054572515296841415,True,True,True,True
+"21a floor (<=150 ft vt, <=400 ft hz)",midland,23988,127,0.5294313823578456,DEAN,1.0405827263267429,0.03571812224728757,True,True,True,True
+"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",delaware,22610,4743,20.977443609022554,BS3_C,42.6367461430575,2.5858369098712446,False,False,False,False
+"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",midland,23988,6708,27.963981990995496,LSSH,39.481323785562225,2.0759184412137297,False,False,False,False
+"D112 vertical at <=400 ft hz (extra, not in the bars)",delaware,22610,1267,5.603715170278638,BS3_C,17.67180925666199,0.4982564377682403,False,False,False,False
+"D112 vertical at <=400 ft hz (extra, not in the bars)",midland,23988,1732,7.220276805069201,LSSH,13.373330752854654,0.33133256922241655,False,False,False,False
+"deal-intake v14 (<=300 ft vt, <=800 ft hz)",delaware,22610,1687,7.461300309597524,OTHER,11.428571428571429,0.27544235630289043,False,False,False,False
+"deal-intake v14 (<=300 ft vt, <=800 ft hz)",midland,23988,1937,8.074870768717691,DEAN,13.31945889698231,0.21452846219201357,True,False,False,False
+A same landing 400 ft,delaware,22610,127,0.5616983635559487,AVA_1,1.4749262536873156,0.054572515296841415,True,True,True,True
+A same landing 400 ft,midland,23988,127,0.5294313823578456,DEAN,1.0405827263267429,0.03571812224728757,True,True,True,True
+B same landing 600 ft,delaware,22610,294,1.3003095975232197,OTHER,4.857142857142857,0.08654429193539497,True,True,True,True
+B same landing 600 ft,midland,23988,404,1.6841754210438553,LSSH,2.3611379910973485,0.07716546711068142,True,True,True,True
+C same landing 600 ft + stacked 150-350 ft within 300 ft,delaware,22610,521,2.3042901371074747,OTHER,5.142857142857143,0.11777010772931702,True,False,False,False
+C same landing 600 ft + stacked 150-350 ft within 300 ft,midland,23988,633,2.6388194097048525,WCA_1,4.415700267618198,0.0933891037276721,True,False,True,False
+D same landing 400 ft + stacked within 300 ft (B2 cells),delaware,22610,260,1.149933657673596,AVA_2,2.3255813953488373,0.08351876123997928,True,True,True,True
+D same landing 400 ft + stacked within 300 ft (B2 cells),midland,23988,377,1.5716191429047857,WCA_1,3.1222123104371096,0.0717670011148272,True,True,True,True
+E same landing 600 ft + every B2 stacked cell,delaware,22610,422,1.8664307828394515,OTHER,4.857142857142857,0.10155675820137636,True,True,True,True
+E same landing 600 ft + every B2 stacked cell,midland,23988,723,3.0140070035017508,WCA_1,5.144216473386857,0.09953486130190634,True,False,False,False

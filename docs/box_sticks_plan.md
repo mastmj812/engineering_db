@@ -38,7 +38,7 @@ stick chain is retired.
 | Spacing floor and tight cap (2026-11-12 / 13, phase 2a) | Floor **1,320 ft** (4 WPS), not 1,540 ft: realized gaps peak at 660, 880 and 1,320 ft and show nothing at 1,540 ft. Tight cap **440 ft** (12 WPS), revised from 660 ft on 2026-11-13 when density went back to per bench: a 660 ft cap would hold an 11 WPS development at 8 |
 | Density is per bench (2026-11-13, phase 2a; reverses the per-landing choice of 2026-11-12) | Bench density is the count of same-bench wells across a section, however the operator staggered them vertically. Reference case: Ruthless 11 Federal COM (Lea), 11 BS2_S wells across a mile at two landings 350 ft apart = 11 WPS, not 5-6 per landing. Known: this measure fails the cross-check against Novi `lateral_closer_xy_ft` in the Delaware (65 % against a 70 % bar) because Novi counts per zone; kept deliberately. The vertical arrangement is the generator's job: where local wells show two landings, sticks alternate between them (open item) |
 | Spacing map (2026-11-13, phase 2a; supersedes the 1 -> 2 -> 3 mi radius chain and the hard band default merged in PR #244) | **Blended surface.** Per bench, the Gaussian-weighted median of per-bench well gaps around the DSU (sigma 3 mi, wells out to 7.5 mi, weight by distance DSU polygon to well), relaxed toward the bench's extent-band median as control thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + 1), n_eff = sum of weights. Bands are distance inside the bench's BOX extent edge (0-2, 2-5, 5-10, 10+ mi); a band with fewer than 20 wells -> 1,320 ft. Clamped to 440-1,320 ft. Every stick records `spacing_basis` (n_eff, weighted median, band value). Reason (Michael): a mature bench reads as nested contours, densest in the core and thinning outward, because operators drilled the best rock first; a gap in development inside the core must not drop to a default. Evidence: passes its pre-set adoption test in both basins; with wells within 2 mi hidden the median error is 137 ft Delaware / 87 ft Midland against 161 / 104 ft for the chain; adjacent-DSU steps over 200 ft fall from about 15 % to about 2 % |
-| No-place envelope | Calibrated from where operators actually drilled children vs parents; gate before freezing |
+| No-place envelope (2026-11-14, phase 2b; candidate D) | A stick is not placed when an existing producer runs alongside >= 30 % of it AND sits either (1) at the **same landing** (within 150 ft vertically, whatever the tag) within **400 ft** sideways, both basins (the Midland 21a floor, now the Delaware's too), or (2) **stacked** within **300 ft** sideways: producer 150-350 ft deeper (both basins); producer shallower by 150-250 ft (Delaware) or 150-350 ft (Midland). Gap = median perpendicular distance over the shared length. Outside it the stick is placed and D150 discounts it. Tested against existing producers only, never stick against stick, so a co-developed stagger inside a bench (Ruthless 11) is untouched. Evidence: drilled children next to a parent >= 12 months on are 0.04-0.05 of the far-field rate inside the same-landing part and 0.14-0.22 in the stacked part (0.87-1.15 when the neighbour is co-developed); the envelope would have excluded 260 of 22,610 Delaware children (1.15 %) and 377 of 23,988 Midland (1.57 %). Not adopted: D112's 800 / 500 ft vertical and deal-intake v14 as placement rules (they exclude 7-28 % of what was drilled); a 600 ft same-landing limit; the Midland stacked part past 350 ft. Decided with two failed bars stated: the pair-metric reproduction, and the D150 refit check in the Midland (the Midland factor's near end is re-measured in phase 6) |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
 
 ### What exploration found (shapes the plan)
@@ -194,7 +194,18 @@ Decided: floor 1,320 ft, tight cap 440 ft, per-bench density, blended spacing su
 superseded during the review, see the findings' decision history). The map averages 1,088 ft (4.9 WPS) over 29,719
 Delaware DSU x bench and 949 ft (5.6 WPS) over 19,835 Midland. Against Novi: mean spacing 1,276 -> 1,124 ft
 Delaware, 1,224 -> 960 ft Midland; wider on Delaware AVA_2, BS2_S and the WCA family, tighter on Midland WCC / WCD
-/ DEAN / JM / MS. 2b (no-place calibration) is not started.
+/ DEAN / JM / MS.
+
+**Phase 2b outcome (2026-11-13 / 14, `docs/box_sticks/phase2b-2026-11-13/`, `scripts/box_sticks_phase2b.py`).** 46,598
+drilled children against parents >= 12 months on production (57,478 Delaware and 82,948 Midland links). Same landing:
+drilling inside 400 ft of a parent runs at 0.04-0.05 of the 1,000-2,000 ft rate and stays rare to 600 ft. Stacked
+150-350 ft within 300 ft sideways: 0.14-0.22 beside a parent, about 1.0 beside a co-developed well. Delaware vertical
+avoidance is gone by about 450 ft. Decided: candidate D (decision table). DEAN: 139 of 961 children are sandwiches but
+only 17 have a parent above and below within 660 ft; 61 of 920 DSUs with LSSH and WCA_1 already developed got DEAN a
+year or more later. On today's Novi sticks D culls 11,703 of 166,636 Delaware and 7,243 of 85,811 Midland (Novi TVD;
+most already carry no forecast in the record runs). Two pre-set bars failed and are stated in the findings: the pair
+metric against `prox_study` (agrees at envelope scale), and the D150 refit check in the Midland (the near end of the
+Midland curve rests on about 50-130 close-in wells; direction lenient, not doubled). **Gate 2 is closed.**
 
 **Gate 2:** spacing table and maps; proposed envelope per bench pair with the share of historical children
 it would have excluded. Michael freezes both.
@@ -296,6 +307,8 @@ whatever the tag).
   CLAUDE.md, sql/31 comments and the data dictionary.
 
 ## Open items to settle at the gates
+
+- No-place envelope (phase 2b): which existing wells count for a stick (every producer, or only >= 12 months on as D115; DUCs); a stick beside a well with no depth evidence (planned survey, permit depth); WCA_1 / WCA_2 landings 75-150 ft apart count as one landing for the 400 ft test; re-measure the Midland D150 near end on placed geometry (phase 6).
 
 - Polygon coverage gaps and overlaps (0b) - what happens inside an extent where Novi drew no DSU.
 - Spacing bands by SIDE of an extent (Central Basin Platform edge vs the eastern shelf): distance to the nearest edge treats them alike. Not tested.
