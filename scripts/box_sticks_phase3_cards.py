@@ -10,6 +10,7 @@ Read-only: inputs are the phase 3 cache frame; outputs are PNG files and an inde
 from __future__ import annotations
 
 import argparse
+import html
 from collections import Counter
 from pathlib import Path
 
@@ -203,9 +204,80 @@ def render(ctx: reads.Context, pid: int, cases: list[str], out: Path, link, cfgs
     name = f"card_{d.basin}_{pid}.png"
     fig.savefig(out / name, dpi=90, bbox_inches="tight")
     plt.close(fig)
-    return {"card": name, "pad_id": pid, "basin": d.basin, "cases": "; ".join(cases), "well_type": kind, "box_sticks": len(res.sticks), "box_legs": n_legs,
+    return {"pdp": pdp_list(ctx, d, pid), "area": ctx.area.get(pid, "outside the pilot blocks"),
+            "card": name, "pad_id": pid, "basin": d.basin, "cases": "; ".join(cases), "well_type": kind, "box_sticks": len(res.sticks), "box_legs": n_legs,
             "novi_remaining": len(novi), "producers": int(sum(prod.values())), "benches_with_sticks": len({s["bench"] for s in res.sticks}),
             "benches_no_row": sum(1 for b in res.benches if not b["legs_placed"])}
+
+
+def pdp_list(ctx: reads.Context, d: core.Dsu, pid: int) -> list[dict]:
+    """Existing producers to look the area up by (api10): every producer in the DSU, or the nearest one outside it."""
+    u = ctx.F["u"]
+    name = dict(zip(u["api10"].astype(str), u["well_name"].fillna("")))
+    got = [{"api10": w.well_id, "bench": w.code or "", "well_name": name.get(w.well_id, ""), "where": "in the DSU",
+            "planned": w.planned} for w in d.wells if w.member and w.status == "producer"]
+    if got:
+        return sorted(got, key=lambda r: (r["bench"], r["api10"]))
+    ix, tree = ctx.tree[("producer", d.basin)]
+    poly = ctx.pads.loc[pid, "geom"]
+    i = ix[tree.nearest(poly)]
+    dist = shapely.distance(poly, u["geom"].to_numpy()[i]) * FT
+    return [{"api10": str(u["api10"].to_numpy()[i]), "bench": str(u["live"].to_numpy()[i]), "well_name": str(u["well_name"].to_numpy()[i]),
+             "where": (f"nearest producer, {dist:,.0f} ft outside the DSU" if dist >= 1.0 else "nearest producer, crosses the DSU with under 30 % of its lateral inside"),
+             "planned": False}]
+
+
+CSS = """
+:root{--bg:#f8fafc;--fg:#0f172a;--mut:#475569;--card:#ffffff;--line:#cbd5e1;--acc:#1d4ed8}
+@media (prefers-color-scheme: dark){:root{--bg:#0b1220;--fg:#e2e8f0;--mut:#94a3b8;--card:#111a2e;--line:#334155;--acc:#93c5fd}}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,Segoe UI,sans-serif}
+main{max-width:1500px;margin:0 auto}h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:0 0 4px}p{margin:4px 0}
+.mut{color:var(--mut)}a{color:var(--acc)}table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}.wrap{overflow-x:auto}
+section{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin:18px 0}
+section img{width:100%;height:auto;background:#fff;border-radius:4px;margin-top:8px}
+code{font:13px ui-monospace,Consolas,monospace;user-select:all}.api{display:flex;flex-wrap:wrap;gap:4px 18px;margin:6px 0}
+details{margin:4px 0}summary{cursor:pointer;color:var(--acc)}
+"""
+
+
+def write_html(rows: list[dict], out: Path, ctx: reads.Context) -> None:
+    e = html.escape
+
+    def first_per_bench(pdp: list[dict]) -> list[dict]:
+        seen, keep = set(), []
+        for r in pdp:
+            if r["bench"] not in seen:
+                seen.add(r["bench"])
+                keep.append(r)
+        return keep
+
+    def api(r: dict) -> str:
+        return (f"<span><code>{e(r['api10'])}</code> {e(r['bench'])} <span class='mut'>{e(r['well_name'])}"
+                + (" (planned survey)" if r["planned"] else "") + "</span></span>")
+
+    toc, body = [], []
+    for r in rows:
+        lead = first_per_bench(r["pdp"])
+        where = r["pdp"][0]["where"]
+        toc.append(f"<tr><td><a href='#d{r['pad_id']}'>{r['pad_id']}</a></td><td>{e(r['area'])}</td><td>{e(r['cases'])}</td><td>{r['well_type']}</td>"
+                   f"<td>{r['box_sticks']} ({r['box_legs']})</td><td>{r['novi_remaining']}</td><td>{r['producers']}</td><td><code>{e(lead[0]['api10'])}</code></td></tr>")
+        more = (f"<details><summary>All {len(r['pdp'])} producers in the DSU</summary><div class='api'>{''.join(api(x) for x in r['pdp'])}</div></details>"
+                if len(r["pdp"]) > len(lead) else "")
+        body.append(f"<section id='d{r['pad_id']}'><h2>DSU {r['pad_id']} &middot; {e(r['basin'])} &middot; {e(r['cases'])}</h2>"
+                    f"<p class='mut'>{e(r['area'])} &middot; {r['well_type']} &middot; BOX {r['box_sticks']} sticks ({r['box_legs']} legs) against "
+                    f"{r['novi_remaining']} remaining Novi sticks &middot; {r['producers']} producers in the DSU</p>"
+                    f"<p><b>Existing PDP to look up in anduin (API 10)</b>, {e(where)}"
+                    + (", one per bench" if len(lead) > 1 else "") + f":</p><div class='api'>{''.join(api(x) for x in lead)}</div>{more}"
+                    f"<a href='{e(r['card'])}'><img loading='lazy' src='{e(r['card'])}' alt='Review card for DSU {r['pad_id']}'></a>"
+                    "<p><a href='#top'>Back to the list</a></p></section>")
+    page = (f"<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>BOX sticks review cards</title><style>{CSS}</style></head><body><main id='top'><h1>BOX sticks phase 3a: review cards</h1>"
+            f"<p class='mut'>{len(rows)} DSUs &middot; live tags pulled {e(str(ctx.F['pulled']))} &middot; generator {e(core.VERSION)} &middot; nothing here is stored "
+            "in the warehouse. Each card names existing producers by API 10 so the area can be opened in anduin. Click a card to open it full size.</p>"
+            "<div class='wrap'><table><thead><tr><th>DSU</th><th>Area</th><th>Case</th><th>Well type</th><th>BOX sticks (legs)</th><th>Novi remaining</th>"
+            f"<th>Producers</th><th>A PDP API 10</th></tr></thead><tbody>{''.join(toc)}</tbody></table></div>{''.join(body)}</main></body></html>")
+    (out / "index.html").write_text(page, encoding="utf-8", newline=chr(10))
 
 
 def choose(ctx: reads.Context) -> dict[int, list[str]]:
@@ -269,11 +341,16 @@ def run(out: Path, cache: Path, pads: list[int] | None) -> pd.DataFrame:
     ctx = reads.Context(cache)
     link = reads.link_fn()
     cfgs = {b: reads.default_cfg(b) for b in ("delaware", "midland")}
+    ctx.area = {int(p): name for name, a in p3.AREAS.items() for p in p3.area_pads(ctx.F, a)}
     picks = choose(ctx) if not pads else {p: [NAMED.get(p, "requested")] for p in pads}
     out.mkdir(parents=True, exist_ok=True)
     rows = [render(ctx, pid, cases, out, link, cfgs) for pid, cases in sorted(picks.items())]
     idx = pd.DataFrame(rows)
+    idx["pdp_api10"] = [" ".join(sorted({x["api10"] for x in r["pdp"]})) for r in rows]
+    idx["pdp_where"] = [r["pdp"][0]["where"] for r in rows]
+    idx = idx.drop(columns="pdp")
     if not pads:
+        write_html(sorted(rows, key=lambda r: (r["area"], r["pad_id"])), out, ctx)
         idx.to_csv(out / "cards_index.csv", index=False)
         lines = ["# BOX sticks phase 3a: review cards", "",
                  f"{len(idx)} cards. Live tags pulled {ctx.F['pulled']}; generator {core.VERSION}. Cards marked `extra` are outside the pilot blocks and count in no bar.", "",
