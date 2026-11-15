@@ -53,13 +53,28 @@ def reasons(res, code):
     return [r["reason"] for r in res.ledger if r["code"] == code and r["status"] == "culled"]
 
 
-def test_two_benches_same_spacing_stagger_half_a_spacing():
+def test_two_close_benches_on_one_spacing_alternate_and_keep_every_row():
     res = run(dsu([bench("BS3_S", 1, 11000, 880), bench("WCA_1", 2, 11200, 880)]))
     a, b = xs(res, "BS3_S"), xs(res, "WCA_1")
-    assert len(a) == 6 and len(b) == 5                     # 4,620 ft clear: 6 rows at 880 ft, 5 between them
-    assert all(abs((y - a[0]) % 880 - 440) < 1 for y in b)
+    assert len(a) == 6 and len(b) == 6                     # 4,620 ft clear: 6 rows at 880 ft leave 220 ft of slack
+    off = (b[0] - a[0]) % 880                              # offset by the slack, not half a spacing: no row is lost to it
+    assert 150 < min(off, 880 - off) < 221 and all(abs((y - a[0]) % 880 - off) < 1 for y in b)
     assert all(s["well_type"] == "single" and s["completed_lateral_ft"] >= 7000 for s in res.sticks)
     assert res.meta["well_type"] == "single"
+    wide = run(dsu([bench("BS3_S", 1, 11000, 880), bench("WCA_1", 2, 11200, 880)], w=5280.0 + 340.0))
+    a, b = xs(wide, "BS3_S"), xs(wide, "WCA_1")
+    assert len(a) == len(b) == 6 and all(abs((y - a[0]) % 880 - 440) < 1 for y in b)      # 520 ft of slack: a true half spacing
+    assert {r["code"]: r["grid"] for r in wide.benches} == {"BS3_S": "map_spacing", "WCA_1": "staggered"}
+
+
+def test_uturn_benches_alternate_and_both_keep_their_pair():
+    """DSU 10804: about 1,950 ft clear, two legs at 1,200 ft. The bench below sits 600 ft off the one above and keeps
+    its U-turn (it used to be left with one leg at the centre and no stick)."""
+    res = run(dsu([bench("AVA_0", 1, 9143, 937), bench("AVA_1", 2, 9350, 653), bench("AVA_2", 3, 9852, 858)], w=2640.0, h=5280.0))
+    a, b, c = xs(res, "AVA_0"), xs(res, "AVA_1"), xs(res, "AVA_2")
+    assert len(a) == len(b) == len(c) == 2 and len(res.sticks) == 3
+    assert abs(abs(b[0] - a[0]) - 600) < 1 and abs(a[1] - a[0] - 1200) < 1
+    assert not [r for r in res.ledger if r["status"] == "culled"]
 
 
 def test_same_bench_well_pins_the_grid_and_closes_400_ft():

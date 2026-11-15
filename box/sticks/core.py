@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.4_pilot"
+VERSION = "box_sticks_0.5_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -364,12 +364,26 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             w.s_pre, w.s_m = w.s_ft, w.s_ft / FT_PER_M
             if w.pinned:
                 w.base, w.fit = pinned_base(w.rows, w.s_m), "pinned"
-            elif prev is not None and abs(prev.s_pre - w.s_pre) < 0.5:
-                w.s_m, w.s_ft = prev.s_m, prev.s_m * FT_PER_M                # the bench above's setback fit carries down
-                w.base, w.fit, w.stagger_ref = prev.base + w.s_m / 2.0, "staggered", prev.b.code
             else:
-                w.s_m, w.base, w.fit_dropped, w.fit, _ = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
+                w.s_m, w.base, w.fit_dropped, w.fit, band = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
                 w.s_ft = w.s_m * FT_PER_M
+                if len(g) > 1 and w.fit == "map_spacing" and band is not None:
+                    # Close benches on one spacing alternate inside the clear width (Michael, 2026-11-15): each keeps every
+                    # row its own fit gives, and sits half a spacing from the bench above where the slack allows, else as
+                    # far as the slack allows. A bench never loses a row to the stagger.
+                    width = band[1] - band[0]
+                    slack = width - math.floor(width / w.s_m + 1e-9) * w.s_m
+                    off = min(w.s_m / 2.0, slack)
+                    lo = band[0] + (slack - off) / 2.0
+                    if prev is None:
+                        w.base = lo
+                    else:
+                        far = [abs(((b - prev.base) % w.s_m) - w.s_m / 2.0) for b in (lo, lo + off)]      # 0 = exactly half a spacing off
+                        w.base = (lo, lo + off)[int(far[1] < far[0] - 1e-9)]
+                        if abs(((w.base - prev.base) % w.s_m) - w.s_m / 2.0) * FT_PER_M <= 0.5:
+                            w.fit, w.stagger_ref = "staggered", prev.b.code
+                        elif off > 1e-6:
+                            w.fit = "offset"
             prev = w
 
     sticks: list[dict] = []

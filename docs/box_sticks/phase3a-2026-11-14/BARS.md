@@ -126,6 +126,15 @@ Midland 0). It also closes rows outside the well's family that sit in its stacke
 guard). DSU 10600: BS2_S gains 3 rows (BS2_C spuds assumed 430 ft above), WCC loses 1; the Avalon is unchanged because
 AVA_1 and AVA_2 land 126 ft apart there and read as one landing. Generator version `box_sticks_0.4_pilot`.
 
+**I2(a) reworded: close benches on one spacing alternate inside the clear width, and none loses a row to it.**
+Michael, same day, from U-turn DSU 10804 (1,952 ft clear, two legs at 1,200 ft): the half-spacing shift left the
+staggered bench one leg at the centre with no partner, so AVA_1, BS1_S and WCA_2 got no stick. Now two adjacent benches
+under 300 ft apart in TVD with equal spacing each keep every row their own fit gives; the lower one sits half a
+spacing from the upper where the slack in the clear width allows (grid `staggered`, checked within 1 ft as before),
+otherwise as far as the slack allows (grid `offset`, not checked against half a spacing). Pinned grids are not moved.
+Effect on the 114 pilot DSUs: U-turn sticks 199 -> 220, straight sticks unchanged at 1,303 (equal spacings only occur
+at the 1,200 ft U-turn floor); `uturn_unpaired` rows 99 -> 77. Generator version `box_sticks_0.5_pilot`.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.
