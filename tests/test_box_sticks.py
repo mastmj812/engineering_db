@@ -110,15 +110,15 @@ def test_skewed_azimuth_fits_the_rows_to_the_clear_width():
     assert got[5.0][:2] == (5, "row_dropped") and got[5.0][2] >= 880 and got[5.0][3] == ["setback_fit"]
 
 
-def test_close_benches_keep_their_own_rows_and_share_a_spacing_only_within_15_pct():
+def test_close_benches_keep_their_own_rows_and_their_own_spacing():
     """Rows of different benches are not tested against each other (Michael, 2026-11-15): each bench keeps every row its
     own spacing gives, however close the bench above or below lands."""
     res = run(dsu([bench("DEAN", 1, 8250, 827, control=5), bench("WCA_1", 2, 8500, 664, control=20)]))
     assert len(xs(res, "WCA_1")) == 7 and len(xs(res, "DEAN")) == 6 and reasons(res, "DEAN") == []
     near = run(dsu([bench("AVA_2", 1, 9770, 849), bench("BS1_S", 2, 9926, 1096)]))          # DSU 10785: 156 ft apart in TVD
     assert len(xs(near, "AVA_2")) == 6 and len(xs(near, "BS1_S")) == 5 and not reasons(near, "BS1_S")
-    shared = run(dsu([bench("LSSH", 1, 8300, 775, control=20), bench("DEAN", 2, 8400, 827, control=5)]))
-    assert shared.sticks[-1]["spacing_basis"]["shared_with"] == "LSSH" and shared.sticks[-1]["spacing_basis"]["final_ft"] == 775
+    own = run(dsu([bench("LSSH", 1, 8300, 775, control=20), bench("DEAN", 2, 8400, 827, control=5)]))       # within 15 %: no sharing
+    assert {s["bench"]: s["spacing_basis"]["final_ft"] for s in own.sticks} == {"LSSH": 775.0, "DEAN": 827.0}
 
 
 def test_sliver_wca_rule_and_reconciliation_give_a_reason_per_bench():

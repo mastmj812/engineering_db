@@ -173,7 +173,7 @@ def render(ctx: reads.Context, pid: int, cases: list[str], out: Path, link, cfgs
         shift = f", moved {b['reconciled_shift_ft']:+.0f}" if abs(b["reconciled_shift_ft"]) > 0.5 else ""
         err = "" if bi.tvd_err_median_ft is None else f" (held-out {bi.tvd_err_median_ft:.0f} / P90 {bi.tvd_err_p90_ft:.0f})"
         sp = f"{b['spacing_map_ft']:.0f}" + ("" if abs(b["spacing_final_ft"] - b["spacing_map_ft"]) < 0.5 else f" -> {b['spacing_final_ft']:.0f}")
-        basis = f"n_eff {sb.get('n_eff', 0):.0f}, {sb.get('band', '')}" + (f", as {b['shared_with']}" if b["shared_with"] else "")
+        basis = f"n_eff {sb.get('n_eff', 0):.0f}, {sb.get('band', '')}"
         note = ", ".join(x.replace("_", " ") for x in (b["flags"] if isinstance(b["flags"], str) else "").split(";") if x)
         rows.append([code, f"{b['target_tvd_ft']:,.0f} {b['rung']}{shift}{err}", f"{sp}; {basis}", b["grid"] + (" (pinned)" if b["pinned"] and b["grid"] != "pinned" else ""),
                      f"{b['legs_placed']} / {b.get('sticks', 0)}", ", ".join(f"{n} {SHORT[k]}" for k, n in sorted(cul.items())) or "-", str(nov.get(code, 0)),

@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.2_pilot"
+VERSION = "box_sticks_0.3_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -40,8 +40,7 @@ class Cfg:
     tight_cap_ft: float = 440.0           # phase 2a: no spacing under this
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
-    share_tol: float = 0.15               # rule 10
-    interzone_ft: float = 300.0           # rule 10: benches closer than this in TVD may share a spacing (I2)
+    interzone_ft: float = 300.0           # benches closer than this in TVD with the same spacing sit half a spacing apart (I2)
     fit_tol: float = 0.10                 # setback fit: spacing may tighten by this share
     same_dv_ft: float = 150.0             # candidate D
     same_dh_ft: float = 400.0
@@ -229,7 +228,6 @@ class _B:
     s_m: float = 0.0
     base: float = 0.0
     pinned: bool = False
-    shared_with: str | None = None
     stagger_ref: str | None = None        # the bench this one's rows were set half a spacing off
     fit: str = ""
     fit_dropped: int = 0
@@ -339,7 +337,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
              "clear_width_ft": None if band0 is None else round((band0[1] - band0[0]) * FT_PER_M, 0),
              "window_width_ft": round(fr.width0 * FT_PER_M, 0)}
 
-    # spacing: U-turn floor, then sharing between close benches (rule 10)
+    # spacing: each bench its own map spacing (U-turn floor only); no sharing between benches (Michael, 2026-11-15)
     for w in live:
         w.s_ft = max(w.b.spacing_ft, min_s_ft)
         mids = [wl.line.interpolate(0.5, normalized=True) for wl in d.wells if wl.member and wl.code == w.b.code]
@@ -349,15 +347,11 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
     groups: list[list[_B]] = []
     for w in live:
         p = groups[-1][-1] if groups else None
-        if p is not None and w.tvd - p.tvd < cfg.interzone_ft and abs(w.s_ft - p.s_ft) / max(w.s_ft, p.s_ft) <= cfg.share_tol:
+        if p is not None and w.tvd - p.tvd < cfg.interzone_ft and abs(w.s_ft - p.s_ft) < 0.5:
             groups[-1].append(w)
         else:
             groups.append([w])
     for g in groups:
-        lead = max(g, key=lambda w: (w.b.control, -w.b.rank))
-        for w in g:
-            if not w.pinned and w is not lead and abs(w.s_ft - lead.s_ft) > 1e-9:
-                w.s_ft, w.shared_with = lead.s_ft, lead.b.code
         prev: _B | None = None
         for w in g:                                                          # row grids, shallow to deep
             w.s_pre, w.s_m = w.s_ft, w.s_ft / FT_PER_M
@@ -452,7 +446,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                     "azimuth_true_deg": round(d.az_true_deg, 1), "azimuth_basis": d.az_basis,
                     "tvd_basis": {"rung": w.b.rung, "held_out_median_ft": w.b.tvd_err_median_ft, "held_out_p90_ft": w.b.tvd_err_p90_ft,
                                   "reconciled_shift_ft": round(w.shift_ft, 1)},
-                    "spacing_basis": dict(w.b.spacing_basis) | {"map_ft": round(w.b.spacing_ft, 1), "final_ft": round(w.s_ft, 1), "shared_with": w.shared_with,
+                    "spacing_basis": dict(w.b.spacing_basis) | {"map_ft": round(w.b.spacing_ft, 1), "final_ft": round(w.s_ft, 1),
                                                                 "grid": w.fit},
                     "flags": sorted(set(w.b.flags) | ({"pinned"} if w.pinned else set()))}
             sticks.append(rec)
@@ -471,7 +465,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         blog.append({"pad_id": d.pad_id, "code": code, "no_row_reason": "" if rows or w.fit_dropped else "no_rows", "rows_considered": len(rows) + w.fit_dropped,
                      "legs_placed": n_placed, "rows_culled": len(rows) + w.fit_dropped - n_placed, "sticks": sum(1 for s in sticks if s["bench"] == code),
                      "target_tvd_ft": tvd, "rung": w.b.rung, "reconciled_shift_ft": round(w.shift_ft, 1), "spacing_map_ft": round(w.b.spacing_ft, 1),
-                     "spacing_final_ft": round(w.s_ft, 1), "shared_with": w.shared_with or "", "grid": w.fit, "stagger_ref": w.stagger_ref or "", "pinned": w.pinned,
+                     "spacing_final_ft": round(w.s_ft, 1), "grid": w.fit, "stagger_ref": w.stagger_ref or "", "pinned": w.pinned,
                      "flags": ";".join(sorted(w.b.flags))})
     order = {b.code: b.rank for b in d.benches}
     sticks.sort(key=lambda s: (order[s["bench"]], s["well_name"]))

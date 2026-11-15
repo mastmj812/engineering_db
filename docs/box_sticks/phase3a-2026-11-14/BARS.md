@@ -107,6 +107,13 @@ under 150 ft vertically; they are reported, not a violation. The reason `stagger
 Generator version `box_sticks_0.2_pilot`. This removes a bar; it was changed on a stated decision before the back-test
 ran, not to make a test pass.
 
+**I2(a) is narrowed: no bench takes another bench's spacing.** Michael, same day: each bench keeps its own map spacing
+(the density evidence of its own extent). Before this, 59 DSU x bench in 41 of the 114 pilot DSUs ran at a neighbour's
+spacing (Midland DSU 22309: WCB_2 mapped at 757 ft, run at WCA_1's 664 ft). What remains of I2(a): two adjacent benches
+under 300 ft apart in TVD whose own spacings are equal (within 0.5 ft) sit half a spacing apart, unless one is pinned.
+`shared_with` leaves the spacing basis. Generator version `box_sticks_0.3_pilot`; effect on the pilot in
+`cards/README.md` and the run summary.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.
