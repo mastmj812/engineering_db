@@ -7,7 +7,8 @@ commit in requirements-dealintake.txt; the rules about WHICH rows exist live her
 
 Per DSU: benches (sliver floor, WCA rule, stack reconciliation) -> well type -> spacing (U-turn floor, sharing
 between close benches) -> row grids (pinned by same-bench wells, staggered, fitted to the clear width) -> culls
-(setback, length, no-place envelope against existing wells, 300 ft against rows of other benches) -> U-turn pairing.
+(setback, length, no-place envelope against existing wells) -> U-turn pairing. Rows of different benches are not
+tested against each other (Michael, 2026-11-15): sticks are what is possible per bench, BOX precedence sorts the rest.
 The generator does not forecast and holds no economics.
 """
 from __future__ import annotations
@@ -24,9 +25,9 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.1_pilot"
+VERSION = "box_sticks_0.2_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
-               "stagger", "uturn_unpaired")
+               "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
 WCA_MEMBERS = ("WCA_1", "WCA_2")
 
@@ -40,7 +41,7 @@ class Cfg:
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
     share_tol: float = 0.15               # rule 10
-    interzone_ft: float = 300.0           # rule 10 / I2(b), sideways and vertical combined
+    interzone_ft: float = 300.0           # rule 10: benches closer than this in TVD may share a spacing (I2)
     fit_tol: float = 0.10                 # setback fit: spacing may tighten by this share
     same_dv_ft: float = 150.0             # candidate D
     same_dh_ft: float = 400.0
@@ -372,7 +373,6 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
 
     sticks: list[dict] = []
     ledger: list[dict] = []
-    placed_rows: list[tuple[str, float, float]] = []                         # (bench, y m, tvd) of every placed leg
     turn_high: bool | None = None
     for w in sorted(live, key=lambda w: (not w.pinned, -w.b.control, w.b.rank)):   # trust order
         code, tvd = w.b.code, round(w.tvd, 1)
@@ -389,11 +389,6 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         open_ = [r for r in rows if r["reason"] is None]
         for k, hit in envelope_hits([_leg_line(fr, r["y"], r["x0"], r["x1"]) for r in open_], tvd, code, d, cfg, link_fn).items():
             open_[k]["reason"], open_[k]["detail"] = hit
-        for r in rows:
-            if r["reason"] is None:
-                near = min((math.hypot((r["y"] - y) * FT_PER_M, tvd - z) for c, y, z in placed_rows if c != code), default=math.inf)
-                if near < cfg.interzone_ft - 1e-6:
-                    r["reason"], r["detail"] = "stagger", f"{near:.0f} ft from a row of another bench"
 
         wells = []                                                           # (InventoryWell, rows it uses)
         open_ = [r for r in rows if r["reason"] is None]
@@ -449,7 +444,6 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             iw.lateral_azimuth_deg = az
             for r in rs:
                 r["stick"] = iw.well_name
-                placed_rows.append((code, r["y"], tvd))
             rec = asdict(iw)
             for k in ("category", "novi_wellname", "edited", "context", "recon_status", "pdp_count_3mi", "inflation_ratio", "handoff_category",
                       "stick_id", "pdp_gap_ft", "pdp_gap_horiz_ft", "pdp_gap_dtvd_ft", "pdp_gap_well", "novi_rep", "scenario_id", "deal_id"):

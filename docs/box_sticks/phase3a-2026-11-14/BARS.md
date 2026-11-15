@@ -29,7 +29,7 @@ Each is 0 violations on the pilot output, and each has a DB-free pytest on synth
 | # | Invariant | Bar |
 |---|---|---|
 | I1 | Envelope | No placed leg is inside the envelope of a counted well with depth evidence (pair metric). Against a counted well with no depth evidence: no placed leg of its formation family within 400 ft sideways |
-| I2 | Stagger | (a) Two adjacent benches whose map spacings are within 15 % share the better-controlled bench's spacing, and every row of one sits half a spacing (within 1 ft) from the rows of the other, unless one of them is pinned by existing wells. (b) Always: no leg is closer than 300 ft, sideways gap and TVD difference combined, to a leg of the adjacent bench; a row that would be is not placed, reason `stagger` (rule 10) |
+| I2 | Stagger | (a) Two adjacent benches whose map spacings are within 15 % share the better-controlled bench's spacing, and every row of one sits half a spacing (within 1 ft) from the rows of the other, unless one of them is pinned by existing wells. ~~(b) Always: no leg is closer than 300 ft, sideways gap and TVD difference combined, to a leg of the adjacent bench; a row that would be is not placed, reason `stagger` (rule 10)~~ **(b) struck 2026-11-15 after the step 3 cards, see "Amended after the cards" below** |
 | I3 | Order | In every DSU the target TVDs of the benches with sticks are in stratigraphic order and at least 75 ft apart. A bench has one landing; where its own wells show two, the DSU x bench carries the flag `two_landings_observed` (rule 3) |
 | I4 | Well type | No single-leg stick has a completed lateral under 7,000 ft. A two-leg stick exists only in a DSU whose straight lateral is under 7,000 ft, on adjacent rows of one bench, and its legs are at least 1,200 ft apart: legs at max(bench spacing, 1,200 ft); an odd leg or a single open slot is not placed (rule 5) |
 | I5 | Inside the DSU | Every leg lies inside its DSU polygon less the 330 ft setback, within 1 ft. Rows are fitted to the width that is clear along the whole lateral: the spacing may be tightened by up to 10 % to keep the row count (never under 440 ft, U-turn legs never under 1,200 ft); beyond 10 % one row is dropped and the rest spread evenly. A grid pinned by existing wells is not moved; an outer row that still clips is culled, reason `setback_clip` |
@@ -92,12 +92,27 @@ max(spacing, 1,200 ft), adjacent rows; 6 lithology members each get their own ro
 the long axis with a flag where the two sides tie; 9 narvi pinned by commit; 10 as I2. Setback fit as I5 (10 %).
 Bars: cutoff 2023-01-01 and T1 at 60 % / 50 % kept; two-landing and U-turn treatment as written above.
 
+## Amended after the cards (Michael, 2026-11-15, before any back-test)
+
+**I2(b) is struck: rows of different benches are not tested against each other.** Raised on the card of DSU 10785,
+where 4 of 5 BS1_S rows were not placed for sitting 170-236 ft from AVA_2 rows (landings 156 ft apart, spacings 1,096 ft
+against 849 ft). Michael: distance to another bench's planned row should not govern placement. BOX sticks represent
+what is possible in the DSU, and what is possible is set by the extents the DSU lies in, what has already been drilled,
+and the density / spacing evidence of each extent. Two benches 100-300 ft apart may or may not be developed together;
+that is for BOX precedence downstream. The envelope against existing wells (I1) is unchanged.
+
+Effect on the 114 pilot DSUs, today's wells: 144 rows no longer culled; 1,332 -> 1,469 sticks (1,523 -> 1,666 legs).
+150 pairs of legs of different benches are under 300 ft apart (sideways and vertical combined) in 46 DSUs, 36 of them
+under 150 ft vertically; they are reported, not a violation. The reason `stagger` leaves the closed list of row reasons.
+Generator version `box_sticks_0.2_pilot`. This removes a bar; it was changed on a stated decision before the back-test
+ran, not to make a test pass.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.
 
-- **I2(a) applies to adjacent benches less than 300 ft apart in TVD.** Farther apart, the 300 ft test of I2(b) is met by
-  depth alone and each bench keeps its own map spacing (per-bench density). Sharing chains through a stack: where three
+- **I2(a) applies to adjacent benches less than 300 ft apart in TVD.** Farther apart, each bench keeps its own map
+  spacing (per-bench density). Sharing chains through a stack: where three
   close benches are each within 15 % of the next, all take the best-controlled one's spacing.
 - **I2(a) is checked against the bench a row grid was set against** (recorded as `stagger_ref`), not against the nearest
   bench that kept sticks. The first version of the check picked the nearest surviving bench and reported 25 false

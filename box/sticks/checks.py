@@ -49,12 +49,6 @@ def i1_envelope(res: Result, d: Dsu, cfg: Cfg, link_fn) -> list[str]:
 def i2_stagger(res: Result, cfg: Cfg) -> list[str]:
     bad = []
     rows = [(s["bench"], leg["gunbarrel_x_ft"], s["target_tvd_ft"], s["well_name"]) for s, leg, _ in _legs(res)]
-    for a in range(len(rows)):
-        for b in range(a + 1, len(rows)):
-            if rows[a][0] != rows[b][0]:
-                gap = math.hypot(rows[a][1] - rows[b][1], rows[a][2] - rows[b][2])
-                if gap < cfg.interzone_ft - 1.0:
-                    bad.append(f"I2b {rows[a][3]} and {rows[b][3]} are {gap:.0f} ft apart")
     by = {b["code"]: b for b in res.benches}
     for b in by.values():                    # (a): a staggered bench sits half a spacing off the grid of the bench it was set against
         ref = by.get(b.get("stagger_ref") or "")

@@ -29,10 +29,10 @@ from scripts import box_sticks_phase3_pilot as p3
 
 FT = core.FT_PER_M
 REASON_STYLE = {"envelope_same_landing": ("#dc2626", "same landing, within 400 ft"), "envelope_stacked": ("#ea580c", "stacked, within 300 ft"),
-                "no_depth_neighbour": ("#9333ea", "well with no depth, same family"), "stagger": ("#2563eb", "under 300 ft from another bench's row"),
+                "no_depth_neighbour": ("#9333ea", "well with no depth, same family"),
                 "uturn_unpaired": ("#92400e", "U-turn leg with no partner"), "setback_clip": ("#111827", "outside the clear width"),
                 "short_lateral": ("#6b7280", "under 7,000 ft"), "setback_fit": ("#111827", "row count reduced to fit")}
-SHORT = {"envelope_same_landing": "same", "envelope_stacked": "stacked", "no_depth_neighbour": "no-depth", "stagger": "300ft", "uturn_unpaired": "unpaired",
+SHORT = {"envelope_same_landing": "same", "envelope_stacked": "stacked", "no_depth_neighbour": "no-depth", "uturn_unpaired": "unpaired",
          "setback_clip": "clip", "short_lateral": "short", "setback_fit": "fit"}
 BENCH_WHY = {"sliver": "under 10 % of DSU in extent", "no_depth": "no landing depth", "wca_one_member": "one WCA row set (other member)",
              "wca_one_landing": "WCA surfaces under 75 ft apart", "reconciled_out": "depth conflict, less trusted", "no_window": "no drillable window",

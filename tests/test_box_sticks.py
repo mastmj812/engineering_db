@@ -110,10 +110,13 @@ def test_skewed_azimuth_fits_the_rows_to_the_clear_width():
     assert got[5.0][:2] == (5, "row_dropped") and got[5.0][2] >= 880 and got[5.0][3] == ["setback_fit"]
 
 
-def test_close_benches_on_different_spacings_cull_rows_under_300_ft():
+def test_close_benches_keep_their_own_rows_and_share_a_spacing_only_within_15_pct():
+    """Rows of different benches are not tested against each other (Michael, 2026-11-15): each bench keeps every row its
+    own spacing gives, however close the bench above or below lands."""
     res = run(dsu([bench("DEAN", 1, 8250, 827, control=5), bench("WCA_1", 2, 8500, 664, control=20)]))
-    assert len(xs(res, "WCA_1")) == 7                      # the better-controlled bench keeps its grid
-    assert "stagger" in reasons(res, "DEAN") and xs(res, "DEAN")
+    assert len(xs(res, "WCA_1")) == 7 and len(xs(res, "DEAN")) == 6 and reasons(res, "DEAN") == []
+    near = run(dsu([bench("AVA_2", 1, 9770, 849), bench("BS1_S", 2, 9926, 1096)]))          # DSU 10785: 156 ft apart in TVD
+    assert len(xs(near, "AVA_2")) == 6 and len(xs(near, "BS1_S")) == 5 and not reasons(near, "BS1_S")
     shared = run(dsu([bench("LSSH", 1, 8300, 775, control=20), bench("DEAN", 2, 8400, 827, control=5)]))
     assert shared.sticks[-1]["spacing_basis"]["shared_with"] == "LSSH" and shared.sticks[-1]["spacing_basis"]["final_ft"] == 775
 
