@@ -1,17 +1,20 @@
 # BOX sticks, phase 3a: definitions and pass/fail bars for the generator pilot, fixed before the first generator run (2026-11-14)
 
-Committed before any generator code exists. Proposed values; Michael may amend them before his go. After the first
-generator run nothing here is tuned: a missed bar is reported as missed.
+Committed before any generator code exists. Amended 2026-11-15 with Michael's decisions (section "Decided" below),
+still before any generator code. After the first generator run nothing here is tuned: a missed bar is reported as missed.
 
-Scope: the three pilot areas of `PROPOSAL.md` (114 DSU polygons, 990 DSU x bench; `pilot_dsus.csv`). Live tags, cache
+Scope: the three pilot areas of `PROPOSAL.md` (114 DSU polygons, 990 DSU x bench; `pilot_dsus.csv`). About six single
+DSUs outside the blocks (Eddy E-W near-squares, the WCA no-control fringe, Midland U-turns) get cards only and are not
+counted in any bar. Live tags, cache
 pulled 2026-11-14. Nothing is written to the warehouse.
 
 ## Definitions
 
 - **Stick** = one generated well: one leg (straight) or two legs and a turn (U-turn). **Leg** = one row position;
   counts of slots are counts of legs.
-- **Counted well** = an existing well the generator must respect. Which wells count, and what a well with no depth
-  evidence does, are open rules 1 and 2 of `PROPOSAL.md`. The bars apply to the set Michael decides.
+- **Counted well** = an existing well the generator must respect: every producer at any age, plus spud / DUC /
+  completed wells (rule 1). A counted well with no depth evidence pins its bench's grid and closes 400 ft sideways to
+  its formation family (rule 2).
 - **Pair metric** = the phase 2b link method (`scripts/box_sticks_phase2b.links`), stick-relative: alongside = share of
   the leg the well runs beside; sideways gap = median perpendicular distance over the shared length (21 samples);
   vertical gap = well evidence depth minus stick target TVD. A pair qualifies at >= 30 % alongside.
@@ -25,13 +28,13 @@ Each is 0 violations on the pilot output, and each has a DB-free pytest on synth
 
 | # | Invariant | Bar |
 |---|---|---|
-| I1 | Envelope | No placed leg is inside the envelope of a counted well with depth evidence (pair metric). Against a counted well with no depth evidence, the rule decided under open rule 2 holds |
-| I2 | Stagger | (a) Two adjacent benches on the same spacing: every row of one sits half a spacing (within 1 ft) from the rows of the other, unless one of them is pinned by existing wells. (b) Always: no leg is closer than 300 ft in 3-D (sideways gap and TVD difference combined) to a leg of the adjacent bench. Reading of "never under 300 ft": narvi's 3-D inter-zone offset; if Michael means 300 ft sideways, (b) is restated before the first run. How (b) is met where adjacent benches carry different spacings is open rule 10 |
-| I3 | Order | In every DSU the target TVDs of the benches with sticks are in stratigraphic order and at least 75 ft apart. Two landings of one bench (open rule 3) are one bench for this test and are at least 150 ft apart |
-| I4 | Well type | No single-leg stick has a completed lateral under 7,000 ft. A two-leg stick exists only in a DSU whose straight lateral is under 7,000 ft, and its legs are at least the decided leg separation apart (open rule 5) |
-| I5 | Inside the DSU | Every leg lies inside its DSU polygon less the 330 ft setback, within 1 ft |
-| I6 | Provenance | Every stick carries DSU id, bench, generator version, azimuth and its basis, `tvd_basis` (direct / thickness / bracket / offset, with the rung's held-out median and P90), `spacing_basis` (n_eff, weighted median, band value, final value), well type, legs with gunbarrel offsets |
-| I7 | Ledger | Every DSU x bench of the pilot is accounted for: legs placed, legs culled each with exactly one reason from a closed list, or one reason the bench has no row. Rows considered = placed + culled |
+| I1 | Envelope | No placed leg is inside the envelope of a counted well with depth evidence (pair metric). Against a counted well with no depth evidence: no placed leg of its formation family within 400 ft sideways |
+| I2 | Stagger | (a) Two adjacent benches whose map spacings are within 15 % share the better-controlled bench's spacing, and every row of one sits half a spacing (within 1 ft) from the rows of the other, unless one of them is pinned by existing wells. (b) Always: no leg is closer than 300 ft, sideways gap and TVD difference combined, to a leg of the adjacent bench; a row that would be is not placed, reason `stagger` (rule 10) |
+| I3 | Order | In every DSU the target TVDs of the benches with sticks are in stratigraphic order and at least 75 ft apart. A bench has one landing; where its own wells show two, the DSU x bench carries the flag `two_landings_observed` (rule 3) |
+| I4 | Well type | No single-leg stick has a completed lateral under 7,000 ft. A two-leg stick exists only in a DSU whose straight lateral is under 7,000 ft, on adjacent rows of one bench, and its legs are at least 1,200 ft apart: legs at max(bench spacing, 1,200 ft); an odd leg or a single open slot is not placed (rule 5) |
+| I5 | Inside the DSU | Every leg lies inside its DSU polygon less the 330 ft setback, within 1 ft. Rows are fitted to the width that is clear along the whole lateral: the spacing may be tightened by up to 10 % to keep the row count (never under 440 ft, U-turn legs never under 1,200 ft); beyond 10 % one row is dropped and the rest spread evenly. A grid pinned by existing wells is not moved; an outer row that still clips is culled, reason `setback_clip` |
+| I6 | Provenance | Every stick carries DSU id, bench, generator version, azimuth and its basis, `tvd_basis` (direct / thickness / bracket / offset, with the rung's held-out median and P90), `spacing_basis` (n_eff, weighted median, band value, map value, final value after any sharing or setback fit), well type, legs with gunbarrel offsets |
+| I7 | Ledger | Every DSU x bench of the pilot is accounted for: legs placed, legs culled each with exactly one reason from a closed list, or one reason the bench has no row. Rows considered = placed + culled. No row disappears at a setback without a reason |
 | I8 | Gunbarrel | The golden table of `tests/test_gunbarrel_convention.py` passes on the function the generator uses, and every stored leg offset is reproduced from its geometry within 1 ft (sign rule v2, azimuth at 0.1 deg, true to grid through `dealintake/geo.true_to_grid`) |
 | I9 | Repeatable | The same inputs give a byte-identical output file |
 
@@ -50,8 +53,14 @@ in that DSU. Before the eligibility filter: 135 (Ward), 293 (Lea), 294 (Glasscoc
 
 **A well lands on a slot** when it is matched one-to-one to a placed leg of the same bench with: shared length at
 least half of the shorter of the two; sideways gap at most min(330 ft, half the leg's spacing); and, where the well has
-depth evidence, |stick TVD - well depth| at most 150 ft. Where a DSU got one WCA landing, WCA_1 / WCA_2 / WCXY wells
-match on the family. Wells with no depth evidence are matched without the depth test and counted separately.
+depth evidence, |stick TVD - well depth| at most 150 ft. Where a DSU got one WCA row set (rule 4: the one-member and
+no-control classes, or surfaces under 75 ft apart), WCA_1 / WCA_2 / WCXY wells match on the family. Wells with no depth
+evidence are matched without the depth test and counted separately. In a DSU x bench flagged `two_landings_observed`
+the depth test is skipped (T1) and the pairs are left out of T5; both are reported separately.
+
+**U-turn DSUs** (straight lateral under 7,000 ft): T1, T3 and T4 are judged on straight DSUs only. U-turn DSUs are
+reported beside them as context. Operators drill short straights at bench spacing in the best rock; reproducing that
+is not a goal of BOX sticks (Michael, 2026-11-15).
 
 **Drilled-across DSU x bench**: at least 3 hidden wells of the bench, no same-bench well before the cutoff, and the
 outer hidden wells within one generated spacing of both setback lines.
@@ -71,3 +80,14 @@ If fewer than 15 DSU x bench are drilled across, T3 and T4 are reported and mark
 
 Per pilot area and bench: sticks and lateral footage BOX against Novi, and stick TVD minus same-bench producer landing
 depth (the phase 0 bust) for both, on today's wells.
+
+## Decided (Michael, 2026-11-15)
+
+Rules: 1 every producer plus spud / DUC / completed; 2 no-depth well pins and closes 400 ft to its family; 3 one landing
+per bench with a flag; 4 WCA_1 and WCA_2 both placed only in the co-developed class (each member >= 8 depth-evidenced
+producers within 3 mi, and >= 3 DSUs within 3 mi drilled in both making >= 25 % of the WCA-drilled DSUs there), no
+envelope test between them there, otherwise one WCA row set at the locally dominant member; 5 U-turn legs at
+max(spacing, 1,200 ft), adjacent rows; 6 lithology members each get their own rows; 7 sliver floor 10 % of DSU area;
+8 azimuth = wells inside the DSU, then the 6-mi cell (>= 10 horizontals), then the county, snapped to a polygon side,
+the long axis with a flag where the two sides tie; 9 narvi pinned by commit; 10 as I2. Setback fit as I5 (10 %).
+Bars: cutoff 2023-01-01 and T1 at 60 % / 50 % kept; two-landing and U-turn treatment as written above.
