@@ -268,3 +268,74 @@ cutover the cache is re-pulled before any number goes in the findings.
 1. The three pilot areas.
 2. Rules 1-10: the recommendation or the alternative for each. Rule 5 and rule 10 are the two I am least sure of.
 3. The bars in `BARS.md`, including the reading of "never under 300 ft" and the 2023-01-01 cutoff.
+
+## 5. Addendum, 2026-11-15: Michael's answers so far, and the two tables he asked for
+
+Decided by Michael on 2026-11-15 (recorded in the plan's decision table after gate 3a):
+
+| Rule | Decision |
+|---|---|
+| 1 | Every producer at any age, plus spud / DUC / completed |
+| 2 | A well with no depth evidence pins its grid and closes 400 ft sideways to its formation family |
+| 5 | U-turn legs at max(bench spacing, 1,200 ft), adjacent rows only; the loss of legs is expected and accepted |
+| 6 | Carbonate and sand members each get their own rows; BOX precedence downstream decides what is drillable |
+| 7 | Sliver floor 10 % of DSU area |
+| 9 | narvi pinned by commit in `requirements-dealintake.txt` |
+| 10 | Adjacent benches within 15 % of each other in spacing share the better-controlled bench's spacing; otherwise a row under 300 ft (sideways and vertical combined) from an adjacent-bench row is not placed |
+
+Open: rule 3 (Michael leans to one landing per bench), rule 4, rule 8, the pilot areas, the bars.
+
+### Rule 4: where WCA_1 and WCA_2 are both developed (`wca_codev.csv`, `wca_codev_map.png`)
+
+Grain: 4,087 Delaware DSUs where both members are eligible. Wells counted: producers with depth evidence, not on a
+planned survey, tagged WCA_1 or WCA_2 (live tags), within 3 mi of the DSU centroid. "Drilled in both" = a DSU with at
+least 2 such producers of each member inside it.
+
+Proposed class, for Michael to set: **co-developed** = each member has at least 8 producers within 3 mi, and at least
+3 DSUs within 3 mi are drilled in both, making at least 25 % of the WCA-drilled DSUs there.
+
+| Class | DSUs | TX / NM | Surfaces under 75 ft / 75-150 ft / over 150 ft apart |
+|---|---|---|---|
+| co-developed | 1,235 | 795 / 440 | 245 / 483 / 505 |
+| one member | 2,520 | 1,769 / 751 | 877 / 863 / 595 |
+| no control (under 8 WCA producers within 3 mi) | 332 | 58 / 274 | 98 / 79 / 135 |
+
+Check on DSUs with at least 4 WCA producers inside: 64.9 % of the co-developed class (638 DSUs) are themselves
+drilled in both members, against 27.3 % of the one-member class (491 DSUs). The split is real but not sharp.
+Sensitivity of the co-developed count: 1,369 (4 each, 2 DSUs, 25 %), 787 (15 each, 5 DSUs, 25 %), 332 (8 each, 3
+DSUs, 50 %). In the one-member class both tags are usually present nearby (median 17 WCA_1 and 15 WCA_2 producers
+within 3 mi) but seldom in the same DSU (median 1 DSU drilled in both).
+
+Pilot pads: Lea 11331 co-developed (8 and 33 producers, 3 of 8 DSUs in both, surfaces 108 ft apart); Ward 12638
+co-developed (22 and 23, 3 of 9, 122 ft); Ruthless 11 (10785) one member (24 and 65, but 2 of 14 DSUs in both;
+surfaces 35 ft apart, so one landing either way).
+
+### Rule 8: regional dominant azimuth (`azimuth_by_county.csv`, `azimuth_by_cell.csv`, `azimuth_map.png`, `azimuth_square_dsus.csv`)
+
+Grain: 54,334 horizontals with a lateral of at least 4,000 ft, not on a planned survey. True bearing, axial, folded to
+[0, 180). R = 1 when every lateral is on one bearing.
+
+| Basin | Wells | Dominant azimuth | R | Within 22.5 deg of N-S | of E-W |
+|---|---|---|---|---|---|
+| Midland | 28,233 | 167.9 deg | 0.97 | 98.4 % | 0.2 % |
+| Delaware | 26,101 | 2.8 deg | 0.67 | 79.5 % | 10.9 % |
+
+Delaware counties: Lea 179.9 deg (R 0.93), Culberson 0.1 (0.95), Loving 178.5 (0.84), Winkler 162.5 (0.83), Reeves
+8.8 (0.72), Ward 36.3 (0.59), Eddy 179.8 (0.34; 32 % of laterals E-W), Pecos 34.4 (0.11). Midland counties are all
+between 164.6 and 0.5 deg with R 0.94 or higher.
+
+Test: near-square DSUs (aspect under 1.15) with at least 3 coherent wells inside; does the default pick the polygon
+side the wells were drilled along? The wells of the DSU are part of the county and cell statistics, so the cell
+figure flatters itself.
+
+| Basin | DSUs tested | County default | 6-mi cell (10 wells or more, else county) | Long axis |
+|---|---|---|---|---|
+| Midland | 78 | 98.7 % | 98.7 % | 43.6 % |
+| Delaware | 410 | 82.4 % | 91.0 % | 82.4 % |
+
+Delaware by county (county default / cell): Eddy 47 % / 80 % (92 DSUs), Lea 91 / 92 (99), Reeves 90 / 96 (102),
+Loving 100 / 96 (52), Ward 96 / 92 (26), Culberson 100 / 100 (23).
+
+Population the default applies to: near-square DSUs with no well inside, 1,353 Delaware and 1,255 Midland. In 41 of
+the Delaware ones (37 in Ward) the two polygon sides are nearly equally far from the county azimuth, so the county
+default does not choose between them.
