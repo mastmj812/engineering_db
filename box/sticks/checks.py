@@ -33,12 +33,14 @@ def i1_envelope(res: Result, d: Dsu, cfg: Cfg, link_fn) -> list[str]:
     t = t[t["overlap"] >= cfg.min_overlap]
     bad = []
     codev = d.wca_class == "co-developed"
+    assumed = {b["code"]: b["target_tvd_ft"] for b in res.benches if not b["no_row_reason"]}      # benches that kept a landing
     for i, j, dh in zip(t["i"].to_numpy(), t["j"].to_numpy(), t["dh_ft"].to_numpy()):
         s, w = legs[int(i)][0], d.wells[int(j)]
-        if w.depth_ft is None:
+        z = w.depth_ft if w.depth_ft is not None else assumed.get(w.code or "")
+        if z is None:
             hit = family(w.code) == family(s["bench"]) and dh <= cfg.same_dh_ft
         else:
-            dz = w.depth_ft - s["target_tvd_ft"]
+            dz = z - s["target_tvd_ft"]
             cross = codev and {w.code, s["bench"]} == set(WCA_MEMBERS)
             hit = (abs(dz) <= cfg.same_dv_ft and dh <= cfg.same_dh_ft and not cross) or any(lo < dz <= hi and dh <= lim for lo, hi, lim in cfg.stacked)
         if hit:

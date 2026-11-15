@@ -79,11 +79,22 @@ def test_stacked_well_closes_the_row_above_it_and_not_a_far_one():
     assert len(xs(res, "BS3_S")) == 5 and all(abs(x - 440) > 300 for x in xs(res, "BS3_S"))
 
 
-def test_no_depth_well_closes_its_family_only():
+def test_no_depth_well_closes_its_family_only_where_its_bench_has_no_landing():
     w = [well("P1", "WCA_2", None, 2640 + 440 + 100)]
     res = run(dsu([bench("WCA_1", 1, 11000, 880), bench("WCB_1", 2, 11500, 880)], w))
     assert reasons(res, "WCA_1") == ["no_depth_neighbour"]
     assert reasons(res, "WCB_1") == []
+
+
+def test_no_depth_well_is_taken_at_its_benchs_landing_depth_in_the_dsu():
+    """DSU 10600: a BS2_C spud with no depth evidence, BS2_C landing 430 ft above BS2_S. It closes its own bench's row
+    as a same landing and leaves the BS2_S row beside it open (the family rule closed both)."""
+    w = [well("P1", "BS2_C", None, 2640 + 440 + 100)]
+    res = run(dsu([bench("BS2_C", 1, 10158, 880), bench("BS2_S", 2, 10588, 880)], w))
+    assert "envelope_same_landing" in reasons(res, "BS2_C") and "no_depth_neighbour" not in reasons(res, "BS2_C")
+    assert reasons(res, "BS2_S") == []
+    close = run(dsu([bench("AVA_1", 1, 9133, 880), bench("AVA_2", 2, 9259, 600)], [well("P1", "AVA_1", None, 2640 + 440 + 100)]))
+    assert "envelope_same_landing" in reasons(close, "AVA_2")         # landings 126 ft apart: one landing to the envelope
 
 
 def test_uturn_dsu_legs_at_1200_ft_and_the_odd_leg_is_not_placed():

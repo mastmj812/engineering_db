@@ -29,7 +29,7 @@ from scripts import box_sticks_phase3_pilot as p3
 
 FT = core.FT_PER_M
 REASON_STYLE = {"envelope_same_landing": ("#dc2626", "same landing, within 400 ft"), "envelope_stacked": ("#ea580c", "stacked, within 300 ft"),
-                "no_depth_neighbour": ("#9333ea", "well with no depth, same family"),
+                "no_depth_neighbour": ("#9333ea", "no-depth well, same family"),
                 "uturn_unpaired": ("#92400e", "U-turn leg with no partner"), "setback_clip": ("#111827", "outside the clear width"),
                 "short_lateral": ("#6b7280", "under 7,000 ft"), "setback_fit": ("#111827", "row count reduced to fit")}
 SHORT = {"envelope_same_landing": "same", "envelope_stacked": "stacked", "no_depth_neighbour": "no-depth", "uturn_unpaired": "unpaired",
@@ -132,7 +132,8 @@ def render(ctx: reads.Context, pid: int, cases: list[str], out: Path, link, cfgs
             bx.scatter(gb(g), z, s=30, marker="^", facecolors="none", edgecolors="#a16207", linewidths=0.9, zorder=3)
     for r in res.ledger:
         if r["status"] == "culled" and r["gunbarrel_x_ft"] is not None:
-            bx.scatter(r["gunbarrel_x_ft"], r["target_tvd_ft"], s=34, marker="x", color=REASON_STYLE[r["reason"]][0], linewidths=1.2, zorder=5)
+            bx.scatter(r["gunbarrel_x_ft"], r["target_tvd_ft"], s=44 if "assumed" in r["detail"] else 34, marker="+" if "assumed" in r["detail"] else "x",
+                       color=REASON_STYLE[r["reason"]][0], linewidths=1.2, zorder=5)
     for s in res.sticks:
         xs_ = [leg["gunbarrel_x_ft"] for leg in s["legs"]]
         bx.scatter(xs_, [s["target_tvd_ft"]] * len(xs_), s=70, marker="s", facecolors=color[s["bench"]], edgecolors="k", linewidths=1.1, zorder=6)
@@ -153,7 +154,9 @@ def render(ctx: reads.Context, pid: int, cases: list[str], out: Path, link, cfgs
                        Line2D([], [], marker="o", ls="", mfc="none", mec="k", ms=5, label="producer outside the DSU"),
                        Line2D([], [], marker="D", ls="", mfc="k", mec="k", ms=5, label="spud / DUC / completed"),
                        Line2D([], [], marker="^", ls="", mfc="none", mec="#a16207", ms=6, label="Novi stick (remaining)")]
-              + [Line2D([], [], marker="x", ls="", color=REASON_STYLE[k][0], ms=6, label="not placed: " + REASON_STYLE[k][1]) for k in used],
+              + [Line2D([], [], marker="x", ls="", color=REASON_STYLE[k][0], ms=6, label="not placed: " + REASON_STYLE[k][1]) for k in used]
+              + ([Line2D([], [], marker="+", ls="", color="k", ms=7, label="+ = closed by a no-depth well at its bench landing")]
+                 if any("assumed" in r["detail"] for r in res.ledger) else []),
               fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=3, framealpha=0.9)
 
     # ---- per-bench table

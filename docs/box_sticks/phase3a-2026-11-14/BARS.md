@@ -28,7 +28,7 @@ Each is 0 violations on the pilot output, and each has a DB-free pytest on synth
 
 | # | Invariant | Bar |
 |---|---|---|
-| I1 | Envelope | No placed leg is inside the envelope of a counted well with depth evidence (pair metric). Against a counted well with no depth evidence: no placed leg of its formation family within 400 ft sideways |
+| I1 | Envelope | No placed leg is inside the envelope of a counted well with depth evidence (pair metric). Against a counted well with no depth evidence: no placed leg of its formation family within 400 ft sideways (**amended 2026-11-15, see "Amended after the cards": such a well is taken at its bench's landing depth in the DSU where that bench kept one**) |
 | I2 | Stagger | (a) Two adjacent benches whose map spacings are within 15 % share the better-controlled bench's spacing, and every row of one sits half a spacing (within 1 ft) from the rows of the other, unless one of them is pinned by existing wells. ~~(b) Always: no leg is closer than 300 ft, sideways gap and TVD difference combined, to a leg of the adjacent bench; a row that would be is not placed, reason `stagger` (rule 10)~~ **(b) struck 2026-11-15 after the step 3 cards, see "Amended after the cards" below** |
 | I3 | Order | In every DSU the target TVDs of the benches with sticks are in stratigraphic order and at least 75 ft apart. A bench has one landing; where its own wells show two, the DSU x bench carries the flag `two_landings_observed` (rule 3) |
 | I4 | Well type | No single-leg stick has a completed lateral under 7,000 ft. A two-leg stick exists only in a DSU whose straight lateral is under 7,000 ft, on adjacent rows of one bench, and its legs are at least 1,200 ft apart: legs at max(bench spacing, 1,200 ft); an odd leg or a single open slot is not placed (rule 5) |
@@ -113,6 +113,18 @@ spacing (Midland DSU 22309: WCB_2 mapped at 757 ft, run at WCA_1's 664 ft). What
 under 300 ft apart in TVD whose own spacings are equal (within 0.5 ft) sit half a spacing apart, unless one is pinned.
 `shared_with` leaves the spacing basis. Generator version `box_sticks_0.3_pilot`; effect on the pilot in
 `cards/README.md` and the run summary.
+
+**Rule 2 / I1 amended: a well with no depth evidence is taken at the DSU's landing depth of its tagged bench.** Michael,
+same day, from DSU 10600: one landing per bench per DSU (rule 3) already says where a bench lands, so a planned-survey
+well of that bench is tested through the normal envelope at that depth. Its own surveyed depth is still never used.
+Guard: only where the tagged bench kept a landing in the DSU (not dropped as sliver / no depth / WCA rule /
+reconciliation, and not an untracked tag); otherwise the well closes its formation family within 400 ft, as before.
+Pinning is unchanged. Ledger detail carries "(bench depth assumed)".
+
+Effect on the 114 pilot DSUs: rows closed as `no_depth_neighbour` 181 -> 10; 1,489 -> 1,502 sticks (Lea +12, Ward +1,
+Midland 0). It also closes rows outside the well's family that sit in its stacked window (22 in the trial without the
+guard). DSU 10600: BS2_S gains 3 rows (BS2_C spuds assumed 430 ft above), WCC loses 1; the Avalon is unchanged because
+AVA_1 and AVA_2 land 126 ft apart there and read as one landing. Generator version `box_sticks_0.4_pilot`.
 
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 

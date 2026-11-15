@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.3_pilot"
+VERSION = "box_sticks_0.4_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -289,9 +289,13 @@ def _leg_line(fr: Frame, y: float, x0: float, x1: float) -> LineString:
     return LineString([npl.unrotate(x0, y, fr.centroid, fr.phi), npl.unrotate(x1, y, fr.centroid, fr.phi)])
 
 
-def envelope_hits(lines: list[LineString], tvd: float, code: str, d: Dsu, cfg: Cfg, link_fn) -> dict[int, tuple[str, str]]:
+def envelope_hits(lines: list[LineString], tvd: float, code: str, d: Dsu, cfg: Cfg, link_fn,
+                  assumed: dict[str, float] | None = None) -> dict[int, tuple[str, str]]:
     """Row index -> (reason, detail) for rows inside the no-place envelope of an existing well (candidate D, the
-    phase 2b pair metric), or within 400 ft sideways of a same-family well with no depth evidence (rule 2)."""
+    phase 2b pair metric). A well with no depth evidence is taken at the DSU's landing depth of its tagged bench where
+    that bench kept a landing (`assumed`: bench -> target TVD); otherwise it closes its formation family within 400 ft
+    sideways (rule 2 as amended 2026-11-15)."""
+    assumed = assumed or {}
     if not lines or not d.wells:
         return {}
     t = link_fn(np.array(lines, dtype=object), np.array([w.line for w in d.wells], dtype=object), same=False)
@@ -301,18 +305,20 @@ def envelope_hits(lines: list[LineString], tvd: float, code: str, d: Dsu, cfg: C
     for i, j, dh in zip(t["i"].to_numpy(), t["j"].to_numpy(), t["dh_ft"].to_numpy()):
         w = d.wells[int(j)]
         why = None
-        if w.depth_ft is None:
+        z = w.depth_ft if w.depth_ft is not None else assumed.get(w.code or "")
+        if z is None:
             if family(w.code) == family(code) and dh <= cfg.same_dh_ft:
                 why = "no_depth_neighbour"
         else:
-            dz = w.depth_ft - tvd
+            dz = z - tvd
             cross = codev and {w.code, code} == set(WCA_MEMBERS)             # rule 4: no test between the two members
             if abs(dz) <= cfg.same_dv_ft and dh <= cfg.same_dh_ft and not cross:
                 why = "envelope_same_landing"
             elif any(lo < dz <= hi and dh <= lim for lo, hi, lim in cfg.stacked):
                 why = "envelope_stacked"
         if why and int(i) not in hits:
-            hits[int(i)] = (why, f"{w.well_id} dh {dh:.0f} ft" + ("" if w.depth_ft is None else f" dz {w.depth_ft - tvd:+.0f} ft"))
+            hits[int(i)] = (why, f"{w.well_id} dh {dh:.0f} ft" + ("" if z is None else f" dz {z - tvd:+.0f} ft")
+                            + (" (bench depth assumed)" if z is not None and w.depth_ft is None else ""))
     return hits
 
 
@@ -344,6 +350,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         w.rows = [fr.y_of(p.x, p.y) for p in mids]                           # pin positions, replaced by rows below
         w.pinned = bool(w.rows)
     live.sort(key=lambda w: w.tvd)
+    assumed = {w.b.code: round(w.tvd, 1) for w in live}                      # landing a no-depth well of that bench is taken at
     groups: list[list[_B]] = []
     for w in live:
         p = groups[-1][-1] if groups else None
@@ -381,7 +388,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             elif not uturn and r["len_ft"] < cfg.min_lateral_ft:
                 r["reason"], r["detail"] = "short_lateral", f"{r['len_ft']:.0f} ft"
         open_ = [r for r in rows if r["reason"] is None]
-        for k, hit in envelope_hits([_leg_line(fr, r["y"], r["x0"], r["x1"]) for r in open_], tvd, code, d, cfg, link_fn).items():
+        for k, hit in envelope_hits([_leg_line(fr, r["y"], r["x0"], r["x1"]) for r in open_], tvd, code, d, cfg, link_fn, assumed).items():
             open_[k]["reason"], open_[k]["detail"] = hit
 
         wells = []                                                           # (InventoryWell, rows it uses)
@@ -426,7 +433,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                     wells.append((iw, rs))
         # the envelope again on the final leg geometry (a U-turn leg is trimmed for its turn, which changes the shared length)
         final = [(iw, rs, leg) for iw, rs in wells for leg in iw.legs]
-        bad = envelope_hits([LineString([leg.heel_xy, leg.toe_xy]) for _, _, leg in final], tvd, code, d, cfg, link_fn)
+        bad = envelope_hits([LineString([leg.heel_xy, leg.toe_xy]) for _, _, leg in final], tvd, code, d, cfg, link_fn, assumed)
         for k, hit in bad.items():
             for r in final[k][1]:
                 if r["reason"] is None:
