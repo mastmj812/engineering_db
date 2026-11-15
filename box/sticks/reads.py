@@ -80,7 +80,8 @@ class Context:
             ix, tree = self.tree[(name, basin)]
             mem = self.members[name].get(pid, set())
             geom, code, api = df["geom"].to_numpy(), df["live"].to_numpy(), df["api10"].to_numpy()
-            ok = df["clean"].to_numpy(bool) & ~df["planned"].fillna(False).to_numpy(bool)
+            planned = df["planned"].fillna(False).to_numpy(bool)
+            ok = df["clean"].to_numpy(bool) & ~planned
             if "screen" in df:
                 ok &= df["screen"].to_numpy() != "bad_depth"
             z = df["depth_ft"].to_numpy(float)
@@ -88,7 +89,7 @@ class Context:
                 if shapely.length(geom[i]) < 1.0:
                     continue
                 out.append(Well(str(api[i]), None if pd.isna(code[i]) else str(code[i]), float(z[i]) if ok[i] and np.isfinite(z[i]) else None,
-                                self.work(geom[i]), bool(i in mem), name))
+                                self.work(geom[i]), bool(i in mem), name, bool(planned[i])))
         return out
 
     def _azimuth(self, pid: int, r: pd.Series) -> tuple[float, str]:

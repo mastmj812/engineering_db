@@ -74,6 +74,7 @@ class Well:
     line: BaseGeometry                    # work CRS
     member: bool = True                   # >= 30 % of its line inside the DSU
     status: str = "producer"
+    planned: bool = False                 # on a planned survey: never depth evidence, drawn in plan view only
 
 
 @dataclass
@@ -465,10 +466,13 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             mid = npl.unrotate((r["x0"] + r["x1"]) / 2.0, r["y"], fr.centroid, fr.phi)
             ledger.append({"pad_id": d.pad_id, "code": code, "row": k, "gunbarrel_x_ft": round(npl.gunbarrel_offset_ft(mid, az, gb[1]), 1),
                            "row_length_ft": round(r["len_ft"], 0), "status": "placed" if r["reason"] is None else "culled",
-                           "reason": r["reason"] or "", "detail": r["detail"], "stick": r["stick"] or ""})
+                           "reason": r["reason"] or "", "detail": r["detail"], "stick": r["stick"] or "", "target_tvd_ft": tvd,
+                           "heel_xy": [round(v, 1) for v in npl.unrotate(r["x0"], r["y"], fr.centroid, fr.phi)],
+                           "toe_xy": [round(v, 1) for v in npl.unrotate(r["x1"], r["y"], fr.centroid, fr.phi)]})
         for k in range(w.fit_dropped):
             ledger.append({"pad_id": d.pad_id, "code": code, "row": len(rows) + k, "gunbarrel_x_ft": None, "row_length_ft": None, "status": "culled",
-                           "reason": "setback_fit", "detail": "row count reduced to fit the clear width", "stick": ""})
+                           "reason": "setback_fit", "detail": "row count reduced to fit the clear width", "stick": "", "target_tvd_ft": tvd,
+                           "heel_xy": None, "toe_xy": None})
         n_placed = sum(r["reason"] is None for r in rows)
         blog.append({"pad_id": d.pad_id, "code": code, "no_row_reason": "" if rows or w.fit_dropped else "no_rows", "rows_considered": len(rows) + w.fit_dropped,
                      "legs_placed": n_placed, "rows_culled": len(rows) + w.fit_dropped - n_placed, "sticks": sum(1 for s in sticks if s["bench"] == code),
