@@ -33,6 +33,7 @@ MIN_LATERAL_FT = 4000.0       # azimuth population: real horizontals
 CELL_MI = 6.0
 SQUARE_ASPECT = p3.SQUARE_ASPECT
 WCA = ("WCA_1", "WCA_2")
+WCA_THRESHOLD = (8, 3, 0.25)  # rule 4 as decided 2026-11-15: each member >= 8 in 3 mi, >= 3 DSUs in both, >= 25 % of WCA-drilled DSUs
 CODEV_MIN_EACH = 2            # a DSU is "drilled in both" with at least this many producers of each member inside
 GEOD = Geod(ellps="WGS84")
 
@@ -47,6 +48,15 @@ def axial(a: np.ndarray) -> tuple[float, float]:
 def axial_dist(a, b):
     d = np.abs(np.asarray(a, float) - np.asarray(b, float)) % 180
     return np.minimum(d, 180 - d)
+
+
+def long_axis_true(pads: pd.DataFrame) -> np.ndarray:
+    """True bearing of each DSU's long axis (the frame stores it as an EPSG:3083 grid bearing)."""
+    a = shapely.get_coordinates(shapely.centroid(pads["geom"].to_numpy()))
+    az = np.radians(pads["long_az_deg"].to_numpy())
+    lon0, lat0 = p3.TO_LL.transform(a[:, 0], a[:, 1])
+    lon1, lat1 = p3.TO_LL.transform(a[:, 0] + 1000 * np.sin(az), a[:, 1] + 1000 * np.cos(az))
+    return np.asarray(GEOD.inv(lon0, lat0, lon1, lat1)[0]) % 180
 
 
 def true_azimuth(wkt_ll: pd.Series) -> np.ndarray:
@@ -231,7 +241,7 @@ def run(out: Path, cache: Path) -> dict:
     S: dict = {"tags": F["tags"], "pulled": F["pulled"]}
 
     t = wca_table(F)
-    t["cls"] = wca_class(t, 8, 3, 0.25)
+    t["cls"] = wca_class(t, *WCA_THRESHOLD)
     t.drop(columns="geom").round(3).to_csv(out / "wca_codev.csv", index=False)
     wca_map(t, out / "wca_codev_map.png")
     S["wca"] = {"dsus": len(t), "by_class": t["cls"].value_counts().to_dict(),
@@ -241,12 +251,7 @@ def run(out: Path, cache: Path) -> dict:
                                 for a, b, c in ((4, 2, 0.25), (8, 3, 0.25), (8, 3, 0.5), (15, 5, 0.25), (15, 5, 0.5))}}
 
     w = az_wells(F)
-    geo = F["pads"]
-    a = shapely.get_coordinates(shapely.centroid(geo["geom"].to_numpy()))
-    az = np.radians(geo["long_az_deg"].to_numpy())
-    lon0, lat0 = p3.TO_LL.transform(a[:, 0], a[:, 1])
-    lon1, lat1 = p3.TO_LL.transform(a[:, 0] + 1000 * np.sin(az), a[:, 1] + 1000 * np.cos(az))
-    geo["long_az_true"] = np.asarray(GEOD.inv(lon0, lat0, lon1, lat1)[0]) % 180
+    F["pads"]["long_az_true"] = long_axis_true(F["pads"])
     county = w.groupby(["basin", "county"]).apply(az_summary, include_groups=False).reset_index()
     county = county[county["wells"] >= 25].sort_values(["basin", "wells"], ascending=[True, False])
     county.to_csv(out / "azimuth_by_county.csv", index=False)

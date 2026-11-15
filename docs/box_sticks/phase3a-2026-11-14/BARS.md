@@ -91,3 +91,21 @@ max(spacing, 1,200 ft), adjacent rows; 6 lithology members each get their own ro
 8 azimuth = wells inside the DSU, then the 6-mi cell (>= 10 horizontals), then the county, snapped to a polygon side,
 the long axis with a flag where the two sides tie; 9 narvi pinned by commit; 10 as I2. Setback fit as I5 (10 %).
 Bars: cutoff 2023-01-01 and T1 at 60 % / 50 % kept; two-landing and U-turn treatment as written above.
+
+## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
+
+Stated here because they narrow or interpret a bar above; none changes a threshold.
+
+- **I2(a) applies to adjacent benches less than 300 ft apart in TVD.** Farther apart, the 300 ft test of I2(b) is met by
+  depth alone and each bench keeps its own map spacing (per-bench density). Sharing chains through a stack: where three
+  close benches are each within 15 % of the next, all take the best-controlled one's spacing.
+- **I2(a) is checked against the bench a row grid was set against** (recorded as `stagger_ref`), not against the nearest
+  bench that kept sticks. The first version of the check picked the nearest surviving bench and reported 25 false
+  violations on the pilot (rows half a spacing off a bench whose own rows were all culled); the generator output was
+  identical before and after the check was corrected.
+- **I5 row count to keep** = the rows the DSU would hold if its sides ran parallel to the azimuth (window area over the
+  longest row, at the map spacing). The clear width is found per DSU from the row-length profile.
+- **I4, straight or U-turn** is decided on the longest row the DSU offers along the resolved azimuth, not on the
+  polygon's long axis.
+- **Azimuth:** wells inside the DSU within 5 deg of a polygon side take the side's bearing (narvi's own edge-snap gate),
+  so rows run parallel to the setback line; farther off, the wells' bearing is kept.
