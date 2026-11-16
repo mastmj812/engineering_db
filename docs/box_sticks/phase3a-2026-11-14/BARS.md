@@ -151,6 +151,13 @@ drilled for parent depletion, but that is a performance call for the BOX forecas
 envelope stays the only test against existing wells, and sticks carry no parent-gap stamp. Stick counts in developed
 DSUs therefore overstate practical inventory and are not to be read without the forecast.
 
+**Written with the back-test (2026-11-15), no threshold changed.** (1) Stack reconciliation fix: the back-test inputs gave
+one I3 violation (DSU 11333); a bench bounced between two neighbours is now dropped and the pair it leaves is tested
+again. Generator version `box_sticks_0.7_pilot`; today's output changed in one DSU (11201). (2) T1 depth test: a DSU x
+bench counts as two-landing when today's wells show two landings, hidden wells included. (3) T3 "within one generated
+spacing of both setback lines" is measured from the DSU polygon's extremes across the azimuth, less 330 ft. (4) A
+`Cfg.alternate` switch exists for one diagnostic (centred grids); the generator of record runs with it on.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.

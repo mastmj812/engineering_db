@@ -171,6 +171,18 @@ def test_sliver_wca_rule_and_reconciliation_give_a_reason_per_bench():
     assert {s["target_tvd_ft"] for s in moved.sticks if s["bench"] == "WCB_1"} == {11495.0}
 
 
+def test_a_bench_squeezed_between_two_neighbours_is_dropped_and_the_order_still_holds():
+    """Back-test DSU 11333: WCB_1 carried 313 ft BELOW WCB_2 and bounced between WCA_1 and WCB_2; the old fallback
+    dropped it without testing the pair it left behind (WCA_1 and WCB_2 15 ft apart, an I3 violation)."""
+    b = [bench("WCA_1", 1, 11971, 880, rung="thickness", tvd_err_median_ft=54.0, tvd_err_p90_ft=151.0, control=33),
+         bench("WCB_1", 2, 12299, 880, rung="offset", tvd_err_median_ft=93.0, tvd_err_p90_ft=392.0, control=19),
+         bench("WCB_2", 3, 11986, 880, rung="offset", tvd_err_median_ft=78.0, tvd_err_p90_ft=232.0, control=5)]
+    res = run(dsu(b))
+    z = {r["code"]: r["target_tvd_ft"] for r in res.benches if not r["no_row_reason"]}
+    assert z == {"WCA_1": 11971.0, "WCB_2": 12046.0}
+    assert {r["code"]: r["no_row_reason"] for r in res.benches}["WCB_1"] == "reconciled_out"
+
+
 def test_codeveloped_wca_members_are_not_tested_against_each_other():
     w = [well("P1", "WCA_2", 11100, 2640 + 440)]
     b = [bench("WCA_1", 1, 11000, 880), bench("WCA_2", 2, 11100, 880)]

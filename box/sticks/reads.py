@@ -32,9 +32,10 @@ def default_cfg(basin: str) -> Cfg:
 
 
 class Context:
-    """The cache frame plus the regional tables of rules 4 and 8, built once."""
+    """The cache frame plus the regional tables of rules 4 and 8, built once. `frame` and `measured` replace the cached
+    frame and spacing gaps (the back-test passes the ones rebuilt without the hidden wells)."""
 
-    def __init__(self, cache):
+    def __init__(self, cache, frame: dict | None = None, measured: pd.DataFrame | None = None):
         from box import tag_scoreboard as sb
         from scripts import box_sticks_phase2a_bands as bands
         from scripts import box_sticks_phase2a_surface as sf
@@ -42,7 +43,7 @@ class Context:
         from scripts import box_sticks_phase3_regional as rg
 
         self.p3, self.rg, self.sf = p3, rg, sf
-        F = self.F = p3.build_frame(cache)
+        F = self.F = frame if frame is not None else p3.build_frame(cache)
         self.order = sb.bench_order()
         self.to_work = Transformer.from_crs("EPSG:3083", f"EPSG:{geo.NARVI_WORK_EPSG}", always_xy=True)
         self.pads = F["pads"].set_index("pad_id")
@@ -59,7 +60,7 @@ class Context:
         self.wca = t.set_index("pad_id")[["cls", "dominant"]].to_dict("index")
         tl = p3.two_landings(F)
         self.two = set(map(tuple, tl.loc[tl["two"], ["pad_id", "code"]].to_numpy()))
-        self.m = sf.measured(cache)
+        self.m = measured if measured is not None else sf.measured(cache)
         self.band_median = bands.build(self.m, F["pads"], F["ext"])[2].set_index(["basin", "code", "band"])["median_ft"].to_dict()
         u, pre = F["u"], F["pre"]
         self.tree = {}

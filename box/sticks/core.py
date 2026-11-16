@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.6_pilot"
+VERSION = "box_sticks_0.7_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -38,6 +38,7 @@ class Cfg:
     min_lateral_ft: float = 7000.0        # no straight stick under this; a U-turn's two legs together reach it
     uturn_leg_ft: float = 1200.0          # rule 5
     tight_cap_ft: float = 440.0           # phase 2a: no spacing under this
+    alternate: bool = True                # unpinned benches alternate left / right down the stack (False: centred; diagnostics)
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
     fit_tol: float = 0.10                 # setback fit: spacing may tighten by this share
@@ -260,7 +261,8 @@ def select_benches(d: Dsu, cfg: Cfg) -> tuple[list[_B], list[tuple[Bench, str]]]
             drop(next(w for w in wca if w.b.code != keep), "wca_one_member")
         elif wca[1].tvd - wca[0].tvd < cfg.min_sep_ft:                       # plan: one WCA landing under the floor
             drop(min(wca, key=lambda w: w.trust), "wca_one_landing")
-    for _ in range(4 * len(live) + 4):                                       # stack reconciliation
+    moves: dict[str, int] = {}
+    while True:                                                              # stack reconciliation; ends: each pass moves or drops
         live.sort(key=lambda w: w.b.rank)
         bad = next(((a, c) for a, c in pairwise(live) if c.tvd - a.tvd < cfg.min_sep_ft - 1e-6), None)
         if bad is None:
@@ -268,14 +270,12 @@ def select_benches(d: Dsu, cfg: Cfg) -> tuple[list[_B], list[tuple[Bench, str]]]
         a, c = bad
         loser, winner = (a, c) if a.trust < c.trust else (c, a)
         target = winner.tvd - cfg.min_sep_ft if loser is a else winner.tvd + cfg.min_sep_ft
-        if abs(target - float(loser.b.tvd_ft)) <= (loser.b.tvd_err_p90_ft or 0.0):
+        moves[loser.b.code] = moves.get(loser.b.code, 0) + 1
+        # a bench pushed back and forth between its two neighbours has no room: it goes, and the pair is tested again
+        if moves[loser.b.code] <= 2 and abs(target - float(loser.b.tvd_ft)) <= (loser.b.tvd_err_p90_ft or 0.0):
             loser.shift_ft, loser.tvd = target - float(loser.b.tvd_ft), target
         else:
             drop(loser, "reconciled_out")
-    else:
-        for a, c in zip(list(live), list(live)[1:]):
-            if c in live and a in live and c.tvd - a.tvd < cfg.min_sep_ft - 1e-6:
-                drop(min((a, c), key=lambda w: w.trust), "reconciled_out")
     return live, out
 
 
@@ -362,7 +362,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         else:
             w.s_m, w.base, w.fit_dropped, w.fit, band = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
             w.s_ft = w.s_m * FT_PER_M
-            if len(live) > 1 and w.fit == "map_spacing" and band is not None:
+            if cfg.alternate and len(live) > 1 and w.fit == "map_spacing" and band is not None:
                 width = band[1] - band[0]
                 n = math.floor(width / w.s_m + 1e-9) + 1
                 slack = width - (n - 1) * w.s_m

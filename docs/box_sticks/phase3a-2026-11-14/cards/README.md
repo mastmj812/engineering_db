@@ -1,6 +1,6 @@
 # BOX sticks phase 3a: review cards
 
-43 cards. Live tags pulled 2026-11-14; generator box_sticks_0.6_pilot. Cards marked `extra` are outside the pilot blocks and count in no bar.
+43 cards. Live tags pulled 2026-11-14; generator box_sticks_0.7_pilot. Cards marked `extra` are outside the pilot blocks and count in no bar.
 
 | Card | Basin | DSU | Cases | Well type | BOX sticks (legs) | Novi remaining | Producers |
 |---|---|---|---|---|---|---|---|
