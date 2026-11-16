@@ -346,7 +346,8 @@ whatever the tag).
 - (Closed 2026-11-15) "35,929 Midland Novi sticks with their midpoint outside every polygon": the `x`, `y` on the stick rows is a stick END, not the midpoint. On the geometry, 166 of 85,811 Midland and 90 of 166,636 Delaware sticks have their midpoint outside every polygon.
 - WCXY: source for the Grisham fault complex line; whether WCXY becomes its own forecast pool; the tag
   policy seed for WCXY tags outside the extent.
-- Open from gate 3a: the 30 % alongside threshold lets a full-length row through beside a well that runs along under 30 % of it (DSU 10600); a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
+- (Decided 2026-11-15, Michael) The 30 % alongside threshold stays: a row beside a well that runs along under 30 % of it is placed (DSU 10600).
+- Open from gate 3a: a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
 - Novi rock quality (`rqs` / `rqt`) on PDP rows of sql/22: drop or keep.
 
 ## Verification
