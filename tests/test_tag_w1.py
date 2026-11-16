@@ -12,9 +12,12 @@ def test_identity_check_counts_frame_and_code_differences():
     wells = pd.DataFrame({"api10": ["1", "2", "3"], "pre_sql23": ["WCA_1", None, "BS2_S"]})
     ident = pd.DataFrame({"api10": ["1", "2", "4"], "sql16": ["WCA_1", None, "WCB_1"]})
     assert check_identity(wells, ident) == {"wells": 3, "only_vendor_frame": 1, "only_enriched_frame": 1,
-                                            "pre_sql23_differs_from_sql16": 0}
+                                            "rule_rows": 0, "pre_sql23_differs_from_sql16": 0}
     ident.loc[0, "sql16"] = "WCXY"
     assert check_identity(wells, ident)["pre_sql23_differs_from_sql16"] == 1
+    # with the switch on, a well sql/16 takes from the rule is counted apart, not as a difference
+    s = check_identity(wells, ident.assign(rule_row=[True, False, False]))
+    assert (s["rule_rows"], s["pre_sql23_differs_from_sql16"]) == (1, 0)
 
 
 def test_sql16_triggers_match_sql16():
