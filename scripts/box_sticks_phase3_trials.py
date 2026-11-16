@@ -2,6 +2,9 @@
 
 Read-only; nothing is stored and no switch is turned on by this script.
 
+Record of 2026-11-15, run against generator 0.7. The WCXY trial was adopted on 2026-11-16 (phase1c
+CHAIN_DIRECT_ONLY is empty, generator 0.8), so on a frame built since then `wcxy_chain` equals the base.
+
     python -m scripts.box_sticks_phase3_trials --out docs/box_sticks/phase3c-<date> --cache <cache>
 
   wcxy_chain     Delaware WCXY takes the full landing-depth chain (today: direct control only)

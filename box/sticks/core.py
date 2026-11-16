@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.7_pilot"
+VERSION = "box_sticks_0.8_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("carried_implausible", "sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")

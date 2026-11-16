@@ -158,6 +158,15 @@ bench counts as two-landing when today's wells show two landings, hidden wells i
 spacing of both setback lines" is measured from the DSU polygon's extremes across the azimuth, less 330 ft. (4) A
 `Cfg.alternate` switch exists for one diagnostic (centred grids); the generator of record runs with it on.
 
+## Amended after gate 3b (Michael, 2026-11-16)
+
+**Delaware WCXY takes the full landing-depth chain** (thickness, bracket, offset), like every other bench; until now it
+took direct control only, "until it has its own extent", which it has. Measured first as a trial
+(`docs/box_sticks/phase3c-2026-11-15/`), then adopted: generator `box_sticks_0.8_pilot`, no generator rule and no bar
+changed, only WCXY's depth input. Results at 0.8: `docs/box_sticks/phase3d-2026-11-16/`. The back-test of record above
+was run at 0.7; at 0.8 T1 is 59.2 % (from 58.9), T2 5.0 %, T3 63.2 %, T4 33.0 %, direct-rung T5 unchanged. The same
+bars fail.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.

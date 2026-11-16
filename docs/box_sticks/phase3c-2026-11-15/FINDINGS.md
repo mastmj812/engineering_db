@@ -7,7 +7,7 @@ phase 3a back-test, and on the affected DSUs basin-wide. Numbers: `trials_summar
 
 | Change | Pilot sticks (1,526 today) | Back-test T1 (58.9 %) | Basin-wide effect | Verdict |
 |---|---|---|---|---|
-| WCXY on the full landing-depth chain | 1,537 | 59.2 % | WCXY sticks 454 -> 963; other benches -16 | **Holds up** |
+| WCXY on the full landing-depth chain | 1,537 | 59.2 % | WCXY sticks 454 -> 963; other benches net -12 | **Holds up; adopted 2026-11-16** |
 | Drop a carried depth that is implausible against a direct bench | 1,465 | 58.3 % | 637 benches dropped, 75 rescued; -1,346 sticks in 500 DSUs | **Does not hold up** |
 | Two landings where the DSU's wells show two | 1,526 | 58.9 % | 336 units; legs in them 250 -> 252 | **No effect** |
 | Short polygons drilled across their line | (count only) | | 402 U-turn DSUs, 1,933 BOX sticks | **Real; needs a decision** |
@@ -18,7 +18,8 @@ Today WCXY takes direct control only (decided 2026-11-12, "until it has its own 
 
 - WCXY DSU x bench with a landing depth: 854 -> 1,277 of 1,299. The 423 new depths are thickness 329, offset 64,
   bracket 30; their rungs' held-out error is 59 ft median, 172 ft P90. 22 still have none.
-- In the 1,299 DSUs: WCXY sticks 454 -> 963. All other benches together lose 16 sticks (WCA_2 -8, BS3_S -4);
+- In the 1,299 DSUs: WCXY sticks 454 -> 963. All other benches together move by a net -12 sticks (16 lost: WCA_2 -8, BS3_S -4, WCA_1 -2, BS3_C -1, WCC -1; 4
+  gained: WCB_1 +3, WCB_2 +1; corrected 2026-11-16, first written as "lose 16");
   benches dropped in stack reconciliation 360 -> 400.
 - Pilot: +11 sticks, all in Lea. Back-test: T1 59.2 %, T2 5.0 %, T4 33.0 %; nothing worse.
 
