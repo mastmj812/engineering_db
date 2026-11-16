@@ -7,11 +7,14 @@ Bars: `BARS.md`. Numbers: `backtest/backtest_summary.json` and the CSVs beside i
 ## Result in one paragraph
 
 The generator meets all eight invariants (0 violations on today's wells and on the back-test inputs). **It fails the
-back-test.** Of 657 hidden producers in straight DSUs, 58.9 % land on a generated slot against a bar of 60 %, and Ward
-is at 46.9 % against a per-area bar of 50 %. The count bar (T3), the unused-slot bar (T4) and the direct-rung depth bar
-(T5) also fail. T2 passes and T6 matches phase 2b. Nothing was tuned after the back-test ran. The main cause of the
-misses is row position, not row count: total legs against wells drilled is 0.96, but 149 of the 270 misses are wells
-that sit 380-570 ft sideways from the nearest row of their bench.
+back-test on three bars.** Of 657 hidden producers in straight DSUs, 58.9 % land on a generated slot against a bar of
+60 %, and Ward is at 46.9 % against a per-area bar of 50 % (T1). The per-unit count bar (T3) and the unused-slot bar
+(T4) also fail, and one carried depth rung (bracket) is over its limit. T2 and the direct-rung depth bar pass; T6
+matches phase 2b. Nothing was tuned after the back-test ran. The misses are row position, not row count: total legs
+against wells drilled is 0.96, and on the sideways test the grid scores what a random phase would (76 % against 80 %).
+
+Corrected 2026-11-15 after the first report: T5 direct was first reported as a fail (81.5 ft, 74.7 %). The scoring had
+not left out the two-landing units as BARS.md requires. With them left out it passes (59.0 ft, 80.2 %).
 
 ## Back-test against the bars
 
@@ -30,8 +33,8 @@ Midland 281): 657 in straight DSUs, 50 in U-turn DSUs.
 | T2 | <= 10 % of W on a bench that got no row | 5.1 % (36 / 707). Lea 1.7 %, Ward 18.1 %, Midland 2.1 % | Pass (Ward alone would not) |
 | T3 | Drilled-across DSU x bench: legs within 1 of wells in >= 70 %; legs / wells 0.85-1.20 | 68 DSU x bench. Within 1 in **63.2 %** (43 / 68). Legs / wells 0.96 (309 / 321) | **Fail** on the per-unit count; the total passes |
 | T4 | Unmatched legs <= 25 % of legs, same units | **33.3 %** (103 / 309) | **Fail** |
-| T5 direct | median abs TVD difference <= 75 ft, >= 80 % within 150 ft | 154 pairs: median **81.5 ft**, **74.7 %** within 150 ft | **Fail** |
-| T5 carried | observed median <= 1.5 x the rung's held-out median | thickness 61 ft vs 48 (1.29x, 230 pairs) pass; offset 100 vs 87 (1.15x, 37) pass; bracket **118 vs 74 (1.59x**, 24) fail | 2 of 3 pass |
+| T5 direct | median abs TVD difference <= 75 ft, >= 80 % within 150 ft | 121 pairs: median 59.0 ft, 80.2 % within 150 ft | Pass (by 0.2 pt on the second test) |
+| T5 carried | observed median <= 1.5 x the rung's held-out median | thickness 61 ft vs 48 (1.28x, 215 pairs) pass; offset 100 vs 87 (1.15x, 37) pass; bracket **118 vs 74 (1.59x**, 24) fail | 2 of 3 pass |
 | T6 | reported | 1.1 % of W with depth (7 / 661) inside the envelope of a pre-cutoff well. Lea 1.63 %, Ward 2.21 %, Midland 0 % | In line with phase 2b (1.15 % / 1.57 %) |
 
 Reported beside the bars, not judged: U-turn DSUs 4 of 50 wells on a slot (8 %), as expected from rule 5. Wells with
@@ -47,13 +50,20 @@ no depth evidence 24 of 40 on a slot; wells in a two-landing DSU x bench 50 of 7
 | Bench has no row in the DSU | 15 | 5 | 4 | 6 |
 | No leg alongside half the well | 3 | 0 | 0 | 3 |
 
-- **Sideways (149).** The nearest row is 453 ft away at the median (quartiles 383 / 574 ft). That is a row grid out of
-  phase with what was drilled, by close to half a spacing. An unpinned bench has no evidence for where its first row
-  sits, so its phase is arbitrary; BARS.md said as much when it set 60 % ("a grid with the right count and an arbitrary
-  phase scores about 660 / spacing").
+- **Sideways (149).** The nearest row is 453 ft away at the median (quartiles 383 / 574 ft): a grid out of phase with
+  what was drilled. On the 603 wells whose bench got a row, 76.3 % pass the sideways test; a grid of the same spacing
+  with a random phase would pass 79.7 %. The generator carries no information about phase, and for a bench with no well
+  in the DSU there is none to carry. T4 is the same miss counted from the leg side.
+- **Benches pinned by existing wells do worse than chance.** 81 wells: 59.3 % pass sideways against 80.5 % by chance
+  (not pinned: 522 wells, 78.9 % against 79.6 %). A pinned grid puts rows on the existing wells (closed by the
+  envelope) and one spacing away from them; the later wells were drilled between or beside the earlier ones.
+- **Trial, not adopted: the wells' own spacing inside the DSU.** A bench with >= 2 (or >= 3) own wells in the DSU takes
+  their median gap instead of the map spacing. T1 57.2 % either way (from 58.9 %); pinned wells 57.0 % / 61.5 % sideways
+  (from 59.3 %). No gain on the hidden wells, and today's pilot sticks fall from 1,526 to 1,433 / 1,460. The pinned miss
+  is not a spacing error. The switch (`Cfg.local_spacing_wells`) stays off.
 - **The left-right alternation costs about 2 points.** Diagnostic only, nothing changed: the same back-test with every
-  unpinned grid centred gives T1 61.0 % (Lea 53.9, Ward 49.0, Midland 72.2) and T4 29.8 %. The overall bar would pass
-  and Ward would still fail. The alternation was decided today from the cards, before the back-test.
+  unpinned grid centred gives T1 61.0 % (Lea 53.9, Ward 49.0, Midland 72.2) and T4 29.8 %. With phase at chance, that
+  difference is noise; Ward fails either way.
 - **Depth (78).** See T5 below.
 - **Worst benches** (W >= 10): Lea BS1_S 2 of 17, Ward BS3_S 0 of 7 and BS1_S 0 of 5, Lea WCB_1 4 of 14, BS3_C 8 of 24,
   Midland DEAN 7 of 17. Best: Midland WCD 61 of 73, WCB_1 32 of 39, WCA_1 46 of 62; Lea AVA_2 13 of 15, WCA_1 15 of 19.
@@ -70,16 +80,19 @@ is the phase 2a held-out error showing up as it should. This is the spacing surf
 
 | Direct rung | Pairs | Median abs | Within 150 ft | Median signed (well - stick) |
 |---|---|---|---|---|
-| Lea | 56 | 124 ft | 67.9 % | -52 ft |
+| Lea | 30 | 73 ft | 80.0 % | -52 ft |
 | Ward | 10 | 152 ft | 50.0 % | -85 ft |
-| Midland | 88 | 53 ft | 81.8 % | +32 ft |
+| Midland | 81 | 39 ft | 84.0 % | +28 ft |
 
-Midland passes on its own. The Delaware direct rung is worse than the Delaware carried rungs, which should not happen
-if "direct" meant what it means today: in the back-test a direct depth comes from the pre-2023 wells near the DSU, and
-the post-2023 wells were landed 50-85 ft shallower. Two readings, not separated here: operators moved their landing
-within the bench after 2022, or some of these benches hold two landings that the pre-cutoff wells did not show (48
-pairs in flagged two-landing units are already left out). **I do not know which**, and the generator has no rule that
-would follow a landing that moves with time.
+Two-landing units left out (48 pairs). The bar passes overall. Ward is 10 pairs, 4 of them WCB_1 wells in DSUs 12615 and
+12617 landed 186 ft above the stick.
+
+Checked, read-only: **the landing did not move with time.** In the 40 pilot DSU x bench that have depth-evidenced wells
+on both sides of the cutoff, post-2022 median depth minus pre-2023 is -24 ft in Lea (24 units, quartiles -62 / +150),
++56 ft in Ward (14 units) and +119 ft in Midland (2 units): no consistent direction. But the two sides differ by more
+than 150 ft in 17 of the 40 units (42 %). So within one DSU and one bench tag, a later campaign often lands a different
+level from the earlier one. That is the two-landing question (rule 3: one landing per bench, flag) showing up across
+time, and it is the source of most depth misses. The flag catches it only when today's wells show both levels.
 
 ### What the back-test does and does not show
 
@@ -151,6 +164,7 @@ reason, Novi sticks, footage both ways, and the bust both ways. The lines that m
 2. **My scoring bug, fixed before any number was read as a result.** The first scoring pass turned a missing depth into
    NaN, which failed the depth test for every well with no depth evidence or in a two-landing unit (T1 read 47.8 %).
    Corrected to skip the depth test as BARS.md says; T1 is 58.9 %.
+   A second one was found after the first report: T5 did not leave out two-landing units (corrected above).
 3. **The 30 % alongside threshold lets a full-length row through.** DSU 10600: a BS2_S row is placed 161 ft and 184 ft
    from two Chevron spuds that run beside 27 % of it. Not measured across the pilot; nothing changed.
 4. **A carried depth can sit far from in-DSU evidence of a neighbour bench.** Lea 10809: carried WCA_1 at 10,981 ft is
@@ -167,11 +181,12 @@ it; rows between existing same-bench producers stay, unstamped.
 
 ## For gate 3a
 
-1. The back-test fails four bars. Do the bars stand as written, and is the pilot generator good enough to carry to the
-   basin-wide run (gate 3b) with those failures stated, or does it go back?
-2. Grid phase for an unpinned bench: keep the left-right alternation (T1 58.9 %) or centre it (61.0 %; Ward fails
-   either way).
-3. Delaware landings drilled 50-85 ft shallower than the pre-2023 wells: accept, or look at it before 3b.
+1. The back-test fails T1, T3 and T4 (and the bracket rung of T5). What they measure: T1 / T4 grid phase at chance
+   level; T3 the phase 2a spacing error per unit (quartiles 0.71 / 1.21) around a correct total (0.96). Does the pilot
+   generator go on to the basin-wide run (gate 3b) with those stated, or go back?
+2. Grid phase for an unpinned bench: keep the left-right alternation or centre it (noise either way).
+3. A second landing inside one bench tag in 42 % of units drilled in two campaigns: stay with one landing per bench and
+   the flag, or revisit rule 3.
 4. The 30 % alongside threshold (defect 3).
 
 Not started: gate 3b (basin-wide run), phase 4.

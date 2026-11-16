@@ -38,6 +38,7 @@ class Cfg:
     min_lateral_ft: float = 7000.0        # no straight stick under this; a U-turn's two legs together reach it
     uturn_leg_ft: float = 1200.0          # rule 5
     tight_cap_ft: float = 440.0           # phase 2a: no spacing under this
+    local_spacing_wells: int = 0          # TRIAL, off: a bench with >= this many own wells in the DSU uses their median gap
     alternate: bool = True                # unpinned benches alternate left / right down the stack (False: centred; diagnostics)
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
@@ -229,6 +230,7 @@ class _B:
     base: float = 0.0
     pinned: bool = False
     stagger_ref: str | None = None        # the bench this one's rows were set half a spacing off
+    local: bool = False
     fit: str = ""
     fit_dropped: int = 0
     shift_ft: float = 0.0
@@ -348,6 +350,11 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         mids = [wl.line.interpolate(0.5, normalized=True) for wl in d.wells if wl.member and wl.code == w.b.code]
         w.rows = [fr.y_of(p.x, p.y) for p in mids]                           # pin positions, replaced by rows below
         w.pinned = bool(w.rows)
+        if cfg.local_spacing_wells and len(w.rows) >= cfg.local_spacing_wells:
+            gaps = np.diff(np.sort(w.rows)) * FT_PER_M
+            gaps = gaps[gaps >= 200.0]                                       # wells closer than this share a slot (stacked landings)
+            if len(gaps) >= cfg.local_spacing_wells - 1:
+                w.s_ft, w.local = max(float(np.median(gaps)), min_s_ft), True
     live.sort(key=lambda w: w.tvd)
     assumed = {w.b.code: round(w.tvd, 1) for w in live}                      # landing a no-depth well of that bench is taken at
     # Row grids, shallow to deep. An unpinned bench keeps every row its own fit gives; inside the slack of the clear
@@ -358,7 +365,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
     for w in live:
         w.s_pre, w.s_m = w.s_ft, w.s_ft / FT_PER_M
         if w.pinned:
-            w.base, w.fit = pinned_base(w.rows, w.s_m), "pinned"
+            w.base, w.fit = pinned_base(w.rows, w.s_m), "pinned_local" if w.local else "pinned"
         else:
             w.s_m, w.base, w.fit_dropped, w.fit, band = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
             w.s_ft = w.s_m * FT_PER_M

@@ -177,6 +177,8 @@ def score(full: dict, ctx_full: reads.Context, runs: dict, area: dict[int, str])
     P = pd.DataFrame(pairs_all)
     B = pd.DataFrame(benchrows)
     Wk = W[W["in_W"]].copy()
+    for c in ("two_landing", "family_match"):                                # object dtype after the concat; ~ on object is not a NOT
+        Wk[c] = Wk[c].astype(bool)
 
     # T1: one-to-one slot match per DSU (a missing depth is None, not NaN: match_slots skips the depth test on None)
     def recs(g: pd.DataFrame) -> list[dict]:
@@ -233,6 +235,18 @@ def score(full: dict, ctx_full: reads.Context, runs: dict, area: dict[int, str])
     X["drilled_across"] = (X["wells"] >= 3) & ~X["prior_same_bench"] & (X["xmin"] <= X["lo"] + X["spacing_ft"].fillna(np.inf)) & (
         X["xmax"] >= X["hi"] - X["spacing_ft"].fillna(np.inf))
     return {"W": W, "Wk": Wk, "pairs": P, "benches": B, "across": X}
+
+
+def pinned_view(S: dict[str, pd.DataFrame], runs: dict) -> dict:
+    """Hidden wells in straight DSUs on a bench that has a row, split by whether the bench grid was pinned by existing wells:
+    share passing the sideways test, the share a random grid phase would give, and the share on a slot."""
+    g = pd.DataFrame([{"pad_id": p, "code": b["code"], "grid": b.get("grid", ""), "s": b.get("spacing_final_ft")} for p, (_d, r) in runs.items() for b in r.benches])
+    k = S["Wk"][(S["Wk"]["well_type"] == "single") & (S["Wk"]["bench_legs"] > 0) & ~S["Wk"]["family_match"]].merge(g, on=["pad_id", "code"], how="left")
+    k["pinned"] = k["grid"].astype(str).str.startswith("pinned")
+    k["chance"] = np.minimum(660.0, k["s"]) / k["s"]
+    return {("pinned" if p else "not_pinned"): {"wells": len(x), "sideways_pass_pct": round(100 * float(x["ok_side"].mean()), 1),
+                                                  "chance_pct": round(100 * float(x["chance"].mean()), 1), "on_slot_pct": round(100 * float(x["on_slot"].mean()), 1)}
+            for p, x in k.groupby("pinned")}
 
 
 def bars(S: dict[str, pd.DataFrame]) -> tuple[dict, pd.DataFrame]:
@@ -379,6 +393,19 @@ def run(out: Path, cache: Path) -> dict:
     Bc, _ = bars(score(full, ctx_full, generate(ctx_bt, ids, alternate=False), area))
     B["sensitivity_centred_grids"] = {"T1_pct": Bc["T1"]["pct"], "T1_by_area": {r["area"]: r["pct"] for r in Bc["T1"]["by_area"]},
                                       "T3_within_1_pct": Bc["T3"]["within_1_pct"], "T4_pct": Bc["T4"]["pct"]}
+    B["pinned_benches"] = pinned_view(S, bt)
+    B["trial_local_spacing"] = {}
+    for n in (2, 3):                                                         # trial only: a bench with >= n own wells in the DSU uses their median gap
+        rn = generate(ctx_bt, ids, local_spacing_wells=n)
+        Sn = score(full, ctx_full, rn, area)
+        Bn, _ = bars(Sn)
+        td = generate(ctx_full, ids, local_spacing_wells=n)
+        B["trial_local_spacing"][f"min_{n}_wells"] = {
+            "T1_pct": Bn["T1"]["pct"], "T1_by_area": {r["area"]: r["pct"] for r in Bn["T1"]["by_area"]}, "pinned_benches": pinned_view(Sn, rn),
+            "backtest_benches_on_local_spacing": sum(1 for _d, r in rn.values() for b in r.benches if b.get("grid") == "pinned_local"),
+            "today_sticks": sum(len(r.sticks) for _d, r in td.values()),
+            "today_benches_on_local_spacing": sum(1 for _d, r in td.values() for b in r.benches if b.get("grid") == "pinned_local"),
+            "today_sticks_by_area": pd.Series({p: len(r.sticks) for p, (_d, r) in td.items()}).groupby(pd.Series(area)).sum().to_dict()}
     S["Wk"].to_csv(out / "backtest_wells.csv", index=False)
     S["across"].to_csv(out / "backtest_dsu_bench.csv", index=False)
     by_bt.to_csv(out / "backtest_area_bench.csv", index=False)

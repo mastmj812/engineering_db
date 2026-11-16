@@ -184,16 +184,16 @@
   },
   "T5": {
    "direct": {
-    "pairs": 154,
-    "median_abs_ft": 81.5,
-    "within_150_pct": 74.7,
-    "pass": false
+    "pairs": 121,
+    "median_abs_ft": 59.0,
+    "within_150_pct": 80.2,
+    "pass": true
    },
    "direct_by_area": {
     "delaware_nm_lea": {
-     "pairs": 56,
-     "median_abs_ft": 123.9,
-     "within_150_pct": 67.9,
+     "pairs": 30,
+     "median_abs_ft": 72.9,
+     "within_150_pct": 80.0,
      "median_signed_ft": -52.1
     },
     "delaware_tx_ward": {
@@ -203,10 +203,10 @@
      "median_signed_ft": -84.8
     },
     "midland_glasscock": {
-     "pairs": 88,
-     "median_abs_ft": 52.8,
-     "within_150_pct": 81.8,
-     "median_signed_ft": 31.9
+     "pairs": 81,
+     "median_abs_ft": 38.6,
+     "within_150_pct": 84.0,
+     "median_signed_ft": 28.0
     }
    },
    "carried": {
@@ -225,10 +225,10 @@
      "pass": true
     },
     "thickness": {
-     "pairs": 230,
-     "median_abs_ft": 61.4,
+     "pairs": 215,
+     "median_abs_ft": 61.0,
      "held_out_median_ft": 47.6,
-     "ratio": 1.29,
+     "ratio": 1.28,
      "pass": true
     }
    },
@@ -253,6 +253,82 @@
    },
    "T3_within_1_pct": 63.2,
    "T4_pct": 29.8
+  },
+  "pinned_benches": {
+   "not_pinned": {
+    "wells": 522,
+    "sideways_pass_pct": 78.9,
+    "chance_pct": 79.6,
+    "on_slot_pct": 61.7
+   },
+   "pinned": {
+    "wells": 81,
+    "sideways_pass_pct": 59.3,
+    "chance_pct": 80.5,
+    "on_slot_pct": 45.7
+   }
+  },
+  "trial_local_spacing": {
+   "min_2_wells": {
+    "T1_pct": 57.2,
+    "T1_by_area": {
+     "delaware_nm_lea": 50.0,
+     "delaware_tx_ward": 42.7,
+     "midland_glasscock": 69.4
+    },
+    "pinned_benches": {
+     "not_pinned": {
+      "wells": 522,
+      "sideways_pass_pct": 77.6,
+      "chance_pct": 79.6,
+      "on_slot_pct": 60.5
+     },
+     "pinned": {
+      "wells": 79,
+      "sideways_pass_pct": 57.0,
+      "chance_pct": 77.5,
+      "on_slot_pct": 43.0
+     }
+    },
+    "backtest_benches_on_local_spacing": 158,
+    "today_sticks": 1433,
+    "today_benches_on_local_spacing": 365,
+    "today_sticks_by_area": {
+     "delaware_nm_lea": 822,
+     "delaware_tx_ward": 368,
+     "midland_glasscock": 243
+    }
+   },
+   "min_3_wells": {
+    "T1_pct": 57.2,
+    "T1_by_area": {
+     "delaware_nm_lea": 50.4,
+     "delaware_tx_ward": 41.7,
+     "midland_glasscock": 69.4
+    },
+    "pinned_benches": {
+     "not_pinned": {
+      "wells": 522,
+      "sideways_pass_pct": 77.4,
+      "chance_pct": 79.6,
+      "on_slot_pct": 60.5
+     },
+     "pinned": {
+      "wells": 78,
+      "sideways_pass_pct": 61.5,
+      "chance_pct": 78.1,
+      "on_slot_pct": 44.9
+     }
+    },
+    "backtest_benches_on_local_spacing": 117,
+    "today_sticks": 1460,
+    "today_benches_on_local_spacing": 259,
+    "today_sticks_by_area": {
+     "delaware_nm_lea": 830,
+     "delaware_tx_ward": 370,
+     "midland_glasscock": 260
+    }
+   }
   }
  },
  "report": {
