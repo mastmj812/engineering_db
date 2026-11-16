@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.5_pilot"
+VERSION = "box_sticks_0.6_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -40,7 +40,6 @@ class Cfg:
     tight_cap_ft: float = 440.0           # phase 2a: no spacing under this
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
-    interzone_ft: float = 300.0           # benches closer than this in TVD with the same spacing sit half a spacing apart (I2)
     fit_tol: float = 0.10                 # setback fit: spacing may tighten by this share
     same_dv_ft: float = 150.0             # candidate D
     same_dh_ft: float = 400.0
@@ -351,40 +350,36 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         w.pinned = bool(w.rows)
     live.sort(key=lambda w: w.tvd)
     assumed = {w.b.code: round(w.tvd, 1) for w in live}                      # landing a no-depth well of that bench is taken at
-    groups: list[list[_B]] = []
+    # Row grids, shallow to deep. An unpinned bench keeps every row its own fit gives; inside the slack of the clear
+    # width it takes the side that puts its rows farthest from the rows of the bench above, so the stack alternates
+    # left and right (Michael, 2026-11-15). Half a spacing off a bench on the same spacing is "staggered"; any other
+    # shift is "offset". No bench loses a row to it, and pinned grids are not moved.
+    prev: _B | None = None
     for w in live:
-        p = groups[-1][-1] if groups else None
-        if p is not None and w.tvd - p.tvd < cfg.interzone_ft and abs(w.s_ft - p.s_ft) < 0.5:
-            groups[-1].append(w)
+        w.s_pre, w.s_m = w.s_ft, w.s_ft / FT_PER_M
+        if w.pinned:
+            w.base, w.fit = pinned_base(w.rows, w.s_m), "pinned"
         else:
-            groups.append([w])
-    for g in groups:
-        prev: _B | None = None
-        for w in g:                                                          # row grids, shallow to deep
-            w.s_pre, w.s_m = w.s_ft, w.s_ft / FT_PER_M
-            if w.pinned:
-                w.base, w.fit = pinned_base(w.rows, w.s_m), "pinned"
-            else:
-                w.s_m, w.base, w.fit_dropped, w.fit, band = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
-                w.s_ft = w.s_m * FT_PER_M
-                if len(g) > 1 and w.fit == "map_spacing" and band is not None:
-                    # Close benches on one spacing alternate inside the clear width (Michael, 2026-11-15): each keeps every
-                    # row its own fit gives, and sits half a spacing from the bench above where the slack allows, else as
-                    # far as the slack allows. A bench never loses a row to the stagger.
-                    width = band[1] - band[0]
-                    slack = width - math.floor(width / w.s_m + 1e-9) * w.s_m
-                    off = min(w.s_m / 2.0, slack)
-                    lo = band[0] + (slack - off) / 2.0
-                    if prev is None:
-                        w.base = lo
-                    else:
-                        far = [abs(((b - prev.base) % w.s_m) - w.s_m / 2.0) for b in (lo, lo + off)]      # 0 = exactly half a spacing off
-                        w.base = (lo, lo + off)[int(far[1] < far[0] - 1e-9)]
-                        if abs(((w.base - prev.base) % w.s_m) - w.s_m / 2.0) * FT_PER_M <= 0.5:
-                            w.fit, w.stagger_ref = "staggered", prev.b.code
-                        elif off > 1e-6:
-                            w.fit = "offset"
-            prev = w
+            w.s_m, w.base, w.fit_dropped, w.fit, band = fit_rows(fr, w.s_m, min_s_ft / FT_PER_M, min_len_m, cfg)
+            w.s_ft = w.s_m * FT_PER_M
+            if len(live) > 1 and w.fit == "map_spacing" and band is not None:
+                width = band[1] - band[0]
+                n = math.floor(width / w.s_m + 1e-9) + 1
+                slack = width - (n - 1) * w.s_m
+                off = min(w.s_m / 2.0, slack)
+                lo = band[0] + (slack - off) / 2.0
+                above = [] if prev is None else [y for y in (prev.base + k * prev.s_m for k in range(
+                    math.ceil((band[0] - prev.base) / prev.s_m - 1e-9), math.floor((band[1] - prev.base) / prev.s_m + 1e-9) + 1))]
+                if not above:
+                    w.base = lo
+                else:
+                    gap = [min(abs(b + k * w.s_m - y) for k in range(n) for y in above) for b in (lo, lo + off)]
+                    w.base = (lo, lo + off)[int(gap[1] > gap[0] + 1e-6)]
+                    if abs(prev.s_m - w.s_m) * FT_PER_M < 0.5 and abs(((w.base - prev.base) % w.s_m) - w.s_m / 2.0) * FT_PER_M <= 0.5:
+                        w.fit, w.stagger_ref = "staggered", prev.b.code
+                    elif off > 1e-6:
+                        w.fit = "offset"
+        prev = w
 
     sticks: list[dict] = []
     ledger: list[dict] = []

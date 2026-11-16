@@ -135,6 +135,16 @@ otherwise as far as the slack allows (grid `offset`, not checked against half a 
 Effect on the 114 pilot DSUs: U-turn sticks 199 -> 220, straight sticks unchanged at 1,303 (equal spacings only occur
 at the 1,200 ft U-turn floor); `uturn_unpaired` rows 99 -> 77. Generator version `box_sticks_0.5_pilot`.
 
+**I2(a) extended down the whole stack.** Michael, same day: the alternation applies between every unpinned bench and
+the bench above it, whatever the depth gap or the spacings (the 300 ft TVD condition is gone). Inside the slack of its
+own clear-width fit, a bench takes the side that puts its rows farthest sideways from the rows of the bench above.
+Grid `staggered` (checked within 1 ft) only where the two share a spacing and end half a spacing apart; otherwise
+`offset`, reported, not checked. Row counts per bench are those of the bench's own fit.
+Effect on the 114 pilot DSUs: 1,523 -> 1,524 sticks (U-turn 220 -> 223; straight 1,303 -> 1,301). In straight DSUs no
+bench's row count changes, but unpinned rows move inside the slack and meet existing wells differently: 38 DSU x bench
+change legs placed, gains and losses about equal (Ward +6 sticks, Lea +2, Midland -7). Generator version
+`box_sticks_0.6_pilot`.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.

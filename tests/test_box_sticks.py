@@ -77,6 +77,17 @@ def test_uturn_benches_alternate_and_both_keep_their_pair():
     assert not [r for r in res.ledger if r["status"] == "culled"]
 
 
+def test_alternation_runs_down_the_whole_stack_whatever_the_depth_gap_or_spacing():
+    far = run(dsu([bench("BS2_S", 1, 10700, 500), bench("BS3_C", 2, 11120, 1000), bench("BS3_S", 3, 11510, 1050)], w=2640.0, h=5280.0))
+    a, b, c = xs(far, "BS2_S"), xs(far, "BS3_C"), xs(far, "BS3_S")          # U-turn floor: all at 1,200 ft, 400 ft apart in TVD
+    assert len(a) == len(b) == len(c) == 2
+    assert abs(abs(b[0] - a[0]) - 600) < 1 and abs(c[0] - a[0]) < 1
+    mixed = run(dsu([bench("BS3_S", 1, 11000, 880), bench("WCB_1", 2, 11600, 1000)]))    # straight, different spacings
+    one = run(dsu([bench("WCB_1", 2, 11600, 1000)]))
+    assert len(xs(mixed, "WCB_1")) == len(xs(one, "WCB_1")) and len(xs(mixed, "BS3_S")) == 6
+    assert {r["code"]: r["grid"] for r in mixed.benches}["WCB_1"] in ("offset", "map_spacing")
+
+
 def test_same_bench_well_pins_the_grid_and_closes_400_ft():
     w = [well("P1", "WCA_1", 11000, 1000), well("P2", "WCA_1", 11010, 1880)]
     res = run(dsu([bench("WCA_1", 1, 11000, 880)], w))
