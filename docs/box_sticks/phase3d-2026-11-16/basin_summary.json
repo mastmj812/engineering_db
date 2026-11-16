@@ -1,7 +1,7 @@
 {
  "summaries": {
   "delaware": {
-   "generator_version": "box_sticks_0.8_pilot",
+   "generator_version": "box_sticks_0.9_pilot",
    "tags": "live",
    "pulled": "2026-11-14",
    "basin": "delaware",
@@ -60,10 +60,10 @@
     "I8": 0
    },
    "violation_examples": {},
-   "seconds": 683
+   "seconds": 605
   },
   "midland": {
-   "generator_version": "box_sticks_0.8_pilot",
+   "generator_version": "box_sticks_0.9_pilot",
    "tags": "live",
    "pulled": "2026-11-14",
    "basin": "midland",
@@ -119,7 +119,7 @@
     "I8": 0
    },
    "violation_examples": {},
-   "seconds": 599
+   "seconds": 521
   }
  },
  "novi_coverage": {

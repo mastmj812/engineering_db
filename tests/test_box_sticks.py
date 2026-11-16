@@ -133,6 +133,21 @@ def test_uturn_dsu_legs_at_1200_ft_and_the_odd_leg_is_not_placed():
     assert len(res.sticks) == 2 and reasons(res, "WCA_1") == ["uturn_unpaired"]      # 5 rows at 1,200 ft: two pairs and one odd leg
 
 
+def test_short_polygon_drilled_across_flags_its_sticks_and_moves_none():
+    """A U-turn DSU (4,620 ft row) holding two 9,760 ft wells: every stick carries the flag, no stick moves."""
+    b = [bench("WCA_1", 1, 11000, 880)]
+    plain = run(dsu(b, w=6000.0, h=5280.0))
+    long2 = [well("P1", "WCC", 12500, 1500), well("P2", "WCC", 12500, 3000)]
+    res = run(dsu(b, long2, w=6000.0, h=5280.0))
+    assert res.meta["drilled_across"] and res.meta["long_wells"] == 2 and not plain.meta["drilled_across"]
+    assert res.sticks and all(core.DRILLED_ACROSS in s["flags"] for s in res.sticks)
+    assert xs(res, "WCA_1") == xs(plain, "WCA_1") and not any(core.DRILLED_ACROSS in s["flags"] for s in plain.sticks)
+    one = run(dsu(b, long2[:1], w=6000.0, h=5280.0))
+    assert not one.meta["drilled_across"]                                     # one long well is not a pattern
+    straight = run(dsu(b, [well("P1", "WCC", 12500, 1500, h_ft=21120.0), well("P2", "WCC", 12500, 3000, h_ft=21120.0)]))
+    assert not straight.meta["drilled_across"]                                # a straight DSU is never flagged
+
+
 def test_skewed_azimuth_fits_the_rows_to_the_clear_width():
     """Polygon sides off the azimuth: the side setbacks cut a wedge off the outer rows. 1 deg still fits 6 rows at 880 ft;
     3 deg tightens the spacing (under 10 %) to keep 6; 5 deg would need more than 10 %, so one row goes and 5 are spread."""

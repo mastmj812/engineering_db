@@ -1,4 +1,4 @@
-# BOX sticks: WCXY on the full landing-depth chain (generator 0.8)
+# BOX sticks: WCXY on the full landing-depth chain (generator 0.8) and the drilled-across flag (0.9)
 
 2026-11-16. Decided by Michael after the trials of `phase3c-2026-11-15/`: Delaware WCXY takes the full landing-depth
 chain (thickness, bracket, offset) like every other bench. Generator `box_sticks_0.8_pilot`; no generator rule and no
@@ -55,7 +55,31 @@ The same bars fail as at gate 3a. The thickness rung moved from 1.28x to 1.32x o
 
 `Cfg.check_carried` and `Cfg.two_levels`: see `phase3c-2026-11-15/FINDINGS.md`.
 
-## Short polygons drilled across their line
+## Short polygons drilled across their line: flagged (generator 0.9)
 
 Michael, 2026-11-16: an artifact of the Novi DSU shapefile, and BOX sticks stay on the Novi polygons; drawing our own
-DSUs is not undertaken now. Nothing changed in the generator. Whether the sticks in those DSUs carry a flag is open.
+DSUs is not undertaken now. The sticks in those DSUs carry a flag, `dsu_drilled_across` (generator
+`box_sticks_0.9_pilot`).
+
+Rule: a U-turn DSU (longest straight row under 7,000 ft) holding at least 2 existing wells (producers or not yet
+producing, >= 30 % of their line inside the DSU) whose length is >= 1.3 x the DSU's longest row. Every stick in such a
+DSU carries the flag; the DSU row carries `drilled_across` and `long_wells`. The flag moves and removes nothing: with
+the flag and the version stripped, the 0.9 stick files are byte-identical to 0.8 in both basins.
+
+| | Delaware | Midland |
+|---|---|---|
+| U-turn DSUs | 1,491 | 594 |
+| ... flagged | 284 | 116 |
+| ... flagged and holding BOX sticks | 246 | 96 |
+| Existing wells in the flagged DSUs (long ones) | 2,129 (999) | 856 (656) |
+| **BOX sticks flagged**, all U-turns (legs) | **1,450** (2,900) | **486** (972) |
+| ... lateral | 11.6 MM ft | 3.9 MM ft |
+| ... share of the basin's sticks | 3.1 % | 1.4 % |
+
+400 DSUs and 1,936 sticks (2.4 % of 80,544). Most flagged benches: Delaware BS3_C 245, WCB_2 192, WCB_1 138; Midland
+MS 72, WCA_1 70, WCB_1 68. On the pilot: 61 of 1,537 sticks in 10 DSUs (10809, 11201, 11523, 12617, 12620, 12621,
+12798, 12799, 18898, 18899). List: `drilled_across_dsus.csv`.
+
+The 3c count was 402 DSUs (Delaware 286) from the cache membership tables; the generator reads its own well list per
+DSU and finds 284 there. The `basin*.csv` files here are the 0.9 run; `backtest/` was run at 0.8 and is unchanged by
+the flag (identical sticks). The review cards do not yet draw the flag.

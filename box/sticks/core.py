@@ -25,7 +25,8 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.8_pilot"
+VERSION = "box_sticks_0.9_pilot"
+DRILLED_ACROSS = "dsu_drilled_across"      # stick flag: a short polygon whose own wells run well past its row
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
 BENCH_REASONS = ("carried_implausible", "sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
@@ -41,6 +42,8 @@ class Cfg:
     local_spacing_wells: int = 0          # TRIAL, off: a bench with >= this many own wells in the DSU uses their median gap
     two_levels: bool = False              # TRIAL, off: a straight DSU x bench whose wells show two landings alternates rows between them
     check_carried: bool = False           # TRIAL, off: a carried depth implausibly far from a direct bench in the DSU gets no row
+    across_ratio: float = 1.3             # a well this many times the DSU's straight row is a long well (flag only)
+    across_min_wells: int = 2             # long wells needed to flag a U-turn DSU as drilled across its line
     alternate: bool = True                # unpinned benches alternate left / right down the stack (False: centred; diagnostics)
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
@@ -350,6 +353,10 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
     meta |= {"well_type": "uturn" if uturn else "single", "straight_ft": round(straight_ft, 0),
              "clear_width_ft": None if band0 is None else round((band0[1] - band0[0]) * FT_PER_M, 0),
              "window_width_ft": round(fr.width0 * FT_PER_M, 0)}
+    # A short polygon the operator drills across with long laterals (Michael, 2026-11-16): the sticks stay, with a flag
+    n_long = sum(1 for wl in d.wells if wl.member and wl.line.length * FT_PER_M >= cfg.across_ratio * straight_ft)
+    across = uturn and n_long >= cfg.across_min_wells
+    meta |= {"long_wells": n_long, "drilled_across": across}
 
     # spacing: each bench its own map spacing (U-turn floor only); no sharing between benches (Michael, 2026-11-15)
     for w in live:
@@ -506,7 +513,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                                   "reconciled_shift_ft": round(w.shift_ft, 1)},
                     "spacing_basis": dict(w.b.spacing_basis) | {"map_ft": round(w.b.spacing_ft, 1), "final_ft": round(w.s_ft, 1),
                                                                 "grid": w.fit},
-                    "flags": sorted(set(w.b.flags) | ({"pinned"} if w.pinned else set()))}
+                    "flags": sorted(set(w.b.flags) | ({"pinned"} if w.pinned else set()) | ({DRILLED_ACROSS} if across else set()))}
             sticks.append(rec)
         for k, r in enumerate(rows):
             mid = npl.unrotate((r["x0"] + r["x1"]) / 2.0, r["y"], fr.centroid, fr.phi)

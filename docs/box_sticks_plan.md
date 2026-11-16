@@ -55,7 +55,7 @@ stick chain is retired.
 | Generator: narvi engine (2026-11-15) | Imported as a library pinned by commit (`requirements-dealintake.txt`); the canonical copy stays in narvi |
 | Gate 3a (2026-11-15) | Pilot generator goes on to the basin-wide run with the back-test failures stated: T1 58.9 % against 60 % (Ward 46.9 % against 50 %), T3 63.2 % of units within one leg against 70 %, T4 33.3 % unused slots against 25 %, bracket depth rung 1.59x against 1.5x. T2, direct-rung depth and the total count (0.96) pass. The bars stand as written. Not adopted: a bench's own in-DSU spacing in place of the map (trial: no gain) |
 | WCXY depth (2026-11-16, after the 3c trials; supersedes "WCXY stays direct-only") | Delaware WCXY takes the full landing-depth chain like every other bench. Generator `box_sticks_0.8_pilot`: WCXY DSU x bench with a depth 854 -> 1,277 of 1,299, WCXY sticks 454 -> 963, other benches net -12 |
-| DSU polygons (2026-11-16) | BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons drilled across with long laterals are an artifact of that shapefile; drawing our own DSUs is not undertaken now |
+| DSU polygons (2026-11-16) | BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons drilled across with long laterals are an artifact of that shapefile; drawing our own DSUs is not undertaken now. Their sticks carry the flag `dsu_drilled_across` (U-turn DSU with >= 2 existing wells >= 1.3 x its longest row; generator `box_sticks_0.9_pilot`; 400 DSUs, 1,936 sticks; nothing moved or removed) |
 | Not adopted (2026-11-16, measured in the 3c trials) | Dropping a carried depth implausible against a direct bench; two landings per bench. Both switches stay off |
 
 ### What exploration found (shapes the plan)
@@ -274,7 +274,9 @@ measured behind off switches. Adopted by Michael 2026-11-16: Delaware WCXY on th
 `box_sticks_0.8_pilot`: WCXY sticks 454 -> 963, Delaware 46,002 -> 46,499 sticks (54,764 legs, 446.4 MM ft), Midland
 unchanged, pilot 1,537 sticks, back-test T1 59.2 % with the same bars failing. Not adopted: dropping a carried depth
 implausible against a direct bench (net -1,346 sticks, back-test slightly worse) and two landings per bench (no
-effect; flagged units are already drilled out). Nothing stored.
+effect; flagged units are already drilled out). Generator `box_sticks_0.9_pilot` adds the flag `dsu_drilled_across`
+on the sticks of short polygons drilled across their line (Delaware 1,450 sticks in 284 DSUs, Midland 486 in 116);
+sticks otherwise identical to 0.8. Nothing stored.
 
 **Gate 3a:** pilot areas reviewed on cards. **Gate 3b:** basin-wide run compared with Novi per DSU and bench
 (count, lateral footage, TVD bust).
@@ -358,7 +360,7 @@ whatever the tag).
   policy seed for WCXY tags outside the extent.
 - (Decided 2026-11-15, Michael) The 30 % alongside threshold stays: a row beside a well that runs along under 30 % of it is placed (DSU 10600).
 - Open from gate 3a: a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
-- (Stated 2026-11-16, Michael) BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons that operators drill across with long straight laterals (402 U-turn DSUs, 1,933 BOX sticks at 0.7; `docs/box_sticks/phase3c-2026-11-15/`) are an artifact of that shapefile. Drawing our own DSUs is not undertaken now: with sparse development it is unclear which sections combine, and who holds the majority working interest per section is inferred, not known. Open: whether those sticks carry a flag.
+- (Stated 2026-11-16, Michael) BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons that operators drill across with long straight laterals (402 U-turn DSUs, 1,933 BOX sticks at 0.7; `docs/box_sticks/phase3c-2026-11-15/`) are an artifact of that shapefile. Drawing our own DSUs is not undertaken now: with sparse development it is unclear which sections combine, and who holds the majority working interest per section is inferred, not known. Decided 2026-11-16: those sticks carry the flag `dsu_drilled_across` (400 DSUs, 1,936 sticks at 0.9).
 - Open from the 3c trials: a carried depth implausible against a direct bench in the same DSU (637 DSU x bench; Lea 10809). Dropping the bench did not hold up; the repair belongs in the landing chain (prefer an anchor bench with wells in or next to the DSU).
 - Novi rock quality (`rqs` / `rqt`) on PDP rows of sql/22: drop or keep.
 

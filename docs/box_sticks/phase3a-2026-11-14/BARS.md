@@ -167,6 +167,10 @@ changed, only WCXY's depth input. Results at 0.8: `docs/box_sticks/phase3d-2026-
 was run at 0.7; at 0.8 T1 is 59.2 % (from 58.9), T2 5.0 %, T3 63.2 %, T4 33.0 %, direct-rung T5 unchanged. The same
 bars fail.
 
+**A stick in a short polygon drilled across its line carries the flag `dsu_drilled_across`** (generator
+`box_sticks_0.9_pilot`): a U-turn DSU holding at least 2 existing wells >= 1.3 x its longest straight row. The flag
+places, moves and removes nothing (0.9 sticks are identical to 0.8 apart from it): 400 DSUs, 1,936 sticks basin-wide.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.
