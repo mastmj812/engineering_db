@@ -258,6 +258,14 @@ invariants at zero violations. Back-test at a 2023-01-01 cutoff, 707 hidden prod
 random phase would (76 % against 80 % on the sideways test), which is what fails T1 and T4. Reviewed on 43 cards; the
 rules decided from them are in the decision table. Nothing stored. **Gate 3a is closed.**
 
+**Phase 3b outcome (2026-11-15, `docs/box_sticks/phase3b-2026-11-15/`).** The same generator over every 2026Q3 polygon
+touched by a BOX extent: Delaware 5,072 DSUs, 46,002 sticks (54,168 legs, 441.5 MM ft) against 55,627 remaining Novi
+sticks (492.6 MM ft) on the same DSUs and benches; Midland 4,385 DSUs, 34,045 sticks (37,688 legs, 350.4 MM ft) against
+35,777 (365.4 MM ft). No errors, no invariant violations. TVD bust against the same-bench producers in the DSU: BOX
+28 ft median Delaware / 22 ft Midland, Novi 100 / 62 ft (favours BOX by construction on the direct rung). Not compared:
+110,978 Delaware and 50,029 Midland remaining Novi sticks on a bench whose BOX extent does not reach their DSU. Nothing
+stored. Waiting on Michael's review (gate 3b).
+
 **Gate 3a:** pilot areas reviewed on cards. **Gate 3b:** basin-wide run compared with Novi per DSU and bench
 (count, lateral footage, TVD bust).
 
@@ -335,7 +343,7 @@ whatever the tag).
 - Polygon coverage gaps and overlaps (0b) - what happens inside an extent where Novi drew no DSU.
 - Spacing bands by SIDE of an extent (Central Basin Platform edge vs the eastern shelf): distance to the nearest edge treats them alike. Not tested.
 - Vertical arrangement inside a bench (BS2_S, Delaware WCC, BS3_C, LSSH): per-bench density with one landing surface puts every stick in one plane; the generator should alternate between landings where local wells show two. Ruthless 11: a single BS2_S surface lands near 10,700 ft, between the real landings (10,540 and 10,890 ft). Second row or second bench is a tag question. Pilot cards.
-- 35,929 of 87,182 Midland Novi sticks have their midpoint outside every 2026Q3 polygon (phase 2a); explain before gate 3b.
+- (Closed 2026-11-15) "35,929 Midland Novi sticks with their midpoint outside every polygon": the `x`, `y` on the stick rows is a stick END, not the midpoint. On the geometry, 166 of 85,811 Midland and 90 of 166,636 Delaware sticks have their midpoint outside every polygon.
 - WCXY: source for the Grisham fault complex line; whether WCXY becomes its own forecast pool; the tag
   policy seed for WCXY tags outside the extent.
 - Open from gate 3a: the 30 % alongside threshold lets a full-length row through beside a well that runs along under 30 % of it (DSU 10600); a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
