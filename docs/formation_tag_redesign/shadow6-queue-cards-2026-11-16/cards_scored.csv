@@ -1,0 +1,23 @@
+card,section,basin,api10,well_name,county,live,sql23,input,v5,proposed,check,verdict,verdict_source,outcome,final
+1,D,delaware,3002556128,WILD WEASEL 22 FEDERAL COM #753H,Lea,AVA_0,,AVA_0,AVA_0,BS3_S,"agrees (input unit 2096 ft off; BS3_S's unit 75 ft, lead 167 ft)",ACCEPT,,agree,BS3_S
+2,D,delaware,3002551948,RATTLESNAKE 28 FEDERAL COM #203H,Lea,AVA_1,,AVA_1,WCB_1,WCB_1,"DISAGREES (input unit 3154 ft off; WCB_1's unit 338 ft, lead 303 ft)",ACCEPT,,agree,WCB_1
+3,D,delaware,3002556042,RATTLESNAKE 28 FEDERAL COM #204H,Lea,AVA_1,,AVA_1,WCB_1,WCB_1,"agrees (input unit 3004 ft off; WCB_1's unit 188 ft, lead 322 ft)",ACCEPT,,agree,WCB_1
+4,D,delaware,3002551951,RATTLESNAKE 28 FEDERAL COM #304H,Lea,AVA_2,,AVA_2,WCB_1,WCB_1,"agrees (input unit 2974 ft off; WCB_1's unit 159 ft, lead 322 ft)",ACCEPT,,agree,WCB_1
+5,D,delaware,3002554046,STONEWALL 28 FEDERAL COM #508H,Lea,AVA_0,AVA_0,BS2_S,,AVA_0,"agrees (input unit 1111 ft off; AVA_0's unit 27 ft, lead 657 ft)",ACCEPT,,agree,AVA_0
+6,D,delaware,3002553997,DOUBLE STAMP FEDERAL COM #113H,Lea,OTHER,,OTHER,OTHER,BS1_S,"DISAGREES (input is OTHER / unmapped; BS1_S's unit 179 ft, lead 874 ft)",ACCEPT,,agree,BS1_S
+7,D,delaware,3001554188,POKER LAKE UNIT 15 TWIN WELLS RANCH #305H,Eddy,BS2_S,BS2_S,OTHER,BS2_S,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 96 ft, lead 344 ft)",ACCEPT,,agree,BS2_S
+8,D,delaware,3001554761,LITTLE GIANTS 20 19 B3AD FEDERAL COM #001H,Eddy,OTHER,,OTHER,OTHER,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 17 ft, lead 1496 ft)",ACCEPT,,agree,BS2_S
+9,D,delaware,3001555472,BONDI 24 FEDERAL COM #134H,Eddy,OTHER,,OTHER,OTHER,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 46 ft, lead 1082 ft)",ACCEPT,,agree,BS2_S
+10,D,delaware,3001555720,BENT TREE 9 11 STATE COM #224H,Eddy,OTHER,,OTHER,BS2_S,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 90 ft, lead 842 ft)",ACCEPT,,agree,BS2_S
+11,D,delaware,3002551752,STACK CATS 25 36 FEDERAL COM #022H,Lea,OTHER,,OTHER,BS2_S,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 113 ft, lead 308 ft)",ACCEPT,,agree,BS2_S
+12,D,delaware,3002552281,DL 15 22 FEDERAL COM #419H,Lea,OTHER,,OTHER,BS2_S,BS2_S,"agrees (input is OTHER / unmapped; BS2_S's unit 59 ft, lead 1331 ft)",ACCEPT,,agree,BS2_S
+13,D,delaware,3001548150,MR POTATO HEAD 11 14 FEDERAL COM #235H,Eddy,OTHER,,OTHER,OTHER,BS3_C,"agrees (input is OTHER / unmapped; BS3_C's unit 90 ft, lead 591 ft)",ACCEPT,,agree,BS3_C
+14,D,delaware,3001547890,BONANZA 22 15 W0FC FEDERAL COM #001H,Eddy,OTHER,,OTHER,WCA_1,WCA_1,"agrees (input is OTHER / unmapped; WCA_1's unit 102 ft, lead 749 ft)",ACCEPT,,agree,WCA_1
+15,D,delaware,3001548624,DELAWARE RANCH 11 14 W1BO FEDERAL COM #002H,Eddy,OTHER,,OTHER,WCA_1,WCA_1,"agrees (input is OTHER / unmapped; WCA_1's unit 5 ft, lead 1420 ft)",ACCEPT,,agree,WCA_1
+16,D,delaware,3001554234,JAMESON 13 24 FEDERAL COM #437H,Eddy,OTHER,,OTHER,WCA_1,WCA_1,"agrees (input is OTHER / unmapped; WCA_1's unit 80 ft, lead 854 ft)",ACCEPT,,agree,WCA_1
+17,D,delaware,3001546391,FULLER 13 12 W1GB FEDERAL COM #001H,Eddy,OTHER,,OTHER,WCA_2,WCA_2,"agrees (input is OTHER / unmapped; WCA_2's unit 14 ft, lead 1043 ft)",ACCEPT,,agree,WCA_2
+18,D,delaware,3001548625,DELAWARE RANCH 11 14 W1BO FEDERAL COM #001H,Eddy,OTHER,,OTHER,WCA_2,WCA_2,"agrees (input is OTHER / unmapped; WCA_2's unit 114 ft, lead 1488 ft)",ACCEPT,,agree,WCA_2
+19,D,delaware,3001553985,POKER LAKE UNIT 19 DTD #309H,Eddy,OTHER,,OTHER,WCXY,WCXY,"agrees (input is OTHER / unmapped; WCXY's unit 56 ft, lead 642 ft)",ACCEPT,,agree,WCXY
+20,D,delaware,3002543570,COLGROVE 35 FEDERAL COM #705H,Lea,OTHER,,OTHER,WCXY,WCXY,"agrees (input is OTHER / unmapped; WCXY's unit 31 ft, lead 454 ft)",ACCEPT,,agree,WCXY
+21,D,delaware,3002543572,COLGROVE 35 FEDERAL COM #707H,Lea,OTHER,,OTHER,WCXY,WCXY,"agrees (input is OTHER / unmapped; WCXY's unit 80 ft, lead 406 ft)",ACCEPT,,agree,WCXY
+22,D,midland,4217336293,BARBA-NEAL 2105H,Glasscock,OTHER,,OTHER,WCD,WCD,"agrees (input is OTHER / unmapped; WCD's unit 10 ft, lead inf ft)",ACCEPT,,agree,WCD
