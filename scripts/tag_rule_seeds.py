@@ -14,7 +14,8 @@ or written by the nightly):
 
 Verdict reading (one rule for every card set): ACCEPT / agree -> the proposal; a bench code -> that code; REJECT -> the
 card's input (Step 3) or today's tag (Step 1); SUSPECT TVD -> a depth exclusion; anything else -> a hold (no row).
-A later card set wins for a well carded twice; clarifications.csv replaces a card's verdict.
+A later card set wins for a well carded twice; clarifications.csv replaces a card's verdict. A review set
+(REVIEW_SETS) re-judges existing human calls: its coded verdicts also replace an older, pre-rule override row.
 """
 
 from __future__ import annotations
@@ -46,7 +47,11 @@ CARD_SETS: list[tuple[str, int]] = [
     ("v5_2-cards-2026-11-08", 3), ("policy-v1-cards-2026-11-09/step1", 1), ("policy-v1-cards-2026-11-09/step1_round2", 1),
     ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3), ("shadow1-queue-cards-2026-11-11", 3),
     ("shadow1-direct-calls-2026-11-11", 3), ("shadow6-queue-cards-2026-11-16", 3),
+    ("human-call-review-2026-11-16", 3),
 ]
+# Card sets that re-judge wells which already carry a human call (input = that call). A verdict with a code replaces
+# the earlier call, including a pre-rule override row; a hold leaves the earlier call as it stands.
+REVIEW_SETS = frozenset({"human-call-review-2026-11-16"})
 STEP1_DECISIONS = ["v5-cards-2026-11-06", "v5-cards-r2-2026-11-06", "policy-v1-cards-2026-11-09/step1",
                    "policy-v1-cards-2026-11-09/step1_round2"]
 STEP3_SCORE = "v5_2-cards-2026-11-08"
@@ -90,13 +95,15 @@ def cards() -> pd.DataFrame:
                          "date": _DATE.search(s).group(1), "today": today, "proposed": r["proposed"],
                          "verdict": text if isinstance(text, str) else "", "kind": kind,
                          "code": code if isinstance(code, str) else None})
-    d = pd.DataFrame(rows).sort_values(["api10", "order"], kind="stable")
+    d = pd.DataFrame(rows)
+    d = d[~(d["set"].isin(REVIEW_SETS) & (d["kind"] == "hold"))].sort_values(["api10", "order"], kind="stable")
     return d.drop_duplicates("api10", keep="last").reset_index(drop=True)
 
 
 def overrides(c: pd.DataFrame) -> pd.DataFrame:
     old = pd.read_csv(OVERRIDES, dtype=str, keep_default_na=False)
     old = old[~old["note"].str.startswith(BLOCK)]
+    old = old[~old["api10"].isin(c.loc[c["set"].isin(REVIEW_SETS), "api10"])]
     clash = set(old["api10"]) & set(c["api10"])
     if clash:
         raise SystemExit(f"carded wells already carry an older override: {sorted(clash)}")

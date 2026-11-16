@@ -1,0 +1,33 @@
+card,section,basin,api10,well_name,county,live,sql23,input,v5,proposed,check,verdict,verdict_source,outcome,final,changed
+1,D,delaware,3001547299,COTTON DRAW UNIT #601H,Eddy,WCXY,,WCXY,BS2_S,BS2_C,"agrees (input unit 2157 ft off; BS2_C's unit 28 ft, lead 682 ft)",ACCEPT,,agree,BS2_C,True
+2,D,delaware,3002541050,IRONHOUSE 19 STATE COM #003H,Lea,BS3_C,,BS3_C,BS2_S,BS3_C,"DISAGREES (input unit 230 ft off; BS3_C's unit 230 ft, lead inf ft)",ACCEPT,,agree,BS3_C,False
+3,D,delaware,3002542946,VAST STATE #005H,Lea,AVA_0,,AVA_0,AVA_0,AVA_0,"DISAGREES (input unit 47 ft off; AVA_0's unit 47 ft, lead 736 ft)",ACCEPT,,agree,AVA_0,False
+4,D,midland,4232944376,ALKALINE EARTH I 8LL,Midland,WCB_1,,WCB_1,LSSH,LSSH,"agrees (input unit 638 ft off; LSSH's unit 159 ft, lead 222 ft)",ACCEPT,,agree,LSSH,True
+5,D,delaware,3001550191,JAVELINA UNIT #509H,Eddy,WCXY,,WCXY,WCXY,WCA_1,"DISAGREES (input unit 114 ft off; WCA_1's unit 114 ft, lead 168 ft)",ACCEPT,,agree,WCA_1,True
+6,D,delaware,3002546618,DAUNTLESS 7 FEDERAL #721H,Lea,WCB_1,,WCB_1,WCA_2,WCA_2,"DISAGREES (input unit 241 ft off; WCA_2's unit 214 ft, lead 26 ft)",WCB_1,,call,WCB_1,False
+7,D,delaware,3002547882,DAUNTLESS 7 FEDERAL #723H,Lea,WCB_1,,WCB_1,WCA_2,WCA_2,"DISAGREES (input unit 246 ft off; WCA_2's unit 212 ft, lead 34 ft)",WCB_1,,call,WCB_1,False
+8,D,delaware,3002545597,DAUNTLESS 7 FEDERAL #728H,Lea,WCB_1,,WCB_1,WCA_2,WCA_2,"DISAGREES (input unit 236 ft off; WCA_2's unit 224 ft, lead 12 ft)",WCB_1,,call,WCB_1,False
+9,D,delaware,4230135446,PERMIT 76-44 LOV UNIT 1H,Loving,WCA_1,,WCA_1,WCA_1,WCXY,"DISAGREES (input unit 101 ft off; WCXY's unit 101 ft, lead 847 ft)",ACCEPT,,agree,WCXY,True
+10,D,delaware,4230136019,SMALL EYED 54-1-36-25 UNIT 15H,Loving,BS3_S,,BS3_S,WCA_1,WCXY,"DISAGREES (input unit 258 ft off; WCXY's unit 8 ft, lead 250 ft)",ACCEPT,,agree,WCXY,True
+11,D,delaware,4230136022,SMALL EYED 54-1-36-25 UNIT 17H,Loving,BS3_S,,BS3_S,WCXY,WCXY,"DISAGREES (input unit 206 ft off; WCXY's unit 86 ft, lead 120 ft)",ACCEPT,,agree,WCXY,True
+12,D,delaware,4230136390,ST KITTS 76 2833 TG 601H,Loving,BS2_C,,BS2_C,BS1_S,BS1_S,"DISAGREES (input unit 162 ft off; BS1_S's unit 53 ft, lead 109 ft)",ACCEPT,,agree,BS1_S,True
+13,D,delaware,4230136332,ST. BRIDES 76 3031 TG 602H,Loving,BS2_C,,BS2_C,BS1_S,BS1_S,"DISAGREES (input unit 242 ft off; BS1_S's unit 28 ft, lead 214 ft)",ACCEPT,,agree,BS1_S,True
+14,D,delaware,4230136283,ST. CLOUD 76 3031 TG 601H,Loving,BS2_C,,BS2_C,BS1_S,BS1_S,"DISAGREES (input unit 240 ft off; BS1_S's unit 32 ft, lead 209 ft)",ACCEPT,,agree,BS1_S,True
+15,D,delaware,4237139126,HALL 28 1H,Pecos,WCA_1,,WCA_1,WCB_2,WCB_2,"DISAGREES (input unit 136 ft off; WCB_2's unit 118 ft, lead 18 ft)",ACCEPT,,agree,WCB_2,True
+16,D,delaware,4237139521,SIBLEY 3-2 3WA,Pecos,WCB_2,,WCB_2,WCA_1,WCA_1,"DISAGREES (input unit 310 ft off; WCA_1's unit 26 ft, lead 284 ft)",ACCEPT,,agree,WCA_1,True
+17,D,delaware,4238937964,BLAZER UNIT 14 3WA,Reeves,WCA_1,,WCA_1,WCXY,BS3_S,"DISAGREES (input unit 116 ft off; BS3_S's unit 43 ft, lead 74 ft)",WCA_1,,call,WCA_1,False
+18,D,delaware,4247538773,CONDIMENT KING 6920A-34 7H,Ward,WCA_2,,WCA_2,WCB_1,WCB_2,"DISAGREES (input unit 149 ft off; WCB_2's unit 8 ft, lead 141 ft)",WCA_2,,call,WCA_2,False
+19,D,delaware,4247538815,UTL 2635-17D 4H,Ward,WCB_2,,WCB_2,WCB_1,WCB_1,"DISAGREES (input unit 62 ft off; WCB_1's unit 62 ft, lead 228 ft)",ACCEPT,,agree,WCB_1,True
+20,D,delaware,4249534174,UL 20 S CHATTER C 2703H,Winkler,WCB_1,,WCB_1,WCA_1,WCA_2,"DISAGREES (input unit 238 ft off; WCA_2's unit 119 ft, lead 119 ft)",WCB_1,,call,WCB_1,False
+21,D,midland,4222742820,FREDERICK LINDSEY E 5H,Howard,WCB_2,,WCB_2,WCB_1,WCB_1,"DISAGREES (input unit 18 ft off; WCB_1's unit 18 ft, lead 3 ft)",WCB_2,,call,WCB_2,False
+22,D,midland,4223534989,BENNIE 4342 4H,Irion,WCB_1,,WCB_1,WCA_1,WCA_1,"DISAGREES (input unit 182 ft off; WCA_1's unit 66 ft, lead 116 ft)",WCB_1,,call,WCB_1,False
+23,D,midland,4231743709,BENDER C 252 2LS,Martin,WCA_1,,WCA_1,LSSH,LSSH,"DISAGREES (input unit 234 ft off; LSSH's unit 128 ft, lead 106 ft)",ACCEPT,,agree,LSSH,True
+24,D,midland,4231741645,MATTINGLEY 14-26 UNIT 2 271,Martin,WCB_1,,WCB_1,WCB_2,WCB_2,"DISAGREES (input unit 13 ft off; WCB_2's unit 13 ft, lead 318 ft)",ACCEPT,,agree,WCB_2,True
+25,D,midland,4232947926,EVERGLADES 5C 303H,Midland,WCB_1,,WCB_1,WCB_2,WCB_2,"DISAGREES (input unit 0 ft off; WCB_2's unit 0 ft, lead 562 ft)",ACCEPT,,agree,WCB_2,True
+26,D,midland,4232943946,TXL 11 UNIT 3 1412AH,Midland,WCA_1,,WCA_1,LSSH,LSSH,"DISAGREES (input unit 593 ft off; LSSH's unit 75 ft, lead 214 ft)",ACCEPT,,agree,LSSH,True
+27,D,midland,4238339992,HICKMAN O 2074SH,Reagan,WCA_1,,WCA_1,WCB_1,WCB_1,"DISAGREES (input unit 65 ft off; WCB_1's unit 60 ft, lead 4 ft)",ACCEPT,,agree,WCB_1,True
+28,D,midland,4238337374,UNIVERSITY 9-31 1H,Reagan,WCB_1,,WCB_1,WCB_2,WCB_2,"DISAGREES (input unit 0 ft off; WCB_2's unit 0 ft, lead 337 ft)",WCB_1,,call,WCB_1,False
+29,D,midland,4246141876,JRS FARMS 22-27-M 13H,Upton,WCB_2,,WCB_2,WCB_1,WCB_1,"DISAGREES (input unit 14 ft off; WCB_1's unit 14 ft, lead 313 ft)",ACCEPT,,agree,WCB_1,True
+30,D,midland,4246139472,NEAL F UNIT 8 7H,Upton,WCB_1,,WCB_1,WCB_2,WCB_2,"DISAGREES (input unit 57 ft off; WCB_2's unit 57 ft, lead 630 ft)",ACCEPT,,agree,WCB_2,True
+31,D,midland,4246142118,PONDEROSA EAST A 7H,Upton,WCB_2,,WCB_2,WCC,WCB_1,"DISAGREES (input unit 128 ft off; WCB_1's unit 128 ft, lead 16 ft)",ACCEPT,,agree,WCB_1,True
+32,D,midland,4246142121,PONDEROSA EAST C 10H,Upton,WCB_2,,WCB_2,WCC,WCB_1,"DISAGREES (input unit 196 ft off; WCB_1's unit 196 ft, lead -20 ft)",ACCEPT,,agree,WCB_1,True
