@@ -78,7 +78,7 @@ def depth_hit(S: dict, units: set) -> dict:
     q = P[P["well"].isin(set(w["api10"])) & P["ok_side"]].copy()
     q["near"] = q["dz_raw"].astype(float).abs() <= 150.0
     got = q.groupby("well")["near"].any()
-    return {"wells": len(w), "with_a_leg_alongside": int(len(got)), "leg_within_150_ft": int(got.sum()),
+    return {"wells": len(w), "with_a_leg_alongside": len(got), "leg_within_150_ft": int(got.sum()),
             "median_abs_dz_nearest_level_ft": round(float(q.groupby("well")["dz_raw"].apply(lambda v: v.astype(float).abs().min()).median()), 1) if len(q) else None}
 
 
