@@ -129,6 +129,19 @@ def test_breaker():
     assert tr.breaker(prev, new, set(), floor=200, share=0.9)["limit"] == 270
 
 
+def test_breaker_names_the_changed_wells():
+    prev = pd.DataFrame({"api10": ["1", "2", "3", "4", "5"], "applied_code": ["A", None, "A", "A", None]})
+    new = pd.DataFrame({"api10": ["1", "2", "3", "4", "5", "6"], "applied_code": ["B", "A", None, "C", None, "A"]})
+    b = tr.breaker(prev, new, {"4"})                       # 4's own inputs moved; 6 is new; 5 stays not applied
+    assert b["changed"] == 3
+    assert b["changed_wells"] == [{"api10": "1", "was": "A", "now": "B"}, {"api10": "2", "was": None, "now": "A"},
+                                  {"api10": "3", "was": "A", "now": None}]
+    assert tr.breaker(None, new, set())["changed_wells"] == []
+    big = pd.DataFrame({"api10": [f"{i:04d}" for i in range(300)], "applied_code": ["A"] * 300})
+    b = tr.breaker(big, big.assign(applied_code="B"), set())
+    assert b["changed"] == 300 and len(b["changed_wells"]) == tr.CHANGED_WELLS_CAP   # list capped, count exact
+
+
 def test_inputs_match():
     rule = pd.DataFrame({"api10": ["1", "2", "3", "4"], "novi_raw": ["A", "A", "A", None], "env_raw": ["E", "E", "E", "E"],
                          "tvd_ft": [8000.0, 8000.0, 8000.0, None], "planned": [False] * 4})

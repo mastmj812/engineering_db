@@ -37,6 +37,7 @@ from box import tag_subbench as ts1
 
 UNMAPPED = "(unmapped)"
 MIN_QUEUE_CLASS = 20
+CHANGED_WELLS_CAP = 200   # breaker()'s changed-well list; the count is always exact
 
 
 @dataclass(frozen=True)
@@ -186,16 +187,23 @@ def inputs_match(rule: pd.DataFrame, wells: pd.DataFrame, vendors: pd.DataFrame)
 
 def breaker(prev: pd.DataFrame | None, new: pd.DataFrame, moved_inputs: set[str], floor: int = 200, share: float = 0.01) -> dict:
     """Circuit breaker (D3): applied codes that change against the previous run on wells present in both whose own
-    inputs did not move. Trips above max(floor, share x judged wells)."""
+    inputs did not move. Trips above max(floor, share x judged wells).
+
+    `changed_wells` names them (api10, was -> now; None = not applied), sorted by api10 and capped at
+    CHANGED_WELLS_CAP: the rule table is replaced every night, so the run row is the only record of which wells moved."""
     limit = max(floor, int(share * len(new)))
     if prev is None or prev.empty:
-        return {"changed": 0, "limit": limit, "tripped": False, "first_run": True}
+        return {"changed": 0, "limit": limit, "tripped": False, "first_run": True, "changed_wells": []}
     a = prev.set_index("api10")["applied_code"]
     b = new.set_index("api10")["applied_code"]
     both = a.index.intersection(b.index).difference(pd.Index(sorted(moved_inputs)))
     norm = lambda s: s.loc[both].astype(object).where(s.loc[both].notna(), "~")
-    changed = int((norm(a) != norm(b)).sum())
-    return {"changed": changed, "limit": limit, "tripped": changed > limit, "first_run": False}
+    na, nb = norm(a), norm(b)
+    diff = na != nb
+    changed = int(diff.sum())
+    code = lambda x: None if x == "~" else x
+    wells = [{"api10": k, "was": code(na[k]), "now": code(nb[k])} for k in sorted(diff.index[diff])[:CHANGED_WELLS_CAP]]
+    return {"changed": changed, "limit": limit, "tripped": changed > limit, "first_run": False, "changed_wells": wells}
 
 
 def git_sha() -> str:
