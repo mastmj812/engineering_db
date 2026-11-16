@@ -1,0 +1,109 @@
+api10,input,proposed,note
+3002545844,AVA_1,AVA_0,sql/23 had this well on AVA_0 until the 2026-11-16 cutover; it is now on the vendor tag AVA_1. Rule: the rule sees a gross miss but cannot place the well.
+3002551332,AVA_1,WCB_1,sql/23 had this well on WCB_1 until the 2026-11-16 cutover; it is now on the vendor tag AVA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+3002553349,AVA_1,WCB_1,sql/23 had this well on WCB_1 until the 2026-11-16 cutover; it is now on the vendor tag AVA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+3002551964,BS1_S,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag BS1_S. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3002552262,BS1_S,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag BS1_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002551957,BS1_S,WCB_1,sql/23 had this well on WCB_1 until the 2026-11-16 cutover; it is now on the vendor tag BS1_S. Rule: the rule sees a gross miss but cannot place the well.
+3002551958,BS1_S,WCB_1,sql/23 had this well on WCB_1 until the 2026-11-16 cutover; it is now on the vendor tag BS1_S. Rule: the rule sees a gross miss but the local bench depths are out of order.
+3001535041,BS1_S,WCXY,sql/23 had this well on WCXY until the 2026-11-16 cutover; it is now on the vendor tag BS1_S. Rule: the rule sees a gross miss but cannot place the well.
+4237140329,BS2_C,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag BS2_C. Rule: the rule has no depth control for the vendor tag's unit here.
+3002555534,BS2_S,AVA_0,sql/23 had this well on AVA_0 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+3001541521,BS2_S,AVA_2,sql/23 had this well on AVA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3001540755,BS2_S,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002541146,BS2_S,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002553619,BS2_S,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+3002553621,BS2_S,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+3002549287,BS2_S,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but the local bench depths are out of order.
+4230137634,BS2_S,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+4230137636,BS2_S,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+4230137637,BS2_S,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS2_S. Rule: the rule sees a gross miss but cannot place the well.
+3001546378,BS3_C,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_C. Rule: the rule has no depth control for the vendor tag's unit here.
+3002541575,BS3_S,AVA_1,sql/23 had this well on AVA_1 until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002548007,BS3_S,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule sees a gross miss but cannot place the well.
+3002550371,BS3_S,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002503097,BS3_S,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002520086,BS3_S,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3002520508,BS3_S,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002553152,BS3_S,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3002550158,BS3_S,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002552959,BS3_S,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002555688,BS3_S,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002555690,BS3_S,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002555721,BS3_S,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule has no depth control for the vendor tag's unit here.
+3002548277,BS3_S,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag BS3_S. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3001539733,OTHER,AVA_1,sql/23 had this well on AVA_1 until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002503429,OTHER,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002552087,OTHER,BS1_S,sql/23 had this well on BS1_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001545749,OTHER,BS2_C,sql/23 had this well on BS2_C until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001535921,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002505936,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002526824,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002536675,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002538612,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002551684,OTHER,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002503027,OTHER,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002505513,OTHER,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002520773,OTHER,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+4237140047,OTHER,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001525956,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001531152,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001532181,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001554219,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002520503,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002520687,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002522679,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002534945,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002550354,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3002552602,OTHER,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001521126,OTHER,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001533625,OTHER,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001554872,OTHER,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001540775,OTHER,WCXY,sql/23 had this well on WCXY until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+3001547580,WCA_1,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+3001543291,WCA_1,BS3_C,sql/23 had this well on BS3_C until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+4237139397,WCA_1,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4237139436,WCA_1,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4237139985,WCA_1,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4238934064,WCA_1,WCB_2,sql/23 had this well on WCB_2 until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule sees a gross miss but cannot place the well.
+4238936101,WCA_1,WCB_2,sql/23 had this well on WCB_2 until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3001547434,WCA_1,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3001554556,WCA_1,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+3001554561,WCA_1,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule has no depth control for the vendor tag's unit here.
+3001553770,WCA_1,WCXY,sql/23 had this well on WCXY until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3001553836,WCA_1,WCXY,sql/23 had this well on WCXY until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+3002543547,WCA_2,AVA_0,sql/23 had this well on AVA_0 until the 2026-11-16 cutover; it is now on the vendor tag WCA_2. Rule: the rule sees a gross miss but cannot place the well.
+4237138810,WCA_2,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag WCA_2. Rule: the rule has no depth control for the vendor tag's unit here.
+4237139298,WCA_2,BS3_S,sql/23 had this well on BS3_S until the 2026-11-16 cutover; it is now on the vendor tag WCA_2. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4210932986,WCA_2,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCA_2. Rule: the rule has no depth control for the vendor tag's unit here.
+3001544401,WCA_2,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCA_2. Rule: the rule sees a gross miss but cannot place the well.
+3001546344,WCB_2,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag WCB_2. Rule: the rule has no depth control for the vendor tag's unit here.
+4238933058,WCB_2,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag WCB_2. Rule: the rule has no depth control for the vendor tag's unit here.
+4238934442,WCB_2,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag WCB_2. Rule: the rule has no depth control for the vendor tag's unit here.
+3001548933,WCC,BS2_S,sql/23 had this well on BS2_S until the 2026-11-16 cutover; it is now on the vendor tag WCC. Rule: the rule has no depth control for the vendor tag's unit here.
+3001553322,WCC,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag WCC. Rule: the rule has no depth control for the vendor tag's unit here.
+3001553440,WCC,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag WCC. Rule: the rule has no depth control for the vendor tag's unit here.
+4210932978,WCC,WCA_2,sql/23 had this well on WCA_2 until the 2026-11-16 cutover; it is now on the vendor tag WCC. Rule: the rule has no depth control for the vendor tag's unit here.
+3001545579,WCC,WCXY,sql/23 had this well on WCXY until the 2026-11-16 cutover; it is now on the vendor tag WCC. Rule: the rule has no depth control for the vendor tag's unit here.
+3001548924,WCXY,WCC,sql/23 had this well on WCC until the 2026-11-16 cutover; it is now on the vendor tag WCXY. Rule: the rule sees a gross miss but cannot place the well.
+4203331672,JM,DEAN,sql/23 had this well on DEAN until the 2026-11-16 cutover; it is now on the vendor tag JM. Rule: the rule has no depth control for the vendor tag's unit here.
+4231742707,JM,LSSH,sql/23 had this well on LSSH until the 2026-11-16 cutover; it is now on the vendor tag JM. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4231742713,JM,LSSH,sql/23 had this well on LSSH until the 2026-11-16 cutover; it is now on the vendor tag JM. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4200348755,LSSH,MS,sql/23 had this well on MS until the 2026-11-16 cutover; it is now on the vendor tag LSSH. Rule: the rule sees a gross miss but cannot place the well.
+4210337719,LSSH,MS,sql/23 had this well on MS until the 2026-11-16 cutover; it is now on the vendor tag LSSH. Rule: the rule has no depth control for the vendor tag's unit here.
+4232941958,LSSH,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag LSSH. Rule: the rule sees a gross miss but cannot place the well.
+4232946206,LSSH,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag LSSH. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4200348504,MS,DEAN,sql/23 had this well on DEAN until the 2026-11-16 cutover; it is now on the vendor tag MS. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4213544173,OTHER,LSSH,sql/23 had this well on LSSH until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+4213544174,OTHER,LSSH,sql/23 had this well on LSSH until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+4200345969,OTHER,MS,sql/23 had this well on MS until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+4223536438,OTHER,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag OTHER. Rule: the vendor tag is OTHER or unmapped and the rule finds no bench close enough.
+4222738913,WCA_1,MS,sql/23 had this well on MS until the 2026-11-16 cutover; it is now on the vendor tag WCA_1. Rule: the rule sees a gross miss but cannot place the well.
+4246141768,WCB_1,JM,sql/23 had this well on JM until the 2026-11-16 cutover; it is now on the vendor tag WCB_1. Rule: the rule sees a gross miss but cannot place the well.
+4232945937,WCB_1,LSSH,sql/23 had this well on LSSH until the 2026-11-16 cutover; it is now on the vendor tag WCB_1. Rule: not judged.
+4210541359,WCB_1,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag WCB_1. Rule: the rule has no depth control for the vendor tag's unit here.
+4223535203,WCB_1,WCB_2,sql/23 had this well on WCB_2 until the 2026-11-16 cutover; it is now on the vendor tag WCB_1. Rule: the rule sees a gross miss but cannot place the well.
+4238339841,WCB_2,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag WCB_2. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4246139501,WCB_2,WCA_1,sql/23 had this well on WCA_1 until the 2026-11-16 cutover; it is now on the vendor tag WCB_2. Rule: the rule finds the well within 600 ft of the vendor tag's unit.
+4231744985,WCD,JM,sql/23 had this well on JM until the 2026-11-16 cutover; it is now on the vendor tag WCD. Rule: the rule has no depth control for the vendor tag's unit here.
+4231744984,WCD,WCB_1,sql/23 had this well on WCB_1 until the 2026-11-16 cutover; it is now on the vendor tag WCD. Rule: the rule has no depth control for the vendor tag's unit here.
