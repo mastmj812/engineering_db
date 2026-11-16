@@ -145,6 +145,12 @@ bench's row count changes, but unpinned rows move inside the slack and meet exis
 change legs placed, gains and losses about equal (Ward +6 sticks, Lea +2, Midland -7). Generator version
 `box_sticks_0.6_pilot`.
 
+**Decided, no change: rows between existing same-bench producers stay.** Michael, same day, from DSU 12638 (two
+BS3_C rows 422 ft and 616 ft from producers drilled 1,130-1,480 ft apart in 2025): such a well would likely not be
+drilled for parent depletion, but that is a performance call for the BOX forecast methodology, not for placement. The
+envelope stays the only test against existing wells, and sticks carry no parent-gap stamp. Stick counts in developed
+DSUs therefore overstate practical inventory and are not to be read without the forecast.
+
 ## Clarifications written with the generator (2026-11-15, after the invariant checks first ran, before any back-test)
 
 Stated here because they narrow or interpret a bar above; none changes a threshold.
