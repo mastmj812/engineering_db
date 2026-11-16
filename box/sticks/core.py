@@ -14,7 +14,7 @@ The generator does not forecast and holds no economics.
 from __future__ import annotations
 
 import math
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from itertools import pairwise
 
 import numpy as np
@@ -28,7 +28,7 @@ from shapely.geometry.base import BaseGeometry
 VERSION = "box_sticks_0.7_pilot"
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
-BENCH_REASONS = ("sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
+BENCH_REASONS = ("carried_implausible", "sliver", "no_depth", "wca_one_member", "wca_one_landing", "reconciled_out", "no_window", "no_rows")
 WCA_MEMBERS = ("WCA_1", "WCA_2")
 
 
@@ -39,6 +39,8 @@ class Cfg:
     uturn_leg_ft: float = 1200.0          # rule 5
     tight_cap_ft: float = 440.0           # phase 2a: no spacing under this
     local_spacing_wells: int = 0          # TRIAL, off: a bench with >= this many own wells in the DSU uses their median gap
+    two_levels: bool = False              # TRIAL, off: a straight DSU x bench whose wells show two landings alternates rows between them
+    check_carried: bool = False           # TRIAL, off: a carried depth implausibly far from a direct bench in the DSU gets no row
     alternate: bool = True                # unpinned benches alternate left / right down the stack (False: centred; diagnostics)
     sliver_frac: float = 0.10             # rule 7
     min_sep_ft: float = 75.0              # stack reconciliation
@@ -65,6 +67,8 @@ class Bench:
     tvd_err_p90_ft: float | None = None
     spacing_basis: dict = field(default_factory=dict)
     flags: tuple = ()
+    levels: tuple[float, float] | None = None   # upper / lower landing where the DSU's own wells show two (used by cfg.two_levels)
+    depth_check: str = ""                 # why a carried depth is implausible against a direct bench here (used by cfg.check_carried)
 
 
 @dataclass
@@ -231,6 +235,7 @@ class _B:
     pinned: bool = False
     stagger_ref: str | None = None        # the bench this one's rows were set half a spacing off
     local: bool = False
+    levels: tuple[float, float] | None = None
     fit: str = ""
     fit_dropped: int = 0
     shift_ft: float = 0.0
@@ -249,6 +254,8 @@ def select_benches(d: Dsu, cfg: Cfg) -> tuple[list[_B], list[tuple[Bench, str]]]
             out.append((b, "sliver"))
         elif b.tvd_ft is None or b.rung == "none":
             out.append((b, "no_depth"))
+        elif cfg.check_carried and b.depth_check:
+            out.append((b, "carried_implausible"))
         else:
             live.append(_B(b, float(b.tvd_ft)))
 
@@ -388,6 +395,17 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                         w.fit = "offset"
         prev = w
 
+    # TRIAL (cfg.two_levels): two landings in a straight DSU x bench, kept only where both clear the benches above and below
+    by_z = sorted(live, key=lambda w: w.tvd)
+    for i, w in enumerate(by_z):
+        lv = w.b.levels
+        if not cfg.two_levels or uturn or lv is None:
+            continue
+        above = by_z[i - 1].levels[1] if i and by_z[i - 1].levels else (by_z[i - 1].tvd if i else -math.inf)
+        below = by_z[i + 1].tvd if i + 1 < len(by_z) else math.inf
+        if lv[0] - above >= cfg.min_sep_ft and below - lv[1] >= cfg.min_sep_ft:
+            w.levels = (round(float(lv[0]), 1), round(float(lv[1]), 1))
+
     sticks: list[dict] = []
     ledger: list[dict] = []
     turn_high: bool | None = None
@@ -403,14 +421,30 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                 r["reason"], r["detail"] = "setback_clip", f"row {r['len_ft']:.0f} ft, outside the clear width"
             elif not uturn and r["len_ft"] < cfg.min_lateral_ft:
                 r["reason"], r["detail"] = "short_lateral", f"{r['len_ft']:.0f} ft"
+        par = 0
+        if w.levels:                                                         # row parity that best matches the bench's own wells
+            ys = np.array([r["y"] for r in rows])
+            score = [0, 0]
+            for wl in d.wells:
+                if wl.member and wl.code == code and wl.depth_ft is not None and len(ys):
+                    m = wl.line.interpolate(0.5, normalized=True)
+                    k = int(np.argmin(np.abs(ys - fr.y_of(m.x, m.y))))
+                    lvl = int(abs(wl.depth_ft - w.levels[1]) < abs(wl.depth_ft - w.levels[0]))
+                    score[(k - lvl) % 2] += 1
+            par = int(score[1] > score[0])
+        for k, r in enumerate(rows):
+            r["tvd"] = w.levels[(k + par) % 2] if w.levels else tvd
         open_ = [r for r in rows if r["reason"] is None]
-        for k, hit in envelope_hits([_leg_line(fr, r["y"], r["x0"], r["x1"]) for r in open_], tvd, code, d, cfg, link_fn, assumed).items():
-            open_[k]["reason"], open_[k]["detail"] = hit
+        for z in sorted({r["tvd"] for r in open_}):
+            grp = [r for r in open_ if r["tvd"] == z]
+            for k, hit in envelope_hits([_leg_line(fr, r["y"], r["x0"], r["x1"]) for r in grp], z, code, d, cfg, link_fn, assumed).items():
+                grp[k]["reason"], grp[k]["detail"] = hit
 
         wells = []                                                           # (InventoryWell, rows it uses)
         open_ = [r for r in rows if r["reason"] is None]
         if not uturn:
-            wells = [(ng._single_well(ng._make_leg(r["y"], r["x0"], r["x1"], fr.centroid, fr.phi, gb), p, 0), [r]) for r in open_]
+            wells = [(ng._single_well(ng._make_leg(r["y"], r["x0"], r["x1"], fr.centroid, fr.phi, gb), replace(p, target_tvd_ft=r["tvd"]), 0), [r])
+                     for r in open_]
         else:
             runs: list[list[dict]] = []
             for r in open_:
@@ -449,11 +483,12 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                     wells.append((iw, rs))
         # the envelope again on the final leg geometry (a U-turn leg is trimmed for its turn, which changes the shared length)
         final = [(iw, rs, leg) for iw, rs in wells for leg in iw.legs]
-        bad = envelope_hits([LineString([leg.heel_xy, leg.toe_xy]) for _, _, leg in final], tvd, code, d, cfg, link_fn, assumed)
-        for k, hit in bad.items():
-            for r in final[k][1]:
-                if r["reason"] is None:
-                    r["reason"], r["detail"] = hit
+        for z in sorted({rs[0]["tvd"] for _, rs, _ in final}):
+            grp = [t for t in final if t[1][0]["tvd"] == z]
+            for k, hit in envelope_hits([LineString([leg.heel_xy, leg.toe_xy]) for _, _, leg in grp], z, code, d, cfg, link_fn, assumed).items():
+                for r in grp[k][1]:
+                    if r["reason"] is None:
+                        r["reason"], r["detail"] = hit
         wells = [(iw, rs) for iw, rs in wells if all(r["reason"] is None for r in rs)]
 
         for n, (iw, rs) in enumerate(sorted(wells, key=lambda t: t[1][0]["y"]), 1):
@@ -477,7 +512,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             mid = npl.unrotate((r["x0"] + r["x1"]) / 2.0, r["y"], fr.centroid, fr.phi)
             ledger.append({"pad_id": d.pad_id, "code": code, "row": k, "gunbarrel_x_ft": round(npl.gunbarrel_offset_ft(mid, az, gb[1]), 1),
                            "row_length_ft": round(r["len_ft"], 0), "status": "placed" if r["reason"] is None else "culled",
-                           "reason": r["reason"] or "", "detail": r["detail"], "stick": r["stick"] or "", "target_tvd_ft": tvd,
+                           "reason": r["reason"] or "", "detail": r["detail"], "stick": r["stick"] or "", "target_tvd_ft": r["tvd"],
                            "heel_xy": [round(v, 1) for v in npl.unrotate(r["x0"], r["y"], fr.centroid, fr.phi)],
                            "toe_xy": [round(v, 1) for v in npl.unrotate(r["x1"], r["y"], fr.centroid, fr.phi)]})
         for k in range(w.fit_dropped):
@@ -489,7 +524,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                      "legs_placed": n_placed, "rows_culled": len(rows) + w.fit_dropped - n_placed, "sticks": sum(1 for s in sticks if s["bench"] == code),
                      "target_tvd_ft": tvd, "rung": w.b.rung, "reconciled_shift_ft": round(w.shift_ft, 1), "spacing_map_ft": round(w.b.spacing_ft, 1),
                      "spacing_final_ft": round(w.s_ft, 1), "grid": w.fit, "stagger_ref": w.stagger_ref or "", "pinned": w.pinned,
-                     "flags": ";".join(sorted(w.b.flags))})
+                     "flags": ";".join(sorted(w.b.flags)), "levels": "" if not w.levels else f"{w.levels[0]:.0f}/{w.levels[1]:.0f}"})
     order = {b.code: b.rank for b in d.benches}
     sticks.sort(key=lambda s: (order[s["bench"]], s["well_name"]))
     ledger.sort(key=lambda r: (order[r["code"]], r["row"]))

@@ -17,6 +17,7 @@ from dealintake import geo
 
 from .core import Bench, Cfg, Dsu, Well, resolve_azimuth
 
+SEP_MIN_DSU = 30                        # direct-direct DSUs needed before a separation band is used
 SEARCH_M = 2640.0 / geo.FT_PER_M       # existing wells are read this far outside the DSU (the pair-link gate)
 
 
@@ -60,6 +61,18 @@ class Context:
         self.wca = t.set_index("pad_id")[["cls", "dominant"]].to_dict("index")
         tl = p3.two_landings(F)
         self.two = set(map(tuple, tl.loc[tl["two"], ["pad_id", "code"]].to_numpy()))
+        self.levels = {(int(r.pad_id), r.code): (float(r.upper_ft), float(r.lower_ft)) for r in tl[tl["two"]].itertuples()}
+        # separation between two benches where both depths are direct in the same DSU: the band a carried depth is checked against
+        dd = F["db"][(F["db"]["rung"] == "direct") & F["db"]["z"].notna()]
+        self.sep_band = {}
+        for basin, g in dd.groupby("basin"):
+            z = g.pivot_table(index="pad_id", columns="code", values="z", aggfunc="first")
+            for a in z.columns:
+                for b in z.columns:
+                    if a != b:
+                        v = (z[b] - z[a]).dropna()
+                        if len(v) >= SEP_MIN_DSU:
+                            self.sep_band[(basin, a, b)] = (float(v.quantile(0.025)), float(v.quantile(0.975)))
         self.m = measured if measured is not None else sf.measured(cache)
         self.band_median = bands.build(self.m, F["pads"], F["ext"])[2].set_index(["basin", "code", "band"])["median_ft"].to_dict()
         u, pre = F["u"], F["pre"]
@@ -117,13 +130,23 @@ class Context:
         basin, poly = r["basin"], r["geom"]
         db = self.F["db"][self.F["db"]["pad_id"] == pid]
         benches = []
+        direct = {b.code: float(b.z) for b in db.itertuples() if b.rung == "direct" and not pd.isna(b.z)}
         for b in db.itertuples():
+            why = ""
+            if b.rung in ("thickness", "bracket", "offset") and not pd.isna(b.z):
+                for x, zx in sorted(direct.items()):
+                    band = self.sep_band.get((basin, b.code, x))
+                    slack = 0.0 if pd.isna(b.expected_p90_ft) else float(b.expected_p90_ft)
+                    if band and not (band[0] - slack <= zx - float(b.z) <= band[1] + slack):
+                        why = f"{x} direct at {zx:.0f} ft is {zx - float(b.z):+.0f} ft from this depth; {band[0]:.0f} to {band[1]:.0f} ft where both are direct"
+                        break
             basis, neff = self._spacing_basis(basin, b.code, poly, b.edge_band)
             benches.append(Bench(code=b.code, rank=self.order[basin].index(b.code), tvd_ft=None if pd.isna(b.z) else float(b.z), rung=b.rung,
                                  spacing_ft=float(b.spacing_ft), inside_frac=float(b.inside_frac), control=neff,
                                  tvd_err_median_ft=None if pd.isna(b.expected_median_ft) else float(b.expected_median_ft),
                                  tvd_err_p90_ft=None if pd.isna(b.expected_p90_ft) else float(b.expected_p90_ft), spacing_basis=basis,
-                                 flags=("two_landings_observed",) if (pid, b.code) in self.two else ()))
+                                 flags=("two_landings_observed",) if (pid, b.code) in self.two else (),
+                                 levels=self.levels.get((int(pid), b.code)), depth_check=why))
         az_true, basis = self._azimuth(pid, r)
         wca = self.wca.get(pid, {})
         return Dsu(pad_id=int(pid), basin=basin, polygon=self.work(poly), az_grid_deg=geo.narvi_azimuth(az_true, float(r["lon"]), float(r["lat"])),
