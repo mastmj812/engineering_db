@@ -28,7 +28,7 @@ def test_seed_invariants():
     block = ov[ov["note"].str.startswith(seeds.BLOCK)]
     ex = built[seeds.EXCLUSIONS]
     assert set(block["api10"]).isdisjoint(ex["api10"])          # a SUSPECT TVD well is an exclusion, not a call
-    assert len(ex) == 12
+    assert len(ex) == 25 and not ex["api10"].duplicated().any()  # 12 (v5.2), -1 re-carded as a call, +14 (sql/23 retired)
     assert {"4232943352", "4232945905", "4232946987", "4246139770"}.isdisjoint(ov["api10"])  # stale rows stay out
     sq = block.set_index("api10")["corrected_code"]
     assert sq["3001554499"] == "WCA_1" and sq["3002544497"] == "WCXY"  # later card sets win (SQUINTS, SALADO DRAW)
@@ -48,6 +48,12 @@ def test_seed_invariants():
 ])
 def test_verdict_reading(text, kind, code):
     assert seeds.read(text, "P", "K") == (kind, code)
+
+
+def test_reject_on_other_is_not_a_call():
+    """Keeping OTHER leaves the well unpinned: no override row, so a later vendor bench still flows through."""
+    assert seeds.read("REJECT", "BS3_S", "OTHER") == ("hold", None)
+    assert seeds.read("OTHER", "BS3_S", "BS2_S") == ("call", "OTHER")  # an explicit OTHER verdict is still a call
 
 
 # ---------------------------------------------------------------------------- the rule on a synthetic frame
@@ -127,6 +133,19 @@ def test_breaker():
     b = tr.breaker(prev, new, {str(i) for i in range(100)}, floor=200)  # wells whose own inputs moved don't count
     assert b["changed"] == 151 and not b["tripped"]
     assert tr.breaker(prev, new, set(), floor=200, share=0.9)["limit"] == 270
+
+
+def test_breaker_names_the_changed_wells():
+    prev = pd.DataFrame({"api10": ["1", "2", "3", "4", "5"], "applied_code": ["A", None, "A", "A", None]})
+    new = pd.DataFrame({"api10": ["1", "2", "3", "4", "5", "6"], "applied_code": ["B", "A", None, "C", None, "A"]})
+    b = tr.breaker(prev, new, {"4"})                       # 4's own inputs moved; 6 is new; 5 stays not applied
+    assert b["changed"] == 3
+    assert b["changed_wells"] == [{"api10": "1", "was": "A", "now": "B"}, {"api10": "2", "was": None, "now": "A"},
+                                  {"api10": "3", "was": "A", "now": None}]
+    assert tr.breaker(None, new, set())["changed_wells"] == []
+    big = pd.DataFrame({"api10": [f"{i:04d}" for i in range(300)], "applied_code": ["A"] * 300})
+    b = tr.breaker(big, big.assign(applied_code="B"), set())
+    assert b["changed"] == 300 and len(b["changed_wells"]) == tr.CHANGED_WELLS_CAP   # list capped, count exact
 
 
 def test_inputs_match():

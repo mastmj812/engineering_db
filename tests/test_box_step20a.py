@@ -447,13 +447,17 @@ def test_tag_screen_override_seed():
 
 
 def test_seed_20a_block_matches_the_screen():
-    """The committed seed's 20a block is exactly what the finished screen builds (re-run box_tag_seed --write if not)."""
+    """The committed seed's 20a block is exactly what the finished screen builds (re-run box_tag_seed --write if not),
+    less the wells a later review card set re-judged (scripts.tag_rule_seeds.REVIEW_SETS replaces those rows)."""
     import csv
 
     from box import tag_screen as ts
     from scripts.box_tag_seed import SEED, build
+    from scripts.tag_rule_seeds import BLOCK, REVIEW_SETS
 
     with open(SEED, encoding="utf-8") as fh:
-        block = [r for r in csv.DictReader(fh) if ts.SEED_TAG in r["note"]]
+        rows = list(csv.DictReader(fh))
+    block = [r for r in rows if ts.SEED_TAG in r["note"]]
+    rejudged = {r["api10"] for r in rows if r["note"].startswith(BLOCK) and any(s in r["note"] for s in REVIEW_SETS)}
     new = build(SEED.parent.parent / "docs/box/step20a-2026-10-26/tag_screen", "2026-10-28")
-    assert [tuple(r.values()) for r in block] == list(new.itertuples(index=False, name=None))
+    assert [tuple(r.values()) for r in block] == [t for t in new.itertuples(index=False, name=None) if t[0] not in rejudged]

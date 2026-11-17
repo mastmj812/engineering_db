@@ -1,0 +1,23 @@
+api10,proposed,input,note,also_show
+3002556128,BS3_S,AVA_0,"STEP 3 depth check (shadow run 6): AVA_0 -> BS3_S, not in an accepted Step 3 class. Depth 12,377 ft (tvd_ft). Novi WOLFCAMP / Enverus UPPER AVALON; EOG, first prod 2026-09-22.",WCXY
+3002551948,WCB_1,AVA_1,"STEP 3 depth check (shadow run 6): AVA_1 -> WCB_1, not in an accepted Step 3 class. Depth 13,063 ft (survey). Novi WOLFCAMP B / Enverus MIDDLE AVALON; EOG, first prod 2026-09-03.",WCB_2
+3002556042,WCB_1,AVA_1,"STEP 3 depth check (shadow run 6): AVA_1 -> WCB_1, not in an accepted Step 3 class. Depth 12,912 ft (survey). Novi WOLFCAMP B / Enverus MIDDLE AVALON; EOG, first prod 2026-09-03.",
+3002551951,WCB_1,AVA_2,"STEP 3 depth check (shadow run 6): AVA_2 -> WCB_1, not in an accepted Step 3 class. Depth 12,883 ft (survey). Novi WOLFCAMP B / Enverus LOWER AVALON; EOG, first prod 2026-09-01.",
+3002554046,AVA_0,BS2_S,"STEP 3 depth check (shadow run 6): BS2_S -> AVA_0, not in an accepted Step 3 class. Depth 9,409 ft (survey). Novi WOLFCAMP B / Enverus 2ND BONE SPRING SAND; EOG, first prod 2025-07-24.",
+3002553997,BS1_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS1_S, not in an accepted Step 3 class. Depth 8,814 ft (survey). Novi PENNSYLVANIAN / Enverus LOWER AVALON; SM Energy, first prod 2025-07-22.",AVA_2
+3001554188,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 10,490 ft (survey). Novi PENNSYLVANIAN / Enverus 2ND BONE SPRING SAND; Exxon Mobil, first prod 2024-06-01.",
+3001554761,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 7,903 ft (survey). Novi PENNSYLVANIAN / Enverus 3RD BONE SPRING SAND; Mewbourne, first prod 2025-03-05.",
+3001555472,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 7,682 ft (survey). Novi PENNSYLVANIAN / Enverus 3RD BONE SPRING SAND; Permian Resources, first prod 2025-08-15.",
+3001555720,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 7,466 ft (survey). Novi PENNSYLVANIAN / Enverus 2ND BONE SPRING SAND; Devon, first prod 2026-07-01.",
+3002551752,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 10,891 ft (survey). Novi PENNSYLVANIAN / Enverus 2ND BONE SPRING SAND; Occidental, first prod 2024-04-22.",
+3002552281,BS2_S,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS2_S, not in an accepted Step 3 class. Depth 10,818 ft (survey). Novi PENNSYLVANIAN / Enverus 2ND BONE SPRING SAND; Chevron, first prod 2025-12-23.",
+3001548150,BS3_C,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> BS3_C, not in an accepted Step 3 class. Depth 9,672 ft (survey). Novi PENNSYLVANIAN / Enverus 3RD BONE SPRING; Devon, first prod 2025-06-13.",
+3001547890,WCA_1,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCA_1, not in an accepted Step 3 class. Depth 9,525 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP A UPPER; Mewbourne, first prod 2021-09-01.",
+3001548624,WCA_1,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCA_1, not in an accepted Step 3 class. Depth 9,615 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP A UPPER; Mewbourne, first prod 2022-02-01.",
+3001554234,WCA_1,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCA_1, not in an accepted Step 3 class. Depth 9,190 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP A UPPER; Chevron, first prod 2025-02-15.",
+3001546391,WCA_2,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCA_2, not in an accepted Step 3 class. Depth 10,647 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP A LOWER; Mewbourne, first prod 2021-02-13.",
+3001548625,WCA_2,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCA_2, not in an accepted Step 3 class. Depth 9,766 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP A LOWER; Mewbourne, first prod 2022-02-01.",
+3001553985,WCXY,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCXY, not in an accepted Step 3 class. Depth 10,572 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP XY; Exxon Mobil, first prod 2025-08-08.",
+3002543570,WCXY,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCXY, not in an accepted Step 3 class. Depth 12,501 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP XY; EOG, first prod 2019-01-01.",
+3002543572,WCXY,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCXY, not in an accepted Step 3 class. Depth 12,511 ft (tvd_ft). Novi PENNSYLVANIAN / Enverus WOLFCAMP XY; EOG, first prod 2019-01-01.",
+4217336293,WCD,OTHER,"STEP 3 depth check (shadow run 6): OTHER -> WCD, not in an accepted Step 3 class. Depth 9,300 ft (survey). Novi PENNSYLVANIAN / Enverus WOLFCAMP D; Apache, first prod 2014-06-08.",

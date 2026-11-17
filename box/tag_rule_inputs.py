@@ -11,7 +11,8 @@ snapshot used, but every DECISION input comes from vendor-side objects:
 
 Nothing tag-derived is read from formation_blueox / formation_blueox_tvd / wells_enriched, because once the rule lands it
 feeds them (a feedback loop). sql/16's vendor resolution is reproduced here (`basin`, `vendor_raw`, `vendor`) and
-`pre_sql23` = human call, else vendor — exactly sql/16's output today. `check_identity` asserts that against live.
+`pre_sql23` = human call, else vendor — exactly sql/16's output wherever no rule row applies. `check_identity` asserts
+that against live; with the switch on (cutover, 2026-11-16) the wells sql/16 takes from the rule are counted apart.
 
 Today's warehouse tag (`live`, `live_source`, `sql23_corrected`) is joined from wells_enriched as REPORT-ONLY columns:
 the review classes were written against it, and the W1 report compares with it. W2 removes the remaining decision uses.
@@ -87,10 +88,12 @@ SELECT extent_id, basin, bench, area_sqmi, extensions.ST_AsText(extensions.ST_Tr
 FROM box.extent WHERE is_record ORDER BY basin, bench
 """
 
-# sql/16's own output for the same wells: must equal pre_sql23 row for row (and the frame must equal the live frame).
+# sql/16's own output for the same wells: must equal pre_sql23 row for row, except where sql/16 applies a rule row
+# (and the frame must equal the live frame).
 IDENTITY_SQL = """
-SELECT e.api10, e.formation_blueox_base AS sql16
+SELECT e.api10, e.formation_blueox_base AS sql16, COALESCE(f.formation_blueox_source LIKE 'rule_step%%', FALSE) AS rule_row
 FROM curated.wells_enriched e
+LEFT JOIN curated.formation_blueox f USING (api10)
 WHERE e.basin_blueox IN ('delaware', 'midland') AND e.is_horizontal AND e.first_production_date IS NOT NULL
 """
 
@@ -142,12 +145,15 @@ def pull(conn: Any, stations: bool = True) -> dict[str, pd.DataFrame]:
 
 
 def check_identity(wells: pd.DataFrame, ident: pd.DataFrame) -> dict[str, int]:
-    """The vendor-only frame must be today's frame (same wells) and pre_sql23 must be sql/16's code on every well."""
+    """The vendor-only frame must be today's frame (same wells) and pre_sql23 must be sql/16's code on every well that
+    sql/16 does not take from the rule (`rule_rows`, 0 while the switch is off)."""
     m = wells[["api10", "pre_sql23"]].merge(ident, on="api10", how="outer", indicator=True)
     both = m[m["_merge"] == "both"]
-    differ = both["pre_sql23"].fillna("~") != both["sql16"].fillna("~")
+    rule = both["rule_row"].fillna(False).astype(bool) if "rule_row" in both.columns else pd.Series(False, index=both.index)
+    differ = (both["pre_sql23"].fillna("~") != both["sql16"].fillna("~")) & ~rule
     return {"wells": len(wells), "only_vendor_frame": int((m["_merge"] == "left_only").sum()),
-            "only_enriched_frame": int((m["_merge"] == "right_only").sum()), "pre_sql23_differs_from_sql16": int(differ.sum())}
+            "only_enriched_frame": int((m["_merge"] == "right_only").sum()), "rule_rows": int(rule.sum()),
+            "pre_sql23_differs_from_sql16": int(differ.sum())}
 
 
 def run(cache: Path) -> dict[str, Any]:
