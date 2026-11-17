@@ -278,6 +278,14 @@ effect; flagged units are already drilled out). Generator `box_sticks_0.9_pilot`
 on the sticks of short polygons drilled across their line (Delaware 1,450 sticks in 284 DSUs, Midland 486 in 116);
 sticks otherwise identical to 0.8. Nothing stored.
 
+**Re-run on the post-cutover tags (2026-11-17, `docs/box_sticks/cutover-2026-11-17/`).** The tag switch went ON
+2026-11-16; phases 0 through 3b were re-run on a pull of 2026-11-17 (1,313 wells re-tagged against the 11-14 pull),
+generator 0.9 unchanged, no threshold reopened. Delaware 46,499 -> 46,690 sticks (54,964 legs, 448.3 MM ft), Midland
+34,045 -> 33,791 (37,432 legs, 347.8 MM ft); 6.0 % of DSU x bench changed their count, most of it outside the DSUs
+holding a re-tagged well. Candidate D still passes every envelope bar. Back-test: T1 59.7 %, T4 36.5 %, and the T5
+thickness rung now fails its bar (1.56x against <= 1.5x; was 1.32x); the other verdicts are unchanged. These are the
+numbers of record for gate 3b; the dated pre-cutover folders stay as what was reviewed. Nothing stored.
+
 **Gate 3a:** pilot areas reviewed on cards. **Gate 3b:** basin-wide run compared with Novi per DSU and bench
 (count, lateral footage, TVD bust).
 

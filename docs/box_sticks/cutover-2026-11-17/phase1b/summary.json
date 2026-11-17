@@ -1,0 +1,44 @@
+{
+  "code_sha": "15076f3",
+  "tags": "live",
+  "k_nearest": 30,
+  "rank_at_mi": 5.0,
+  "all": {
+    "dsu": 52712,
+    "direct_pct": 48.230004553042946,
+    "phase1_thickness_pct": 16.091212627105783,
+    "bracket_pct": 13.084307178631052,
+    "offset_pct": 31.96236151161026,
+    "none_pct": 6.723326756715739,
+    "none_centroid_outside_pct": 1.8971012293215965,
+    "carried_expected_median_ft": 65.52786497391571,
+    "carried_expected_p90_ft": 199.43693970011918,
+    "top_method": "offset:WCA (nearest)"
+  },
+  "by_basin": {
+    "delaware": {
+      "dsu": 32877,
+      "direct_pct": 44.572193326641724,
+      "phase1_thickness_pct": 15.585363628068254,
+      "bracket_pct": 15.217325181737992,
+      "offset_pct": 33.4032910545366,
+      "none_pct": 6.807190437083675,
+      "none_centroid_outside_pct": 1.8280256714420418,
+      "carried_expected_median_ft": 67.51000512553128,
+      "carried_expected_p90_ft": 211.20217083285243,
+      "top_method": "offset:WCA (nearest)"
+    },
+    "midland": {
+      "dsu": 19835,
+      "direct_pct": 54.292916561633476,
+      "phase1_thickness_pct": 16.929669775649106,
+      "bracket_pct": 9.548777413662718,
+      "offset_pct": 29.573985379379884,
+      "none_pct": 6.584320645323922,
+      "none_centroid_outside_pct": 2.0115956642298967,
+      "carried_expected_median_ft": 47.41951892804718,
+      "carried_expected_p90_ft": 145.76722996388708,
+      "top_method": "offset:WCA_1 (nearest)"
+    }
+  }
+}

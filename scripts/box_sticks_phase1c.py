@@ -47,8 +47,9 @@ MISTAG_MIN_FT = 150.0
 DIRECT_ONLY = set(ls.WCA_FAM)                # the Delaware WCA family, for the stack tables
 CHAIN_DIRECT_ONLY: set[tuple[str, str]] = set()   # Michael 2026-11-16: WCXY takes the full chain too (it has its extent); was {("delaware", "WCXY")}
 DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
-THICK_RANK = DOCS / "phase1-2026-11-12" / "holdout_thickness.csv"
-FAR_RANK = DOCS / "phase1b-2026-11-12" / "holdout_far.csv"
+# Re-measured on the post-cutover tags (pulled 2026-11-17); the 2026-11-12 files are the pre-cutover record.
+THICK_RANK = DOCS / "cutover-2026-11-17" / "phase1" / "holdout_thickness.csv"
+FAR_RANK = DOCS / "cutover-2026-11-17" / "phase1b" / "holdout_far.csv"
 
 
 def loo_residual(w: pd.DataFrame) -> pd.Series:

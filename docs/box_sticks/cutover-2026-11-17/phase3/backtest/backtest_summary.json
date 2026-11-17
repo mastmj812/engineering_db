@@ -1,0 +1,375 @@
+{
+ "generator_version": "box_sticks_0.9_pilot",
+ "tags": "live",
+ "pulled": "2026-11-17",
+ "cutoff": "2023-01-01",
+ "dsus": 114,
+ "hidden_producers_in_pilot_dsus": 732,
+ "not_on_an_eligible_bench": 24,
+ "not_eligible_by_code": {
+  "WCD": 4,
+  "MISS": 4,
+  "BRNT": 4,
+  "WCC": 3,
+  "WCB_2": 3,
+  "OTHER": 2,
+  "WCXY": 2,
+  "BS2_C": 1,
+  "MS": 1
+ },
+ "W": 708,
+ "W_by_area": {
+  "delaware_nm_lea": 290,
+  "delaware_tx_ward": 137,
+  "midland_glasscock": 281
+ },
+ "producers_seen_by_generator": 39547,
+ "spacing_gaps_seen": 18791,
+ "backtest_sticks": 2481,
+ "backtest_legs": 2775,
+ "today_sticks": 1534,
+ "bars": {
+  "T1": {
+   "W_straight": 658,
+   "on_slot": 393,
+   "pct": 59.7,
+   "by_area": [
+    {
+     "area": "delaware_nm_lea",
+     "W": 282,
+     "on_slot": 152,
+     "pct": 53.9
+    },
+    {
+     "area": "delaware_tx_ward",
+     "W": 95,
+     "on_slot": 47,
+     "pct": 49.5
+    },
+    {
+     "area": "midland_glasscock",
+     "W": 281,
+     "on_slot": 194,
+     "pct": 69.0
+    }
+   ],
+   "pass": false,
+   "uturn_context": {
+    "W": 50,
+    "on_slot": 4,
+    "pct": 8.0
+   },
+   "no_depth_evidence_wells": {
+    "W": 41,
+    "on_slot": 26
+   },
+   "two_landing_wells": {
+    "W": 70,
+    "on_slot": 48
+   },
+   "misses_by_reason": {
+    "sideways_gap": 149,
+    "depth": 80,
+    "slot_taken": 21,
+    "bench_has_no_row": 12,
+    "no_leg_alongside": 3
+   },
+   "misses_by_area": {
+    "delaware_nm_lea": {
+     "bench_has_no_row": 4,
+     "depth": 35,
+     "no_leg_alongside": 0,
+     "sideways_gap": 73,
+     "slot_taken": 18
+    },
+    "delaware_tx_ward": {
+     "bench_has_no_row": 4,
+     "depth": 9,
+     "no_leg_alongside": 0,
+     "sideways_gap": 35,
+     "slot_taken": 0
+    },
+    "midland_glasscock": {
+     "bench_has_no_row": 4,
+     "depth": 36,
+     "no_leg_alongside": 3,
+     "sideways_gap": 41,
+     "slot_taken": 3
+    }
+   },
+   "sideways_gap_of_misses_ft": {
+    "p25": 383.0,
+    "p50": 459.0,
+    "p75": 573.0
+   }
+  },
+  "T2": {
+   "W": 708,
+   "on_bench_with_no_row": 33,
+   "pct": 4.7,
+   "by_reason": {
+    "all_rows_culled": 26,
+    "no_depth": 3,
+    "sliver": 2,
+    "reconciled_out": 2
+   },
+   "by_area": {
+    "delaware_nm_lea": 1.4,
+    "delaware_tx_ward": 18.2,
+    "midland_glasscock": 1.4
+   },
+   "pass": true
+  },
+  "T3": {
+   "detail": {
+    "legs_minus_wells": {
+     "-8": 1,
+     "-6": 1,
+     "-5": 1,
+     "-4": 2,
+     "-3": 2,
+     "-2": 7,
+     "-1": 7,
+     "0": 18,
+     "1": 18,
+     "2": 9,
+     "3": 2
+    },
+    "by_area": {
+     "delaware_nm_lea": {
+      "dsu_bench": 23,
+      "within_1": 13,
+      "legs": 95,
+      "wells": 126
+     },
+     "delaware_tx_ward": {
+      "dsu_bench": 8,
+      "within_1": 5,
+      "legs": 33,
+      "wells": 31
+     },
+     "midland_glasscock": {
+      "dsu_bench": 37,
+      "within_1": 25,
+      "legs": 179,
+      "wells": 162
+     }
+    },
+    "generated_spacing_over_actual_gap_median": 0.93,
+    "generated_spacing_over_actual_gap_p25_p75": [
+     0.72,
+     1.21
+    ]
+   },
+   "dsu_bench": 68,
+   "within_1_pct": 63.2,
+   "legs": 307,
+   "wells": 319,
+   "ratio": 0.96,
+   "judged": true,
+   "pass": false,
+   "uturn_context": {
+    "dsu_bench": 1,
+    "legs": 0,
+    "wells": 3
+   }
+  },
+  "T4": {
+   "dsu_bench": 68,
+   "legs": 307,
+   "unmatched": 112,
+   "pct": 36.5,
+   "judged": true,
+   "pass": false
+  },
+  "T5": {
+   "direct": {
+    "pairs": 121,
+    "median_abs_ft": 55.1,
+    "within_150_pct": 82.6,
+    "pass": true
+   },
+   "direct_by_area": {
+    "delaware_nm_lea": {
+     "pairs": 30,
+     "median_abs_ft": 72.9,
+     "within_150_pct": 80.0,
+     "median_signed_ft": -52.1
+    },
+    "delaware_tx_ward": {
+     "pairs": 11,
+     "median_abs_ft": 111.5,
+     "within_150_pct": 63.6,
+     "median_signed_ft": -32.6
+    },
+    "midland_glasscock": {
+     "pairs": 80,
+     "median_abs_ft": 36.5,
+     "within_150_pct": 86.2,
+     "median_signed_ft": 23.4
+    }
+   },
+   "carried": {
+    "bracket": {
+     "pairs": 25,
+     "median_abs_ft": 109.7,
+     "held_out_median_ft": 64.0,
+     "ratio": 1.71,
+     "pass": false
+    },
+    "offset": {
+     "pairs": 38,
+     "median_abs_ft": 94.4,
+     "held_out_median_ft": 81.2,
+     "ratio": 1.16,
+     "pass": true
+    },
+    "thickness": {
+     "pairs": 221,
+     "median_abs_ft": 67.7,
+     "held_out_median_ft": 43.5,
+     "ratio": 1.56,
+     "pass": false
+    }
+   },
+   "two_landing_pairs_left_out": 46
+  },
+  "T6": {
+   "W_with_depth": 661,
+   "inside_prior_envelope": 7,
+   "pct": 1.1,
+   "by_area": {
+    "delaware_nm_lea": 1.63,
+    "delaware_tx_ward": 2.22,
+    "midland_glasscock": 0.0
+   }
+  },
+  "sensitivity_centred_grids": {
+   "T1_pct": 62.2,
+   "T1_by_area": {
+    "delaware_nm_lea": 55.7,
+    "delaware_tx_ward": 54.7,
+    "midland_glasscock": 71.2
+   },
+   "T3_within_1_pct": 63.2,
+   "T4_pct": 31.3
+  },
+  "pinned_benches": {
+   "not_pinned": {
+    "wells": 524,
+    "sideways_pass_pct": 78.6,
+    "chance_pct": 79.4,
+    "on_slot_pct": 61.8
+   },
+   "pinned": {
+    "wells": 83,
+    "sideways_pass_pct": 59.0,
+    "chance_pct": 80.5,
+    "on_slot_pct": 49.4
+   }
+  },
+  "trial_local_spacing": {
+   "min_2_wells": {
+    "T1_pct": 58.8,
+    "T1_by_area": {
+     "delaware_nm_lea": 52.1,
+     "delaware_tx_ward": 49.5,
+     "midland_glasscock": 68.7
+    },
+    "pinned_benches": {
+     "not_pinned": {
+      "wells": 524,
+      "sideways_pass_pct": 77.5,
+      "chance_pct": 79.4,
+      "on_slot_pct": 61.3
+     },
+     "pinned": {
+      "wells": 81,
+      "sideways_pass_pct": 59.3,
+      "chance_pct": 77.2,
+      "on_slot_pct": 49.4
+     }
+    },
+    "backtest_benches_on_local_spacing": 162,
+    "today_sticks": 1446,
+    "today_benches_on_local_spacing": 369,
+    "today_sticks_by_area": {
+     "delaware_nm_lea": 834,
+     "delaware_tx_ward": 366,
+     "midland_glasscock": 246
+    }
+   },
+   "min_3_wells": {
+    "T1_pct": 58.8,
+    "T1_by_area": {
+     "delaware_nm_lea": 52.1,
+     "delaware_tx_ward": 49.5,
+     "midland_glasscock": 68.7
+    },
+    "pinned_benches": {
+     "not_pinned": {
+      "wells": 524,
+      "sideways_pass_pct": 77.5,
+      "chance_pct": 79.4,
+      "on_slot_pct": 61.3
+     },
+     "pinned": {
+      "wells": 80,
+      "sideways_pass_pct": 62.5,
+      "chance_pct": 77.9,
+      "on_slot_pct": 50.0
+     }
+    },
+    "backtest_benches_on_local_spacing": 117,
+    "today_sticks": 1476,
+    "today_benches_on_local_spacing": 258,
+    "today_sticks_by_area": {
+     "delaware_nm_lea": 844,
+     "delaware_tx_ward": 370,
+     "midland_glasscock": 262
+    }
+   }
+  }
+ },
+ "report": {
+  "novi_remaining_on_benches_with_no_box_extent_in_the_dsu": {
+   "delaware_nm_lea": 79,
+   "delaware_tx_ward": 584,
+   "midland_glasscock": 311
+  },
+  "bench_no_row_reasons": {
+   "delaware_nm_lea": {
+    "reconciled_out": 26,
+    "sliver": 4,
+    "wca_one_landing": 12,
+    "wca_one_member": 10
+   },
+   "delaware_tx_ward": {
+    "reconciled_out": 3,
+    "sliver": 5,
+    "wca_one_landing": 4,
+    "wca_one_member": 30
+   },
+   "midland_glasscock": {
+    "reconciled_out": 0,
+    "sliver": 3,
+    "wca_one_landing": 0,
+    "wca_one_member": 0
+   }
+  },
+  "dsu_by_type": {
+   "delaware_nm_lea": {
+    "single": 27,
+    "uturn": 7
+   },
+   "delaware_tx_ward": {
+    "single": 22,
+    "uturn": 18
+   },
+   "midland_glasscock": {
+    "single": 36,
+    "uturn": 4
+   }
+  }
+ }
+}
