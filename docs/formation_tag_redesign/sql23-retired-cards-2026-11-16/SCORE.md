@@ -36,7 +36,7 @@
   bench, as on every earlier card set.
 - **SUGG STRIP 6H (card 104, Irion) stops being a depth exclusion.** It was SUSPECT TVD on v5.2 card 123. Here it is
   marked REJECT, and the latest verdict wins, so it becomes a human call on WCB_1 and its exclusion row drops out. Its
-  card still shows the well 2,122 ft from the WCB unit. If the depth is still not trusted, mark it SUSPECT TVD again.
+  card still shows the well 2,122 ft from the WCB unit. **Confirmed by Michael 2026-11-17: the WCB_1 call stands.**
 
 ## Depth exclusions: 12 → 25
 
