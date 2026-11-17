@@ -47,7 +47,7 @@ CARD_SETS: list[tuple[str, int]] = [
     ("v5_2-cards-2026-11-08", 3), ("policy-v1-cards-2026-11-09/step1", 1), ("policy-v1-cards-2026-11-09/step1_round2", 1),
     ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3), ("shadow1-queue-cards-2026-11-11", 3),
     ("shadow1-direct-calls-2026-11-11", 3), ("shadow6-queue-cards-2026-11-16", 3),
-    ("human-call-review-2026-11-16", 3),
+    ("human-call-review-2026-11-16", 3), ("sql23-retired-cards-2026-11-16", 3),
 ]
 # Card sets that re-judge wells which already carry a human call (input = that call). A verdict with a code replaces
 # the earlier call, including a pre-rule override row; a hold leaves the earlier call as it stands.
@@ -55,6 +55,9 @@ REVIEW_SETS = frozenset({"human-call-review-2026-11-16"})
 STEP1_DECISIONS = ["v5-cards-2026-11-06", "v5-cards-r2-2026-11-06", "policy-v1-cards-2026-11-09/step1",
                    "policy-v1-cards-2026-11-09/step1_round2"]
 STEP3_SCORE = "v5_2-cards-2026-11-08"
+# Card sets with SUSPECT TVD verdicts: each carries a depth_exclusions.csv (the depth judged and its source).
+EXCLUSION_SETS = [STEP3_SCORE, "sql23-retired-cards-2026-11-16"]
+OTHER = "OTHER"
 _CODE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 _CLASS = re.compile(r"^(?P<basin>\w+) (?P<frm>\S+)->(?P<to>\S+) \((?P<basis>\w+)\)$")
 _DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
@@ -69,8 +72,8 @@ def read(text: object, proposed: str, keep: object) -> tuple[str, object]:
         return "call", proposed
     if low.startswith(("suspect tvd", "suspect depth")):
         return "exclusion", None
-    if low.startswith("reject"):
-        return "call", keep
+    if low.startswith("reject"):  # keeping OTHER is not a call: the well stays unpinned, on whatever the vendors say
+        return ("hold", None) if keep == OTHER else ("call", keep)
     if _CODE.match(head):
         return "call", head
     return "hold", None
@@ -116,13 +119,21 @@ def overrides(c: pd.DataFrame) -> pd.DataFrame:
 
 
 def exclusions(c: pd.DataFrame) -> pd.DataFrame:
-    ex = pd.read_csv(DOCS / STEP3_SCORE / "depth_exclusions.csv", dtype={"api10": str})
-    want = set(c.loc[c["kind"] == "exclusion", "api10"])
-    if set(ex["api10"]) != want:
-        raise SystemExit(f"depth_exclusions.csv != SUSPECT TVD verdicts: {sorted(set(ex['api10']) ^ want)}")
-    return pd.DataFrame({"api10": ex["api10"], "depth_ft": ex["depth_ft"], "depth_source": ex["depth_source"],
-                         "tag_kept": ex["tag_kept"], "card": [f"{STEP3_SCORE} card {k}" for k in ex["card"]],
-                         "note": ex["decided"]}).sort_values("api10").reset_index(drop=True)
+    """One row per well whose LATEST verdict is SUSPECT TVD, from that card set's own depth_exclusions.csv."""
+    want = c[c["kind"] == "exclusion"].set_index("api10")["set"]
+    parts = []
+    for s in EXCLUSION_SETS:
+        ex = pd.read_csv(DOCS / s / "depth_exclusions.csv", dtype={"api10": str})
+        mine = set(want.index[want == s])
+        if not mine <= set(ex["api10"]):
+            raise SystemExit(f"{s}/depth_exclusions.csv lacks SUSPECT TVD verdicts: {sorted(mine - set(ex['api10']))}")
+        ex = ex[ex["api10"].isin(mine)]
+        parts.append(pd.DataFrame({"api10": ex["api10"], "depth_ft": ex["depth_ft"], "depth_source": ex["depth_source"],
+                                   "tag_kept": ex["tag_kept"], "card": [f"{s} card {k}" for k in ex["card"]],
+                                   "note": ex["decided"]}))
+    if set(want.unique()) - set(EXCLUSION_SETS):
+        raise SystemExit(f"SUSPECT TVD verdicts in a set without depth_exclusions.csv: {sorted(set(want.unique()) - set(EXCLUSION_SETS))}")
+    return pd.concat(parts).sort_values("api10").reset_index(drop=True)
 
 
 def policy() -> pd.DataFrame:
