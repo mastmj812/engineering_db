@@ -28,7 +28,7 @@ def test_seed_invariants():
     block = ov[ov["note"].str.startswith(seeds.BLOCK)]
     ex = built[seeds.EXCLUSIONS]
     assert set(block["api10"]).isdisjoint(ex["api10"])          # a SUSPECT TVD well is an exclusion, not a call
-    assert len(ex) == 12
+    assert len(ex) == 25 and not ex["api10"].duplicated().any()  # 12 (v5.2), -1 re-carded as a call, +14 (sql/23 retired)
     assert {"4232943352", "4232945905", "4232946987", "4246139770"}.isdisjoint(ov["api10"])  # stale rows stay out
     sq = block.set_index("api10")["corrected_code"]
     assert sq["3001554499"] == "WCA_1" and sq["3002544497"] == "WCXY"  # later card sets win (SQUINTS, SALADO DRAW)
@@ -48,6 +48,12 @@ def test_seed_invariants():
 ])
 def test_verdict_reading(text, kind, code):
     assert seeds.read(text, "P", "K") == (kind, code)
+
+
+def test_reject_on_other_is_not_a_call():
+    """Keeping OTHER leaves the well unpinned: no override row, so a later vendor bench still flows through."""
+    assert seeds.read("REJECT", "BS3_S", "OTHER") == ("hold", None)
+    assert seeds.read("OTHER", "BS3_S", "BS2_S") == ("call", "OTHER")  # an explicit OTHER verdict is still a call
 
 
 # ---------------------------------------------------------------------------- the rule on a synthetic frame

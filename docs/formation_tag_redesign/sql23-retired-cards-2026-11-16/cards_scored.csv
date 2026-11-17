@@ -1,0 +1,109 @@
+card,section,basin,api10,well_name,county,live,sql23,input,v5,proposed,check,verdict,verdict_source,outcome,final,human_call,changed
+1,D,delaware,3002545844,ZEUS STATE #173H,Lea,AVA_1,,AVA_1,AVA_1,AVA_0,"DISAGREES (input unit 4779 ft off; AVA_0's unit 4779 ft, lead 929 ft)",SUSPECT TVD,,depth exclusion,AVA_1,False,False
+2,D,delaware,3002551332,DAUNTLESS 7 FEDERAL #103H,Lea,AVA_1,,AVA_1,WCB_1,WCB_1,"agrees (input unit 3327 ft off; WCB_1's unit 37 ft, lead 400 ft)",ACCEPT,,restore,WCB_1,True,True
+3,D,delaware,3002553349,MERCILESS 13 FEDERAL COM #101H,Lea,AVA_1,,AVA_1,WCB_1,WCB_1,"agrees (no plain read for the input unit; WCB_1's unit 48 ft, lead 402 ft)",ACCEPT,,restore,WCB_1,True,True
+4,D,delaware,3002551964,RATTLESNAKE 28 FEDERAL COM #314H,Lea,BS1_S,,BS1_S,BS1_S,BS2_C,"DISAGREES (input unit 52 ft off; BS2_C's unit 256 ft, lead -204 ft)",REJECT,,keep vendor tag,BS1_S,True,False
+5,D,delaware,3002552262,PAKSE 3 SOUTH FEDERAL COM #432H,Lea,BS1_S,,BS1_S,BS1_S,BS3_S,no plain-median read for BS3_S's unit,ACCEPT,,restore,BS3_S,True,True
+6,D,delaware,3002551957,RATTLESNAKE 28 FEDERAL COM #305H,Lea,BS1_S,,BS1_S,BS1_S,WCB_1,"DISAGREES (input unit 3035 ft off; WCB_1's unit 485 ft, lead 341 ft)",ACCEPT,,restore,WCB_1,True,True
+7,D,delaware,3002551958,RATTLESNAKE 28 FEDERAL COM #306H,Lea,BS1_S,,BS1_S,WCB_1,WCB_1,"DISAGREES (input unit 2850 ft off; WCB_1's unit 300 ft, lead 342 ft)",ACCEPT,,restore,WCB_1,True,True
+8,D,delaware,3001535041,VORTEC 27 #001,Eddy,BS1_S,,BS1_S,BS1_S,WCXY,"DISAGREES (input unit 3092 ft off; WCXY's unit 684 ft, lead 984 ft)",ACCEPT,,restore,WCXY,True,True
+9,D,delaware,4237140329,MOORE SHARK 10-9 UNIT 6BS,Pecos,BS2_C,,BS2_C,BS2_C,BS3_C,"agrees (input unit 678 ft off; BS3_C's unit 16 ft, lead 586 ft)",ACCEPT,,restore,BS3_C,True,True
+10,D,delaware,3002555534,STREETCAR 15 FEDERAL #511H,Lea,BS2_S,,BS2_S,BS2_S,AVA_0,"DISAGREES (input unit 1662 ft off; AVA_0's unit 514 ft, lead 794 ft)",ACCEPT,,restore,AVA_0,True,True
+11,D,delaware,3001541521,MYOX 32 FEE #002H,Eddy,BS2_S,,BS2_S,BS2_S,AVA_2,"DISAGREES (input unit 3025 ft off; AVA_2's unit 1661 ft, lead 1364 ft)",SUSPECT TVD,,depth exclusion,BS2_S,False,False
+12,D,delaware,3001540755,AQUILA 22 FEDERAL #002H,Eddy,BS2_S,,BS2_S,BS2_S,BS1_S,"DISAGREES (input unit 4007 ft off; BS1_S's unit 2907 ft, lead 1100 ft)",SUSPECT TVD,,depth exclusion,BS2_S,False,False
+13,D,delaware,3002541146,TAYLOR DRAW 7 FEDERAL #001H,Lea,BS2_S,,BS2_S,BS2_S,BS1_S,no plain-median read for BS1_S's unit,SUSPECT TVD,,depth exclusion,BS2_S,False,False
+14,D,delaware,3002553619,PISTOLERO 15 FEDERAL #402H,Lea,BS2_S,,BS2_S,WCB_1,WCA_1,"DISAGREES (input unit 2067 ft off; WCA_1's unit 385 ft, lead 212 ft)",WCB_2,,call,WCB_2,True,True
+15,D,delaware,3002553621,PISTOLERO 15 FEDERAL #502H,Lea,BS2_S,,BS2_S,WCB_1,WCA_1,"DISAGREES (input unit 2040 ft off; WCA_1's unit 358 ft, lead 212 ft)",WCB_2,,call,WCB_2,True,True
+16,D,delaware,3002549287,EIDER 35 FEDERAL #501H,Lea,BS2_S,,BS2_S,WCA_1,WCA_2,"agrees (input unit 1546 ft off; WCA_2's unit 22 ft, lead 570 ft)",ACCEPT,,restore,WCA_2,True,True
+17,D,delaware,4230137634,SILVERTIP 76-16 UNIT Q 21H,Loving,BS2_S,,BS2_S,BS2_S,WCA_2,"DISAGREES (input unit 2082 ft off; WCA_2's unit 496 ft, lead 448 ft)",WCB_2,,call,WCB_2,True,True
+18,D,delaware,4230137636,SILVERTIP 76-16 UNIT Q 23H,Loving,BS2_S,,BS2_S,BS2_S,WCA_2,"DISAGREES (input unit 2078 ft off; WCA_2's unit 488 ft, lead 448 ft)",WCB_2,,call,WCB_2,True,True
+19,D,delaware,4230137637,SILVERTIP 76-16 UNIT Q 24H,Loving,BS2_S,,BS2_S,BS2_S,WCA_2,"DISAGREES (input unit 2001 ft off; WCA_2's unit 415 ft, lead 448 ft)",WCB_2,,call,WCB_2,True,True
+20,D,delaware,3001546378,JAMES RANCH UNIT DI 12 ELKHORN #702H,Eddy,BS3_C,,BS3_C,BS3_C,BS2_S,no plain-median read for BS2_S's unit,ACCEPT,,restore,BS2_S,True,True
+21,D,delaware,3002541575,MARATHON ROAD 15 PA FEDERAL #001H,Lea,BS3_S,,BS3_S,BS3_S,AVA_1,"DISAGREES (input unit 3681 ft off; AVA_1's unit 1768 ft, lead 548 ft)",SUSPECT TVD,,depth exclusion,BS3_S,False,False
+22,D,delaware,3002548007,ANDERSON FEDERAL COM #558H,Lea,BS3_S,,BS3_S,BS3_S,BS1_S,"DISAGREES (input unit 3962 ft off; BS1_S's unit 2680 ft, lead 829 ft)",SUSPECT TVD,,depth exclusion,BS3_S,False,False
+23,D,delaware,3002550371,CARNIVAL FEDERAL COM #304H,Lea,BS3_S,,BS3_S,BS1_S,BS1_S,"agrees (input unit 1870 ft off; BS1_S's unit 92 ft, lead 135 ft)",ACCEPT,,restore,BS1_S,True,True
+24,D,delaware,3002503097,PRE-ONGARD WELL #001,Lea,BS3_S,,BS3_S,BS3_S,BS2_C,no plain-median read for BS2_C's unit,ACCEPT,,restore,BS2_C,True,True
+25,D,delaware,3002520086,NEW MEXICO AE STATE #005,Lea,BS3_S,,BS3_S,BS3_S,BS2_C,no plain-median read for BS2_C's unit,ACCEPT,,restore,BS2_C,True,True
+26,D,delaware,3002520508,NEW MEXICO AE STATE #017,Lea,BS3_S,,BS3_S,BS3_S,BS2_C,no plain-median read for BS2_C's unit,ACCEPT,,restore,BS2_C,True,True
+27,D,delaware,3002553152,SKY DWELLER 14 STATE COM #201H,Lea,BS3_S,,BS3_S,BS3_S,BS2_C,no plain-median read for BS2_C's unit,BS3_C,,call,BS3_C,True,True
+28,D,delaware,3002550158,BRIDGE STATE UNIT 29 #505H,Lea,BS3_S,,BS3_S,BS3_S,BS2_S,"agrees (input unit 682 ft off; BS2_S's unit 217 ft, lead 465 ft)",ACCEPT,,restore,BS2_S,True,True
+29,D,delaware,3002552959,BURKE STATE COM #129H,Lea,BS3_S,,BS3_S,BS2_S,BS2_S,"agrees (input unit 1051 ft off; BS2_S's unit 16 ft, lead 539 ft)",ACCEPT,,restore,BS2_S,True,True
+30,D,delaware,3002555688,BOND 32 34 FEDERAL COM #201H,Lea,BS3_S,,BS3_S,BS2_S,BS2_S,"agrees (input unit 818 ft off; BS2_S's unit 70 ft, lead 687 ft)",ACCEPT,,restore,BS2_S,True,True
+31,D,delaware,3002555690,BOND 32 34 FEDERAL COM #205H,Lea,BS3_S,,BS3_S,BS2_S,BS2_S,"agrees (input unit 1120 ft off; BS2_S's unit 110 ft, lead 607 ft)",ACCEPT,,restore,BS2_S,True,True
+32,D,delaware,3002555721,BOND 33 34 FEDERAL COM #207H,Lea,BS3_S,,BS3_S,BS2_S,BS2_S,"agrees (input unit 1083 ft off; BS2_S's unit 97 ft, lead 660 ft)",ACCEPT,,restore,BS2_S,True,True
+33,D,delaware,3002548277,MANDELBAUM FEE #132H,Lea,BS3_S,,BS3_S,BS3_S,WCA_2,"agrees (input unit 646 ft off; WCA_2's unit 140 ft, lead 506 ft)",ACCEPT,,restore,WCA_2,True,True
+34,D,delaware,3001539733,MARTHA AIK FEDERAL #008H,Eddy,OTHER,,OTHER,OTHER,AVA_1,no plain-median read for AVA_1's unit,REJECT,,keep vendor tag,OTHER,False,False
+35,D,delaware,3002503429,PRE-ONGARD WELL #009,Lea,OTHER,,OTHER,OTHER,BS1_S,"DISAGREES (input is OTHER / unmapped; BS1_S's unit 4200 ft, lead 700 ft)",SUSPECT TVD,,depth exclusion,OTHER,False,False
+36,D,delaware,3002552087,NORTH WILSON DEEP UNIT #005H,Lea,OTHER,,OTHER,OTHER,BS1_S,"DISAGREES (input is OTHER / unmapped; BS1_S's unit 668 ft, lead 695 ft)",SUSPECT TVD,,depth exclusion,OTHER,False,False
+37,D,delaware,3001545749,RUMBLE STATE #004H,Eddy,OTHER,,OTHER,OTHER,BS2_C,no plain-median read for BS2_C's unit,REJECT,,keep vendor tag,OTHER,False,False
+38,D,delaware,3001535921,DARK CANYON 19 FEDERAL #001,Eddy,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+39,D,delaware,3002505936,PRE-ONGARD WELL #007,Lea,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+40,D,delaware,3002526824,STATE AP #001,Lea,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,BS3_C,,call,BS3_C,True,True
+41,D,delaware,3002536675,V LAUGHLIN #005H,Lea,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+42,D,delaware,3002538612,LANGLEY GREER COM #003H,Lea,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+43,D,delaware,3002551684,DANJER 22 10 STATE COM #004H,Lea,OTHER,,OTHER,OTHER,BS2_S,no plain-median read for BS2_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+44,D,delaware,3002503027,PRE-ONGARD WELL #002,Lea,OTHER,,OTHER,OTHER,BS3_C,no plain-median read for BS3_C's unit,REJECT,,keep vendor tag,OTHER,False,False
+45,D,delaware,3002505513,PRE-ONGARD WELL #001,Lea,OTHER,,OTHER,OTHER,BS3_C,no plain-median read for BS3_C's unit,REJECT,,keep vendor tag,OTHER,False,False
+46,D,delaware,3002520773,PRE-ONGARD WELL #004,Lea,OTHER,,OTHER,OTHER,BS3_C,no plain-median read for BS3_C's unit,REJECT,,keep vendor tag,OTHER,False,False
+47,D,delaware,4237140047,OSPREY STATE WEST UNIT 1H,Pecos,OTHER,,OTHER,OTHER,BS3_C,no plain-median read for BS3_C's unit,REJECT,,keep vendor tag,OTHER,False,False
+48,D,delaware,3001525956,EASTERN SHORE QW FEDERAL COM #002Y,Eddy,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+49,D,delaware,3001531152,OLD RANCH CANYON 7 FEDERAL #003,Eddy,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+50,D,delaware,3001532181,LOWE STAPLE AMR FEDERAL COM #002,Eddy,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+51,D,delaware,3001554219,GEMINI 36 35 FEDERAL COM #513H,Eddy,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,BS2_S,,call,BS2_S,True,True
+52,D,delaware,3002520503,NEW MEXICO R STATE NCT 1 #007,Lea,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+53,D,delaware,3002520687,PRE-ONGARD WELL #001,Lea,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+54,D,delaware,3002522679,PRE-ONGARD WELL #001,Lea,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+55,D,delaware,3002534945,STATE BA #015H,Lea,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+56,D,delaware,3002550354,PINE STRAW 25 36 05 FEDERAL COM #107H,Lea,OTHER,,OTHER,OTHER,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,OTHER,False,False
+57,D,delaware,3002552602,JUNIPER 25 36 34 FEDERAL COM #116H,Lea,OTHER,,OTHER,OTHER,BS3_S,"DISAGREES (input is OTHER / unmapped; BS3_S's unit 292 ft, lead inf ft)",ACCEPT,,restore,BS3_S,True,True
+58,D,delaware,3001521126,SANDY FEDERAL #001,Eddy,OTHER,,OTHER,OTHER,WCA_1,"DISAGREES (input is OTHER / unmapped; WCA_1's unit 3361 ft, lead 460 ft)",ACCEPT,,restore,WCA_1,True,True
+59,D,delaware,3001533625,RIGHTHAND CANYON 35 FEDERAL #005,Eddy,OTHER,,OTHER,OTHER,WCA_2,no plain-median read for WCA_2's unit,SUSPECT TVD,,depth exclusion,OTHER,False,False
+60,D,delaware,3001554872,LITTLE BETTY 20 #702H,Eddy,OTHER,,OTHER,OTHER,WCA_2,no plain-median read for WCA_2's unit,WCA_2,,call,WCA_2,True,True
+61,D,delaware,3001540775,LOST TANK 4 FEDERAL #023,Eddy,OTHER,,OTHER,OTHER,WCXY,no plain-median read for WCXY's unit,REJECT,,keep vendor tag,OTHER,False,False
+62,D,delaware,3001547580,ROCK JELLY FEDERAL COM #704H,Eddy,WCA_1,,WCA_1,WCA_1,BS2_S,"agrees (input unit 1278 ft off; BS2_S's unit 15 ft, lead 718 ft)",ACCEPT,,restore,BS2_S,True,True
+63,D,delaware,3001543291,CAVERNS FEDERAL COM #004H,Eddy,WCA_1,,WCA_1,WCA_1,BS3_C,no plain-median read for BS3_C's unit,REJECT,,keep vendor tag,WCA_1,True,False
+64,D,delaware,4237139397,STATE NEAL LETHCO 'A' 3427-142 1H,Pecos,WCA_1,,WCA_1,WCA_1,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,WCA_1,True,False
+65,D,delaware,4237139436,STATE NEAL LETHCO 3405-142 2H,Pecos,WCA_1,,WCA_1,WCA_1,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,WCA_1,True,False
+66,D,delaware,4237139985,SILOW 14 UNIT K001,Pecos,WCA_1,,WCA_1,WCA_1,WCA_2,"DISAGREES (input unit 132 ft off; WCA_2's unit 132 ft, lead inf ft)",REJECT,,keep vendor tag,WCA_1,True,False
+67,D,delaware,4238934064,BLACK FLAG STATE UNIT 253-254E 5H,Reeves,WCA_1,,WCA_1,WCA_1,WCB_2,"DISAGREES (input unit 1496 ft off; WCB_2's unit 1116 ft, lead 380 ft)",SUSPECT TVD,,depth exclusion,WCA_1,False,False
+68,D,delaware,4238936101,PEDERNALES 293 1H,Reeves,WCA_1,,WCA_1,WCB_1,WCB_2,"DISAGREES (input unit 546 ft off; WCB_2's unit 326 ft, lead 220 ft)",SUSPECT TVD,,depth exclusion,WCA_1,False,False
+69,D,delaware,3001547434,CREEDENCE 21 16 W0OB FEDERAL COM #002H,Eddy,WCA_1,,WCA_1,WCB_1,WCC,no plain-median read for WCC's unit,WCB_2,,call,WCB_2,True,True
+70,D,delaware,3001554556,CB AMILYN 10 3 FEDERAL COM P13 #401H,Eddy,WCA_1,,WCA_1,WCA_1,WCC,no plain-median read for WCC's unit,ACCEPT,,restore,WCC,True,True
+71,D,delaware,3001554561,CB AMILYN 10 3 FEDERAL COM P13 #403H,Eddy,WCA_1,,WCA_1,WCA_1,WCC,no plain-median read for WCC's unit,ACCEPT,,restore,WCC,True,True
+72,D,delaware,3001553770,POKER LAKE UNIT 19 DTD #218H,Eddy,WCA_1,,WCA_1,WCA_1,WCXY,"DISAGREES (input unit 81 ft off; WCXY's unit 81 ft, lead 646 ft)",ACCEPT,,restore,WCXY,True,True
+73,D,delaware,3001553836,POKER LAKE UNIT 19 DTD #323H,Eddy,WCA_1,,WCA_1,WCA_1,WCXY,"DISAGREES (input unit 35 ft off; WCXY's unit 35 ft, lead 622 ft)",ACCEPT,,restore,WCXY,True,True
+74,D,delaware,3002543547,VAST STATE #026H,Lea,WCA_2,,WCA_2,WCA_2,AVA_0,"DISAGREES (input unit 7347 ft off; AVA_0's unit 4319 ft, lead 854 ft)",SUSPECT TVD,,depth exclusion,WCA_2,False,False
+75,D,delaware,4237138810,BIG TEX NORTH 30 301,Pecos,WCA_2,,WCA_2,WCA_2,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,WCA_2,True,False
+76,D,delaware,4237139298,STATE NEAL LETHCO 3405-142 1H,Pecos,WCA_2,,WCA_2,WCA_2,BS3_S,no plain-median read for BS3_S's unit,REJECT,,keep vendor tag,WCA_2,True,False
+77,D,delaware,4210932986,W A STATE 5H,Culberson,WCA_2,,WCA_2,WCA_2,WCC,no plain-median read for WCC's unit,SUSPECT TVD,,depth exclusion,WCA_2,False,False
+78,D,delaware,3001544401,REMUDA NORTH 30 STATE #122H,Eddy,WCA_2,,WCA_2,WCA_2,WCC,no plain-median read for WCC's unit,SUSPECT TVD,,depth exclusion,WCA_2,False,False
+79,D,delaware,3001546344,CICADA UNIT #035H,Eddy,WCB_2,,WCB_2,WCB_2,WCA_2,"agrees (no plain read for the input unit; WCA_2's unit 92 ft, lead 949 ft)",ACCEPT,,restore,WCA_2,True,True
+80,D,delaware,4238933058,COTTONMOUTH 58-47 1H,Reeves,WCB_2,,WCB_2,WCB_2,WCA_2,no plain-median read for WCA_2's unit,REJECT,,keep vendor tag,WCB_2,True,False
+81,D,delaware,4238934442,JETT RINK STATE 59-25 1H,Reeves,WCB_2,,WCB_2,WCB_2,WCA_2,no plain-median read for WCA_2's unit,REJECT,,keep vendor tag,WCB_2,True,False
+82,D,delaware,3001548933,BONANZA 22 15 B2FC FEDERAL COM #001H,Eddy,WCC,,WCC,WCC,BS2_S,"agrees (no plain read for the input unit; BS2_S's unit 12 ft, lead 444 ft)",ACCEPT,,restore,BS2_S,True,True
+83,D,delaware,3001553322,COLD SNACK FEDERAL COM #231H,Eddy,WCC,,WCC,WCC,WCA_1,"agrees (no plain read for the input unit; WCA_1's unit 218 ft, lead inf ft)",SUSPECT TVD,,depth exclusion,WCC,False,False
+84,D,delaware,3001553440,POKER LAKE UNIT 30 19 BS #155H,Eddy,WCC,,WCC,WCC,WCA_1,"agrees (no plain read for the input unit; WCA_1's unit 132 ft, lead 940 ft)",ACCEPT,,restore,WCA_1,True,True
+85,D,delaware,4210932978,HAY BOWEN 29/32 001 0012WD,Culberson,WCC,,WCC,WCC,WCA_2,"agrees (no plain read for the input unit; WCA_2's unit 43 ft, lead 372 ft)",ACCEPT,,restore,WCA_2,True,True
+86,D,delaware,3001545579,ROCK SPUR 27 W0BO STATE #004H,Eddy,WCC,,WCC,WCC,WCXY,"agrees (no plain read for the input unit; WCXY's unit 105 ft, lead 728 ft)",ACCEPT,,restore,WCXY,True,True
+87,D,delaware,3001548924,FOREIGNER 33 4 W0IP FEDERAL COM #001H,Eddy,WCXY,,WCXY,WCXY,WCC,no plain-median read for WCC's unit,SUSPECT TVD,,depth exclusion,WCXY,False,False
+88,D,midland,4203331672,JO-MILL UNIT LP 2520H,Borden,JM,,JM,JM,DEAN,no plain-median read for DEAN's unit,REJECT,,keep vendor tag,JM,True,False
+89,D,midland,4231742707,T Y RANCH WEST 2451JM,Martin,JM,,JM,JM,LSSH,"DISAGREES (input unit 592 ft off; LSSH's unit 148 ft, lead 241 ft)",ACCEPT,,restore,LSSH,True,True
+90,D,midland,4231742713,T Y RANCH WEST 2453JM,Martin,JM,,JM,JM,LSSH,"DISAGREES (input unit 570 ft off; LSSH's unit 127 ft, lead 283 ft)",ACCEPT,,restore,LSSH,True,True
+91,D,midland,4200348755,PUTNAM THE PIO 32 7LS,Andrews,LSSH,,LSSH,LSSH,MS,"DISAGREES (input unit 3096 ft off; MS's unit 2504 ft, lead 223 ft)",SUSPECT TVD,,depth exclusion,LSSH,False,False
+92,D,midland,4210337719,EDWARDS B 2H,Crane,LSSH,,LSSH,LSSH,MS,no plain-median read for MS's unit,REJECT,,keep vendor tag,LSSH,True,False
+93,D,midland,4232941958,RIO SAN MARCOS 36-45 UNIT 1 242,Midland,LSSH,,LSSH,WCA_1,WCA_1,"DISAGREES (input unit 601 ft off; WCA_1's unit 122 ft, lead 46 ft)",SUSPECT TVD,,depth exclusion,LSSH,False,False
+94,D,midland,4232946206,ONEAL-ANNIE 15R 18H,Midland,LSSH,,LSSH,WCA_1,WCA_1,"DISAGREES (input unit 452 ft off; WCA_1's unit 32 ft, lead 248 ft)",ACCEPT,,restore,WCA_1,True,True
+95,D,midland,4200348504,UNIVERSITY 5-35 N3 H 3MS,Andrews,MS,,MS,MS,DEAN,no plain-median read for DEAN's unit,REJECT,,keep vendor tag,MS,True,False
+96,D,midland,4213544173,SOCO 1907 B 401H,Ector,OTHER,,OTHER,OTHER,LSSH,no plain-median read for LSSH's unit,WCA_1,,call,WCA_1,True,True
+97,D,midland,4213544174,SOCO 1907 C 201H,Ector,OTHER,,OTHER,OTHER,LSSH,no plain-median read for LSSH's unit,ACCEPT,,restore,LSSH,True,True
+98,D,midland,4200345969,UL DIGGER 502H,Andrews,OTHER,,OTHER,OTHER,MS,no plain-median read for MS's unit,REJECT,,keep vendor tag,OTHER,False,False
+99,D,midland,4223536438,"HOYT, JOAN CREWS 1CH",Irion,OTHER,,OTHER,OTHER,WCA_1,no plain-median read for WCA_1's unit,REJECT,,keep vendor tag,OTHER,False,False
+100,D,midland,4222738913,MIDLAND 15-10 1WA,Howard,WCA_1,,WCA_1,WCA_1,MS,"agrees (input unit 666 ft off; MS's unit 228 ft, lead 141 ft)",SUSPECT TVD,,depth exclusion,WCA_1,False,False
+101,D,midland,4246141768,NEAL 34GG 12HM,Upton,WCB_1,,WCB_1,WCB_1,JM,"DISAGREES (input unit 2514 ft off; JM's unit 1307 ft, lead 382 ft)",SUSPECT TVD,,depth exclusion,WCB_1,False,False
+102,D,midland,4232945937,BUTTER CRUNCH J 4WB,Midland,WCB_1,,WCB_1,WCB_1,LSSH,"agrees (input unit 856 ft off; LSSH's unit 86 ft, lead 178 ft)",SUSPECT TVD,,depth exclusion,WCB_1,False,False
+103,D,midland,4210541359,SHANNON ESTATE 01-36 3H,Crockett,WCB_1,,WCB_1,WCB_1,WCA_1,no plain-median read for WCA_1's unit,REJECT,,keep vendor tag,WCB_1,True,False
+104,D,midland,4223535203,SUGG STRIP 6H,Irion,WCB_1,,WCB_1,WCB_1,WCB_2,"DISAGREES (input unit 2122 ft off; WCB_2's unit 2122 ft, lead 595 ft)",REJECT,,keep vendor tag,WCB_1,True,False
+105,D,midland,4238339841,UNIVERSITY CENTRAL 0803DH,Reagan,WCB_2,,WCB_2,WCA_1,WCA_1,"DISAGREES (input unit 274 ft off; WCA_1's unit 26 ft, lead 248 ft)",ACCEPT,,restore,WCA_1,True,True
+106,D,midland,4246139501,PEMBROOK X-1 5H,Upton,WCB_2,,WCB_2,WCA_1,WCA_1,"DISAGREES (input unit 383 ft off; WCA_1's unit 38 ft, lead 345 ft)",ACCEPT,,restore,WCA_1,True,True
+107,D,midland,4231744985,JOHNSON RANCH WEST B 13-1 2602H,Martin,WCD,,WCD,WCD,JM,"agrees (no plain read for the input unit; JM's unit 30 ft, lead 292 ft)",SUSPECT TVD,,depth exclusion,WCD,False,False
+108,D,midland,4231744984,JOHNSON RANCH WEST A 13-1 4301H,Martin,WCD,,WCD,WCD,WCB_1,"agrees (no plain read for the input unit; WCB_1's unit 10 ft, lead 260 ft)",ACCEPT,,restore,WCB_1,True,True
