@@ -139,3 +139,13 @@ def test_the_stored_set_is_read_back_with_exact_floats() -> None:
     # 15-digit values against the stored ones and failed on every carried depth (rolled back, nothing stored)
     src = (ROOT / "scripts" / "box_sticks_run.py").read_text(encoding="utf-8")
     assert src.index('q("SET LOCAL extra_float_digits = 1")') < src.index("FROM box.location_set_bench WHERE set_id = %s AND pad_id = ANY(%s)")
+
+
+def test_the_record_flip_supersedes_before_it_sets_and_defaults_to_a_dry_run() -> None:
+    src = (ROOT / "scripts" / "box_sticks_run.py").read_text(encoding="utf-8")
+    body = src[src.index("def flip_record"):src.index("def cmd_record")]
+    # one record per basin is a unique index: the old record must be cleared first, in the same transaction
+    assert body.index("SET is_record = false, superseded_by = %s WHERE basin = %s AND is_record") < body.index("SET is_record = true WHERE set_id = %s")
+    assert "location_stick SET" not in body and "DELETE" not in body                    # the flip touches no stick row
+    assert run.main.__doc__ is None and "if bad or not go:" in src[src.index("def cmd_record"):src.index("def main")]
+
