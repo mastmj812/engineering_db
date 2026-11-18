@@ -305,6 +305,16 @@ numbers of record for gate 3b; the dated pre-cutover folders stay as what was re
   DSU + bench + slot. App-facing `stick_id` stays POSITIVE; the PDP `-(api10)` convention is untouched.
 - Built alongside the Novi objects. Nothing is dropped or re-pointed in this phase.
 
+**Gate 4a (2026-11-18, `docs/box_sticks/phase4a-2026-11-18/DESIGN.md`, read-only, nothing applied).** Draft DDL: new
+`box.location_set`, `box.location_stick` (the stick per set), `box.location_set_dsu` / `_bench` / `_well` (what the
+generator was given, so a set re-runs from the warehouse), six identity columns on `box.location`. Id rule
+(`box/sticks/identity.py`): same DSU + bench, >= 50 % of the shorter stick alongside within 220 ft, 1:1; slot numbers never
+reused. Measured: 0.9 on the 11-14 pull against 0.10 on the 11-17 pull (tag cutover between) carries 91.2 % of Delaware and
+89.8 % of Midland sticks; 0.10 on the 11-17 pull against a fresh 11-18 pull carries 99.65 % and 98.96 %. Fresh run
+(pull 2026-11-18): Delaware 46,709 sticks, Midland 33,829. Found: the generator drops the anchor benches and stores no
+expected error on the direct rung (both needed by the columns above); four private narvi functions are imported, not
+three; `scripts/box_pud_run.py` reads `box.location` by vintage with no source filter. Nine questions wait on Michael.
+
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations
