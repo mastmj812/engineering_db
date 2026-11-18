@@ -1,0 +1,751 @@
+{
+ "record_sets": [
+  {
+   "set_id": 6,
+   "basin": "delaware",
+   "generator_version": "box_sticks_0.11",
+   "pulled_at": "2026-11-18T18:26:45.138Z",
+   "tag_run_id": 8
+  },
+  {
+   "set_id": 7,
+   "basin": "midland",
+   "generator_version": "box_sticks_0.11",
+   "pulled_at": "2026-11-18T18:26:45.138Z",
+   "tag_run_id": 8
+  }
+ ],
+ "wells_pulled_at": "2026-11-18 20:00:07.455429+00:00",
+ "wells_by_class": [
+  {
+   "basin": "delaware",
+   "cls": "drilled",
+   "n": 3236
+  },
+  {
+   "basin": "delaware",
+   "cls": "ignored",
+   "n": 10349
+  },
+  {
+   "basin": "delaware",
+   "cls": "permit",
+   "n": 4661
+  },
+  {
+   "basin": "delaware",
+   "cls": "producing",
+   "n": 31905
+  },
+  {
+   "basin": "midland",
+   "cls": "drilled",
+   "n": 2459
+  },
+  {
+   "basin": "midland",
+   "cls": "ignored",
+   "n": 2587
+  },
+  {
+   "basin": "midland",
+   "cls": "permit",
+   "n": 806
+  },
+  {
+   "basin": "midland",
+   "cls": "producing",
+   "n": 29032
+  }
+ ],
+ "wells_no_depth_evidence": [
+  {
+   "basin": "delaware",
+   "state_code": 30,
+   "cls": "drilled",
+   "size": 1799,
+   "sum": 1078
+  },
+  {
+   "basin": "delaware",
+   "state_code": 30,
+   "cls": "permit",
+   "size": 4250,
+   "sum": 2749
+  },
+  {
+   "basin": "delaware",
+   "state_code": 30,
+   "cls": "producing",
+   "size": 16993,
+   "sum": 3362
+  },
+  {
+   "basin": "delaware",
+   "state_code": 42,
+   "cls": "drilled",
+   "size": 1437,
+   "sum": 600
+  },
+  {
+   "basin": "delaware",
+   "state_code": 42,
+   "cls": "permit",
+   "size": 411,
+   "sum": 301
+  },
+  {
+   "basin": "delaware",
+   "state_code": 42,
+   "cls": "producing",
+   "size": 14912,
+   "sum": 231
+  },
+  {
+   "basin": "midland",
+   "state_code": 42,
+   "cls": "drilled",
+   "size": 2459,
+   "sum": 658
+  },
+  {
+   "basin": "midland",
+   "state_code": 42,
+   "cls": "permit",
+   "size": 806,
+   "sum": 515
+  },
+  {
+   "basin": "midland",
+   "state_code": 42,
+   "cls": "producing",
+   "size": 29032,
+   "sum": 422
+  }
+ ],
+ "status_counts": [
+  {
+   "basin": "delaware",
+   "open": 44617,
+   "permitted": 771,
+   "drilled": 216,
+   "producing": 569,
+   "conflict": 536,
+   "crowded_flag": 1799,
+   "sticks": 46709,
+   "not_open_ex_permit_pct": 2.828,
+   "crowded_pct": 3.852
+  },
+  {
+   "basin": "midland",
+   "open": 33330,
+   "permitted": 76,
+   "drilled": 205,
+   "producing": 44,
+   "conflict": 174,
+   "crowded_flag": 1542,
+   "sticks": 33829,
+   "not_open_ex_permit_pct": 1.25,
+   "crowded_pct": 4.558
+  }
+ ],
+ "by_cause": [
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "cause": "generator held no depth for the well (screened out)",
+   "sticks": 3
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 26
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "cause": "same well, different measure",
+   "sticks": 402
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "cause": "well not read by the generator",
+   "sticks": 105
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "cause": "generator held no depth for the well (screened out)",
+   "sticks": 9
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 125
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "cause": "same well, different measure",
+   "sticks": 1384
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "cause": "well not read by the generator",
+   "sticks": 281
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 30
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "cause": "same well, different measure",
+   "sticks": 52
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "cause": "well not read by the generator",
+   "sticks": 134
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "cause": "generator held no depth for the well (screened out)",
+   "sticks": 2
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 33
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "cause": "same well, different measure",
+   "sticks": 534
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 24
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "cause": "same well, different measure",
+   "sticks": 85
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "cause": "well not read by the generator",
+   "sticks": 65
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "cause": "generator held no depth for the well (screened out)",
+   "sticks": 2
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 92
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "cause": "same well, different measure",
+   "sticks": 1133
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "cause": "well not read by the generator",
+   "sticks": 315
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 15
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "cause": "same well, different measure",
+   "sticks": 5
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "cause": "well not read by the generator",
+   "sticks": 185
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "cause": "generator held no depth for the well (screened out)",
+   "sticks": 2
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "cause": "real U-turn well: survey path here, wellstick in the generator",
+   "sticks": 26
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "cause": "same well, different measure",
+   "sticks": 16
+  }
+ ],
+ "variant_b_status_counts": [
+  {
+   "basin": "delaware",
+   "open": 45397,
+   "permitted": 671,
+   "drilled": 162,
+   "producing": 133,
+   "conflict": 346,
+   "crowded_flag": 529,
+   "sticks": 46709,
+   "not_open_ex_permit_pct": 1.372,
+   "crowded_pct": 1.133
+  },
+  {
+   "basin": "midland",
+   "open": 33325,
+   "permitted": 79,
+   "drilled": 206,
+   "producing": 44,
+   "conflict": 175,
+   "crowded_flag": 519,
+   "sticks": 33829,
+   "not_open_ex_permit_pct": 1.256,
+   "crowded_pct": 1.534
+  }
+ ],
+ "variant_b_by_cause": [
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "other",
+   "sticks": 157
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 23
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 53
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "well not read by the generator: Abandoned",
+   "sticks": 7
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 17
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "well not read by the generator: P&A",
+   "sticks": 9
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 56
+  },
+  {
+   "basin": "delaware",
+   "kind": "conflict",
+   "why": "well without depth evidence",
+   "sticks": 24
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "other",
+   "sticks": 172
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 98
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 4
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well not read by the generator: Abandoned",
+   "sticks": 10
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well not read by the generator: Active",
+   "sticks": 3
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 61
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well not read by the generator: P&A",
+   "sticks": 24
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 130
+  },
+  {
+   "basin": "delaware",
+   "kind": "crowded",
+   "why": "well without depth evidence",
+   "sticks": 27
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "other",
+   "sticks": 3
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 29
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 7
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well not read by the generator: Abandoned",
+   "sticks": 4
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well not read by the generator: Active",
+   "sticks": 1
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 25
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well not read by the generator: P&A",
+   "sticks": 11
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 77
+  },
+  {
+   "basin": "delaware",
+   "kind": "drilled",
+   "why": "well without depth evidence",
+   "sticks": 5
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "why": "other",
+   "sticks": 28
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 31
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 70
+  },
+  {
+   "basin": "delaware",
+   "kind": "producing",
+   "why": "well without depth evidence",
+   "sticks": 4
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "other",
+   "sticks": 69
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 24
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 14
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "well not read by the generator: Abandoned",
+   "sticks": 2
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 45
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "well not read by the generator: P&A",
+   "sticks": 4
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 16
+  },
+  {
+   "basin": "midland",
+   "kind": "conflict",
+   "why": "well without depth evidence",
+   "sticks": 1
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "other",
+   "sticks": 123
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 89
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 1
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well not read by the generator: Abandoned",
+   "sticks": 2
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well not read by the generator: Active",
+   "sticks": 2
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 249
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well not read by the generator: P&A",
+   "sticks": 10
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 40
+  },
+  {
+   "basin": "midland",
+   "kind": "crowded",
+   "why": "well without depth evidence",
+   "sticks": 3
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 15
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 5
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "why": "well not read by the generator: Inactive",
+   "sticks": 171
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "why": "well not read by the generator: P&A",
+   "sticks": 5
+  },
+  {
+   "basin": "midland",
+   "kind": "drilled",
+   "why": "well not read by the generator: Permit Approved",
+   "sticks": 10
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "why": "other",
+   "sticks": 4
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "why": "real U-turn well (survey path here, wellstick in the generator)",
+   "sticks": 26
+  },
+  {
+   "basin": "midland",
+   "kind": "producing",
+   "why": "same code, 150 to 500 ft apart vertically",
+   "sticks": 14
+  }
+ ],
+ "sql": {
+  "seconds": 49.1,
+  "rows": 80538,
+  "agreement": [
+   {
+    "basin": "delaware",
+    "sticks": 46709.0,
+    "same_status_pct": 99.98287267978334,
+    "same_crowded_pct": 99.96146352951251
+   },
+   {
+    "basin": "midland",
+    "sticks": 33829.0,
+    "same_status_pct": 100.0,
+    "same_crowded_pct": 99.94974725826953
+   }
+  ],
+  "uses_stick_index": [
+   "box_location_stick_geog_gix"
+  ],
+  "sql_status_counts": [
+   {
+    "basin": "delaware",
+    "status": "conflict",
+    "n": 530
+   },
+   {
+    "basin": "delaware",
+    "status": "drilled",
+    "n": 216
+   },
+   {
+    "basin": "delaware",
+    "status": "open",
+    "n": 44622
+   },
+   {
+    "basin": "delaware",
+    "status": "permitted",
+    "n": 771
+   },
+   {
+    "basin": "delaware",
+    "status": "producing",
+    "n": 570
+   },
+   {
+    "basin": "midland",
+    "status": "conflict",
+    "n": 174
+   },
+   {
+    "basin": "midland",
+    "status": "drilled",
+    "n": 205
+   },
+   {
+    "basin": "midland",
+    "status": "open",
+    "n": 33330
+   },
+   {
+    "basin": "midland",
+    "status": "permitted",
+    "n": 76
+   },
+   {
+    "basin": "midland",
+    "status": "producing",
+    "n": 44
+   }
+  ],
+  "sql_crowded": {
+   "delaware": 1795,
+   "midland": 1525
+  }
+ }
+}
