@@ -3,6 +3,7 @@
     python -m scripts.box_sticks_run pull     --run <dir>                       # read-only; a NEW, empty run dir
     python -m scripts.box_sticks_run generate --run <dir> --basin delaware|midland
     python -m scripts.box_sticks_run store    --run <dir> --basin <b> [--check N] [--go]
+    python -m scripts.box_sticks_run record   --set-id <n> [--go]               # make a stored set its basin's record
 
 pull      reads every warehouse input once into <dir>/cache (never reused: a run dir is one pull), puts every frame in key
           order (no pull has an ORDER BY and several tie-breaks follow row order), and writes manifest.json: the pull time
@@ -14,6 +15,8 @@ store     carries location ids from the basin's record set (the latest stored se
           box.location_set + box.location + box.location_stick + box.location_set_dsu / _bench / _well in ONE transaction,
           verifies by identity, regenerates DSUs from the STORED rows and compares, then ROLLS BACK unless --go.
           The set is stored NOT record; the record flip is a separate explicit go.
+record    makes one stored set the record of its basin: the basin's previous record (if any) is superseded by it, in the
+          same transaction. Checked before and after; ROLLS BACK unless --go. No stick row is touched.
 
 !! store --go writes box.* on whatever DB_* points at: explicit authorization required. Container first
 (python -m scripts.box_rehearsal env). The generator does not forecast and holds no economics.
@@ -412,6 +415,58 @@ def cmd_store(run: Path, basin: str, go: bool, check: int | None, backtest: Path
         conn.close()
 
 
+def flip_record(cur, sid: int) -> tuple[list[str], dict]:
+    """Make set `sid` its basin's record inside the caller's transaction. Returns (failed checks, what happened)."""
+    q, bad = cur.execute, []
+
+    def ck(ok: bool, msg: str) -> None:
+        print(f"    {'ok  ' if ok else 'FAIL'} {msg}", flush=True)
+        if not ok:
+            bad.append(msg)
+
+    row = q("SELECT basin, is_record, generator_version, (counts->>'sticks')::int, counts->'violations', counts->>'errors' FROM box.location_set WHERE set_id = %s",
+            (sid,)).fetchone()
+    if row is None:
+        raise SystemExit(f"box.location_set has no set {sid}")
+    basin, was, version, n_sticks, viol, errs = row
+    ck(not was, f"set {sid} ({basin}, {version}) is not the record yet")
+    n = q("SELECT count(*), count(DISTINCT location_id) FROM box.location_stick WHERE set_id = %s", (sid,)).fetchone()
+    ck(n[0] == n_sticks == n[1], f"its stick rows = the count it was stored with ({n[0]:,} = {n_sticks:,}), one location each")
+    ck(q("SELECT count(*) FROM box.location_stick k LEFT JOIN box.location l ON l.location_id = k.location_id AND l.source = 'box_sticks' AND l.basin = %s "
+         "WHERE k.set_id = %s AND l.location_id IS NULL", (basin, sid)).fetchone()[0] == 0, "every stick has its BOX stick location in the basin")
+    ck(not any((viol or {}).values()) and str(errs) == "0", "the set was generated with 0 invariant violations and 0 DSU errors")
+    before = q("SELECT md5(string_agg(set_id::text || location_id::text || well_name || target_tvd_ft::text, '' ORDER BY set_id, location_id)) FROM box.location_stick").fetchone()[0]
+    prev = [int(r[0]) for r in q("SELECT set_id FROM box.location_set WHERE basin = %s AND is_record", (basin,)).fetchall()]
+    q("UPDATE box.location_set SET is_record = false, superseded_by = %s WHERE basin = %s AND is_record", (sid, basin))
+    q("UPDATE box.location_set SET is_record = true WHERE set_id = %s", (sid,))
+    rec = dict(q("SELECT basin, array_agg(set_id ORDER BY set_id) FROM box.location_set WHERE is_record GROUP BY 1").fetchall())
+    ck(rec.get(basin) == [sid], f"the {basin} record is set {sid} and only it ({rec})")
+    ck(all(q("SELECT superseded_by FROM box.location_set WHERE set_id = %s", (p,)).fetchone()[0] == sid for p in prev), f"previous {basin} record(s) {prev} superseded by {sid}")
+    after = q("SELECT md5(string_agg(set_id::text || location_id::text || well_name || target_tvd_ft::text, '' ORDER BY set_id, location_id)) FROM box.location_stick").fetchone()[0]
+    ck(before == after, "no stick row changed")
+    return bad, {"basin": basin, "previous": prev}
+
+
+def cmd_record(sid: int, go: bool) -> int:
+    from etl.db import get_connection
+
+    conn = get_connection()
+    conn.autocommit = False
+    try:
+        with conn.cursor() as cur:
+            print(f"target {cur.execute('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
+            bad, what = flip_record(cur, sid)
+            if bad or not go:
+                conn.rollback()
+                print(f"ROLLED BACK ({len(bad)} check(s) failed)" if bad else "dry run: ROLLED BACK (pass --go to keep it)", flush=True)
+                return 1 if bad else 0
+            conn.commit()
+            print(f"RECORD: set {sid} is the {what['basin']} record", flush=True)
+            return 0
+    finally:
+        conn.close()
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -426,7 +481,12 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--check", type=int, default=None, help="regenerate only N DSUs from the stored rows (default: every DSU)")
     s.add_argument("--backtest", type=Path, default=None, help="the back-test summary json of this generator on this pull (required with --go)")
     s.add_argument("--notes", default=None)
+    r = sub.add_parser("record")
+    r.add_argument("--set-id", required=True, type=int)
+    r.add_argument("--go", action="store_true", help="commit (explicit authorization required); default is a rolled-back dry run")
     a = ap.parse_args(argv)
+    if a.cmd == "record":
+        return cmd_record(a.set_id, a.go)
     if a.cmd == "pull":
         pull(a.run)
         return 0

@@ -63,7 +63,7 @@ stick chain is retired.
 | Identity rule (2026-11-18, gate 4a) | Same DSU + bench, >= 50 % of the shorter stick alongside within 220 ft sideways, 1:1 greedy; slot numbers never reused; depth is not identity, bench is. A new set carries ids from the basin's RECORD set (from the latest stored set while there is no record). Measured: 91.2 / 89.8 % carried across the tag cutover, 99.65 / 98.96 % over one night (Delaware / Midland) |
 | App-facing id (2026-11-18, Q2) | `stick_id = location_id` for BOX sticks; the id sequence restarts at 10,000,001, apart from Novi stick ids (max 1,824,903) and the Novi-seeded location ids (max 252,947). PDP `-(api10)` untouched |
 | Stick name (2026-11-18, Q3) | Stored `well_name` = `<pad_id>-<bench>-<slot number>`, stable across sets; not the position in the row |
-| First stored set (2026-11-18, Q4) | Stored NOT record. The record flip is a separate explicit go once both basins are stored and checked. Nothing reads `box.location_set` before phase 5 |
+| First stored set (2026-11-18, Q4) | Stored NOT record. The record flip is a separate explicit go once both basins are stored and checked. Nothing reads `box.location_set` before phase 5. **Flipped 2026-11-18:** set 6 (Delaware) and set 7 (Midland) are the records |
 | Row ledger (2026-11-18, Q5) | Not stored. Culled rows are counted by reason per DSU x bench (`box.location_set_bench.rows_culled`); the ledger regenerates from the stored inputs |
 | WCXY extent storage (2026-11-18, Q6; supersedes "store with the phase 4 writes") | Not stored in `box.extent` in phase 4. The committed geojson is pinned by sha256 in each set's manifest and a missing file fails the run. Reason: a record WCXY extent needs a `box.bench_scope` row and enters the nightly tag rule's inputs, erebor's scope list and the geology package. Store it when phase 6 settles the WCXY forecast pool |
 | narvi private functions (2026-11-18, Q7) | Four are imported (`placement._longest_segment`, `generate._make_leg`, `generate._single_well`, `generate._place_uturns`). A narvi PR exposes them under public names with no behaviour change, then the pin is bumped. No engine copy. **Done 2026-11-18:** narvi #34 merged (`bfc7955`), pin bumped, `box/sticks/core.py` uses `longest_segment`, `make_leg`, `single_well`, `place_uturns`; a test fails if any is missing; 5,864 sticks in 400 Delaware DSUs identical on the new pin |
@@ -358,6 +358,13 @@ re-applying the `box.location_set` comment.
 re-run on live about 19:29 UTC, 31 of 31 checks: the `box.location_set` comment now carries the `extra_float_digits = 1` note.
 Data unchanged by identity (2 sets, 80,538 stick rows with an equal digest before and after, 333,463 locations; sets 6 and 7
 still not record). Data dictionary regenerated. Left in phase 4: the record flip.
+
+**Record flip (2026-11-18, Michael: "go flip the record for both basins").** `python -m scripts.box_sticks_run record --set-id N --go`
+(new command; dry run first, 7 of 7 checks each): **set 6 is the Delaware record (46,709 sticks) and set 7 the Midland record
+(33,829 sticks)**, generator `box_sticks_0.11`, pull 2026-11-18 18:26 UTC. No earlier record existed, so nothing was superseded;
+no stick row changed (80,538 rows, digest equal before and after). The BOX forecast records are unchanged (run 32 Delaware,
+run 30 Midland) and still stand on the Novi sticks: nothing reads `box.location_set` until phases 5 to 7. From here a
+regenerated set carries its ids from these two. **Phase 4 is complete.**
 
 ## Phase 5 - Nightly reconciliation
 

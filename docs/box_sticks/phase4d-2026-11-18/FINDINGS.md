@@ -71,5 +71,13 @@ Both basins together: 80,538 sticks (92,455 legs, 796.8 MM ft), ids 10,046,716 t
 
 ## Not done
 
-- Nothing is record. No app, forecast or reconciliation reads either set.
+- No app, forecast or reconciliation reads either set.
 - The back-test was not re-run on 0.11.
+
+## Record flip (2026-11-18, later)
+
+Michael: "go flip the record for both basins". `scripts.box_sticks_run record --set-id 6 --go`, then `--set-id 7 --go`, each after
+a rolled-back dry run (7 of 7 checks): stick rows = the count the set was stored with, every stick has its location, the set
+was generated with 0 violations and 0 errors, exactly one record in the basin afterwards, no stick row changed. Set 6 is the
+Delaware record, set 7 the Midland record; no earlier record existed. Verified from a second connection: 46,709 and 33,829
+record sticks; 80,538 stick rows in all; BOX forecast records still run 32 and run 30.
