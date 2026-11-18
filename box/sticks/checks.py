@@ -12,7 +12,16 @@ from shapely.geometry import LineString
 
 from dealintake import geo
 
-from .core import BENCH_REASONS, ROW_REASONS, WCA_MEMBERS, Cfg, Dsu, Result, family
+from .core import (
+    BENCH_REASONS,
+    ROW_REASONS,
+    WCA_MEMBERS,
+    Cfg,
+    Dsu,
+    Result,
+    family,
+    well_legs,
+)
 
 FT_PER_M = geo.FT_PER_M
 REQUIRED = ("pad_id", "bench", "generator_version", "lateral_azimuth_deg", "azimuth_basis", "tvd_basis", "spacing_basis", "well_type", "legs",
@@ -29,13 +38,14 @@ def i1_envelope(res: Result, d: Dsu, cfg: Cfg, link_fn) -> list[str]:
     legs = list(_legs(res))
     if not legs or not d.wells:
         return []
-    t = link_fn(np.array([g for _, _, g in legs], dtype=object), np.array([w.line for w in d.wells], dtype=object), same=False)
+    wl = [(g, k) for k, w in enumerate(d.wells) for g in well_legs(w.line)]
+    t = link_fn(np.array([g for _, _, g in legs], dtype=object), np.array([g for g, _ in wl], dtype=object), same=False)
     t = t[t["overlap"] >= cfg.min_overlap]
     bad = []
     codev = d.wca_class == "co-developed"
     assumed = {b["code"]: b["target_tvd_ft"] for b in res.benches if not b["no_row_reason"]}      # benches that kept a landing
     for i, j, dh in zip(t["i"].to_numpy(), t["j"].to_numpy(), t["dh_ft"].to_numpy()):
-        s, w = legs[int(i)][0], d.wells[int(j)]
+        s, w = legs[int(i)][0], d.wells[wl[int(j)][1]]
         z = w.depth_ft if w.depth_ft is not None else assumed.get(w.code or "")
         if z is None:
             hit = family(w.code) == family(s["bench"]) and dh <= cfg.same_dh_ft

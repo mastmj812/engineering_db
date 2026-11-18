@@ -60,7 +60,8 @@ FROM curated.wells_enriched w
 LEFT JOIN curated.well_lateral_survey s ON s.api10 = w.api10
 LEFT JOIN ref.formation_crosswalk fx ON fx.basin = w.basin_blueox AND fx.raw_value = w.formation_blueox_raw
 WHERE w.basin_blueox IN ('delaware', 'midland') AND w.is_horizontal AND w.first_production_date IS NULL
-  AND w.well_status IN ('Spud', 'DUC', 'Completed')
+  AND (w.well_status IN ('Spud', 'DUC', 'Completed', 'Inactive', 'Active')
+       OR (w.well_status = 'Permit Approved' AND w.spud_date IS NOT NULL))
   AND extensions.ST_GeometryType(w.wellstick_geom) = 'ST_LineString'
 """
 
@@ -79,6 +80,28 @@ BACKTEST_CUTOFF = pd.Timestamp("2023-01-01")
 YOUNG_DAYS = 365
 BENCH_COLORS = {"AVA": "#a3a3a3", "BS1": "#0ea5e9", "BS2": "#2563eb", "BS3": "#7c3aed", "WCX": "#f59e0b", "WCA": "#dc2626", "WCB": "#ea580c",
                 "WCC": "#65a30d", "WCD": "#15803d", "MS": "#0ea5e9", "JM": "#2563eb", "LSS": "#7c3aed", "DEA": "#db2777"}
+
+
+_UTURN_SQL = """
+SELECT s.api10, extensions.ST_AsText(extensions.ST_Transform(s.lateral_geom, 3083)) AS wkt
+FROM curated.well_lateral_survey s
+JOIN curated.wells_enriched w ON w.api10 = s.api10
+WHERE s.is_uturn AND s.lateral_geom IS NOT NULL AND w.basin_blueox IN ('delaware', 'midland') AND w.is_horizontal
+"""
+
+
+def pull_uturn(cache: Path) -> pd.DataFrame:
+    """Survey paths of the real U-turn wells (generator 0.12): their wellstick is a short line across the two legs."""
+    f = cache / "p5_uturn.pkl"
+    if f.exists():
+        return pd.read_pickle(f)
+    from etl.db import get_connection
+
+    with get_connection() as conn:
+        d = sb._read(conn, _UTURN_SQL, {})
+    d["api10"] = d["api10"].astype(str)
+    d.to_pickle(f)
+    return d
 
 
 def pull_preprod(cache: Path) -> pd.DataFrame:

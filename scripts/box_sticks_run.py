@@ -44,11 +44,12 @@ from dealintake import geo
 ROOT = Path(__file__).resolve().parent.parent
 KEYS = {"wells": ["api10"], "sticks": ["stick_id"], "extents": ["basin", "bench"], "pads": ["pad_id"], "rule": ["api10"],
         "p2a_well_geom": ["api10"], "p2a_stick_geom": ["stick_id"], "p3_preprod": ["api10"], "p2b_stick_status": ["stick_id"],
-        "p2b_record": ["stick_id"]}
-PLACES = ("wells", "extents", "pads", "p2a_well_geom", "p3_preprod")          # the inputs that place sticks; the rest feed reports
+        "p2b_record": ["stick_id"], "p5_uturn": ["api10"]}
+PLACES = ("wells", "extents", "pads", "p2a_well_geom", "p3_preprod", "p5_uturn")          # the inputs that place sticks; the rest feed reports
 SOURCES = {"wells": "curated.wells_enriched + curated.well_lateral_survey (producing horizontals)", "extents": "box.extent WHERE is_record",
            "pads": "raw_novi_intel.pads", "p2a_well_geom": "curated.wells_enriched (lateral geometry)",
-           "p3_preprod": "curated.wells_enriched (Spud / DUC / Completed, not producing)", "sticks": "curated.intel_locations (reports only)",
+           "p3_preprod": "curated.wells_enriched (not producing: Spud / DUC / Completed / Inactive / Active, or Permit Approved with a spud date)",
+           "p5_uturn": "curated.well_lateral_survey (survey paths of real U-turn wells)", "sticks": "curated.intel_locations (reports only)",
            "rule": "curated.formation_tag_rule (reports only)", "p2a_stick_geom": "curated.intel_locations (reports only)",
            "p2b_stick_status": "curated.reconciled_inventory (reports only)", "p2b_record": "box record runs (reports only)"}
 _TAG_SQL = "SELECT run_id, policy_digest FROM meta.formation_tag_run WHERE status = 'written' ORDER BY run_id DESC LIMIT 1"
@@ -142,6 +143,7 @@ def pull(run: Path) -> dict:
     p0.pull(cache)
     p2a.pull_geoms(cache)
     p3.pull_preprod(cache)
+    p3.pull_uturn(cache)
     p2b.pull_stick_status(cache)
     with get_connection() as conn:
         t1 = sb._read(conn, "SELECT now() AS t", {})["t"].iloc[0]

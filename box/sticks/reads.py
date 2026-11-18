@@ -7,6 +7,7 @@ The methods are the earlier phases', imported, not re-derived: the pair-link met
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -89,6 +90,9 @@ class Context:
         self.m = measured if measured is not None else sf.measured(cache)
         self.band_median = bands.build(self.m, F["pads"], F["ext"])[2].set_index(["basin", "code", "band"])["median_ft"].to_dict()
         u, pre = F["u"], F["pre"]
+        f_ut = Path(cache) / "p5_uturn.pkl"                              # absent in a pull made before generator 0.12
+        ut = pd.read_pickle(f_ut) if f_ut.exists() else pd.DataFrame({"api10": [], "wkt": []})
+        self.uturn = dict(zip(ut["api10"].astype(str), shapely.from_wkt(ut["wkt"].to_numpy(dtype=object)), strict=True))
         self.tree = {}
         for name, df in (("producer", u), ("preprod", pre)):
             for b in df["basin"].unique():
@@ -116,7 +120,7 @@ class Context:
                 if shapely.length(geom[i]) < 1.0:
                     continue
                 out.append(Well(str(api[i]), None if pd.isna(code[i]) else str(code[i]), float(z[i]) if ok[i] and np.isfinite(z[i]) else None,
-                                self.work(geom[i]), bool(i in mem), name, bool(planned[i])))
+                                self.work(self.uturn.get(str(api[i]), geom[i])), bool(i in mem), name, bool(planned[i])))
         return out
 
     def _azimuth(self, pid: int, r: pd.Series) -> tuple[float, str]:
