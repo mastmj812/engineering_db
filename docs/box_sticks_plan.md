@@ -333,6 +333,14 @@ In the rehearsal container: sql/73 passes 31 of 31 checks; a store dry-run of ea
 46,709 sticks, Midland 33,829) passes every identity check, and every DSU regenerated from the stored rows alone gives the
 stored sticks (9,457 DSUs, 0 differences). Apply sql/73 (gate 4c) before this branch merges.
 
+**Gate 4c (2026-11-18, Michael: "Go apply sql/73").** sql/73 **LIVE** on Supabase oilgas, committed 2026-11-18 about 18:08 UTC
+(`python -m scripts.apply_box_location_set`, 31 of 31 checks; nightly idle, today's run green at 11:00 UTC). Verified from a
+second read-only connection: the five new tables exist, commented and EMPTY; `box.location` still holds 252,925 rows, all
+`source = 'novi'` (Delaware 167,070, Midland 85,855; ids 4 to 252,947), none with a NULL vintage; records still run 32
+(Delaware) and run 30 (Midland), and their 166,561 + 85,849 `pud_forecast` rows still join `box.location`; the id sequence
+stands at 10,000,006 (the rolled-back smoke used five numbers). Data dictionary regenerated (107 relations). Nothing stored:
+no `box.location_set` row exists.
+
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations

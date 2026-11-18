@@ -94,3 +94,9 @@ planned (runs 30 and 32 are to be replaced by BOX-stick runs).
 - `scripts/gen_data_dictionary.py` has 9 ruff findings that are on main already; the lines added here are clean. The
   dictionary is regenerated after the live apply (it reads live).
 - `two_landings` and `second_level` shares are not stored per bench (the flag and the other level's TVD are).
+
+## Gate 4c: applied (2026-11-18)
+
+sql/73 is live (Michael's go, 2026-11-18; committed about 18:08 UTC; 31 of 31 checks on live; verified from a second read-only
+connection, see the plan's gate 4c paragraph). The five new tables are empty. The merge-order condition above is met: this
+branch can merge once reviewed. Nothing is stored (gate 4d).
