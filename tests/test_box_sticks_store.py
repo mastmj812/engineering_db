@@ -41,9 +41,9 @@ def _dsu(w_ft: float = 5280.0, h_ft: float = 10560.0) -> core.Dsu:
                     benches=benches, wells=wells, wca_class="one member", wca_dominant="WCA_1")
 
 
-def test_the_four_narvi_private_functions_the_generator_uses_exist() -> None:
-    # decision 2026-11-18 (Q7): until narvi exposes them publicly, a missing one must fail here, not in a basin run
-    assert callable(npl._longest_segment) and callable(ng._make_leg) and callable(ng._single_well) and callable(ng._place_uturns)
+def test_the_four_narvi_engine_functions_have_public_names() -> None:
+    # decision 2026-11-18 (Q7): public names since narvi #34; a missing one must fail here, not in a basin run
+    assert callable(npl.longest_segment) and callable(ng.make_leg) and callable(ng.single_well) and callable(ng.place_uturns)
 
 
 def test_anchors_and_expected_error_reach_the_stick() -> None:

@@ -174,7 +174,7 @@ class Frame:
         self.width0 = min(self.maxy - self.miny, window.area / max(float(self.L.max()), 1.0))
 
     def length_at(self, y: float) -> float:
-        seg = npl._longest_segment(LineString([(self.minx - 10.0, y), (self.maxx + 10.0, y)]).intersection(self.rot))
+        seg = npl.longest_segment(LineString([(self.minx - 10.0, y), (self.maxx + 10.0, y)]).intersection(self.rot))
         return seg.length if seg is not None else 0.0
 
     def y_of(self, x: float, y: float) -> float:
@@ -454,7 +454,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
         wells = []                                                           # (InventoryWell, rows it uses)
         open_ = [r for r in rows if r["reason"] is None]
         if not uturn:
-            wells = [(ng._single_well(ng._make_leg(r["y"], r["x0"], r["x1"], fr.centroid, fr.phi, gb), replace(p, target_tvd_ft=r["tvd"]), 0), [r])
+            wells = [(ng.single_well(ng.make_leg(r["y"], r["x0"], r["x1"], fr.centroid, fr.phi, gb), replace(p, target_tvd_ft=r["tvd"]), 0), [r])
                      for r in open_]
         else:
             runs: list[list[dict]] = []
@@ -468,7 +468,7 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                 got = []
                 for run in runs:
                     k = 0
-                    for iw in ng._place_uturns([(r["y"], r["x0"], r["x1"]) for r in run], w.s_m, fr.centroid, fr.phi, gb, p, high):
+                    for iw in ng.place_uturns([(r["y"], r["x0"], r["x1"]) for r in run], w.s_m, fr.centroid, fr.phi, gb, p, high):
                         n = len(iw.legs)
                         got.append((iw, run[k:k + n]))
                         k += n
