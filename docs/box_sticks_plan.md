@@ -354,6 +354,11 @@ pull as set 6 (2026-11-18 18:26 UTC): 33,829 sticks (37,470 legs, 348.3 MM ft), 
 (80,538 sticks); **neither is record**. The record flip is its own go (decision Q4). Phase 4's remaining items: that flip, and
 re-applying the `box.location_set` comment.
 
+**sql/73 comment re-applied (2026-11-18, Michael: "go re-apply the sql/73 comment").** `python -m scripts.apply_box_location_set`
+re-run on live about 19:29 UTC, 31 of 31 checks: the `box.location_set` comment now carries the `extra_float_digits = 1` note.
+Data unchanged by identity (2 sets, 80,538 stick rows with an equal digest before and after, 333,463 locations; sets 6 and 7
+still not record). Data dictionary regenerated. Left in phase 4: the record flip.
+
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations

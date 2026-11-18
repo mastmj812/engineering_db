@@ -2778,7 +2778,7 @@ BOX production runs (step 7, D58/D59/D62/D63/D69): the frozen analog workup box_
 
 BOX location ids (plan step 7, D67): one row per drillable location, outliving Novi stick ids (which do not carry across vintages). geom / lateral_ft = the stick as last seen; formation_blueox is part of identity (a re-benched stick becomes a new location). box_econ (Steven) keys on location_id. See sql/60.
 
-~252,925 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d); since sql/73 also our own generated sticks (source = 'box_sticks')
+~333,463 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d); since sql/73 also our own generated sticks (source = 'box_sticks')
 
 | column | type | description |
 |---|---|---|
@@ -2818,7 +2818,7 @@ The named analog wells behind each covered location (the workup's provenance, D5
 
 ### `box.location_set` (table)
 
-BOX sticks generation runs (docs/box_sticks_plan.md phase 4): one row per basin per run of box.sticks. is_record = the set downstream reads (at most one per basin). inputs = what was read and its digests; cfg = every threshold; backtest = the bars as written with each verdict, failures included. A set is rebuilt exactly from box.location_set_dsu / _bench / _well + the DSU polygons of dsu_vintage.
+BOX sticks generation runs (docs/box_sticks_plan.md phase 4): one row per basin per run of box.sticks. is_record = the set downstream reads (at most one per basin). inputs = what was read and its digests; cfg = every threshold; backtest = the bars as written with each verdict, failures included. A set is rebuilt exactly from box.location_set_dsu / _bench / _well + the DSU polygons of dsu_vintage; read the float8 columns with SET extra_float_digits = 1 (the Supabase pooler default of 0 returns 15 digits, not the stored value).
 
 ~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generation runs (sql/73): scripts.box_sticks_run store; one record set per basin. No app reads it before the BOX sticks phases 5-7 (reconciliation, BOX forecasts, app cutover)
 
@@ -2849,7 +2849,7 @@ BOX sticks generation runs (docs/box_sticks_plan.md phase 4): one row per basin 
 
 Per set and DSU x bench: what the generator was given (depth before stack reconciliation, rung, anchors, expected error, spacing basis) and what it did (no_row_reason, target TVD after reconciliation, rows culled by reason, sticks). A bench with no stick is a row here with its reason, never an absence. tvd_err_* on a direct rung is the reported hold-out; the reconciliation does not use it. See sql/73.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input + outcome per DSU x bench (sql/73): why a bench has no stick; scripts.box_sticks_run
+~49,554 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input + outcome per DSU x bench (sql/73): why a bench has no stick; scripts.box_sticks_run
 
 | column | type | description |
 |---|---|---|
@@ -2882,7 +2882,7 @@ Per set and DSU x bench: what the generator was given (depth before stack reconc
 
 Per set and DSU: the azimuth the rows were laid on and its basis, the WCA class, the well type, and the wells the generator read (well_api10 / well_member, parallel arrays). With box.location_set_bench and box.location_set_well it is the generator's exact input. See sql/73.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input per DSU (sql/73): scripts.box_sticks_run regenerates a stored set from it
+~9,457 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input per DSU (sql/73): scripts.box_sticks_run regenerates a stored set from it
 
 | column | type | description |
 |---|---|---|
@@ -2909,7 +2909,7 @@ Per set and DSU: the azimuth the rows were laid on and its basis, the WCA class,
 
 Per set: every existing well the generator read (producers at any age + spud / DUC / completed), with the tag and the depth evidence used at the pull. depth_ft NULL = no depth evidence (planned survey, permit-round depth, screened out); such a well still pins rows. See sql/73.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input per well (sql/73): tag and depth evidence at the pull; scripts.box_sticks_run
+~62,380 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks generator input per well (sql/73): tag and depth evidence at the pull; scripts.box_sticks_run
 
 | column | type | description |
 |---|---|---|
@@ -2941,7 +2941,7 @@ Quarterly crosswalk: the Novi stick (report_version, stick_id) a BOX location wa
 
 BOX sticks as generated, one row per (set, location): the stick of box.location.location_id in that generation run. App-facing stick_id = location_id (positive, >= 10,000,001). legs_geom = producing legs heel to toe; turn_geom = the non-producing arc of a U-turn. completed_lateral_ft = sum of legs (the EUR driver, D56); drilled_lateral_ft adds the turn. azimuth_deg is a TRUE axial bearing in [0,180), azimuth_grid_deg the UTM 13N grid bearing the rows were laid on; gunbarrel_x_ft follows sign rule v2 with the DSU centroid as origin. The generator does not forecast and holds no economics. Rows of different benches are never tested against each other: sticks are what is possible per bench, so counts in developed DSUs overstate practical inventory. See sql/73.
 
-~0 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks as generated, per set (sql/73): the future source of undrilled locations for BOX forecasts and the apps (plan phases 6-7); no reader yet
+~80,538 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX sticks as generated, per set (sql/73): the future source of undrilled locations for BOX forecasts and the apps (plan phases 6-7); no reader yet
 
 | column | type | description |
 |---|---|---|
