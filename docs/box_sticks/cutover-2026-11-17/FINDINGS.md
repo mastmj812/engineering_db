@@ -109,6 +109,30 @@ One bar changed verdict: the thickness rung of T5 now fails its own bar. Both si
 fell 4.1 ft (the hold-out scores better on the new tags) and the observed error rose 4.7 ft. Nothing was tuned.
 The carried-depth repair in the landing chain is already an open item; this adds the thickness rung to it.
 
+### Where the thickness rung moved: the Midland WCD anchor switched (traced 2026-11-18)
+
+Grain: hidden wells matched to a generated leg, thickness rung, two-landing pairs left out (221 pairs, 92 DSU x bench).
+
+- The chain tries anchor benches in the order of their held-out median error (phase 1 `holdout_thickness.csv`, 1 mi
+  exclusion). For Midland WCD that order flipped on a 0.03 ft margin: WCB_2 43.50 ft against WCA_1 43.53 ft (before:
+  44.43 against 42.89). WCB_2 predicts 270 of 849 WCD wells in the hold-out, WCA_1 643.
+- 7 of the 12 WCD DSUs in the pairs switched anchor WCA_1 -> WCB_2; they hold 31 of the 44 WCD pairs. On those 31 the
+  median miss is 89.6 ft; the same wells against the pre-cutover depth of the same DSU x bench, about 54.5 ft (same
+  leg matching, so approximate). The only other switch is WCA_1 on 2 DSUs (WCB_1 -> LSSH, 9 pairs).
+- WCD median miss 59.1 -> 95.1 ft (44 pairs both times). Leaving WCD out, the rung is 63.0 -> 65.7 ft.
+- Pad 22309 (Glasscock; no producer within 1 mi before the cutoff, 30 wells drilled after it). WCD stick before:
+  WCA_1 surface 8,640 ft + 1,492 ft = 10,132 ft. Now: WCB_2 surface 8,951 ft (13 wells within 2 mi) + 1,105 ft =
+  10,056 ft. The 6 hidden WCD wells landed at 10,186 to 10,238 ft: miss 54 to 106 ft before, 130 to 182 ft now. The
+  direct depth with every well visible is 10,166 ft. The WCB_2 surface there sits at or above where the pad's hidden
+  WCB_1 wells landed (8,917 to 9,064 ft); whether that is tags or structure was not examined.
+- The same pad's LSSH miss is not a cutover effect: stick 8,133 ft (WCA_1 surface 8,634 ft - 501 ft from 43 LSSH wells
+  within 5 mi; 8,139 ft before), 6 hidden wells at 8,314 to 8,365 ft, 181 to 232 ft deeper in both runs. The
+  neighbouring LSSH wells sit at two levels above WCA_1 (about 490 to 525 ft and 310 to 370 ft); the weighted median
+  takes the upper, the operator drilled the lower. That is the second-landing item already open.
+
+Nothing was changed in response. An anchor order decided by a sort on medians 0.03 ft apart is the thing to look at
+in the carried-depth repair.
+
 ## Upstream re-measurements
 
 Landing depth (phases 0-1c):
