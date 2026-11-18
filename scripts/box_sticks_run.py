@@ -343,7 +343,9 @@ def verify_set(cur, sid: int, art: dict, xw: dict, check: int | None) -> list[st
          "AND k.pad_id = b.pad_id AND k.formation_blueox = b.formation_blueox)", (sid,)).fetchone()[0] == 0, "DSU x bench stick counts = the stick rows")
     ck(q("SELECT is_record FROM box.location_set WHERE set_id = %s", (sid,)).fetchone()[0] is False, "the set is stored NOT record")
 
-    # regenerate from the stored rows alone (+ the DSU polygons of the set's vintage)
+    # regenerate from the stored rows alone (+ the DSU polygons of the set's vintage). float8 must come back exact: the
+    # Supabase pooler session reads with extra_float_digits = 0 (15 digits), which is not the stored value.
+    q("SET LOCAL extra_float_digits = 1")
     pads = [int(r[0]) for r in q("SELECT pad_id FROM box.location_set_dsu WHERE set_id = %s ORDER BY pad_id", (sid,)).fetchall()]
     if check is not None:
         pads = pads[:: max(1, len(pads) // max(check, 1))][:check]
