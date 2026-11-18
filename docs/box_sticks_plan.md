@@ -59,6 +59,16 @@ stick chain is retired.
 | Not adopted (2026-11-16, measured in the 3c trials) | Dropping a carried depth implausible against a direct bench; two landings per bench. Both switches stay off |
 | Thickness-rung anchor (2026-11-18) | The anchor stays the first eligible bench in the held-out rank order. The median of every eligible anchor was scored after the tag cutover reordered Midland WCD on a 0.03 ft margin: it wins the hold-out (Delaware 52.8 -> 50.0 ft median, Midland 40.1 -> 37.9 ft) and the back-test run once did not confirm it (same 263 hidden wells, 70.2 -> 79.0 ft median miss; over 150 ft 25.1 -> 19.4 %). Built behind `THICK_RULE`, off. `docs/box_sticks/cutover-2026-11-17/FINDINGS.md` |
 | Second level nearby (2026-11-18) | A thickness-carried depth whose neighbouring same-bench wells sit at two levels (second peak >= 150 ft away, >= 25 % of the weight, >= 3 wells) gets the flag `second_level_nearby` and the other level's TVD; nothing is placed or moved by it. Generator `box_sticks_0.10_pilot`: 5,074 sticks flagged (Delaware 3,575, Midland 1,499), 0 sticks changed otherwise. Flagged depths miss 87.1 / 74.1 ft median on the hold-out against 50.0 / 39.2 ft unflagged. Thickness rung only. `docs/box_sticks/phase3e-2026-11-18/FINDINGS.md` |
+| Storage: stick rows per set (2026-11-18, gate 4a Q1; refines "`box.location` gains ...") | `box.location` holds identity only (source, DSU vintage, pad id, slot number, first / last seen set; `geom` and `lateral_ft` as last seen). The generated stick (legs, turn, TVD and how it was reached, spacing, flags) is one row per set in `box.location_stick`, so an older set stays explainable after a regeneration |
+| Identity rule (2026-11-18, gate 4a) | Same DSU + bench, >= 50 % of the shorter stick alongside within 220 ft sideways, 1:1 greedy; slot numbers never reused; depth is not identity, bench is. A new set carries ids from the basin's RECORD set (from the latest stored set while there is no record). Measured: 91.2 / 89.8 % carried across the tag cutover, 99.65 / 98.96 % over one night (Delaware / Midland) |
+| App-facing id (2026-11-18, Q2) | `stick_id = location_id` for BOX sticks; the id sequence restarts at 10,000,001, apart from Novi stick ids (max 1,824,903) and the Novi-seeded location ids (max 252,947). PDP `-(api10)` untouched |
+| Stick name (2026-11-18, Q3) | Stored `well_name` = `<pad_id>-<bench>-<slot number>`, stable across sets; not the position in the row |
+| First stored set (2026-11-18, Q4) | Stored NOT record. The record flip is a separate explicit go once both basins are stored and checked. Nothing reads `box.location_set` before phase 5 |
+| Row ledger (2026-11-18, Q5) | Not stored. Culled rows are counted by reason per DSU x bench (`box.location_set_bench.rows_culled`); the ledger regenerates from the stored inputs |
+| WCXY extent storage (2026-11-18, Q6; supersedes "store with the phase 4 writes") | Not stored in `box.extent` in phase 4. The committed geojson is pinned by sha256 in each set's manifest and a missing file fails the run. Reason: a record WCXY extent needs a `box.bench_scope` row and enters the nightly tag rule's inputs, erebor's scope list and the geology package. Store it when phase 6 settles the WCXY forecast pool |
+| narvi private functions (2026-11-18, Q7) | Four are imported (`placement._longest_segment`, `generate._make_leg`, `generate._single_well`, `generate._place_uturns`). A narvi PR exposes them under public names with no behaviour change, then the pin is bumped. No engine copy. Until it merges: pin stays at `41e0844` and a test fails if any of the four is missing |
+| Second level on bracket / offset rungs (2026-11-18, Q8) | Not measured before storing. `second_level_tvd_ft` is NULL there and the column comment says NULL means not measured |
+| Direct-rung expected error (2026-11-18, Q9) | Every stick stores an expected error: direct-rung sticks take their bench's direct hold-out (`holdout_direct.csv`, median and P90). Reported on the stick only; the stack reconciliation keeps using what it used (no stick moves) |
 
 ### What exploration found (shapes the plan)
 
@@ -304,6 +314,32 @@ numbers of record for gate 3b; the dated pre-cutover folders stay as what was re
 - Ids stay stable across regenerations through the existing overlap crosswalk idea (D73/D83) keyed on
   DSU + bench + slot. App-facing `stick_id` stays POSITIVE; the PDP `-(api10)` convention is untouched.
 - Built alongside the Novi objects. Nothing is dropped or re-pointed in this phase.
+
+**Gate 4a (2026-11-18, `docs/box_sticks/phase4a-2026-11-18/DESIGN.md`, read-only, nothing applied).** Draft DDL: new
+`box.location_set`, `box.location_stick` (the stick per set), `box.location_set_dsu` / `_bench` / `_well` (what the
+generator was given, so a set re-runs from the warehouse), six identity columns on `box.location`. Id rule
+(`box/sticks/identity.py`): same DSU + bench, >= 50 % of the shorter stick alongside within 220 ft, 1:1; slot numbers never
+reused. Measured: 0.9 on the 11-14 pull against 0.10 on the 11-17 pull (tag cutover between) carries 91.2 % of Delaware and
+89.8 % of Midland sticks; 0.10 on the 11-17 pull against a fresh 11-18 pull carries 99.65 % and 98.96 %. Fresh run
+(pull 2026-11-18): Delaware 46,709 sticks, Midland 33,829. Found: the generator drops the anchor benches and stores no
+expected error on the direct rung (both needed by the columns above); four private narvi functions are imported, not
+three; `scripts/box_pud_run.py` reads `box.location` by vintage with no source filter. Nine questions wait on Michael.
+
+**Gate 4b (2026-11-18, `docs/box_sticks/phase4b-2026-11-18/FINDINGS.md`; nothing applied on live).** `sql/73_box_location_set.sql`,
+`scripts/apply_box_location_set.py`, `scripts/box_sticks_run.py` (pull / generate / store), `box/sticks/store.py`, generator
+`box_sticks_0.11` (anchors and direct-rung expected error on the stick; 0 of 80,538 sticks moved against 0.10 on identical
+inputs), the `source = 'novi'` filter in `scripts/box_pud_run.py`, narvi PR #34 (public names; not merged, pin not bumped).
+In the rehearsal container: sql/73 passes 31 of 31 checks; a store dry-run of each basin (pull 2026-11-18 17:28 UTC, Delaware
+46,709 sticks, Midland 33,829) passes every identity check, and every DSU regenerated from the stored rows alone gives the
+stored sticks (9,457 DSUs, 0 differences). Apply sql/73 (gate 4c) before this branch merges.
+
+**Gate 4c (2026-11-18, Michael: "Go apply sql/73").** sql/73 **LIVE** on Supabase oilgas, committed 2026-11-18 about 18:08 UTC
+(`python -m scripts.apply_box_location_set`, 31 of 31 checks; nightly idle, today's run green at 11:00 UTC). Verified from a
+second read-only connection: the five new tables exist, commented and EMPTY; `box.location` still holds 252,925 rows, all
+`source = 'novi'` (Delaware 167,070, Midland 85,855; ids 4 to 252,947), none with a NULL vintage; records still run 32
+(Delaware) and run 30 (Midland), and their 166,561 + 85,849 `pud_forecast` rows still join `box.location`; the id sequence
+stands at 10,000,006 (the rolled-back smoke used five numbers). Data dictionary regenerated (107 relations). Nothing stored:
+no `box.location_set` row exists.
 
 ## Phase 5 - Nightly reconciliation
 

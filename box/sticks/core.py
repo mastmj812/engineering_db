@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.10_pilot"
+VERSION = "box_sticks_0.11"
 SECOND_LEVEL = "second_level_nearby"      # stick flag: a thickness-carried depth whose neighbouring wells sit at two levels (nothing moves)
 DRILLED_ACROSS = "dsu_drilled_across"      # stick flag: a short polygon whose own wells run well past its row
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
@@ -74,6 +74,8 @@ class Bench:
     levels: tuple[float, float] | None = None   # upper / lower landing where the DSU's own wells show two (used by cfg.two_levels)
     second_tvd_ft: float | None = None    # the other level of a thickness-carried depth (flag SECOND_LEVEL); reported, never used to place
     depth_check: str = ""                 # why a carried depth is implausible against a direct bench here (used by cfg.check_carried)
+    anchors: tuple = ()                   # anchor set(s) a carried depth came from (one for thickness / offset, above + below for bracket)
+    report_err: tuple[float, float] | None = None   # (median, P90) held-out error REPORTED on a direct-rung stick; never used to place
 
 
 @dataclass
@@ -511,7 +513,9 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                 rec.pop(k)
             rec |= {"pad_id": d.pad_id, "basin": d.basin, "bench": code, "generator_version": VERSION, "n_legs": len(iw.legs),
                     "azimuth_true_deg": round(d.az_true_deg, 1), "azimuth_basis": d.az_basis,
-                    "tvd_basis": {"rung": w.b.rung, "held_out_median_ft": w.b.tvd_err_median_ft, "held_out_p90_ft": w.b.tvd_err_p90_ft,
+                    "tvd_basis": {"rung": w.b.rung, "anchors": list(w.b.anchors),
+                                  "held_out_median_ft": w.b.tvd_err_median_ft if w.b.tvd_err_median_ft is not None else (w.b.report_err or (None, None))[0],
+                                  "held_out_p90_ft": w.b.tvd_err_p90_ft if w.b.tvd_err_p90_ft is not None else (w.b.report_err or (None, None))[1],
                                   "reconciled_shift_ft": round(w.shift_ft, 1),
                                   "second_level_tvd_ft": None if w.b.second_tvd_ft is None else round(w.b.second_tvd_ft, 1)},
                     "spacing_basis": dict(w.b.spacing_basis) | {"map_ft": round(w.b.spacing_ft, 1), "final_ft": round(w.s_ft, 1),

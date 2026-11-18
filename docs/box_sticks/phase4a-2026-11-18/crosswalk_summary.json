@@ -1,0 +1,76 @@
+{
+ "prev": {
+  "delaware": {
+   "generator_version": "box_sticks_0.9_pilot",
+   "pulled": "2026-11-14",
+   "sticks": 46499,
+   "legs": 54764
+  },
+  "midland": {
+   "generator_version": "box_sticks_0.9_pilot",
+   "pulled": "2026-11-14",
+   "sticks": 34045,
+   "legs": 37688
+  }
+ },
+ "new": {
+  "delaware": {
+   "generator_version": "box_sticks_0.10_pilot",
+   "pulled": "2026-11-18",
+   "sticks": 46690,
+   "legs": 54964
+  },
+  "midland": {
+   "generator_version": "box_sticks_0.10_pilot",
+   "pulled": "2026-11-18",
+   "sticks": 33791,
+   "legs": 37432
+  }
+ },
+ "basins": {
+  "delaware": {
+   "corridor_ft": 220.0,
+   "min_share": 0.5,
+   "carried": 42586,
+   "new": 4104,
+   "stopped": 3913,
+   "carried_exact_position": 27675,
+   "carried_position_number_changed": 819,
+   "carried_tvd_moved_over_50ft": 2064,
+   "carried_tvd_moved_over_150ft": 583,
+   "carried_well_type_changed": 0,
+   "new_by": {
+    "bench new to the DSU": 431,
+    "bench already in the DSU": 3673
+   },
+   "stopped_by": {
+    "bench still in the DSU": 3489,
+    "bench gone from the DSU": 424
+   },
+   "dsu_bench_count_changed": 1501,
+   "dsu_bench": 18956
+  },
+  "midland": {
+   "corridor_ft": 220.0,
+   "min_share": 0.5,
+   "carried": 30341,
+   "new": 3450,
+   "stopped": 3704,
+   "carried_exact_position": 17189,
+   "carried_position_number_changed": 844,
+   "carried_tvd_moved_over_50ft": 1992,
+   "carried_tvd_moved_over_150ft": 404,
+   "carried_well_type_changed": 0,
+   "new_by": {
+    "bench already in the DSU": 3071,
+    "bench new to the DSU": 379
+   },
+   "stopped_by": {
+    "bench still in the DSU": 3269,
+    "bench gone from the DSU": 435
+   },
+   "dsu_bench_count_changed": 1496,
+   "dsu_bench": 12972
+  }
+ }
+}

@@ -19,6 +19,18 @@ from .core import SECOND_LEVEL, Bench, Cfg, Dsu, Well, resolve_azimuth
 
 SEP_MIN_DSU = 30                        # direct-direct DSUs needed before a separation band is used
 SEARCH_M = 2640.0 / geo.FT_PER_M       # existing wells are read this far outside the DSU (the pair-link gate)
+CARRIED = ("thickness", "bracket", "offset")
+
+
+def direct_holdout() -> dict[tuple[str, str], tuple[float, float]]:
+    """(median, P90) held-out error of the direct rung per (basin, code): reported on direct-rung sticks, never used to place."""
+    from scripts import box_sticks_phase1c as p1c
+    t = pd.read_csv(p1c.THICK_RANK.parent / "holdout_direct.csv")
+    return {(r.basin, r.code): (round(float(r.median_ft), 1), round(float(r.p90_ft), 1)) for r in t.itertuples()}
+
+
+def anchors_of(rung: str, how: object) -> tuple[str, ...]:
+    return tuple(str(how).replace("+", "/").split("/")) if rung in CARRIED and isinstance(how, str) and how else ()
 
 
 def link_fn():
@@ -46,6 +58,7 @@ class Context:
         self.p3, self.rg, self.sf = p3, rg, sf
         F = self.F = frame if frame is not None else p3.build_frame(cache)
         self.order = sb.bench_order()
+        self.direct_err = direct_holdout()
         self.to_work = Transformer.from_crs("EPSG:3083", f"EPSG:{geo.NARVI_WORK_EPSG}", always_xy=True)
         self.pads = F["pads"].set_index("pad_id")
         self.long_true = pd.Series(rg.long_axis_true(F["pads"]), index=F["pads"]["pad_id"].to_numpy())
@@ -148,7 +161,8 @@ class Context:
                                  spacing_ft=float(b.spacing_ft), inside_frac=float(b.inside_frac), control=neff,
                                  tvd_err_median_ft=None if pd.isna(b.expected_median_ft) else float(b.expected_median_ft),
                                  tvd_err_p90_ft=None if pd.isna(b.expected_p90_ft) else float(b.expected_p90_ft), spacing_basis=basis,
-                                 flags=flags, second_tvd_ft=sec,
+                                 flags=flags, second_tvd_ft=sec, anchors=anchors_of(b.rung, getattr(b, "how", None)),
+                                 report_err=self.direct_err.get((basin, b.code)) if b.rung == "direct" else None,
                                  levels=self.levels.get((int(pid), b.code)), depth_check=why))
         az_true, basis = self._azimuth(pid, r)
         wca = self.wca.get(pid, {})
