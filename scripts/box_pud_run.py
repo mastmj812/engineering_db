@@ -746,7 +746,8 @@ def cmd_store(a: argparse.Namespace) -> int:
             q = cur.execute
             print(f"target {q('select inet_server_addr(), inet_server_port(), current_database()').fetchone()}", flush=True)
             # every location lookup is the run's basin only (D130: each basin publishes on its own schedule)
-            src_b = "box.location_source s JOIN box.location l USING (location_id) WHERE l.basin = %s AND"
+            # source = 'novi' (sql/73): our own generated sticks share box.location and never take part in the Novi vintage crosswalk
+            src_b = "box.location_source s JOIN box.location l USING (location_id) WHERE l.source = 'novi' AND l.basin = %s AND"
             later = q(f"SELECT count(*) FROM {src_b} s.report_version > %s", (basin, rv)).fetchone()[0]
             if later:
                 raise SystemExit(f"box.location already holds {basin} vintages after {rv}: refusing to store an older vintage")
@@ -757,7 +758,7 @@ def cmd_store(a: argparse.Namespace) -> int:
             if len(new) and prev_v is not None:
                 # D73: carry locations forward from the most recent earlier vintage; the rest of `new` become 'new' locations
                 prev = q("SELECT location_id, basin, formation_blueox, extensions.ST_AsText(geom) FROM box.location WHERE last_seen_vintage = %s "
-                         "AND basin = %s", (prev_v, basin)).fetchall()
+                         "AND basin = %s AND source = 'novi'", (prev_v, basin)).fetchall()
                 pl = pr.project_ft([w for *_, w in prev])
                 nl = pr.project_ft(list(new["wkt"]))
                 xw = pr.crosswalk([(int(p[0]), p[1], p[2], g) for p, g in zip(prev, pl, strict=True)],
