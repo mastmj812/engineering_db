@@ -57,6 +57,7 @@ stick chain is retired.
 | WCXY depth (2026-11-16, after the 3c trials; supersedes "WCXY stays direct-only") | Delaware WCXY takes the full landing-depth chain like every other bench. Generator `box_sticks_0.8_pilot`: WCXY DSU x bench with a depth 854 -> 1,277 of 1,299, WCXY sticks 454 -> 963, other benches net -12 |
 | DSU polygons (2026-11-16) | BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons drilled across with long laterals are an artifact of that shapefile; drawing our own DSUs is not undertaken now. Their sticks carry the flag `dsu_drilled_across` (U-turn DSU with >= 2 existing wells >= 1.3 x its longest row; generator `box_sticks_0.9_pilot`; 400 DSUs, 1,936 sticks; nothing moved or removed) |
 | Not adopted (2026-11-16, measured in the 3c trials) | Dropping a carried depth implausible against a direct bench; two landings per bench. Both switches stay off |
+| Thickness-rung anchor (2026-11-18) | The anchor stays the first eligible bench in the held-out rank order. The median of every eligible anchor was scored after the tag cutover reordered Midland WCD on a 0.03 ft margin: it wins the hold-out (Delaware 52.8 -> 50.0 ft median, Midland 40.1 -> 37.9 ft) and the back-test run once did not confirm it (same 263 hidden wells, 70.2 -> 79.0 ft median miss; over 150 ft 25.1 -> 19.4 %). Built behind `THICK_RULE`, off. `docs/box_sticks/cutover-2026-11-17/FINDINGS.md` |
 
 ### What exploration found (shapes the plan)
 
@@ -293,6 +294,11 @@ numbers of record for gate 3b; the dated pre-cutover folders stay as what was re
 
 - `box.location` gains what D14 promised and the generator needs: source, generator version, DSU id, leg and
   turn geometry, target TVD + basis, spacing + basis, well type.
+- Every stick stores how its depth was reached and how far to trust it (Michael, 2026-11-18): the rung (direct /
+  thickness / bracket / offset), the anchor bench(es) of a carried depth, and the held-out expected error of that rung
+  for the bench (median and P90, ft). The back-test ratios (carried rungs miss 1.2x to 1.7x their held-out median) go
+  in the column comments, so a consumer can filter or weight by depth confidence. Flags travel with the stick:
+  `two_landings_observed`, `dsu_drilled_across`.
 - New `box.location_set`: one versioned generation run per basin, one `is_record`, like `forecast_run`.
 - Ids stay stable across regenerations through the existing overlap crosswalk idea (D73/D83) keyed on
   DSU + bench + slot. App-facing `stick_id` stays POSITIVE; the PDP `-(api10)` convention is untouched.
