@@ -1,0 +1,3 @@
+basin,wells,rank_new_median_ft,rank_new_p90_ft,rank_new_over_150_pct,rank_old_median_ft,rank_old_p90_ft,rank_old_over_150_pct,spread_median_ft,spread_p90_ft,spread_over_150_pct,median_median_ft,median_p90_ft,median_over_150_pct,adjacent_median_ft,adjacent_p90_ft,adjacent_over_150_pct,oracle_median_ft,oracle_p90_ft,oracle_over_150_pct
+delaware,21996.0,52.79,163.4,12.17,52.7,162.62,12.08,51.5,160.19,11.62,50.02,148.5,9.78,57.0,176.0,14.17,28.01,109.38,4.88
+midland,23789.0,40.08,117.08,4.99,39.79,115.53,4.81,39.9,117.19,5.01,37.92,108.55,3.79,42.0,121.63,5.52,18.98,82.4,2.08

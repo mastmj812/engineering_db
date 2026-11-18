@@ -6,7 +6,10 @@ The chain adopted 2026-11-12 (docs/box_sticks_plan.md), evaluated at each DSU po
 BOX extent the polygon intersects:
   1 direct     the bench's own evidence wells (>= 3 within 2 mi, nearest within 1 mi);
   2 thickness  own wells within 5 mi (>= 3, on more than one side) on a neighbour's DIRECT surface; neighbours in the
-               order of their held-out error (phase 1 holdout_thickness.csv);
+               order of their held-out error (phase 1 holdout_thickness.csv). That order flipped for Midland WCD on a
+               0.03 ft margin after the tag cutover; THICK_RULE = "median" (the median of every eligible neighbour's
+               estimate, scored in scripts.box_sticks_anchor_rule 2026-11-18) is built and NOT adopted: the hold-out
+               favours it, the back-test did not confirm it (cutover-2026-11-17/FINDINGS.md);
   3 bracket    between a bench above and a bench below, both DIRECT at the centroid; fraction from the 30 nearest
                same-bench wells (regional median when fewer than 5), clamped to the window; pairs in the order of
                their held-out error at 5 mi (phase 1b holdout_far.csv);
@@ -50,6 +53,8 @@ DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
 # Re-measured on the post-cutover tags (pulled 2026-11-17); the 2026-11-12 files are the pre-cutover record.
 THICK_RANK = DOCS / "cutover-2026-11-17" / "phase1" / "holdout_thickness.csv"
 FAR_RANK = DOCS / "cutover-2026-11-17" / "phase1b" / "holdout_far.csv"
+THICK_RULE = "rank"                          # "rank" (first in THICK_RANK order, the rule of record) or "median" of every eligible anchor's estimate
+THICK_EXPECTED = DOCS / "cutover-2026-11-17" / "anchor_rule" / "by_bench_chain_pool.csv"   # held-out error of the median rule, per bench
 
 
 def loo_residual(w: pd.DataFrame) -> pd.Series:
@@ -118,8 +123,18 @@ def rankings() -> tuple[dict, dict]:
     return thick, far
 
 
+def thick_expected(rule: str | None = None) -> dict[tuple[str, str], tuple[float, float]]:
+    """(median, P90) held-out error of the median-of-anchors thickness rule per (basin, code); empty under the rank rule."""
+    if (rule or THICK_RULE) != "median":
+        return {}
+    t = pd.read_csv(THICK_EXPECTED)
+    return {(r.basin, r.code): (float(r.median_median_ft), float(r.median_p90_ft)) for r in t.itertuples()}
+
+
 def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.ndarray, Fc: dict[str, np.ndarray], Fp: dict[str, np.ndarray],
-                   thick_rank: list, far_rank: list) -> pd.DataFrame:
+                   thick_rank: list, far_rank: list, thick_exp: tuple[float, float] | None = None) -> pd.DataFrame:
+    """``thick_exp`` given: the thickness rung is the median over every anchor in ``thick_rank`` that qualifies, with that
+    expected error. None: the first anchor that qualifies, with its own held-out error."""
     n = len(pts)
     z, rung, how = np.full(n, np.nan), np.full(n, "none", dtype=object), np.full(n, None, dtype=object)
     exp_med, exp_p90 = np.full(n, np.nan), np.full(n, np.nan)
@@ -136,6 +151,7 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
             balls = tree.query_ball_point(pts[todo], P.thick_max_mi * MI) if len(todo) else []
             for i, ks in zip(todo, balls, strict=True):
                 ks = np.asarray(ks, int)
+                got = []
                 for a, med, p90 in thick_rank:
                     if a not in Fp or not np.isfinite(Fp[a][i]):
                         continue
@@ -144,8 +160,15 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
                         continue
                     d = np.hypot(cxy[kk, 0] - pts[i, 0], cxy[kk, 1] - pts[i, 1]) / MI
                     t = ls.weighted_median(cz[kk] - Fc[a][kk], np.exp(-0.5 * (d / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9)
-                    z[i], rung[i], how[i], exp_med[i], exp_p90[i] = Fp[a][i] + t, "thickness", a, med, p90
-                    break
+                    got.append((a, Fp[a][i] + t, med, p90))
+                    if thick_exp is None:
+                        break
+                if got and thick_exp is None:
+                    how[i], z[i], exp_med[i], exp_p90[i] = got[0]
+                    rung[i] = "thickness"
+                elif got:
+                    z[i], rung[i], how[i] = float(np.median([g[1] for g in got])), "thickness", "+".join(g[0] for g in got)
+                    exp_med[i], exp_p90[i] = thick_exp
             # 3 bracket, then 4 offset
             rels, regional = {}, {}
             for kind, a, b, _, _ in far_rank:
@@ -185,6 +208,7 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
 
 def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, order: dict, thick: dict, far: dict) -> pd.DataFrame:
     parts = []
+    exp = thick_expected()
     for basin in sorted(extents["basin"].unique()):
         bw = w[w["basin"] == basin].reset_index(drop=True)
         sets = p1.anchor_sets(extents, basin)
@@ -200,7 +224,7 @@ def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, orde
                 cm = (bw["live"] == code).to_numpy()
                 r = chain_for_code((basin, code) in CHAIN_DIRECT_ONLY, ppts[hit], bw.loc[cm, ["x", "y"]].to_numpy(float), bw.loc[cm, "depth_ft"].to_numpy(float),
                                    {n: f[cm] for n, f in Fw.items()}, {n: f[hit] for n, f in Fp_all.items()},
-                                   thick.get((basin, code), []), far.get((basin, code), []))
+                                   thick.get((basin, code), []), far.get((basin, code), []), exp.get((basin, code)))
                 r.insert(0, "pad_id", pb["pad_id"].to_numpy()[hit])
                 r.insert(0, "code", code)
                 r.insert(0, "basin", basin)

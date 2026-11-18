@@ -131,7 +131,56 @@ Grain: hidden wells matched to a generated leg, thickness rung, two-landing pair
   takes the upper, the operator drilled the lower. That is the second-landing item already open.
 
 Nothing was changed in response. An anchor order decided by a sort on medians 0.03 ft apart is the thing to look at
-in the carried-depth repair.
+in the carried-depth repair (done next, below).
+
+### Anchor repair: median of every eligible anchor, scored and NOT adopted (2026-11-18)
+
+Asked for after the WCD trace. Pick rule stated before measuring: lowest pooled held-out median error in both basins,
+P90 no worse, by 2 ft or more; then the back-test once, as confirmation. `scripts/box_sticks_anchor_rule`, files in
+`anchor_rule/`. The chain still runs the rank order (`THICK_RULE = "rank"`); the median rule is behind that switch.
+
+Hold-out (grain: screened evidence wells inside their extent, same-bench wells within 1 mi hidden, the same wells for
+every rule; anchors = those the chain already walks):
+
+| Rule | Delaware median / P90 / over 150 ft (21,996 wells) | Midland median / P90 / over 150 ft (23,789 wells) |
+|---|---|---|
+| Rank order, cutover file (of record) | 52.8 ft / 163.4 ft / 12.2 % | 40.1 ft / 117.1 ft / 5.0 % |
+| Rank order, 2026-11-12 file | 52.7 / 162.6 / 12.1 | 39.8 / 115.5 / 4.8 |
+| Tightest local thickness spread | 51.5 / 160.2 / 11.6 | 39.9 / 117.2 / 5.0 |
+| **Median of the eligible anchors** | **50.0 / 148.5 / 9.8** | **37.9 / 108.6 / 3.8** |
+| Nearest bench in the stack | 57.0 / 176.0 / 14.2 | 42.0 / 121.6 / 5.5 |
+| Best anchor per well (headroom, not a rule) | 28.0 / 109.4 / 4.9 | 19.0 / 82.4 / 2.1 |
+
+- The median rule meets the pick rule: -2.8 ft and -2.2 ft on the median, -14.9 ft and -8.5 ft on P90. Worse on the
+  median for Delaware BS1_S (+4.0 ft), WCB_1 (+1.8), BS3_S (+0.6), WCC (+0.5); better or level on the other 19 benches.
+- How much the order alone moves: swapping the 2026-11-12 ranking file for the cutover one changes the anchor of
+  20.2 % of Midland wells (median move 30.0 ft where it changes) and 2.3 % of Delaware wells (51.2 ft).
+- 20.7 % of Delaware wells and 9.0 % of Midland wells have one eligible anchor; no rule changes those.
+
+Back-test, once, with the median rule (`anchor_rule/backtest/`): **it does not confirm the hold-out on depth.**
+
+| | Rank order | Median rule |
+|---|---|---|
+| T1 hidden wells with a leg (>= 60 %) | 59.7 % | 61.6 % (passes) |
+| T2 on a bench with no row | 4.7 % | 4.4 % |
+| T3 units within one leg; ratio | 63.2 %; 0.96 | 63.2 %; 0.96 |
+| T4 unused slots (<= 25 %) | 36.5 % | 33.9 % |
+| T5 thickness rung, matched pairs: observed / held-out | 67.7 / 43.5 ft, 1.56x | 77.4 / 40.8 ft, **1.90x** |
+| T5 bracket rung | 1.71x | 1.56x |
+| Same 263 hidden wells against the DSU x bench depth (96 DSU x bench, no leg matching): median / P90 / over 150 ft | 70.2 ft / 206.8 ft / 25.1 % | 79.0 ft / 214.7 ft / 19.4 % |
+| Those 96 DSU x bench: better by > 5 ft / worse by > 5 ft / within 5 ft | | 27 / 29 / 40 |
+
+- The typical miss is 9 ft worse and the misses over 150 ft are fewer. Per DSU x bench it is a coin flip (27 against 29).
+- The held-out expectation in the T5 ratio is the median rule's own (40.8 ft), so the ratio rises on both sides.
+- Pad 22309, which started this: WCD stays at 10,056 ft (the median of its anchors lands on the WCB_2 estimate), and
+  LSSH, JM and WCB_1 move 34 to 44 ft the wrong way. Pads it helps: 22310 WCD, 8 wells, 144 -> 87 ft; 13088 WCB_1
+  (Ward), 3 wells, 206 -> 134 ft.
+- Why the two disagree was not established. The hold-out predicts at today's wells from today's wells; the back-test
+  predicts at DSU centroids from pre-2023 wells and is scored on what was drilled after, in 96 DSU x bench of three
+  areas. The hold-out gain (2 to 3 ft) is smaller than what 263 clustered wells can resolve.
+
+The anchor choice is not where the carried-depth error lives: no simple rule gets near the best-anchor headroom, and
+the large misses are benches with two landing levels (pad 22309 LSSH), which a median over anchors does not address.
 
 ## Upstream re-measurements
 
