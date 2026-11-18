@@ -29,7 +29,7 @@ DOC = ROOT / "docs" / "box_sticks" / "phase5a-2026-11-18"
 VINTAGE = pd.Timestamp("2026-09-30")          # curated.intel_vintage_date() at 2026Q3; checked in `wells`
 FT = 0.3048
 CORRIDOR_M = 46.0                             # sql/20: +-150 ft
-MATCH, CONFLICT = 0.5, 0.2                    # sql/68
+MATCH, CONFLICT = 0.5, 0.3                    # sql/68's 0.5; the conflict floor is 0.3, not sql/68's 0.2 (Michael, 2026-11-18)
 SAME_CODE_FT, ANY_TAG_FT = 500.0, 150.0       # sql/68
 MEMBER = 0.30                                 # rule 9
 BASINS = ("delaware", "midland")
@@ -360,7 +360,7 @@ TRIGGERS = {
 }
 
 
-def cmd_hindcast2(run: Path, src: Path) -> None:
+def cmd_hindcast2(run: Path, src: Path, keep_producers: bool = False) -> None:
     """The second hindcast (BARS_2.md): the raw frames of an earlier pull (`src`, one snapshot), every well with a spud
     date after CUTOFF_2 (or, with no spud date, first production after it) removed from all of them, then generate."""
     from scripts import box_sticks_run as br
@@ -376,6 +376,8 @@ def cmd_hindcast2(run: Path, src: Path) -> None:
     shutil.copy(src / "wells_today.pkl", run / "wells_today.pkl")
     w = classify(cmd_wells(run))
     hide = (w["spud_date"] > CUTOFF_2) | (w["spud_date"].isna() & (w["fp"] > CUTOFF_2))
+    if keep_producers:                                   # BARS_4.md: the regeneration once the hidden producers are known
+        hide &= w["cls"] != "producing"
     ids = set(w.loc[hide, "api10"].astype(str))
     w.loc[hide, ["api10", "basin", "well_status", "spud_date", "fp", "cls"]].to_csv(run / "hidden.csv", index=False)
     for name in ("wells", "p2a_well_geom", "p3_preprod"):
@@ -543,9 +545,86 @@ def cmd_day0files(run: Path, out: Path) -> None:
     (out / "day0_v012_summary.json").write_text(json.dumps(summ, indent=1, default=str), encoding="utf-8")
 
 
+def cmd_dsusignal(run: Path, truth: Path, out: Path) -> None:
+    """BARS_4.md. `run` = the 2026-01-01 hindcast (every later well hidden); `truth` = the same inputs regenerated with the
+    hidden PRODUCERS put back. Per DSU x bench holding a new producer of that bench: the stick count a regeneration gives,
+    against three estimates made without regenerating: nothing, the stick-level status (T1, variant B), and the DSU signal
+    (hindcast sticks minus new producers of the bench that are members of the DSU, floored at 0)."""
+    from box.sticks.core import well_legs
+
+    out.mkdir(parents=True, exist_ok=True)
+    st, gen = hind_sticks(run)
+    w = classify(cmd_wells(run))
+    hid = pd.read_csv(run / "hidden.csv", dtype={"api10": str})
+    test = w[w["api10"].astype(str).isin(set(hid["api10"])) & (w["cls"] == "producing")].copy()
+    vis = w[~w["api10"].astype(str).isin(set(hid["api10"])) & (w["cls"] == "producing")]
+    mirror = hind_mirror(run)
+    S0, _ = judge(st, vis, gen, mirror)
+    S1, _ = judge(st, test, gen, mirror)
+    out0 = set(S0.loc[S0["status"].isin(["drilled", "producing", "conflict"]) | S0["crowded"], "key"])
+    S1 = S1[~S1["key"].isin(out0)]
+    taken = S1[S1["status"].isin(["drilled", "producing", "conflict"]) | S1["crowded"]].groupby(["pad_id", "bench"]).size().rename("stick_level_out")
+
+    def bench_counts(r: Path) -> pd.DataFrame:
+        rows = []
+        for b in BASINS:
+            art = pd.read_pickle(r / f"set_{b}.pkl")
+            rows += [{"basin": b, "pad_id": int(x["pad_id"]), "bench": x["formation_blueox"], "sticks": int(x["sticks"])} for x in art["bench_rows"]]
+        return pd.DataFrame(rows)
+
+    h, t = bench_counts(run), bench_counts(truth)
+    d = h.merge(t, on=["basin", "pad_id", "bench"], how="outer", suffixes=("_h", "_t")).fillna({"sticks_h": 0, "sticks_t": 0})
+
+    # the signal: new producers of the bench that are members of the DSU (>= 30 % of the LATERAL inside)
+    pads = pd.read_pickle(run / "cache" / "pads.pkl")
+    pads["geom"] = shapely.from_wkt(pads["wkt"].to_numpy())
+    lat = np.array([shapely.multilinestrings([list(g.coords) for g in well_legs(x)]) for x in test["geom"]], dtype=object)
+    pg = pads["geom"].to_numpy()
+    a, k = shapely.STRtree(pg).query(lat, predicate="intersects")
+    sh = shapely.length(shapely.intersection(lat[a], pg[k])) / shapely.length(lat[a])
+    ok = (sh >= MEMBER) & (pads["basin"].to_numpy()[k] == test["basin"].to_numpy()[a])
+    mem = pd.DataFrame({"api10": test["api10"].to_numpy()[a[ok]], "pad_id": pads["pad_id"].to_numpy()[k[ok]].astype(int), "bench": test["code"].to_numpy()[a[ok]]})
+    sig = mem.groupby(["pad_id", "bench"]).size().rename("new_producers")
+    d = d.merge(sig.reset_index(), on=["pad_id", "bench"], how="left").merge(taken.reset_index(), on=["pad_id", "bench"], how="left")
+    d = d.fillna({"new_producers": 0, "stick_level_out": 0})
+    d["est_nothing"] = d["sticks_h"]
+    d["est_stick_level"] = d["sticks_h"] - d["stick_level_out"]
+    d["est_dsu_signal"] = (d["sticks_h"] - d["new_producers"]).clip(lower=0)
+    d.to_csv(out / "dsusignal_dsu_bench.csv", index=False)
+
+    has = set(zip(h.loc[h["sticks"] > 0, "pad_id"], h.loc[h["sticks"] > 0, "bench"], strict=True))
+    member_of = mem.groupby("api10").apply(lambda g: any((int(p_), b_) in has for p_, b_ in zip(g["pad_id"], g["bench"], strict=True)), include_groups=False)
+    cov = pd.DataFrame({"api10": test["api10"].to_numpy(), "basin": test["basin"].to_numpy()})
+    cov["in_a_dsu"] = cov["api10"].isin(set(mem["api10"]))
+    cov["fires_on_sticks_of_its_code"] = cov["api10"].map(member_of).fillna(False).astype(bool)
+    rows = []
+    for b in BASINS:
+        T = d[(d["basin"] == b) & (d["new_producers"] > 0) & (d["sticks_h"] > 0)]
+        U = d[(d["basin"] == b) & (d["new_producers"] == 0) & ((d["sticks_h"] > 0) | (d["sticks_t"] > 0))]
+        cb = cov[cov["basin"] == b]
+        r = {"basin": b, "test_producers": len(cb), "in_a_dsu_pct": round(100 * float(cb["in_a_dsu"].mean()), 1),
+             "fires_on_sticks_of_its_code_pct": round(100 * float(cb["fires_on_sticks_of_its_code"].mean()), 1),
+             "touched_dsu_bench": len(T), "new_producers_there": int(T["new_producers"].sum()), "sticks_hindcast": int(T["sticks_h"].sum()),
+             "sticks_regenerated": int(T["sticks_t"].sum())}
+        for e in ("nothing", "stick_level", "dsu_signal"):
+            err = T[f"est_{e}"] - T["sticks_t"]
+            r[f"{e}_total"] = int(T[f"est_{e}"].sum())
+            r[f"{e}_total_err_pct"] = round(100 * float(err.sum()) / max(float(T["sticks_t"].sum()), 1.0), 1)
+            r[f"{e}_mae"] = round(float(err.abs().mean()), 3)
+            r[f"{e}_exact_pct"] = round(100 * float((err == 0).mean()), 1)
+        r |= {"untouched_dsu_bench": len(U), "untouched_changed_pct": round(100 * float((U["sticks_h"] != U["sticks_t"]).mean()), 2),
+              "untouched_sticks_hindcast": int(U["sticks_h"].sum()), "untouched_sticks_regenerated": int(U["sticks_t"].sum())}
+        rows.append(r)
+    res = pd.DataFrame(rows)
+    res.to_csv(out / "dsusignal_bars.csv", index=False)
+    (out / "dsusignal_summary.json").write_text(json.dumps(res.to_dict("records"), indent=1, default=str), encoding="utf-8")
+    print(res.T.to_string(), flush=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest", "hindcast2", "backtest2", "day0files"))
+    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest", "hindcast2", "backtest2", "day0files", "hindcast3", "dsusignal"))
+    ap.add_argument("--truth", type=Path, help="dsusignal: the run dir of hindcast3")
     ap.add_argument("--src", type=Path, help="hindcast2: the run dir of the first hindcast (its pull is reused)")
     ap.add_argument("--run", required=True, type=Path)
     ap.add_argument("--out", type=Path, default=DOC)
@@ -553,6 +632,7 @@ def main(argv: list[str] | None = None) -> int:
     a.run.mkdir(parents=True, exist_ok=True)
     {"hindcast": lambda: cmd_hindcast(a.run), "wells": lambda: cmd_wells(a.run), "day0": lambda: cmd_day0(a.run, a.out),
      "backtest": lambda: cmd_backtest(a.run, a.out), "hindcast2": lambda: cmd_hindcast2(a.run, a.src),
+     "hindcast3": lambda: cmd_hindcast2(a.run, a.src, keep_producers=True), "dsusignal": lambda: cmd_dsusignal(a.run, a.truth, a.out),
      "day0files": lambda: cmd_day0files(a.run, a.out),
      "backtest2": lambda: [cmd_backtest(a.run, a.out, t) for t in TRIGGERS]}[a.step]()
     return 0

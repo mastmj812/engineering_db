@@ -60,13 +60,15 @@ def test_classes_and_depth_evidence():
 
 def test_match_conflict_and_open():
     s = _sticks([{"key": k, "pad_id": 1, "bench": "WCA_1", "target_tvd_ft": 10000.0, "geom": MultiLineString([_line(x)])}
-                 for k, x in (("on", 0), ("half", 3000), ("far", 6000))])
+                 for k, x in (("on", 0), ("half", 3000), ("far", 6000), ("quarter", 9000))])
     w = _wells([{"api10": "a", "geom": _line(50)},                                   # 50 ft from `on`, full length
-                {"api10": "b", "geom": _line(3000, 0, 3000)},                        # covers about 30 % of `half`
+                {"api10": "b", "geom": _line(3000, 0, 4000)},                        # covers about 40 % of `half`
+                {"api10": "d", "geom": _line(9000, 0, 2400)},                        # about 25 % of `quarter`: under the 30 % floor
                 {"api10": "c", "geom": _line(6000 + 700)}])                          # 700 ft from `far`
     r = _status(s, w)
     assert r.loc["on", "status"] == "producing" and r.loc["on", "matched_api10"] == "a"
     assert r.loc["half", "status"] == "conflict"
+    assert r.loc["quarter", "status"] == "open"                                   # the generator places a row beside under 30 %
     assert r.loc["far", "status"] == "open" and not r.loc["far", "crowded"]
 
 
@@ -129,7 +131,7 @@ def test_draft_sql_states_the_same_thresholds():
     sql = (DOC / "predicate_draft.sql").read_text(encoding="utf-8")
     assert ", 46)" in sql and p5.CORRIDOR_M == 46.0
     assert "<= 500" in sql and "<= 150" in sql and (p5.SAME_CODE_FT, p5.ANY_TAG_FT) == (500.0, 150.0)
-    assert ">= 0.5" in sql and ">= 0.2" in sql and (p5.MATCH, p5.CONFLICT) == (0.5, 0.2)
+    assert ">= 0.5" in sql and ">= 0.3" in sql and ">= 0.2" not in sql and (p5.MATCH, p5.CONFLICT) == (0.5, 0.3)
     assert "box_location_stick" not in sql.split("WITH rec", 1)[1].replace("box.location_stick", "")   # reads the table, names no index
     for word in ("INSERT", "UPDATE ", "DELETE", "CREATE ", "DROP ", "REFRESH"):
         assert word not in sql.split("=====\nWITH", 1)[-1], word                      # one read-only SELECT

@@ -4,7 +4,7 @@
 -- scripts/box_sticks_phase5a.py runs it inside SET TRANSACTION READ ONLY and compares it with the Python reference.
 --
 -- sql/68's rule, re-targeted: the share of a stick LEG inside a well's +-150 ft (46 m) corridor; >= 0.5 = match,
--- 0.2 to 0.5 = conflict; same code within 500 ft TVD, or within 150 ft whatever the tag. New against sql/68:
+-- 0.3 to 0.5 = conflict (0.3, not sql/68's 0.2: Michael 2026-11-18, to agree with the generator's 30 % rule); same code within 500 ft TVD, or within 150 ft whatever the tag. New against sql/68:
 --   * legs (a U-turn stick has two), judged one by one;
 --   * wells not yet producing (Spud / DUC / Completed or a spud date) and approved permits, as their own classes;
 --   * a well with no depth evidence matches on formation family (match_basis = 'planned');
@@ -94,7 +94,7 @@ leg_status AS (
     SELECT l.*,
            CASE WHEN n_strong >= 2 THEN 'conflict'
                 WHEN best_ov >= 0.5 THEN 'matched'
-                WHEN best_ov >= 0.2 THEN 'conflict'
+                WHEN best_ov >= 0.3 THEN 'conflict'
                 ELSE 'open' END AS leg_state
     FROM leg l
 ),
