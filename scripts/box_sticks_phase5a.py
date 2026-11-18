@@ -353,6 +353,40 @@ def cmd_hindcast(run: Path) -> None:
         br.generate(run, b)
 
 
+CUTOFF_2 = pd.Timestamp("2026-01-01")          # BARS_2.md: the as-of date of the second hindcast
+TRIGGERS = {
+    "t1": lambda w: w["cls"] == "producing",
+    "t2": lambda w: (w["cls"] == "producing") | ((w["cls"] == "drilled") & w["well_status"].isin(["DUC", "Completed"]) & w["depth_ft"].notna()),
+}
+
+
+def cmd_hindcast2(run: Path, src: Path) -> None:
+    """The second hindcast (BARS_2.md): the raw frames of an earlier pull (`src`, one snapshot), every well with a spud
+    date after CUTOFF_2 (or, with no spud date, first production after it) removed from all of them, then generate."""
+    from scripts import box_sticks_run as br
+
+    cache = run / "cache"
+    if cache.exists() and any(cache.iterdir()):
+        raise SystemExit(f"{cache} is not empty")
+    cache.mkdir(parents=True)
+    for name in br.KEYS:
+        shutil.copy(src / "cache" / f"{name}.pkl", cache / f"{name}.pkl")
+    shutil.copy(src / "p3_preprod_full.pkl", cache / "p3_preprod.pkl")           # the pull's own frame, nothing hidden yet
+    shutil.copy(src / "manifest.json", run / "manifest.json")
+    shutil.copy(src / "wells_today.pkl", run / "wells_today.pkl")
+    w = classify(cmd_wells(run))
+    hide = (w["spud_date"] > CUTOFF_2) | (w["spud_date"].isna() & (w["fp"] > CUTOFF_2))
+    ids = set(w.loc[hide, "api10"].astype(str))
+    w.loc[hide, ["api10", "basin", "well_status", "spud_date", "fp", "cls"]].to_csv(run / "hidden.csv", index=False)
+    for name in ("wells", "p2a_well_geom", "p3_preprod"):
+        d = pd.read_pickle(cache / f"{name}.pkl")
+        keep = ~d["api10"].astype(str).isin(ids)
+        print(f"{name}: {int((~keep).sum()):,} of {len(d):,} hidden", flush=True)
+        d[keep].reset_index(drop=True).to_pickle(cache / f"{name}.pkl")
+    for b in BASINS:
+        br.generate(run, b)
+
+
 def hind_sticks(run: Path) -> tuple[pd.DataFrame, dict]:
     rows, gen = [], {}
     for b in BASINS:
@@ -375,15 +409,26 @@ def hind_mirror(run: Path) -> dict:
     return {"codev": codev, "landing": landing}
 
 
-def cmd_backtest(run: Path, out: Path) -> None:
+def cmd_backtest(run: Path, out: Path, trigger: str | None = None) -> None:
+    """trigger None = the first measurement (BARS.md: every producing or drilled well, cutoff = the vintage date).
+    trigger 't1' / 't2' = the second (BARS_2.md): the hidden wells of hidden.csv, only wells passing the trigger count."""
     out.mkdir(parents=True, exist_ok=True)
     st, gen = hind_sticks(run)
     w = classify(cmd_wells(run))
-    hidden_ids = set(pd.read_csv(run / "hidden_preprod.csv", dtype={"api10": str})["api10"])
-    # the generator reads Spud / DUC / Completed only; every other well with a spud date after the vintage is a test well too
-    late = (w["spud_date"] > VINTAGE) & w["cls"].isin(["drilled", "producing"])
-    test = w[late].copy()
-    vis = w[~(w["spud_date"] > VINTAGE)]
+    if trigger is None:
+        prefix, cutoff = "backtest", VINTAGE
+        hidden_ids = set(pd.read_csv(run / "hidden_preprod.csv", dtype={"api10": str})["api10"])
+        # the generator reads Spud / DUC / Completed only; every other well with a spud date after the vintage is a test well too
+        late = (w["spud_date"] > VINTAGE) & w["cls"].isin(["drilled", "producing"])
+        test = w[late].copy()
+        vis = w[~(w["spud_date"] > VINTAGE)]
+    else:
+        prefix, cutoff = f"backtest2_{trigger}", CUTOFF_2
+        hidden_ids = set(pd.read_csv(run / "hidden.csv", dtype={"api10": str})["api10"])
+        counts_ = TRIGGERS[trigger](w)
+        hid = w["api10"].astype(str).isin(hidden_ids)
+        test = w[hid & counts_].copy()
+        vis = w[~hid & counts_]
     pads = pd.read_pickle(run / "cache" / "pads.pkl")
     pads["geom"] = shapely.from_wkt(pads["wkt"].to_numpy())
     fam_in_pad = set(zip(st["pad_id"], [family(c) for c in st["bench"]], strict=True))
@@ -398,7 +443,7 @@ def cmd_backtest(run: Path, out: Path) -> None:
         grp.append("no tag" if not r.fam else "member of no DSU" if not mine else
                    "W" if any((int(p), r.fam) in fam_in_pad for p in mine) else "no stick of its family in its DSU")
     test["grp"] = grp
-    summ = {"cutoff": str(VINTAGE.date()), "hidden_from_generator": len(hidden_ids), "test_wells": len(test),
+    summ = {"cutoff": str(cutoff.date()), "trigger": trigger, "hidden_from_generator": len(hidden_ids), "test_wells": len(test),
             "test_wells_by_status": test.groupby(["basin", "well_status"]).size().rename("n").reset_index().to_dict("records"),
             "hindcast_sticks": st.groupby("basin").size().to_dict()}
     keep = {}
@@ -424,7 +469,7 @@ def cmd_backtest(run: Path, out: Path) -> None:
         for name, df, col in (("sticks_matched", clean, "key"), ("dsus_matched", clean, "pad_id"), ("sticks_conflict", confl, "key"), ("sticks_crowded", crowd, "key")):
             per[name] = per["api10"].map(df.groupby("api10")[col].nunique()).fillna(0).astype(int)
         per["outcome"] = np.where(per["sticks_matched"] > 0, "match", np.where(per["sticks_conflict"] > 0, "conflict", np.where(per["sticks_crowded"] > 0, "crowded", "nothing")))
-        per.to_csv(out / f"backtest_wells_variant_{tag}.csv", index=False)
+        per.to_csv(out / f"{prefix}_wells_variant_{tag}.csv", index=False)
         W = per[per["grp"] == "W"]
         touched = pd.concat([clean, confl, crowd])
         touched = touched[touched["api10"].isin(set(W["api10"]))]
@@ -444,28 +489,35 @@ def cmd_backtest(run: Path, out: Path) -> None:
                          "out_crowded": int(kb["crowded"].sum()), "wells_planned_basis_pct": round(100 * float((wb["basis"] == "planned").mean()), 1) if n else None,
                          "uturn_sticks_drilled": len(ut), "uturn_sticks_both_legs": int((ut["legs_matched"] == 2).sum()),
                          "wells_matching_2plus_sticks": int((wb["sticks_matched"] >= 2).sum()), "wells_matching_2plus_dsus": int((wb["dsus_matched"] >= 2).sum())})
+        cm = clean[clean["api10"].isin(set(W["api10"])) & ~clean["planned_basis"]]
+        for r_ in rows:
+            g_ = cm[cm["basin"] == r_["basin"]]
+            r_["clean_match_median_abs_dz_ft"] = round(float(g_["dz"].abs().median()), 1) if len(g_) else None
+            r_["W_nm"] = int(((W["basin"] == r_["basin"]) & (W["state_code"] == 30)).sum())
         res = pd.DataFrame(rows)
-        res.to_csv(out / f"backtest_bars_variant_{tag}.csv", index=False)
+        res.to_csv(out / f"{prefix}_bars_variant_{tag}.csv", index=False)
         g = per.groupby(["basin", "state_code", "grp", "outcome", "basis"]).size().rename("wells").reset_index()
-        g.to_csv(out / f"backtest_wells_by_outcome_variant_{tag}.csv", index=False)
+        g.to_csv(out / f"{prefix}_wells_by_outcome_variant_{tag}.csv", index=False)
         so = live[(live["status"] != "open") | live["crowded"]].merge(st[["key", "flags"]], on="key")
-        so.assign(flags=so["flags"].map(",".join)).to_csv(out / f"backtest_sticks_out_variant_{tag}.csv", index=False)
+        so.assign(flags=so["flags"].map(",".join)).to_csv(out / f"{prefix}_sticks_out_variant_{tag}.csv", index=False)
         summ[f"variant_{tag}"] = {"B5": b5.to_dict("records"), "bars": res.to_dict("records")}
         keep[tag] = {"S0": S0, "S1": S1, "P1": P1, "per": per}
         print(f"--- variant {tag}\n", res.T.to_string(), "\n", g.groupby(["basin", "grp", "outcome"])["wells"].sum().to_string(), flush=True)
-    (out / "backtest_summary.json").write_text(json.dumps(summ, indent=1, default=str), encoding="utf-8")
-    pd.to_pickle(keep | {"st": st, "test": test}, run / "backtest.pkl")
+    (out / f"{prefix}_summary.json").write_text(json.dumps(summ, indent=1, default=str), encoding="utf-8")
+    pd.to_pickle(keep | {"st": st, "test": test}, run / f"{prefix}.pkl")
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest"))
+    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest", "hindcast2", "backtest2"))
+    ap.add_argument("--src", type=Path, help="hindcast2: the run dir of the first hindcast (its pull is reused)")
     ap.add_argument("--run", required=True, type=Path)
     ap.add_argument("--out", type=Path, default=DOC)
     a = ap.parse_args(argv)
     a.run.mkdir(parents=True, exist_ok=True)
     {"hindcast": lambda: cmd_hindcast(a.run), "wells": lambda: cmd_wells(a.run), "day0": lambda: cmd_day0(a.run, a.out),
-     "backtest": lambda: cmd_backtest(a.run, a.out)}[a.step]()
+     "backtest": lambda: cmd_backtest(a.run, a.out), "hindcast2": lambda: cmd_hindcast2(a.run, a.src),
+     "backtest2": lambda: [cmd_backtest(a.run, a.out, t) for t in TRIGGERS]}[a.step]()
     return 0
 
 

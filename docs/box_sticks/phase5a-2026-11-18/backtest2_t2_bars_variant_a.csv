@@ -1,0 +1,3 @@
+variant,basin,test_wells,W,B1_take_out_pct,B2_sticks_out_per_well,sticks_out,B3_clean_match_pct,B4_conflict_share_pct,B5_not_open_before_pct,out_drilled,out_conflict,out_crowded,wells_planned_basis_pct,uturn_sticks_drilled,uturn_sticks_both_legs,wells_matching_2plus_sticks,wells_matching_2plus_dsus,clean_match_median_abs_dz_ft,W_nm
+a,delaware,695,554,70.8,0.91,504,25.1,13.1,4.801,145,66,293,10.3,14,3,9,2,76.0,352
+a,midland,720,586,87.2,1.394,817,36.3,11.8,3.393,228,96,493,0.0,4,0,15,4,56.1,0

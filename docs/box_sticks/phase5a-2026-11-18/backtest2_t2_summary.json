@@ -1,0 +1,176 @@
+{
+ "cutoff": "2026-01-01",
+ "trigger": "t2",
+ "hidden_from_generator": 4658,
+ "test_wells": 1415,
+ "test_wells_by_status": [
+  {
+   "basin": "delaware",
+   "well_status": "Active",
+   "n": 410
+  },
+  {
+   "basin": "delaware",
+   "well_status": "Completed",
+   "n": 228
+  },
+  {
+   "basin": "delaware",
+   "well_status": "DUC",
+   "n": 55
+  },
+  {
+   "basin": "delaware",
+   "well_status": "Inactive",
+   "n": 2
+  },
+  {
+   "basin": "midland",
+   "well_status": "Active",
+   "n": 276
+  },
+  {
+   "basin": "midland",
+   "well_status": "Completed",
+   "n": 174
+  },
+  {
+   "basin": "midland",
+   "well_status": "DUC",
+   "n": 227
+  },
+  {
+   "basin": "midland",
+   "well_status": "Inactive",
+   "n": 43
+  }
+ ],
+ "hindcast_sticks": {
+  "delaware": 47988,
+  "midland": 35514
+ },
+ "variant_a": {
+  "B5": [
+   {
+    "basin": "delaware",
+    "sticks": 47988,
+    "not_open_before": 2304,
+    "pct": 4.801
+   },
+   {
+    "basin": "midland",
+    "sticks": 35514,
+    "not_open_before": 1205,
+    "pct": 3.393
+   }
+  ],
+  "bars": [
+   {
+    "variant": "a",
+    "basin": "delaware",
+    "test_wells": 695,
+    "W": 554,
+    "B1_take_out_pct": 70.8,
+    "B2_sticks_out_per_well": 0.91,
+    "sticks_out": 504,
+    "B3_clean_match_pct": 25.1,
+    "B4_conflict_share_pct": 13.1,
+    "B5_not_open_before_pct": 4.801,
+    "out_drilled": 145,
+    "out_conflict": 66,
+    "out_crowded": 293,
+    "wells_planned_basis_pct": 10.3,
+    "uturn_sticks_drilled": 14,
+    "uturn_sticks_both_legs": 3,
+    "wells_matching_2plus_sticks": 9,
+    "wells_matching_2plus_dsus": 2,
+    "clean_match_median_abs_dz_ft": 76.0,
+    "W_nm": 352
+   },
+   {
+    "variant": "a",
+    "basin": "midland",
+    "test_wells": 720,
+    "W": 586,
+    "B1_take_out_pct": 87.2,
+    "B2_sticks_out_per_well": 1.394,
+    "sticks_out": 817,
+    "B3_clean_match_pct": 36.3,
+    "B4_conflict_share_pct": 11.8,
+    "B5_not_open_before_pct": 3.393,
+    "out_drilled": 228,
+    "out_conflict": 96,
+    "out_crowded": 493,
+    "wells_planned_basis_pct": 0.0,
+    "uturn_sticks_drilled": 4,
+    "uturn_sticks_both_legs": 0,
+    "wells_matching_2plus_sticks": 15,
+    "wells_matching_2plus_dsus": 4,
+    "clean_match_median_abs_dz_ft": 56.1,
+    "W_nm": 0
+   }
+  ]
+ },
+ "variant_b": {
+  "B5": [
+   {
+    "basin": "delaware",
+    "sticks": 47988,
+    "not_open_before": 613,
+    "pct": 1.277
+   },
+   {
+    "basin": "midland",
+    "sticks": 35514,
+    "not_open_before": 285,
+    "pct": 0.803
+   }
+  ],
+  "bars": [
+   {
+    "variant": "b",
+    "basin": "delaware",
+    "test_wells": 695,
+    "W": 554,
+    "B1_take_out_pct": 65.7,
+    "B2_sticks_out_per_well": 0.83,
+    "sticks_out": 460,
+    "B3_clean_match_pct": 24.5,
+    "B4_conflict_share_pct": 13.7,
+    "B5_not_open_before_pct": 1.277,
+    "out_drilled": 140,
+    "out_conflict": 63,
+    "out_crowded": 257,
+    "wells_planned_basis_pct": 10.3,
+    "uturn_sticks_drilled": 14,
+    "uturn_sticks_both_legs": 3,
+    "wells_matching_2plus_sticks": 7,
+    "wells_matching_2plus_dsus": 2,
+    "clean_match_median_abs_dz_ft": 82.1,
+    "W_nm": 352
+   },
+   {
+    "variant": "b",
+    "basin": "midland",
+    "test_wells": 720,
+    "W": 586,
+    "B1_take_out_pct": 85.8,
+    "B2_sticks_out_per_well": 1.324,
+    "sticks_out": 776,
+    "B3_clean_match_pct": 36.5,
+    "B4_conflict_share_pct": 12.4,
+    "B5_not_open_before_pct": 0.803,
+    "out_drilled": 229,
+    "out_conflict": 96,
+    "out_crowded": 451,
+    "wells_planned_basis_pct": 0.0,
+    "uturn_sticks_drilled": 4,
+    "uturn_sticks_both_legs": 0,
+    "wells_matching_2plus_sticks": 15,
+    "wells_matching_2plus_dsus": 4,
+    "clean_match_median_abs_dz_ft": 56.1,
+    "W_nm": 0
+   }
+  ]
+ }
+}

@@ -407,6 +407,18 @@ location is never tested by the envelope (a stick placed on a producing well, at
 under status Inactive / P&A / Abandoned / Permit Approved are not read; real U-turn wells are read as their short
 wellstick. 145 of the 570 newly spudded wells carry tag OTHER or none (Midland 41 %). Thirteen questions wait on Michael.
 
+**Gate 5a, second measurement (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/FINDINGS_2.md`; Michael, on the first: reconciling
+against DUCs and permits is dubious, their tags and depths are still permit data).** Measured: no depth evidence on 39 % of
+Texas and 57 % of New Mexico Spud wells against 0.6 % and 23 % of this year's producers; spud to first production is a median
+196 days (NM) and 220 days (TX). With only producing wells counting, day 0 on sets 6 and 7 is 0.76 % matched or conflict and
+0.53 % crowded (Delaware), 0.35 % and 0.49 % (Midland). Back-test as of 2026-01-01 (3,785 wells hidden; bars in `BARS_2.md`,
+committed first; 326 Delaware and 289 Midland producing test wells in a DSU with a stick of their family): conflicts pass
+(13.7 % / 11.5 % of sticks out, bar 15 %); Midland passes P1 (83.4 % of wells take a stick out) and P2 (1.27 sticks per well);
+**the Delaware fails P1 (60.4 %) and P2 (0.74); P3 fails in both (clean match 22.7 % / 35.6 %, bar 40 %); P5 fails in both
+(1.24 % / 0.80 %, bar 0.5 %).** Row spacing alone predicts 87 % / 34 % in the Midland (863 ft median) and 73 % / 28 % in the
+Delaware (1,193 ft): a new well usually lands between two rows, so a stick-by-stick status is silent for about 1 new producer
+in 6 in the Midland and 2 in 5 in the Delaware. Nothing decided; the drop trigger of 2026-11-12 stands until Michael changes it.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks
