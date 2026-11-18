@@ -389,6 +389,24 @@ whatever the tag).
   (`crowded`). Regenerating sticks and re-running forecasts stay periodic, explicit-go operations.
 - Needs the geography expression indexes (sql/26 pattern) and a slot in `etl/db.py:_CURATED_MATVIEWS`.
 
+**Gate 5a (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/DESIGN.md`, read-only, nothing applied, nothing on the nightly
+path).** Design: three ETL-owned tables (`curated.box_location_status`, `curated.box_location_status_log`, `meta.box_recon_run`)
+written by a nightly hook that reads `box.*` and never writes it; `_CURATED_MATVIEWS` unchanged. The predicate is one SELECT
+against the record sets (`predicate_draft.sql`): legs judged one by one, wells not yet producing and approved permits as
+their own classes, the survey path for the 467 real U-turn wells, crowded from the set's stored envelope. On live it takes
+47 s for both basins, uses `box_location_stick_geog_gix`, and gives the Python reference's status on 99.98 % (Delaware) and
+100.00 % (Midland) of sticks. Bars were committed before scoring (`BARS.md`, `d2b06a0`). **Day 0 fails D1 and D2:** on sets 6
+and 7 (pull 2026-11-18 18:26 UTC) 2.83 % of Delaware and 1.25 % of Midland sticks already match or conflict with a well and
+3.85 % / 4.56 % are flagged crowded; with three generator rules mirrored (variant B, not the bar) 1.37 % / 1.26 % and
+1.13 % / 1.53 %. **Back-test** (hindcast sets with the 353 not-yet-producing wells spudded after 2026-09-30 hidden; 570 test
+wells, 283 of them in a DSU holding a stick of their family): one well takes out 0.83 (Delaware) and 1.11 (Midland) sticks
+(B2 passes); **B1 fails in the Delaware** (67.5 % of wells take a stick out, bar 80 %; Midland 82.6 %); **B3 fails** (clean
+match 17.8 % / 27.2 %, bar 40 %); **B4 fails** (conflicts 29.1 % / 34.3 % of sticks out, bar 15 %); **B5 fails** (6.41 % /
+5.70 %, bar 0.5 %). Found in the generator, nothing changed: a well whose stored line starts at a stepped-out surface
+location is never tested by the envelope (a stick placed on a producing well, at least 24 sticks); wells with a spud date
+under status Inactive / P&A / Abandoned / Permit Approved are not read; real U-turn wells are read as their short
+wellstick. 145 of the 570 newly spudded wells carry tag OTHER or none (Midland 41 %). Thirteen questions wait on Michael.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks
