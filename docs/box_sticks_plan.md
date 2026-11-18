@@ -341,6 +341,13 @@ second read-only connection: the five new tables exist, commented and EMPTY; `bo
 stands at 10,000,006 (the rolled-back smoke used five numbers). Data dictionary regenerated (107 relations). Nothing stored:
 no `box.location_set` row exists.
 
+**Gate 4d, Delaware (2026-11-18, Michael: "go store Delaware first"; `docs/box_sticks/phase4d-2026-11-18/FINDINGS.md`).**
+`box.location_set` **set 6, Delaware, NOT record**: generator `box_sticks_0.11` from `fb5c6c8`, pull 2026-11-18 18:26 UTC, tag
+run 8; 46,709 sticks (54,985 legs, 448.5 MM ft), ids 10,046,716 to 10,093,424, 5,072 DSUs, 29,719 DSU x bench, 32,376 wells.
+All 5,072 DSUs regenerated from the stored rows give the stored sticks. The first attempt rolled back on its own check: the
+live session reads `float8` at 15 digits (`extra_float_digits = 0`); the verifier now reads exact floats. Midland is not
+stored; nothing is record.
+
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations
