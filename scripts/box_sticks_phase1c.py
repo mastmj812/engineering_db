@@ -19,6 +19,9 @@ Delaware WCXY takes rung 1 only until it has its own extent; WCA_1 / WCA_2 take 
 carried depth, so every bench is computed independently; the STACK is then checked per DSU: adjacent benches out of
 stratigraphic order or closer than MIN_SEP_FT, by which rungs the two depths came from.
 
+Every thickness-rung depth also reports whether its thickness sample sits at TWO LEVELS (``levels``; measured
+2026-11-18 in scripts.box_sticks_second_landing, adopted as a flag only): ``second_tvd_ft`` / ``second_share``.
+
 Run twice: all evidence wells, and with the two-part screen (two_part_screen: depths that fit no bench are dropped;
 wells sitting on another bench's surface are removed from their tagged bench's evidence). Live tags. Nothing is written to the
 warehouse.
@@ -53,6 +56,11 @@ DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
 # Re-measured on the post-cutover tags (pulled 2026-11-17); the 2026-11-12 files are the pre-cutover record.
 THICK_RANK = DOCS / "cutover-2026-11-17" / "phase1" / "holdout_thickness.csv"
 FAR_RANK = DOCS / "cutover-2026-11-17" / "phase1b" / "holdout_far.csv"
+# Two levels in a thickness sample (Michael 2026-11-18): a second peak >= SECOND_SEP_FT from the main one, holding >= SECOND_SHARE
+# of the weight and >= LEVEL_MIN_N wells, the dip between them <= VALLEY x the smaller peak. A flag; the depth does not move.
+BW_FT, GRID_FT, LEVEL_MIN_N, VALLEY = 30.0, 5.0, 3, 0.7
+SEPS = (100.0, 150.0, 200.0)
+SECOND_SEP_FT, SECOND_SHARE = 150.0, 0.25
 THICK_RULE = "rank"                          # "rank" (first in THICK_RANK order, the rule of record) or "median" of every eligible anchor's estimate
 THICK_EXPECTED = DOCS / "cutover-2026-11-17" / "anchor_rule" / "by_bench_chain_pool.csv"   # held-out error of the median rule, per bench
 
@@ -111,6 +119,36 @@ def two_part_screen(w: pd.DataFrame, extents: pd.DataFrame) -> pd.DataFrame:
     return w
 
 
+def levels(rel: np.ndarray, wt: np.ndarray) -> dict:
+    """Peaks of a weighted thickness sample smoothed with a BW_FT Gaussian. Per SEPS threshold: the weight share of the
+    strongest qualifying second peak (each well to its nearest peak) and its offset from the MAIN peak (ft, + = deeper);
+    0 / NaN when none qualifies. ``main`` is the main peak's position in the sample's own units."""
+    out = {f"share_{int(s)}": 0.0 for s in SEPS} | {f"off_{int(s)}": np.nan for s in SEPS} | {"peaks": 0, "main": np.nan}
+    if len(rel) < 2 * LEVEL_MIN_N:
+        return out
+    g = np.arange(rel.min() - 3 * BW_FT, rel.max() + 3 * BW_FT + GRID_FT, GRID_FT)
+    dens = (wt[None, :] * np.exp(-0.5 * ((g[:, None] - rel[None, :]) / BW_FT) ** 2)).sum(axis=1)
+    pk = np.where((dens[1:-1] > dens[:-2]) & (dens[1:-1] >= dens[2:]))[0] + 1
+    out["peaks"] = len(pk)
+    if not len(pk):
+        return out
+    main = pk[np.argmax(dens[pk])]
+    out["main"] = float(g[main])
+    own = pk[np.argmin(np.abs(rel[:, None] - g[pk][None, :]), axis=1)]
+    total = wt.sum()
+    for j in pk:
+        if j == main:
+            continue
+        lo, hi = sorted((j, main))
+        if dens[lo:hi + 1].min() > VALLEY * dens[j] or (own == j).sum() < LEVEL_MIN_N:
+            continue
+        share, off = float(wt[own == j].sum() / total), float(g[j] - g[main])
+        for s in SEPS:
+            if abs(off) >= s and share > out[f"share_{int(s)}"]:
+                out[f"share_{int(s)}"], out[f"off_{int(s)}"] = share, off
+    return out
+
+
 def rankings() -> tuple[dict, dict]:
     t = pd.read_csv(THICK_RANK)
     t = t[(t["exclude_mi"] == 1.0) & (t["predicted_pct"] >= 25)].sort_values("median_ft")
@@ -138,6 +176,7 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
     n = len(pts)
     z, rung, how = np.full(n, np.nan), np.full(n, "none", dtype=object), np.full(n, None, dtype=object)
     exp_med, exp_p90 = np.full(n, np.nan), np.full(n, np.nan)
+    second, second_share = np.full(n, np.nan), np.full(n, np.nan)
     near = np.full(n, np.inf)
     if len(cz) >= P.n_min:
         tree = cKDTree(cxy)
@@ -159,7 +198,13 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
                     if len(kk) < P.n_min or ls.max_angular_gap_deg(cxy[kk], pts[i]) >= 180.0:
                         continue
                     d = np.hypot(cxy[kk, 0] - pts[i, 0], cxy[kk, 1] - pts[i, 1]) / MI
-                    t = ls.weighted_median(cz[kk] - Fc[a][kk], np.exp(-0.5 * (d / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9)
+                    rel, wt = cz[kk] - Fc[a][kk], np.exp(-0.5 * (d / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9
+                    t = ls.weighted_median(rel, wt)
+                    if not got:                                                  # two levels in the first anchor's sample
+                        lv = levels(rel, wt)
+                        if lv[f"share_{int(SECOND_SEP_FT)}"] >= SECOND_SHARE:
+                            second[i] = Fp[a][i] + lv["main"] + lv[f"off_{int(SECOND_SEP_FT)}"]
+                            second_share[i] = lv[f"share_{int(SECOND_SEP_FT)}"]
                     got.append((a, Fp[a][i] + t, med, p90))
                     if thick_exp is None:
                         break
@@ -203,7 +248,8 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
                         z[i], rung[i], exp_med[i], exp_p90[i] = Fp[a][i] + f * span_i, kind, med, p90
                         how[i] = a if kind == "offset" else f"{a}/{b}"
                         break
-    return pd.DataFrame({"z": z, "rung": rung, "how": how, "expected_median_ft": exp_med, "expected_p90_ft": exp_p90, "near_mi": near})
+    return pd.DataFrame({"z": z, "rung": rung, "how": how, "expected_median_ft": exp_med, "expected_p90_ft": exp_p90, "near_mi": near,
+                         "second_tvd_ft": second, "second_share": second_share})
 
 
 def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, order: dict, thick: dict, far: dict) -> pd.DataFrame:

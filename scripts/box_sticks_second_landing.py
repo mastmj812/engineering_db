@@ -8,7 +8,7 @@ wells within 5 mi. Where those wells sit at two levels the median takes one of t
 The in-DSU flag ``two_landings_observed`` only fires where the DSU's own wells show two; this measures a flag for the
 carried case, on the thickness rung only.
 
-Proposed definition (``levels``): smooth the thickness sample (depth - anchor surface, the rung's own distance
+Definition (``box_sticks_phase1c.levels``, adopted as a flag 2026-11-18): smooth the thickness sample (depth - anchor surface, the rung's own distance
 weights) with a BW_FT Gaussian; a second peak >= SEP_FT from the main one, holding >= SHARE of the weight and >= MIN_N
 wells (each well to its nearest peak), with the dip between them <= VALLEY x the smaller peak.
 
@@ -38,44 +38,15 @@ from scripts import box_sticks_phase1b as p1b
 from scripts import box_sticks_phase1c as p1c
 from scripts import box_sticks_phase3_backtest as bt
 from scripts import box_sticks_phase3_pilot as p3
+from scripts.box_sticks_phase1c import BW_FT, GRID_FT, SEPS, VALLEY, levels
+from scripts.box_sticks_phase1c import LEVEL_MIN_N as MIN_N
+from scripts.box_sticks_phase1c import SECOND_SEP_FT as SEP_FT
+from scripts.box_sticks_phase1c import SECOND_SHARE as SHARE
 
 P = ls.PARAMS
 MI = ls.M_PER_MI
-BW_FT, GRID_FT, MIN_N, VALLEY = 30.0, 5.0, 3, 0.7
-SEPS = (100.0, 150.0, 200.0)
-SEP_FT, SHARE = 150.0, 0.25
 SHARES = (0.15, 0.25, 0.33)
 EXCLUDE_MI = 1.0
-EMPTY = {f"share_{int(s)}": 0.0 for s in SEPS} | {f"off_{int(s)}": np.nan for s in SEPS} | {"peaks": 0}
-
-
-def levels(rel: np.ndarray, wt: np.ndarray) -> dict:
-    """Per SEPS threshold: the weight share of the strongest qualifying second peak and its offset from the MAIN peak
-    (ft, + = deeper). 0 / NaN when none qualifies."""
-    out = dict(EMPTY)
-    if len(rel) < 2 * MIN_N:
-        return out
-    g = np.arange(rel.min() - 3 * BW_FT, rel.max() + 3 * BW_FT + GRID_FT, GRID_FT)
-    dens = (wt[None, :] * np.exp(-0.5 * ((g[:, None] - rel[None, :]) / BW_FT) ** 2)).sum(axis=1)
-    pk = np.where((dens[1:-1] > dens[:-2]) & (dens[1:-1] >= dens[2:]))[0] + 1
-    out["peaks"] = len(pk)
-    if len(pk) < 2:
-        return out
-    main = pk[np.argmax(dens[pk])]
-    own = pk[np.argmin(np.abs(rel[:, None] - g[pk][None, :]), axis=1)]
-    total = wt.sum()
-    for j in pk:
-        if j == main:
-            continue
-        lo, hi = sorted((j, main))
-        if dens[lo:hi + 1].min() > VALLEY * dens[j] or (own == j).sum() < MIN_N:
-            continue
-        share, off = float(wt[own == j].sum() / total), float(g[j] - g[main])
-        for s in SEPS:
-            if abs(off) >= s and share > out[f"share_{int(s)}"]:
-                out[f"share_{int(s)}"], out[f"off_{int(s)}"] = share, off
-    return out
-
 
 def _weights(d_mi: np.ndarray) -> np.ndarray:
     return np.exp(-0.5 * (d_mi / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9

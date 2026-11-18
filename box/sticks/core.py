@@ -25,7 +25,8 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.9_pilot"
+VERSION = "box_sticks_0.10_pilot"
+SECOND_LEVEL = "second_level_nearby"      # stick flag: a thickness-carried depth whose neighbouring wells sit at two levels (nothing moves)
 DRILLED_ACROSS = "dsu_drilled_across"      # stick flag: a short polygon whose own wells run well past its row
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
                "uturn_unpaired")
@@ -71,6 +72,7 @@ class Bench:
     spacing_basis: dict = field(default_factory=dict)
     flags: tuple = ()
     levels: tuple[float, float] | None = None   # upper / lower landing where the DSU's own wells show two (used by cfg.two_levels)
+    second_tvd_ft: float | None = None    # the other level of a thickness-carried depth (flag SECOND_LEVEL); reported, never used to place
     depth_check: str = ""                 # why a carried depth is implausible against a direct bench here (used by cfg.check_carried)
 
 
@@ -510,7 +512,8 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             rec |= {"pad_id": d.pad_id, "basin": d.basin, "bench": code, "generator_version": VERSION, "n_legs": len(iw.legs),
                     "azimuth_true_deg": round(d.az_true_deg, 1), "azimuth_basis": d.az_basis,
                     "tvd_basis": {"rung": w.b.rung, "held_out_median_ft": w.b.tvd_err_median_ft, "held_out_p90_ft": w.b.tvd_err_p90_ft,
-                                  "reconciled_shift_ft": round(w.shift_ft, 1)},
+                                  "reconciled_shift_ft": round(w.shift_ft, 1),
+                                  "second_level_tvd_ft": None if w.b.second_tvd_ft is None else round(w.b.second_tvd_ft, 1)},
                     "spacing_basis": dict(w.b.spacing_basis) | {"map_ft": round(w.b.spacing_ft, 1), "final_ft": round(w.s_ft, 1),
                                                                 "grid": w.fit},
                     "flags": sorted(set(w.b.flags) | ({"pinned"} if w.pinned else set()) | ({DRILLED_ACROSS} if across else set()))}
@@ -531,7 +534,8 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
                      "legs_placed": n_placed, "rows_culled": len(rows) + w.fit_dropped - n_placed, "sticks": sum(1 for s in sticks if s["bench"] == code),
                      "target_tvd_ft": tvd, "rung": w.b.rung, "reconciled_shift_ft": round(w.shift_ft, 1), "spacing_map_ft": round(w.b.spacing_ft, 1),
                      "spacing_final_ft": round(w.s_ft, 1), "grid": w.fit, "stagger_ref": w.stagger_ref or "", "pinned": w.pinned,
-                     "flags": ";".join(sorted(w.b.flags)), "levels": "" if not w.levels else f"{w.levels[0]:.0f}/{w.levels[1]:.0f}"})
+                     "flags": ";".join(sorted(w.b.flags)), "second_level_tvd_ft": None if w.b.second_tvd_ft is None else round(w.b.second_tvd_ft, 1),
+                     "levels": "" if not w.levels else f"{w.levels[0]:.0f}/{w.levels[1]:.0f}"})
     order = {b.code: b.rank for b in d.benches}
     sticks.sort(key=lambda s: (order[s["bench"]], s["well_name"]))
     ledger.sort(key=lambda r: (order[r["code"]], r["row"]))

@@ -29,7 +29,7 @@ from scripts import box_sticks_phase1c as p1c
 from scripts import box_sticks_phase3_backtest as bt
 from scripts import box_sticks_phase3_pilot as p3
 
-CHAIN_COLS = ["z", "rung", "how", "expected_median_ft", "expected_p90_ft", "near_mi"]
+CHAIN_COLS = ["z", "rung", "how", "expected_median_ft", "expected_p90_ft", "near_mi", "second_tvd_ft", "second_share"]
 
 
 def wcxy_frame(F: dict, cache: Path, before: pd.Timestamp | None) -> dict:

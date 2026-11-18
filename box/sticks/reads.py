@@ -15,7 +15,7 @@ from pyproj import Transformer
 
 from dealintake import geo
 
-from .core import Bench, Cfg, Dsu, Well, resolve_azimuth
+from .core import SECOND_LEVEL, Bench, Cfg, Dsu, Well, resolve_azimuth
 
 SEP_MIN_DSU = 30                        # direct-direct DSUs needed before a separation band is used
 SEARCH_M = 2640.0 / geo.FT_PER_M       # existing wells are read this far outside the DSU (the pair-link gate)
@@ -141,11 +141,14 @@ class Context:
                         why = f"{x} direct at {zx:.0f} ft is {zx - float(b.z):+.0f} ft from this depth; {band[0]:.0f} to {band[1]:.0f} ft where both are direct"
                         break
             basis, neff = self._spacing_basis(basin, b.code, poly, b.edge_band)
+            sec = getattr(b, "second_tvd_ft", np.nan)                           # absent in frames built before 0.10
+            sec = None if b.rung != "thickness" or pd.isna(sec) else float(sec)
+            flags = (("two_landings_observed",) if (pid, b.code) in self.two else ()) + ((SECOND_LEVEL,) if sec is not None else ())
             benches.append(Bench(code=b.code, rank=self.order[basin].index(b.code), tvd_ft=None if pd.isna(b.z) else float(b.z), rung=b.rung,
                                  spacing_ft=float(b.spacing_ft), inside_frac=float(b.inside_frac), control=neff,
                                  tvd_err_median_ft=None if pd.isna(b.expected_median_ft) else float(b.expected_median_ft),
                                  tvd_err_p90_ft=None if pd.isna(b.expected_p90_ft) else float(b.expected_p90_ft), spacing_basis=basis,
-                                 flags=("two_landings_observed",) if (pid, b.code) in self.two else (),
+                                 flags=flags, second_tvd_ft=sec,
                                  levels=self.levels.get((int(pid), b.code)), depth_check=why))
         az_true, basis = self._azimuth(pid, r)
         wca = self.wca.get(pid, {})

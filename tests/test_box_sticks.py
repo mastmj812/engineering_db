@@ -245,3 +245,14 @@ def test_match_slots_is_one_to_one_and_respects_the_gates():
          {"well": "D", "leg": "L4", "shared_frac": 0.9, "dh_ft": 10.0, "dz_ft": 160.0, "spacing_ft": 880.0},
          {"well": "E", "leg": "L5", "shared_frac": 0.4, "dh_ft": 10.0, "dz_ft": 0.0, "spacing_ft": 880.0}]
     assert checks.match_slots(p) == {"B": "L1", "A": "L2"}
+
+
+def test_second_level_nearby_flags_the_sticks_and_moves_none():
+    """A thickness-carried depth whose neighbouring wells sit at two levels: flag + the other level, same sticks."""
+    plain = run(dsu([bench("WCA_1", 1, 11000, 880, rung="thickness")]))
+    res = run(dsu([bench("WCA_1", 1, 11000, 880, rung="thickness", flags=(core.SECOND_LEVEL,), second_tvd_ft=11165.0)]))
+    assert res.sticks and all(core.SECOND_LEVEL in s["flags"] and s["tvd_basis"]["second_level_tvd_ft"] == 11165.0 for s in res.sticks)
+    assert xs(res, "WCA_1") == xs(plain, "WCA_1")
+    assert [s["target_tvd_ft"] for s in res.sticks] == [s["target_tvd_ft"] for s in plain.sticks]
+    assert all(s["tvd_basis"]["second_level_tvd_ft"] is None and core.SECOND_LEVEL not in s["flags"] for s in plain.sticks)
+    assert res.benches[0]["second_level_tvd_ft"] == 11165.0 and core.SECOND_LEVEL in res.benches[0]["flags"]

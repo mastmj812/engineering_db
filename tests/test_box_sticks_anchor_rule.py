@@ -45,3 +45,16 @@ def test_expected_error_table_covers_the_chain_benches():
     exp = p1c.thick_expected("median")
     assert ("midland", "WCD") in exp and all(0 < m < p for m, p in exp.values())
     assert p1c.THICK_RULE == "rank" and p1c.thick_expected() == {}   # the rule of record until Michael decides
+
+
+def test_thickness_rung_reports_a_second_level_and_leaves_the_depth_alone():
+    # own wells on a ring 2 mi out: 8 at 1,000 ft, 4 at 1,200 ft, alternating round the ring; one flat anchor at 900 ft
+    ang = np.linspace(0, 2 * np.pi, 12, endpoint=False)
+    cxy = 2 * MI * np.column_stack([np.cos(ang), np.sin(ang)])
+    cz = np.where(np.arange(12) % 3 == 0, 1200.0, 1000.0)
+    r = p1c.chain_for_code(False, np.array([[0.0, 0.0]]), cxy, cz, {"A": np.full(12, 900.0)}, {"A": np.array([900.0])}, [("A", 40.0, 120.0)], []).iloc[0]
+    assert (r["rung"], r["z"]) == ("thickness", 1000.0)
+    assert abs(r["second_tvd_ft"] - 1200.0) <= p1c.GRID_FT and abs(r["second_share"] - 1 / 3) < 0.01
+    one = p1c.chain_for_code(False, np.array([[0.0, 0.0]]), cxy, np.full(12, 1000.0), {"A": np.full(12, 900.0)}, {"A": np.array([900.0])},
+                             [("A", 40.0, 120.0)], []).iloc[0]
+    assert np.isnan(one["second_tvd_ft"])
