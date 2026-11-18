@@ -507,9 +507,45 @@ def cmd_backtest(run: Path, out: Path, trigger: str | None = None) -> None:
     pd.to_pickle(keep | {"st": st, "test": test}, run / f"{prefix}.pkl")
 
 
+def cmd_day0files(run: Path, out: Path) -> None:
+    """Day 0 on a generated run that is NOT stored (BARS_3.md): the sticks of set_<basin>.pkl against a wells pull made
+    now, variant B, under trigger T1 (producing) and with every drilled well counted."""
+    out.mkdir(parents=True, exist_ok=True)
+    st, gen = hind_sticks(run)
+    mirror = hind_mirror(run)
+    w = classify(cmd_wells(run))
+    arts = {b: pd.read_pickle(run / f"set_{b}.pkl") for b in BASINS}
+    seen = {a: r for art in arts.values() for a, r in art["wells"].items()}
+    wi = w.set_index("api10")
+    summ = {"generator_version": arts["delaware"]["generator_version"], "pulled_at": arts["delaware"]["manifest"]["pulled_at"],
+            "wells_pulled_at": cmd_wells(run).attrs.get("pulled_at"), "counts": {b: {k: v for k, v in arts[b]["counts"].items()} for b in BASINS}}
+    for trig, sub in (("t1", w[w["cls"] == "producing"]), ("all_drilled", w[w["cls"].isin(["producing", "drilled"])])):
+        S, P = judge(st, sub, gen, mirror)
+        c = counts(S)
+        c.to_csv(out / f"day0_v012_{trig}_status_counts.csv", index=False)
+        nb = S[S["status"].isin(["drilled", "producing", "conflict"]) | S["crowded"]].copy()
+        nb["api10"] = nb["matched_api10"].fillna(nb["crowd_api10"]).astype(str)
+        pb = P.assign(api10=P["api10"].astype(str)).sort_values("ov", ascending=False).drop_duplicates(["key", "api10"])
+        nb = nb.merge(pb[["key", "api10", "dz", "code", "planned_basis", "ov"]], on=["key", "api10"], how="left")
+        nb["w_status"] = wi["well_status"].reindex(nb["api10"]).to_numpy()
+        nb["w_uturn"] = wi["is_uturn"].reindex(nb["api10"]).fillna(False).to_numpy().astype(bool)
+        nb["read"] = nb["api10"].isin(seen)
+        nb["why"] = np.where(~nb["read"], "well not read by the generator: " + nb["w_status"].astype(str),
+                    np.where(nb["w_uturn"], "real U-turn well",
+                    np.where(nb["planned_basis"].fillna(False).astype(bool), "well without depth evidence",
+                    np.where((nb["dz"].abs() > 150) & (nb["code"] == nb["bench"]), "same code, 150 to 500 ft apart vertically",
+                    np.where(nb["code"] == nb["bench"], "same code, within 150 ft vertically", "other code, within 150 ft vertically")))))
+        cause = nb.assign(kind=np.where(nb["crowded"], "crowded", nb["status"])).groupby(["basin", "kind", "why"]).size().rename("sticks").reset_index()
+        cause.to_csv(out / f"day0_v012_{trig}_by_cause.csv", index=False)
+        nb.to_csv(out / f"day0_v012_{trig}_not_open.csv", index=False)
+        summ[trig] = {"status_counts": c.to_dict("records"), "by_cause": cause.to_dict("records")}
+        print(f"--- {trig}\n", c.to_string(index=False), "\n", cause.to_string(index=False), flush=True)
+    (out / "day0_v012_summary.json").write_text(json.dumps(summ, indent=1, default=str), encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest", "hindcast2", "backtest2"))
+    ap.add_argument("step", choices=("hindcast", "wells", "day0", "backtest", "hindcast2", "backtest2", "day0files"))
     ap.add_argument("--src", type=Path, help="hindcast2: the run dir of the first hindcast (its pull is reused)")
     ap.add_argument("--run", required=True, type=Path)
     ap.add_argument("--out", type=Path, default=DOC)
@@ -517,6 +553,7 @@ def main(argv: list[str] | None = None) -> int:
     a.run.mkdir(parents=True, exist_ok=True)
     {"hindcast": lambda: cmd_hindcast(a.run), "wells": lambda: cmd_wells(a.run), "day0": lambda: cmd_day0(a.run, a.out),
      "backtest": lambda: cmd_backtest(a.run, a.out), "hindcast2": lambda: cmd_hindcast2(a.run, a.src),
+     "day0files": lambda: cmd_day0files(a.run, a.out),
      "backtest2": lambda: [cmd_backtest(a.run, a.out, t) for t in TRIGGERS]}[a.step]()
     return 0
 

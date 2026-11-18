@@ -419,6 +419,16 @@ committed first; 326 Delaware and 289 Midland producing test wells in a DSU with
 Delaware (1,193 ft): a new well usually lands between two rows, so a stick-by-stick status is silent for about 1 new producer
 in 6 in the Midland and 2 in 5 in the Delaware. Nothing decided; the drop trigger of 2026-11-12 stands until Michael changes it.
 
+**Generator 0.12 (2026-11-18, Michael: "Yes, generator first"; `docs/box_sticks/phase5a-2026-11-18/FINDINGS_3.md`; files only,
+NOT stored, sets 6 and 7 stay the records).** Three well-input fixes, no threshold or placement rule changed: a first segment
+more than 15 degrees off the rest of a well's stored line (the surface step-out) is dropped; the 467 real U-turn wells are read
+on their survey path as two legs; not-yet-producing wells now include Inactive / Active and Permit Approved with a spud date
+(3,516 -> 5,020 wells). Pull 2026-11-18 22:37 UTC: Delaware 46,062 sticks (set 6: 46,709), Midland 33,138 (set 7: 33,829), 0
+invariant violations. Day 0 on producing wells (bars in `BARS_3.md`, committed first): matched or conflict 0.63 % Delaware
+(**fails** the 0.5 % bar; 0.76 % on set 6) and 0.22 % Midland (passes; 0.35 %); crowded 0.41 % and 0.39 % (pass). 168 of the 215
+Delaware conflicts are a producer alongside 20 to 30 % of a stick: the generator places such a row (30 % rule, 2026-11-15) and
+the predicate's sql/68 floor of 20 % calls it a conflict. Storing a 0.12 set is its own explicit go.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks
