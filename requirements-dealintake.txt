@@ -12,4 +12,4 @@ keyring>=25                 # anduin token in the Windows Credential Manager (de
 blueox-boxfit @ git+https://github.com/mastmj812/permiantypecurve.git@3380317134130f1fde4d9d7040115716ed3b2268#subdirectory=backend/packages/boxfit
 # BOX sticks generator (box/sticks/) lays rows with narvi's geometry engine (placement / generate / records).
 # Pinned to a commit merged on narvi master: narvi changes never move BOX sticks until this SHA is bumped on purpose.
-narvi @ git+https://github.com/mastmj812/narvi.git@41e08446743fc95c6cac6d92cba4cb11da141055
+narvi @ git+https://github.com/mastmj812/narvi.git@bfc7955f85a10a24b82e7d671e3ea51883779e4a
