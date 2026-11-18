@@ -236,7 +236,8 @@ GRANT SELECT ON box.location_set, box.location_stick, box.location_set_dsu, box.
 COMMENT ON TABLE box.location_set IS
     'BOX sticks generation runs (docs/box_sticks_plan.md phase 4): one row per basin per run of box.sticks. is_record = the set downstream reads '
     '(at most one per basin). inputs = what was read and its digests; cfg = every threshold; backtest = the bars as written with each verdict, '
-    'failures included. A set is rebuilt exactly from box.location_set_dsu / _bench / _well + the DSU polygons of dsu_vintage.';
+    'failures included. A set is rebuilt exactly from box.location_set_dsu / _bench / _well + the DSU polygons of dsu_vintage; read the float8 columns '
+    'with SET extra_float_digits = 1 (the Supabase pooler default of 0 returns 15 digits, not the stored value).';
 COMMENT ON COLUMN box.location.source IS
     'novi = a Novi Intelligence stick carried by vintage (box.location_source, D73 / D83). box_sticks = our own generated location: identity is '
     '(dsu_vintage, pad_id, formation_blueox, slot_no), carried between sets by co-extent overlap (>= 50 % of the shorter stick within 220 ft, 1:1). '

@@ -132,3 +132,10 @@ def test_every_moving_constant_is_in_the_set_cfg() -> None:
     assert t["spacing"]["FLOOR_FT"] == 1320.0 and t["identity"] == {"corridor_ft": 220.0, "min_share": 0.5}
     assert t["generator"]["stacked"] != run.thresholds("delaware")["generator"]["stacked"]         # the envelope is per basin
     assert all(p.exists() for p in run.file_inputs().values())
+
+
+def test_the_stored_set_is_read_back_with_exact_floats() -> None:
+    # 2026-11-18: the live pooler session reads float8 with extra_float_digits = 0; the regeneration check then compared
+    # 15-digit values against the stored ones and failed on every carried depth (rolled back, nothing stored)
+    src = (ROOT / "scripts" / "box_sticks_run.py").read_text(encoding="utf-8")
+    assert src.index('q("SET LOCAL extra_float_digits = 1")') < src.index("FROM box.location_set_bench WHERE set_id = %s AND pad_id = ANY(%s)")
