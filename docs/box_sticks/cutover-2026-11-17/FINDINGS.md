@@ -182,6 +182,54 @@ Back-test, once, with the median rule (`anchor_rule/backtest/`): **it does not c
 The anchor choice is not where the carried-depth error lives: no simple rule gets near the best-anchor headroom, and
 the large misses are benches with two landing levels (pad 22309 LSSH), which a median over anchors does not address.
 
+### A "two levels nearby" flag for thickness-carried depths: measured, not built into the generator (2026-11-18)
+
+`scripts/box_sticks_second_landing`, files in `second_landing/`. Read-only; the generator is untouched.
+
+Definition proposed before measuring: take the thickness sample the rung already uses (same-bench wells within 5 mi,
+depth minus the anchor surface, the rung's distance weights), smooth with a 30 ft kernel; flag when a second peak is
+150 ft or more from the main one, holds 25 % or more of the weight and 3 or more wells, and the dip between falls to
+70 % of the smaller peak or lower. 150 ft matches `two_landings_observed` and the same-landing tolerance.
+
+How many (grain: thickness-rung DSU x bench, today's frame):
+
+| | Thickness DSU x bench | Flagged | Sticks on a flagged depth |
+|---|---|---|---|
+| Delaware | 9,048 | 1,520 (16.8 %) | 3,575 of 46,690 (7.7 %), in 1,014 DSUs |
+| Midland | 4,731 | 582 (12.3 %) | 1,499 of 33,791 (4.4 %), in 451 DSUs |
+
+Most flagged: Delaware AVA_1 26.4 %, WCB_2 23.8 %, BS2_C 22.8 %, BS2_S 21.6 %; Midland WCC 22.4 %, WCD 18.4 %. The
+second level is a median 210 ft from the main one, above and below about equally (51 % deeper).
+
+Does a flagged depth miss more? Hold-out (grain: screened evidence wells, same-bench wells within 1 mi hidden, rank
+anchor; 45,785 wells, 3,697 flagged):
+
+| | Flagged: median / P90 / over 150 ft | Not flagged |
+|---|---|---|
+| Delaware (2,715 / 19,281 wells) | 87.1 ft / 222.5 ft / 25.4 % | 50.0 ft / 151.8 ft / 10.3 % |
+| Midland (982 / 22,807 wells) | 74.1 ft / 197.9 ft / 20.2 % | 39.2 ft / 113.0 ft / 4.3 % |
+
+Of the 22 benches with flagged wells, flagged is worse on the median in 20, level in Delaware AVA_1 (52.3 against
+50.9 ft) and better in Delaware WCC (57.3 against 71.6 ft). Midland WCD is the weakest split that still holds (58.1
+against 44.6 ft).
+
+Back-test (2023-01-01 frame, hidden wells with a depth on a thickness-rung bench): 10 of 112 DSU x bench flagged.
+36 hidden wells on flagged depths: 181.3 ft median, 61.1 % over 150 ft. 279 on unflagged: 70.2 ft, 22.6 %. Ten DSU x
+bench is a small sample (pad 22309 LSSH is 6 of the 36 wells).
+
+The flag says "trust this depth less", not "use the other level": only 35 % of flagged hold-out wells and 36 % of the
+flagged back-test wells are nearer the second level than the stick. Pad 22309 LSSH is flagged (second level 165 ft
+deeper, 31 % of the weight); its 6 hidden wells are 56 ft (median) from that level and 203 ft from the stick. Pad
+11339 WCA_2 (Lea) is flagged the same way and its 7 hidden wells are nearer the stick (195 ft) than the second level
+(321 ft).
+
+Threshold sensitivity, hold-out, both basins (flagged share; flagged median against unflagged): 100 ft / 25 %: 10.2 %,
+79.6 against 43.3 ft. 150 ft / 15 %: 13.2 %, 76.4 against 42.6 ft. 150 ft / 25 % (proposed): 8.1 %, 83.0 against
+43.7 ft. 200 ft / 25 %: 5.0 %, 90.8 against 44.2 ft. Every variant separates; none was picked on these numbers.
+
+Not measured: the bracket and offset rungs (their samples are built differently); whether the flag adds anything
+where `two_landings_observed` already fires (no flagged DSU x bench with sticks also carries that flag today).
+
 ## Upstream re-measurements
 
 Landing depth (phases 0-1c):

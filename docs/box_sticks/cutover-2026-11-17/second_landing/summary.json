@@ -1,0 +1,89 @@
+{
+  "code_sha": "210e81a",
+  "tags": "live",
+  "definition": {
+    "bw_ft": 30.0,
+    "sep_ft": 150.0,
+    "share": 0.25,
+    "min_n": 3,
+    "valley": 0.7
+  },
+  "dsu": {
+    "delaware": {
+      "thickness_dsu_bench": 9048,
+      "flagged": 1520,
+      "flagged_pct": 16.8
+    },
+    "midland": {
+      "thickness_dsu_bench": 4731,
+      "flagged": 582,
+      "flagged_pct": 12.3
+    }
+  },
+  "holdout": {
+    "delaware": {
+      "flagged": {
+        "n": 2715,
+        "median_ft": 87.1,
+        "p90_ft": 222.5,
+        "over_150_pct": 25.4
+      },
+      "unflagged": {
+        "n": 19281,
+        "median_ft": 50.0,
+        "p90_ft": 151.8,
+        "over_150_pct": 10.3
+      },
+      "flagged_nearer_second_level_pct": 35.1
+    },
+    "midland": {
+      "flagged": {
+        "n": 982,
+        "median_ft": 74.1,
+        "p90_ft": 197.9,
+        "over_150_pct": 20.2
+      },
+      "unflagged": {
+        "n": 22807,
+        "median_ft": 39.2,
+        "p90_ft": 113.0,
+        "over_150_pct": 4.3
+      },
+      "flagged_nearer_second_level_pct": 33.9
+    }
+  },
+  "backtest": {
+    "dsu_bench": 112,
+    "dsu_bench_flagged": 10,
+    "all_hidden_wells": {
+      "flagged": {
+        "n": 36,
+        "median_ft": 181.3,
+        "p90_ft": 292.1,
+        "over_150_pct": 61.1
+      },
+      "unflagged": {
+        "n": 279,
+        "median_ft": 70.2,
+        "p90_ft": 210.3,
+        "over_150_pct": 22.6
+      },
+      "flagged_nearer_second_level_pct": 36.1
+    },
+    "one_landing_pairs_only": {
+      "flagged": {
+        "n": 36,
+        "median_ft": 181.3,
+        "p90_ft": 292.1,
+        "over_150_pct": 61.1
+      },
+      "unflagged": {
+        "n": 258,
+        "median_ft": 68.5,
+        "p90_ft": 194.6,
+        "over_150_pct": 19.4
+      },
+      "flagged_nearer_second_level_pct": 36.1
+    }
+  }
+}
