@@ -348,6 +348,12 @@ All 5,072 DSUs regenerated from the stored rows give the stored sticks. The firs
 live session reads `float8` at 15 digits (`extra_float_digits = 0`); the verifier now reads exact floats. Midland is not
 stored; nothing is record.
 
+**Gate 4d, Midland (2026-11-18, Michael: "go store midland").** `box.location_set` **set 7, Midland, NOT record**, from the same
+pull as set 6 (2026-11-18 18:26 UTC): 33,829 sticks (37,470 legs, 348.3 MM ft), ids 10,093,425 to 10,127,253, 4,385 DSUs,
+19,835 DSU x bench, 30,004 wells; all 4,385 DSUs regenerate from the stored rows with 0 differences. Both basins are now stored
+(80,538 sticks); **neither is record**. The record flip is its own go (decision Q4). Phase 4's remaining items: that flip, and
+re-applying the `box.location_set` comment.
+
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations

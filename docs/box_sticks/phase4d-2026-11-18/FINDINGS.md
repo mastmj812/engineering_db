@@ -1,6 +1,6 @@
 # BOX sticks phase 4d: the first stored set (Delaware)
 
-2026-11-18. Michael: "go store Delaware first". **`box.location_set` set 6, Delaware, NOT record.** Midland is not stored.
+2026-11-18. Michael: "go store Delaware first". **`box.location_set` set 6, Delaware, NOT record.** Midland followed as set 7 (below).
 
 ## What was stored
 
@@ -46,7 +46,30 @@ says so (the live comment is not yet re-applied: that is a `COMMENT ON`, waiting
 
 The two attempts used id numbers 10,000,007 to 10,046,715 without keeping them (a sequence does not roll back).
 
+## Midland: set 7 (stored later the same day)
+
+Michael: "go store midland". **`box.location_set` set 7, Midland, NOT record.** Generated from the SAME pull as Delaware set 6
+(2026-11-18 18:26:45 UTC, tag rule run 8), not a new one: no generator code or file input changed between `fb5c6c8` and main
+(`c9a0c82`) and the tag rule had not run again, so both basins rest on one set of inputs. `summary_midland.json` is the run's own.
+
+| Grain | Rows |
+|---|---|
+| Sticks (`box.location_stick`, set 7) | 33,829 (37,470 legs, 348.3 MM ft completed; 3,641 U-turns) |
+| New locations | 33,829, ids 10,093,425 to 10,127,253 (seed) |
+| DSUs / DSU x bench / wells read | 4,385 / 19,835 (7,131 with no stick, each with its reason) / 30,004 |
+
+By rung (sticks; mean held-out median error): direct 14,614 (33.6 ft), thickness 12,058 (41.3 ft), offset 5,791 (68.0 ft),
+bracket 1,366 (42.4 ft). Flags: pinned 8,835; `second_level_nearby` 1,494 (thickness only); `dsu_drilled_across` 492;
+`two_landings_observed` 124.
+
+In the store transaction 10 of 10 checks, including **all 4,385 DSUs regenerated from the stored rows with 0 differences**
+(293 s); it passed on the first attempt. From a second read-only connection: the same counts, all 33,829 sticks intersect
+their own DSU polygon, the Novi side unchanged. Pad 22871 DEAN (the gate 4a example): 3 sticks, slots 1 to 3, 8,980.5 ft,
+direct rung, expected error 28.4 ft, spacing 823.7 ft.
+
+Both basins together: 80,538 sticks (92,455 legs, 796.8 MM ft), ids 10,046,716 to 10,127,253, in 9,457 DSUs.
+
 ## Not done
 
-- Midland is not stored. Nothing is record. No app, forecast or reconciliation reads the set.
+- Nothing is record. No app, forecast or reconciliation reads either set.
 - The back-test was not re-run on 0.11.
