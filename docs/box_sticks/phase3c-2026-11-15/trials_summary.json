@@ -1,0 +1,508 @@
+{
+ "generator": "box_sticks_0.7_pilot + switches",
+ "tags": "live",
+ "pulled": "2026-11-14",
+ "base": {
+  "pilot_today": {
+   "sticks": 1526,
+   "legs": 1751,
+   "bench_no_row": {
+    "wca_one_member": 40,
+    "reconciled_out": 25,
+    "no_depth": 19,
+    "wca_one_landing": 16,
+    "sliver": 12
+   },
+   "sticks_by_bench": {
+    "AVA_0": 47,
+    "AVA_1": 94,
+    "AVA_2": 82,
+    "BS1_S": 177,
+    "BS2_C": 72,
+    "BS2_S": 58,
+    "BS3_C": 146,
+    "BS3_S": 82,
+    "DEAN": 22,
+    "JM": 74,
+    "LSSH": 60,
+    "WCA_1": 81,
+    "WCA_2": 72,
+    "WCB_1": 157,
+    "WCB_2": 178,
+    "WCC": 76,
+    "WCD": 45,
+    "WCXY": 3
+   },
+   "sticks_by_area": {
+    "delaware_nm_lea": 875,
+    "delaware_tx_ward": 380,
+    "midland_glasscock": 271
+   }
+  },
+  "backtest": {
+   "T1_pct": 58.9,
+   "T1_by_area": {
+    "delaware_nm_lea": 52.1,
+    "delaware_tx_ward": 46.9,
+    "midland_glasscock": 69.8
+   },
+   "T2_pct": 5.1,
+   "T3_within_1_pct": 63.2,
+   "T3_ratio": 0.96,
+   "T4_pct": 33.3,
+   "T5_direct": [
+    121,
+    59.0,
+    80.2
+   ],
+   "T5_carried": {
+    "bracket": [
+     24,
+     117.7,
+     1.59
+    ],
+    "offset": [
+     37,
+     99.8,
+     1.15
+    ],
+    "thickness": [
+     215,
+     61.0,
+     1.28
+    ]
+   }
+  }
+ },
+ "two_levels": {
+  "pilot_today": {
+   "sticks": 1526,
+   "legs": 1751,
+   "bench_no_row": {
+    "wca_one_member": 40,
+    "reconciled_out": 25,
+    "no_depth": 19,
+    "wca_one_landing": 16,
+    "sliver": 12
+   },
+   "sticks_by_bench": {
+    "AVA_0": 47,
+    "AVA_1": 94,
+    "AVA_2": 82,
+    "BS1_S": 177,
+    "BS2_C": 72,
+    "BS2_S": 59,
+    "BS3_C": 146,
+    "BS3_S": 82,
+    "DEAN": 22,
+    "JM": 74,
+    "LSSH": 59,
+    "WCA_1": 81,
+    "WCA_2": 72,
+    "WCB_1": 157,
+    "WCB_2": 178,
+    "WCC": 76,
+    "WCD": 45,
+    "WCXY": 3
+   },
+   "sticks_by_area": {
+    "delaware_nm_lea": 876,
+    "delaware_tx_ward": 380,
+    "midland_glasscock": 270
+   }
+  },
+  "backtest": {
+   "T1_pct": 58.9,
+   "T1_by_area": {
+    "delaware_nm_lea": 52.1,
+    "delaware_tx_ward": 46.9,
+    "midland_glasscock": 69.8
+   },
+   "T2_pct": 5.1,
+   "T3_within_1_pct": 63.2,
+   "T3_ratio": 0.96,
+   "T4_pct": 33.3,
+   "T5_direct": [
+    121,
+    59.0,
+    80.2
+   ],
+   "T5_carried": {
+    "bracket": [
+     24,
+     117.7,
+     1.59
+    ],
+    "offset": [
+     37,
+     99.8,
+     1.15
+    ],
+    "thickness": [
+     215,
+     61.0,
+     1.28
+    ]
+   }
+  },
+  "pilot_units_flagged_today": 25,
+  "pilot_units_using_two_levels_today": 17,
+  "backtest_units_using_two_levels": 8,
+  "hidden_wells_depth_in_those_units": {
+   "single_landing": {
+    "wells": 6,
+    "with_a_leg_alongside": 2,
+    "leg_within_150_ft": 1,
+    "median_abs_dz_nearest_level_ft": 155.8
+   },
+   "two_levels": {
+    "wells": 6,
+    "with_a_leg_alongside": 2,
+    "leg_within_150_ft": 0,
+    "median_abs_dz_nearest_level_ft": 318.8
+   }
+  },
+  "pilot_sticks_in_units_today": {
+   "single_landing": 16,
+   "two_levels": 16
+  },
+  "basin_wide_flagged_dsus": {
+   "delaware": {
+    "dsus_with_a_flagged_bench": 246,
+    "flagged_dsu_bench": 271,
+    "using_two_levels": 169,
+    "legs_in_those_units_single": 157,
+    "legs_in_those_units_two_levels": 163,
+    "sticks_all_benches_single": 3865,
+    "sticks_all_benches_two_levels": 3871
+   },
+   "midland": {
+    "dsus_with_a_flagged_bench": 254,
+    "flagged_dsu_bench": 263,
+    "using_two_levels": 167,
+    "legs_in_those_units_single": 93,
+    "legs_in_those_units_two_levels": 89,
+    "sticks_all_benches_single": 2016,
+    "sticks_all_benches_two_levels": 2012
+   }
+  }
+ },
+ "check_carried": {
+  "pilot_today": {
+   "sticks": 1465,
+   "legs": 1688,
+   "bench_no_row": {
+    "carried_implausible": 36,
+    "wca_one_member": 35,
+    "no_depth": 19,
+    "reconciled_out": 17,
+    "wca_one_landing": 16,
+    "sliver": 12
+   },
+   "sticks_by_bench": {
+    "AVA_0": 44,
+    "AVA_1": 94,
+    "AVA_2": 80,
+    "BS1_S": 157,
+    "BS2_C": 64,
+    "BS2_S": 54,
+    "BS3_C": 150,
+    "BS3_S": 84,
+    "DEAN": 22,
+    "JM": 74,
+    "LSSH": 60,
+    "WCA_1": 80,
+    "WCA_2": 72,
+    "WCB_1": 143,
+    "WCB_2": 172,
+    "WCC": 69,
+    "WCD": 43,
+    "WCXY": 3
+   },
+   "sticks_by_area": {
+    "delaware_nm_lea": 825,
+    "delaware_tx_ward": 371,
+    "midland_glasscock": 269
+   }
+  },
+  "backtest": {
+   "T1_pct": 58.3,
+   "T1_by_area": {
+    "delaware_nm_lea": 50.7,
+    "delaware_tx_ward": 46.9,
+    "midland_glasscock": 69.8
+   },
+   "T2_pct": 6.1,
+   "T3_within_1_pct": 62.3,
+   "T3_ratio": 0.95,
+   "T4_pct": 33.3,
+   "T5_direct": [
+    121,
+    59.0,
+    80.2
+   ],
+   "T5_carried": {
+    "bracket": [
+     24,
+     117.7,
+     1.59
+    ],
+    "offset": [
+     37,
+     99.8,
+     1.15
+    ],
+    "thickness": [
+     212,
+     61.4,
+     1.29
+    ]
+   }
+  },
+  "basin_wide": {
+   "carried_dsu_bench": 21034,
+   "flagged_implausible": 637,
+   "dsus_affected": 500,
+   "flagged_by_basin_code": {
+    "midland / WCD": 88,
+    "delaware / BS3_S": 69,
+    "delaware / WCA_1": 44,
+    "delaware / BS1_S": 42,
+    "delaware / BS2_C": 42,
+    "midland / MS": 40,
+    "delaware / WCA_2": 39,
+    "delaware / AVA_2": 36,
+    "midland / LSSH": 36,
+    "delaware / WCB_1": 33,
+    "delaware / BS3_C": 27,
+    "delaware / WCB_2": 24,
+    "midland / DEAN": 23,
+    "delaware / BS2_S": 20
+   },
+   "in_affected_dsus_before": {
+    "sticks": 6777,
+    "legs": 7762,
+    "bench_no_row": {
+     "reconciled_out": 223,
+     "wca_one_member": 175,
+     "sliver": 58,
+     "no_depth": 50,
+     "wca_one_landing": 26
+    },
+    "sticks_by_bench": {
+     "AVA_0": 142,
+     "AVA_1": 253,
+     "AVA_2": 312,
+     "BS1_S": 576,
+     "BS2_C": 319,
+     "BS2_S": 423,
+     "BS3_C": 499,
+     "BS3_S": 335,
+     "DEAN": 168,
+     "JM": 275,
+     "LSSH": 403,
+     "MS": 349,
+     "WCA_1": 549,
+     "WCA_2": 181,
+     "WCB_1": 541,
+     "WCB_2": 528,
+     "WCC": 356,
+     "WCD": 523,
+     "WCXY": 45
+    }
+   },
+   "in_affected_dsus_after": {
+    "sticks": 5431,
+    "legs": 6290,
+    "bench_no_row": {
+     "carried_implausible": 613,
+     "reconciled_out": 148,
+     "wca_one_member": 109,
+     "sliver": 58,
+     "no_depth": 50,
+     "wca_one_landing": 23
+    },
+    "sticks_by_bench": {
+     "AVA_0": 119,
+     "AVA_1": 229,
+     "AVA_2": 225,
+     "BS1_S": 462,
+     "BS2_C": 228,
+     "BS2_S": 385,
+     "BS3_C": 491,
+     "BS3_S": 212,
+     "DEAN": 127,
+     "JM": 257,
+     "LSSH": 307,
+     "MS": 210,
+     "WCA_1": 464,
+     "WCA_2": 218,
+     "WCB_1": 450,
+     "WCB_2": 443,
+     "WCC": 337,
+     "WCD": 222,
+     "WCXY": 45
+    }
+   }
+  }
+ },
+ "wcxy_chain": {
+  "pilot_today": {
+   "sticks": 1537,
+   "legs": 1766,
+   "bench_no_row": {
+    "wca_one_member": 40,
+    "reconciled_out": 30,
+    "wca_one_landing": 16,
+    "sliver": 12
+   },
+   "sticks_by_bench": {
+    "AVA_0": 47,
+    "AVA_1": 94,
+    "AVA_2": 82,
+    "BS1_S": 177,
+    "BS2_C": 72,
+    "BS2_S": 58,
+    "BS3_C": 146,
+    "BS3_S": 82,
+    "DEAN": 22,
+    "JM": 74,
+    "LSSH": 60,
+    "WCA_1": 76,
+    "WCA_2": 65,
+    "WCB_1": 158,
+    "WCB_2": 178,
+    "WCC": 76,
+    "WCD": 45,
+    "WCXY": 25
+   },
+   "sticks_by_area": {
+    "delaware_nm_lea": 886,
+    "delaware_tx_ward": 380,
+    "midland_glasscock": 271
+   }
+  },
+  "backtest": {
+   "T1_pct": 59.2,
+   "T1_by_area": {
+    "delaware_nm_lea": 52.9,
+    "delaware_tx_ward": 46.9,
+    "midland_glasscock": 69.8
+   },
+   "T2_pct": 5.0,
+   "T3_within_1_pct": 63.2,
+   "T3_ratio": 0.96,
+   "T4_pct": 33.0,
+   "T5_direct": [
+    121,
+    59.0,
+    80.2
+   ],
+   "T5_carried": {
+    "bracket": [
+     24,
+     117.7,
+     1.59
+    ],
+    "offset": [
+     38,
+     98.2,
+     1.14
+    ],
+    "thickness": [
+     217,
+     63.0,
+     1.32
+    ]
+   }
+  },
+  "basin_wide": {
+   "wcxy_dsu_bench": 1299,
+   "rung_before": {
+    "direct": 854,
+    "none": 445
+   },
+   "rung_after": {
+    "direct": 854,
+    "thickness": 329,
+    "offset": 64,
+    "bracket": 30,
+    "none": 22
+   },
+   "carried_expected_median_ft": 59.0,
+   "carried_expected_p90_ft": 172.0,
+   "in_wcxy_dsus_before": {
+    "sticks": 20047,
+    "legs": 22978,
+    "bench_no_row": {
+     "wca_one_member": 695,
+     "no_depth": 505,
+     "reconciled_out": 360,
+     "sliver": 159,
+     "wca_one_landing": 72
+    },
+    "sticks_by_bench": {
+     "AVA_0": 350,
+     "AVA_1": 794,
+     "AVA_2": 713,
+     "BS1_S": 2055,
+     "BS2_C": 1197,
+     "BS2_S": 1822,
+     "BS3_C": 3017,
+     "BS3_S": 1140,
+     "WCA_1": 1113,
+     "WCA_2": 982,
+     "WCB_1": 2107,
+     "WCB_2": 2998,
+     "WCC": 1305,
+     "WCXY": 454
+    }
+   },
+   "in_wcxy_dsus_after": {
+    "sticks": 20544,
+    "legs": 23574,
+    "bench_no_row": {
+     "wca_one_member": 695,
+     "reconciled_out": 400,
+     "sliver": 159,
+     "no_depth": 108,
+     "wca_one_landing": 72
+    },
+    "sticks_by_bench": {
+     "AVA_0": 350,
+     "AVA_1": 794,
+     "AVA_2": 713,
+     "BS1_S": 2055,
+     "BS2_C": 1197,
+     "BS2_S": 1822,
+     "BS3_C": 3016,
+     "BS3_S": 1136,
+     "WCA_1": 1111,
+     "WCA_2": 974,
+     "WCB_1": 2110,
+     "WCB_2": 2999,
+     "WCC": 1304,
+     "WCXY": 963
+    }
+   }
+  }
+ },
+ "short_polygons_drilled_across": {
+  "delaware": {
+   "uturn_dsus_with_wells": 1225,
+   "with_2plus_wells_30pct_longer_than_the_dsu_row": 286,
+   "wells_in_them": 2158,
+   "long_wells_in_them": 1007,
+   "box_sticks_in_them": 1447,
+   "with_5plus": 61
+  },
+  "midland": {
+   "uturn_dsus_with_wells": 271,
+   "with_2plus_wells_30pct_longer_than_the_dsu_row": 116,
+   "wells_in_them": 856,
+   "long_wells_in_them": 658,
+   "box_sticks_in_them": 486,
+   "with_5plus": 47
+  }
+ }
+}

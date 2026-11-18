@@ -1,0 +1,49 @@
+{
+  "code_sha": "15076f3",
+  "picked": {
+    "sigma_mi": 3.0,
+    "k": 0.0,
+    "train_score_ft": 111.97765858778246
+  },
+  "targets": {
+    "train": 6180,
+    "test": 6226
+  },
+  "verdict": {
+    "delaware": {
+      "median_better_1_and_2mi": true,
+      "p90_within_slack": true,
+      "fringe_no_worse": true,
+      "pass": true
+    },
+    "midland": {
+      "median_better_1_and_2mi": true,
+      "p90_within_slack": true,
+      "fringe_no_worse": true,
+      "pass": true
+    }
+  },
+  "relaxed_variant": {
+    "sigma_mi": 3.0,
+    "k": 2.0,
+    "train_score_ft": 116.34720649998923,
+    "verdict": {
+      "delaware": {
+        "median_better_1_and_2mi": true,
+        "p90_within_slack": true,
+        "fringe_no_worse": true,
+        "pass": true
+      },
+      "midland": {
+        "median_better_1_and_2mi": true,
+        "p90_within_slack": true,
+        "fringe_no_worse": true,
+        "pass": true
+      }
+    }
+  },
+  "figures": [
+    "surface_map_delaware_BS1_S.png",
+    "surface_map_midland_DEAN.png"
+  ]
+}

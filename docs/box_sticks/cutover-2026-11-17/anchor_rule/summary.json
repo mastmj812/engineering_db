@@ -1,0 +1,132 @@
+{
+  "code_sha": "dd370ad",
+  "tags": "live",
+  "exclude_mi": 1.0,
+  "evidence_wells": 55400,
+  "pools": {
+    "chain_pool": {
+      "by_basin": [
+        {
+          "basin": "delaware",
+          "wells": 21996.0,
+          "rank_new_median_ft": 52.79,
+          "rank_new_p90_ft": 163.4,
+          "rank_new_over_150_pct": 12.17,
+          "rank_old_median_ft": 52.7,
+          "rank_old_p90_ft": 162.62,
+          "rank_old_over_150_pct": 12.08,
+          "spread_median_ft": 51.5,
+          "spread_p90_ft": 160.19,
+          "spread_over_150_pct": 11.62,
+          "median_median_ft": 50.02,
+          "median_p90_ft": 148.5,
+          "median_over_150_pct": 9.78,
+          "adjacent_median_ft": 57.0,
+          "adjacent_p90_ft": 176.0,
+          "adjacent_over_150_pct": 14.17,
+          "oracle_median_ft": 28.01,
+          "oracle_p90_ft": 109.38,
+          "oracle_over_150_pct": 4.88
+        },
+        {
+          "basin": "midland",
+          "wells": 23789.0,
+          "rank_new_median_ft": 40.08,
+          "rank_new_p90_ft": 117.08,
+          "rank_new_over_150_pct": 4.99,
+          "rank_old_median_ft": 39.79,
+          "rank_old_p90_ft": 115.53,
+          "rank_old_over_150_pct": 4.81,
+          "spread_median_ft": 39.9,
+          "spread_p90_ft": 117.19,
+          "spread_over_150_pct": 5.01,
+          "median_median_ft": 37.92,
+          "median_p90_ft": 108.55,
+          "median_over_150_pct": 3.79,
+          "adjacent_median_ft": 42.0,
+          "adjacent_p90_ft": 121.63,
+          "adjacent_over_150_pct": 5.52,
+          "oracle_median_ft": 18.98,
+          "oracle_p90_ft": 82.4,
+          "oracle_over_150_pct": 2.08
+        }
+      ],
+      "rank_order": {
+        "delaware": {
+          "wells": 21996,
+          "rank_order_changed_anchor_pct": 2.3,
+          "rank_moved_ft_median_when_changed": 51.2,
+          "one_anchor_only_pct": 20.7
+        },
+        "midland": {
+          "wells": 23789,
+          "rank_order_changed_anchor_pct": 20.2,
+          "rank_moved_ft_median_when_changed": 30.0,
+          "one_anchor_only_pct": 9.0
+        }
+      }
+    },
+    "all_anchors": {
+      "by_basin": [
+        {
+          "basin": "delaware",
+          "wells": 21996.0,
+          "rank_new_median_ft": 52.79,
+          "rank_new_p90_ft": 163.4,
+          "rank_new_over_150_pct": 12.17,
+          "rank_old_median_ft": 52.7,
+          "rank_old_p90_ft": 162.62,
+          "rank_old_over_150_pct": 12.08,
+          "spread_median_ft": 51.69,
+          "spread_p90_ft": 163.93,
+          "spread_over_150_pct": 12.08,
+          "median_median_ft": 49.29,
+          "median_p90_ft": 148.0,
+          "median_over_150_pct": 9.69,
+          "adjacent_median_ft": 57.19,
+          "adjacent_p90_ft": 178.5,
+          "adjacent_over_150_pct": 14.51,
+          "oracle_median_ft": 23.73,
+          "oracle_p90_ft": 102.0,
+          "oracle_over_150_pct": 4.22
+        },
+        {
+          "basin": "midland",
+          "wells": 23789.0,
+          "rank_new_median_ft": 40.08,
+          "rank_new_p90_ft": 117.08,
+          "rank_new_over_150_pct": 4.99,
+          "rank_old_median_ft": 39.79,
+          "rank_old_p90_ft": 115.53,
+          "rank_old_over_150_pct": 4.81,
+          "spread_median_ft": 40.11,
+          "spread_p90_ft": 118.0,
+          "spread_over_150_pct": 5.19,
+          "median_median_ft": 37.91,
+          "median_p90_ft": 108.0,
+          "median_over_150_pct": 3.71,
+          "adjacent_median_ft": 42.0,
+          "adjacent_p90_ft": 121.77,
+          "adjacent_over_150_pct": 5.54,
+          "oracle_median_ft": 17.83,
+          "oracle_p90_ft": 79.13,
+          "oracle_over_150_pct": 1.81
+        }
+      ],
+      "rank_order": {
+        "delaware": {
+          "wells": 21996,
+          "rank_order_changed_anchor_pct": 2.3,
+          "rank_moved_ft_median_when_changed": 51.2,
+          "one_anchor_only_pct": 15.6
+        },
+        "midland": {
+          "wells": 23789,
+          "rank_order_changed_anchor_pct": 20.2,
+          "rank_moved_ft_median_when_changed": 30.0,
+          "one_anchor_only_pct": 7.4
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,297 @@
+{
+  "generated": "2026-11-17T22:22:38+00:00",
+  "code_sha": "15076f3",
+  "tags": "live",
+  "params": {
+    "parallel_tol_deg": 15.0,
+    "overlap_min_frac": 0.3,
+    "same_slot_ft": 300.0,
+    "search_ft": 3000.0,
+    "min_gaps": 6,
+    "radii_mi": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "density_basis": "per bench",
+    "codev_days": 365,
+    "unbounded_ft": 2800.0,
+    "stagger_ft": 75.0,
+    "cap_shown_ft": 440.0
+  },
+  "universe_wells": 60894,
+  "geometry_check": {
+    "median_line_len_over_lateral_length": 1.0818678487124909
+  },
+  "method_reproduction": [
+    {
+      "basin": "delaware",
+      "code": "BS1_S",
+      "wells": 1209,
+      "with_gap_original": 1036,
+      "with_gap_here": 1037,
+      "agree_pct": 99.83457402812242,
+      "max_abs_diff_ft": 7.133165461451881,
+      "median_diff_ft": -2.089248201783448,
+      "pass": true
+    },
+    {
+      "basin": "midland",
+      "code": "DEAN",
+      "wells": 1001,
+      "with_gap_original": 896,
+      "with_gap_here": 896,
+      "agree_pct": 99.6003996003996,
+      "max_abs_diff_ft": 82.04164830093123,
+      "median_diff_ft": -1.86612827108263,
+      "pass": true
+    }
+  ],
+  "crosscheck": {
+    "all": {
+      "wells": 37860,
+      "median_diff_ft": -7.382248288768949,
+      "agree_pct": 69.39513998943477,
+      "pass_median": true,
+      "pass_agree": false
+    },
+    "delaware": {
+      "wells": 16627,
+      "median_diff_ft": -7.826090531933687,
+      "agree_pct": 65.09893546641005,
+      "pass_median": true,
+      "pass_agree": false
+    },
+    "midland": {
+      "wells": 21233,
+      "median_diff_ft": -7.179566660818523,
+      "agree_pct": 72.75938397777045,
+      "pass_median": true,
+      "pass_agree": true
+    },
+    "unbounded_class": [
+      {
+        "basin": "delaware",
+        "novi_class": "bounded",
+        "bounded": 16627,
+        "unbounded": 3087
+      },
+      {
+        "basin": "delaware",
+        "novi_class": "null",
+        "bounded": 653,
+        "unbounded": 122
+      },
+      {
+        "basin": "delaware",
+        "novi_class": "sentinel_2800",
+        "bounded": 533,
+        "unbounded": 1653
+      },
+      {
+        "basin": "midland",
+        "novi_class": "bounded",
+        "bounded": 21233,
+        "unbounded": 1615
+      },
+      {
+        "basin": "midland",
+        "novi_class": "null",
+        "bounded": 208,
+        "unbounded": 22
+      },
+      {
+        "basin": "midland",
+        "novi_class": "sentinel_2800",
+        "bounded": 263,
+        "unbounded": 950
+      }
+    ]
+  },
+  "crosscheck_per_landing": {
+    "all": {
+      "wells": 35845,
+      "median_diff_ft": 0.8541839395493298,
+      "agree_pct": 80.27060956897755,
+      "pass_median": true,
+      "pass_agree": true
+    },
+    "delaware": {
+      "wells": 15414,
+      "median_diff_ft": 1.433722163057496,
+      "agree_pct": 75.502789671727,
+      "pass_median": true,
+      "pass_agree": true
+    },
+    "midland": {
+      "wells": 20431,
+      "median_diff_ft": 0.4702126739631467,
+      "agree_pct": 83.86765209730311,
+      "pass_median": true,
+      "pass_agree": true
+    },
+    "unbounded_class": [
+      {
+        "basin": "delaware",
+        "novi_class": "bounded",
+        "bounded": 15414,
+        "unbounded": 4300
+      },
+      {
+        "basin": "delaware",
+        "novi_class": "null",
+        "bounded": 580,
+        "unbounded": 195
+      },
+      {
+        "basin": "delaware",
+        "novi_class": "sentinel_2800",
+        "bounded": 220,
+        "unbounded": 1966
+      },
+      {
+        "basin": "midland",
+        "novi_class": "bounded",
+        "bounded": 20431,
+        "unbounded": 2417
+      },
+      {
+        "basin": "midland",
+        "novi_class": "null",
+        "bounded": 199,
+        "unbounded": 31
+      },
+      {
+        "basin": "midland",
+        "novi_class": "sentinel_2800",
+        "bounded": 99,
+        "unbounded": 1114
+      }
+    ]
+  },
+  "basins": {
+    "delaware": {
+      "wells_2016plus_in_population": 22675,
+      "wells_measured": 14000,
+      "pairs": 9021,
+      "status": {
+        "measured": 14000,
+        "nearest_neighbour_other_campaign": 3496,
+        "no_neighbour_within_2800ft": 2791,
+        "nearest_neighbour_not_evidence": 1659,
+        "nearest_neighbour_pre_2016": 729
+      },
+      "median_ft": 997.9792739531481,
+      "p10_wide_ft": 1604.4929269877257,
+      "p90_tight_ft": 539.6812309618072,
+      "gap_quantiles_ft": {
+        "0.01": 330.38888588920105,
+        "0.02": 365.2534804013639,
+        "0.05": 442.01386979281847,
+        "0.1": 539.6812309618072,
+        "0.25": 734.218158116466,
+        "0.5": 997.9792739531481,
+        "0.75": 1310.3461649255376,
+        "0.9": 1604.4929269877257,
+        "0.95": 1880.2564034929449
+      },
+      "under_660_pct": 19.585714285714285,
+      "under_500_pct": 8.014285714285714,
+      "under_440_pct": 4.928571428571429,
+      "two_landings_pct": 23.585714285714285,
+      "under_660_two_landings_pct": 44.01896425966448,
+      "landing_wells_measured": 12902,
+      "landing_median_ft": 1127.9822962152061,
+      "near_1320_pct": 15.371428571428572,
+      "near_1540_pct": 4.3999999999999995,
+      "between_1386_1463_pct": 2.857142857142857,
+      "over_1617_pct": 9.742857142857144,
+      "dsu_bench": 29719,
+      "dsu_bench_local_pct": 62.027659073320095,
+      "local_median_quantiles_ft": {
+        "0.01": 483.711866209502,
+        "0.02": 540.9011688283006,
+        "0.05": 635.3537973741079,
+        "0.1": 697.3639551796009,
+        "0.25": 855.0039043373749,
+        "0.5": 1044.6941344431857,
+        "0.75": 1286.8882225936356,
+        "0.9": 1385.4518394905847,
+        "0.95": 1531.816220248639
+      },
+      "local_under_660_pct": 7.751980036888359,
+      "local_under_600_pct": 3.2819789519366385,
+      "local_under_500_pct": 1.2314202018010199,
+      "local_under_440_pct": 0.5967234458066616,
+      "local_over_1320_pct": 15.986763589020288,
+      "local_1254_1386_pct": 20.245199088640558,
+      "local_1463_1617_pct": 3.732233915590756,
+      "local_over_1617_pct": 3.3796246067050015,
+      "mixed_pct_of_local": 76.52164478680699
+    },
+    "midland": {
+      "wells_2016plus_in_population": 24291,
+      "wells_measured": 18744,
+      "pairs": 12042,
+      "status": {
+        "measured": 18744,
+        "nearest_neighbour_other_campaign": 3335,
+        "no_neighbour_within_2800ft": 1307,
+        "nearest_neighbour_pre_2016": 495,
+        "nearest_neighbour_not_evidence": 410
+      },
+      "median_ft": 830.5668657792617,
+      "p10_wide_ft": 1317.8361769013543,
+      "p90_tight_ft": 500.9171819356672,
+      "gap_quantiles_ft": {
+        "0.01": 319.33532711356656,
+        "0.02": 340.80770741132693,
+        "0.05": 413.1007721442751,
+        "0.1": 500.9171819356672,
+        "0.25": 651.4681396984429,
+        "0.5": 830.5668657792617,
+        "0.75": 1019.9300189459573,
+        "0.9": 1317.8361769013543,
+        "0.95": 1517.8492638976466
+      },
+      "under_660_pct": 27.08600085360649,
+      "under_500_pct": 9.960520699957321,
+      "under_440_pct": 6.434058898847632,
+      "two_landings_pct": 15.749039692701663,
+      "under_660_two_landings_pct": 36.97065195981879,
+      "landing_wells_measured": 18380,
+      "landing_median_ft": 863.1741885739264,
+      "near_1320_pct": 7.5277422108408025,
+      "near_1540_pct": 2.315407597097738,
+      "between_1386_1463_pct": 1.2377294067434912,
+      "over_1617_pct": 3.803883909517712,
+      "dsu_bench": 19835,
+      "dsu_bench_local_pct": 73.05772624149232,
+      "local_median_quantiles_ft": {
+        "0.01": 418.64986656125797,
+        "0.02": 459.44677139592653,
+        "0.05": 566.9500934504247,
+        "0.1": 641.4015784236774,
+        "0.25": 770.7462787738393,
+        "0.5": 875.9118562488954,
+        "0.75": 1118.3133805188145,
+        "0.9": 1308.959178524838,
+        "0.95": 1464.0074453066454
+      },
+      "local_under_660_pct": 14.333034297149954,
+      "local_under_600_pct": 6.0313297909046995,
+      "local_under_500_pct": 2.9466565454419986,
+      "local_under_440_pct": 1.4215720102132356,
+      "local_over_1320_pct": 8.736457111310468,
+      "local_1254_1386_pct": 9.502449796425367,
+      "local_1463_1617_pct": 2.905251535435788,
+      "local_over_1617_pct": 2.1392588503208887,
+      "mixed_pct_of_local": 72.44496584086674
+    }
+  },
+  "figures": [
+    "spacing_map_delaware_BS1_S.png",
+    "spacing_map_midland_DEAN.png",
+    "gap_histograms.png"
+  ]
+}

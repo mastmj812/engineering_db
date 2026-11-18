@@ -1,0 +1,277 @@
+{
+ "summaries": {
+  "delaware": {
+   "generator_version": "box_sticks_0.9_pilot",
+   "tags": "live",
+   "pulled": "2026-11-14",
+   "basin": "delaware",
+   "dsus_run": 5072,
+   "dsus_with_no_bench": 3184,
+   "errors": 0,
+   "sticks": 46499,
+   "legs": 54764,
+   "completed_lateral_ft": 446392783.0,
+   "well_type_dsu": {
+    "single": 3073,
+    "uturn": 1491,
+    "NaN": 508
+   },
+   "azimuth_basis": {
+    "wells_in_dsu+side": 3378,
+    "long_axis": 907,
+    "cell": 428,
+    "wells_in_dsu": 304,
+    "county": 50,
+    "long_axis+square_unresolved": 5
+   },
+   "row_reasons": {
+    "envelope_stacked": 8123,
+    "envelope_same_landing": 23138,
+    "uturn_unpaired": 2053,
+    "short_lateral": 256,
+    "setback_clip": 1827,
+    "setback_fit": 372,
+    "no_depth_neighbour": 222
+   },
+   "bench_reasons": {
+    "wca_one_member": 2621,
+    "wca_one_landing": 245,
+    "sliver": 713,
+    "no_depth": 1433,
+    "reconciled_out": 598
+   },
+   "grid": {
+    "pinned": 10288,
+    "offset": 9376,
+    "map_spacing": 2853,
+    "staggered": 935,
+    "row_dropped": 332,
+    "tightened": 258,
+    "no_clear_band": 67
+   },
+   "violations": {
+    "I1": 0,
+    "I2": 0,
+    "I3": 0,
+    "I4": 0,
+    "I5": 0,
+    "I6": 0,
+    "I7": 0,
+    "I8": 0
+   },
+   "violation_examples": {},
+   "seconds": 605
+  },
+  "midland": {
+   "generator_version": "box_sticks_0.9_pilot",
+   "tags": "live",
+   "pulled": "2026-11-14",
+   "basin": "midland",
+   "dsus_run": 4385,
+   "dsus_with_no_bench": 3944,
+   "errors": 0,
+   "sticks": 34045,
+   "legs": 37688,
+   "completed_lateral_ft": 350370066.4,
+   "well_type_dsu": {
+    "single": 3140,
+    "NaN": 651,
+    "uturn": 594
+   },
+   "azimuth_basis": {
+    "wells_in_dsu+side": 2957,
+    "long_axis": 828,
+    "cell": 384,
+    "wells_in_dsu": 116,
+    "county": 100
+   },
+   "row_reasons": {
+    "envelope_same_landing": 22943,
+    "envelope_stacked": 12208,
+    "setback_clip": 1312,
+    "setback_fit": 153,
+    "uturn_unpaired": 466,
+    "short_lateral": 77,
+    "no_depth_neighbour": 7
+   },
+   "bench_reasons": {
+    "reconciled_out": 216,
+    "no_depth": 1137,
+    "sliver": 494
+   },
+   "grid": {
+    "pinned": 8587,
+    "offset": 5997,
+    "map_spacing": 2062,
+    "staggered": 964,
+    "tightened": 182,
+    "row_dropped": 125,
+    "no_clear_band": 71
+   },
+   "violations": {
+    "I1": 0,
+    "I2": 0,
+    "I3": 0,
+    "I4": 0,
+    "I5": 0,
+    "I6": 0,
+    "I7": 0,
+    "I8": 0
+   },
+   "violation_examples": {},
+   "seconds": 521
+  }
+ },
+ "novi_coverage": {
+  "delaware": {
+   "remaining_novi_sticks": 166636,
+   "midpoint_inside_a_polygon": 166449,
+   "midpoint_outside_every_polygon": 187,
+   "under_30pct_in_any_dsu": 31,
+   "of_those_midpoint_outside": 19,
+   "no_dsu_by_category": {
+    "PUD": 29,
+    "RES": 2
+   },
+   "no_dsu_top_counties": {
+    "Pecos": 11,
+    "Jeff Davis": 7,
+    "Ward": 6,
+    "Brewster": 4,
+    "Reeves": 3
+   },
+   "no_dsu_by_bench": {
+    "WDFD": 31
+   },
+   "no_dsu_footage": 249880.0,
+   "in_a_dsu": 166605,
+   "in_a_dsu_that_ran": 141871,
+   "in_a_dsu_on_a_bench_with_box_extent": 55627,
+   "in_a_dsu_on_a_bench_with_no_box_extent": 110978,
+   "no_box_extent_by_bench": {
+    "WDFD": 15845,
+    "WCC": 14311,
+    "WCXY": 12829,
+    "BS2_C": 10212,
+    "BS2_S": 9615,
+    "AVA_2": 7699,
+    "BS3_C": 7182,
+    "WCB_1": 5263,
+    "AVA_1": 5050,
+    "BS3_S": 4988
+   },
+   "polygons": 8256,
+   "polygons_with_a_box_bench": 5072,
+   "polygon_area_acres": 8813130.38480674
+  },
+  "midland": {
+   "remaining_novi_sticks": 85811,
+   "midpoint_inside_a_polygon": 50540,
+   "midpoint_outside_every_polygon": 35271,
+   "under_30pct_in_any_dsu": 5,
+   "of_those_midpoint_outside": 1,
+   "no_dsu_by_category": {
+    "RES": 4,
+    "PUD": 1
+   },
+   "no_dsu_top_counties": {
+    "Glasscock": 3,
+    "Andrews": 1,
+    "Crockett": 1
+   },
+   "no_dsu_by_bench": {
+    "BRNT": 5
+   },
+   "no_dsu_footage": 34320.0,
+   "in_a_dsu": 85806,
+   "in_a_dsu_that_ran": 74906,
+   "in_a_dsu_on_a_bench_with_box_extent": 35777,
+   "in_a_dsu_on_a_bench_with_no_box_extent": 50029,
+   "no_box_extent_by_bench": {
+    "BRNT": 11041,
+    "WCC": 7661,
+    "WCA_1": 6538,
+    "WCD": 4648,
+    "MS": 3958,
+    "LSSH": 3882,
+    "US": 3756,
+    "JM": 3493,
+    "WCB_1": 3393,
+    "WCB_2": 1227
+   },
+   "polygons": 8329,
+   "polygons_with_a_box_bench": 4385,
+   "polygon_area_acres": 10232455.371302998
+  }
+ },
+ "pads_total": {
+  "delaware": 8256,
+  "midland": 8329
+ },
+ "bench_no_row_reasons": {
+  "delaware": {
+   "no_depth": 1433,
+   "reconciled_out": 598,
+   "sliver": 713,
+   "wca_one_landing": 245,
+   "wca_one_member": 2621
+  },
+  "midland": {
+   "no_depth": 1137,
+   "reconciled_out": 216,
+   "sliver": 494,
+   "wca_one_landing": 0,
+   "wca_one_member": 0
+  }
+ },
+ "rung_of_dsu_bench_with_sticks": {
+  "delaware": {
+   "bracket": 916,
+   "direct": 7996,
+   "offset": 2570,
+   "thickness": 7223
+  },
+  "midland": {
+   "bracket": 554,
+   "direct": 6291,
+   "offset": 1826,
+   "thickness": 4054
+  }
+ },
+ "dsu_box_minus_novi": {
+  "delaware": {
+   "dsus": 5072,
+   "box_more": 1730,
+   "equal": 628,
+   "novi_more": 2714,
+   "box_zero_novi_some": 420,
+   "novi_zero_box_some": 173,
+   "quartiles": [
+    -9.0,
+    -5.0,
+    -1.0,
+    2.0,
+    5.0
+   ]
+  },
+  "midland": {
+   "dsus": 4385,
+   "box_more": 1762,
+   "equal": 838,
+   "novi_more": 1785,
+   "box_zero_novi_some": 380,
+   "novi_zero_box_some": 368,
+   "quartiles": [
+    -8.0,
+    -3.0,
+    0.0,
+    2.0,
+    6.0
+   ]
+  }
+ },
+ "two_landing_dsu_bench": {
+  "delaware": 251,
+  "midland": 261
+ }
+}

@@ -6,7 +6,10 @@ The chain adopted 2026-11-12 (docs/box_sticks_plan.md), evaluated at each DSU po
 BOX extent the polygon intersects:
   1 direct     the bench's own evidence wells (>= 3 within 2 mi, nearest within 1 mi);
   2 thickness  own wells within 5 mi (>= 3, on more than one side) on a neighbour's DIRECT surface; neighbours in the
-               order of their held-out error (phase 1 holdout_thickness.csv);
+               order of their held-out error (phase 1 holdout_thickness.csv). That order flipped for Midland WCD on a
+               0.03 ft margin after the tag cutover; THICK_RULE = "median" (the median of every eligible neighbour's
+               estimate, scored in scripts.box_sticks_anchor_rule 2026-11-18) is built and NOT adopted: the hold-out
+               favours it, the back-test did not confirm it (cutover-2026-11-17/FINDINGS.md);
   3 bracket    between a bench above and a bench below, both DIRECT at the centroid; fraction from the 30 nearest
                same-bench wells (regional median when fewer than 5), clamped to the window; pairs in the order of
                their held-out error at 5 mi (phase 1b holdout_far.csv);
@@ -15,6 +18,9 @@ BOX extent the polygon intersects:
 Delaware WCXY takes rung 1 only until it has its own extent; WCA_1 / WCA_2 take the full chain. A carried depth never rests on another
 carried depth, so every bench is computed independently; the STACK is then checked per DSU: adjacent benches out of
 stratigraphic order or closer than MIN_SEP_FT, by which rungs the two depths came from.
+
+Every thickness-rung depth also reports whether its thickness sample sits at TWO LEVELS (``levels``; measured
+2026-11-18 in scripts.box_sticks_second_landing, adopted as a flag only): ``second_tvd_ft`` / ``second_share``.
 
 Run twice: all evidence wells, and with the two-part screen (two_part_screen: depths that fit no bench are dropped;
 wells sitting on another bench's surface are removed from their tagged bench's evidence). Live tags. Nothing is written to the
@@ -45,10 +51,18 @@ SCREEN_FT = 300.0
 SCREEN_MIN_N = 5
 MISTAG_MIN_FT = 150.0
 DIRECT_ONLY = set(ls.WCA_FAM)                # the Delaware WCA family, for the stack tables
-CHAIN_DIRECT_ONLY = {("delaware", "WCXY")}   # Michael 2026-11-12: WCA_1 / WCA_2 take the full chain; WCXY waits on its extent
+CHAIN_DIRECT_ONLY: set[tuple[str, str]] = set()   # Michael 2026-11-16: WCXY takes the full chain too (it has its extent); was {("delaware", "WCXY")}
 DOCS = Path(__file__).resolve().parent.parent / "docs" / "box_sticks"
-THICK_RANK = DOCS / "phase1-2026-11-12" / "holdout_thickness.csv"
-FAR_RANK = DOCS / "phase1b-2026-11-12" / "holdout_far.csv"
+# Re-measured on the post-cutover tags (pulled 2026-11-17); the 2026-11-12 files are the pre-cutover record.
+THICK_RANK = DOCS / "cutover-2026-11-17" / "phase1" / "holdout_thickness.csv"
+FAR_RANK = DOCS / "cutover-2026-11-17" / "phase1b" / "holdout_far.csv"
+# Two levels in a thickness sample (Michael 2026-11-18): a second peak >= SECOND_SEP_FT from the main one, holding >= SECOND_SHARE
+# of the weight and >= LEVEL_MIN_N wells, the dip between them <= VALLEY x the smaller peak. A flag; the depth does not move.
+BW_FT, GRID_FT, LEVEL_MIN_N, VALLEY = 30.0, 5.0, 3, 0.7
+SEPS = (100.0, 150.0, 200.0)
+SECOND_SEP_FT, SECOND_SHARE = 150.0, 0.25
+THICK_RULE = "rank"                          # "rank" (first in THICK_RANK order, the rule of record) or "median" of every eligible anchor's estimate
+THICK_EXPECTED = DOCS / "cutover-2026-11-17" / "anchor_rule" / "by_bench_chain_pool.csv"   # held-out error of the median rule, per bench
 
 
 def loo_residual(w: pd.DataFrame) -> pd.Series:
@@ -105,6 +119,36 @@ def two_part_screen(w: pd.DataFrame, extents: pd.DataFrame) -> pd.DataFrame:
     return w
 
 
+def levels(rel: np.ndarray, wt: np.ndarray) -> dict:
+    """Peaks of a weighted thickness sample smoothed with a BW_FT Gaussian. Per SEPS threshold: the weight share of the
+    strongest qualifying second peak (each well to its nearest peak) and its offset from the MAIN peak (ft, + = deeper);
+    0 / NaN when none qualifies. ``main`` is the main peak's position in the sample's own units."""
+    out = {f"share_{int(s)}": 0.0 for s in SEPS} | {f"off_{int(s)}": np.nan for s in SEPS} | {"peaks": 0, "main": np.nan}
+    if len(rel) < 2 * LEVEL_MIN_N:
+        return out
+    g = np.arange(rel.min() - 3 * BW_FT, rel.max() + 3 * BW_FT + GRID_FT, GRID_FT)
+    dens = (wt[None, :] * np.exp(-0.5 * ((g[:, None] - rel[None, :]) / BW_FT) ** 2)).sum(axis=1)
+    pk = np.where((dens[1:-1] > dens[:-2]) & (dens[1:-1] >= dens[2:]))[0] + 1
+    out["peaks"] = len(pk)
+    if not len(pk):
+        return out
+    main = pk[np.argmax(dens[pk])]
+    out["main"] = float(g[main])
+    own = pk[np.argmin(np.abs(rel[:, None] - g[pk][None, :]), axis=1)]
+    total = wt.sum()
+    for j in pk:
+        if j == main:
+            continue
+        lo, hi = sorted((j, main))
+        if dens[lo:hi + 1].min() > VALLEY * dens[j] or (own == j).sum() < LEVEL_MIN_N:
+            continue
+        share, off = float(wt[own == j].sum() / total), float(g[j] - g[main])
+        for s in SEPS:
+            if abs(off) >= s and share > out[f"share_{int(s)}"]:
+                out[f"share_{int(s)}"], out[f"off_{int(s)}"] = share, off
+    return out
+
+
 def rankings() -> tuple[dict, dict]:
     t = pd.read_csv(THICK_RANK)
     t = t[(t["exclude_mi"] == 1.0) & (t["predicted_pct"] >= 25)].sort_values("median_ft")
@@ -117,11 +161,22 @@ def rankings() -> tuple[dict, dict]:
     return thick, far
 
 
+def thick_expected(rule: str | None = None) -> dict[tuple[str, str], tuple[float, float]]:
+    """(median, P90) held-out error of the median-of-anchors thickness rule per (basin, code); empty under the rank rule."""
+    if (rule or THICK_RULE) != "median":
+        return {}
+    t = pd.read_csv(THICK_EXPECTED)
+    return {(r.basin, r.code): (float(r.median_median_ft), float(r.median_p90_ft)) for r in t.itertuples()}
+
+
 def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.ndarray, Fc: dict[str, np.ndarray], Fp: dict[str, np.ndarray],
-                   thick_rank: list, far_rank: list) -> pd.DataFrame:
+                   thick_rank: list, far_rank: list, thick_exp: tuple[float, float] | None = None) -> pd.DataFrame:
+    """``thick_exp`` given: the thickness rung is the median over every anchor in ``thick_rank`` that qualifies, with that
+    expected error. None: the first anchor that qualifies, with its own held-out error."""
     n = len(pts)
     z, rung, how = np.full(n, np.nan), np.full(n, "none", dtype=object), np.full(n, None, dtype=object)
     exp_med, exp_p90 = np.full(n, np.nan), np.full(n, np.nan)
+    second, second_share = np.full(n, np.nan), np.full(n, np.nan)
     near = np.full(n, np.inf)
     if len(cz) >= P.n_min:
         tree = cKDTree(cxy)
@@ -135,6 +190,7 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
             balls = tree.query_ball_point(pts[todo], P.thick_max_mi * MI) if len(todo) else []
             for i, ks in zip(todo, balls, strict=True):
                 ks = np.asarray(ks, int)
+                got = []
                 for a, med, p90 in thick_rank:
                     if a not in Fp or not np.isfinite(Fp[a][i]):
                         continue
@@ -142,9 +198,22 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
                     if len(kk) < P.n_min or ls.max_angular_gap_deg(cxy[kk], pts[i]) >= 180.0:
                         continue
                     d = np.hypot(cxy[kk, 0] - pts[i, 0], cxy[kk, 1] - pts[i, 1]) / MI
-                    t = ls.weighted_median(cz[kk] - Fc[a][kk], np.exp(-0.5 * (d / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9)
-                    z[i], rung[i], how[i], exp_med[i], exp_p90[i] = Fp[a][i] + t, "thickness", a, med, p90
-                    break
+                    rel, wt = cz[kk] - Fc[a][kk], np.exp(-0.5 * (d / (2 * P.wmed_sigma_mi)) ** 2) + 1e-9
+                    t = ls.weighted_median(rel, wt)
+                    if not got:                                                  # two levels in the first anchor's sample
+                        lv = levels(rel, wt)
+                        if lv[f"share_{int(SECOND_SEP_FT)}"] >= SECOND_SHARE:
+                            second[i] = Fp[a][i] + lv["main"] + lv[f"off_{int(SECOND_SEP_FT)}"]
+                            second_share[i] = lv[f"share_{int(SECOND_SEP_FT)}"]
+                    got.append((a, Fp[a][i] + t, med, p90))
+                    if thick_exp is None:
+                        break
+                if got and thick_exp is None:
+                    how[i], z[i], exp_med[i], exp_p90[i] = got[0]
+                    rung[i] = "thickness"
+                elif got:
+                    z[i], rung[i], how[i] = float(np.median([g[1] for g in got])), "thickness", "+".join(g[0] for g in got)
+                    exp_med[i], exp_p90[i] = thick_exp
             # 3 bracket, then 4 offset
             rels, regional = {}, {}
             for kind, a, b, _, _ in far_rank:
@@ -179,11 +248,13 @@ def chain_for_code(direct_only: bool, pts: np.ndarray, cxy: np.ndarray, cz: np.n
                         z[i], rung[i], exp_med[i], exp_p90[i] = Fp[a][i] + f * span_i, kind, med, p90
                         how[i] = a if kind == "offset" else f"{a}/{b}"
                         break
-    return pd.DataFrame({"z": z, "rung": rung, "how": how, "expected_median_ft": exp_med, "expected_p90_ft": exp_p90, "near_mi": near})
+    return pd.DataFrame({"z": z, "rung": rung, "how": how, "expected_median_ft": exp_med, "expected_p90_ft": exp_p90, "near_mi": near,
+                         "second_tvd_ft": second, "second_share": second_share})
 
 
 def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, order: dict, thick: dict, far: dict) -> pd.DataFrame:
     parts = []
+    exp = thick_expected()
     for basin in sorted(extents["basin"].unique()):
         bw = w[w["basin"] == basin].reset_index(drop=True)
         sets = p1.anchor_sets(extents, basin)
@@ -199,7 +270,7 @@ def build_chain(w: pd.DataFrame, extents: pd.DataFrame, pads: pd.DataFrame, orde
                 cm = (bw["live"] == code).to_numpy()
                 r = chain_for_code((basin, code) in CHAIN_DIRECT_ONLY, ppts[hit], bw.loc[cm, ["x", "y"]].to_numpy(float), bw.loc[cm, "depth_ft"].to_numpy(float),
                                    {n: f[cm] for n, f in Fw.items()}, {n: f[hit] for n, f in Fp_all.items()},
-                                   thick.get((basin, code), []), far.get((basin, code), []))
+                                   thick.get((basin, code), []), far.get((basin, code), []), exp.get((basin, code)))
                 r.insert(0, "pad_id", pb["pad_id"].to_numpy()[hit])
                 r.insert(0, "code", code)
                 r.insert(0, "basin", basin)

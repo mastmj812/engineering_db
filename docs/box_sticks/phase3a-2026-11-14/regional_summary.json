@@ -1,0 +1,126 @@
+{
+ "tags": "live",
+ "pulled": "2026-11-14",
+ "wca": {
+  "dsus": 4087,
+  "by_class": {
+   "one member": 2520,
+   "co-developed": 1235,
+   "no control": 332
+  },
+  "by_class_state": {
+   "NM": {
+    "co-developed": 440,
+    "no control": 274,
+    "one member": 751
+   },
+   "TX": {
+    "co-developed": 795,
+    "no control": 58,
+    "one member": 1769
+   }
+  },
+  "gap_by_class": {
+   "co-developed": {
+    "count": 1233.0,
+    "25%": 89.0,
+    "50%": 135.0,
+    "75%": 178.0
+   },
+   "no control": {
+    "count": 312.0,
+    "25%": 53.0,
+    "50%": 129.0,
+    "75%": 178.0
+   },
+   "one member": {
+    "count": 2335.0,
+    "25%": 53.0,
+    "50%": 101.0,
+    "75%": 151.0
+   }
+  },
+  "sensitivity": {
+   "each>=4,both_dsus>=2,share>=0.25": {
+    "one member": 2587,
+    "co-developed": 1369,
+    "no control": 131
+   },
+   "each>=8,both_dsus>=3,share>=0.25": {
+    "one member": 2520,
+    "co-developed": 1235,
+    "no control": 332
+   },
+   "each>=8,both_dsus>=3,share>=0.5": {
+    "one member": 3423,
+    "no control": 332,
+    "co-developed": 332
+   },
+   "each>=15,both_dsus>=5,share>=0.25": {
+    "one member": 2638,
+    "co-developed": 787,
+    "no control": 662
+   },
+   "each>=15,both_dsus>=5,share>=0.5": {
+    "one member": 3129,
+    "no control": 662,
+    "co-developed": 296
+   }
+  }
+ },
+ "azimuth": {
+  "wells": 54334,
+  "basin": {
+   "delaware": {
+    "wells": 26101.0,
+    "dominant_az_deg": 2.8,
+    "R": 0.67,
+    "within_15_pct": 72.9,
+    "ns_pct": 79.5,
+    "ew_pct": 10.9
+   },
+   "midland": {
+    "wells": 28233.0,
+    "dominant_az_deg": 167.9,
+    "R": 0.97,
+    "within_15_pct": 95.4,
+    "ns_pct": 98.4,
+    "ew_pct": 0.2
+   }
+  },
+  "square_dsus": {
+   "delaware": {
+    "total": 2131,
+    "no_wells": 1353,
+    "one_two": 320
+   },
+   "midland": {
+    "total": 1442,
+    "no_wells": 1255,
+    "one_two": 101
+   }
+  },
+  "score": [
+   {
+    "basin": "delaware",
+    "dsus": 410.0,
+    "county_pct": 82.4,
+    "cell_pct": 91.0,
+    "north_south_pct": 82.4,
+    "long_axis_pct": 82.4
+   },
+   {
+    "basin": "midland",
+    "dsus": 78.0,
+    "county_pct": 98.7,
+    "cell_pct": 98.7,
+    "north_south_pct": 98.7,
+    "long_axis_pct": 43.6
+   }
+  ],
+  "no_well_square_margin_under_20": {
+   "delaware": 41,
+   "midland": 0
+  }
+ }
+}

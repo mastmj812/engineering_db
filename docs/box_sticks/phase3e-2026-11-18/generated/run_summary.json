@@ -1,0 +1,66 @@
+{
+ "generator_version": "box_sticks_0.10_pilot",
+ "tags": "live",
+ "pulled": "2026-11-18",
+ "dsus": 114,
+ "sticks": 1534,
+ "legs": 1765,
+ "by_area": {
+  "delaware_nm_lea": {
+   "sticks": 885,
+   "legs": 993
+  },
+  "delaware_tx_ward": {
+   "sticks": 379,
+   "legs": 486
+  },
+  "midland_glasscock": {
+   "sticks": 270,
+   "legs": 286
+  }
+ },
+ "well_type": {
+  "single": 85,
+  "uturn": 29
+ },
+ "azimuth_basis": {
+  "wells_in_dsu+side": 91,
+  "long_axis": 14,
+  "cell": 5,
+  "wells_in_dsu": 4
+ },
+ "row_reasons": {
+  "setback_clip": 86,
+  "envelope_same_landing": 1224,
+  "envelope_stacked": 614,
+  "no_depth_neighbour": 11,
+  "uturn_unpaired": 72,
+  "setback_fit": 10
+ },
+ "bench_reasons": {
+  "sliver": 12,
+  "reconciled_out": 29,
+  "wca_one_landing": 16,
+  "wca_one_member": 40
+ },
+ "grid": {
+  "pinned": 447,
+  "offset": 288,
+  "map_spacing": 70,
+  "staggered": 61,
+  "tightened": 10,
+  "row_dropped": 10,
+  "no_clear_band": 7
+ },
+ "violations": {
+  "I1": 0,
+  "I2": 0,
+  "I3": 0,
+  "I4": 0,
+  "I5": 0,
+  "I6": 0,
+  "I7": 0,
+  "I8": 0
+ },
+ "violation_examples": {}
+}

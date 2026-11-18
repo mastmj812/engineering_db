@@ -1,0 +1,4 @@
+area,dsu_bench,dsu_bench_with_sticks,no_row,box_sticks,box_legs,box_straight,box_uturn,rows_not_placed,novi_sticks,box_ft,novi_ft,producers,box_bust_n,box_bust_median_abs_ft,box_bust_p90_abs_ft,novi_bust_n,novi_bust_median_abs_ft,novi_bust_p90_abs_ft,paired_n,paired_box_median_abs_ft,paired_novi_median_abs_ft
+delaware_nm_lea,460.0,312.0,52.0,885.0,993.0,777.0,108.0,845.0,1212.0,8713967.0,10798080.0,672.0,75.0,36.0,184.0,92.0,73.0,311.0,51.0,23.0,51.0
+delaware_tx_ward,274.0,176.0,42.0,379.0,486.0,272.0,107.0,322.0,416.0,3685530.0,3174560.0,278.0,61.0,31.0,147.0,56.0,100.0,334.0,39.0,32.0,103.0
+midland_glasscock,256.0,109.0,3.0,270.0,286.0,254.0,16.0,850.0,367.0,3044850.0,3880800.0,572.0,42.0,27.0,97.0,55.0,44.0,173.0,34.0,29.0,40.0

@@ -1,0 +1,307 @@
+basin,envelope,bench,children,excluded,excluded_pct
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",AVA_0,260,3,1.1538461538461537
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",AVA_1,338,5,1.4792899408284024
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",AVA_2,259,2,0.7722007722007722
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BRNT,60,0,0.0
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BS1_S,828,1,0.12077294685990338
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BS2_C,538,0,0.0
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BS2_S,2789,19,0.6812477590534242
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BS3_C,1373,6,0.43699927166788055
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",BS3_S,1774,8,0.4509582863585118
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",MISS,18,0,0.0
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",OTHER,322,3,0.9316770186335404
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCA_1,4861,36,0.740588356305287
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCA_2,3840,22,0.5729166666666666
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCB_1,1660,5,0.30120481927710846
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCB_2,1030,2,0.1941747572815534
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCC,792,4,0.5050505050505051
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCD,142,0,0.0
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WCXY,1626,12,0.7380073800738007
+delaware,"21a floor (<=150 ft vt, <=400 ft hz)",WDFD,165,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",BRNT,68,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",DEAN,961,10,1.0405827263267429
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",JM,1763,5,0.28360748723766305
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",LSSH,5118,30,0.5861664712778429
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",MISS,136,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",MS,1615,2,0.1238390092879257
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",OTHER,57,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",STRN,1,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",US,44,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WCA_1,6577,55,0.8362475292686635
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WCB_1,4809,18,0.37429819089207733
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WCB_2,1860,4,0.21505376344086022
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WCC,432,1,0.23148148148148148
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WCD,827,0,0.0
+midland,"21a floor (<=150 ft vt, <=400 ft hz)",WDFD,23,0,0.0
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",AVA_0,260,45,17.307692307692307
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",AVA_1,338,67,19.82248520710059
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",AVA_2,259,55,21.235521235521237
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BRNT,60,9,15.0
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BS1_S,828,217,26.207729468599034
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BS2_C,538,160,29.739776951672862
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BS2_S,2789,306,10.971674435281463
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BS3_C,1373,603,43.918426802621994
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BS3_S,1774,372,20.9695603156708
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",MISS,18,1,5.555555555555555
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",OTHER,322,19,5.900621118012422
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCA_1,4861,776,15.963793458136186
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCA_2,3840,799,20.807291666666668
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCB_1,1660,567,34.1566265060241
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCB_2,1030,321,31.16504854368932
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCC,792,99,12.5
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCD,142,23,16.197183098591548
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCXY,1626,323,19.86469864698647
+delaware,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WDFD,165,4,2.4242424242424243
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",BRNT,68,2,2.9411764705882355
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",DEAN,961,329,34.23517169614984
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",JM,1763,564,31.990924560408395
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",LSSH,5118,2043,39.9179366940211
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",MISS,136,4,2.9411764705882355
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",MS,1615,563,34.860681114551085
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",OTHER,57,4,7.017543859649122
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",STRN,1,0,0.0
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",US,44,14,31.818181818181817
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCA_1,6577,1956,29.740003040900106
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCB_1,4809,878,18.257433977957994
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCB_2,1860,346,18.602150537634408
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCC,432,110,25.462962962962962
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WCD,827,13,1.5719467956469166
+midland,"D112 vertical (topfill 800 / underfill 500 ft, <=1,400 ft hz)",WDFD,23,2,8.695652173913043
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",AVA_0,260,15,5.769230769230769
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",AVA_1,338,19,5.621301775147929
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",AVA_2,259,21,8.108108108108109
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BRNT,60,4,6.666666666666667
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BS1_S,828,95,11.473429951690822
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BS2_C,538,64,11.895910780669144
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BS2_S,2789,75,2.6891358910003587
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BS3_C,1373,250,18.20830298616169
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",BS3_S,1774,78,4.3968432919954905
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",MISS,18,1,5.555555555555555
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",OTHER,322,4,1.2422360248447204
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCA_1,4861,120,2.4686278543509568
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCA_2,3840,182,4.739583333333333
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCB_1,1660,148,8.91566265060241
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCB_2,1030,109,10.58252427184466
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCC,792,22,2.7777777777777777
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCD,142,4,2.816901408450704
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCXY,1626,61,3.7515375153751536
+delaware,"D112 vertical at <=400 ft hz (extra, not in the bars)",WDFD,165,0,0.0
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",BRNT,68,1,1.4705882352941178
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",DEAN,961,55,5.723204994797086
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",JM,1763,134,7.60068065796937
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",LSSH,5118,694,13.5599843688941
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",MISS,136,0,0.0
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",MS,1615,185,11.455108359133128
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",OTHER,57,2,3.508771929824561
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",STRN,1,0,0.0
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",US,44,1,2.272727272727273
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCA_1,6577,512,7.78470427246465
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCB_1,4809,112,2.328966521106259
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCB_2,1860,39,2.096774193548387
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCC,432,24,5.555555555555555
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WCD,827,2,0.2418379685610641
+midland,"D112 vertical at <=400 ft hz (extra, not in the bars)",WDFD,23,1,4.3478260869565215
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",AVA_0,260,20,7.6923076923076925
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",AVA_1,338,23,6.804733727810651
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",AVA_2,259,12,4.633204633204633
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BRNT,60,2,3.3333333333333335
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BS1_S,828,18,2.1739130434782608
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BS2_C,538,14,2.6022304832713754
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BS2_S,2789,126,4.517748296880602
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BS3_C,1373,53,3.8601602330662783
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BS3_S,1774,115,6.482525366403608
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",MISS,18,0,0.0
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",OTHER,322,37,11.490683229813664
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCA_1,4861,433,8.907632174449702
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCA_2,3840,415,10.807291666666666
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCB_1,1660,176,10.602409638554217
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCB_2,1030,48,4.660194174757281
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCC,792,31,3.914141414141414
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCD,142,5,3.5211267605633805
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCXY,1626,167,10.270602706027061
+delaware,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WDFD,165,5,3.0303030303030303
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",BRNT,68,1,1.4705882352941178
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",DEAN,961,128,13.31945889698231
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",JM,1763,75,4.254112308564946
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",LSSH,5118,398,7.776475185619383
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",MISS,136,2,1.4705882352941178
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",MS,1615,38,2.3529411764705883
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",OTHER,57,2,3.508771929824561
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",STRN,1,0,0.0
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",US,44,1,2.272727272727273
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCA_1,6577,799,12.148395925193858
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCB_1,4809,394,8.192971511748805
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCB_2,1860,117,6.290322580645161
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCC,432,11,2.5462962962962963
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WCD,827,4,0.4836759371221282
+midland,"deal-intake v14 (<=300 ft vt, <=800 ft hz)",WDFD,23,1,4.3478260869565215
+delaware,A same landing 400 ft,AVA_0,260,3,1.1538461538461537
+delaware,A same landing 400 ft,AVA_1,338,5,1.4792899408284024
+delaware,A same landing 400 ft,AVA_2,259,2,0.7722007722007722
+delaware,A same landing 400 ft,BRNT,60,0,0.0
+delaware,A same landing 400 ft,BS1_S,828,1,0.12077294685990338
+delaware,A same landing 400 ft,BS2_C,538,0,0.0
+delaware,A same landing 400 ft,BS2_S,2789,19,0.6812477590534242
+delaware,A same landing 400 ft,BS3_C,1373,6,0.43699927166788055
+delaware,A same landing 400 ft,BS3_S,1774,8,0.4509582863585118
+delaware,A same landing 400 ft,MISS,18,0,0.0
+delaware,A same landing 400 ft,OTHER,322,3,0.9316770186335404
+delaware,A same landing 400 ft,WCA_1,4861,36,0.740588356305287
+delaware,A same landing 400 ft,WCA_2,3840,22,0.5729166666666666
+delaware,A same landing 400 ft,WCB_1,1660,5,0.30120481927710846
+delaware,A same landing 400 ft,WCB_2,1030,2,0.1941747572815534
+delaware,A same landing 400 ft,WCC,792,4,0.5050505050505051
+delaware,A same landing 400 ft,WCD,142,0,0.0
+delaware,A same landing 400 ft,WCXY,1626,12,0.7380073800738007
+delaware,A same landing 400 ft,WDFD,165,0,0.0
+midland,A same landing 400 ft,BRNT,68,0,0.0
+midland,A same landing 400 ft,DEAN,961,10,1.0405827263267429
+midland,A same landing 400 ft,JM,1763,5,0.28360748723766305
+midland,A same landing 400 ft,LSSH,5118,30,0.5861664712778429
+midland,A same landing 400 ft,MISS,136,0,0.0
+midland,A same landing 400 ft,MS,1615,2,0.1238390092879257
+midland,A same landing 400 ft,OTHER,57,0,0.0
+midland,A same landing 400 ft,STRN,1,0,0.0
+midland,A same landing 400 ft,US,44,0,0.0
+midland,A same landing 400 ft,WCA_1,6577,55,0.8362475292686635
+midland,A same landing 400 ft,WCB_1,4809,18,0.37429819089207733
+midland,A same landing 400 ft,WCB_2,1860,4,0.21505376344086022
+midland,A same landing 400 ft,WCC,432,1,0.23148148148148148
+midland,A same landing 400 ft,WCD,827,0,0.0
+midland,A same landing 400 ft,WDFD,23,0,0.0
+delaware,B same landing 600 ft,AVA_0,260,9,3.4615384615384617
+delaware,B same landing 600 ft,AVA_1,338,6,1.7751479289940828
+delaware,B same landing 600 ft,AVA_2,259,3,1.1583011583011582
+delaware,B same landing 600 ft,BRNT,60,0,0.0
+delaware,B same landing 600 ft,BS1_S,828,3,0.36231884057971014
+delaware,B same landing 600 ft,BS2_C,538,1,0.18587360594795538
+delaware,B same landing 600 ft,BS2_S,2789,24,0.8605234851201148
+delaware,B same landing 600 ft,BS3_C,1373,10,0.7283321194464676
+delaware,B same landing 600 ft,BS3_S,1774,14,0.7891770011273957
+delaware,B same landing 600 ft,MISS,18,0,0.0
+delaware,B same landing 600 ft,OTHER,322,19,5.900621118012422
+delaware,B same landing 600 ft,WCA_1,4861,79,1.6251800041143798
+delaware,B same landing 600 ft,WCA_2,3840,69,1.796875
+delaware,B same landing 600 ft,WCB_1,1660,15,0.9036144578313253
+delaware,B same landing 600 ft,WCB_2,1030,7,0.6796116504854369
+delaware,B same landing 600 ft,WCC,792,8,1.0101010101010102
+delaware,B same landing 600 ft,WCD,142,1,0.704225352112676
+delaware,B same landing 600 ft,WCXY,1626,25,1.5375153751537516
+delaware,B same landing 600 ft,WDFD,165,1,0.6060606060606061
+midland,B same landing 600 ft,BRNT,68,0,0.0
+midland,B same landing 600 ft,DEAN,961,18,1.8730489073881373
+midland,B same landing 600 ft,JM,1763,8,0.45377197958026094
+midland,B same landing 600 ft,LSSH,5118,120,2.3446658851113718
+midland,B same landing 600 ft,MISS,136,0,0.0
+midland,B same landing 600 ft,MS,1615,9,0.5572755417956656
+midland,B same landing 600 ft,OTHER,57,0,0.0
+midland,B same landing 600 ft,STRN,1,0,0.0
+midland,B same landing 600 ft,US,44,0,0.0
+midland,B same landing 600 ft,WCA_1,6577,151,2.2958795803557854
+midland,B same landing 600 ft,WCB_1,4809,75,1.5595757953836555
+midland,B same landing 600 ft,WCB_2,1860,17,0.9139784946236559
+midland,B same landing 600 ft,WCC,432,4,0.9259259259259259
+midland,B same landing 600 ft,WCD,827,1,0.12091898428053205
+midland,B same landing 600 ft,WDFD,23,0,0.0
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,AVA_0,260,9,3.4615384615384617
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,AVA_1,338,9,2.662721893491124
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,AVA_2,259,6,2.3166023166023164
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BRNT,60,0,0.0
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BS1_S,828,5,0.6038647342995169
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BS2_C,538,3,0.5576208178438662
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BS2_S,2789,32,1.1473646468268197
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BS3_C,1373,31,2.2578295702840494
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,BS3_S,1774,29,1.6347237880496055
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,MISS,18,0,0.0
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,OTHER,322,20,6.211180124223603
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCA_1,4861,120,2.4686278543509568
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCA_2,3840,120,3.125
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCB_1,1660,55,3.3132530120481927
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCB_2,1030,22,2.1359223300970873
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCC,792,11,1.3888888888888888
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCD,142,2,1.408450704225352
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCXY,1626,45,2.7675276752767526
+delaware,C same landing 600 ft + stacked 150-350 ft within 300 ft,WDFD,165,1,0.6060606060606061
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,BRNT,68,0,0.0
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,DEAN,961,34,3.5379812695109263
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,JM,1763,18,1.0209869540555871
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,LSSH,5118,142,2.77452129738179
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,MISS,136,0,0.0
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,MS,1615,12,0.7430340557275542
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,OTHER,57,2,3.508771929824561
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,STRN,1,0,0.0
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,US,44,0,0.0
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCA_1,6577,295,4.485327656986468
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCB_1,4809,104,2.1626117695986693
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCB_2,1860,23,1.2365591397849462
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCC,432,5,1.1574074074074074
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WCD,827,1,0.12091898428053205
+midland,C same landing 600 ft + stacked 150-350 ft within 300 ft,WDFD,23,0,0.0
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),AVA_0,260,3,1.1538461538461537
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),AVA_1,338,6,1.7751479289940828
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),AVA_2,259,6,2.3166023166023164
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BRNT,60,0,0.0
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BS1_S,828,2,0.24154589371980675
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BS2_C,538,2,0.37174721189591076
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BS2_S,2789,26,0.932233775546791
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BS3_C,1373,17,1.238164603058995
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),BS3_S,1774,22,1.2401352874859075
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),MISS,18,0,0.0
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),OTHER,322,3,0.9316770186335404
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCA_1,4861,67,1.378317218679284
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCA_2,3840,51,1.328125
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCB_1,1660,15,0.9036144578313253
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCB_2,1030,4,0.3883495145631068
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCC,792,4,0.5050505050505051
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCD,142,0,0.0
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WCXY,1626,32,1.968019680196802
+delaware,D same landing 400 ft + stacked within 300 ft (B2 cells),WDFD,165,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),BRNT,68,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),DEAN,961,27,2.8095733610822062
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),JM,1763,15,0.8508224617129893
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),LSSH,5118,57,1.1137162954279016
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),MISS,136,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),MS,1615,5,0.30959752321981426
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),OTHER,57,2,3.508771929824561
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),STRN,1,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),US,44,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WCA_1,6577,211,3.2081496122852364
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WCB_1,4809,49,1.0189228529839884
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WCB_2,1860,10,0.5376344086021505
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WCC,432,2,0.46296296296296297
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WCD,827,0,0.0
+midland,D same landing 400 ft + stacked within 300 ft (B2 cells),WDFD,23,0,0.0
+delaware,E same landing 600 ft + every B2 stacked cell,AVA_0,260,9,3.4615384615384617
+delaware,E same landing 600 ft + every B2 stacked cell,AVA_1,338,7,2.0710059171597632
+delaware,E same landing 600 ft + every B2 stacked cell,AVA_2,259,6,2.3166023166023164
+delaware,E same landing 600 ft + every B2 stacked cell,BRNT,60,0,0.0
+delaware,E same landing 600 ft + every B2 stacked cell,BS1_S,828,4,0.4830917874396135
+delaware,E same landing 600 ft + every B2 stacked cell,BS2_C,538,3,0.5576208178438662
+delaware,E same landing 600 ft + every B2 stacked cell,BS2_S,2789,31,1.1115095016134815
+delaware,E same landing 600 ft + every B2 stacked cell,BS3_C,1373,20,1.4566642388929352
+delaware,E same landing 600 ft + every B2 stacked cell,BS3_S,1774,28,1.5783540022547915
+delaware,E same landing 600 ft + every B2 stacked cell,MISS,18,0,0.0
+delaware,E same landing 600 ft + every B2 stacked cell,OTHER,322,19,5.900621118012422
+delaware,E same landing 600 ft + every B2 stacked cell,WCA_1,4861,108,2.221765068915861
+delaware,E same landing 600 ft + every B2 stacked cell,WCA_2,3840,97,2.5260416666666665
+delaware,E same landing 600 ft + every B2 stacked cell,WCB_1,1660,25,1.5060240963855422
+delaware,E same landing 600 ft + every B2 stacked cell,WCB_2,1030,9,0.8737864077669902
+delaware,E same landing 600 ft + every B2 stacked cell,WCC,792,8,1.0101010101010102
+delaware,E same landing 600 ft + every B2 stacked cell,WCD,142,1,0.704225352112676
+delaware,E same landing 600 ft + every B2 stacked cell,WCXY,1626,45,2.7675276752767526
+delaware,E same landing 600 ft + every B2 stacked cell,WDFD,165,1,0.6060606060606061
+midland,E same landing 600 ft + every B2 stacked cell,BRNT,68,0,0.0
+midland,E same landing 600 ft + every B2 stacked cell,DEAN,961,35,3.6420395421436003
+midland,E same landing 600 ft + every B2 stacked cell,JM,1763,22,1.2478729438457175
+midland,E same landing 600 ft + every B2 stacked cell,LSSH,5118,145,2.833137944509574
+midland,E same landing 600 ft + every B2 stacked cell,MISS,136,0,0.0
+midland,E same landing 600 ft + every B2 stacked cell,MS,1615,12,0.7430340557275542
+midland,E same landing 600 ft + every B2 stacked cell,OTHER,57,2,3.508771929824561
+midland,E same landing 600 ft + every B2 stacked cell,STRN,1,0,0.0
+midland,E same landing 600 ft + every B2 stacked cell,US,44,0,0.0
+midland,E same landing 600 ft + every B2 stacked cell,WCA_1,6577,343,5.215143682530029
+midland,E same landing 600 ft + every B2 stacked cell,WCB_1,4809,121,2.5161156165522978
+midland,E same landing 600 ft + every B2 stacked cell,WCB_2,1860,34,1.8279569892473118
+midland,E same landing 600 ft + every B2 stacked cell,WCC,432,14,3.240740740740741
+midland,E same landing 600 ft + every B2 stacked cell,WCD,827,4,0.4836759371221282
+midland,E same landing 600 ft + every B2 stacked cell,WDFD,23,0,0.0

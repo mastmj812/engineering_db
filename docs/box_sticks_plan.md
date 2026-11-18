@@ -31,7 +31,7 @@ stick chain is retired.
 | Landing depth without direct control (2026-11-12, after phase 0) | Allowed for non-pooled benches: depth carried from a neighbour bench by thickness (existing method, to 5 mi), flagged `tvd_basis = 'thickness'` as lower confidence, hold-out error reported separately. WCA_1 / WCA_2 / WCXY still need direct control. Reason: only 17 % of today's stick positions have a same-bench producer within 1 mi |
 | Focus benches (2026-11-12) | Delaware BS1_S and Midland DEAN: thin own control over a large extent, dense neighbours. DEAN sits between LSSH above and WCA_1 below, so it is also the test case for topfill / underfill / sandwich no-place logic (phase 2b). Generator pilot AREAS (all benches per DSU) are picked inside these two extents |
 | Landing-depth chain (2026-11-12, after phase 1b) | direct -> local thickness (own wells within 5 mi) -> bracket between a bench above and a bench below -> single-neighbour offset -> none. **No error ceiling: weak carried depths are still placed, flagged low confidence.** Every stick records its rung (`tvd_basis`) and that rung's held-out error |
-| WCA_1 / WCA_2 depth (2026-11-12, after phase 1c) | Both take the full landing-depth chain (supersedes "direct control only" for these two; WCXY stays direct-only until it has its own extent) |
+| WCA_1 / WCA_2 depth (2026-11-12, after phase 1c) | Both take the full landing-depth chain (supersedes "direct control only" for these two; WCXY stays direct-only until it has its own extent; **WCXY joined them 2026-11-16, see the WCXY depth row below**) |
 | WCA_1 / WCA_2 under the floor (2026-11-12) | Where the two landings are closer than the minimum separation (75 ft) or out of order in a DSU, that DSU gets ONE WCA landing. Detail to settle in the generator: it takes the code and depth of the member with the more trusted depth there |
 | Stack reconciliation (2026-11-12) | Benches are estimated independently, then each conflicting adjacent pair in a DSU is reconciled: the less trusted depth gives way (carried before direct; among carried, the higher held-out error). It moves to the minimum separation if that stays inside its own error band; otherwise that bench gets no stick in that DSU, with the reason recorded |
 | Evidence screen (2026-11-12) | Two-part, replacing a fixed cutoff. **Likely mis-tag**: a well closer to another bench's direct surface than to its own and more than max(150 ft, half the local gap) off its own is removed from its tagged bench's evidence and listed for formation-tag review; the surface builder never re-tags. **Bad depth**: more than 300 ft off its own surface and not a mis-tag is dropped. Live tags: 1,499 + 377 wells |
@@ -40,6 +40,25 @@ stick chain is retired.
 | Spacing map (2026-11-13, phase 2a; supersedes the 1 -> 2 -> 3 mi radius chain and the hard band default merged in PR #244) | **Blended surface.** Per bench, the Gaussian-weighted median of per-bench well gaps around the DSU (sigma 3 mi, wells out to 7.5 mi, weight by distance DSU polygon to well), relaxed toward the bench's extent-band median as control thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + 1), n_eff = sum of weights. Bands are distance inside the bench's BOX extent edge (0-2, 2-5, 5-10, 10+ mi); a band with fewer than 20 wells -> 1,320 ft. Clamped to 440-1,320 ft. Every stick records `spacing_basis` (n_eff, weighted median, band value). Reason (Michael): a mature bench reads as nested contours, densest in the core and thinning outward, because operators drilled the best rock first; a gap in development inside the core must not drop to a default. Evidence: passes its pre-set adoption test in both basins; with wells within 2 mi hidden the median error is 137 ft Delaware / 87 ft Midland against 161 / 104 ft for the chain; adjacent-DSU steps over 200 ft fall from about 15 % to about 2 % |
 | No-place envelope (2026-11-14, phase 2b; candidate D) | A stick is not placed when an existing producer runs alongside >= 30 % of it AND sits either (1) at the **same landing** (within 150 ft vertically, whatever the tag) within **400 ft** sideways, both basins (the Midland 21a floor, now the Delaware's too), or (2) **stacked** within **300 ft** sideways: producer 150-350 ft deeper (both basins); producer shallower by 150-250 ft (Delaware) or 150-350 ft (Midland). Gap = median perpendicular distance over the shared length. Outside it the stick is placed and D150 discounts it. Tested against existing producers only, never stick against stick, so a co-developed stagger inside a bench (Ruthless 11) is untouched. Evidence: drilled children next to a parent >= 12 months on are 0.04-0.05 of the far-field rate inside the same-landing part and 0.14-0.22 in the stacked part (0.87-1.15 when the neighbour is co-developed); the envelope would have excluded 260 of 22,610 Delaware children (1.15 %) and 377 of 23,988 Midland (1.57 %). Not adopted: D112's 800 / 500 ft vertical and deal-intake v14 as placement rules (they exclude 7-28 % of what was drilled); a 600 ft same-landing limit; the Midland stacked part past 350 ft. Decided with two failed bars stated: the pair-metric reproduction, and the D150 refit check in the Midland (the Midland factor's near end is re-measured in phase 6) |
 | Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
+| Generator: which wells count (2026-11-15, gate 3a) | Every producer at any age plus spud / DUC / completed wells. A well's own planned-survey depth is never used |
+| Generator: well with no depth evidence (2026-11-15) | Pins its bench's row grid. It is tested through the normal envelope at the DSU's landing depth of its tagged bench, where that bench kept a landing in the DSU; otherwise it closes its whole formation family within 400 ft sideways |
+| Generator: one landing per bench (2026-11-15) | One landing per bench per DSU; where the DSU's own wells show two, the flag `two_landings_observed`. Known from the back-test: in 17 of 40 pilot DSU x bench drilled in two campaigns, the later campaign landed more than 150 ft from the earlier one |
+| Generator: WCA_1 / WCA_2 (2026-11-15; refines the 11-12 rows) | Both placed only where co-developed nearby (each member >= 8 depth-evidenced producers within 3 mi; >= 3 DSUs within 3 mi drilled in both, making >= 25 % of the WCA-drilled DSUs there), with no envelope test between the two members there. Elsewhere one WCA row set at the locally dominant member |
+| Generator: U-turns (2026-11-15) | Legs at max(bench spacing, 1,200 ft), on adjacent rows of ONE bench; an odd leg or a single open slot is not placed. Reproducing short straight wells in Tier-1 rock is not a goal |
+| Generator: lithology members (2026-11-15) | BS2_C / BS2_S and BS3_C / BS3_S each get their own rows; BOX precedence downstream decides which are drillable |
+| Generator: sliver floor (2026-11-15) | A bench whose extent covers under 10 % of the DSU area gets no row |
+| Generator: azimuth (2026-11-15; supersedes "long axis, square -> surrounding PDP") | Wells inside the DSU, then the 6-mi cell (>= 10 horizontals), then the county, snapped to a polygon side; where the two sides tie, the long axis with a flag |
+| Generator: setback fit (2026-11-15) | Rows are fitted to the width clear along the whole lateral by tightening SPACING up to 10 % (never under 440 ft; U-turn legs never under 1,200 ft); beyond 10 % a row is dropped and the rest spread evenly. Pinned grids are not moved |
+| Generator: no test between planned rows (2026-11-15; supersedes "Stagger ... never under 300 ft") | Rows of different benches are never tested against each other and no bench takes another bench's spacing. Sticks are what is possible in the DSU: its extents, what is drilled, and each extent's own spacing evidence. The envelope against existing wells is the only placement test |
+| Generator: grid phase (2026-11-15) | A bench not pinned by existing wells keeps every row its own fit gives and takes, inside the slack of the clear width, the side farthest from the rows of the bench above, so the stack alternates left and right. No bench loses a row to it |
+| Generator: rows between parents (2026-11-15) | Stay as placed, with no parent-gap stamp. Whether a child between two parents is worth drilling is for the BOX forecast, so stick counts in developed DSUs overstate practical inventory |
+| Generator: narvi engine (2026-11-15) | Imported as a library pinned by commit (`requirements-dealintake.txt`); the canonical copy stays in narvi |
+| Gate 3a (2026-11-15) | Pilot generator goes on to the basin-wide run with the back-test failures stated: T1 58.9 % against 60 % (Ward 46.9 % against 50 %), T3 63.2 % of units within one leg against 70 %, T4 33.3 % unused slots against 25 %, bracket depth rung 1.59x against 1.5x. T2, direct-rung depth and the total count (0.96) pass. The bars stand as written. Not adopted: a bench's own in-DSU spacing in place of the map (trial: no gain) |
+| WCXY depth (2026-11-16, after the 3c trials; supersedes "WCXY stays direct-only") | Delaware WCXY takes the full landing-depth chain like every other bench. Generator `box_sticks_0.8_pilot`: WCXY DSU x bench with a depth 854 -> 1,277 of 1,299, WCXY sticks 454 -> 963, other benches net -12 |
+| DSU polygons (2026-11-16) | BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons drilled across with long laterals are an artifact of that shapefile; drawing our own DSUs is not undertaken now. Their sticks carry the flag `dsu_drilled_across` (U-turn DSU with >= 2 existing wells >= 1.3 x its longest row; generator `box_sticks_0.9_pilot`; 400 DSUs, 1,936 sticks; nothing moved or removed) |
+| Not adopted (2026-11-16, measured in the 3c trials) | Dropping a carried depth implausible against a direct bench; two landings per bench. Both switches stay off |
+| Thickness-rung anchor (2026-11-18) | The anchor stays the first eligible bench in the held-out rank order. The median of every eligible anchor was scored after the tag cutover reordered Midland WCD on a 0.03 ft margin: it wins the hold-out (Delaware 52.8 -> 50.0 ft median, Midland 40.1 -> 37.9 ft) and the back-test run once did not confirm it (same 263 hidden wells, 70.2 -> 79.0 ft median miss; over 150 ft 25.1 -> 19.4 %). Built behind `THICK_RULE`, off. `docs/box_sticks/cutover-2026-11-17/FINDINGS.md` |
+| Second level nearby (2026-11-18) | A thickness-carried depth whose neighbouring same-bench wells sit at two levels (second peak >= 150 ft away, >= 25 % of the weight, >= 3 wells) gets the flag `second_level_nearby` and the other level's TVD; nothing is placed or moved by it. Generator `box_sticks_0.10_pilot`: 5,074 sticks flagged (Delaware 3,575, Midland 1,499), 0 sticks changed otherwise. Flagged depths miss 87.1 / 74.1 ft median on the hold-out against 50.0 / 39.2 ft unflagged. Thickness rung only. `docs/box_sticks/phase3e-2026-11-18/FINDINGS.md` |
 
 ### What exploration found (shapes the plan)
 
@@ -236,6 +255,39 @@ Per DSU:
 Review surface: rendered per-DSU cards (plan view + gunbarrel with PDP, BOX sticks, culled rows, and the Novi
 sticks for comparison), not YAML.
 
+**Phase 3a outcome (2026-11-14 / 15, `docs/box_sticks/phase3a-2026-11-14/`, `box/sticks/`,
+`scripts/box_sticks_phase3_*.py`).** Generator `box_sticks_0.7_pilot` on 114 DSUs in Ward TX, Lea NM and Glasscock /
+Midland: 1,526 BOX sticks (1,751 legs) against 1,993 remaining Novi sticks on the same DSUs and benches; all eight
+invariants at zero violations. Back-test at a 2023-01-01 cutoff, 707 hidden producers: the count is right in total
+(309 legs for 321 wells) and off by 20-30 % in a typical unit (the phase 2a spacing error); grid phase scores what a
+random phase would (76 % against 80 % on the sideways test), which is what fails T1 and T4. Reviewed on 43 cards; the
+rules decided from them are in the decision table. Nothing stored. **Gate 3a is closed.**
+
+**Phase 3b outcome (2026-11-15, `docs/box_sticks/phase3b-2026-11-15/`).** The same generator over every 2026Q3 polygon
+touched by a BOX extent: Delaware 5,072 DSUs, 46,002 sticks (54,168 legs, 441.5 MM ft) against 55,627 remaining Novi
+sticks (492.6 MM ft) on the same DSUs and benches; Midland 4,385 DSUs, 34,045 sticks (37,688 legs, 350.4 MM ft) against
+35,777 (365.4 MM ft). No errors, no invariant violations. TVD bust against the same-bench producers in the DSU: BOX
+28 ft median Delaware / 22 ft Midland, Novi 100 / 62 ft (favours BOX by construction on the direct rung). Not compared:
+110,978 Delaware and 50,029 Midland remaining Novi sticks on a bench whose BOX extent does not reach their DSU. Nothing
+stored. Waiting on Michael's review (gate 3b).
+
+**After 3b (2026-11-15 / 16, `docs/box_sticks/phase3c-2026-11-15/`, `phase3d-2026-11-16/`).** Four improvements were
+measured behind off switches. Adopted by Michael 2026-11-16: Delaware WCXY on the full landing-depth chain, generator
+`box_sticks_0.8_pilot`: WCXY sticks 454 -> 963, Delaware 46,002 -> 46,499 sticks (54,764 legs, 446.4 MM ft), Midland
+unchanged, pilot 1,537 sticks, back-test T1 59.2 % with the same bars failing. Not adopted: dropping a carried depth
+implausible against a direct bench (net -1,346 sticks, back-test slightly worse) and two landings per bench (no
+effect; flagged units are already drilled out). Generator `box_sticks_0.9_pilot` adds the flag `dsu_drilled_across`
+on the sticks of short polygons drilled across their line (Delaware 1,450 sticks in 284 DSUs, Midland 486 in 116);
+sticks otherwise identical to 0.8. Nothing stored.
+
+**Re-run on the post-cutover tags (2026-11-17, `docs/box_sticks/cutover-2026-11-17/`).** The tag switch went ON
+2026-11-16; phases 0 through 3b were re-run on a pull of 2026-11-17 (1,313 wells re-tagged against the 11-14 pull),
+generator 0.9 unchanged, no threshold reopened. Delaware 46,499 -> 46,690 sticks (54,964 legs, 448.3 MM ft), Midland
+34,045 -> 33,791 (37,432 legs, 347.8 MM ft); 6.0 % of DSU x bench changed their count, most of it outside the DSUs
+holding a re-tagged well. Candidate D still passes every envelope bar. Back-test: T1 59.7 %, T4 36.5 %, and the T5
+thickness rung now fails its bar (1.56x against <= 1.5x; was 1.32x); the other verdicts are unchanged. These are the
+numbers of record for gate 3b; the dated pre-cutover folders stay as what was reviewed. Nothing stored.
+
 **Gate 3a:** pilot areas reviewed on cards. **Gate 3b:** basin-wide run compared with Novi per DSU and bench
 (count, lateral footage, TVD bust).
 
@@ -243,6 +295,11 @@ sticks for comparison), not YAML.
 
 - `box.location` gains what D14 promised and the generator needs: source, generator version, DSU id, leg and
   turn geometry, target TVD + basis, spacing + basis, well type.
+- Every stick stores how its depth was reached and how far to trust it (Michael, 2026-11-18): the rung (direct /
+  thickness / bracket / offset), the anchor bench(es) of a carried depth, and the held-out expected error of that rung
+  for the bench (median and P90, ft). The back-test ratios (carried rungs miss 1.2x to 1.7x their held-out median) go
+  in the column comments, so a consumer can filter or weight by depth confidence. Flags travel with the stick:
+  `two_landings_observed`, `second_level_nearby` (with the other level's TVD), `dsu_drilled_across`.
 - New `box.location_set`: one versioned generation run per basin, one `is_record`, like `forecast_run`.
 - Ids stay stable across regenerations through the existing overlap crosswalk idea (D73/D83) keyed on
   DSU + bench + slot. App-facing `stick_id` stays POSITIVE; the PDP `-(api10)` convention is untouched.
@@ -313,12 +370,13 @@ whatever the tag).
 - Polygon coverage gaps and overlaps (0b) - what happens inside an extent where Novi drew no DSU.
 - Spacing bands by SIDE of an extent (Central Basin Platform edge vs the eastern shelf): distance to the nearest edge treats them alike. Not tested.
 - Vertical arrangement inside a bench (BS2_S, Delaware WCC, BS3_C, LSSH): per-bench density with one landing surface puts every stick in one plane; the generator should alternate between landings where local wells show two. Ruthless 11: a single BS2_S surface lands near 10,700 ft, between the real landings (10,540 and 10,890 ft). Second row or second bench is a tag question. Pilot cards.
-- 35,929 of 87,182 Midland Novi sticks have their midpoint outside every 2026Q3 polygon (phase 2a); explain before gate 3b.
-- U-turn leg separation where bench spacing is under 990 ft.
-- Lithology-pair handling (BS2_C/S, BS3_C/S).
+- (Closed 2026-11-15) "35,929 Midland Novi sticks with their midpoint outside every polygon": the `x`, `y` on the stick rows is a stick END, not the midpoint. On the geometry, 166 of 85,811 Midland and 90 of 166,636 Delaware sticks have their midpoint outside every polygon.
 - WCXY: source for the Grisham fault complex line; whether WCXY becomes its own forecast pool; the tag
   policy seed for WCXY tags outside the extent.
-- How narvi's engine is made importable in `engineering_db` CI (Python 3.12, no narvi today).
+- (Decided 2026-11-15, Michael) The 30 % alongside threshold stays: a row beside a well that runs along under 30 % of it is placed (DSU 10600).
+- Open from gate 3a: a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
+- (Stated 2026-11-16, Michael) BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons that operators drill across with long straight laterals (402 U-turn DSUs, 1,933 BOX sticks at 0.7; `docs/box_sticks/phase3c-2026-11-15/`) are an artifact of that shapefile. Drawing our own DSUs is not undertaken now: with sparse development it is unclear which sections combine, and who holds the majority working interest per section is inferred, not known. Decided 2026-11-16: those sticks carry the flag `dsu_drilled_across` (400 DSUs, 1,936 sticks at 0.9).
+- Open from the 3c trials: a carried depth implausible against a direct bench in the same DSU (637 DSU x bench; Lea 10809). Dropping the bench did not hold up; the repair belongs in the landing chain (prefer an anchor bench with wells in or next to the DSU).
 - Novi rock quality (`rqs` / `rqt`) on PDP rows of sql/22: drop or keep.
 
 ## Verification

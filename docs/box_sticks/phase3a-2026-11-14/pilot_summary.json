@@ -1,0 +1,165 @@
+{
+  "code_sha": "245a286",
+  "tags": "live",
+  "cache_pulled": "2026-11-14",
+  "pad_vintage": "2026Q3",
+  "member_frac": 0.3,
+  "backtest_cutoff": "2023-01-01",
+  "areas": [
+    {
+      "area": "delaware_tx_ward",
+      "label": "Delaware TX: Ward County (BS1_S extent)",
+      "centre_lon_lat": [
+        -103.31,
+        31.581
+      ],
+      "size_mi": 7.0,
+      "counties": {
+        "Ward": 282
+      },
+      "operators": {
+        "Crescent Energy": 94,
+        "Apache": 85,
+        "Occidental": 35,
+        "BTA Oil": 23
+      },
+      "dsu": 40,
+      "dsu_bench": 274,
+      "dsu_undeveloped": 4,
+      "dsu_1_to_4_producers": 8,
+      "dsu_uturn": 18,
+      "dsu_uturn_pct": 45.0,
+      "dsu_near_square": 13,
+      "producers": 282,
+      "producers_on_benches_without_extent_here": {
+        "WCC": 8,
+        "AVA_1": 1,
+        "OTHER": 1,
+        "BS2_C": 1,
+        "WCD": 1
+      },
+      "producers_no_depth_evidence": 23,
+      "producers_planned_survey": 0,
+      "producers_under_12_months": 13,
+      "producers_since_backtest_cutoff": 135,
+      "not_yet_producing": {
+        "Spud": 7
+      },
+      "not_yet_producing_with_depth_evidence": 7,
+      "bench_carried_pct": 37.22627737226277,
+      "bench_no_depth_pct": 0.0,
+      "bench_carried_low_conf_pct": 20.072992700729927,
+      "novi_sticks": 1026,
+      "novi_remaining": 1000,
+      "novi_remaining_on_benches_without_extent_here": 488,
+      "two_landing_dsu_bench": 1,
+      "dsu_bench_under_10pct_inside": 5
+    },
+    {
+      "area": "delaware_nm_lea",
+      "label": "Delaware NM: Lea County, holds Ruthless 11 Federal COM (BS1_S extent)",
+      "centre_lon_lat": [
+        -103.664,
+        32.159
+      ],
+      "size_mi": 7.0,
+      "counties": {
+        "Lea": 698
+      },
+      "operators": {
+        "EOG": 365,
+        "Devon": 183,
+        "ConocoPhillips": 78,
+        "Exxon Mobil": 30
+      },
+      "dsu": 34,
+      "dsu_bench": 460,
+      "dsu_undeveloped": 1,
+      "dsu_1_to_4_producers": 8,
+      "dsu_uturn": 7,
+      "dsu_uturn_pct": 20.588235294117645,
+      "dsu_near_square": 6,
+      "producers": 698,
+      "producers_on_benches_without_extent_here": {
+        "OTHER": 20,
+        "WCD": 3,
+        "BRNT": 1
+      },
+      "producers_no_depth_evidence": 89,
+      "producers_planned_survey": 85,
+      "producers_under_12_months": 79,
+      "producers_since_backtest_cutoff": 293,
+      "not_yet_producing": {
+        "Spud": 43,
+        "Completed": 12,
+        "DUC": 1
+      },
+      "not_yet_producing_with_depth_evidence": 12,
+      "bench_carried_pct": 43.04347826086957,
+      "bench_no_depth_pct": 4.3478260869565215,
+      "bench_carried_low_conf_pct": 13.043478260869565,
+      "novi_sticks": 1404,
+      "novi_remaining": 1291,
+      "novi_remaining_on_benches_without_extent_here": 66,
+      "two_landing_dsu_bench": 15,
+      "dsu_bench_under_10pct_inside": 4
+    },
+    {
+      "area": "midland_glasscock",
+      "label": "Midland: Glasscock / Midland County (DEAN extent)",
+      "centre_lon_lat": [
+        -101.754,
+        31.871
+      ],
+      "size_mi": 8.0,
+      "counties": {
+        "Glasscock": 352,
+        "Midland": 240
+      },
+      "operators": {
+        "Occidental": 283,
+        "Diamondback": 144,
+        "Exxon Mobil": 132,
+        "SM Energy": 33
+      },
+      "dsu": 40,
+      "dsu_bench": 256,
+      "dsu_undeveloped": 6,
+      "dsu_1_to_4_producers": 2,
+      "dsu_uturn": 4,
+      "dsu_uturn_pct": 10.0,
+      "dsu_near_square": 3,
+      "producers": 592,
+      "producers_on_benches_without_extent_here": {
+        "MISS": 4,
+        "BRNT": 4,
+        "OTHER": 2,
+        "MS": 1,
+        "WCC": 1
+      },
+      "producers_no_depth_evidence": 1,
+      "producers_planned_survey": 1,
+      "producers_under_12_months": 125,
+      "producers_since_backtest_cutoff": 294,
+      "not_yet_producing": {
+        "Spud": 33,
+        "Completed": 31,
+        "DUC": 18
+      },
+      "not_yet_producing_with_depth_evidence": 67,
+      "bench_carried_pct": 28.90625,
+      "bench_no_depth_pct": 0.0,
+      "bench_carried_low_conf_pct": 0.0,
+      "novi_sticks": 722,
+      "novi_remaining": 677,
+      "novi_remaining_on_benches_without_extent_here": 308,
+      "two_landing_dsu_bench": 9,
+      "dsu_bench_under_10pct_inside": 3
+    }
+  ],
+  "maps": [
+    "pilot_map_delaware_tx_ward.png",
+    "pilot_map_delaware_nm_lea.png",
+    "pilot_map_midland_glasscock.png"
+  ]
+}
