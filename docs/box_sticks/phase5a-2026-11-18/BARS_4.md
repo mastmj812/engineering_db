@@ -20,9 +20,11 @@ producers, tagged that bench, and members of the DSU (>= 30 % of the LATERAL ins
 
 ## The measurement
 
-- **Before:** the 2026-01-01 hindcast of `BARS_2.md` (every well spudded after 2026-01-01 hidden; generator 0.11).
+- **Before:** a 2026-01-01 hindcast as in `BARS_2.md` (every well spudded after 2026-01-01 hidden).
 - **Truth:** the same inputs regenerated with the hidden PRODUCERS put back (745 wells) and the not-yet-producing ones still
-  hidden. Generator 0.11, files only. This is what a regeneration gives once those wells produce.
+  hidden. Files only. This is what a regeneration gives once those wells produce.
+- **Correction, still before any run:** both runs use generator `box_sticks_0.12` on the pull of 2026-11-18 22:37 UTC, not
+  0.11. The 0.11 hindcast of `BARS_2.md` is not reused, so the two sides differ in the hidden producers and nothing else.
 - **Judged on:** every DSU x bench that holds hindcast sticks and at least one new producer of that bench ("touched").
 - Three estimates of the regenerated stick count, none of which regenerates: **nothing** (the hindcast count), **stick level**
   (hindcast count minus the sticks the nightly predicate takes out: producing trigger, variant B, 30 % floor), **DSU signal**.
