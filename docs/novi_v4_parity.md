@@ -31,10 +31,16 @@ So v4 is the same data. Two things stop a migration today:
    rates of record (`rate_calday_*`) would stop being "exactly as Novi computed them" and become
    something we compute. They reproduce exactly (section 4.3), but this changes a convention of
    record (domain rule 4), so it is Michael's decision.
-2. **v4 was released today.** One snapshot says nothing about schema stability or nightly timing.
+2. **We have one snapshot of v4.** Novi released it on 2026-10-29 (user guide, section 11); the
+   first draft of this study wrongly said it was released on 2026-11-19, the day we first read
+   it. We have still not watched it night over night ourselves.
 
 A third blocker in the first draft of this study, 2,211 wells with a v3 forecast and no v4
 forecast, turned out to be stale rows on our side (section 10).
+
+**Update, later on 2026-11-19:** Novi's user guide for the schema answers most of the questions
+in section 8 and none of the answers contradicts the parity numbers. Section 11 lists what it
+settles and what is still open.
 
 **Side finding, independent of v4. Fixed the same day (section 10):** `raw_novi` held stale rows
 that the nightly upsert never deletes. The log showed no full load or reconcile of `WellMonths` or
@@ -385,34 +391,40 @@ Dropping Enverus is a separate study: geometry parity first, then a column-by-co
 
 ## 8. Open questions for Novi
 
-1. `PRODUCTION_MONTHLY` has no per-day rates. v3's `OilPerDay` equals volume / days in month
+Questions marked **[guide]** are answered by Novi's user guide (section 11) and need not be
+sent. Still to send: 2, 7, 9, 10, 12 (notice period only), 13 and 14.
+
+1. **[guide]** `PRODUCTION_MONTHLY` has no per-day rates. v3's `OilPerDay` equals volume / days in month
    rounded to 0.1. Is that the definition, and will v4 ever ship rates, or is the consumer meant
    to compute them?
 2. About 2,200 Permian horizontal wells have an EUR and Arps segments but no monthly forecast
    rows, in v3 `ForecastWellMonths` and in v4 `PRODUCTION_FORECAST_MONTHLY` alike. They had
    monthly rows in v3 until recently. Is that intended? (Example list available.)
-3. Answered by the 2026-11-19 v3 file (section 10): rows do leave the v3 TSV when a forecast
+3. **[guide]** Answered by the 2026-11-19 v3 file (section 10): rows do leave the v3 TSV when a forecast
    shortens or a well leaves scope, with no deletion marker. Is there any signal for those
    removals short of comparing keys?
-4. v3 `WellType` differs from v4 `PRIMARY_STREAM` on 10.9 % of wells (7,472 Oil in v3, GAS in
+4. **[guide]** v3 `WellType` differs from v4 `PRIMARY_STREAM` on 10.9 % of wells (7,472 Oil in v3, GAS in
    v4). How was v3 `WellType` derived, and which v4 column carries it?
-5. `PRODUCTION_FORECAST` has `CREATED_AT` and no `UPDATED_AT`, and rows within one forecast can
+5. **[guide]** `PRODUCTION_FORECAST` has `CREATED_AT` and no `UPDATED_AT`, and rows within one forecast can
    carry different dates. What is the supported way to detect a changed forecast, and a deleted
    one?
-6. No view has a deletion marker. Is a nightly key comparison the intended way to find deletes?
+6. **[guide]** No view has a deletion marker. Is a nightly key comparison the intended way to find deletes?
 7. Is the reader account's warehouse use metered or capped? Is a nightly pull of 1M to 5M rows
    within fair use?
-8. `WELL_DETAIL`, `PRODUCTION_MONTHLY` and `PRODUCTION_FORECAST_MONTHLY` have no modified stamp.
+8. **[guide]** `WELL_DETAIL`, `PRODUCTION_MONTHLY` and `PRODUCTION_FORECAST_MONTHLY` have no modified stamp.
    Will they get one, or should incremental loads read the base views?
 9. v3 columns with no v4 home: `HasAccurateFirstProductionDate`, `HasProductionSharing`,
    `IsSyntheticApi`, `CurrentOperatorEntity` / `OperatorEntity`, `CountyUnique`, the cumulative
    volume columns on production, forecast monthly volumes. Dropped on purpose?
 10. `ParentDaysOnline` is -1 in v3 and NULL in v4 for the same 22,971 wells. Same meaning?
-11. 766 Permian wells are HORIZONTAL in v4 but absent from v3 us-horizontals, and Novi's own
+11. **[guide]** 766 Permian wells are HORIZONTAL in v4 but absent from v3 us-horizontals, and Novi's own
     calculated slant calls 557 of them vertical. Which direction column defines "horizontal" for
     scope?
 12. What notice will Novi give before a v4 schema change, and is there a changelog?
 13. Our entitlement is Permian only. Is that the intended scope of the share?
+14. `WELLBORE_LATERAL_LENGTH` is deprecated in favour of `LATERAL_LENGTH_CALCULATED_LP_TO_BHL`,
+    but that column is filled on only 18,727 of the 68,973 Permian horizontals where v3
+    `WellboreLateralLength` has a value (section 11). Will its coverage be backfilled?
 
 ## 9. Checks I could not run
 
@@ -481,3 +493,51 @@ compare against run 3 instead of being the first run.
 forecast rows in five months), until the loader handles deletions or the reconcile is put on a
 schedule. Anything that copied the warehouse before today (anduin's synced production, stored
 BOX inputs) still holds what it copied.
+
+## 11. What Novi's user guide answers
+
+Source: "WELLS Schema User Guide", release 26.4.3, generated 2026-11-13 (108 pages), received
+from Michael on 2026-11-19 after the study. Read against the two blockers in section 1 and the
+questions in section 8.
+
+**Settled by the guide**
+
+| Topic (question) | What the guide says | Effect |
+|---|---|---|
+| Age of v4 | Release 26.4.3, "the first release of Novi Wells in Snowflake", released 2026-10-29. Builds run on weekdays only. | Corrects section 1: v4 was three weeks old at the study, not one day. |
+| Per-day rates (1) | `PRODUCTION` carries `CALENDAR_DAYS` and `PRODUCING_DAYS` "to support rate normalization". No actual-production view has a rate column. | The consumer computes rates. Matches section 4.3 (volume / days in month, rounded to 0.1). The rule 4 wording is still Michael's decision. |
+| Deletions (3, 6) | No deletion marker in the views. The diff zips ship `<Table>--deleted.tsv` with the keys of removed rows, and a whole-table file when a table cannot be compared, "for example after a column change". | Hard deletes found by key comparison are the intended method. The census in section 5 is the SQL form of it. |
+| Changed forecasts (5) | `PRODUCTION_FORECAST_ID` "groups the period rows of one forecast". `CREATED_AT` is the "source ingestion timestamp from the production forecast feed". | Compare forecast ids per well; a new id means re-pull that well's forecast whole. |
+| Flat views (8) | They are "presentation views" that join the base views. | Incremental loads read the base views, as section 5 assumed. |
+| Horizontal scope (11) | `DIRECTION` is resolved in order: U-turn from the calculated slant; a survey not marked planned that shows a horizontal path; the filed slant; the calculated slant. | The 557 wells Novi's calculation calls vertical are horizontal by filing. Scope can be stated as a rule on `DIRECTION` and `DIRECTION_CALCULATED`. |
+| `WellType` (4) | `PRIMARY_STREAM` is the declared purpose from the filing: "Declared purpose, not observed production"; it "asserts nothing about volumes". | It is a different quantity from v3 `WellType`. The 10.9 % mismatch is expected, and one must not be mapped onto the other. v4 has no stated equivalent of v3 `WellType`. |
+| Forecast cumulative | "Accumulated over the FORECAST horizon only." Actual and forecast months "OVERLAP and are not reconciled". | Confirms section 4.6. |
+| Changelog (12, part) | A "What changed" chapter and a release-history appendix "generated from the release catalog". | A changelog exists. The notice period before a change is not stated. |
+
+**Also learned**
+
+- `MONTHS_ON_PRODUCTION` changed from 0-based to 1-based in September 2026. v3 and v4 agree in
+  the sample, so nothing is off today, but Novi does change a convention in place.
+- `WELLBORE_LATERAL_LENGTH` is "deprecated and no longer maintained": frozen at its value before
+  2026-09-24 and NULL on wellbores added since. The guide names
+  `LATERAL_LENGTH_CALCULATED_LP_TO_BHL` as the replacement. Checked live on 2026-11-19 against
+  v3 `WellboreLateralLength` (read by `curated.wells` as `wellbore_lateral_length_ft`), on the
+  68,973 wells where v3 has a value:
+
+  | v4 column | Wells with a value | Equal to v3 within 1 ft |
+  |---|---:|---:|
+  | `WELLBORE_LATERAL_LENGTH` (deprecated) | 59,499 | 54,876 |
+  | `LATERAL_LENGTH_CALCULATED_LP_TO_BHL` | 18,727 | 18,727 |
+
+  The replacement is exact where it exists but covers 27 % of the wells. A v4 loader could not
+  fill `wellbore_lateral_length_ft` for the other 73 % today (question 14). The completed lateral
+  (`LateralLength` -> `LATERAL_LENGTH`) is not affected; it matched 100 % in section 3.1.
+
+**Not answered by the guide**
+
+- The roughly 2,200 wells with an EUR and Arps segments but no monthly forecast rows (2).
+- Whether the reader account's warehouse use is metered or capped (7).
+- v3 columns with no v4 home, and `ParentDaysOnline` -1 against NULL (9, 10). The guide is silent
+  on all of them.
+- How much notice precedes a schema change (12).
+- Day-over-day behaviour is still unobserved by us (section 9, item 8).
