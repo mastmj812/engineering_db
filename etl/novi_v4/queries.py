@@ -74,6 +74,13 @@ def case_map(expr: str, mapping: dict, *, passthrough: bool) -> str:
     return f"CASE {expr} {whens} ELSE {expr if passthrough else 'NULL'} END"
 
 
+def _utc(expr: str) -> str:
+    """A v4 stamp as naive UTC. The share's stamps are TIMESTAMP_LTZ and arrive in the session
+    time zone (Pacific) with an offset; a Postgres `timestamp` column drops the offset on input,
+    which would store Pacific wall time. v3 `ModifiedAt` is naive UTC."""
+    return f"CONVERT_TIMEZONE('UTC', {expr})::TIMESTAMP_NTZ"
+
+
 def _int(expr: str) -> str:
     return f"ROUND({expr})::INTEGER"
 
@@ -166,8 +173,8 @@ _HEADER_COMMON: dict[str, str] = {
     "WellboreLateralLength": _int("wb.LATERAL_LENGTH_CALCULATED_LP_TO_BHL"),
     "LastRefracDate": "d.LAST_REFRAC_DATE",
     "ReportedWellType": "d.WELLBORE_TYPE_REPORTED",
-    "CreatedAt": "wb.CREATED_AT",
-    "ModifiedAt": "wb.UPDATED_AT",
+    "CreatedAt": _utc("wb.CREATED_AT"),
+    "ModifiedAt": _utc("wb.UPDATED_AT"),
 }
 
 _STREAMS = (("Oil", "OIL"), ("Gas", "GAS"), ("Water", "WATER"), ("BOE", "BOE"))
@@ -217,8 +224,8 @@ SPACING_COLUMNS: dict[str, str] = {
     "StaggerCloserTangent": "ws.STAGGER_CLOSER_TANGENT",
     "StackCloserZ": "ws.STACK_CLOSER_Z",
     "BoundednessScore": "ws.BOUNDEDNESS_SCORE",
-    "CreatedAt": "ws.CREATED_AT",
-    "ModifiedAt": "ws.UPDATED_AT",
+    "CreatedAt": _utc("ws.CREATED_AT"),
+    "ModifiedAt": _utc("ws.UPDATED_AT"),
 }
 
 
@@ -318,8 +325,8 @@ WELL_MONTHS_COLUMNS: dict[str, str] = {
     "IsGasFromProductionSharing": "COALESCE(p.IS_GAS_FROM_PRODUCTION_SHARING, FALSE)",
     "IsGasFlaredFromProductionSharing": "COALESCE(p.IS_GAS_FLARED_FROM_PRODUCTION_SHARING, FALSE)",
     "IsWaterFromProductionSharing": "COALESCE(p.IS_WATER_FROM_PRODUCTION_SHARING, FALSE)",
-    "CreatedAt": "p.CREATED_AT",
-    "ModifiedAt": "p.UPDATED_AT",
+    "CreatedAt": _utc("p.CREATED_AT"),
+    "ModifiedAt": _utc("p.UPDATED_AT"),
 }
 
 
@@ -355,8 +362,8 @@ FORECAST_COLUMNS: dict[str, str] = {
     "WaterPerDay": "ROUND(f.WATER_PER_DAY, 1)",
     "WaterPerMonth": _fc_volume("WATER"),
     "CumulativeWater": "(f.CUMULATIVE_WATER + COALESCE(b.WATER, 0))::INTEGER",
-    "CreatedAt": "f.CREATED_AT",
-    "ModifiedAt": "f.CREATED_AT",
+    "CreatedAt": _utc("f.CREATED_AT"),
+    "ModifiedAt": _utc("f.CREATED_AT"),
 }
 
 
@@ -403,8 +410,8 @@ SURVEY_COLUMNS: dict[str, str] = {
     "Latitude": "ds.LATITUDE",
     "Longitude": "ds.LONGITUDE",
     "Interpolated": "ds.INTERPOLATED",
-    "CreatedAt": "ds.CREATED_AT",
-    "ModifiedAt": "ds.UPDATED_AT",
+    "CreatedAt": _utc("ds.CREATED_AT"),
+    "ModifiedAt": _utc("ds.UPDATED_AT"),
 }
 
 
@@ -431,7 +438,7 @@ _CENSUS = {
 def census_sql(table: str) -> str:
     view, stamp, where = _CENSUS[table]
     return f"""WITH {SCOPE_CTE}
-SELECT sc.API10, COUNT(*) AS N, MAX(t.{stamp}) AS STAMP
+SELECT sc.API10, COUNT(*) AS N, {_utc(f'MAX(t.{stamp})')} AS STAMP
 FROM {DB}.{view} t
 JOIN scope sc ON sc.WELLBORE_KEY = t.WELLBORE_KEY
 WHERE {where}

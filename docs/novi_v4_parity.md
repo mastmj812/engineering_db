@@ -687,3 +687,43 @@ none of it is read by a forecast or a cohort.
 
 **Not done.** A second night into `raw_novi_v4` (to see a real incremental with changed and
 deleted wells), the cutover of `raw_novi`, and the nightly switch. Each needs its own go.
+
+## 14. Incremental rehearsal and a stamp defect, 2026-11-19
+
+Before the real second night, the incremental path was exercised on the scratch copy: in each
+child table of `raw_novi_v4` one well's rows were removed, one row of a second well was removed,
+and a third well's rows were copied under a fake API. The loader should re-pull two wells and
+delete one.
+
+**Defect found.** The first rehearsal reloaded every table in full. The share's stamps are
+`TIMESTAMP_LTZ` and arrive in Pacific time with an offset; a Postgres `timestamp` column drops
+the offset, so the scratch copy held `ModifiedAt` 8 hours off UTC and every well's census
+differed. On a live cutover this would have meant a full 38M-row reload every night. The
+section 13 diff did not see it because it skipped the stamp columns.
+
+**Fix.** Stamps are converted to naive UTC in the translation SQL, rows and census alike
+(pinned by a test). The full diff now compares `ModifiedAt`.
+
+**Rehearsal after the fix.** 86 seconds for the three tables, from the laptop.
+
+| Table | Wells re-pulled | Wells deleted | Rows in / out |
+|---|---:|---:|---|
+| `WellMonths` | 2 | 1 | 414 / 388 |
+| `ForecastWellMonths` | 2 | 1 | 105 / 108 |
+| `DirectionalSurveys` | 2 | 1 | 290 / 332 |
+
+The full diff afterwards is identical to section 13 on every data column, so the scratch copy
+was repaired exactly. `ModifiedAt`:
+
+- `WellMonths`: equal on all 5,241,013 rows. The census will track v3 stamps exactly.
+- `Wells` / `WellDetails`: differ on 381 wells (headers are replaced whole, so this is harmless).
+- `ForecastWellMonths`: differ on 96.7 % of rows. v4's only stamp there is `CREATED_AT`, which is
+  not v3's `ModifiedAt`. Expected; it costs one full forecast reload at cutover.
+- `DirectionalSurveys`: differ on 45.7 % of rows, the restamping noted in section 12.
+
+A quiet night (nothing changed) costs the three censuses: under 2 minutes.
+
+**Still open.** The real second night, scheduled for 2026-11-20 after the v3 nightly, will show
+what a production day's changes look like. One `meta.etl_log` row
+(`v4 raw_novi_v4.ForecastWellMonths`, started 20:12 UTC) is left at `running` from the stopped
+first rehearsal; the nightly's stale-run sweep will close it.

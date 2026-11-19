@@ -43,7 +43,9 @@ FULL JOIN (SELECT * FROM {v3}) b USING ({using})"""
 
 def diff_table(schema: str, table: str) -> dict[str, Any]:
     _, filled = {**q.HEADER_TABLES, **q.CHILD_TABLES}[table]
-    columns = [c for c in filled if c not in KEYS[table] and c not in SKIP]
+    # ModifiedAt IS diffed here (the sampled compare skips it): the census keys on it, and a
+    # time-zone slip in the stamps shows up nowhere else.
+    columns = [c for c in filled if c not in KEYS[table] and (c not in SKIP or c == "ModifiedAt")]
     with get_connection() as conn, conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
         cur.execute(

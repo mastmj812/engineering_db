@@ -134,6 +134,17 @@ def test_lateral_closer_xy_is_passed_through_untouched():
     assert q.SPACING_COLUMNS["LateralCloserXY"] == "ws.LATERAL_CLOSER_XY"
 
 
+def test_stamps_are_naive_utc_in_rows_and_in_the_census():
+    """The share's stamps are TIMESTAMP_LTZ in Pacific time; Postgres `timestamp` drops the offset.
+    Unconverted, every well's ModifiedAt lands 8 h off and every census differs (found on the
+    first incremental rehearsal, 2026-11-19)."""
+    for table, (_, columns) in ALL.items():
+        for c in ("CreatedAt", "ModifiedAt"):
+            assert columns[c].startswith("CONVERT_TIMEZONE('UTC', ") and columns[c].endswith(")::TIMESTAMP_NTZ"), (table, c)
+    for table in q.CHILD_TABLES:
+        assert "CONVERT_TIMEZONE('UTC', MAX(t." in q.census_sql(table)
+
+
 def test_well_filter():
     assert q.well_filter(None) == ""
     assert q.well_filter(["4230112345", "3001512345"]) == " AND sc.API10 IN ('4230112345', '3001512345')"
