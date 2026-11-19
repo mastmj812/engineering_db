@@ -431,6 +431,18 @@ invariant violations. Day 0 on producing wells (bars in `BARS_3.md`, committed f
 Delaware conflicts are a producer alongside 20 to 30 % of a stick: the generator places such a row (30 % rule, 2026-11-15) and
 the predicate's sql/68 floor of 20 % calls it a conflict. Storing a 0.12 set is its own explicit go.
 
+**Gate 5a, DSU-level signal (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/FINDINGS_4.md`; files only).** With the two decisions
+of the day (producing-only drop trigger, 30 % conflict floor) day 0 on generator 0.12 is 0.26 % matched or conflict (Delaware)
+and 0.07 % (Midland); crowded is 0.63 % / 0.50 % and 0.40 % / 0.34 % with flat-ended corridors (side check; for 5b). Signal
+tested: per DSU x bench, sticks minus new producers of that bench that are members of the DSU. Test: generator 0.12 as of
+2026-01-01 against the same inputs regenerated with the 745 hidden producers put back; 156 touched DSU x bench per basin (450
+-> 178 sticks Delaware, 534 -> 192 Midland; bars in `BARS_4.md`, committed first). **Delaware passes all four bars** (total
++0.6 %, mean abs error 0.57 against 0.69 for the stick status, exact on 55.8 %, fires for 72.3 % of new producers). **Midland
+fails three** (total +31.8 %, error 0.72 against 0.62, exact on 49.4 %) and passes the fourth (84.4 %): a regeneration there
+removes 1.16 sticks per new producer, not 1. The lower of the two estimates is within 8 % in both basins (seen after scoring;
+a proposal for 5b). Size: 10.5 months of new producers make 312 DSU x bench stale (984 of about 83,000 sticks); doing nothing
+overstates inventory by 0.57 % (Delaware) and 0.97 % (Midland), the stick status alone by 0.20 % and 0.17 %.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks

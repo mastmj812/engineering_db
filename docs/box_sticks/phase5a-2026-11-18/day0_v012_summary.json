@@ -110,27 +110,27 @@
   "status_counts": [
    {
     "basin": "delaware",
-    "open": 45774,
+    "open": 45942,
     "permitted": 0,
     "drilled": 0,
     "producing": 73,
-    "conflict": 215,
-    "crowded_flag": 188,
+    "conflict": 47,
+    "crowded_flag": 291,
     "sticks": 46062,
-    "not_open_ex_permit_pct": 0.625,
-    "crowded_pct": 0.408
+    "not_open_ex_permit_pct": 0.261,
+    "crowded_pct": 0.632
    },
    {
     "basin": "midland",
-    "open": 33064,
+    "open": 33116,
     "permitted": 0,
     "drilled": 0,
     "producing": 16,
-    "conflict": 58,
-    "crowded_flag": 129,
+    "conflict": 6,
+    "crowded_flag": 166,
     "sticks": 33138,
-    "not_open_ex_permit_pct": 0.223,
-    "crowded_pct": 0.389
+    "not_open_ex_permit_pct": 0.066,
+    "crowded_pct": 0.501
    }
   ],
   "by_cause": [
@@ -138,61 +138,61 @@
     "basin": "delaware",
     "kind": "conflict",
     "why": "other code, within 150 ft vertically",
-    "sticks": 51
+    "sticks": 3
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "real U-turn well",
-    "sticks": 5
+    "sticks": 2
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 39
+    "sticks": 19
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "same code, within 150 ft vertically",
-    "sticks": 101
+    "sticks": 19
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "well without depth evidence",
-    "sticks": 19
+    "sticks": 4
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "other code, within 150 ft vertically",
-    "sticks": 115
+    "sticks": 137
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "real U-turn well",
-    "sticks": 3
+    "sticks": 6
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 5
+    "sticks": 11
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "same code, within 150 ft vertically",
-    "sticks": 44
+    "sticks": 108
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "well without depth evidence",
-    "sticks": 21
+    "sticks": 29
    },
    {
     "basin": "delaware",
@@ -221,56 +221,38 @@
    {
     "basin": "midland",
     "kind": "conflict",
+    "why": "same code, 150 to 500 ft apart vertically",
+    "sticks": 3
+   },
+   {
+    "basin": "midland",
+    "kind": "conflict",
+    "why": "same code, within 150 ft vertically",
+    "sticks": 3
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
     "why": "other code, within 150 ft vertically",
+    "sticks": 88
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
+    "why": "real U-turn well",
     "sticks": 7
    },
    {
     "basin": "midland",
-    "kind": "conflict",
-    "why": "real U-turn well",
+    "kind": "crowded",
+    "why": "same code, 150 to 500 ft apart vertically",
     "sticks": 2
    },
    {
     "basin": "midland",
-    "kind": "conflict",
-    "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 6
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
-    "why": "same code, within 150 ft vertically",
-    "sticks": 42
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
-    "why": "well without depth evidence",
-    "sticks": 1
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "other code, within 150 ft vertically",
-    "sticks": 83
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "real U-turn well",
-    "sticks": 5
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 1
-   },
-   {
-    "basin": "midland",
     "kind": "crowded",
     "why": "same code, within 150 ft vertically",
-    "sticks": 37
+    "sticks": 66
    },
    {
     "basin": "midland",
@@ -302,27 +284,27 @@
   "status_counts": [
    {
     "basin": "delaware",
-    "open": 45703,
+    "open": 45897,
     "permitted": 0,
     "drilled": 28,
     "producing": 73,
-    "conflict": 258,
-    "crowded_flag": 241,
+    "conflict": 64,
+    "crowded_flag": 353,
     "sticks": 46062,
-    "not_open_ex_permit_pct": 0.779,
-    "crowded_pct": 0.523
+    "not_open_ex_permit_pct": 0.358,
+    "crowded_pct": 0.766
    },
    {
     "basin": "midland",
-    "open": 33018,
+    "open": 33095,
     "permitted": 0,
     "drilled": 17,
     "producing": 16,
-    "conflict": 87,
-    "crowded_flag": 162,
+    "conflict": 10,
+    "crowded_flag": 211,
     "sticks": 33138,
-    "not_open_ex_permit_pct": 0.362,
-    "crowded_pct": 0.489
+    "not_open_ex_permit_pct": 0.13,
+    "crowded_pct": 0.637
    }
   ],
   "by_cause": [
@@ -330,85 +312,85 @@
     "basin": "delaware",
     "kind": "conflict",
     "why": "other code, within 150 ft vertically",
-    "sticks": 57
-   },
-   {
-    "basin": "delaware",
-    "kind": "conflict",
-    "why": "real U-turn well",
     "sticks": 5
    },
    {
     "basin": "delaware",
     "kind": "conflict",
+    "why": "real U-turn well",
+    "sticks": 2
+   },
+   {
+    "basin": "delaware",
+    "kind": "conflict",
     "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 56
+    "sticks": 25
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "same code, within 150 ft vertically",
-    "sticks": 103
+    "sticks": 19
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "well not read by the generator: Abandoned",
-    "sticks": 7
+    "sticks": 4
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "well not read by the generator: P&A",
-    "sticks": 8
+    "sticks": 3
    },
    {
     "basin": "delaware",
     "kind": "conflict",
     "why": "well without depth evidence",
-    "sticks": 22
-   },
-   {
-    "basin": "delaware",
-    "kind": "crowded",
-    "why": "other code, within 150 ft vertically",
-    "sticks": 119
-   },
-   {
-    "basin": "delaware",
-    "kind": "crowded",
-    "why": "real U-turn well",
-    "sticks": 13
-   },
-   {
-    "basin": "delaware",
-    "kind": "crowded",
-    "why": "same code, 150 to 500 ft apart vertically",
     "sticks": 6
    },
    {
     "basin": "delaware",
     "kind": "crowded",
+    "why": "other code, within 150 ft vertically",
+    "sticks": 141
+   },
+   {
+    "basin": "delaware",
+    "kind": "crowded",
+    "why": "real U-turn well",
+    "sticks": 16
+   },
+   {
+    "basin": "delaware",
+    "kind": "crowded",
+    "why": "same code, 150 to 500 ft apart vertically",
+    "sticks": 12
+   },
+   {
+    "basin": "delaware",
+    "kind": "crowded",
     "why": "same code, within 150 ft vertically",
-    "sticks": 46
+    "sticks": 111
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "well not read by the generator: Abandoned",
-    "sticks": 10
+    "sticks": 13
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "well not read by the generator: P&A",
-    "sticks": 22
+    "sticks": 27
    },
    {
     "basin": "delaware",
     "kind": "crowded",
     "why": "well without depth evidence",
-    "sticks": 25
+    "sticks": 33
    },
    {
     "basin": "delaware",
@@ -461,80 +443,62 @@
    {
     "basin": "midland",
     "kind": "conflict",
-    "why": "other code, within 150 ft vertically",
-    "sticks": 14
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
-    "why": "real U-turn well",
+    "why": "same code, 150 to 500 ft apart vertically",
     "sticks": 3
    },
    {
     "basin": "midland",
     "kind": "conflict",
-    "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 14
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
     "why": "same code, within 150 ft vertically",
-    "sticks": 49
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
-    "why": "well not read by the generator: Abandoned",
-    "sticks": 2
-   },
-   {
-    "basin": "midland",
-    "kind": "conflict",
-    "why": "well not read by the generator: P&A",
     "sticks": 4
    },
    {
     "basin": "midland",
     "kind": "conflict",
-    "why": "well without depth evidence",
-    "sticks": 1
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "other code, within 150 ft vertically",
-    "sticks": 98
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "real U-turn well",
-    "sticks": 6
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "same code, 150 to 500 ft apart vertically",
-    "sticks": 1
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
-    "why": "same code, within 150 ft vertically",
-    "sticks": 41
-   },
-   {
-    "basin": "midland",
-    "kind": "crowded",
     "why": "well not read by the generator: Abandoned",
+    "sticks": 1
+   },
+   {
+    "basin": "midland",
+    "kind": "conflict",
+    "why": "well not read by the generator: P&A",
     "sticks": 2
    },
    {
     "basin": "midland",
     "kind": "crowded",
+    "why": "other code, within 150 ft vertically",
+    "sticks": 106
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
+    "why": "real U-turn well",
+    "sticks": 9
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
+    "why": "same code, 150 to 500 ft apart vertically",
+    "sticks": 2
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
+    "why": "same code, within 150 ft vertically",
+    "sticks": 75
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
+    "why": "well not read by the generator: Abandoned",
+    "sticks": 3
+   },
+   {
+    "basin": "midland",
+    "kind": "crowded",
     "why": "well not read by the generator: P&A",
-    "sticks": 11
+    "sticks": 13
    },
    {
     "basin": "midland",

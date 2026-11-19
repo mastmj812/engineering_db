@@ -1,18 +1,18 @@
 basin,kind,why,sticks
-delaware,conflict,"other code, within 150 ft vertically",57
-delaware,conflict,real U-turn well,5
-delaware,conflict,"same code, 150 to 500 ft apart vertically",56
-delaware,conflict,"same code, within 150 ft vertically",103
-delaware,conflict,well not read by the generator: Abandoned,7
-delaware,conflict,well not read by the generator: P&A,8
-delaware,conflict,well without depth evidence,22
-delaware,crowded,"other code, within 150 ft vertically",119
-delaware,crowded,real U-turn well,13
-delaware,crowded,"same code, 150 to 500 ft apart vertically",6
-delaware,crowded,"same code, within 150 ft vertically",46
-delaware,crowded,well not read by the generator: Abandoned,10
-delaware,crowded,well not read by the generator: P&A,22
-delaware,crowded,well without depth evidence,25
+delaware,conflict,"other code, within 150 ft vertically",5
+delaware,conflict,real U-turn well,2
+delaware,conflict,"same code, 150 to 500 ft apart vertically",25
+delaware,conflict,"same code, within 150 ft vertically",19
+delaware,conflict,well not read by the generator: Abandoned,4
+delaware,conflict,well not read by the generator: P&A,3
+delaware,conflict,well without depth evidence,6
+delaware,crowded,"other code, within 150 ft vertically",141
+delaware,crowded,real U-turn well,16
+delaware,crowded,"same code, 150 to 500 ft apart vertically",12
+delaware,crowded,"same code, within 150 ft vertically",111
+delaware,crowded,well not read by the generator: Abandoned,13
+delaware,crowded,well not read by the generator: P&A,27
+delaware,crowded,well without depth evidence,33
 delaware,drilled,real U-turn well,4
 delaware,drilled,"same code, 150 to 500 ft apart vertically",10
 delaware,drilled,well not read by the generator: Abandoned,4
@@ -21,19 +21,16 @@ delaware,producing,"other code, within 150 ft vertically",2
 delaware,producing,real U-turn well,1
 delaware,producing,"same code, 150 to 500 ft apart vertically",69
 delaware,producing,"same code, within 150 ft vertically",1
-midland,conflict,"other code, within 150 ft vertically",14
-midland,conflict,real U-turn well,3
-midland,conflict,"same code, 150 to 500 ft apart vertically",14
-midland,conflict,"same code, within 150 ft vertically",49
-midland,conflict,well not read by the generator: Abandoned,2
-midland,conflict,well not read by the generator: P&A,4
-midland,conflict,well without depth evidence,1
-midland,crowded,"other code, within 150 ft vertically",98
-midland,crowded,real U-turn well,6
-midland,crowded,"same code, 150 to 500 ft apart vertically",1
-midland,crowded,"same code, within 150 ft vertically",41
-midland,crowded,well not read by the generator: Abandoned,2
-midland,crowded,well not read by the generator: P&A,11
+midland,conflict,"same code, 150 to 500 ft apart vertically",3
+midland,conflict,"same code, within 150 ft vertically",4
+midland,conflict,well not read by the generator: Abandoned,1
+midland,conflict,well not read by the generator: P&A,2
+midland,crowded,"other code, within 150 ft vertically",106
+midland,crowded,real U-turn well,9
+midland,crowded,"same code, 150 to 500 ft apart vertically",2
+midland,crowded,"same code, within 150 ft vertically",75
+midland,crowded,well not read by the generator: Abandoned,3
+midland,crowded,well not read by the generator: P&A,13
 midland,crowded,well without depth evidence,3
 midland,drilled,real U-turn well,1
 midland,drilled,"same code, 150 to 500 ft apart vertically",11
