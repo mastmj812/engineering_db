@@ -1,0 +1,435 @@
+# Novi v4 (Snowflake `NOVI_WELLS`) vs v3 bulk TSV: parity study
+
+Date: 2026-11-19. Read-only study. No ETL code changed, nothing applied to the warehouse,
+nothing written to Snowflake.
+
+- **v3 side:** `raw_novi.*` as loaded by the nightly of 2026-11-19 11:02 UTC (scope us-horizontals,
+  95,985 wells).
+- **v4 side:** `NOVI_DATA_ACCESS.NOVI_WELLS` (41 secure views), read through
+  `etl/intel_sf/client.get_sf_connection`, role DATA_READER, warehouse NOVI_WH. Share run
+  `20261119_100441` (10:04 UTC the same day). Our entitlement is Permian only.
+
+## 1. Recommendation
+
+**Stay on v3 for the nightly, and dual-run v4 in shadow (read-only compare) until Novi answers
+the questions in section 8. Do not migrate yet.**
+
+The numbers behind it:
+
+| Check | Result |
+|---|---|
+| Wells | All 95,985 v3 wells are in v4. v4 has 96,751 horizontal + U-turn wellbores; the 766 extra come from Novi's US_Onshore set. |
+| Header columns (all 95,985 wells) | Names, formation, lateral length, TVD, MD, dates, EURs, completion: 100 % equal wherever both sides have a value. |
+| Spacing (63,650 wells) | All 10 columns equal. `LATERAL_CLOSER_XY` = 2800.0 on the same 8,385 wells on both sides. |
+| Surveys (68,972 wells) | 15,954,057 stations on both sides; station count equal on 100 % of wells. |
+| Monthly production (2,551-well sample, 204,127 common well-months) | Oil, gas, water and producing days all equal on 99.51 % of well-months. The misses sit in 15 wells. |
+| Forecast rates (2,227-well sample, 656,762 common rows) | Oil 99.90 %, gas 99.94 %, water 99.89 % within 0.1 %. The misses sit in 3 wells. |
+
+So v4 is the same data. Three things stop a migration today:
+
+1. **v4 has no per-day rate columns.** `PRODUCTION_MONTHLY` carries volumes and days only. The
+   rates of record (`rate_calday_*`) would stop being "exactly as Novi computed them" and become
+   something we compute. They reproduce exactly (section 4.3), but this changes a convention of
+   record (domain rule 4), so it is Michael's decision.
+2. **2,211 horizontal wells that have a v3 forecast have no monthly forecast rows in v4** (3.7 % of
+   the 59,982 v3 forecast wells). v4 still gives them an EUR (2,172 wells) and Arps segments
+   (2,170 wells).
+3. **v4 was released today.** One snapshot says nothing about schema stability or nightly timing.
+
+**Side finding, independent of v4, and the more urgent one:** `raw_novi` holds stale rows that the
+nightly upsert never deletes. The log shows no full load or reconcile of `WellMonths` or
+`ForecastWellMonths` since 2026-06-23.
+
+- `ForecastWellMonths`: on 44,087 of 57,771 wells (76 %) our series runs past the end of Novi's
+  current forecast. That is 4,016,644 leftover rows from older forecast vintages (19 % of our
+  forecast rows on those wells). They flow into `curated.production_forecast`. Header EURs are
+  not affected.
+- `WellMonths`: 207 wells (39,450 rows) no longer have a `Wells` row, and life-of-well volumes
+  differ from v4 on 2,008 of 66,017 wells (3.0 %); total oil is 0.59 % higher on our side.
+
+The fix is the documented one: `python -m etl.novi.load --reconcile`, then
+`python -m etl.refresh --force`. It writes to the warehouse, so it needs an explicit go. I could
+not confirm from today's v3 TSV that these rows are gone from the v3 feed (section 9, item 1);
+the evidence is in sections 4.2 and 4.6.
+
+## 2. Method
+
+- Columns in use: the live column-level dependencies of curated objects on the six `raw_novi`
+  tables (`pg_depend`), cross-checked against `sql/04`, `sql/05`, `sql/10`, `sql/49`, `sql/64`.
+- Header, spacing, survey counts, per-well production totals and per-well forecast ranges: full
+  population, joined on api10 (`WELL_DETAIL.NATIVE_ID`; every Permian wellbore is type API10,
+  sequence 0, so `wellbore_key` = `US:API10:<api10>:0`).
+- Row-level production and forecast: a sample of 2,551 wells, every 26th api10 of the 66,311
+  wells with `WellMonths` rows.
+- Floats compared exactly, and again within 0.1 %. Nulls counted separately.
+
+## 3. View and column map
+
+"Used" means a curated object reads the column today. Unused v3 columns are left out.
+
+### 3.1 `Wells` and `WellDetails` -> `WELL_DETAIL`
+
+`WELL_DETAIL` is one flat row per wellbore (471,076 rows) that already joins `WELLBORE`, `WELL`,
+`WELLBORE_COMPLETION_DESIGN`, `WELLBORE_PRODUCTION_SUMMARY` and `WELLBORE_SPACING_DETAIL`. It has
+no modified timestamp; `WELL` and `WELLBORE` do. Land-grid columns come from `SURFACE_LOCATION`.
+
+| v3 column | v4 column | Parity on common wells |
+|---|---|---|
+| API10 | NATIVE_ID | key |
+| WellName, County, Basin, Subbasin | WELL_NAME, COUNTY, BASIN, SUBBASIN | 100 % |
+| CountyCode | COUNTY_CODE | 100 % (94,729 with a value) |
+| State ("Texas"), StateCode ("42") | STATE ("TX") | recode needed |
+| Formation | FORMATION | 100 % |
+| ReportedFormation | FORMATION_REPORTED_NORMALIZED | 100 % (the raw FORMATION_REPORTED matches 92 %) |
+| GridFormation | FORMATION_CALCULATED | 100 % (73,765) |
+| CurrentOperator | CURRENT_OPERATOR | 100 % |
+| OriginalOperator | OPERATOR_ORIGINAL | 100 % |
+| SlantCalculated | DIRECTION_CALCULATED | 100 % after recode. Note `DIRECTION` is not the same thing: 5,539 wells are "Vertical" in v3 and HORIZONTAL in v4 `DIRECTION`. |
+| WellStatus | WELL_STATUS | recode needed: uppercase, underscores, "P&A" -> "PA" |
+| WellType (Oil / Gas / O&G / Other) | PRIMARY_STREAM | **89.1 % only.** 7,472 wells are Oil in v3 and GAS in v4. See question 4. |
+| LateralLength | LATERAL_LENGTH | 100 % (93,167) |
+| TVD, MD | TVD_TD, MD_TD | 100 % |
+| SHL / BHL / LP / MP latitude, longitude | SURFACE_*, BOTTOM_HOLE_*, LANDING_POINT_*, MIDPOINT_* | 100 % within 4e-6 degrees |
+| SpudDate, DrillingEndDate, FirstCompletionDate, FirstProductionDate, PluggedDate | SPUD_DATE, TD_DATE, COMPLETION_DATE, FIRST_PRODUCTION_DATE, PA_DATE | 100 % |
+| LastReportedMonth | LAST_REPORTED_MONTH | 100 % |
+| FirstCompletionFluidVolume, FirstCompletionProppantMass | FLUID_VOLUME, PROPPANT_MASS | 100 % within 0.1 %; v3 is rounded to an integer (largest gap 6 lb) |
+| FirstCompletionStages, FirstCompletionStages_AvgSpacing | STAGE_COUNT, STAGE_SPACING | 100 % |
+| FirstCompletionProppantLbsPerGal, SoakTimeDays | PROPPANT_CONCENTRATION, SOAK_TIME_DAYS | 100 % |
+| EUR20YR / 30YR / 50YR x Oil, Gas, Water, BOE | EUR_<stream>_<nn>YR | 100 % (65,965) |
+| PeakMonthOil / Gas / Water / BOE | PEAK_MONTH_<stream>_INDEX | 100 % (oil checked) |
+| PeakMonth<stream>Rate | PEAK_MONTH_<stream>_AMOUNT | 100 % (oil checked) |
+| DirectionalSurveyIsPlanned | PLANNED_AS_DRILLED_SURVEY (PLANNED / AS_DRILLED) | 100 % after recode (68,972) |
+| Section, TXSurvey, TXAbstract, TXBlock | SURFACE_LOCATION.SECTION, TX_SURVEY, ABSTRACT_LOT, BLOCK_TOWNSHIP | 100 % |
+| Township, Range | SURFACE_LOCATION.BLOCK_TOWNSHIP ("23S 22E New Mexico Principal") | must be parsed |
+
+Used in v3 with **no v4 column**: `IsSyntheticApi`, `HasAccurateFirstProductionDate`,
+`HasProductionSharing`, `CountyUnique`, `CurrentOperatorEntity`, `DeletedAt`.
+`WellboreLateralLength` exists only as a deprecated column on `WELLBORE` (frozen 2026-09-24,
+matches 92.4 %).
+
+### 3.2 `WellMonths` -> `PRODUCTION_MONTHLY` (flat) or `PRODUCTION` (base)
+
+| v3 column | v4 column | Note |
+|---|---|---|
+| API10, Year, Month, Date | NATIVE_ID, YEAR, MONTH, PRODUCTION_DATE | |
+| OilPerMonth, GasPerMonth, WaterPerMonth | OIL, GAS, WATER | integers on both sides |
+| FlaredGasPerMonth | GAS_FLARED | |
+| ProducingDays, CumulativeProducingDays | PRODUCING_DAYS, CUMULATIVE_PRODUCING_DAYS | |
+| MonthsOnProduction | MONTHS_ON_PRODUCTION | |
+| Operator | PRODUCTION.OPERATOR_REPORTED | base view only; uppercase in v4 |
+| Is{Oil,Gas,Water}FromProductionSharing | IS_*_FROM_PRODUCTION_SHARING | |
+| IsGasFlaredFromProductionSharing | PRODUCTION.IS_GAS_FLARED_FROM_PRODUCTION_SHARING | base view only |
+| ModifiedAt | PRODUCTION.UPDATED_AT | base view only |
+| Basin, Subbasin | BASIN, SUBBASIN | |
+
+**No v4 column:** `OilPerDay`, `GasPerDay`, `WaterPerDay`, `FlaredGasPerDay` (the rates of
+record), `CumulativeOil`, `CumulativeGas`, `CumulativeWater`, `CumulativeFlaredGas`,
+`OperatorEntity`, `DeletedAt`. v4 adds `CALENDAR_DAYS`.
+
+### 3.3 `WellSpacing` -> `WELL_SPACING` (base) or the spacing columns of `WELL_DETAIL`
+
+All ten used columns exist under the obvious names (`IS_CHILD`, `PARENT_COUNT`,
+`PARENT_DAYS_ONLINE`, `CLOSEST_WELL_XY`, `CLOSEST_TWO_AVG_XY`, `WELLS_IN_RADIUS`,
+`LATERAL_CLOSER_XY`, `STAGGER_CLOSER_TANGENT`, `STACK_CLOSER_Z`, `BOUNDEDNESS_SCORE`).
+`WELL_SPACING.UPDATED_AT` replaces `ModifiedAt`. No `DeletedAt`.
+
+### 3.4 `ForecastWellMonths` -> `PRODUCTION_FORECAST_MONTHLY` (flat) or `PRODUCTION_FORECAST` (base)
+
+| v3 column | v4 column | Note |
+|---|---|---|
+| API10, Date | NATIVE_ID, FORECAST_DATE | |
+| OilPerDay, GasPerDay, WaterPerDay | OIL_PER_DAY, GAS_PER_DAY, WATER_PER_DAY | v3 rounded to 0.1; v4 mostly unrounded |
+| CumulativeOil / Gas / Water | CUMULATIVE_OIL / GAS / WATER | **different origin**, section 4.6 |
+| MonthsOnProduction | FORECAST_MONTH | equal on 17,751 of 17,751 sampled rows |
+| IsForecasted | none | the v4 view holds forecast rows only; actuals are in `PRODUCTION_MONTHLY` |
+| ModifiedAt | PRODUCTION_FORECAST.CREATED_AT | base view only; there is no UPDATED_AT |
+
+**No v4 column:** `OilPerMonth`, `GasPerMonth`, `WaterPerMonth` (rate x days in month rebuilds
+the oil volume within 1 bbl on 98.5 % of sampled rows), `DeletedAt`.
+
+### 3.5 `DirectionalSurveys` -> `DIRECTIONAL_SURVEY_STATION`
+
+| v3 column | v4 column |
+|---|---|
+| API10 | WELLBORE_KEY |
+| Path | STATION_SEQUENCE (1-based, contiguous on all 69,095 wellbores) |
+| MD, TVD | MD, TVD |
+| SubSeaTVD | SUB_SEA_TVD_CALCULATED |
+| LocationType | LOCATION_TYPE (same integer codes, -1 and 0 to 7) |
+| Latitude, Longitude, Interpolated | LATITUDE, LONGITUDE, INTERPOLATED |
+| ModifiedAt | UPDATED_AT |
+
+No `DeletedAt`. `sql/64` would work unchanged on a table of the v3 shape built from this view.
+
+## 4. Row-level parity
+
+### 4.1 Well counts
+
+| | Count |
+|---|---|
+| v3 `Wells` | 95,985 (89,973 Horizontal, 5,539 Vertical by `SlantCalculated`, 473 U-turn) |
+| v4 `WELL_DETAIL`, DIRECTION horizontal or U-turn | 96,751 (96,278 + 473) |
+| v3 wells found in v4 | 95,985 (100 %), all sourced from US_Horizontals |
+| v3 wells missing from v4 | 0 |
+| v4 horizontal wells missing from v3 | 766, all sourced from US_Onshore. 512 ACTIVE, 186 PA. 308 have a first production date. Novi's own calculated slant says VERTICAL on 557 of them. |
+
+### 4.2 Monthly volumes and producing days (sample of 2,551 wells)
+
+| | Well-months |
+|---|---|
+| v3 rows | 207,680 |
+| v4 rows | 204,319 |
+| In both | 204,127 |
+| v3 only | 3,553. 3,477 have all three volumes null or zero, and 3,436 of those fall after the well's last v4 month (v3 pads the tail with empty rows). 76 carry volumes, in 5 wells. |
+| v4 only | 192. 130 belong to one well; 66 are 2026 months. |
+
+On the 204,127 common well-months:
+
+| Field | Exactly equal | Misses |
+|---|---|---|
+| Oil, bbl/month | 99.706 % | 600 rows in 11 wells. Median gap 153 bbl, P90 604, max 6,500. |
+| Gas, Mcf/month | 99.756 % | 496 rows in 8 wells. Median gap 664 Mcf, P90 3,729, max 35,507. |
+| Water, bbl/month | 99.532 % | 955 rows in 14 wells. Median gap 504 bbl, P90 8,174, max 44,592. |
+| Producing days | 100 % | none (null on 75 % of rows on both sides) |
+| Cumulative producing days | 100 % | none |
+| Months on production | 99.977 % | 47 rows, one well |
+| Flared gas | 99.825 % | 186 rows; another 171 are null on one side and 0 on the other |
+| All of oil, gas, water, days | **99.508 %** | 1,004 rows in 15 wells |
+
+The misses are not noise. In all 15 wells the v4 row carries a later update stamp than our row
+(for example v4 2026-11-16 against ours 2026-07-28), and whole runs of months differ by a
+constant factor, which is what a re-allocation looks like. 5 of the 15 wells no longer have a
+`Wells` row on our side. I read this as our rows being stale, not v4 being wrong. It is not
+proven: there is no third production source in the warehouse to settle it (section 9).
+
+Full population, per-well life totals: 66,311 v3 wells have production; 66,216 of them have v4
+production. Of the 66,017 that also have a `Wells` row, oil, gas and water totals are all equal
+on 64,009 wells (96.96 %). Across those wells v4 is lower by 0.59 % on oil, 0.13 % on gas and
+0.33 % on water. Counting the wells without a `Wells` row as well, 2,132 of 2,156 mismatched
+wells are in Texas. The well-level mismatch share
+(3.0 %) is higher than the well-month share (0.5 %) because a single missing or extra month
+breaks a well's total.
+
+### 4.3 Calendar-day and producing-day rates
+
+v4 carries **volumes and days only**. There is no per-day rate column in `PRODUCTION_MONTHLY` or
+`PRODUCTION`.
+
+The v3 rate is reproducible. On every sampled well-month where the volume matched, the v3
+`OilPerDay`, `GasPerDay` and `WaterPerDay` equal `round(volume / days in month, 1)`: oil 202,206
+of 202,206, gas 202,306 of 202,306, water 203,046 of 203,046. `FlaredGasPerDay` follows the same
+rule (162,924 of 162,924). v4 `CALENDAR_DAYS` equals the days in the month on 100 % of rows. So
+v3's rate is a calendar-day rate rounded to 0.1 bbl/d or Mcf/d, with no first-month exception.
+Neither feed ships a producing-day rate; `rate_prodday_*` is already ours.
+
+`CumulativeOil` equals the running sum of `OilPerMonth` on 98.8 % of sampled rows (2,435 of
+2,551 wells). I did not chase the rest, and did not check gas, water or flared.
+
+### 4.4 `LATERAL_CLOSER_XY` and the 2800.0 sentinel
+
+- v3 has 63,650 live spacing rows (63,841 with 191 soft-deleted). v4 has a spacing row for every
+  one of them, and for 264 more wells.
+- All ten columns agree on all 63,650 wells. The float columns differ by at most 0.00012 ft.
+- **2800.0 exactly: 8,385 wells in v3, the same 8,385 wells in v4.** Across all v4 horizontals
+  the count is 8,574. `WELL_SPACING_CONFIGURATION` states it outright:
+  `DEFAULT_LATERAL_DISTANCE` = 2800, `MAX_NEIGHBOR_DISTANCE` = 2640 ft, in every sub-basin.
+- One sentinel changed: `ParentDaysOnline` is -1 in v3 on 22,971 wells and NULL in v4.
+  `curated.wells_enriched` passes that column through.
+
+### 4.5 Survey stations
+
+| | v3 | v4 |
+|---|---|---|
+| Wells with stations | 68,972 | 69,095 (68,534 horizontal, 471 U-turn, 69 vertical, 21 directional) |
+| Stations | 15,954,057 | 15,973,799 |
+| Stations on the 68,972 common wells | 15,954,057 | 15,954,057 |
+
+Station count is equal on 68,972 of 68,972 wells. On 300 wells compared station by station
+(65,692 stations), MD, TVD, sub-sea TVD, location type, latitude, longitude and the interpolated
+flag are equal on 100 %. Location-type code counts line up code for code.
+
+### 4.6 Forecast rates and cumulative
+
+| | v3 (`IsForecasted`) | v4 |
+|---|---|---|
+| Rows | 21,672,506 | 23,873,693 total; 17,231,371 on horizontals and U-turns |
+| Wells | 59,982 | 115,222 total; 57,816 horizontal and U-turn |
+| Scenario | one | P50 only, monthly only, one forecast id per wellbore |
+
+Common wells: 57,771.
+
+- **Start month** equal on 57,714 (99.9 %).
+- **Row count** equal on only 13,662 (23.6 %). Our series is longer on 44,087 wells, v4's on 17.
+  The extra 4,016,644 rows are ours, and they are stale. Example, well 3001538484: Novi's current
+  forecast is 131 months and ends 2037-07 at 1.3 bbl/d. Our table continues with 129 more months
+  stamped 2026-10-21, 10-15, 09-17 and 08-12, in which the oil rate jumps back to 5.4 bbl/d and
+  cumulative water steps down from 575,554 to 545,519 bbl. Those are the tails of four older
+  forecast vintages. On affected sample wells, our last cumulative oil is a median 13 % above the
+  cumulative at the end of the current forecast.
+- **Rates** on the 656,762 common sample rows: oil 99.895 %, gas 99.943 %, water 99.886 % within
+  0.1 %. The misses are 3 wells whose rows on our side are stamped 2026-07-30 and 2026-10-30
+  (stale again). Exact equality is only 39.8 % because v3 rounds to 0.1 and v4 mostly does not.
+- **Cumulative.** v4 counts from the start of the forecast: the first forecast row's cumulative
+  is that month's own volume (398 of 400 wells checked). v3 counts from first production. The
+  difference v3 minus v4 is constant along each well on 2,224 of 2,227 wells (within 2 bbl), so
+  v3 cumulative = v4 cumulative + cumulative actuals at the last reported month.
+- **Missing in v4:** 2,211 wells have a v3 forecast and no v4 monthly rows (427,772 rows). They
+  are live on the v3 side (533 restamped since 2026-11-05), mostly Active, first production
+  2012 to 2017, 1,130 Delaware and 776 Midland. v4 does carry `EUR_OIL_50YR` for 2,172 of them
+  and Arps segments for 2,170. 61 horizontal wells have a v4 forecast and no v3 forecast.
+
+## 5. Incremental-load feasibility
+
+v4 keeps v3's change stamps: the newest `PRODUCTION.UPDATED_AT` (2026-11-17 14:56:11.450 UTC) is
+our newest `WellMonths.ModifiedAt` to the millisecond. So the watermark logic carries over, but
+only on the base views.
+
+| v4 view | Modified stamp | Rows | Changed in last 1 / 7 / 30 days |
+|---|---|---|---|
+| `WELL_DETAIL` (flat) | none | 471,076 | full pull each night |
+| `WELL`, `WELLBORE` | UPDATED_AT | 471,076 | 6 / 174,773 / 419,804 |
+| `WELL_SPACING` | UPDATED_AT | 64,151 | 63,841 / 63,870 / 63,904 (rewritten nightly, as in v3) |
+| `PRODUCTION_MONTHLY` (flat) | none | 51,885,710 | use `PRODUCTION` |
+| `PRODUCTION` | UPDATED_AT | 51,885,710 (5,308,022 horizontal) | 0 / 17.9M / 22.9M, all directions |
+| `PRODUCTION_FORECAST_MONTHLY` (flat) | none | 23,873,693 | use `PRODUCTION_FORECAST` |
+| `PRODUCTION_FORECAST` | CREATED_AT only | 23,873,693 | 166,882 / 482,131 / 6.5M |
+| `DIRECTIONAL_SURVEY_STATION` | UPDATED_AT | 15,973,799 | 0 / 3.1M / 15.9M |
+| `WELL_EVENT`, `WELL_COMPLETION` | UPDATED_AT | 4,868,062 / 292,151 | 97,373 / 1.6M / 2.4M (events) |
+
+No view has a soft-delete column. v4 is a hard-delete snapshot, so a v4 loader needs a per-well
+key census each night (count and newest stamp per wellbore, then delete what is gone). That
+census is cheap, and it would have prevented the stale rows found above.
+
+Measured pulls, NOVI_WH (Medium, auto-suspend 60 s), fetched to the laptop, horizontals only:
+
+| Pull | Rows | Seconds |
+|---|---|---|
+| `WELL_DETAIL`, all columns | 96,751 | 13.5 |
+| `PRODUCTION`, heaviest recent day (2026-11-16) | 1,641,920 | 24.5 |
+| `PRODUCTION`, quiet day (2026-11-17) | 9,490 | 7.4 |
+| `PRODUCTION_FORECAST`, rows created 2026-11-05 | 768,674 | 13.8 |
+| `DIRECTIONAL_SURVEY_STATION`, stations updated 2026-11-16 | 1,839,977 | 17.8 |
+| Per-well census of `PRODUCTION` | 66,329 groups | 7.1 |
+
+Throughput was 56,000 to 103,000 rows/s. A heavy night is about 4.3M rows and under 2 minutes of
+Snowflake time. A quiet night is the header, spacing and three censuses: under 1 minute. A full
+reload of all three big tables (5.3M + 17.2M + 16.0M rows) extrapolates to about 10 minutes; I
+did not run it. At the standard 4 credits per hour for a Medium warehouse, a nightly is roughly
+0.1 to 0.2 credits. Whether Novi meters or caps the reader account is question 7.
+
+For comparison, the v3 nightly downloads a 1.6 GB zip every night, and on forecast days upserts
+7.9M to 9.3M `ForecastWellMonths` rows in about 4 minutes. v4 stamps far fewer forecast rows per
+day (at most 768,674 in the last month), so the Supabase write would shrink. The Supabase write
+cost was not measured.
+
+## 6. What v4 adds
+
+- **Verticals and directionals: 374,325 wellbores** (367,654 + 6,671) that we do not get from
+  Novi today. 198,447 have a first production date, 287,246 a TVD, 195,117 an EUR. They carry
+  46.6M monthly production rows back to 1973 and 6.6M forecast rows.
+- **`WELL_EVENT`: 4,868,062 rows, 14 event types.** WELL_TEST 2,524,537; PERMIT_APPROVED 345,126;
+  COMPLETED 289,673; SPUD 273,374; PERMIT_SUBMITTED 272,930; TIL 264,776; TD_REACHED 264,705;
+  OPERATOR_CHANGE 211,431; PA 148,601; PERMIT_CANCELLED 93,443; FRAC_START and FRAC_END 86,381
+  each; PERMIT_AMENDED 5,895; REFRAC 809. Every row has a date. Permit events carry the filed
+  lateral length, TVD and bottom hole in a JSON payload. Operator-change history is new to us.
+- **`WELLBORE_TRAJECTORY`:** a WKT line (EPSG:4326) for 94,535 of 96,278 horizontals (98.2 %)
+  and all 473 U-turns.
+- **Source lineage (`SOURCE`):** 32 rows. It names the Novi export set a row came from (for
+  example `wells` from US_Horizontals or US_Onshore). It is dataset-level, not regulator-level;
+  it does not say which state filing a volume came from.
+- **`DOWNLOADS_FULL` / `DOWNLOADS_DIFF`:** signed links to zip files. Permian full = 7,313 MB;
+  the last seven daily diffs ran 173 to 4,686 MB. That is 4.5 times our v3 zip, because it
+  includes the verticals. I did not download one. With SQL access to the same data there is no
+  reason to use the files.
+- Also new: Arps segments per stream (`WELLBORE_DECLINE_PARAMETERS`, 260,779 wells), well tests
+  (2.5M rows, 104,921 with oil gravity), permits with proposed TVD, FracFocus, rig activity.
+
+**Could it replace Enverus?** Not as it stands. The warehouse uses one Enverus table,
+`raw_enverus.wells` (640,167 rows), in two places: `curated.enverus_lateral_lines` (the
+wellstick geometry from `lateralline`) and about 43 columns of `curated.wells`.
+
+- Possible: v4 trajectories could stand in for the Enverus lateral line, and v4 vertical headers
+  could cover the vertical wells we take from Enverus today. Neither was tested here.
+- Not possible: v4 has no cluster data (`clustersperstage`, `clustersper1000ft`), no pad id
+  (`PLANNED_WELL.PAD_ID` is documented as always NULL), and nothing like the Enverus interval
+  and play names (`envinterval`, `envplay`, `envsubplay`).
+
+Dropping Enverus is a separate study: geometry parity first, then a column-by-column call on the
+43 columns.
+
+## 7. Migration outline (for when the blockers clear)
+
+1. Run the overdue `--reconcile` and `etl.refresh --force` on v3. It is independent of v4, and
+   it makes later v3/v4 comparisons clean. Needs an explicit go.
+2. Send section 8 to Novi. Decide the rate convention (question 1) with Michael.
+3. Add a read-only shadow compare (a script like the ones behind this study) and run it for at
+   least two weeks, across one heavy production day and one forecast day. Pass bar: the
+   section 4 numbers hold or improve after step 1.
+4. Build a v4 loader next to `etl/intel_sf` that lands v4 into new raw tables, with the per-well
+   census for deletions. New DDL needs an explicit go. Leave `raw_novi` untouched.
+5. Put a compatibility layer on top that presents the six v3 table shapes: v3 column names,
+   recoded status, slant and state, -1 for `ParentDaysOnline`, cumulative rebased, per-day rates
+   under the agreed rule. `sql/04`, `05`, `10`, `49`, `64` and the Python readers of `raw_novi`
+   (BOX, `etl/box_recon.py`, the apply scripts) then need no change.
+6. Cut over one table at a time, simplest first: `DirectionalSurveys`, `WellSpacing`, `Wells` and
+   `WellDetails`, `WellMonths`, then `ForecastWellMonths`. Rebuild curated from the new source in
+   a scratch schema and diff it against live before each switch.
+7. Keep the `meta.etl_log` labels. The v4 forecast load must still log a `table_name` starting
+   with `ForecastWellMonths`, or the `production_forecast` refresh gate never fires.
+8. Keep the v3 nightly path runnable for one quarter as fallback.
+9. Only then consider scope growth: verticals, `WELL_EVENT`, the Enverus question.
+
+## 8. Open questions for Novi
+
+1. `PRODUCTION_MONTHLY` has no per-day rates. v3's `OilPerDay` equals volume / days in month
+   rounded to 0.1. Is that the definition, and will v4 ever ship rates, or is the consumer meant
+   to compute them?
+2. 2,211 Permian horizontal wells have a monthly forecast in v3 and none in
+   `PRODUCTION_FORECAST_MONTHLY`, though v4 has their EUR and Arps segments. Is that intended?
+   (Example list available.)
+3. When a well is re-forecast with a shorter life, does the v3 bulk TSV still contain the old
+   tail months, or are they removed? Same for a well that leaves the us-horizontals scope: are
+   its `WellMonths` rows removed from the TSV?
+4. v3 `WellType` differs from v4 `PRIMARY_STREAM` on 10.9 % of wells (7,472 Oil in v3, GAS in
+   v4). How was v3 `WellType` derived, and which v4 column carries it?
+5. `PRODUCTION_FORECAST` has `CREATED_AT` and no `UPDATED_AT`, and rows within one forecast can
+   carry different dates. What is the supported way to detect a changed forecast, and a deleted
+   one?
+6. No view has a deletion marker. Is a nightly key comparison the intended way to find deletes?
+7. Is the reader account's warehouse use metered or capped? Is a nightly pull of 1M to 5M rows
+   within fair use?
+8. `WELL_DETAIL`, `PRODUCTION_MONTHLY` and `PRODUCTION_FORECAST_MONTHLY` have no modified stamp.
+   Will they get one, or should incremental loads read the base views?
+9. v3 columns with no v4 home: `HasAccurateFirstProductionDate`, `HasProductionSharing`,
+   `IsSyntheticApi`, `CurrentOperatorEntity` / `OperatorEntity`, `CountyUnique`, the cumulative
+   volume columns on production, forecast monthly volumes. Dropped on purpose?
+10. `ParentDaysOnline` is -1 in v3 and NULL in v4 for the same 22,971 wells. Same meaning?
+11. 766 Permian wells are HORIZONTAL in v4 but absent from v3 us-horizontals, and Novi's own
+    calculated slant calls 557 of them vertical. Which direction column defines "horizontal" for
+    scope?
+12. What notice will Novi give before a v4 schema change, and is there a changelog?
+13. Our entitlement is Permian only. Is that the intended scope of the share?
+
+## 9. Checks I could not run
+
+1. **Today's v3 TSV was not inspected.** The only local copy is from May, and I did not download
+   a new one. So "stale rows on our side" is inferred from update stamps, the load log and the
+   non-monotonic cumulatives, not confirmed against the v3 file. Question 3 covers the other
+   possibility, that the v3 feed itself keeps those rows.
+2. **No third source for volumes.** The warehouse holds no Enverus production, so where v3 and
+   v4 disagree I cannot say from data which is right.
+3. **No curated-level diff.** Rebuilding `curated.wells`, `curated.production` or
+   `curated.production_forecast` from v4 would need writes. Parity is shown at the raw level only.
+4. **Row-level production and forecast parity is on the 2,551-well sample.** The full population
+   was compared only on per-well totals, counts and date ranges.
+5. **Cumulative gas, water and flared rebuilds** were not checked; oil only (98.8 %).
+6. **Lateral geometry** (`WELLBORE_TRAJECTORY` against `curated.enverus_lateral_lines`) was not
+   compared.
+7. **Timing from a GitHub Actions runner** was not measured; all timings are to the laptop.
+   Supabase write time for v4-shaped loads was not measured. Snowflake credit use was estimated
+   from the standard rate, not read from account usage.
+8. **One snapshot only.** Day-over-day behaviour of v4 (restamps, deletes, schema drift) is
+   unobserved.
+9. **Not compared on values:** `HasAccurateFirstProductionDate`, `HasProductionSharing`,
+   `IsSyntheticApi`, `OperatorEntity`, per-month operator names beyond a spot check, and the
+   peak-month columns for gas, water and BOE.
