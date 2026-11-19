@@ -541,3 +541,98 @@ questions in section 8.
   on all of them.
 - How much notice precedes a schema change (12).
 - Day-over-day behaviour is still unobserved by us (section 9, item 8).
+
+## 12. Loader build, 2026-11-19
+
+Michael reframed the question the same day: v3 is deprecated, v4 is the source, what stops the
+move. Answer: nothing on Novi's side. The loader did not exist. It does now, in `etl/novi_v4`,
+not yet wired into the nightly and not yet run against any table.
+
+**Shape.** The loader presents v4 in the six v3 table shapes, so `sql/04`, `05`, `10`, `49`, `64`
+and every reader of `raw_novi` stay as they are. The translation is Snowflake SQL
+(`etl/novi_v4/queries.py`); Python only streams rows into Postgres.
+
+- Header tables (`Wells`, `WellDetails`, `WellSpacing`): whole table each run, replaced inside
+  one transaction.
+- Child tables (`WellMonths`, `ForecastWellMonths`, `DirectionalSurveys`): a per-well census
+  (row count and newest stamp) on both sides. A well that differs is re-pulled whole; a well
+  that left the share is deleted. This is what the v3 nightly could not do.
+- Guards: a run refuses to delete more than max(200, 1 %) of wells, or to replace a header
+  table with under 90 % of its rows, without `--allow-breaker`. Writing `raw_novi` needs
+  `--confirm-live`.
+- `meta.etl_log` label on the live schema is `<table> (v4)`, so the `ForecastWellMonths%` gate
+  keeps firing, and now fires on deletions too. On the side-by-side schema the label cannot
+  match the gate.
+
+**Two corrections to earlier sections.**
+
+- *Scope.* The v3 population is exactly the wellbores whose `WELLBORE.SOURCE_ID` is Novi's
+  `US_Horizontals` export set: 95,990 wells, the count in the 2026-11-19 v3 file. The loader
+  uses that. A rule on `DIRECTION_CALCULATED` (floated in conversation) would have been wrong:
+  5,539 wells already in v3 are calculated-vertical. Taking any of the 766 `US_Onshore`
+  horizontals is a separate decision and is not built.
+- *`HasProductionSharing` is not lost.* v4 has no well-level flag, but `PRODUCTION` carries the
+  monthly ones. "Any month flagged" equals the v3 well flag on 95,985 of 95,985 wells.
+
+**Read-only compare of the loader's output against `raw_novi`** (after the section 10
+reconcile; `python -m etl.novi_v4.load --compare --sample-every 60`). Header tables are every
+well; child tables are a 1,101-well sample.
+
+| Table | Rows compared | Result |
+|---|---:|---|
+| `Wells`, `WellDetails` | 95,985 wells | Every filled column equal on 100 % of wells where both have a value, except the items below. v4 has 5 newer wells. |
+| `WellSpacing` | 63,650 wells | All 12 filled columns equal on 100 %. v4 has 264 more wells; 191 v3 rows are not in v4. |
+| `WellMonths` | 87,285 well-months | Volumes, days, months on production, operator, sharing flags and all four per-day rates equal on 100 %. `CumulativeWater` 99.92 %, `CumulativeFlaredGas` 99.80 % (v3's running totals are not a clean sum on a few wells; section 4.3). |
+| `ForecastWellMonths` | 281,043 rows | Same rows on both sides. Rates and monthly volumes 100 %. `CumulativeOil` 99.65 % (misses are 1 bbl of rounding), gas and water 99.96 %. |
+| `DirectionalSurveys` | 223,005 stations | Every column 100 %. |
+
+Full-table row counts from the loader's SQL equal `raw_novi` exactly: 5,241,013 production
+rows, 17,217,480 forecast rows, 15,954,057 stations. No NULL in any column the v3 tables
+declare NOT NULL.
+
+**What the compare changed in the translation.**
+
+- *Rate rounding.* v3 rounds an exact tie to the even digit (97.25 -> 97.2). Snowflake's
+  default rounds away from zero. Ties only happen in 28-day Februaries, about 0.2 % of
+  well-months. The loader divides in fixed point and rounds half to even; rates then match 100 %.
+- *Operator.* v3's monthly `Operator` is Novi's company name (`OPERATOR.NAME`), not the filer's
+  legal name in `OPERATOR_REPORTED`.
+- *Texas land grid.* v3 stores `''`, not NULL, on Texas wells without a block or abstract.
+
+**Known differences that remain.**
+
+- `DirectionalSurveyIsPlanned`: v4 is NULL on wells without a survey. v3 was FALSE on 23,107 of
+  those and NULL on 3,906, with no rule that separates them; the loader writes FALSE. 584
+  wells are planned in v3 with no v4 survey flag at all, so they lose the flag. They have no
+  stations either. Worth a question to Novi.
+- `WellboreLateralLength`: filled on 18,727 wells against 68,973 (section 11). Nothing reads it.
+- No v4 source, left NULL: `WellType`, `IsHorizontalWell`, `HasPLSSData`, `WellboreLocations`,
+  `HasAccurateFirstProductionDate`, `IsSyntheticApi`, `CountyUnique`, `CurrentOperatorEntity`,
+  `OperatorEntity`. `curated.wells.well_type` then falls through to the Enverus value already
+  in its COALESCE. No reader of any of these was found.
+- `ForecastWellMonths` holds forecast rows only. v3 also carried 5,136,010 history rows
+  (`IsForecasted` = FALSE); `sql/10` never read them and nothing else does. They go at cutover.
+- `PermitID` differs on 0.13 % of wells (v4 carries a newer permit).
+
+**Dry run of the census against the live tables** (`--schema raw_novi --dry-run`, no writes):
+
+| Table | Wells remote / local | Wells to re-pull | Wells to delete |
+|---|---|---:|---:|
+| `WellMonths` | 66,021 / 66,021 | 0 | 0 |
+| `ForecastWellMonths` | 57,711 / 65,959 | all (first run) | 8,248 (history-only wells) |
+| `DirectionalSurveys` | 68,972 / 68,972 | 29,893 | 0 |
+
+`WellMonths` agrees to the millisecond: v4 `UPDATED_AT` is v3 `ModifiedAt`. Survey stamps differ
+on 43 % of wells with identical station counts, so the first run reloads surveys once. Section 5
+showed Novi restamps every station within 30 days, so expect a full survey reload about monthly
+(roughly 12 minutes of Supabase write, by the section 10 timing).
+
+**Not done.** No table has been written. `sql/75` (the side-by-side schema `raw_novi_v4`) is
+authored, not applied. The nightly does not call the loader. The Supabase write time of a full
+v4 load is still unmeasured, and so is a run from a GitHub Actions runner.
+
+**Order from here.** Apply `sql/75`; load `raw_novi_v4` in full; diff every row against
+`raw_novi`; run a second night into it to see a real incremental; then drop NOT NULL on the same
+unsourced columns in `raw_novi`, run the loader on it with `--confirm-live`, switch
+`scripts/run_daily.py` to the v4 loader, force one curated refresh, and drop `raw_novi_v4`.
+Each of those warehouse steps needs its own go.
