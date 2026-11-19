@@ -463,6 +463,18 @@ records unchanged (run 32, run 30). **Record flip (2026-11-19 03:12 UTC, Michael
 sets 6 and 7 are superseded and kept.** Dry run then `--go`, 7 of 7 checks each; no stick row changed; forecast records unchanged.
 A new set now carries its ids from 16 and 17. Gate 5b is authored against them.
 
+**Gate 5b (2026-11-19, `docs/box_sticks/phase5b-2026-11-19/FINDINGS.md`; authored, NOTHING applied on live).** `sql/74_box_recon.sql`
+(four ETL-owned tables: `meta.box_recon_run`, `curated.box_location_status`, `curated.box_location_status_log`,
+`curated.box_dsu_bench_stale`), `etl/box_recon.py` (the nightly step, pure SQL, version `box_recon_1`, soft, a no-op until its
+tables exist), `scripts/apply_box_recon.py` (33 checks), the hook in `etl/refresh.py` before `curated.codev_context`
+(`_CURATED_MATVIEWS` not edited), 12 tests. Bars committed first (`BARS.md`); all eight pass. On sets 16 and 17, read-only on
+live: the module's SQL gives the Python reference's status on 99.993 % (Delaware) and 100 % (Midland) of sticks; 131.6 s; day 0
+is 0.20 % / 0.05 % producing or conflict and 0.15 % / 0.14 % crowded (inventory 45,903 of 46,062 and 33,073 of 33,138; 22
+conflict sticks; 3 stale DSU x bench). The stale estimate against a regeneration: -7.3 % Delaware, +7.8 % Midland in total,
+exact on 58 % / 64 % of DSU x bench. Rehearsal container: apply twice, night 1 (79,200 rows), a quiet night 2 (0 log rows), a
+forced error (no raise, table untouched, `failed` row), the breaker; 24 of 24 checks. Gate 5c (the apply) is its own go, and
+comes before this branch merges.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks
