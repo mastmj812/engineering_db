@@ -478,6 +478,8 @@ comes before this branch merges.
 
 **Gate 5c (2026-11-19, `docs/box_sticks/phase5c-2026-11-19/apply.log`; APPLIED on live).** After the nightly finished (run 44510796253, green 12:42 UTC): `python -m scripts.apply_box_recon --dry-run` (33 of 33 checks, rolled back), then the apply (33 of 33, COMMITTED). Verified from a second connection: four tables, owner `postgres`, 0 rows each, 8 indexes, table comments, `analyst_ro` SELECT only; `box` unchanged by identity (4 sets, 159,738 stick rows, 335,352 locations, record sets 16 and 17, forecast records runs 30 and 32); `etl.box_recon.missing_tables` empty. Data dictionary regenerated. The tables stay empty until this branch merges and a nightly runs the hook: nothing on main calls it yet. Gate 5d (shadow) reports night by night from the first night after the merge.
 
+**Gate 5d (started 2026-11-19, `docs/box_sticks/phase5d-2026-11-19`; shadow, nothing reads the tables).** PR #260 merged 13:04 UTC, after that day's nightly, so the first shadow night is the nightly of 2026-11-20. Bars S1 to S8 written and committed (`0ccbe78`) before any night. `scripts/box_recon_shadow.py` (read-only; the hook stays the only writer): `baseline`, `night`, `week`. Night 0 baseline (read-only pass, 136.2 s, nothing written): inventory 45,902 of 46,062 Delaware and 33,073 of 33,138 Midland; 88 sticks producing, 22 in conflict, 115 crowded; 3 stale DSU x bench; no well is the matching well of two sticks (0 of 88). sql/68's rule per well on the 218 wells behind those sticks: realizes a Novi stick 21, conflict 22, nothing 175 (reported, no bar). Nights are reported one by one.
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks
