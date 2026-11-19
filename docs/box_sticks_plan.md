@@ -70,6 +70,7 @@ stick chain is retired.
 | Second level on bracket / offset rungs (2026-11-18, Q8) | Not measured before storing. `second_level_tvd_ft` is NULL there and the column comment says NULL means not measured |
 | Direct-rung expected error (2026-11-18, Q9) | Every stick stores an expected error: direct-rung sticks take their bench's direct hold-out (`holdout_direct.csv`, median and P90). Reported on the stick only; the stack reconciliation keeps using what it used (no stick moves) |
 | Drop trigger, revised (2026-11-18, gate 5a; supersedes "Spud / DUC removes a location") | **Producing only.** A location leaves undrilled counts when a matching well has a first production date. A well that is spudded, a DUC or completed but not producing only flags, like an approved permit, and is re-judged the night it produces. Reason (Michael): before a survey or the completion report reaches the vendor, tags and depths are permit data. Measured: no depth evidence on 39 % of Texas and 57 % of New Mexico Spud wells against 0.6 % and 23 % of this year's producers; 41 % of newly spudded Midland wells are tagged OTHER or untagged; conflicts fall from about 30 % of sticks taken out to 11 to 14 %. Cost: a median 196 days (NM) and 220 days (TX) from spud to first production. The GENERATOR still reads wells that are not producing yet (2026-11-15 row); that is not changed |
+| Shape of nightly reconciliation (2026-11-18, gate 5a; Michael: "i agree") | **Stick status** as designed in `docs/box_sticks/phase5a-2026-11-18/DESIGN.md` (ETL-owned tables written by a nightly hook that reads `box.*` and never writes it), with the producing-only trigger, the 30 % conflict floor, the three generator-mirroring rules (no test between WCA_1 and WCA_2 in a co-developed DSU; a well with no depth evidence taken at the DSU's landing of its tagged bench, family otherwise; crowded on the median form) and flat-ended corridors. **Stale row:** one nightly row per DSU x bench holding a new producer of that bench, with the new producers and an estimated stick count marked as an estimate. **Regeneration** stays periodic and explicit-go, with the stale list as its work list. The estimate (the lower of the stick status and sticks minus new producers) gets its own bar in 5b |
 | Reconciliation conflict floor (2026-11-18, gate 5a) | A well alongside **30 % to 50 %** of a stick leg is a conflict, not sql/68's 20 % to 50 %. Reason: the generator places a row beside a well that runs along under 30 % of it (2026-11-15, DSU 10600), so 20 to 30 % was a conflict by construction: 168 of 215 Delaware and 52 of 58 Midland day-0 conflicts on generator 0.12. sql/68 itself keeps 0.2 on the Novi sticks |
 
 ### What exploration found (shapes the plan)
@@ -442,6 +443,14 @@ fails three** (total +31.8 %, error 0.72 against 0.62, exact on 49.4 %) and pass
 removes 1.16 sticks per new producer, not 1. The lower of the two estimates is within 8 % in both basins (seen after scoring;
 a proposal for 5b). Size: 10.5 months of new producers make 312 DSU x bench stale (984 of about 83,000 sticks); doing nothing
 overstates inventory by 0.57 % (Delaware) and 0.97 % (Midland), the stick status alone by 0.20 % and 0.17 %.
+
+**Generator 0.12, store dry run on live (2026-11-19 00:18 to 00:31 UTC, Michael: "dry run the store"; rolled back;
+`docs/box_sticks/phase5a-2026-11-18/STORE_DRY_RUN.md`).** Delaware: 44,788 of 46,062 sticks carry their id from set 6 (97.2 %),
+1,274 new, 1,921 ids stop. Midland: 32,523 of 33,138 from set 7 (98.1 %), 615 new, 1,306 stop. All store checks ok; every DSU
+regenerated from the stored rows gives the stored sticks (9,457 DSUs, 0 differences). Live unchanged by identity (2 sets, 80,538
+stick rows, 333,463 locations, sets 6 and 7 still the records); the id sequence moved from 10,127,259 to 10,129,148 and set ids
+12 and 13 are used up. **Nothing is stored.** A real store needs a fresh pull from a clean main after PR #258 merges, the 0.12
+back-test on that pull, and its own go.
 
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
