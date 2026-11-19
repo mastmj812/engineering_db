@@ -452,6 +452,15 @@ stick rows, 333,463 locations, sets 6 and 7 still the records); the id sequence 
 12 and 13 are used up. **Nothing is stored.** A real store needs a fresh pull from a clean main after PR #258 merges, the 0.12
 back-test on that pull, and its own go.
 
+**Generator 0.12 stored (2026-11-19, Michael: "Go store both"; `docs/box_sticks/store-0.12-2026-11-19/FINDINGS.md`).**
+`box.location_set` **set 16 (Delaware, 46,062 sticks) and set 17 (Midland, 33,138 sticks), NOT record**: generator `box_sticks_0.12`
+from `0fb5cde`, pull 2026-11-19 01:00 UTC, tag run 8. Ids carried from the records: 44,788 from set 6 (97.2 %) and 32,523 from
+set 7 (98.1 %); 1,274 + 615 new ids (10,131,038 to 10,132,926); 1,921 + 1,306 record ids stop. 10 of 10 store checks each; every
+DSU regenerated from the stored rows gives the stored sticks (9,457 DSUs, 0 differences). Back-test stored with the sets: T1
+59.3 %, T3 62.5 %, T4 37.5 %, thickness 1.56x and bracket 1.79x fail their bars as before; T2, the direct rung and the offset
+rung pass. Verified from a second connection: sets 6 and 7 are still the records, 159,738 stick rows, 335,352 locations, forecast
+records unchanged (run 32, run 30). **The record flip is its own go; gate 5b starts after it.**
+
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
 ## Phase 6 - BOX forecasts on BOX sticks

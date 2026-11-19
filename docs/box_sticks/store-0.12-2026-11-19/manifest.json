@@ -1,0 +1,129 @@
+{
+ "pulled_at": "2026-11-19T01:00:12.188844+00:00",
+ "pull_finished_at": "2026-11-19T01:00:33.719819+00:00",
+ "tag_run_id": 8,
+ "tag_policy_digest": "a84205f80b28",
+ "tag_switch_use_rule": true,
+ "dsu_vintage": "2026Q3",
+ "relations": {
+  "wells": {
+   "rows": 60937,
+   "sha256": "2dbf8b0c77a40e4a82ca089b64cbf22aa84aef856c965fa0ee463f2d4785057f",
+   "source": "curated.wells_enriched + curated.well_lateral_survey (producing horizontals)",
+   "places_sticks": true
+  },
+  "sticks": {
+   "rows": 257397,
+   "sha256": "bf8089c2241a4625691f3dfaf028fdc80792f6bb9e4b8f05e336efa364fcaea1",
+   "source": "curated.intel_locations (reports only)",
+   "places_sticks": false
+  },
+  "extents": {
+   "rows": 21,
+   "sha256": "5506a7a7c80e9fb1dc29c9f69b22d5a80819583c442bd7f2b19ec769ec08d965",
+   "source": "box.extent WHERE is_record",
+   "places_sticks": true
+  },
+  "pads": {
+   "rows": 16585,
+   "sha256": "6fa9232f03da65436c8c797f47df35ddc3acdb852134c65767dad82286213ecb",
+   "source": "raw_novi_intel.pads",
+   "places_sticks": true
+  },
+  "rule": {
+   "rows": 1004,
+   "sha256": "7bd90e2e8e147f2a6f97089c4acd875a76d071f76b03a8585c9b18cf0cfe07d9",
+   "source": "curated.formation_tag_rule (reports only)",
+   "places_sticks": false
+  },
+  "p2a_well_geom": {
+   "rows": 60937,
+   "sha256": "19cfc22cb07a28c6ecf3f2aee46b1789c733e1ac874801e350b47dd224d17fed",
+   "source": "curated.wells_enriched (lateral geometry)",
+   "places_sticks": true
+  },
+  "p2a_stick_geom": {
+   "rows": 257397,
+   "sha256": "ef0ce0e38e9d3fece65cb509e4b61041832f1ce068775a88a2ad4c2fc81d4cb2",
+   "source": "curated.intel_locations (reports only)",
+   "places_sticks": false
+  },
+  "p3_preprod": {
+   "rows": 5020,
+   "sha256": "9aa29ac10d84d5bdd48805c180c3bf1c7c22a01fca8641852e54bc267270c2cd",
+   "source": "curated.wells_enriched (not producing: Spud / DUC / Completed / Inactive / Active, or Permit Approved with a spud date)",
+   "places_sticks": true
+  },
+  "p2b_stick_status": {
+   "rows": 257397,
+   "sha256": "773406f2ebdc6290a695e8c39ae7861fe1708a5eac73746885c88f6a7522a1aa",
+   "source": "curated.reconciled_inventory (reports only)",
+   "places_sticks": false
+  },
+  "p2b_record": {
+   "rows": 252410,
+   "sha256": "e9c76099748a705f2dee08143ee98946a08e41f5cca27d3eb0430800b697e948",
+   "source": "box record runs (reports only)",
+   "places_sticks": false
+  },
+  "p5_uturn": {
+   "rows": 467,
+   "sha256": "f885088848d410fc5ffe8272f802a27f030e266a3665a2a38fba0f6d68c4f5e4",
+   "source": "curated.well_lateral_survey (survey paths of real U-turn wells)",
+   "places_sticks": true
+  }
+ },
+ "extents": {
+  "delaware/AVA_0": 28,
+  "delaware/AVA_1": 29,
+  "delaware/AVA_2": 30,
+  "delaware/BS1_S": 26,
+  "delaware/BS2_C": 20,
+  "delaware/BS2_S": 7,
+  "delaware/BS3_C": 18,
+  "delaware/BS3_S": 16,
+  "delaware/WCA": 6,
+  "delaware/WCB_1": 22,
+  "delaware/WCB_2": 24,
+  "delaware/WCC": 27,
+  "midland/DEAN": 49,
+  "midland/JM": 45,
+  "midland/LSSH": 47,
+  "midland/MS": 44,
+  "midland/WCA_1": 36,
+  "midland/WCB_1": 37,
+  "midland/WCB_2": 38,
+  "midland/WCC": 39,
+  "midland/WCD": 42
+ },
+ "files": {
+  "wcxy_extent": {
+   "path": "docs/box_sticks/wcxy-extent-2026-11-12/extent_WCXY_edited.geojson",
+   "sha256": "7c2d653aee48ccbeba2952be10bf9360dea3155093dbdbf42ab4cf94688b40b8"
+  },
+  "thickness_rank": {
+   "path": "docs/box_sticks/cutover-2026-11-17/phase1/holdout_thickness.csv",
+   "sha256": "279e3aa68094f4a13ac9c0eb15eed3bb2d7c1f689b7c0ecda8eebe7232430a0a"
+  },
+  "far_rank": {
+   "path": "docs/box_sticks/cutover-2026-11-17/phase1b/holdout_far.csv",
+   "sha256": "cc716d576ab8b25a4ecf537ab2a60f6b6e16fe7b5297c346ed4165b33b11dde2"
+  },
+  "direct_holdout": {
+   "path": "docs/box_sticks/cutover-2026-11-17/phase1/holdout_direct.csv",
+   "sha256": "6386cbd701c4c27e0d163567e6485421a3b6dc716e1fa0b583403a5c5adf8cb3"
+  },
+  "strat_column": {
+   "path": ".claude/skills/deal-intake/config/strat_column.yaml",
+   "sha256": "c30116c5adcd561ba73770d4319885574bab4fe7bb9ecd5b2936a2e62f1f1a47"
+  },
+  "thresholds": {
+   "path": ".claude/skills/deal-intake/config/thresholds.yaml",
+   "sha256": "c9e711ae99dd159533d7f6eb7fce0001a4aaf106ff531dca5789c9f624177f0e"
+  }
+ },
+ "code_sha": "0fb5cde9f6dcd59173a1d7e435c1be2ac3d57569",
+ "code_dirty": false,
+ "narvi_sha": "bfc7955f85a10a24b82e7d671e3ea51883779e4a",
+ "narvi_installed": "bfc7955f85a10a24b82e7d671e3ea51883779e4a"
+}
