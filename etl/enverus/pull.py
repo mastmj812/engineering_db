@@ -15,8 +15,9 @@ record — anything missed gets picked up the following run.
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Any, Sequence
+from typing import Any
 
 from etl.db import get_connection, log_etl_run, upsert_batch_resilient
 from etl.enverus.client import get_client

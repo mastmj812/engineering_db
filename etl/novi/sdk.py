@@ -1,20 +1,21 @@
 # this is a library file, check out usage examples in sample.py
 
+import json
 import os
 import shutil
 import sys
 import zipfile
+from collections.abc import Iterator
 from pathlib import Path
-from shutil import rmtree, copy2
-from typing import List, Iterator, Optional, Tuple, Dict, Set
+from shutil import copy2, rmtree
+
 import requests
-import json
 
 
 class NoviDataException(Exception):
     code: str = None
 
-    def __init__(self, message: str, code: Optional[str] = None):
+    def __init__(self, message: str, code: str | None = None):
         super().__init__(message)
         self.code = code
 
@@ -65,7 +66,7 @@ class NoviDataSdk:
             raise NoviDataException(f'Query expected a single result, {len(data)} found')
         return data[0]
 
-    def raw_request(self, url, params: dict = None) -> List[dict]:
+    def raw_request(self, url, params: dict = None) -> list[dict]:
         res = requests.get(
             self._base + url,
             params={
@@ -84,7 +85,7 @@ class NoviDataSdk:
 
         return res.json()
 
-    def update_bulk_data(self, scope: Optional[str] = None, basin: Optional[str] = None, subbasin: Optional[str] = None, no_diffs: bool = False) -> Path:
+    def update_bulk_data(self, scope: str | None = None, basin: str | None = None, subbasin: str | None = None, no_diffs: bool = False) -> Path:
         bulk_dir = self._data_dir / (scope or self._scope) / (basin or 'All basins') / (subbasin or 'All subbasins')
         target_dir = bulk_dir / 'Bulk'
         last_downloaded = self.read_file(bulk_dir / self.EXPORT_DATE_FILE) or self.NONE_DATE
@@ -187,13 +188,13 @@ class NoviDataSdk:
             # malformed diff, I/O error) must recover via a full download rather than
             # propagate and lose the local cache. Uses full_export, not latest_export
             # (which the diff loop reassigned to a diff lacking the full-export URL).
-            print(f'Error while merging diffs, falling back to a full download. Error message: {str(e)}')
+            print(f'Error while merging diffs, falling back to a full download. Error message: {e!s}')
             return self._fetch_bulk_data_file(target_dir, full_export['URL'], full_export['ExportDate'])
         finally:
             # ignore_errors so a cleanup failure can't mask the real exception above
             shutil.rmtree(tmp_dir_base, ignore_errors=True)
 
-    def _fetch_bulk_data_file(self, target_dir: Path, url: str, export_date: Optional[str]):
+    def _fetch_bulk_data_file(self, target_dir: Path, url: str, export_date: str | None):
         print(f'Downloading {url} to {target_dir}')
         self._ensure_empty_dir(target_dir.parent)
         zip_file = self._download_file(url, target_dir.parent / 'Bulk.zip')
@@ -249,7 +250,7 @@ class NoviDataSdk:
         return dir
 
     @staticmethod
-    def read_file(filename: Path, encoding='utf-8') -> Optional[str]:
+    def read_file(filename: Path, encoding='utf-8') -> str | None:
         if not os.path.exists(filename):
             return None
 
@@ -261,7 +262,7 @@ class NoviDataSdk:
         with open(filename, 'w+', encoding=encoding) as f:
             f.write(content)
 
-    def merge_bulk_diffs(self, current_dir: Path, diff_dirs: List[Path], target_dir: Path) -> Path:
+    def merge_bulk_diffs(self, current_dir: Path, diff_dirs: list[Path], target_dir: Path) -> Path:
         if target_dir == current_dir:
             raise NoviDataDiffMergingException('Cannot apply diffs in-place')
         print('Performing a diff merge:', current_dir, ' + ', diff_dirs, ' -> ', target_dir)
@@ -296,7 +297,7 @@ class NoviDataSdk:
 
         return target_dir
 
-    def __plan_files_operations(self, current_dir: Path, diff_dirs: List[Path]) -> Dict[Path, List[Tuple[str, Path]]]:
+    def __plan_files_operations(self, current_dir: Path, diff_dirs: list[Path]) -> dict[Path, list[tuple[str, Path]]]:
         files_operations = {}
 
         for diff_dir in diff_dirs:
@@ -329,7 +330,7 @@ class NoviDataSdk:
             first_line = f.readline().rstrip()
             return first_line.endswith('\t__deleted')
 
-    def __split_diff_line(self, line: str, pk_length: int, is_legacy_diff: bool = False) -> Tuple[str, str, Optional[bool]]:
+    def __split_diff_line(self, line: str, pk_length: int, is_legacy_diff: bool = False) -> tuple[str, str, bool | None]:
         tab_count = 0
         i = 0
         while True:
@@ -347,10 +348,10 @@ class NoviDataSdk:
             line[-1:] == 't' if is_legacy_diff else None,
         )
 
-    def __apply_operations(self, operations: List[Tuple[str, Path]], relative_file: Path, schema)\
-            -> Tuple[Optional[Path], Dict[str, str], bool, Optional[int], Optional[str]]:
+    def __apply_operations(self, operations: list[tuple[str, Path]], relative_file: Path, schema)\
+            -> tuple[Path | None, dict[str, str], bool, int | None, str | None]:
         file_to_overwrite = None
-        rows_to_overwrite: Dict[str, str] = dict()
+        rows_to_overwrite: dict[str, str] = dict()
         has_diffs = False
         pk_length = None
         header = None
@@ -380,7 +381,7 @@ class NoviDataSdk:
                         rows_to_overwrite[pk] = content
         return file_to_overwrite, rows_to_overwrite, has_diffs, pk_length, header
 
-    def __apply_diff(self, current_file: Path, target_file: Path, header: str, pk_length: int, to_overwrite: Dict[str, str]):
+    def __apply_diff(self, current_file: Path, target_file: Path, header: str, pk_length: int, to_overwrite: dict[str, str]):
         with open(target_file, 'w+') as fw:
             with open(current_file, 'r') as fr:
                 for i, line in enumerate(fr.readlines()):

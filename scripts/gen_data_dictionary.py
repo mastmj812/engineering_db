@@ -83,7 +83,7 @@ _CONSUMERS = {
     "box.tc_member": "SUPERSEDED (D66): provenance of the retired area curves",
     "box.risk_factor": "SUPERSEDED (D66): factors of the retired factor chain; step-6 hindcast scoring only",
     "box.location": "BOX location ids (plan step 7, D67): key for box.pud_forecast and Steven's box_econ (step 7d); since sql/73 also our own generated sticks (source = 'box_sticks')",
-    "box.location_set": "BOX sticks generation runs (sql/73): scripts.box_sticks_run store; one record set per basin. No app reads it before the BOX sticks phases 5-7 (reconciliation, BOX forecasts, app cutover)",
+    "box.location_set": "BOX sticks generation runs (sql/73): scripts.box_sticks_run store; one record set per basin. Read by the nightly reconciliation (etl/box_recon.py, sql/74) once that is applied; no app reads it before phases 6-7",
     "box.location_stick": "BOX sticks as generated, per set (sql/73): the future source of undrilled locations for BOX forecasts and the apps (plan phases 6-7); no reader yet",
     "box.location_set_dsu": "BOX sticks generator input per DSU (sql/73): scripts.box_sticks_run regenerates a stored set from it",
     "box.location_set_bench": "BOX sticks generator input + outcome per DSU x bench (sql/73): why a bench has no stick; scripts.box_sticks_run",
@@ -103,6 +103,10 @@ _CONSUMERS = {
     "vdr.well_daily": "anduin daily-production PDP forecasting (planned)",
     "curated.formation_tag_rule": "curated.formation_blueox (sql/16) reads applied rows only while ref.formation_tag_switch.use_rule is ON (shadow until cutover W5); tag-rule queue/drift review",
     "meta.formation_tag_run": "nightly tag-rule run log + circuit breaker (etl/tag_rule.py); W4 shadow review",
+    "curated.box_location_status": "nightly BOX sticks reconciliation (sql/74, etl/box_recon.py): status of every record stick; NO reader until gate 5 of docs/box_sticks_plan.md (shadow only)",
+    "curated.box_location_status_log": "history of curated.box_location_status (sql/74): one row per location per night it changed; audit",
+    "curated.box_dsu_bench_stale": "regeneration work list (sql/74): DSU x bench holding a new producer, with an ESTIMATED stick count; no reader yet",
+    "meta.box_recon_run": "nightly BOX sticks reconciliation run log + circuit breaker (etl/box_recon.py); shadow review (gate 5d)",
     "curated.box_scout_locations":"land team / analyst_ro QGIS: undrilled locations with a BOX record-run forecast, Steven's default-deck econ for that run where priced (blank until then), minimal columns (sql/69 v4)",
 }
 

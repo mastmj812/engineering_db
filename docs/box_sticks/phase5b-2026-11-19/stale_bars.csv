@@ -1,0 +1,3 @@
+basin,touched_dsu_bench,new_producers,sticks_before,sticks_regenerated,sticks_total,sticks_total_err_pct,sticks_mae,sticks_exact_pct,stick_level_total,stick_level_total_err_pct,stick_level_mae,stick_level_exact_pct,subtraction_total,subtraction_total_err_pct,subtraction_mae,subtraction_exact_pct
+delaware,156,305,450,178,165,-7.3,0.506,58.3,271,52.2,0.686,56.4,179,0.6,0.571,55.8
+midland,156,295,534,192,207,7.8,0.468,63.5,254,32.3,0.628,54.5,253,31.8,0.724,49.4

@@ -14,16 +14,15 @@ from __future__ import annotations
 
 import logging
 
+import snowflake.connector
+from snowflake.connector import SnowflakeConnection
+from snowflake.connector.errors import DatabaseError, OperationalError
 from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
 )
-
-import snowflake.connector
-from snowflake.connector import SnowflakeConnection
-from snowflake.connector.errors import DatabaseError, OperationalError
 
 from etl.intel_sf.config import SnowflakeConfig, get_config
 

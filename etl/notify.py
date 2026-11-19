@@ -39,7 +39,7 @@ import logging
 import os
 import smtplib
 import socket
-from datetime import date, datetime
+from datetime import date
 from email.message import EmailMessage
 from pathlib import Path
 from typing import Any

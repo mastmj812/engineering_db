@@ -1,0 +1,293 @@
+{
+ "record_sticks": 79200,
+ "checks": [
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "run(write=True) returns absent with the tables missing"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the hook created nothing"
+  },
+  {
+   "bar": "E5",
+   "ok": true,
+   "check": "first apply: 33 checks ok, COMMITTED"
+  },
+  {
+   "bar": "E5",
+   "ok": true,
+   "check": "second apply over the existing tables: 33 checks ok"
+  },
+  {
+   "bar": "E5",
+   "ok": true,
+   "check": "the tables are empty after the apply"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "run 5 written, cause first_run (174.4 s)"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "status rows = record sticks, one per location (79,200 = 79,200)"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "every record stick has its status row, on its own set"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "log rows = status rows, all first_run (79,200)"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "run row: written, changed 79,200, sets [16, 17], box_recon_1"
+  },
+  {
+   "bar": "E7",
+   "ok": true,
+   "check": "run 6 written, changed 0 (48.4 s)"
+  },
+  {
+   "bar": "E7",
+   "ok": true,
+   "check": "0 log rows"
+  },
+  {
+   "bar": "E7",
+   "ok": true,
+   "check": "status table identical but for the run id (digest d492ebeeb59c, 79,200 rows)"
+  },
+  {
+   "bar": "E7",
+   "ok": true,
+   "check": "every status row carries the night's run id"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the hook did not raise"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the status table is untouched"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "a failed run row exists (DivisionByZero: division by zero)"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "run 8: breaker, 5 changed > limit 1"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the status table is untouched by the breaker run"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the breaker run logged nothing"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "let through: run 9 written, 5 log rows, cause well (producing->pending 5)"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "the wells produce again: 5 locations heal, status back to night 2 except status_since"
+  },
+  {
+   "bar": "E8",
+   "ok": true,
+   "check": "producing sticks back to night 2's count (88)"
+  },
+  {
+   "bar": "E6",
+   "ok": true,
+   "check": "schema box as seeded (sets 4, stick rows 159,738, locations 335,352)"
+  }
+ ],
+ "failed": [],
+ "runs": [
+  {
+   "run_id": 5,
+   "status": "written",
+   "wrote": true,
+   "changed": 79200,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 174.4,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 17,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 76,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45288,
+     "sticks": 46062,
+     "crowded": 67,
+     "pending": 28,
+     "conflict": 20,
+     "inventory": 45903,
+     "permitted": 654,
+     "producing": 72
+    }
+   }
+  },
+  {
+   "run_id": 6,
+   "status": "written",
+   "wrote": true,
+   "changed": 0,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 48.4,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 17,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 76,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45288,
+     "sticks": 46062,
+     "crowded": 67,
+     "pending": 28,
+     "conflict": 20,
+     "inventory": 45903,
+     "permitted": 654,
+     "producing": 72
+    }
+   }
+  },
+  {
+   "run_id": 7,
+   "status": "failed",
+   "wrote": false,
+   "changed": null,
+   "breaker_limit": null,
+   "stale_dsu_bench": null,
+   "seconds": null,
+   "counts": {}
+  },
+  {
+   "run_id": 8,
+   "status": "breaker",
+   "wrote": false,
+   "changed": 5,
+   "breaker_limit": 1,
+   "stale_dsu_bench": 3,
+   "seconds": 47.0,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 17,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 76,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45288,
+     "sticks": 46062,
+     "crowded": 67,
+     "pending": 33,
+     "conflict": 20,
+     "inventory": 45908,
+     "permitted": 654,
+     "producing": 67
+    }
+   }
+  },
+  {
+   "run_id": 9,
+   "status": "written",
+   "wrote": true,
+   "changed": 5,
+   "breaker_limit": 1,
+   "stale_dsu_bench": 3,
+   "seconds": 48.0,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 17,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 76,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45288,
+     "sticks": 46062,
+     "crowded": 67,
+     "pending": 33,
+     "conflict": 20,
+     "inventory": 45908,
+     "permitted": 654,
+     "producing": 67
+    }
+   }
+  },
+  {
+   "run_id": 10,
+   "status": "written",
+   "wrote": true,
+   "changed": 5,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 47.8,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 17,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 76,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45288,
+     "sticks": 46062,
+     "crowded": 67,
+     "pending": 28,
+     "conflict": 20,
+     "inventory": 45903,
+     "permitted": 654,
+     "producing": 72
+    }
+   }
+  }
+ ]
+}
