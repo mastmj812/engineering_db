@@ -63,7 +63,7 @@ stick chain is retired.
 | Identity rule (2026-11-18, gate 4a) | Same DSU + bench, >= 50 % of the shorter stick alongside within 220 ft sideways, 1:1 greedy; slot numbers never reused; depth is not identity, bench is. A new set carries ids from the basin's RECORD set (from the latest stored set while there is no record). Measured: 91.2 / 89.8 % carried across the tag cutover, 99.65 / 98.96 % over one night (Delaware / Midland) |
 | App-facing id (2026-11-18, Q2) | `stick_id = location_id` for BOX sticks; the id sequence restarts at 10,000,001, apart from Novi stick ids (max 1,824,903) and the Novi-seeded location ids (max 252,947). PDP `-(api10)` untouched |
 | Stick name (2026-11-18, Q3) | Stored `well_name` = `<pad_id>-<bench>-<slot number>`, stable across sets; not the position in the row |
-| First stored set (2026-11-18, Q4) | Stored NOT record. The record flip is a separate explicit go once both basins are stored and checked. Nothing reads `box.location_set` before phase 5. **Flipped 2026-11-18:** set 6 (Delaware) and set 7 (Midland) are the records |
+| First stored set (2026-11-18, Q4) | Stored NOT record. The record flip is a separate explicit go once both basins are stored and checked. Nothing reads `box.location_set` before phase 5. **Flipped 2026-11-18:** set 6 (Delaware) and set 7 (Midland) are the records | **Superseded 2026-11-19 by set 16 (Delaware, 46,062 sticks) and set 17 (Midland, 33,138), generator 0.12** |
 | Row ledger (2026-11-18, Q5) | Not stored. Culled rows are counted by reason per DSU x bench (`box.location_set_bench.rows_culled`); the ledger regenerates from the stored inputs |
 | WCXY extent storage (2026-11-18, Q6; supersedes "store with the phase 4 writes") | Not stored in `box.extent` in phase 4. The committed geojson is pinned by sha256 in each set's manifest and a missing file fails the run. Reason: a record WCXY extent needs a `box.bench_scope` row and enters the nightly tag rule's inputs, erebor's scope list and the geology package. Store it when phase 6 settles the WCXY forecast pool |
 | narvi private functions (2026-11-18, Q7) | Four are imported (`placement._longest_segment`, `generate._make_leg`, `generate._single_well`, `generate._place_uturns`). A narvi PR exposes them under public names with no behaviour change, then the pin is bumped. No engine copy. **Done 2026-11-18:** narvi #34 merged (`bfc7955`), pin bumped, `box/sticks/core.py` uses `longest_segment`, `make_leg`, `single_well`, `place_uturns`; a test fails if any is missing; 5,864 sticks in 400 Delaware DSUs identical on the new pin |
@@ -451,6 +451,17 @@ regenerated from the stored rows gives the stored sticks (9,457 DSUs, 0 differen
 stick rows, 333,463 locations, sets 6 and 7 still the records); the id sequence moved from 10,127,259 to 10,129,148 and set ids
 12 and 13 are used up. **Nothing is stored.** A real store needs a fresh pull from a clean main after PR #258 merges, the 0.12
 back-test on that pull, and its own go.
+
+**Generator 0.12 stored (2026-11-19, Michael: "Go store both"; `docs/box_sticks/store-0.12-2026-11-19/FINDINGS.md`).**
+`box.location_set` **set 16 (Delaware, 46,062 sticks) and set 17 (Midland, 33,138 sticks), NOT record**: generator `box_sticks_0.12`
+from `0fb5cde`, pull 2026-11-19 01:00 UTC, tag run 8. Ids carried from the records: 44,788 from set 6 (97.2 %) and 32,523 from
+set 7 (98.1 %); 1,274 + 615 new ids (10,131,038 to 10,132,926); 1,921 + 1,306 record ids stop. 10 of 10 store checks each; every
+DSU regenerated from the stored rows gives the stored sticks (9,457 DSUs, 0 differences). Back-test stored with the sets: T1
+59.3 %, T3 62.5 %, T4 37.5 %, thickness 1.56x and bracket 1.79x fail their bars as before; T2, the direct rung and the offset
+rung pass. Verified from a second connection: sets 6 and 7 are still the records, 159,738 stick rows, 335,352 locations, forecast
+records unchanged (run 32, run 30). **Record flip (2026-11-19 03:12 UTC, Michael: "Go flip both"): set 16 is the Delaware record and set 17 the Midland record;
+sets 6 and 7 are superseded and kept.** Dry run then `--go`, 7 of 7 checks each; no stick row changed; forecast records unchanged.
+A new set now carries its ids from 16 and 17. Gate 5b is authored against them.
 
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 
