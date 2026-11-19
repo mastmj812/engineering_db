@@ -1,0 +1,28 @@
+basin,kind,cause,sticks
+delaware,conflict,generator held no depth for the well (screened out),3
+delaware,conflict,"real U-turn well: survey path here, wellstick in the generator",26
+delaware,conflict,"same well, different measure",402
+delaware,conflict,well not read by the generator,105
+delaware,crowded,generator held no depth for the well (screened out),9
+delaware,crowded,"real U-turn well: survey path here, wellstick in the generator",125
+delaware,crowded,"same well, different measure",1384
+delaware,crowded,well not read by the generator,281
+delaware,drilled,"real U-turn well: survey path here, wellstick in the generator",30
+delaware,drilled,"same well, different measure",52
+delaware,drilled,well not read by the generator,134
+delaware,producing,generator held no depth for the well (screened out),2
+delaware,producing,"real U-turn well: survey path here, wellstick in the generator",33
+delaware,producing,"same well, different measure",534
+midland,conflict,"real U-turn well: survey path here, wellstick in the generator",24
+midland,conflict,"same well, different measure",85
+midland,conflict,well not read by the generator,65
+midland,crowded,generator held no depth for the well (screened out),2
+midland,crowded,"real U-turn well: survey path here, wellstick in the generator",92
+midland,crowded,"same well, different measure",1133
+midland,crowded,well not read by the generator,315
+midland,drilled,"real U-turn well: survey path here, wellstick in the generator",15
+midland,drilled,"same well, different measure",5
+midland,drilled,well not read by the generator,185
+midland,producing,generator held no depth for the well (screened out),2
+midland,producing,"real U-turn well: survey path here, wellstick in the generator",26
+midland,producing,"same well, different measure",16

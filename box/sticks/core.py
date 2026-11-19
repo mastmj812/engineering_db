@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.11"
+VERSION = "box_sticks_0.12"
 SECOND_LEVEL = "second_level_nearby"      # stick flag: a thickness-carried depth whose neighbouring wells sit at two levels (nothing moves)
 DRILLED_ACROSS = "dsu_drilled_across"      # stick flag: a short polygon whose own wells run well past its row
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
@@ -110,6 +110,41 @@ class Result:
     sticks: list[dict]
     ledger: list[dict]
     benches: list[dict]
+
+
+STEP_OUT_DEG = 15.0                       # a first segment further than this off the rest of the line is the surface step-out
+DOUBLE_BACK = 0.5                         # a line whose ends are closer than this share of its length doubles back: a U-turn path
+LEG_TRIM = 0.85                           # a U-turn leg is taken up to this share of the way to the turn (the arc is not lateral)
+
+
+def _bearing(a, b) -> float:
+    return math.degrees(math.atan2(b[0] - a[0], b[1] - a[1])) % 180.0
+
+
+def well_legs(line: BaseGeometry) -> list[LineString]:
+    """The lateral line(s) of a well's stored line (generator 0.12; docs/box_sticks/phase5a-2026-11-18 findings 1 and 3).
+
+    curated.wells.wellstick_geom runs surface location -> landing point -> midpoint -> bottom hole. Where the surface
+    location is stepped out sideways the first segment is not lateral: it is dropped when it lies more than STEP_OUT_DEG
+    off the rest of the line (taken whole, the line's bearing can read more than 15 degrees off its own lateral, and the
+    pair measure then never tests the well). A line that doubles back is the survey path of a real U-turn well: it gives
+    two legs, each a chord from its outer end to LEG_TRIM of the way to the turn. Anything else is returned as it is."""
+    c = np.asarray(line.coords, float)[:, :2]
+    if len(c) < 3:
+        return [LineString(c)]
+    if len(c) >= 5 and math.hypot(*(c[-1] - c[0])) < DOUBLE_BACK * line.length:
+        far = int(np.argmax(np.hypot(*(c - c[0]).T)))
+        u = (c[far] - c[0]) / max(math.hypot(*(c[far] - c[0])), 1e-9)
+        t = (c - c[0]) @ u
+        lim = LEG_TRIM * t[far]
+        out_i = [i for i in range(far + 1) if t[i] <= lim]
+        back_i = [i for i in range(far, len(c)) if t[i] <= lim]
+        legs = [LineString([c[k[0]], c[k[-1]]]) for k in (out_i, back_i) if len(k) >= 2 and math.hypot(*(c[k[-1]] - c[k[0]])) > 1.0]
+        return legs or [LineString(c)]
+    d = abs(_bearing(c[0], c[1]) - _bearing(c[1], c[-1]))
+    if min(d, 180.0 - d) > STEP_OUT_DEG and math.hypot(*(c[-1] - c[1])) > 1.0:
+        return [LineString(c[1:])]
+    return [LineString(c)]
 
 
 def family(code: str | None) -> str:
@@ -313,12 +348,13 @@ def envelope_hits(lines: list[LineString], tvd: float, code: str, d: Dsu, cfg: C
     assumed = assumed or {}
     if not lines or not d.wells:
         return {}
-    t = link_fn(np.array(lines, dtype=object), np.array([w.line for w in d.wells], dtype=object), same=False)
+    wl = [(leg, k) for k, w in enumerate(d.wells) for leg in well_legs(w.line)]      # a real U-turn well is tested leg by leg
+    t = link_fn(np.array(lines, dtype=object), np.array([g for g, _ in wl], dtype=object), same=False)
     t = t[t["overlap"] >= cfg.min_overlap]
     hits: dict[int, tuple[str, str]] = {}
     codev = d.wca_class == "co-developed"
     for i, j, dh in zip(t["i"].to_numpy(), t["j"].to_numpy(), t["dh_ft"].to_numpy()):
-        w = d.wells[int(j)]
+        w = d.wells[wl[int(j)][1]]
         why = None
         z = w.depth_ft if w.depth_ft is not None else assumed.get(w.code or "")
         if z is None:
@@ -358,14 +394,14 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
              "clear_width_ft": None if band0 is None else round((band0[1] - band0[0]) * FT_PER_M, 0),
              "window_width_ft": round(fr.width0 * FT_PER_M, 0)}
     # A short polygon the operator drills across with long laterals (Michael, 2026-11-16): the sticks stay, with a flag
-    n_long = sum(1 for wl in d.wells if wl.member and wl.line.length * FT_PER_M >= cfg.across_ratio * straight_ft)
+    n_long = sum(1 for wl in d.wells if wl.member and max(g.length for g in well_legs(wl.line)) * FT_PER_M >= cfg.across_ratio * straight_ft)
     across = uturn and n_long >= cfg.across_min_wells
     meta |= {"long_wells": n_long, "drilled_across": across}
 
     # spacing: each bench its own map spacing (U-turn floor only); no sharing between benches (Michael, 2026-11-15)
     for w in live:
         w.s_ft = max(w.b.spacing_ft, min_s_ft)
-        mids = [wl.line.interpolate(0.5, normalized=True) for wl in d.wells if wl.member and wl.code == w.b.code]
+        mids = [g.interpolate(0.5, normalized=True) for wl in d.wells if wl.member and wl.code == w.b.code for g in well_legs(wl.line)]
         w.rows = [fr.y_of(p.x, p.y) for p in mids]                           # pin positions, replaced by rows below
         w.pinned = bool(w.rows)
         if cfg.local_spacing_wells and len(w.rows) >= cfg.local_spacing_wells:
@@ -438,10 +474,11 @@ def generate_dsu(d: Dsu, cfg: Cfg, link_fn) -> Result:
             score = [0, 0]
             for wl in d.wells:
                 if wl.member and wl.code == code and wl.depth_ft is not None and len(ys):
-                    m = wl.line.interpolate(0.5, normalized=True)
-                    k = int(np.argmin(np.abs(ys - fr.y_of(m.x, m.y))))
-                    lvl = int(abs(wl.depth_ft - w.levels[1]) < abs(wl.depth_ft - w.levels[0]))
-                    score[(k - lvl) % 2] += 1
+                    for g in well_legs(wl.line):
+                        m = g.interpolate(0.5, normalized=True)
+                        k = int(np.argmin(np.abs(ys - fr.y_of(m.x, m.y))))
+                        lvl = int(abs(wl.depth_ft - w.levels[1]) < abs(wl.depth_ft - w.levels[0]))
+                        score[(k - lvl) % 2] += 1
             par = int(score[1] > score[0])
         for k, r in enumerate(rows):
             r["tvd"] = w.levels[(k + par) % 2] if w.levels else tvd

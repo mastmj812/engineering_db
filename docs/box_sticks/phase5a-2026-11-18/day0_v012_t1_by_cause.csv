@@ -1,0 +1,25 @@
+basin,kind,why,sticks
+delaware,conflict,"other code, within 150 ft vertically",3
+delaware,conflict,real U-turn well,2
+delaware,conflict,"same code, 150 to 500 ft apart vertically",19
+delaware,conflict,"same code, within 150 ft vertically",19
+delaware,conflict,well without depth evidence,4
+delaware,crowded,"other code, within 150 ft vertically",137
+delaware,crowded,real U-turn well,6
+delaware,crowded,"same code, 150 to 500 ft apart vertically",11
+delaware,crowded,"same code, within 150 ft vertically",108
+delaware,crowded,well without depth evidence,29
+delaware,producing,"other code, within 150 ft vertically",2
+delaware,producing,real U-turn well,1
+delaware,producing,"same code, 150 to 500 ft apart vertically",69
+delaware,producing,"same code, within 150 ft vertically",1
+midland,conflict,"same code, 150 to 500 ft apart vertically",3
+midland,conflict,"same code, within 150 ft vertically",3
+midland,crowded,"other code, within 150 ft vertically",88
+midland,crowded,real U-turn well,7
+midland,crowded,"same code, 150 to 500 ft apart vertically",2
+midland,crowded,"same code, within 150 ft vertically",66
+midland,crowded,well without depth evidence,3
+midland,producing,"other code, within 150 ft vertically",2
+midland,producing,real U-turn well,1
+midland,producing,"same code, 150 to 500 ft apart vertically",13

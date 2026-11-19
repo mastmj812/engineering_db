@@ -1,0 +1,9 @@
+key,basin,status_py,crowded_py,legs_matched_py,status_sql,crowded_sql,legs_matched_sql
+10054201,delaware,conflict,False,0,open,True,0
+10054322,delaware,conflict,False,0,open,True,0
+10055817,delaware,conflict,False,0,open,True,0
+10063891,delaware,permitted,True,0,open,True,0
+10070864,delaware,conflict,False,0,open,True,0
+10084803,delaware,conflict,False,0,open,True,0
+10087762,delaware,open,False,0,permitted,False,0
+10088419,delaware,conflict,False,0,producing,False,1

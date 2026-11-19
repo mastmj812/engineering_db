@@ -1,0 +1,49 @@
+Merge Left Join  (cost=114496.21..766643503.34 rows=80538 width=240)
+  Merge Cond: ((s.set_id = p.set_id) AND (s.location_id = p.location_id))
+  CTE rec
+    ->  Seq Scan on location_set  (cost=0.00..13.60 rows=80 width=96)
+          Filter: is_record
+  CTE w
+    ->  Gather  (cost=1001.25..18297.02 rows=222 width=155)
+          Workers Planned: 1
+          ->  Nested Loop Left Join  (cost=1.25..17274.82 rows=131 width=155)
+                ->  Nested Loop Left Join  (cost=0.83..16954.09 rows=131 width=142)
+                      ->  Nested Loop  (cost=0.42..16661.47 rows=131 width=136)
+                            ->  Parallel Seq Scan on wells w  (cost=0.00..16343.86 rows=141 width=123)
+                                  Filter: (CASE WHEN ((COALESCE(novi_slant_calculated, (enverus_trajectory)::character varying))::text ~~* '%horizontal%'::text) THEN true WHEN (COALESCE(novi_slant_calculated, (enverus_trajectory)::character varying) IS NULL) THEN NULL::boolean ELSE false END AND (st_geometrytype(wellstick_geom) = 'ST_LineString'::text))
+                            ->  Index Scan using idx_curated_formation_blueox_api10 on formation_blueox fb  (cost=0.42..2.25 rows=1 width=24)
+                                  Index Cond: ((api10)::text = (w.api10)::text)
+                                  Filter: (basin_blueox = ANY ('{delaware,midland}'::text[]))
+                      ->  Index Scan using idx_formation_blueox_tvd_api10 on formation_blueox_tvd fbt  (cost=0.41..2.23 rows=1 width=17)
+                            Index Cond: ((api10)::text = (w.api10)::text)
+                ->  Index Scan using uq_well_lateral_survey_api10 on well_lateral_survey sv  (cost=0.42..2.42 rows=1 width=2629)
+                      Index Cond: ((api10)::text = (w.api10)::text)
+  CTE pair
+    ->  Nested Loop  (cost=4.26..50468.77 rows=213000 width=371)
+          ->  Nested Loop  (cost=3.01..44610.02 rows=213 width=367)
+                ->  Hash Join  (cost=2.60..9.99 rows=212 width=282)
+                      Hash Cond: (w_1.basin = r_1.basin)
+                      ->  CTE Scan on w w_1  (cost=0.00..4.44 rows=221 width=250)
+                            Filter: (cls IS NOT NULL)
+                      ->  Hash  (cost=1.60..1.60 rows=80 width=96)
+                            ->  CTE Scan on rec r_1  (cost=0.00..1.60 rows=80 width=96)
+                ->  Index Scan using box_location_stick_geog_gix on location_stick s_1  (cost=0.41..210.34 rows=4 width=93)
+                      Index Cond: ((legs_geom)::geography && _st_expand((w_1.line)::geography, (r_1.same_dh_ft * '0.3048'::double precision)))
+                      Filter: ((r_1.set_id = set_id) AND st_dwithin((legs_geom)::geography, (w_1.line)::geography, (r_1.same_dh_ft * '0.3048'::double precision), true))
+          ->  Function Scan on st_dump d  (cost=1.25..11.25 rows=1000 width=64)
+  ->  Merge Join  (cost=4.55..21180.10 rows=80538 width=39)
+        Merge Cond: (s.set_id = r.set_id)
+        ->  Index Scan using location_stick_pkey on location_stick s  (cost=0.42..19766.56 rows=80538 width=39)
+        ->  Sort  (cost=4.13..4.33 rows=80 width=8)
+              Sort Key: r.set_id
+              ->  CTE Scan on rec r  (cost=0.00..1.60 rows=80 width=8)
+  ->  GroupAggregate  (cost=45712.28..766551612.53 rows=21300 width=131)
+        Group Key: p.set_id, p.location_id
+        ->  GroupAggregate  (cost=45712.28..766532602.28 rows=213000 width=165)
+              Group Key: p.set_id, p.location_id, p.leg_no
+              ->  Sort  (cost=45712.28..46244.78 rows=213000 width=398)
+                    Sort Key: p.set_id, p.location_id, p.leg_no
+                    ->  CTE Scan on pair p  (cost=0.00..4260.00 rows=213000 width=398)
+              SubPlan 4
+                ->  Function Scan on jsonb_array_elements k  (cost=0.00..10282.25 rows=4 width=0)
+                      Filter: (((p.depth_ft - p.target_tvd_ft) > ((value ->> 0))::double precision) AND ((p.depth_ft - p.target_tvd_ft) <= ((value ->> 1))::double precision) AND ((st_length((st_intersection(p.leg, (geography(st_transform(st_buffer(st_transform(geometry((p.line)::geography), _st_bestsrid((p.line)::geography)), (((value ->> 2))::double precision * '0.3048'::double precision), ''::text), st_srid((p.line)::geography))))::geometry, '-1'::double precision))::geography, true) / NULLIF(st_length((p.leg)::geography, true), '0'::double precision)) >= p.min_ov))

@@ -256,3 +256,65 @@ def test_second_level_nearby_flags_the_sticks_and_moves_none():
     assert [s["target_tvd_ft"] for s in res.sticks] == [s["target_tvd_ft"] for s in plain.sticks]
     assert all(s["tvd_basis"]["second_level_tvd_ft"] is None and core.SECOND_LEVEL not in s["flags"] for s in plain.sticks)
     assert res.benches[0]["second_level_tvd_ft"] == 11165.0 and core.SECOND_LEVEL in res.benches[0]["flags"]
+
+
+# ----------------------------------------------------------------------------
+# Generator 0.12: the well line the generator reads (docs/box_sticks/phase5a-2026-11-18, findings 1 to 3)
+# ----------------------------------------------------------------------------
+
+
+def _stepped(x_ft, step_ft=2500.0, h_ft=10560.0):
+    """A stored wellstick: surface location stepped out east of the heel, then landing point, midpoint, bottom hole."""
+    x = X0 + x_ft * M
+    return LineString([(x + step_ft * M, Y0 + 500 * M), (x, Y0 + 400 * M), (x, Y0 + h_ft / 2 * M), (x, Y0 + (h_ft - 400) * M)])
+
+
+def test_well_legs_drops_a_stepped_out_surface_location_only():
+    line = _stepped(1000)
+    (leg,) = core.well_legs(line)
+    assert len(leg.coords) == 3 and abs(leg.coords[0][0] - (X0 + 1000 * M)) < 1e-6           # starts at the landing point
+    straight = LineString([(X0, Y0 - 300 * M), (X0, Y0), (X0, Y0 + 5000 * M), (X0, Y0 + 10000 * M)])   # surface in line with the lateral
+    assert core.well_legs(straight) == [straight]
+    two = LineString([(X0, Y0), (X0, Y0 + 5000 * M)])
+    assert core.well_legs(two) == [two]
+
+
+def test_well_legs_splits_a_real_uturn_path_into_two_legs():
+    out = [(X0, Y0 + k * 500 * M) for k in range(11)]                                          # 5,000 ft out
+    back = [(X0 + 1200 * M, Y0 + k * 500 * M) for k in range(10, -1, -1)]                      # 1,200 ft over, 5,000 ft back
+    legs = core.well_legs(LineString(out + back))
+    assert len(legs) == 2
+    assert all(abs(g.length / M - 0.85 * 5000) < 300 for g in legs)                            # each leg up to 85 % of the way to the turn
+    assert abs(legs[0].centroid.x - X0) < 1 and abs(legs[1].centroid.x - (X0 + 1200 * M)) < 1
+
+
+def test_a_well_with_a_stepped_out_surface_location_still_closes_its_row():
+    """Finding 1: taken first point to last, this well reads more than 15 degrees off the rows and was never tested."""
+    w = core.Well("P1", "WCA_1", 11000, _stepped(1000), True)
+    res = run(dsu([bench("WCA_1", 1, 11000, 880)], [w]))
+    assert all(abs(x - (1000 - 2640)) > 400 for x in xs(res, "WCA_1"))
+    assert "envelope_same_landing" in reasons(res, "WCA_1")
+    assert all("pinned" in s["flags"] for s in res.sticks)
+
+
+def test_a_real_uturn_well_closes_both_of_its_legs():
+    """Finding 3: on its survey path a real U-turn well pins and closes two rows; on its wellstick it closed none."""
+    out = [(X0 + 1000 * M, Y0 + (400 + k * 500) * M) for k in range(19)]
+    back = [(X0 + 2200 * M, Y0 + (400 + k * 500) * M) for k in range(18, -1, -1)]
+    w = core.Well("U1", "WCA_1", 11000, LineString(out + back), True)
+    res = run(dsu([bench("WCA_1", 1, 11000, 1200)], [w]))
+    got = xs(res, "WCA_1")
+    assert got and all(abs(x - (1000 - 2640)) > 400 and abs(x - (2200 - 2640)) > 400 for x in got)
+    assert reasons(res, "WCA_1").count("envelope_same_landing") == 2
+
+
+def test_the_not_yet_producing_pull_reads_every_drilled_status():
+    """Finding 2: a spud date under Inactive / Active / Permit Approved is a drilled well; a cancelled permit is not read."""
+    from scripts import box_sticks_phase3_pilot as p3
+
+    sql = p3._PREPROD_SQL
+    for status in ("Spud", "DUC", "Completed", "Inactive", "Active"):
+        assert f"'{status}'" in sql
+    assert "w.well_status = 'Permit Approved' AND w.spud_date IS NOT NULL" in sql
+    assert "Permit Cancelled" not in sql and "P&A" not in sql and "Abandoned" not in sql
+    assert "w.first_production_date IS NULL" in sql

@@ -39,7 +39,7 @@ stick chain is retired.
 | Density is per bench (2026-11-13, phase 2a; reverses the per-landing choice of 2026-11-12) | Bench density is the count of same-bench wells across a section, however the operator staggered them vertically. Reference case: Ruthless 11 Federal COM (Lea), 11 BS2_S wells across a mile at two landings 350 ft apart = 11 WPS, not 5-6 per landing. Known: this measure fails the cross-check against Novi `lateral_closer_xy_ft` in the Delaware (65 % against a 70 % bar) because Novi counts per zone; kept deliberately. The vertical arrangement is the generator's job: where local wells show two landings, sticks alternate between them (open item) |
 | Spacing map (2026-11-13, phase 2a; supersedes the 1 -> 2 -> 3 mi radius chain and the hard band default merged in PR #244) | **Blended surface.** Per bench, the Gaussian-weighted median of per-bench well gaps around the DSU (sigma 3 mi, wells out to 7.5 mi, weight by distance DSU polygon to well), relaxed toward the bench's extent-band median as control thins: spacing = band - c (band - weighted median), c = n_eff / (n_eff + 1), n_eff = sum of weights. Bands are distance inside the bench's BOX extent edge (0-2, 2-5, 5-10, 10+ mi); a band with fewer than 20 wells -> 1,320 ft. Clamped to 440-1,320 ft. Every stick records `spacing_basis` (n_eff, weighted median, band value). Reason (Michael): a mature bench reads as nested contours, densest in the core and thinning outward, because operators drilled the best rock first; a gap in development inside the core must not drop to a default. Evidence: passes its pre-set adoption test in both basins; with wells within 2 mi hidden the median error is 137 ft Delaware / 87 ft Midland against 161 / 104 ft for the chain; adjacent-DSU steps over 200 ft fall from about 15 % to about 2 % |
 | No-place envelope (2026-11-14, phase 2b; candidate D) | A stick is not placed when an existing producer runs alongside >= 30 % of it AND sits either (1) at the **same landing** (within 150 ft vertically, whatever the tag) within **400 ft** sideways, both basins (the Midland 21a floor, now the Delaware's too), or (2) **stacked** within **300 ft** sideways: producer 150-350 ft deeper (both basins); producer shallower by 150-250 ft (Delaware) or 150-350 ft (Midland). Gap = median perpendicular distance over the shared length. Outside it the stick is placed and D150 discounts it. Tested against existing producers only, never stick against stick, so a co-developed stagger inside a bench (Ruthless 11) is untouched. Evidence: drilled children next to a parent >= 12 months on are 0.04-0.05 of the far-field rate inside the same-landing part and 0.14-0.22 in the stacked part (0.87-1.15 when the neighbour is co-developed); the envelope would have excluded 260 of 22,610 Delaware children (1.15 %) and 377 of 23,988 Midland (1.57 %). Not adopted: D112's 800 / 500 ft vertical and deal-intake v14 as placement rules (they exclude 7-28 % of what was drilled); a 600 ft same-landing limit; the Midland stacked part past 350 ft. Decided with two failed bars stated: the pair-metric reproduction, and the D150 refit check in the Midland (the Midland factor's near end is re-measured in phase 6) |
-| Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags |
+| Drop trigger | Spud / DUC removes a location from undrilled counts; an approved permit only flags. **Superseded 2026-11-18: producing only, see the row "Drop trigger, revised"** |
 | Generator: which wells count (2026-11-15, gate 3a) | Every producer at any age plus spud / DUC / completed wells. A well's own planned-survey depth is never used |
 | Generator: well with no depth evidence (2026-11-15) | Pins its bench's row grid. It is tested through the normal envelope at the DSU's landing depth of its tagged bench, where that bench kept a landing in the DSU; otherwise it closes its whole formation family within 400 ft sideways |
 | Generator: one landing per bench (2026-11-15) | One landing per bench per DSU; where the DSU's own wells show two, the flag `two_landings_observed`. Known from the back-test: in 17 of 40 pilot DSU x bench drilled in two campaigns, the later campaign landed more than 150 ft from the earlier one |
@@ -69,6 +69,9 @@ stick chain is retired.
 | narvi private functions (2026-11-18, Q7) | Four are imported (`placement._longest_segment`, `generate._make_leg`, `generate._single_well`, `generate._place_uturns`). A narvi PR exposes them under public names with no behaviour change, then the pin is bumped. No engine copy. **Done 2026-11-18:** narvi #34 merged (`bfc7955`), pin bumped, `box/sticks/core.py` uses `longest_segment`, `make_leg`, `single_well`, `place_uturns`; a test fails if any is missing; 5,864 sticks in 400 Delaware DSUs identical on the new pin |
 | Second level on bracket / offset rungs (2026-11-18, Q8) | Not measured before storing. `second_level_tvd_ft` is NULL there and the column comment says NULL means not measured |
 | Direct-rung expected error (2026-11-18, Q9) | Every stick stores an expected error: direct-rung sticks take their bench's direct hold-out (`holdout_direct.csv`, median and P90). Reported on the stick only; the stack reconciliation keeps using what it used (no stick moves) |
+| Drop trigger, revised (2026-11-18, gate 5a; supersedes "Spud / DUC removes a location") | **Producing only.** A location leaves undrilled counts when a matching well has a first production date. A well that is spudded, a DUC or completed but not producing only flags, like an approved permit, and is re-judged the night it produces. Reason (Michael): before a survey or the completion report reaches the vendor, tags and depths are permit data. Measured: no depth evidence on 39 % of Texas and 57 % of New Mexico Spud wells against 0.6 % and 23 % of this year's producers; 41 % of newly spudded Midland wells are tagged OTHER or untagged; conflicts fall from about 30 % of sticks taken out to 11 to 14 %. Cost: a median 196 days (NM) and 220 days (TX) from spud to first production. The GENERATOR still reads wells that are not producing yet (2026-11-15 row); that is not changed |
+| Shape of nightly reconciliation (2026-11-18, gate 5a; Michael: "i agree") | **Stick status** as designed in `docs/box_sticks/phase5a-2026-11-18/DESIGN.md` (ETL-owned tables written by a nightly hook that reads `box.*` and never writes it), with the producing-only trigger, the 30 % conflict floor, the three generator-mirroring rules (no test between WCA_1 and WCA_2 in a co-developed DSU; a well with no depth evidence taken at the DSU's landing of its tagged bench, family otherwise; crowded on the median form) and flat-ended corridors. **Stale row:** one nightly row per DSU x bench holding a new producer of that bench, with the new producers and an estimated stick count marked as an estimate. **Regeneration** stays periodic and explicit-go, with the stale list as its work list. The estimate (the lower of the stick status and sticks minus new producers) gets its own bar in 5b |
+| Reconciliation conflict floor (2026-11-18, gate 5a) | A well alongside **30 % to 50 %** of a stick leg is a conflict, not sql/68's 20 % to 50 %. Reason: the generator places a row beside a well that runs along under 30 % of it (2026-11-15, DSU 10600), so 20 to 30 % was a conflict by construction: 168 of 215 Delaware and 52 of 58 Midland day-0 conflicts on generator 0.12. sql/68 itself keeps 0.2 on the Novi sticks |
 
 ### What exploration found (shapes the plan)
 
@@ -369,7 +372,7 @@ regenerated set carries its ids from these two. **Phase 4 is complete.**
 ## Phase 5 - Nightly reconciliation
 
 New nightly step after `wells_enriched`, re-targeting the sql/68 co-extent overlap predicate at BOX locations
-(+-150 ft corridor; >= 0.5 overlap = match, 0.2-0.5 = conflict; same code within 500 ft TVD, or within 150 ft
+(+-150 ft corridor; >= 0.5 overlap = match, 0.3-0.5 = conflict (0.3 since 2026-11-18, see the decision table); same code within 500 ft TVD, or within 150 ft
 whatever the tag).
 
 | Status | Fired by | Counts as inventory |
@@ -388,6 +391,66 @@ whatever the tag).
 - A newly drilled well also flags neighbouring locations that now sit inside the no-place envelope
   (`crowded`). Regenerating sticks and re-running forecasts stay periodic, explicit-go operations.
 - Needs the geography expression indexes (sql/26 pattern) and a slot in `etl/db.py:_CURATED_MATVIEWS`.
+
+**Gate 5a (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/DESIGN.md`, read-only, nothing applied, nothing on the nightly
+path).** Design: three ETL-owned tables (`curated.box_location_status`, `curated.box_location_status_log`, `meta.box_recon_run`)
+written by a nightly hook that reads `box.*` and never writes it; `_CURATED_MATVIEWS` unchanged. The predicate is one SELECT
+against the record sets (`predicate_draft.sql`): legs judged one by one, wells not yet producing and approved permits as
+their own classes, the survey path for the 467 real U-turn wells, crowded from the set's stored envelope. On live it takes
+47 s for both basins, uses `box_location_stick_geog_gix`, and gives the Python reference's status on 99.98 % (Delaware) and
+100.00 % (Midland) of sticks. Bars were committed before scoring (`BARS.md`, `d2b06a0`). **Day 0 fails D1 and D2:** on sets 6
+and 7 (pull 2026-11-18 18:26 UTC) 2.83 % of Delaware and 1.25 % of Midland sticks already match or conflict with a well and
+3.85 % / 4.56 % are flagged crowded; with three generator rules mirrored (variant B, not the bar) 1.37 % / 1.26 % and
+1.13 % / 1.53 %. **Back-test** (hindcast sets with the 353 not-yet-producing wells spudded after 2026-09-30 hidden; 570 test
+wells, 283 of them in a DSU holding a stick of their family): one well takes out 0.83 (Delaware) and 1.11 (Midland) sticks
+(B2 passes); **B1 fails in the Delaware** (67.5 % of wells take a stick out, bar 80 %; Midland 82.6 %); **B3 fails** (clean
+match 17.8 % / 27.2 %, bar 40 %); **B4 fails** (conflicts 29.1 % / 34.3 % of sticks out, bar 15 %); **B5 fails** (6.41 % /
+5.70 %, bar 0.5 %). Found in the generator, nothing changed: a well whose stored line starts at a stepped-out surface
+location is never tested by the envelope (a stick placed on a producing well, at least 24 sticks); wells with a spud date
+under status Inactive / P&A / Abandoned / Permit Approved are not read; real U-turn wells are read as their short
+wellstick. 145 of the 570 newly spudded wells carry tag OTHER or none (Midland 41 %). Thirteen questions wait on Michael.
+
+**Gate 5a, second measurement (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/FINDINGS_2.md`; Michael, on the first: reconciling
+against DUCs and permits is dubious, their tags and depths are still permit data).** Measured: no depth evidence on 39 % of
+Texas and 57 % of New Mexico Spud wells against 0.6 % and 23 % of this year's producers; spud to first production is a median
+196 days (NM) and 220 days (TX). With only producing wells counting, day 0 on sets 6 and 7 is 0.76 % matched or conflict and
+0.53 % crowded (Delaware), 0.35 % and 0.49 % (Midland). Back-test as of 2026-01-01 (3,785 wells hidden; bars in `BARS_2.md`,
+committed first; 326 Delaware and 289 Midland producing test wells in a DSU with a stick of their family): conflicts pass
+(13.7 % / 11.5 % of sticks out, bar 15 %); Midland passes P1 (83.4 % of wells take a stick out) and P2 (1.27 sticks per well);
+**the Delaware fails P1 (60.4 %) and P2 (0.74); P3 fails in both (clean match 22.7 % / 35.6 %, bar 40 %); P5 fails in both
+(1.24 % / 0.80 %, bar 0.5 %).** Row spacing alone predicts 87 % / 34 % in the Midland (863 ft median) and 73 % / 28 % in the
+Delaware (1,193 ft): a new well usually lands between two rows, so a stick-by-stick status is silent for about 1 new producer
+in 6 in the Midland and 2 in 5 in the Delaware. Nothing decided; the drop trigger of 2026-11-12 stands until Michael changes it.
+
+**Generator 0.12 (2026-11-18, Michael: "Yes, generator first"; `docs/box_sticks/phase5a-2026-11-18/FINDINGS_3.md`; files only,
+NOT stored, sets 6 and 7 stay the records).** Three well-input fixes, no threshold or placement rule changed: a first segment
+more than 15 degrees off the rest of a well's stored line (the surface step-out) is dropped; the 467 real U-turn wells are read
+on their survey path as two legs; not-yet-producing wells now include Inactive / Active and Permit Approved with a spud date
+(3,516 -> 5,020 wells). Pull 2026-11-18 22:37 UTC: Delaware 46,062 sticks (set 6: 46,709), Midland 33,138 (set 7: 33,829), 0
+invariant violations. Day 0 on producing wells (bars in `BARS_3.md`, committed first): matched or conflict 0.63 % Delaware
+(**fails** the 0.5 % bar; 0.76 % on set 6) and 0.22 % Midland (passes; 0.35 %); crowded 0.41 % and 0.39 % (pass). 168 of the 215
+Delaware conflicts are a producer alongside 20 to 30 % of a stick: the generator places such a row (30 % rule, 2026-11-15) and
+the predicate's sql/68 floor of 20 % calls it a conflict. Storing a 0.12 set is its own explicit go.
+
+**Gate 5a, DSU-level signal (2026-11-18, `docs/box_sticks/phase5a-2026-11-18/FINDINGS_4.md`; files only).** With the two decisions
+of the day (producing-only drop trigger, 30 % conflict floor) day 0 on generator 0.12 is 0.26 % matched or conflict (Delaware)
+and 0.07 % (Midland); crowded is 0.63 % / 0.50 % and 0.40 % / 0.34 % with flat-ended corridors (side check; for 5b). Signal
+tested: per DSU x bench, sticks minus new producers of that bench that are members of the DSU. Test: generator 0.12 as of
+2026-01-01 against the same inputs regenerated with the 745 hidden producers put back; 156 touched DSU x bench per basin (450
+-> 178 sticks Delaware, 534 -> 192 Midland; bars in `BARS_4.md`, committed first). **Delaware passes all four bars** (total
++0.6 %, mean abs error 0.57 against 0.69 for the stick status, exact on 55.8 %, fires for 72.3 % of new producers). **Midland
+fails three** (total +31.8 %, error 0.72 against 0.62, exact on 49.4 %) and passes the fourth (84.4 %): a regeneration there
+removes 1.16 sticks per new producer, not 1. The lower of the two estimates is within 8 % in both basins (seen after scoring;
+a proposal for 5b). Size: 10.5 months of new producers make 312 DSU x bench stale (984 of about 83,000 sticks); doing nothing
+overstates inventory by 0.57 % (Delaware) and 0.97 % (Midland), the stick status alone by 0.20 % and 0.17 %.
+
+**Generator 0.12, store dry run on live (2026-11-19 00:18 to 00:31 UTC, Michael: "dry run the store"; rolled back;
+`docs/box_sticks/phase5a-2026-11-18/STORE_DRY_RUN.md`).** Delaware: 44,788 of 46,062 sticks carry their id from set 6 (97.2 %),
+1,274 new, 1,921 ids stop. Midland: 32,523 of 33,138 from set 7 (98.1 %), 615 new, 1,306 stop. All store checks ok; every DSU
+regenerated from the stored rows gives the stored sticks (9,457 DSUs, 0 differences). Live unchanged by identity (2 sets, 80,538
+stick rows, 333,463 locations, sets 6 and 7 still the records); the id sequence moved from 10,127,259 to 10,129,148 and set ids
+12 and 13 are used up. **Nothing is stored.** A real store needs a fresh pull from a clean main after PR #258 merges, the 0.12
+back-test on that pull, and its own go.
 
 **Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
 

@@ -1,0 +1,32 @@
+basin,state_code,grp,outcome,basis,wells
+delaware,30,W,conflict,depth,35
+delaware,30,W,conflict,planned,2
+delaware,30,W,crowded,depth,103
+delaware,30,W,crowded,planned,18
+delaware,30,W,match,depth,61
+delaware,30,W,match,planned,18
+delaware,30,W,nothing,depth,97
+delaware,30,W,nothing,planned,18
+delaware,30,no stick of its family in its DSU,conflict,depth,1
+delaware,30,no stick of its family in its DSU,crowded,depth,3
+delaware,30,no stick of its family in its DSU,match,depth,1
+delaware,30,no stick of its family in its DSU,nothing,depth,79
+delaware,30,no stick of its family in its DSU,nothing,planned,16
+delaware,42,W,conflict,depth,22
+delaware,42,W,crowded,depth,73
+delaware,42,W,match,depth,60
+delaware,42,W,nothing,depth,46
+delaware,42,W,nothing,planned,1
+delaware,42,no stick of its family in its DSU,conflict,depth,3
+delaware,42,no stick of its family in its DSU,crowded,depth,5
+delaware,42,no stick of its family in its DSU,match,depth,4
+delaware,42,no stick of its family in its DSU,nothing,depth,29
+midland,42,W,conflict,depth,78
+midland,42,W,crowded,depth,220
+midland,42,W,match,depth,213
+midland,42,W,nothing,depth,75
+midland,42,no stick of its family in its DSU,conflict,depth,2
+midland,42,no stick of its family in its DSU,crowded,depth,8
+midland,42,no stick of its family in its DSU,match,depth,3
+midland,42,no stick of its family in its DSU,nothing,depth,120
+midland,42,no stick of its family in its DSU,nothing,planned,1

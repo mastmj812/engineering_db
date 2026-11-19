@@ -1,0 +1,1416 @@
+api10,basin,state_code,well_name,well_status,spud_date,code,fam,is_uturn,grp,basis,sticks_matched,dsus_matched,sticks_conflict,sticks_crowded,outcome
+3001553732,delaware,30,CHAOS WC FEDERAL COM #702H,Active,2026-02-02,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3001554152,delaware,30,FLAMING SNAIL FEDERAL COM #703H,Active,2026-03-13,WCA_1,WCA,False,W,depth,1,1,0,0,match
+3001554306,delaware,30,SIMON CAMAMILE 0206 FEDERAL COM #121H,Active,2026-01-07,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001554309,delaware,30,SIMON CAMAMILE 0206 FEDERAL COM #122H,Active,2026-01-08,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001554728,delaware,30,KOALA 9 FEDERAL COM #121H,Active,2026-02-14,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001554982,delaware,30,COTTON DRAW 25 36 FEDERAL COM #307H,DUC,2026-05-30,BS3_S,BS3,False,W,depth,1,1,1,0,match
+3001555015,delaware,30,YUKON GOLD 31 19 FEDERAL COM #821H,DUC,2026-09-06,WCB_2,WCB,False,W,depth,0,0,1,0,conflict
+3001555170,delaware,30,POLO AOP FEDERAL COM #010H,Active,2026-04-21,BS2_C,BS2,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001555195,delaware,30,POLO AOP FEDERAL COM #001H,Active,2026-04-19,AVA_0,AVA,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001555197,delaware,30,POLO AOP FEDERAL COM #011H,Active,2026-04-16,BS1_S,BS1,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001555199,delaware,30,POLO AOP FEDERAL COM #070H,Active,2026-04-18,BS2_C,BS2,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001555479,delaware,30,SWEET TEA FEDERAL COM #553H,Active,2026-03-15,BS3_C,BS3,False,W,planned,0,0,0,1,crowded
+3001555630,delaware,30,SWEET TEA STATE COM #552H,Active,2026-03-14,BS3_C,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001555644,delaware,30,RICK VAUGHN FEDERAL COM #503H,Completed,2026-05-15,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001555645,delaware,30,RICK VAUGHN FEDERAL COM #811H,Completed,2026-04-30,WCC,WCC,False,W,depth,0,0,0,0,nothing
+3001555646,delaware,30,RICK VAUGHN FEDERAL COM #812H,Completed,2026-04-26,WCC,WCC,False,W,depth,0,0,0,0,nothing
+3001555819,delaware,30,STEEL GUITAR 35 26 FEDERAL COM #460H,Completed,2026-02-17,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001555839,delaware,30,GROVE 16 STATE COM #070H,Active,2026-03-28,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001555841,delaware,30,GROVE 16 STATE COM #011H,Active,2026-03-26,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001555842,delaware,30,GROVE 16 STATE COM #090H,Active,2026-03-22,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001555874,delaware,30,OMAHA 36 31 FEDERAL COM #527H,Active,2026-02-26,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001555875,delaware,30,OMAHA 36 31 FEDERAL COM #525H,Active,2026-02-26,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001555937,delaware,30,STEEL GUITAR 35 26 FEDERAL COM #333H,Completed,2026-03-17,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001556026,delaware,30,RICK VAUGHN FEDERAL COM #810H,Completed,2026-07-31,WCC,WCC,False,W,depth,2,1,0,0,match
+3001556040,delaware,30,NUGGET 6 31 FEDERAL COM #023H,Active,2026-03-14,AVA_2,AVA,False,W,depth,1,1,0,1,match
+3001556041,delaware,30,NUGGET 6 31 FEDERAL COM #043H,Active,2026-03-13,AVA_1,AVA,False,W,planned,0,0,0,1,crowded
+3001556049,delaware,30,NUGGET 6 31 FEDERAL COM #025H,Active,2026-03-18,AVA_2,AVA,False,W,depth,1,1,0,1,match
+3001556050,delaware,30,NUGGET 6 31 FEDERAL COM #026H,Active,2026-03-18,AVA_2,AVA,False,W,depth,1,1,0,0,match
+3001556071,delaware,30,JAKKU 36 FEDERAL COM #131H,Active,2026-02-15,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001556108,delaware,30,UTAH 17 18 FEDERAL COM #821H,Active,2026-02-11,WCB_1,WCB,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001556109,delaware,30,UTAH 17 18 FEDERAL COM #823H,Active,2026-02-11,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001556110,delaware,30,UTAH 17 18 FEDERAL COM #825H,Active,2026-02-11,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001556205,delaware,30,NUGGET 6 31 FEDERAL COM #021H,Active,2026-03-15,AVA_2,AVA,False,W,depth,0,0,0,0,nothing
+3001556330,delaware,30,CANAL 20 19 FEDERAL COM #716H,Active,2026-01-23,WCA_1,WCA,False,W,depth,1,1,0,1,match
+3001556333,delaware,30,CANAL 20 19 FEDERAL COM #718H,Active,2026-02-08,WCA_1,WCA,False,W,depth,1,1,0,1,match
+3001556357,delaware,30,CANAL 20 19 FEDERAL COM #857H,Active,2026-01-08,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001556389,delaware,30,EASY PEASY 32 33 FEDERAL COM #527H,Completed,2026-05-06,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001556396,delaware,30,UTAH 17 18 FEDERAL COM #827H,Active,2026-02-11,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001556414,delaware,30,PRECIOUS 30 18 FEDERAL COM #013H,Active,2026-01-27,BS1_S,BS1,False,W,planned,0,0,0,1,crowded
+3001556415,delaware,30,PRECIOUS 30 18 FEDERAL COM #014H,Active,2026-01-28,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+3001556418,delaware,30,PRECIOUS 30 18 FEDERAL COM #173H,Active,2026-01-10,BS3_C,BS3,False,W,planned,0,0,0,0,nothing
+3001556419,delaware,30,PRECIOUS 30 18 FEDERAL COM #174H,Active,2026-01-11,BS3_C,BS3,False,W,planned,0,0,0,0,nothing
+3001556531,delaware,30,NEATO BANDITO 23 24 FEDERAL COM #511H,Active,2026-01-19,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+3001556532,delaware,30,NEATO BANDITO 23 24 FEDERAL COM #513H,Active,2026-01-17,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+3001556535,delaware,30,PRECIOUS 30 18 FEDERAL COM #011H,Active,2026-01-12,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3001556536,delaware,30,PRECIOUS 30 18 FEDERAL COM #012H,Active,2026-01-12,BS1_S,BS1,False,W,planned,1,1,0,0,match
+3001556729,delaware,30,COTTON DRAW 25 36 FEDERAL COM #718H,Completed,2026-05-11,WCA_2,WCA,False,W,depth,1,1,0,1,match
+3001556731,delaware,30,COTTON DRAW 25 36 FEDERAL COM #302H,Completed,2026-03-10,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3001556732,delaware,30,COTTON DRAW 25 36 FEDERAL COM #828H,Completed,2026-04-27,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+3001556733,delaware,30,COTTON DRAW 25 36 FEDERAL COM #625H,DUC,2026-05-02,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3001556795,delaware,30,NUGGET 6 31 FEDERAL COM #022H,Active,2026-03-15,AVA_2,AVA,False,W,depth,0,0,0,2,crowded
+3001556968,delaware,30,TOP SPOT 12 13 FEDERAL COM #012H,Active,2026-03-22,AVA_1,AVA,False,W,planned,0,0,0,0,nothing
+3001556984,delaware,30,TOP SPOT 12 13 FEDERAL COM #042H,Active,2026-04-01,AVA_1,AVA,False,W,depth,1,1,0,0,match
+3001556985,delaware,30,TOP SPOT 12 13 FEDERAL COM #013H,Active,2026-03-25,AVA_1,AVA,False,W,planned,0,0,0,1,crowded
+3001556986,delaware,30,TOP SPOT 12 13 FEDERAL COM #043H,Active,2026-03-26,WCA_2,WCA,False,W,planned,0,0,0,0,nothing
+3001556987,delaware,30,TOP SPOT 12 13 FEDERAL COM #044H,Active,2026-03-23,WCA_2,WCA,False,W,planned,0,0,0,1,crowded
+3001556988,delaware,30,TOP SPOT 12 13 FEDERAL #041H,Active,2026-03-28,AVA_2,AVA,False,W,depth,0,0,0,0,nothing
+3001556998,delaware,30,TAIPAN 21 FEDERAL COM #121H,Active,2026-02-21,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001556999,delaware,30,TAIPAN 21 FEDERAL COM #122H,Active,2026-02-22,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557001,delaware,30,TAIPAN 21 FEDERAL COM #124H,Active,2026-01-31,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557013,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #041H,Active,2026-04-23,WCB_2,WCB,False,W,planned,1,1,0,0,match
+3001557014,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #042H,Active,2026-04-24,WCB_2,WCB,False,W,planned,1,1,0,1,match
+3001557015,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #043H,Active,2026-04-25,WCB_2,WCB,False,W,planned,1,1,0,0,match
+3001557016,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #044H,Active,2026-04-24,WCB_1,WCB,False,W,planned,0,0,0,1,crowded
+3001557017,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #045H,Active,2026-04-17,WCB_2,WCB,False,W,planned,1,1,0,1,match
+3001557018,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #046H,Active,2026-04-20,WCB_2,WCB,False,W,planned,0,0,1,0,conflict
+3001557019,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #047H,Active,2026-04-18,WCB_1,WCB,False,W,planned,1,1,0,0,match
+3001557020,delaware,30,PURE GOLD MDP1 29 17 FEDERAL COM #048H,Active,2026-04-19,WCB_2,WCB,False,W,planned,1,1,0,0,match
+3001557022,delaware,30,VALKYRIE FEDERAL COM #501H,Active,2026-05-15,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557023,delaware,30,VALKYRIE FEDERAL COM #502H,Active,2026-04-24,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557024,delaware,30,VALKYRIE FEDERAL COM #551H,Active,2026-04-20,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3001557025,delaware,30,VALKYRIE FEDERAL COM #552H,Active,2026-04-28,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3001557029,delaware,30,JAKKU 36 FEDERAL COM #132H,Active,2026-02-15,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3001557037,delaware,30,FOSTERS 16 FEDERAL COM #131H,Active,2026-02-24,BS2_S,BS2,True,W,depth,0,0,0,0,nothing
+3001557039,delaware,30,FOSTERS 16 15 FEDERAL COM #133H,Active,2026-02-03,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557040,delaware,30,FOSTERS 16 15 FEDERAL COM #132H,Active,2026-02-24,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557078,delaware,30,RIVERBEND 11 14 FEDERAL COM #002H,Active,2026-01-06,BS3_C,BS3,False,W,planned,0,0,0,0,nothing
+3001557079,delaware,30,RIVERBEND 11 14 FEDERAL COM #004H,Active,2026-04-09,BS1_S,BS1,False,W,planned,0,0,0,0,nothing
+3001557080,delaware,30,RIVERBEND 11 14 FEDERAL COM #003H,Active,2026-01-07,BS2_S,BS2,False,W,planned,0,0,0,1,crowded
+3001557081,delaware,30,RIVERBEND 11 14 FEDERAL COM #006H,Active,2026-01-08,BS2_S,BS2,False,W,planned,0,0,0,1,crowded
+3001557082,delaware,30,RIVERBEND 11 14 FEDERAL COM #005H,Active,2026-01-10,BS3_C,BS3,False,W,planned,0,0,0,1,crowded
+3001557104,delaware,30,KALIK 6 FEDERAL COM #020H,Active,2026-04-13,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557105,delaware,30,TWELVE PACK FEDERAL COM LBB #021H,Active,2026-04-17,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557111,delaware,30,EASY PEASY 32 33 FEDERAL COM #525H,Completed,2026-05-07,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001557146,delaware,30,RIVERBEND 11 14 FEDERAL COM #001H,Active,2026-01-05,BS1_S,BS1,False,W,planned,0,0,0,2,crowded
+3001557147,delaware,30,TATER SALAD FEDERAL COM #701H,Completed,2026-03-04,WCA_1,WCA,False,W,depth,0,0,1,2,conflict
+3001557151,delaware,30,TATER SALAD FEDERAL COM #703H,Completed,2026-03-17,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+3001557154,delaware,30,TATER SALAD FEDERAL COM #903H,Completed,2026-08-11,WCC,WCC,False,W,depth,0,0,0,2,crowded
+3001557161,delaware,30,BOLANDER 32 STATE FEDERAL COM #201H,Active,2026-01-11,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+3001557162,delaware,30,BOLANDER 32 STATE FEDERAL COM #202H,Active,2026-01-10,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+3001557165,delaware,30,TAIPAN 21 FEDERAL COM #123H,Active,2026-01-31,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557167,delaware,30,DAKOTA 32 STATE FEDERAL COM #204H,Active,2026-01-02,WCB_1,WCB,False,no stick of its family in its DSU,depth,1,1,0,0,match
+3001557254,delaware,30,BEER 30 FEDERAL COM #202H,Active,2026-04-02,WCXY,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557255,delaware,30,BEER 30 FEDERAL COM #211H,Active,2026-04-03,WCXY,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557256,delaware,30,BEER 30 FEDERAL COM #204H,Active,2026-04-24,WCXY,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557257,delaware,30,BEER 30 FEDERAL COM #213H,Active,2026-04-25,WCXY,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557313,delaware,30,TATER SALAD FEDERAL COM #704H,Completed,2026-03-08,WCA_2,WCA,False,W,depth,0,0,2,0,conflict
+3001557360,delaware,30,BIG EDDY UNIT DI 31W 10 7 #001H,Completed,2026-02-23,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557365,delaware,30,CHERRY COLA STATE COM #110H,Active,2026-01-27,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557366,delaware,30,BIG EDDY UNIT DI 31W 10 7 #004H,Completed,2026-03-03,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001557388,delaware,30,GHOST 16 15 STATE COM #010H,Active,2026-03-10,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557390,delaware,30,GHOST 16 15 STATE COM #020H,Active,2026-03-18,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557391,delaware,30,GHOST 16 15 STATE COM #021H,Active,2026-03-03,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557392,delaware,30,GHOST 16 15 STATE COM #070H,Active,2026-03-14,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557393,delaware,30,GHOST 16 15 STATE COM #071H,Active,2026-03-07,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557399,delaware,30,COTTON DRAW 25 36 FEDERAL COM #300H,Completed,2026-03-15,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001557402,delaware,30,COTTON DRAW 25 36 FEDERAL COM #626H,Completed,2026-03-13,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3001557432,delaware,30,ALPINE 7 11 STATE #134H,Active,2026-02-18,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557434,delaware,30,ANGELL RANCH 36 34 FEDERAL COM #232H,Active,2026-01-02,BS3_S,BS3,False,W,planned,1,1,0,0,match
+3001557445,delaware,30,ALPINE 7 11 STATE #133H,Active,2026-02-18,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557446,delaware,30,ALPINE 7 11 STATE #131H,Active,2026-03-06,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557448,delaware,30,ALPINE 7 11 STATE #202H,Active,2026-03-05,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557451,delaware,30,MAGELLAN WC FEE #701H,Completed,2026-01-16,WCXY,WCA,False,W,depth,0,0,0,2,crowded
+3001557453,delaware,30,MAGELLAN BS FEE #501H,Completed,2026-01-15,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001557454,delaware,30,MAGELLAN WC FEE #702H,Completed,2026-01-14,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+3001557494,delaware,30,COTTON DRAW 25 36 FEDERAL COM #738H,Completed,2026-03-14,WCA_1,WCA,False,W,depth,0,0,1,1,conflict
+3001557512,delaware,30,DICK & DONNA 2729 FEDERAL COM #201H,Active,2026-04-16,WCA_2,WCA,False,W,planned,0,0,0,0,nothing
+3001557515,delaware,30,RIVERBEND 14 FEDERAL COM #003H,Active,2026-01-04,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557516,delaware,30,RIVERBEND 14 FEDERAL COM #004H,Active,2026-03-09,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+3001557517,delaware,30,RIVERBEND 14 FEDERAL COM #008H,Active,2026-01-05,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3001557524,delaware,30,ROSS DRAW 17 FEDERAL COM #511H,Active,2026-02-22,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3001557525,delaware,30,ROSS DRAW 17 FEDERAL COM #512H,Active,2026-02-26,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557527,delaware,30,ROSS DRAW 17 FEDERAL COM #517H,Active,2026-02-22,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3001557529,delaware,30,ROSS DRAW 17 FEDERAL COM #525H,Active,2026-02-25,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3001557530,delaware,30,ROSS DRAW 17 FEDERAL COM #754H,Active,2026-02-22,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3001557531,delaware,30,ROSS DRAW 17 FEDERAL COM #757H,Active,2026-02-22,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557532,delaware,30,ROSS DRAW 17 FEDERAL COM #758H,Active,2026-02-25,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3001557534,delaware,30,ROSS DRAW 17 FEDERAL COM #768H,Active,2026-02-27,AVA_2,AVA,False,W,depth,0,0,0,2,crowded
+3001557552,delaware,30,NEATO BANDITO 23 24 FEDERAL COM #401H,Active,2026-01-19,BS1_S,BS1,False,W,depth,1,1,0,0,match
+3001557553,delaware,30,NEATO BANDITO 23 24 FEDERAL COM #404H,Active,2026-01-16,BS1_S,BS1,False,W,depth,0,0,1,0,conflict
+3001557554,delaware,30,NEATO BANDITO 23 24 FEDERAL COM #502H,Active,2026-01-18,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3001557555,delaware,30,R WILSON FEDERAL COM #137H,Completed,2026-04-28,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3001557583,delaware,30,DICK & DONNA 2729 FEDERAL COM #202H,Active,2026-04-14,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3001557587,delaware,30,DAMA DORADA 1 3 FEDERAL COM #623H,Completed,2026-05-28,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3001557588,delaware,30,JERICHO 7 12 FEDERAL COM #523H,Active,2026-02-11,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557589,delaware,30,JERICHO 7 12 FEDERAL COM #527H,Active,2026-02-11,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557590,delaware,30,TOTO 7 10 FEDERAL COM #616H,Completed,2026-04-19,BS3_S,BS3,False,W,depth,1,1,0,1,match
+3001557591,delaware,30,TOTO 7 10 FEDERAL COM #618H,Completed,2026-04-19,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3001557597,delaware,30,JERICHO 7 12 FEDERAL COM #525H,Active,2026-02-11,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557603,delaware,30,PEAKY 9 8 STATE COM #021H,Active,2026-01-30,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557605,delaware,30,RIVERBEND 14 FEDERAL COM #007H,Active,2026-03-09,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3001557606,delaware,30,PEAKY 9 8 STATE COM #070H,Active,2026-01-31,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557615,delaware,30,ROSS DRAW 17 FEDERAL COM #510H,Active,2026-02-21,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3001557616,delaware,30,ROSS DRAW 17 FEDERAL COM #518H,Active,2026-02-26,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3001557617,delaware,30,PINTA 29 27 FEDERAL COM #522H,Active,2026-01-22,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3001557618,delaware,30,PINTA 29 27 FEDERAL COM #524H,Active,2026-01-21,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3001557619,delaware,30,PINTA 29 27 FEDERAL COM #526H,Active,2026-01-21,BS2_S,BS2,False,W,planned,1,1,0,0,match
+3001557637,delaware,30,KOALA 9 FEDERAL COM #122H,Active,2026-02-14,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557655,delaware,30,LAJITAS 5 4 STATE COM #124H,Active,2026-01-30,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557656,delaware,30,LAJITAS 5 4 STATE COM #123H,Active,2026-01-30,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557657,delaware,30,WARRIOR 2729 FEDERAL COM #204H,Active,2026-04-18,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3001557660,delaware,30,LAJITAS 5 4 STATE COM #122H,Active,2026-01-29,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557661,delaware,30,LAJITAS 5 4 STATE COM #121H,Active,2026-01-29,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557674,delaware,30,WARRIOR 2729 FEDERAL COM #203H,Active,2026-04-19,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+3001557699,delaware,30,JERICHO 7 12 FEDERAL COM #521H,Active,2026-02-12,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557700,delaware,30,WAR CLUB 3 4 FEDERAL COM #822H,Completed,2026-02-24,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557702,delaware,30,WAR CLUB 2 3 FEDERAL COM #624H,Completed,2026-04-15,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3001557704,delaware,30,WAR CLUB 2 3 FEDERAL COM #824H,Completed,2026-02-21,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557734,delaware,30,KIMBERLY KONE FEDERAL COM #129H,Completed,2026-05-29,OTHER,OTHER,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557735,delaware,30,BEER CAVE FEDERAL COM #202H,Active,2026-05-16,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557736,delaware,30,BEER CAVE FEDERAL COM #204H,Active,2026-05-16,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557737,delaware,30,BEER CAVE FEDERAL COM #211H,Active,2026-05-16,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557738,delaware,30,BEER CAVE FEDERAL COM #213H,Active,2026-05-15,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557747,delaware,30,WAR CLUB 3 4 FEDERAL COM #622H,Completed,2026-03-10,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3001557748,delaware,30,WAR CLUB 3 4 FEDERAL COM #821H,Completed,2026-02-23,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557770,delaware,30,DARK FROST STATE COM #110H,Active,2026-04-25,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557771,delaware,30,CACTUS SOUR STATE COM #110H,Active,2026-04-23,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3001557789,delaware,30,KOALA 9 FEDERAL COM #123H,Active,2026-03-02,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3001557790,delaware,30,KOALA 9 FEDERAL COM #124H,Active,2026-03-03,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557791,delaware,30,LAGUNA GRANDE 29 28 FEDERAL COM #001H,Completed,2026-04-16,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557795,delaware,30,ST HELENS 21 19 FEDERAL COM #623H,Completed,2026-04-08,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3001557796,delaware,30,BIG MICK 4 U FEDERAL COM #501H,Active,2026-03-17,BS2_S,BS2,True,W,depth,0,0,0,0,nothing
+3001557797,delaware,30,BIG MICK 4 U FEDERAL COM #551H,Active,2026-03-18,BS3_C,BS3,True,W,depth,0,0,0,0,nothing
+3001557799,delaware,30,ST HELENS 21 19 FEDERAL COM #624H,Completed,2026-05-15,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3001557806,delaware,30,PELEE 28 30 FEDERAL COM #624H,Completed,2026-04-23,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3001557807,delaware,30,PELEE 28 30 FEDERAL COM #623H,Completed,2026-03-03,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+3001557808,delaware,30,PELEE 28 30 FEDERAL COM #621H,Completed,2026-05-12,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3001557809,delaware,30,PELEE 28 30 FEDERAL COM #620H,Completed,2026-06-30,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+3001557836,delaware,30,PADRON 28 STATE WC UNIT #702H,Completed,2026-03-08,BS3_S,BS3,False,W,depth,0,0,1,0,conflict
+3001557837,delaware,30,PADRON 28 STATE WC UNIT #711H,Completed,2026-03-08,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3001557838,delaware,30,PADRON 28 STATE WC UNIT #712H,Completed,2026-03-08,WCXY,WCA,False,W,depth,0,0,0,0,nothing
+3001557885,delaware,30,KING HARVEST 3 4 FEDERAL COM #523H,Completed,2026-03-07,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3001557886,delaware,30,KING HARVEST 3 4 FEDERAL COM #622H,Completed,2026-03-18,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3001557929,delaware,30,ST HELENS 19 21 FEDERAL COM #621H,Completed,2026-06-08,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3001557950,delaware,30,PEAKY 9 8 STATE COM #020H,Active,2026-03-19,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001557956,delaware,30,CRIPPLE CREEK 35 34 FEDERAL #521H,Active,2026-03-21,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557957,delaware,30,CRIPPLE CREEK 35 34 FEDERAL #523H,Active,2026-03-23,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557958,delaware,30,CRIPPLE CREEK 35 34 FEDERAL #525H,Active,2026-03-23,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557959,delaware,30,CRIPPLE CREEK 35 34 FEDERAL #527H,Active,2026-03-24,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557973,delaware,30,TOP SPOT 12 13 FEDERAL #075H,Active,2026-03-30,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+3001557974,delaware,30,TOP SPOT 12 13 FEDERAL #076H,Active,2026-03-31,WCA_2,WCA,False,W,depth,1,1,0,0,match
+3001557978,delaware,30,MILKSHAKE 9 10 FEDERAL COM #522H,Active,2026-04-09,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001557979,delaware,30,MILKSHAKE 9 10 FEDERAL COM #524H,Active,2026-04-09,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3001558054,delaware,30,PETTY 31CD FEDERAL COM #006H,Active,2026-05-10,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558056,delaware,30,VAN HALEN 33AB FEDERAL COM #005H,Active,2026-05-25,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558064,delaware,30,CHESHIRE CAT 2 STATE COM #050H,Completed,2026-05-01,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558067,delaware,30,CHESHIRE CAT 2 STATE COM #051H,Completed,2026-04-30,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558181,delaware,30,CECILIA 35 STATE COM #001H,Completed,2026-07-10,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558184,delaware,30,CECILIA 35 STATE COM #010H,Completed,2026-07-09,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558204,delaware,30,SKELLY UNIT #002H,Completed,2026-09-13,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558205,delaware,30,SKELLY UNIT #003H,Completed,2026-09-03,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558254,delaware,30,COUSIN EDDY FEDERAL UNIT COM #091H,Completed,2026-07-05,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558255,delaware,30,COUSIN EDDY FEDERAL UNIT COM #090H,Completed,2026-07-05,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558279,delaware,30,DAMA DORADA 1 3 FEDERAL COM #523H,Completed,2026-07-17,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3001558281,delaware,30,DAMA DORADA 1 3 FEDERAL COM #521H,Completed,2026-07-16,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3001558461,delaware,30,KITE 4 FEDERAL COM #090H,DUC,2026-08-03,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558474,delaware,30,TORRENT STATE COM #214H,Active,2026-07-26,BS3_S,BS3,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3001558605,delaware,30,TURKEY TROT 33 32 FEDERAL COM #527H,DUC,2026-09-17,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002550109,delaware,30,PEREGRINE 27 FEDERAL COM #741H,Active,,WCB_1,WCB,False,W,planned,0,0,0,1,crowded
+3002550285,delaware,30,MEAT LOVER FEDERAL COM #608H,Active,2026-03-03,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3002550994,delaware,30,EMERALD FEDERAL COM #501H,Active,2026-03-14,BS2_S,BS2,False,W,planned,0,0,0,0,nothing
+3002551274,delaware,30,DAUNTLESS 7 FEDERAL #504H,Active,2026-01-23,AVA_1,AVA,False,W,depth,1,1,0,0,match
+3002551292,delaware,30,DAUNTLESS 7 FEDERAL #210H,Active,2026-01-20,AVA_1,AVA,False,W,depth,0,0,1,0,conflict
+3002551293,delaware,30,DAUNTLESS 7 FEDERAL #211H,Active,2026-01-07,AVA_1,AVA,False,W,depth,0,0,1,1,conflict
+3002551294,delaware,30,DAUNTLESS 7 FEDERAL #212H,Active,2026-01-14,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002551295,delaware,30,DAUNTLESS 7 FEDERAL #213H,Active,2026-01-13,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002551296,delaware,30,DAUNTLESS 7 FEDERAL #214H,Active,2026-01-14,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002551309,delaware,30,GATO GRANDE 9 4 FEDERAL COM #515H,Completed,2026-05-21,AVA_1,AVA,False,W,depth,1,1,0,1,match
+3002551310,delaware,30,GATO GRANDE 9 4 FEDERAL COM #526H,Completed,2026-04-02,AVA_2,AVA,False,W,depth,1,1,0,1,match
+3002551311,delaware,30,GATO GRANDE 9 4 FEDERAL COM #516H,Completed,2026-05-05,AVA_1,AVA,False,W,depth,0,0,0,1,crowded
+3002551312,delaware,30,GATO GRANDE 9 4 FEDERAL COM #511H,Completed,2026-05-19,AVA_1,AVA,False,W,depth,2,1,0,0,match
+3002551313,delaware,30,GATO GRANDE 9 4 FEDERAL COM #513H,Completed,2026-05-18,AVA_1,AVA,False,W,depth,0,0,0,2,crowded
+3002551314,delaware,30,GATO GRANDE 9 4 FEDERAL COM #514H,Completed,2026-06-07,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002551315,delaware,30,GATO GRANDE 9 4 FEDERAL COM #521H,Completed,2026-05-13,AVA_2,AVA,False,W,depth,0,0,0,1,crowded
+3002551316,delaware,30,GATO GRANDE 9 4 FEDERAL COM #522H,Completed,2026-05-05,AVA_2,AVA,False,W,depth,1,1,0,1,match
+3002551317,delaware,30,GATO GRANDE 9 4 FEDERAL COM #512H,Completed,2026-04-23,AVA_1,AVA,False,W,depth,0,0,0,2,crowded
+3002551318,delaware,30,GATO GRANDE 9 4 FEDERAL COM #524H,Completed,2026-05-16,AVA_2,AVA,False,W,depth,0,0,0,2,crowded
+3002551319,delaware,30,GATO GRANDE 9 4 FEDERAL COM #525H,Completed,2026-05-13,AVA_2,AVA,False,W,depth,0,0,0,2,crowded
+3002551320,delaware,30,GATO GRANDE 9 4 FEDERAL COM #527H,Completed,2026-04-22,AVA_2,AVA,False,W,depth,1,1,0,0,match
+3002551334,delaware,30,DAUNTLESS 7 FEDERAL #106H,Active,2026-01-21,AVA_0,AVA,False,W,depth,0,0,0,1,crowded
+3002551335,delaware,30,DAUNTLESS 7 FEDERAL #107H,Active,2026-01-14,AVA_0,AVA,False,W,planned,1,1,0,0,match
+3002551336,delaware,30,DAUNTLESS 7 FEDERAL #108H,Active,2026-01-13,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002551382,delaware,30,TALCO FEDERAL COM #151H,Active,2026-02-02,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002551383,delaware,30,TALCO STATE FEDERAL COM #152H,Active,2026-01-31,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+3002551946,delaware,30,RATTLESNAKE 28 FEDERAL COM #762H,Active,2026-04-01,AVA_0,AVA,False,W,planned,0,0,0,2,crowded
+3002551948,delaware,30,RATTLESNAKE 28 FEDERAL COM #203H,Active,2026-04-10,WCB_1,WCB,False,W,depth,1,1,0,0,match
+3002551950,delaware,30,RATTLESNAKE 28 FEDERAL COM #303H,Active,2026-04-09,AVA_2,AVA,False,W,depth,0,0,0,0,nothing
+3002551951,delaware,30,RATTLESNAKE 28 FEDERAL COM #304H,Active,2026-04-13,WCB_1,WCB,False,W,depth,1,1,0,0,match
+3002551957,delaware,30,RATTLESNAKE 28 FEDERAL COM #305H,Active,2026-04-03,WCB_1,WCB,False,W,depth,1,1,0,0,match
+3002551958,delaware,30,RATTLESNAKE 28 FEDERAL COM #306H,Active,2026-04-14,WCB_1,WCB,False,W,depth,1,1,0,0,match
+3002552016,delaware,30,DOGWOOD 25 36 20 FEDERAL COM #106H,Active,2026-01-21,BS3_S,BS3,False,W,planned,1,1,0,0,match
+3002552137,delaware,30,DOGWOOD 25 36 20 FEDERAL COM #093H,Active,2026-02-02,BS3_S,BS3,False,W,depth,0,0,0,2,crowded
+3002552140,delaware,30,DOGWOOD 25 36 20 FEDERAL COM #115H,Active,2026-01-22,WCC,WCC,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3002552151,delaware,30,DOGWOOD 25 36 20 FEDERAL COM #113H,Active,2026-02-03,BS1_S,BS1,False,W,planned,0,0,0,1,crowded
+3002553472,delaware,30,EMERALD FEDERAL COM #506H,Active,2026-01-23,BS2_S,BS2,False,W,planned,0,0,0,1,crowded
+3002553518,delaware,30,SILVER TRAIN 17 FEDERAL COM #742H,Completed,2026-05-30,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+3002553574,delaware,30,EMERALD FEDERAL COM #505H,Active,2026-01-22,BS2_S,BS2,False,W,planned,0,0,0,1,crowded
+3002553618,delaware,30,PISTOLERO 15 FEDERAL #401H,Active,2026-03-28,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+3002553619,delaware,30,PISTOLERO 15 FEDERAL #402H,Active,2026-03-28,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+3002553620,delaware,30,PISTOLERO 15 FEDERAL #501H,Active,2026-03-28,BS2_S,BS2,False,W,planned,0,0,0,0,nothing
+3002553621,delaware,30,PISTOLERO 15 FEDERAL #502H,Active,2026-03-29,WCB_2,WCB,False,W,depth,0,0,2,0,conflict
+3002553629,delaware,30,BOBWHITE 22304 4 3 FEDERAL COM #004H,Active,2026-01-19,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002553630,delaware,30,BOBWHITE 22304 4 3 FEDERAL COM #005H,Active,2026-01-20,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002554049,delaware,30,PEACHTREE 24 FEDERAL COM #103H,Active,2026-01-06,AVA_1,AVA,False,W,depth,1,1,0,0,match
+3002554068,delaware,30,PEACHTREE 25 FEDERAL COM #303H,Active,2026-01-10,BS2_C,BS2,False,W,depth,0,0,0,1,crowded
+3002554069,delaware,30,PEACHTREE 25 FEDERAL COM #304H,Active,2026-01-09,BS1_S,BS1,False,W,depth,1,1,0,0,match
+3002554072,delaware,30,PEACHTREE 25 FEDERAL COM #403H,Active,2026-01-13,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+3002554073,delaware,30,PEACHTREE 25 FEDERAL COM #404H,Active,2026-01-11,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002554075,delaware,30,PEACHTREE 25 FEDERAL COM #503H,Active,2026-01-14,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002554076,delaware,30,PEACHTREE 25 FEDERAL COM #504H,Active,2026-01-12,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3002554190,delaware,30,EMERALD FEDERAL COM #513H,Active,2026-03-15,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3002554287,delaware,30,CO 34 27 FEDERAL COM #637H,Completed,2026-01-24,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3002554347,delaware,30,CIMARRON STATE COM #119H,Completed,2026-06-29,BS1_S,BS1,True,W,depth,1,1,0,0,match
+3002554503,delaware,30,DATE 14 STATE COM #603H,Active,2026-01-02,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002554508,delaware,30,DATE 14 STATE COM #604H,Active,2026-01-02,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002554513,delaware,30,DATE 14 STATE COM #605H,Active,2026-01-02,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002554515,delaware,30,DATE 14 STATE COM #505H,Active,2026-01-02,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002554579,delaware,30,BELL LAKE SOUTH UNIT #731H,Active,2026-01-26,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002554684,delaware,30,MEAT LOVER FEDERAL COM #702H,Active,,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3002554685,delaware,30,MEAT LOVER FEDERAL COM #703H,Active,2026-02-17,WCA_1,WCA,False,W,planned,0,0,0,0,nothing
+3002554795,delaware,30,PEGASUS 3 FEDERAL COM #001H,Active,2026-02-20,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002554807,delaware,30,PEGASUS 3 FEDERAL COM #220H,Active,2026-02-22,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002554808,delaware,30,PEGASUS 3 FEDERAL COM #221H,Active,2026-02-21,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002554814,delaware,30,PEGASUS 3 FEDERAL COM #316H,Active,2026-02-23,BS1_S,BS1,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002554843,delaware,30,VACA 24 FEDERAL COM #751H,Active,,WCB_2,WCB,False,W,planned,1,1,0,0,match
+3002554887,delaware,30,BLUE CHIP 14 FEDERAL COM #501H,Completed,2026-03-24,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002554890,delaware,30,BLUE CHIP 14 FEDERAL COM #503H,Completed,2026-06-08,AVA_0,AVA,False,W,depth,1,1,0,0,match
+3002554894,delaware,30,BLUE CHIP 14 FEDERAL COM #511H,Completed,2026-03-23,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002554903,delaware,30,LION OIL 28 33 FEDERAL COM #038H,Active,2026-03-12,WCA_1,WCA,False,W,planned,2,1,0,0,match
+3002554905,delaware,30,LION OIL 28 33 FEDERAL COM #037H,Active,2026-03-14,WCA_2,WCA,False,W,planned,1,1,0,1,match
+3002554912,delaware,30,LION OIL 28 33 FEDERAL COM #034H,Active,2026-03-06,WCA_1,WCA,False,W,planned,1,1,0,1,match
+3002554913,delaware,30,LION OIL 28 33 FEDERAL COM #035H,Active,2026-03-17,WCA_2,WCA,False,W,planned,0,0,0,2,crowded
+3002554946,delaware,30,LION OIL 28 33 FEDERAL COM #032H,Active,2026-03-09,WCA_1,WCA,False,W,planned,0,0,0,0,nothing
+3002554947,delaware,30,LION OIL 28 33 FEDERAL COM #033H,Active,2026-03-08,WCA_2,WCA,False,W,planned,1,1,0,1,match
+3002554963,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #513H,Completed,2026-02-23,BS3_S,BS3,False,W,depth,0,0,0,2,crowded
+3002554968,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #520H,Completed,2026-01-27,BS3_S,BS3,False,W,depth,0,0,1,1,conflict
+3002554969,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #304H,Completed,2026-03-03,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002554970,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #125H,Completed,2026-02-27,BS3_S,BS3,False,W,depth,0,0,1,0,conflict
+3002554981,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #530H,Completed,2026-03-18,BS1_S,BS1,False,W,depth,1,1,0,0,match
+3002555025,delaware,30,ZN 34 27 FEDERAL STATE COM #408H,Active,2026-01-02,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555026,delaware,30,ZN 34 27 FEDERAL STATE COM #409H,Active,2026-01-04,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555028,delaware,30,ZN 34 27 FEDERAL STATE COM #608H,Active,2026-01-03,BS3_S,BS3,False,W,planned,0,0,0,0,nothing
+3002555029,delaware,30,ZN 34 27 FEDERAL STATE COM #609H,Active,2026-01-05,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555117,delaware,30,MONTERA FEDERAL COM #702H,Active,2026-02-08,WCA_2,WCA,False,W,planned,0,0,0,0,nothing
+3002555172,delaware,30,BLUE CHIP 14 FEDERAL COM #704H,Completed,2026-06-08,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555173,delaware,30,BLUE CHIP 14 FEDERAL COM #702H,Completed,2026-03-22,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555210,delaware,30,ART SMITH STATE COM #121H,Active,2026-01-19,BS2_S,BS2,False,W,depth,0,0,0,2,crowded
+3002555288,delaware,30,ART SMITH STATE COM #111H,Active,2026-01-17,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555333,delaware,30,COSMO K FEE #151Y,Active,2026-01-12,BS3_S,BS3,False,W,planned,0,0,0,0,nothing
+3002555334,delaware,30,COSMO K FEE #121H,Active,2026-01-14,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3002555335,delaware,30,ART SMITH STATE COM #112H,Active,2026-01-12,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555336,delaware,30,ART SMITH STATE COM #122H,Active,2026-01-10,BS2_S,BS2,False,W,depth,0,0,0,2,crowded
+3002555344,delaware,30,ART SMITH STATE #130H,Active,2026-01-14,BS3_S,BS3,True,W,depth,0,0,0,0,nothing
+3002555364,delaware,30,PEREGRINE 27 FEDERAL COM #508H,Active,2026-01-02,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555397,delaware,30,DAUNTLESS 7 FEDERAL #505H,Active,2026-01-22,AVA_2,AVA,False,W,depth,1,1,0,1,match
+3002555400,delaware,30,TRES EQUIS 5 8 STATE COM #152H,Completed,2026-01-03,BS1_S,BS1,False,W,depth,0,0,0,3,crowded
+3002555403,delaware,30,TRES EQUIS 5 8 STATE COM #212H,Completed,2026-01-02,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3002555408,delaware,30,BILL ALEXANDER 3309 STATE COM #134H,Active,2026-02-24,BS3_S,BS3,False,W,planned,0,0,0,1,crowded
+3002555413,delaware,30,DAUNTLESS 7 FEDERAL #747H,Active,2026-01-10,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555414,delaware,30,DAUNTLESS 7 FEDERAL #751H,Active,2026-01-08,AVA_2,AVA,False,W,depth,0,0,0,1,crowded
+3002555415,delaware,30,DAUNTLESS 7 FEDERAL #752H,Active,2026-01-09,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002555426,delaware,30,MARGIE 24 FEDERAL COM #201H,Active,2026-01-19,BS1_S,BS1,False,W,depth,0,0,1,0,conflict
+3002555427,delaware,30,MARGIE 24 FEDERAL COM #202H,Active,2026-01-19,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555428,delaware,30,MARGIE 24 FEDERAL COM #301H,Active,2026-01-17,BS1_S,BS1,False,W,depth,0,0,1,0,conflict
+3002555429,delaware,30,MARGIE 24 FEDERAL COM #304H,Active,2026-01-18,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+3002555430,delaware,30,MARGIE 24 FEDERAL COM #501H,Active,2026-01-20,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555431,delaware,30,MARGIE 24 FEDERAL COM #504H,Active,2026-01-18,BS1_S,BS1,False,W,depth,1,1,0,0,match
+3002555456,delaware,30,GOUDA FEDERAL COM #205H,Active,2026-01-11,AVA_1,AVA,False,W,depth,0,0,0,1,crowded
+3002555457,delaware,30,GOUDA FEDERAL COM #206H,Active,2026-01-11,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002555459,delaware,30,CHEDDAR FEDERAL COM #202H,Active,2026-02-15,AVA_1,AVA,False,W,depth,1,1,0,0,match
+3002555492,delaware,30,NEVER BETTER 14 FEDERAL COM #706H,Active,2026-04-19,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3002555497,delaware,30,PEACHTREE 24 FEDERAL COM #571H,Active,2026-01-07,BS2_C,BS2,False,W,depth,1,1,0,0,match
+3002555498,delaware,30,PEACHTREE 24 FEDERAL COM #572H,Active,2026-01-08,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555499,delaware,30,PEACHTREE 24 FEDERAL COM #573H,Active,2026-01-09,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002555500,delaware,30,PEACHTREE 24 FEDERAL COM #574H,Active,2026-01-10,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002555510,delaware,30,NEVER BETTER 14 FEDERAL COM #708H,Active,2026-04-15,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+3002555534,delaware,30,STREETCAR 15 FEDERAL #511H,Active,2026-01-18,AVA_0,AVA,True,W,depth,0,0,0,0,nothing
+3002555535,delaware,30,STREETCAR 15 FEDERAL #512H,Active,2026-01-20,WCB_2,WCB,True,W,depth,1,1,0,0,match
+3002555536,delaware,30,STREETCAR 15 FEDERAL #582H,Active,2026-01-17,BS3_C,BS3,True,W,depth,1,1,0,0,match
+3002555537,delaware,30,STREETCAR 15 FEDERAL #583H,Active,2026-01-12,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002555541,delaware,30,STREETCAR 15 FEDERAL #722H,Active,2026-02-13,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+3002555542,delaware,30,STREETCAR 15 FEDERAL #741H,Active,2026-01-18,BS2_S,BS2,True,W,depth,0,0,0,0,nothing
+3002555543,delaware,30,STREETCAR 15 FEDERAL #743H,Active,2026-02-12,BS2_S,BS2,True,W,depth,0,0,1,0,conflict
+3002555544,delaware,30,STREETCAR 15 FEDERAL #751H,Active,2026-01-18,WCB_2,WCB,True,W,depth,1,1,0,1,match
+3002555554,delaware,30,JUNIOR MINT FEDERAL #224H,Active,2026-01-05,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,1,0,conflict
+3002555556,delaware,30,JUNIOR MINT FEDERAL #223H,Active,2026-02-09,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+3002555567,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #131H,Active,2026-02-05,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002555570,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #133H,Active,2026-02-23,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002555574,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #112H,Active,2026-03-03,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002555579,delaware,30,JUNIOR MINT FEDERAL #218H,Active,2026-01-06,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+3002555580,delaware,30,JUNIOR MINT FEDERAL #216H,Active,2026-02-09,WCA_2,WCA,False,W,depth,1,1,0,0,match
+3002555581,delaware,30,JUNIOR MINT FEDERAL #214H,Active,2026-01-05,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3002555582,delaware,30,JUNIOR MINT FEDERAL #213H,Active,2026-02-11,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+3002555586,delaware,30,MILLION DOLLAR MAN FEDERAL COM #301H,DUC,2026-07-18,BS1_S,BS1,False,W,depth,1,1,0,2,match
+3002555614,delaware,30,JUNIOR MINT FEDERAL #158H,Active,2026-01-06,BS3_S,BS3,False,W,depth,0,0,1,0,conflict
+3002555618,delaware,30,JUNIOR MINT FEDERAL #138H,Active,2026-01-07,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555621,delaware,30,JUNIOR MINT FEDERAL #156H,Active,2026-03-08,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555624,delaware,30,JUNIOR MINT FEDERAL #134H,Active,2026-01-07,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002555627,delaware,30,JUNIOR MINT FEDERAL #133H,Active,2026-02-10,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002555640,delaware,30,MONTERA FEDERAL COM #603H,Active,2026-02-08,BS3_S,BS3,False,W,depth,0,0,2,0,conflict
+3002555647,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #120H,Active,2026-02-06,BS2_S,BS2,True,W,depth,0,0,0,0,nothing
+3002555654,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #132H,Active,2026-03-02,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002555655,delaware,30,BILL ALEXANDER 3309 FEDERAL COM #123H,Active,2026-02-25,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555665,delaware,30,COUSIN EDDY FEDERAL UNIT COM #036H,Completed,2026-01-05,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002555667,delaware,30,COUSIN EDDY FEDERAL UNIT COM #033H,Completed,2026-01-02,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555688,delaware,30,BOND 32 34 FEDERAL COM #201H,Active,2026-01-02,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555689,delaware,30,BOND 32 34 FEDERAL COM #301H,Active,2026-01-04,BS3_S,BS3,False,W,planned,0,0,0,1,crowded
+3002555690,delaware,30,BOND 32 34 FEDERAL COM #205H,Active,2026-01-04,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3002555719,delaware,30,BOND 33 34 FEDERAL COM #211H,Active,2026-01-14,BS1_S,BS1,False,W,planned,1,1,0,0,match
+3002555720,delaware,30,NORTH WILSON DEEP UNIT #018H,Active,2026-01-09,BS3_S,BS3,False,W,planned,0,0,0,0,nothing
+3002555721,delaware,30,BOND 33 34 FEDERAL COM #207H,Active,2026-01-13,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555725,delaware,30,SEINFELD FEDERAL UNIT #611H,Active,2026-02-09,BS2_C,BS2,False,W,depth,0,0,0,2,crowded
+3002555732,delaware,30,COSMO K FEE #151H,Active,2026-01-13,BS3_C,BS3,False,W,planned,0,0,0,1,crowded
+3002555736,delaware,30,TWINKLE 26 FEDERAL COM #201H,Active,2026-02-23,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555737,delaware,30,TWINKLE 26 FEDERAL COM #202H,Active,2026-02-24,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555738,delaware,30,TWINKLE 26 FEDERAL COM #203H,Active,2026-03-03,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555739,delaware,30,TWINKLE 26 FEDERAL COM #204H,Active,2026-03-04,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555740,delaware,30,TWINKLE 26 FEDERAL COM #131H,Active,2026-02-22,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555741,delaware,30,TWINKLE 26 FEDERAL COM #132H,Active,2026-02-25,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555742,delaware,30,TWINKLE 26 FEDERAL COM #133H,Completed,2026-03-02,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555743,delaware,30,TWINKLE 26 FEDERAL COM #134H,Active,2026-03-01,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002555759,delaware,30,MYSTERIO 19 30 FEDERAL #521H,Active,2026-01-09,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555782,delaware,30,MYSTERIO 19 30 FEDERAL #523H,Active,2026-01-10,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555796,delaware,30,RAES CREEK 25 36 22 FEDERAL COM #095H,Active,2026-02-10,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555797,delaware,30,BRUCE HEATH STATE #209H,Completed,2026-04-12,BS3_S,BS3,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555808,delaware,30,COMANCHE 25 36 FEDERAL COM #801H,Active,2026-01-16,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+3002555809,delaware,30,COMANCHE 25 36 FEDERAL COM #802H,Active,2026-01-17,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555818,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #306H,Completed,2026-02-20,BS3_S,BS3,False,W,depth,0,0,1,0,conflict
+3002555819,delaware,30,MOZZARELLA FEDERAL COM #204H,Active,2026-02-28,AVA_1,AVA,False,W,depth,0,0,0,1,crowded
+3002555823,delaware,30,CALM BREEZE 2 FEDERAL COM #303H,Active,2026-02-24,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+3002555825,delaware,30,CALM BREEZE 2 FEDERAL COM #202H,Active,2026-02-25,WCB_1,WCB,False,W,depth,1,1,0,2,match
+3002555827,delaware,30,CALM BREEZE 2 FEDERAL COM #201H,Active,2026-02-26,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+3002555828,delaware,30,CALM BREEZE 2 FEDERAL COM #401H,Active,2026-02-16,WCB_2,WCB,False,W,depth,0,0,1,0,conflict
+3002555829,delaware,30,CALM BREEZE 2 FEDERAL COM #302H,Active,2026-02-26,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002555831,delaware,30,CALM BREEZE 2 FEDERAL COM #301H,Active,2026-02-27,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555833,delaware,30,VAN DOO DAH 33 28 FEDERAL COM #222H,Completed,2026-03-18,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002555834,delaware,30,SEINFELD FEDERAL UNIT #614H,Active,2026-02-07,BS1_S,BS1,False,W,depth,0,0,0,1,crowded
+3002555835,delaware,30,SEINFELD FEDERAL UNIT #613H,Active,2026-02-26,BS1_S,BS1,False,W,depth,0,0,1,0,conflict
+3002555836,delaware,30,SEINFELD FEDERAL UNIT #612H,Active,2026-02-07,BS1_S,BS1,False,W,depth,0,0,0,2,crowded
+3002555840,delaware,30,QUAIL 16 STATE COM #201H,Active,2026-02-14,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555841,delaware,30,QUAIL 16 STATE COM #202H,Active,2026-02-15,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555842,delaware,30,QUAIL 16 STATE COM #203H,Active,2026-03-19,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555843,delaware,30,QUAIL 16 STATE COM #301H,Active,2026-02-16,BS1_S,BS1,False,W,planned,1,1,0,0,match
+3002555844,delaware,30,QUAIL 16 STATE COM #302H,Active,2026-03-20,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555845,delaware,30,QUAIL 16 STATE COM #501H,Active,2026-02-15,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555846,delaware,30,QUAIL 16 STATE COM #502H,Active,2026-02-14,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3002555847,delaware,30,QUAIL 16 STATE COM #503H,Active,2026-03-19,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555848,delaware,30,QUAIL 16 STATE COM #204H,Active,2026-04-11,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555849,delaware,30,QUAIL 16 STATE COM #205H,Active,2026-04-10,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555850,delaware,30,QUAIL 16 STATE COM #206H,Active,2026-04-08,AVA_1,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555851,delaware,30,QUAIL 16 STATE COM #303H,Active,2026-04-12,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555852,delaware,30,QUAIL 16 STATE COM #304H,Active,2026-04-11,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555853,delaware,30,QUAIL 16 STATE COM #305H,Active,2026-04-08,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002555854,delaware,30,QUAIL 16 STATE COM #504H,Active,2026-04-12,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3002555855,delaware,30,QUAIL 16 STATE COM #505H,Active,2026-04-10,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555856,delaware,30,QUAIL 16 STATE COM #506H,Active,2026-04-09,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555887,delaware,30,BJ FRAZIER STATE #110H,Completed,2026-04-14,BS1_S,BS1,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555894,delaware,30,MONTERA FEDERAL COM #701H,Active,2026-02-09,WCA_2,WCA,False,W,depth,1,1,0,0,match
+3002555895,delaware,30,SUPREME FEDERAL COM #603H,Active,2026-04-14,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+3002555899,delaware,30,NEVER BETTER 14 FEDERAL COM #725H,Active,2026-04-20,BS3_S,BS3,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3002555900,delaware,30,NEVER BETTER 14 FEDERAL COM #604H,Active,,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555902,delaware,30,NEVER BETTER 14 FEDERAL COM #603H,Active,2026-04-22,WCXY,WCA,False,W,depth,0,0,0,0,nothing
+3002555903,delaware,30,NEVER BETTER 14 FEDERAL COM #707H,Active,,WCXY,WCA,False,W,planned,0,0,0,0,nothing
+3002555904,delaware,30,NEVER BETTER 14 FEDERAL COM #726H,Active,2026-04-18,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+3002555905,delaware,30,NEVER BETTER 14 FEDERAL COM #727H,Active,,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+3002555906,delaware,30,MOZZARELLA FEDERAL COM #203H,Active,2026-02-27,AVA_1,AVA,False,W,depth,1,1,0,0,match
+3002555910,delaware,30,BIG IRON 4 9 FEDERAL COM #102H,Active,2026-03-11,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002555911,delaware,30,BIG IRON 4 9 FEDERAL COM #202H,Active,2026-03-10,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+3002555914,delaware,30,SUPREME FEDERAL COM #602H,Active,2026-04-16,WCA_1,WCA,False,W,planned,0,0,0,2,crowded
+3002555915,delaware,30,SUPREME FEDERAL COM #601H,Active,2026-04-20,WCA_1,WCA,False,W,planned,0,0,0,2,crowded
+3002555927,delaware,30,SUSAN LANCASTER FEDERAL COM #132H,Active,2026-03-07,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555929,delaware,30,SUSAN LANCASTER FEDERAL COM #131H,Active,2026-03-08,BS3_S,BS3,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555931,delaware,30,SUSAN LANCASTER FEDERAL COM #201H,Active,2026-03-06,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002555955,delaware,30,CAPER 20 29 FEDERAL COM #318H,Completed,2026-04-25,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002555999,delaware,30,SUSAN LANCASTER FEDERAL COM #241H,Active,2026-03-30,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002556016,delaware,30,BRUCE HEATH STATE #119H,Completed,2026-05-06,BS1_S,BS1,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002556042,delaware,30,RATTLESNAKE 28 FEDERAL COM #204H,Active,2026-04-10,WCB_1,WCB,False,W,depth,2,1,0,0,match
+3002556053,delaware,30,CHOCTAW BINGO 30 29 FEDERAL COM #625H,Active,2026-04-04,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002556057,delaware,30,CHOCTAW BINGO 30 29 FEDERAL COM #627H,Active,2026-03-18,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002556067,delaware,30,EASTWOOD 36 25 FEDERAL COM #353H,Active,2026-04-08,BS3_S,BS3,False,W,depth,0,0,0,2,crowded
+3002556074,delaware,30,EASTWOOD 36 25 FEDERAL COM #404H,Active,2026-04-11,BS3_S,BS3,False,W,depth,0,0,0,2,crowded
+3002556090,delaware,30,LION OIL 28 33 FEDERAL COM #036H,Active,2026-04-13,OTHER,OTHER,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3002556117,delaware,30,CAPER 20 29 FEDERAL COM #316H,Completed,2026-04-24,AVA_1,AVA,False,W,depth,0,0,1,0,conflict
+3002556118,delaware,30,CHOCTAW BINGO 30 29 FEDERAL COM #467H,Active,2026-04-16,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+3002556119,delaware,30,CHOCTAW BINGO 30 29 FEDERAL COM #526H,Active,2026-04-17,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002556125,delaware,30,HALLERTAU 4 FEDERAL #415H,Completed,2026-05-30,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+3002556126,delaware,30,CAPER 20 29 FEDERAL COM #587H,Completed,2026-04-23,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+3002556127,delaware,30,CAPER 20 29 FEDERAL COM #585H,Completed,2026-05-08,BS3_S,BS3,False,W,depth,1,1,0,0,match
+3002556128,delaware,30,WILD WEASEL 22 FEDERAL COM #753H,Active,2026-05-01,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002556129,delaware,30,WILD WEASEL 22 FEDERAL COM #743H,Active,2026-05-13,AVA_0,AVA,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+3002556134,delaware,30,WILD WEASEL 22 FEDERAL COM #754H,Active,2026-05-23,AVA_0,AVA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+3002556139,delaware,30,IGLOO 19 24 FEDERAL COM #601H,Active,2026-05-05,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002556140,delaware,30,IGLOO 19 24 FEDERAL COM #602H,Active,2026-05-07,BS3_S,BS3,False,W,depth,0,0,0,2,crowded
+3002556142,delaware,30,MYSTERIO 19 30 FEDERAL #525H,Completed,2026-05-31,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002556143,delaware,30,MYSTERIO 19 30 FEDERAL #527H,Completed,2026-05-30,BS2_S,BS2,False,W,depth,1,1,0,0,match
+3002556154,delaware,30,UNDERTAKER 20 29 FEDERAL COM #521H,Completed,2026-05-20,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002556155,delaware,30,UNDERTAKER 20 29 FEDERAL COM #523H,Completed,2026-05-19,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+3002556167,delaware,30,BILBREY 34 27 FEDERAL COM #312H,Completed,2026-07-13,AVA_1,AVA,False,W,depth,0,0,0,0,nothing
+3002556168,delaware,30,BILBREY 34 27 FEDERAL COM #402H,Completed,2026-07-12,BS2_S,BS2,False,W,depth,0,0,0,2,crowded
+3002556169,delaware,30,BILBREY 34 27 FEDERAL COM #581H,Completed,2026-07-14,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+3002556175,delaware,30,WILD WEASEL 22 FEDERAL COM #105H,Active,2026-05-31,AVA_0,AVA,False,W,depth,1,1,0,0,match
+3002556231,delaware,30,BILBREY 34 27 FEDERAL COM #911H,Completed,2026-06-22,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349053,midland,42,UL KINGS INN 12-13 A 1MS,Active,2026-01-13,MS,MS,False,W,depth,0,0,0,0,nothing
+4200349054,midland,42,ULDESERT ROSE 12-13 D 2LS,Active,2026-01-11,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4200349217,midland,42,WEST CROSS BAR RANCH-B 2090OP,Completed,2026-02-05,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349219,midland,42,WEST CROSS BAR RANCH-B 2094OP,Completed,2026-01-31,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349248,midland,42,CASSELMAN 32 7HC,Active,2026-01-15,WCD,WCD,True,W,depth,0,0,0,0,nothing
+4200349259,midland,42,KTM 4795OP 3H,Completed,2026-01-13,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349275,midland,42,CASSELMAN R UNIT 1,Completed,2026-03-12,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349276,midland,42,CASSELMAN R UNIT 2,Completed,2026-03-11,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349277,midland,42,CASSELMAN-R UNIT #3,Active,2026-03-13,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349278,midland,42,CASSELMAN-R UNIT #4,Active,2026-03-12,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349284,midland,42,ULDESERT ROSE 12-13 A 1MS,Active,2026-01-07,MS,MS,False,W,depth,0,0,0,0,nothing
+4200349285,midland,42,ULDESERT ROSE 12-13 B 1LS,Active,2026-01-08,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4200349286,midland,42,ULDESERT ROSE 12-13 B 1WB,Active,2026-01-09,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4200349287,midland,42,ULDESERT ROSE 12-13 C 1JM,Active,2026-01-09,JM,JM,False,W,depth,0,0,0,1,crowded
+4200349288,midland,42,ULDESERT ROSE 12-13 D 1US,Active,2026-01-12,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4203332797,midland,42,RAIDER 42-43 A 1JM,Completed,2026-03-07,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4203332815,midland,42,SIREN UNIT 36-48 1MH,Active,2026-01-16,MS,MS,False,W,depth,0,0,0,0,nothing
+4203332816,midland,42,SIREN UNIT 36-48 2MH,Active,2026-02-02,MS,MS,False,W,depth,0,0,0,0,nothing
+4203332817,midland,42,SIREN UNIT 36-48 2AH,Active,2026-01-19,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4203332818,midland,42,SIREN UNIT 36-48 3AH,Active,2026-01-14,WCA_1,WCA,False,W,depth,0,0,1,1,conflict
+4203332819,midland,42,BANNER WEST A 11H,Completed,2026-01-10,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4203332820,midland,42,SIREN UNIT 36-48 3MH,Active,2026-01-08,MS,MS,False,W,depth,0,0,0,0,nothing
+4203332821,midland,42,BANNER WEST B 12H,Completed,2026-01-11,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4203332823,midland,42,BANNER WEST C 13H,Completed,2026-01-12,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4203332824,midland,42,GRIFFIN 48-37 UNIT A M 1H,Active,2026-02-13,MS,MS,False,W,depth,0,0,0,1,crowded
+4203332825,midland,42,GRIFFIN 48-37 UNIT A L 1H,Active,2026-02-14,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4203332826,midland,42,GR WEST 49-62 A UNIT L 1H,Active,2026-02-15,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4203332828,midland,42,WENDIGO UNIT A 10-15 2MH,Active,2026-03-08,MS,MS,False,W,depth,1,1,0,0,match
+4203332829,midland,42,WENDIGO UNIT B 10-14 3MH,Active,2026-03-14,MS,MS,False,W,depth,0,0,0,1,crowded
+4203332830,midland,42,WENDIGO UNIT B 10-14 4MH,Active,2026-02-18,MS,MS,False,W,depth,0,0,0,1,crowded
+4203332831,midland,42,WENDIGO UNIT B 10-14 5MH,Active,2026-02-24,MS,MS,False,W,depth,0,0,0,0,nothing
+4203332832,midland,42,GUNSMOKE 30-31 1JM,Completed,2026-03-09,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4203332838,midland,42,DOLORES WOLF 41-44 A UNIT L 2H,DUC,2026-05-10,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4203332839,midland,42,DOLORES WOLF 41-44 A UNIT A 1H,DUC,2026-05-08,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4203332840,midland,42,DOLORES WOLF 41-44 A UNIT A 2H,DUC,2026-05-09,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4203332843,midland,42,MIRACLES 19-29 5AH,Completed,2026-07-18,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4203332844,midland,42,MIRACLES 19-29 6AH,Completed,2026-07-24,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4210934531,delaware,42,STATE KINGMAN UNIT 5H,Completed,2026-01-29,WCA_2,WCA,False,W,depth,0,0,1,1,conflict
+4210934532,delaware,42,STATE KINGMAN UNIT 6H,Completed,2026-02-01,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+4210934533,delaware,42,STATE KINGMAN UNIT 7H,Completed,2026-02-09,WCA_2,WCA,False,W,depth,0,0,1,1,conflict
+4210934534,delaware,42,STATE KINGMAN UNIT 8H,Completed,2026-02-03,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4210934538,delaware,42,DR STATE WISE UNIT 0616TB,DUC,2026-02-19,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+4210934544,delaware,42,MYSTIK DAN 36-13 A 1H,Completed,2026-01-29,WCA_1,WCA,False,W,depth,2,2,0,1,match
+4210934545,delaware,42,MYSTIK DAN 36-13 B 2H,Completed,2026-01-27,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4210934546,delaware,42,MYSTIK DAN 36-13 C 3H,Completed,2026-01-24,WCA_1,WCA,False,W,depth,0,0,1,1,conflict
+4210934547,delaware,42,MYSTIK DAN 36-13 D 4H,Completed,2026-01-21,WCA_2,WCA,False,W,depth,1,1,0,0,match
+4210934548,delaware,42,MYSTIK DAN 36-13 E 5H,Completed,2026-02-07,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4210934549,delaware,42,MYSTIK DAN 36-13 F 6H,Completed,2026-02-05,WCA_2,WCA,False,W,depth,1,1,0,0,match
+4210934550,delaware,42,MYSTIK DAN 36-13 G 7H,Completed,2026-02-03,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4210934551,delaware,42,MYSTIK DAN 36-13 H 8H,Completed,2026-02-07,WCA_2,WCA,False,W,depth,1,1,0,2,match
+4210934552,delaware,42,MYSTIK DAN 36-13 I 9H,Completed,2026-02-03,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4210934553,delaware,42,BLACK GOLD 35-26 2H,Completed,2026-02-05,WCA_2,WCA,False,W,depth,1,1,0,0,match
+4210934554,delaware,42,BLACK GOLD 35-26 3H,Completed,2026-02-03,WCA_2,WCA,False,W,depth,1,1,0,1,match
+4210934555,delaware,42,BLACK GOLD 35-26 4H,Completed,2026-02-08,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4210934556,delaware,42,BLACK GOLD 35-26 5H,Completed,2026-02-07,WCA_2,WCA,False,W,depth,1,1,0,1,match
+4210934557,delaware,42,BLACK GOLD 35-26 6H,Completed,2026-02-11,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4210934558,delaware,42,BLACK GOLD 35-26 7H,Completed,2026-02-09,WCA_2,WCA,False,W,depth,1,1,0,1,match
+4210934559,delaware,42,BLACK GOLD 35-26 8H,Completed,2026-02-14,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4210934560,delaware,42,BLACK GOLD 35-26 9H,Completed,2026-02-12,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4211534109,midland,42,NY NY 37-1 A 321H,Active,2026-02-18,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4211534110,midland,42,NY NY 37-1 B 341H,Active,2026-02-20,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4211534111,midland,42,CAESARS 36-24A 311H,Active,2026-02-22,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4211534113,midland,42,KATHERINE J 10H,Active,2026-04-06,DEAN,DEAN,True,W,depth,0,0,0,3,crowded
+4211534127,midland,42,PANTHER D-G UNIT #A1H A 1H,Active,2026-04-09,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4211534128,midland,42,PANTHER H UNIT 1H,Active,2026-04-26,WCA_1,WCA,False,no stick of its family in its DSU,depth,1,1,0,0,match
+4211534130,midland,42,PANTHER I UNIT #1H,Active,2026-05-11,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4211534131,midland,42,PANTHER F UNIT #1H,Active,2026-05-12,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,1,0,conflict
+4211534132,midland,42,ARKHAM B 2WA,Active,2026-05-20,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4211534133,midland,42,AZKABAN A 1WA,Active,2026-06-17,WCA_1,WCA,False,W,depth,1,1,1,1,match
+4211534134,midland,42,MONSTER MANSION A 1WA,Active,2026-07-11,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544071,midland,42,HEADLEE 5D 202HG,Completed,2026-03-25,DEAN,DEAN,False,W,depth,2,1,0,2,match
+4213544072,midland,42,HEADLEE 5E 204HD,Completed,2026-03-28,JM,JM,False,W,depth,1,1,0,2,match
+4213544073,midland,42,HEADLEE 5D 201HD,Completed,2026-03-23,JM,JM,False,W,depth,0,0,0,2,crowded
+4213544074,midland,42,HEADLEE 5E 203HC,Completed,2026-03-27,MS,MS,False,W,depth,0,0,0,1,crowded
+4213544196,midland,42,RATLIFF C4 1801AH,Completed,2026-02-23,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4213544197,midland,42,RATLIFF C5 1801LH,Active,2026-02-24,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4213544198,midland,42,RATLIFF C6 1801BH,Active,2026-02-25,WCB_1,WCB,False,no stick of its family in its DSU,depth,1,1,0,0,match
+4213544199,midland,42,RATLIFF C7 1801JH,Active,2026-02-26,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4213544208,midland,42,RATLIFF GREEN 2513A 01H,Completed,2026-05-18,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544209,midland,42,RATLIFF GREEN 2513B 02H,Completed,2026-05-16,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544210,midland,42,RATLIFF GREEN 2513D 04H,Completed,2026-02-06,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544211,midland,42,RATLIFF GREEN 2513C 03H,Completed,2026-06-30,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544212,midland,42,HEADLEE 5E 205HG,Completed,2026-03-30,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4213544213,midland,42,MILLIE B LEON 8-5 C 3H,Completed,2026-04-08,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544214,midland,42,MILLIE B LEON 8-5 D 4H,Completed,2026-04-10,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544260,midland,42,GARDENDALE WHITE 0805B 0802H,Completed,2026-05-26,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544261,midland,42,GARDENDALE WHITE 0805C 0803H,Completed,2026-05-23,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4213544262,midland,42,GARDENDALE WHITE 0805D 0804H,Completed,2026-05-24,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339061,midland,42,COOK E20 13D,Active,,WCC,WCC,False,no stick of its family in its DSU,planned,0,0,0,0,nothing
+4217339293,midland,42,CHANCELLORSVILLE F 11BB,Completed,2026-03-08,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4217339294,midland,42,CHANCELLORSVILLE F 12DN,Completed,2026-03-09,DEAN,DEAN,False,W,depth,1,1,0,0,match
+4217339295,midland,42,CHANCELLORSVILLE F 13JM,Completed,2026-03-11,JM,JM,False,W,depth,0,0,1,0,conflict
+4217339296,midland,42,CHANCELLORSVILLE G 14LM,Completed,2026-03-12,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4217339297,midland,42,CHANCELLORSVILLE G 15HA,Completed,2026-03-14,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4217339336,midland,42,BARBEE Q A 1A,DUC,2026-01-06,WCA_1,WCA,True,W,depth,0,0,1,2,conflict
+4217339337,midland,42,BARBEE Q B 2A,DUC,2026-01-07,WCA_1,WCA,True,W,depth,0,0,0,3,crowded
+4217339350,midland,42,BUNKER HILL 1HD,Completed,2026-03-18,WCD,WCD,False,W,depth,0,0,1,0,conflict
+4217339351,midland,42,BUNKER HILL 2BB,Completed,2026-03-20,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4217339352,midland,42,BUNKER HILL 3DN,Completed,2026-03-20,DEAN,DEAN,False,W,depth,0,0,1,0,conflict
+4217339353,midland,42,BUNKER HILL 4JM,Completed,2026-03-22,JM,JM,False,W,depth,0,0,0,1,crowded
+4217339354,midland,42,BUNKER HILL 5HA,Completed,2026-03-23,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4217339355,midland,42,BUNKER HILL E 8HB,Completed,2026-03-27,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4217339356,midland,42,BUNKER HILL E 9JM,Completed,2026-03-29,JM,JM,False,W,depth,0,0,0,2,crowded
+4217339357,midland,42,BUNKER HILL E 10DN,Completed,2026-03-29,DEAN,DEAN,False,W,depth,1,1,0,2,match
+4217339358,midland,42,BUNKER HILL E 11HD,Completed,2026-03-30,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339359,midland,42,BUNKER HILL 7LM,Completed,2026-03-26,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4217339360,midland,42,BUNKER HILL F 12HB,Completed,2026-03-31,WCB_1,WCB,False,W,depth,0,0,1,1,conflict
+4217339361,midland,42,BUNKER HILL F 13LM,Completed,2026-04-03,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4217339362,midland,42,BUNKER HILL F 14HA,Completed,2026-04-04,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4217339372,midland,42,CUDA 46-3 I 4WA,Inactive,2026-01-04,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4217339373,midland,42,BUNKER HILL G 16HD,Completed,2026-04-04,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339374,midland,42,BUNKER HILL G 17HB,Completed,2026-04-05,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4217339375,midland,42,BUNKER HILL G 18DN,Completed,2026-04-07,DEAN,DEAN,False,W,depth,1,1,0,2,match
+4217339378,midland,42,CUDA 46-3 L 4WB,Inactive,2026-01-04,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4217339383,midland,42,COOK E B 13D,Active,2026-02-13,WCD,WCD,True,W,depth,0,0,1,1,conflict
+4217339385,midland,42,COOK E B 14D,Active,2026-02-13,WCD,WCD,True,W,depth,0,0,1,0,conflict
+4217339394,midland,42,CURRIE 44G 7H,Active,2026-03-10,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339395,midland,42,CURRIE 44H 8H,Active,2026-03-09,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339401,midland,42,BRUNSON 40A 1H,Active,2026-02-03,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339402,midland,42,BRUNSON 40B 2H,Inactive,2026-02-02,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4217339403,midland,42,BRUNSON 40C 3H,Active,2026-02-01,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4217339404,midland,42,BRUNSON 40D 4H,Active,2026-01-31,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4217339405,midland,42,BRUNSON 40E 5H,Active,2026-02-05,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339406,midland,42,BRUNSON 40F 6H,Active,2026-02-06,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4217339407,midland,42,BRUNSON 40G 7H,Active,2026-01-12,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4217339408,midland,42,BRUNSON 40I 9H,Active,2026-02-14,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339409,midland,42,BRUNSON 40J 10H,Active,2026-02-13,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4217339410,midland,42,BRUNSON 40K 11H,Active,2026-02-12,LSSH,LSSH,False,W,depth,0,0,1,1,conflict
+4217339411,midland,42,BRUNSON 40L 12H,Active,2026-02-11,WCA_1,WCA,False,W,depth,0,0,1,1,conflict
+4217339412,midland,42,BRUNSON 40M 13H,Active,2026-02-13,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339413,midland,42,BRUNSON 40N 14H,Active,2026-02-14,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4217339414,midland,42,BRUNSON 40O 15H,Active,2026-02-15,LSSH,LSSH,False,W,depth,0,0,0,3,crowded
+4217339415,midland,42,BRUNSON 40P 16H,Active,2026-02-16,WCA_1,WCA,False,W,depth,0,0,0,3,crowded
+4217339416,midland,42,BRUNSON 40H 8H,Active,2026-01-12,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4217339420,midland,42,COUNTY LINE WEST 34-22 A 1JM,Active,2026-01-31,JM,JM,False,W,depth,0,0,0,2,crowded
+4217339422,midland,42,COUNTY LINE WEST 34-22 C 2LS,Inactive,2026-01-30,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4217339423,midland,42,COUNTY LINE WEST 34-22 D 2WB,Inactive,2026-02-02,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4217339424,midland,42,COUNTY LINE WEST 34-22 E 2JM,Active,2026-01-26,JM,JM,False,W,depth,0,0,0,3,crowded
+4217339425,midland,42,COUNTY LINE WEST 34-22 E 2WA,Completed,2026-01-25,WCA_1,WCA,False,W,depth,0,0,0,4,crowded
+4217339428,midland,42,COUNTY LINE WEST 34-22 H 2WD,Inactive,2026-01-22,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339429,midland,42,CUDA 46-3 N R6WB R 6WB,Inactive,2026-02-02,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4217339432,midland,42,COUNTY LINE WEST 34-22 G 1WD,Inactive,2026-01-23,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339433,midland,42,PICKLE RICK A 301HD,Active,2026-01-30,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339434,midland,42,PICKLE RICK B 302HD,Active,2026-01-30,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339435,midland,42,COUNTY LINE EAST 27-22 A 3JM,Active,2026-03-17,JM,JM,False,W,depth,1,1,0,0,match
+4217339436,midland,42,COUNTY LINE EAST 27-22 A 3WA,Active,2026-03-19,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4217339437,midland,42,COUNTY LINE EAST 27-22 B 3WD,Active,2026-03-22,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339439,midland,42,COUNTY LINE EAST 27-22 D 4WA,Active,2026-03-12,WCA_1,WCA,False,W,depth,0,0,0,3,crowded
+4217339440,midland,42,COUNTY LINE EAST 27-22 C 4LS,Active,2026-03-18,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4217339441,midland,42,COUNTY LINE EAST 27-22 C 4WB,Active,2026-03-20,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4217339442,midland,42,COUNTY LINE EAST 27-22 D 4JM,Active,2026-03-10,JM,JM,False,W,depth,1,1,0,0,match
+4217339443,midland,42,COUNTY LINE EAST 27-22 E 5LS,Active,2026-03-15,LSSH,LSSH,False,W,depth,0,0,1,1,conflict
+4217339444,midland,42,COUNTY LINE EAST 27-22 E 5WB,Active,2026-03-13,WCB_1,WCB,False,W,depth,0,0,1,1,conflict
+4217339445,midland,42,COUNTY LINE EAST 27-22 F 4WD,Active,2026-03-23,WCD,WCD,False,W,depth,0,0,1,0,conflict
+4217339447,midland,42,COUNTY LINE EAST 27-22 H 5WA,Active,2026-03-14,WCA_1,WCA,False,W,depth,0,0,1,1,conflict
+4217339450,midland,42,CUDA 46-3 S R 2WD,Inactive,2026-03-04,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339452,midland,42,HOELSCHER 34B 2H,DUC,2026-07-07,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339455,midland,42,HOELSCHER 34E 5H,DUC,2026-07-04,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339457,midland,42,HOELSCHER 34G 7H,DUC,2026-07-06,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4217339458,midland,42,HOELSCHER 34H 8H,DUC,2026-07-05,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339473,midland,42,HUTCHISON-DRIVER 1830A 11D,Completed,2026-02-22,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339474,midland,42,HUTCHISON-DRIVER 1830C 12D,Completed,2026-02-22,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339475,midland,42,HUTCHISON-DRIVER 1830E 13D,Completed,2026-02-22,WCD,WCD,False,W,depth,0,0,1,0,conflict
+4217339476,midland,42,HUTCHISON-DRIVER 1830E 242H,Completed,2026-02-21,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339477,midland,42,PICKLE RICK C 303HD,Active,2026-03-13,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339478,midland,42,PICKLE RICK D 304HD,Active,2026-03-13,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339479,midland,42,HUTCHISON-TXL 1807A 1D,Completed,2026-03-19,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339480,midland,42,HUTCHISON-TXL 1807B 2D,Completed,2026-03-19,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339486,midland,42,TXL-DRIVER 1830D 12D,Completed,2026-03-18,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339487,midland,42,TXL-DRIVER 1830I 10D,Completed,2026-03-18,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339488,midland,42,WEYMAN 23A 1H,DUC,2026-04-28,WCD,WCD,False,W,depth,1,1,1,0,match
+4217339489,midland,42,WEYMAN 23B 2H,DUC,2026-04-29,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4217339490,midland,42,WEYMAN 23C 3H,DUC,2026-04-30,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4217339492,midland,42,WEYMAN 23E 5H,DUC,2026-05-09,WCD,WCD,False,W,depth,0,0,0,2,crowded
+4217339493,midland,42,WEYMAN 23F 6H,DUC,2026-05-08,WCA_1,WCA,False,W,depth,0,0,0,4,crowded
+4217339494,midland,42,WEYMAN 23G 7H,DUC,2026-05-06,WCB_1,WCB,False,W,depth,0,0,1,2,conflict
+4217339495,midland,42,WEYMAN 23H 8H,DUC,2026-05-07,LSSH,LSSH,False,W,depth,0,0,1,4,conflict
+4217339496,midland,42,WEYMAN 23I 9H,DUC,2026-05-08,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4217339497,midland,42,WEYMAN 23J 10H,DUC,2026-05-08,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4217339498,midland,42,WEYMAN 23K 11H,DUC,2026-05-07,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4217339499,midland,42,WEYMAN 23L 12H,DUC,2026-05-06,LSSH,LSSH,False,W,depth,0,0,1,2,conflict
+4217339500,midland,42,WEYMAN 23M 13H,DUC,2026-05-02,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339501,midland,42,WEYMAN 23N 14H,DUC,2026-05-01,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4217339502,midland,42,WEYMAN 23O 15H,DUC,2026-04-30,WCA_1,WCA,False,W,depth,0,0,0,3,crowded
+4217339503,midland,42,WEYMAN 23P 16H,DUC,2026-05-03,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4217339504,midland,42,WEYMAN 23Q 17H,DUC,2026-05-04,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4217339505,midland,42,WEYMAN 23R 18H,DUC,2026-05-05,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4217339507,midland,42,WOODY 4-9 UNIT 1H,Active,2026-04-29,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339508,midland,42,WOODY 4-9 UNIT 2H,Active,2026-04-30,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4217339522,midland,42,TROPICANA EAST L 14-26 1H,DUC,2026-06-05,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339523,midland,42,TROPICANA EAST 23-14B 2H,DUC,2026-06-06,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339524,midland,42,GOLDEN WINGS EAST I 33-21 4209H,DUC,2026-06-10,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4217339525,midland,42,GOLDEN WINGS EAST J 33-21 4310H,DUC,2026-06-11,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4217339526,midland,42,GOLDEN WINGS EAST K 33-21 4211H,DUC,2026-06-12,WCA_1,WCA,False,W,depth,2,2,0,0,match
+4217339527,midland,42,GOLDEN WINGS EAST M 33-21 4313H,DUC,2026-06-13,WCB_1,WCB,False,W,depth,2,2,0,0,match
+4217339528,midland,42,GOLDEN WINGS EAST N 33-21 4214H,DUC,2026-06-13,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4217339529,midland,42,GOLDEN WINGS EAST O 33-21 4315H,DUC,2026-06-14,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4217339530,midland,42,BIGBY 22A 1H,DUC,2026-06-13,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339531,midland,42,BIGBY 22B 2H,DUC,2026-06-12,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4217339532,midland,42,BIGBY 22C 3H,DUC,2026-06-11,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4217339533,midland,42,BIGBY-TXL E15 J 110H,DUC,2026-06-06,WCD,WCD,False,W,depth,0,0,1,0,conflict
+4217339534,midland,42,BIGBY-TXL E15 K 111H,DUC,2026-06-07,WCD,WCD,False,W,depth,1,1,0,0,match
+4217339538,midland,42,BARBEE Q C 3B,DUC,2026-08-29,WCA_1,WCA,True,W,depth,1,1,2,0,match
+4222742673,midland,42,CLYDE BARROW UNIT 32-41 6LS,Active,2026-04-09,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4222742675,midland,42,BUTCH CASSIDY UNIT 33-40 5LS,Active,2026-05-14,LSSH,LSSH,False,W,depth,0,0,1,1,conflict
+4222742676,midland,42,BUTCH CASSIDY UNIT 33-40 1HA,Active,2026-05-24,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4222742732,midland,42,SHADY OAK 1LM,Active,2026-01-02,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4222742733,midland,42,SHADY OAK 2HA,Active,2026-01-03,WCA_1,WCA,False,W,depth,0,0,2,1,conflict
+4222742734,midland,42,SHADY OAK 3DN,Active,2026-01-04,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4222742744,midland,42,SHADY OAK E 8DN,Active,2026-01-02,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4222742745,midland,42,SHADY OAK E 9JM,Active,2026-01-02,JM,JM,False,W,depth,0,0,0,0,nothing
+4222742746,midland,42,SHADY OAK F 10LM ST1 10LM,Active,2026-01-06,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4222742747,midland,42,SHADY OAK F 11HA ST1 11HA,Active,2026-01-07,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4222742749,midland,42,SHADY OAK F 12DN,Active,2026-01-07,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4222742751,midland,42,SHADY OAK F 13MS,Active,2026-01-08,MS,MS,False,W,depth,0,0,0,0,nothing
+4222742753,midland,42,SHADY OAK 4HB,Active,2026-01-04,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4222742784,midland,42,RAINIER 18F 1HK,Inactive,2026-01-06,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4222742785,midland,42,RAINIER 18X 2HG,Inactive,2026-01-07,DEAN,DEAN,False,W,depth,0,0,1,4,conflict
+4222742786,midland,42,RAINIER 17A-U 3HJ,Inactive,2026-01-04,DEAN,DEAN,True,W,depth,0,0,1,4,conflict
+4222742787,midland,42,RAINIER 17B 4HK,Inactive,2026-01-05,WCA_1,WCA,False,W,depth,1,1,1,0,match
+4222742788,midland,42,RAINIER 17C 5HG,Inactive,2026-01-05,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4222742793,midland,42,CARELESS WHISPER A 19-15 1SH,Active,2026-03-18,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4222742794,midland,42,CARELESS WHISPER B 19-15 1AH,Active,2026-03-31,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4222742795,midland,42,CARELESS WHISPER C 19-15 2SH,Active,2026-04-06,LSSH,LSSH,False,W,depth,0,0,1,0,conflict
+4222742796,midland,42,CARELESS WHISPER D 19-15 2AH,Active,2026-04-12,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4222742797,midland,42,CARELESS WHISPER E 19-15 3SH,Completed,2026-04-07,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4222742798,midland,42,CARELESS WHISPER F 19-15 3AH,Active,2026-04-18,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4222742799,midland,42,CARELESS WHISPER G 19-15 4SH,Active,2026-04-25,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4222742800,midland,42,CARELESS WHISPER H 19-15 4AH,Active,2026-05-01,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4222742801,midland,42,CARELESS WHISPER M 19-15 1MH,Active,2026-03-24,MS,MS,False,W,depth,0,0,1,0,conflict
+4222742802,midland,42,CARELESS WHISPER N 19-15 3MH,Active,2026-04-13,MS,MS,False,W,depth,0,0,0,0,nothing
+4222742803,midland,42,SAM BASS UNIT 36-37 1HA,Active,2026-02-11,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4222742804,midland,42,SAM BASS UNIT 36-37 5LS,Active,2026-02-10,LSSH,LSSH,False,W,depth,0,0,1,1,conflict
+4222742806,midland,42,MORGAN CHEVRON 36-48 C UNIT A 6H,Active,2026-01-07,DEAN,DEAN,False,W,depth,0,0,1,1,conflict
+4222742807,midland,42,MORGAN CHEVRON 36-48 D UNIT A 7H,Active,2026-01-05,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4222742808,midland,42,MORGAN CHEVRON 36-48 D UNIT L 7H,Active,2026-01-03,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742809,midland,42,BULL 33-45 UNIT 6WA,Active,2026-01-25,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4222742810,midland,42,BULL 33-45 UNIT 4LS,Active,2026-01-24,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4222742811,midland,42,BULL 33-45 UNIT 4WB,Active,2026-01-25,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742812,midland,42,BULL 33-45 UNIT 5WA,Active,2026-01-27,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4222742813,midland,42,BULL 33-45 UNIT 3WB,Active,2026-01-26,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742814,midland,42,BULL 33-45 UNIT 3LS,Active,2026-01-28,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4222742815,midland,42,BULL 33-45 UNIT 4WA,Active,2026-01-27,DEAN,DEAN,False,W,depth,0,0,0,1,crowded
+4222742816,midland,42,FREDERICK LINDSEY A 1DN,Active,2026-02-03,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742817,midland,42,FREDERICK LINDSEY B 2DN,Active,2026-02-01,DEAN,DEAN,False,W,depth,2,1,0,2,match
+4222742818,midland,42,FREDERICK LINDSEY C 3AH,Active,2026-02-02,WCA_1,WCA,False,W,depth,2,1,0,0,match
+4222742819,midland,42,FREDERICK LINDSEY D 4AH,Active,2026-02-01,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4222742820,midland,42,FREDERICK LINDSEY E 5H,Active,2026-02-02,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4222742823,midland,42,BULL 28-45 UNIT 1WB,Active,2026-02-25,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4222742824,midland,42,BULL 28-45 UNIT 2WB,Active,2026-02-26,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742825,midland,42,BULL 28-45 UNIT 1LS,Active,2026-03-02,LSSH,LSSH,False,W,depth,0,0,0,3,crowded
+4222742827,midland,42,BULL 28-45 UNIT 1WA,Active,2026-02-24,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4222742828,midland,42,BULL 28-45 UNIT 2LS,Active,2026-03-01,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4222742829,midland,42,BULL 28-45 UNIT 2WA,Active,2026-02-27,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,2,crowded
+4222742830,midland,42,BULL 28-45 UNIT 3WA,Active,2026-02-28,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4222742831,midland,42,JH SELMAN ALLOCATION C 26-35 6LS,Active,2026-02-22,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4222742832,midland,42,JH SELMAN ALLOCATION D 26-35 2HA,Active,2026-02-23,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4222742833,midland,42,BLAGRAVE C 3AH,Active,2026-03-08,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4222742834,midland,42,BLAGRAVE D 5H,Active,2026-03-10,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4222742835,midland,42,BLAGRAVE A 1DN,Active,2026-03-08,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4222742836,midland,42,BLAGRAVE B 2DN,Active,2026-03-09,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4222742837,midland,42,MORGAN RANCH 35-47 B UNIT L 5H,Active,2026-03-30,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4222742838,midland,42,MORGAN RANCH 35-47 B UNIT A 5H,Active,2026-03-27,JM,JM,False,no stick of its family in its DSU,depth,1,1,0,1,match
+4222742839,midland,42,MORGAN RANCH 35-47 B UNIT A 6H,Active,2026-04-01,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4222742840,midland,42,MORGAN RANCH 35-47 B UNIT L 6H,Active,2026-04-05,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4222742845,midland,42,CURLY BILL UNIT 31-42 1HA,Active,2026-04-14,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4222742846,midland,42,CURLY BILL UNIT 31-42 5LS,Active,2026-04-15,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4222742847,midland,42,KING FISHER UNIT 42-43 2MS,Active,2026-04-16,MS,MS,False,W,depth,0,0,0,1,crowded
+4222742866,midland,42,HIMALAYA 13-24 U 1W,Completed,2026-06-25,DEAN,DEAN,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742870,midland,42,ZISSOU 32-41 A 3245WA,DUC,2026-06-23,WCA_1,WCA,True,W,depth,1,1,1,1,match
+4222742871,midland,42,ZISSOU B 3243WA,DUC,2026-06-24,WCA_1,WCA,True,W,depth,0,0,3,2,conflict
+4222742873,midland,42,OLD TOM UNIT A 21-28 3MH,Active,2026-06-05,MS,MS,False,W,depth,0,0,0,0,nothing
+4222742874,midland,42,OLD TOM UNIT A 21-28 4MH,Completed,2026-06-14,MS,MS,False,W,depth,0,0,0,1,crowded
+4222742875,midland,42,OLD TOM B 21-33 6MH,Active,2026-06-20,MS,MS,False,W,depth,0,0,0,0,nothing
+4222742876,midland,42,OLD TOM A 21-33 5MH,Active,2026-06-14,MS,MS,False,W,depth,1,1,0,1,match
+4222742885,midland,42,FAR COUNTRY 12-13-24 H 2WA,Active,2026-05-23,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4222742886,midland,42,FAR COUNTRY 12-13-24 H 1WA,Active,2026-05-22,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4222742894,midland,42,EVANS-ANTELL UNIT B 46-03 1MH,Active,2026-07-23,MS,MS,False,W,depth,1,1,0,0,match
+4222742895,midland,42,EVANS-ANTELL UNIT B 46-03 2MH,Active,2026-07-31,MS,MS,False,W,depth,1,1,0,0,match
+4222742896,midland,42,EVANS-ANTELL UNIT B 46-03 2CH,Active,2026-07-13,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742897,midland,42,EVANS-ANTELL UNIT B 46-03 3MH,Active,2026-07-13,MS,MS,False,W,depth,1,1,0,0,match
+4222742898,midland,42,EVANS-ANTELL UNIT B 46-03 4CH,Active,2026-07-05,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742899,midland,42,EVANS-ANTELL UNIT B 46-03 4MH,Active,2026-07-19,MS,MS,False,W,depth,1,1,0,0,match
+4222742900,midland,42,ENGLE UNIT B 43-54 3AH,Completed,2026-08-19,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742901,midland,42,ENGLE UNIT B 43-54 4SH,Completed,2026-08-10,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4222742902,midland,42,ENGLE UNIT A 43-54 3SH,Completed,2026-08-25,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4222742903,midland,42,VERTIGO 6-7 H 2WA,Active,2026-07-11,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4222742904,midland,42,VERTIGO 6-7 H 1WA,Active,2026-07-11,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4222742905,midland,42,THE PEAKS 29-17 A UNIT A 3H,DUC,2026-08-08,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4222742906,midland,42,THE PEAKS 29-17 B UNIT A 5H,DUC,2026-08-07,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536734,midland,42,MARENGO N311H,Active,2026-02-02,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4223536735,midland,42,MARENGO N312H,Active,2026-02-05,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536736,midland,42,MARENGO N313H,Active,2026-02-06,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,1,0,conflict
+4223536737,midland,42,MARENGO N314H,Active,2026-02-07,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4223536738,midland,42,MARENGO N315H,Active,2026-02-08,WCB_1,WCB,False,W,depth,0,0,0,3,crowded
+4223536739,midland,42,MARENGO N316H,Active,2026-02-09,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536740,midland,42,MARENGO N317H,Active,2026-02-09,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4223536741,midland,42,MARENGO N318H,Active,2026-02-10,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4223536743,midland,42,UNIVERSITY 40 1302WC,Active,2026-03-14,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536744,midland,42,UNIVERSITY 40 1304WC,Active,2026-03-15,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536745,midland,42,UNIVERSITY 40 1306WC,Active,2026-03-16,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536746,midland,42,UNIVERSITY 40 1310WC,Active,2026-03-17,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4223536747,midland,42,UNIVERSITY 40D 0701WC,Completed,2026-04-03,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4223536748,midland,42,UNIVERSITY 40D 0703WC,Completed,2026-04-04,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4223536750,midland,42,BIG JAKE A N401H,DUC,2026-04-23,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4223536765,midland,42,UNIVERSITY 40 E 1803WB,Completed,2026-05-17,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,4,crowded
+4223536766,midland,42,UNIVERSITY 40 E 1803WC,Completed,2026-05-18,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137396,delaware,42,IRON JACKET UNIT 236H,Completed,2026-03-07,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137506,delaware,42,HAT TRICK 56-T1-42 2C B20 B203H,Active,2026-01-19,BS2_S,BS2,True,W,depth,0,0,0,0,nothing
+4230137533,delaware,42,UL 19 JITTERBUG A 2671H,Completed,2026-04-12,WCB_2,WCB,False,W,depth,1,1,0,1,match
+4230137534,delaware,42,UL 19 JITTERBUG B 2672H,Completed,2026-04-19,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4230137535,delaware,42,UL 19 JITTERBUG F 2674H,Completed,2026-04-24,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137537,delaware,42,UL 19 JITTERBUG C 2651H,Completed,2026-04-07,BS1_S,BS1,False,W,depth,1,1,0,0,match
+4230137538,delaware,42,UL 19 JITTERBUG D 2652H,Completed,2026-04-17,BS2_C,BS2,False,no stick of its family in its DSU,depth,1,1,0,0,match
+4230137540,delaware,42,UL 19 JITTERBUG G 2653H,Completed,2026-06-03,BS2_C,BS2,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4230137541,delaware,42,UL 19 JITTERBUG H 2654H,Completed,2026-04-20,BS2_C,BS2,False,no stick of its family in its DSU,depth,1,1,0,0,match
+4230137587,delaware,42,SILVERTIP 76-11 UNIT I 21H,Completed,2026-03-02,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4230137588,delaware,42,SILVERTIP 76-11 UNIT I 22H,Completed,2026-03-01,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4230137589,delaware,42,SILVERTIP 76-11 UNIT I 23H,Completed,2026-02-25,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+4230137590,delaware,42,SILVERTIP 76-11 UNIT I 12H,Completed,2026-02-24,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4230137591,delaware,42,SILVERTIP 76-11 UNIT I 13H,Completed,2026-02-22,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4230137592,delaware,42,SILVERTIP 76-11 UNIT I 14H,Completed,2026-02-20,WCXY,WCA,False,W,depth,0,0,0,2,crowded
+4230137644,delaware,42,STATE LINK VJ RANCH 37-48 71 711H,Active,2026-02-14,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4230137645,delaware,42,STATE LINK VJ RANCH 37-48 73 732H,Active,2026-02-22,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4230137646,delaware,42,STATE LINK VJ RANCH 37-48 752H,Active,2026-02-05,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4230137647,delaware,42,STATE LINK VJ RANCH 37-48 75 751H,Active,2026-01-29,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4230137658,delaware,42,EL HEFE 3109H,DUC,2026-04-01,BS2_C,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137659,delaware,42,EL HEFE 3113H,DUC,2026-04-03,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137674,delaware,42,HIGHLINE RIDGE 54-2 A 3802H,Active,2026-02-09,WCB_2,WCB,False,W,planned,0,0,0,0,nothing
+4230137675,delaware,42,HIGHLINE RIDGE 54-2 B 3801H,Active,2026-02-21,WCXY,WCA,False,W,depth,0,0,0,0,nothing
+4230137679,delaware,42,KEG 1-0-39-38 G 507H,Completed,2026-02-04,BS1_S,BS1,False,W,depth,0,0,1,0,conflict
+4230137680,delaware,42,KEG 1-0-39-38 H 508H,Completed,2026-02-03,BS2_C,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137681,delaware,42,KEG 1-0-39-38 I 509H,Completed,2026-02-02,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+4230137682,delaware,42,KEG 1-0-39-38 J 510H,Completed,2026-01-31,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137685,delaware,42,PIZZA SNACK 22502 19 #01H,Active,2026-02-07,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4230137690,delaware,42,STARLIGHT 56-1-25-36 I 17H,Active,2026-03-18,WCA_1,WCA,False,W,depth,0,0,2,0,conflict
+4230137691,delaware,42,STARLIGHT 56-1-25-36 J 18H,Active,2026-03-26,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4230137692,delaware,42,STARLIGHT 56-1-25-36 K 19H,Active,2026-04-03,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4230137693,delaware,42,STARLIGHT 56-1-25-36 L 23H,Active,2026-04-04,WCB_1,WCB,False,W,depth,0,0,1,1,conflict
+4230137694,delaware,42,STARLIGHT 56-1-25-36 M 110H,Active,2026-04-04,WCA_1,WCA,False,W,depth,0,0,0,3,crowded
+4230137695,delaware,42,STARLIGHT 56-1-25-36 N 111H,Completed,2026-04-05,WCA_2,WCA,False,W,depth,0,0,0,2,crowded
+4230137696,delaware,42,STARLIGHT 56-1-36-25 A 11H,Completed,2026-02-20,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4230137697,delaware,42,STARLIGHT 56-1-36-25 B 12H,Completed,2026-02-25,WCA_2,WCA,False,W,depth,0,0,1,0,conflict
+4230137698,delaware,42,STARLIGHT 56-1-36-25 C 13H,Completed,2026-02-23,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,2,0,conflict
+4230137699,delaware,42,STARLIGHT 56-1-36-25 D 21H,Completed,2026-02-24,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+4230137700,delaware,42,STARLIGHT 56-1-36-25 E 14H,Completed,2026-02-28,WCA_1,WCA,False,W,depth,0,0,2,0,conflict
+4230137701,delaware,42,STARLIGHT 56-1-36-25 F 15H,Active,2026-02-27,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4230137702,delaware,42,STARLIGHT 56-1-36-25 G 16H,Completed,2026-02-28,WCA_1,WCA,False,W,depth,0,0,1,2,conflict
+4230137703,delaware,42,STARLIGHT 56-1-36-25 H 22H,Completed,2026-03-02,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+4230137704,delaware,42,BLUE 34 312H,Active,2026-02-23,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137708,delaware,42,BLUE 34 314H,Active,2026-02-26,BS1_S,BS1,True,W,depth,0,0,0,0,nothing
+4230137709,delaware,42,BLUE 34 411H,Active,2026-02-27,WCA_1,WCA,True,W,depth,0,0,0,3,crowded
+4230137710,delaware,42,LUDEMAN A 605UH,Completed,2026-02-26,WCA_2,WCA,True,W,depth,0,0,0,3,crowded
+4230137711,delaware,42,LUDEMAN AC 604UH,Completed,2026-02-27,WCA_1,WCA,True,W,depth,0,0,0,2,crowded
+4230137712,delaware,42,WHIPLASH A 631H,Completed,2026-03-26,BS3_S,BS3,False,W,depth,0,0,0,0,nothing
+4230137713,delaware,42,WHIPLASH B 671H,Completed,2026-03-28,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137715,delaware,42,WHIPLASH C 672H,Completed,2026-04-01,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4230137716,delaware,42,WHIPLASH D 673H,Completed,2026-04-16,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137717,delaware,42,WHIPLASH E 674H,Completed,2026-04-13,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,1,0,conflict
+4230137719,delaware,42,PIZZA SNACK 22502 19 #03H,Active,2026-02-05,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4230137720,delaware,42,PIZZA SNACK 22502 19 #02H,Active,2026-02-06,WCXY,WCA,False,W,depth,0,0,0,0,nothing
+4230137721,delaware,42,PIZZA SNACK 22502 19 #04H,Active,2026-02-04,WCXY,WCA,False,W,depth,0,0,2,0,conflict
+4230137722,delaware,42,PIZZA SNACK 22502 19 #05H,Active,2026-02-04,WCA_2,WCA,False,W,depth,0,0,0,2,crowded
+4230137737,delaware,42,THUNDERBALL 101BS,Completed,2026-02-09,BS1_S,BS1,False,W,depth,1,1,0,0,match
+4230137738,delaware,42,THUNDERBALL 103BS,Completed,2026-02-12,BS2_C,BS2,False,W,depth,0,0,0,2,crowded
+4230137739,delaware,42,THUNDERBALL 102BS,Completed,2026-02-12,BS1_S,BS1,False,W,depth,1,1,0,0,match
+4230137740,delaware,42,THUNDERBALL 104BS,Completed,2026-02-10,BS1_S,BS1,False,W,depth,1,1,0,0,match
+4230137741,delaware,42,THUNDERBALL 201BS,Completed,2026-02-08,BS2_S,BS2,False,W,depth,1,1,0,1,match
+4230137742,delaware,42,THUNDERBALL 202BS,Completed,2026-02-11,BS2_S,BS2,False,W,depth,0,0,0,2,crowded
+4230137743,delaware,42,THUNDERBALL 203BS,Completed,2026-02-14,BS2_S,BS2,False,W,depth,0,0,1,0,conflict
+4230137744,delaware,42,THUNDERBALL 204BS,Completed,2026-02-11,BS2_S,BS2,False,W,depth,0,0,0,2,crowded
+4230137745,delaware,42,THUNDERBALL 301BC,Completed,2026-02-10,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4230137746,delaware,42,THUNDERBALL 302BC,Completed,2026-02-12,BS3_C,BS3,False,W,depth,1,1,0,0,match
+4230137747,delaware,42,THUNDERBALL 303BC,Completed,2026-02-22,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4230137748,delaware,42,SWAPPORTUNITY STATE D 1171H,Completed,2026-06-28,WCB_2,WCB,False,W,depth,1,1,0,1,match
+4230137749,delaware,42,SWAPPORTUNITY STATE E 1172H,Completed,2026-07-03,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4230137750,delaware,42,WRANGLER C UNIT 402H,Active,2026-03-18,BS2_C,BS2,False,W,depth,1,1,0,0,match
+4230137751,delaware,42,WRANGLER C UNIT 522H,Active,2026-03-13,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+4230137752,delaware,42,WRANGLER C UNIT 581H,Active,2026-03-13,BS3_C,BS3,False,W,depth,1,1,0,0,match
+4230137753,delaware,42,WRANGLER D UNIT 401H,Active,2026-03-20,BS2_C,BS2,False,W,depth,0,0,0,1,crowded
+4230137754,delaware,42,WRANGLER D UNIT 521H,Active,2026-03-19,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+4230137755,delaware,42,WRANGLER D UNIT 551H,Active,2026-03-20,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+4230137756,delaware,42,LINK VJ RANCH 30-31 E 591H,DUC,2026-03-29,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4230137757,delaware,42,LINK VJ RANCH 30-31 F 551H,DUC,2026-04-04,BS2_S,BS2,False,W,depth,0,0,0,1,crowded
+4230137758,delaware,42,LINK VJ RANCH 30-31 G 581H,DUC,2026-04-05,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4230137759,delaware,42,LINK VJ RANCH 30-31 H 521H,DUC,2026-04-13,BS2_S,BS2,False,W,depth,1,1,0,0,match
+4230137760,delaware,42,LINK VJ RANCH WEST 30-31 552H,DUC,2026-04-18,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+4230137765,delaware,42,KEG 1-0-39-38 A 501H,Completed,2026-04-05,BS1_S,BS1,False,W,depth,0,0,0,2,crowded
+4230137766,delaware,42,KEG 1-0-39-38 B 61H,Completed,2026-04-06,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137767,delaware,42,KEG 1-0-39-38 C 503H,Completed,2026-04-08,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,1,0,conflict
+4230137768,delaware,42,KEG 1-0-39-38 D 62H,Completed,2026-04-09,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137769,delaware,42,KEG 1-0-39-38 E 505H,Completed,2026-04-11,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137770,delaware,42,KEG 1-0-39-38 F 63H,Completed,2026-04-13,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137771,delaware,42,WRANGLER C UNIT 552H,Active,2026-03-13,BS2_S,BS2,False,W,depth,1,1,0,0,match
+4230137772,delaware,42,WRANGLER C UNIT 403H,Active,2026-03-12,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+4230137773,delaware,42,WRANGLER C UNIT 553H,Active,2026-03-12,BS2_S,BS2,False,W,depth,1,1,0,0,match
+4230137780,delaware,42,HALEY 31 31HU,Active,2026-04-10,WCB_2,WCB,True,W,depth,1,1,0,0,match
+4230137781,delaware,42,HALEY 31 32HU,Active,2026-04-14,WCB_2,WCB,True,W,depth,0,0,0,0,nothing
+4230137798,delaware,42,SEAHAWK 301BC,Completed,2026-07-01,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4230137800,delaware,42,JAYHAWK STATE UNIT 65-64 1WC,Completed,2026-07-02,WCB_2,WCB,False,W,depth,0,0,1,0,conflict
+4230137801,delaware,42,BULL A 4051H,Completed,2026-05-29,BS2_C,BS2,False,W,depth,0,0,0,1,crowded
+4230137802,delaware,42,BULL B 4052H,Completed,2026-06-02,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+4230137803,delaware,42,BULL C 4053H,Completed,2026-06-09,BS2_C,BS2,False,W,depth,0,0,0,1,crowded
+4230137807,delaware,42,BULL G 4041H,Completed,2026-06-06,BS2_S,BS2,False,W,depth,0,0,0,0,nothing
+4230137818,delaware,42,GOLDILOCKS 1HX,Active,2026-04-24,WCC,WCC,False,no stick of its family in its DSU,depth,1,1,1,0,match
+4230137820,delaware,42,LINK VJ RANCH 26-23 H 731H,DUC,2026-07-15,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4230137821,delaware,42,LINK VJ RANCH 26-23 J 732H,DUC,2026-07-29,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4230137822,delaware,42,LINK VJ RANCH 26-23 K 733H,DUC,2026-05-10,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4230137823,delaware,42,LINK VJ RANCH 26-23 L 751H,DUC,2026-05-10,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4230137824,delaware,42,LINK VJ RANCH 26-23 M 752H,DUC,2026-05-10,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4230137825,delaware,42,LINK VJ RANCH 26-23 N 753H,DUC,2026-06-19,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137826,delaware,42,LINK VJ RANCH 26-23 O 761H,DUC,2026-06-06,WCC,WCC,False,W,depth,0,0,0,1,crowded
+4230137868,delaware,42,RED RYDER UNIT 101BS,Completed,2026-06-15,BS1_S,BS1,False,W,depth,0,0,0,0,nothing
+4230137871,delaware,42,RED RYDER UNIT 201BS,Completed,2026-06-16,BS2_S,BS2,False,W,depth,1,1,0,0,match
+4230137872,delaware,42,RED RYDER UNIT 202SH,Completed,2026-06-15,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+4230137873,delaware,42,RED RYDER UNIT 203BS,Completed,2026-06-03,BS2_C,BS2,False,W,depth,1,1,0,0,match
+4230137876,delaware,42,RED RYDER UNIT 301BC,Completed,2026-07-01,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4230137889,delaware,42,STATE APOLLO XL A 731H,DUC,2026-07-01,WCB_1,WCB,False,W,depth,1,1,1,0,match
+4230137890,delaware,42,STATE APOLLO XL B 761H,DUC,2026-07-01,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4230137891,delaware,42,STATE APOLLO XL C 751H,DUC,2026-07-02,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4230137892,delaware,42,STATE APOLLO XL D 732H,DUC,2026-06-19,WCB_1,WCB,False,W,depth,1,1,2,0,match
+4230137893,delaware,42,STATE APOLLO XL E 762H,DUC,2026-06-19,WCC,WCC,False,no stick of its family in its DSU,depth,1,1,0,1,match
+4230137894,delaware,42,STATE APOLLO XL F 752H,DUC,2026-06-20,WCB_1,WCB,False,W,depth,1,1,1,1,match
+4231746453,midland,42,PINOT 65 D 2JM,Inactive,2026-03-31,JM,JM,False,W,depth,0,0,0,1,crowded
+4231746454,midland,42,PINOT 65 A 1US,Inactive,2026-03-30,MS,MS,False,W,depth,1,1,0,0,match
+4231746457,midland,42,PINOT 65 C 2US,Inactive,2026-04-03,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231746475,midland,42,PINOT 65 H 3JM,Inactive,2026-04-04,JM,JM,False,W,depth,0,0,0,1,crowded
+4231746476,midland,42,PINOT 65 G 3DN,Inactive,2026-04-05,DEAN,DEAN,False,W,depth,1,1,0,3,match
+4231746477,midland,42,PINOT 65 E 2WB,Active,2026-04-01,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4231747025,midland,42,WEST CROSS BAR RANCH-B 1894OP,Completed,2026-04-30,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747026,midland,42,WEST CROSS BAR RANCH-B 1895OP,Completed,2026-02-21,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747033,midland,42,RICHARDS-GRISHAM 24D 4H,Inactive,2026-01-03,JM,JM,False,W,depth,1,1,0,1,match
+4231747034,midland,42,RICHARDS-GRISHAM 24E 5H,Inactive,2026-01-04,DEAN,DEAN,False,W,depth,1,1,0,2,match
+4231747078,midland,42,EPLEY-GLASSCOCK E8G 207H,DUC,2026-03-15,MS,MS,False,W,depth,1,1,0,0,match
+4231747089,midland,42,UNIVERSITY 7-14AA 201H,Active,2026-01-10,JM,JM,False,W,depth,1,1,0,1,match
+4231747090,midland,42,UNIVERSITY 7-14BB 202H,Active,2026-01-11,WCA_1,WCA,False,W,depth,1,1,1,2,match
+4231747091,midland,42,UNIVERSITY 7-14CC 203H,Active,2026-01-13,JM,JM,False,W,depth,1,1,0,0,match
+4231747092,midland,42,UNIVERSITY 7-14DD 204H,Active,2026-01-10,WCA_1,WCA,False,W,depth,1,1,0,4,match
+4231747093,midland,42,UNIVERSITY 7-14EE 205H,Active,2026-01-12,JM,JM,False,W,depth,1,1,0,0,match
+4231747094,midland,42,UNIVERSITY 7-14FF 206H,Active,2026-01-13,WCA_1,WCA,False,W,depth,2,1,0,2,match
+4231747102,midland,42,HR VENOM 320J 6HG,Active,2026-02-19,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4231747103,midland,42,HR VENOM 320K 8HE,Active,2026-02-11,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4231747104,midland,42,HR VENOM 320L 10HG,Active,2026-02-06,DEAN,DEAN,False,W,depth,0,0,1,0,conflict
+4231747105,midland,42,HR VENOM 320M 13HG,Active,2026-01-31,DEAN,DEAN,False,W,depth,0,0,0,1,crowded
+4231747106,midland,42,HR VENOM 320J 5HD,Active,2026-02-18,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747107,midland,42,HR VENOM 320K 7HC,Active,2026-02-13,MS,MS,False,W,depth,0,0,0,2,crowded
+4231747108,midland,42,HR VENOM 320L 9HD,Active,2026-02-09,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747109,midland,42,HR VENOM 320LL 11HE,Active,2026-03-16,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4231747110,midland,42,HR VENOM 320LL 12HC,Active,2026-02-02,MS,MS,False,W,depth,0,0,1,0,conflict
+4231747111,midland,42,HR VENOM 320M 14HD,Active,2026-01-30,JM,JM,False,W,depth,0,0,0,0,nothing
+4231747113,midland,42,SCHARBAUER-DOVE 9A 1H,Active,2026-01-31,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4231747114,midland,42,SCHARBAUER-DOVE 9B 2H,Active,2026-02-01,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747115,midland,42,SCHARBAUER-DOVE 9C 3H,Active,2026-02-02,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4231747117,midland,42,SCHARBAUER-DOVE 9E 5H,Active,2026-02-05,MS,MS,False,W,depth,0,0,1,0,conflict
+4231747118,midland,42,SCHARBAUER RANCH 19D 4H,Active,2026-01-15,WCB_1,WCB,False,W,depth,0,0,1,1,conflict
+4231747119,midland,42,SCHARBAUER RANCH 19E 5H,Active,2026-01-16,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747120,midland,42,SCHARBAUER RANCH 19G 7H,Inactive,2026-01-19,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4231747121,midland,42,SCHARBAUER RANCH 19F 6H,Active,2026-01-19,MS,MS,False,W,depth,1,1,0,0,match
+4231747132,midland,42,CURTIS-SCHARBAUER 8A 1H,Active,2026-01-17,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747133,midland,42,CURTIS-SCHARBAUER 8B 2H,Active,2026-01-18,MS,MS,False,W,depth,0,0,0,0,nothing
+4231747134,midland,42,CURTIS-SCHARBAUER 8C 3H,Active,2026-01-19,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4231747135,midland,42,SCHARBAUER RANCH 18H 1808H,Active,2026-02-12,WCB_1,WCB,False,W,depth,0,0,0,3,crowded
+4231747136,midland,42,SCHARBAUER RANCH 18I 1809H,Active,2026-02-14,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4231747137,midland,42,CURTIS-SCHARBAUER 8D 4H,Active,2026-01-21,JM,JM,False,W,depth,1,1,0,0,match
+4231747138,midland,42,CURTIS-SCHARBAUER 8E 5H,Active,2026-01-22,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4231747139,midland,42,CURTIS-SCHARBAUER 8F 6H,Active,2026-01-27,MS,MS,False,W,depth,0,0,0,0,nothing
+4231747140,midland,42,CURTIS-SCHARBAUER 8G 7H,Active,2026-01-28,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747141,midland,42,GLASS-NAIL 24A 1H,Active,2026-02-27,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4231747142,midland,42,GLASS-NAIL 24B 2H,Active,2026-03-01,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4231747143,midland,42,GLASS-NAIL 24C 3H,Active,2026-03-02,MS,MS,False,W,depth,1,1,0,0,match
+4231747144,midland,42,GLASS-NAIL 24D 4H,Inactive,2026-03-03,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4231747145,midland,42,GLASS-NAIL 24E 5H,Active,2026-03-04,JM,JM,False,W,depth,1,1,0,0,match
+4231747146,midland,42,GLASS-NAIL 24K 11H,Active,2026-02-28,JM,JM,False,W,depth,1,1,0,0,match
+4231747147,midland,42,GLASS-NAIL 24F 6H,Active,2026-02-22,MS,MS,False,W,depth,0,0,1,0,conflict
+4231747148,midland,42,GLASS-NAIL 24G 7H,Active,2026-02-24,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4231747149,midland,42,GLASS-NAIL 24H 8H,Inactive,2026-02-25,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4231747150,midland,42,GLASS-NAIL 24I 9H,Active,2026-02-22,JM,JM,False,W,depth,0,0,1,0,conflict
+4231747151,midland,42,GLASS-NAIL 24J 10H,Inactive,2026-02-27,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4231747152,midland,42,MABEE E1L 112H,Inactive,2026-02-23,LSSH,LSSH,False,W,depth,0,0,0,3,crowded
+4231747153,midland,42,MABEE E1M 113H,Inactive,2026-02-24,MS,MS,False,W,depth,0,0,0,0,nothing
+4231747154,midland,42,MABEE E1N 114H,Inactive,2026-02-25,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4231747155,midland,42,MABEE E1O 115H,Inactive,2026-02-26,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747156,midland,42,MABEE E1K 111H,Inactive,2026-02-21,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747157,midland,42,MABEE E1P 116H,Inactive,2026-02-28,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747158,midland,42,MABEE E1Q 117H,Inactive,2026-03-02,WCB_1,WCB,False,W,depth,0,0,1,2,conflict
+4231747159,midland,42,MABEE E1R 118H,Inactive,2026-03-03,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4231747160,midland,42,MABEE E1S 119H,Inactive,2026-03-04,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747175,midland,42,SIDEWAYZER UNIT 1824 201JM,Completed,2026-07-08,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747176,midland,42,SIDEWAYZER UNIT 1824 202MS,Completed,2026-07-13,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747177,midland,42,SIDEWAYZER UNIT 1824 203JM,Completed,2026-07-16,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747178,midland,42,SIDEWAYZER UNIT 1824 204MS,Completed,2026-06-08,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747179,midland,42,SIDEWAYZER UNIT 1824 205JM,Completed,2026-06-01,JM,JM,False,W,depth,1,1,0,0,match
+4231747180,midland,42,SIDEWAYZER UNIT 1824 206MS,Completed,2026-06-01,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747181,midland,42,SIDEWAYZER UNIT 1824 207JM,Completed,2026-06-20,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747183,midland,42,SIDEWAYZER UNIT 1824 209JM,Completed,2026-06-25,JM,JM,False,W,depth,0,0,0,2,crowded
+4231747184,midland,42,SIDEWAYZER EAST DEEP 303OP,Completed,2026-06-13,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747185,midland,42,SIDEWAYZER EAST DEEP E 304OP,Completed,2026-06-15,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747187,midland,42,SIDEWAYZER WEST DEEP E 302OP,Completed,2026-08-23,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747198,midland,42,ASHLEY-PRIBYLA 29A 1H,DUC,2026-05-11,LSSH,LSSH,False,W,depth,0,0,1,0,conflict
+4231747199,midland,42,ASHLEY-PRIBYLA 29B 2H,DUC,2026-05-12,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4231747200,midland,42,ASHLEY-PRIBYLA 29C 3H,DUC,2026-05-13,MS,MS,False,W,depth,0,0,1,0,conflict
+4231747201,midland,42,ASHLEY-PRIBYLA 29D 4H,DUC,2026-05-14,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4231747202,midland,42,ASHLEY-PRIBYLA 29E 5H,DUC,2026-05-14,LSSH,LSSH,False,W,depth,0,0,2,0,conflict
+4231747203,midland,42,ASHLEY-PRIBYLA 29F 6H,Completed,2026-05-08,LSSH,LSSH,False,W,depth,0,0,2,0,conflict
+4231747205,midland,42,ASHLEY-PRIBYLA 29H 8H,Completed,2026-05-09,MS,MS,False,W,depth,0,0,0,0,nothing
+4231747206,midland,42,ASHLEY-PRIBYLA 29I 9H,Completed,2026-05-10,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4231747208,midland,42,HERA 56-46 UNIT 2 4JM,DUC,2026-04-03,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747209,midland,42,HERA 56-46 UNIT 2 4LS,DUC,2026-03-25,LSSH,LSSH,False,W,depth,0,0,1,2,conflict
+4231747210,midland,42,HERA 56-46 UNIT 2 4WA,DUC,2026-03-26,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4231747211,midland,42,HERA 56-46 UNIT 2 4WB,DUC,2026-03-27,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4231747212,midland,42,HERA 56-46 UNIT 2 5LS,DUC,2026-04-02,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4231747213,midland,42,HERA 56-46 UNIT 2 5WA,DUC,2026-03-28,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4231747214,midland,42,HERA 56-46 UNIT 2 3JM,DUC,2026-04-29,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747215,midland,42,MERLOT 95-66 A 1JM,Active,2026-04-23,JM,JM,False,W,depth,1,1,0,0,match
+4231747216,midland,42,MERLOT 95-66 D 1WB,Inactive,2026-04-27,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4231747217,midland,42,MERLOT 95-66 B 1LS,Inactive,2026-04-22,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4231747219,midland,42,MERLOT 95-66 G 2JM,Active,2026-04-25,JM,JM,False,W,depth,0,0,0,1,crowded
+4231747220,midland,42,MERLOT 95-66 I 2DN,Inactive,2026-04-26,DEAN,DEAN,False,W,depth,0,0,0,3,crowded
+4231747221,midland,42,DR ORSON Q 77H,Active,2026-04-28,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4231747222,midland,42,DR ORSON R 79H,Active,2026-04-29,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4231747250,midland,42,HERA 56-46 UNIT 2 3WD,DUC,2026-04-28,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4231747251,midland,42,HERA 56-46 UNIT 2 4WD,DUC,2026-04-29,WCD,WCD,False,W,depth,1,1,0,0,match
+4231747292,midland,42,EPLEY E7A 101H,DUC,2026-06-24,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4231747293,midland,42,EPLEY E7B 102H,DUC,2026-06-26,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4231747294,midland,42,EPLEY E7C 103H,DUC,2026-07-01,MS,MS,False,W,depth,0,0,0,0,nothing
+4231747295,midland,42,EPLEY E7D 104H,DUC,2026-07-03,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4231747296,midland,42,EPLEY E7E 105H,DUC,2026-07-11,LSSH,LSSH,False,W,depth,1,1,1,0,match
+4231747297,midland,42,EPLEY E7F 106H,DUC,2026-07-09,DEAN,DEAN,False,W,depth,0,0,0,2,crowded
+4231747298,midland,42,EPLEY W7G 107H,DUC,2026-06-25,MS,MS,False,W,depth,1,1,0,0,match
+4231747299,midland,42,EPLEY W7H 108H,DUC,2026-06-27,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4231747300,midland,42,EPLEY W7I 109H,DUC,2026-06-28,LSSH,LSSH,False,W,depth,2,1,0,0,match
+4231747301,midland,42,EPLEY W7J 110H,DUC,2026-06-30,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747302,midland,42,EPLEY W7K 111H,DUC,2026-07-01,LSSH,LSSH,False,W,depth,2,1,0,0,match
+4231747303,midland,42,GUARDIAN EAST 250 U 4DN,DUC,2026-06-04,DEAN,DEAN,False,W,depth,0,0,1,1,conflict
+4231747304,midland,42,GUARDIAN EAST 250 V 4JM,DUC,2026-05-28,JM,JM,False,W,depth,0,0,0,0,nothing
+4231747305,midland,42,GUARDIAN EAST 250 W 4LS,DUC,2026-05-25,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4231747306,midland,42,GUARDIAN EAST 250 X 4MS,DUC,2026-05-23,MS,MS,False,W,depth,0,0,0,1,crowded
+4231747307,midland,42,GUARDIAN EAST 250 Y 4US,DUC,2026-06-05,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4231747308,midland,42,GUARDIAN EAST 250 AA 7WB,DUC,2026-06-02,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4231747309,midland,42,GUARDIAN EAST 250 Z 6WB,DUC,2026-05-31,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4232945570,midland,42,FASKEN-BUCHANAN 51J 10H,DUC,2026-07-19,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232945572,midland,42,FASKEN-BUCHANAN 51L 12H,DUC,2026-07-14,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4232945577,midland,42,FASKEN-BUCHANAN 51I 9H,DUC,2026-07-15,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232945580,midland,42,GOLLADAY-MCALISTER 51G 7H,DUC,2026-07-16,WCB_2,WCB,False,W,depth,1,1,0,2,match
+4232945581,midland,42,BUCHANAN 42B 2H,DUC,2026-06-22,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232947770,midland,42,CHANCELLORSVILLE 1JM,Completed,2026-04-25,WCB_1,WCB,False,W,depth,1,1,0,2,match
+4232947771,midland,42,CHANCELLORSVILLE 2DN,Completed,2026-02-28,DEAN,DEAN,False,W,depth,0,0,0,3,crowded
+4232947773,midland,42,CHANCELLORSVILLE 4LM,Completed,2026-03-04,LSSH,LSSH,False,W,depth,1,1,0,1,match
+4232947775,midland,42,CHANCELLORSVILLE 5HA,Completed,2026-03-07,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4232947777,midland,42,CHANCELLORSVILLE E 6JM,Completed,2026-02-15,JM,JM,False,W,depth,0,0,0,1,crowded
+4232947778,midland,42,CHANCELLORSVILLE E 7DN,Completed,2026-02-17,DEAN,DEAN,False,W,depth,1,1,0,0,match
+4232947779,midland,42,CHANCELLORSVILLE E 8HB,Completed,2026-02-19,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4232947780,midland,42,CHANCELLORSVILLE E 9LM,Completed,2026-02-22,LSSH,LSSH,False,W,depth,0,0,1,0,conflict
+4232947781,midland,42,CHANCELLORSVILLE E 10HA,Completed,2026-02-25,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232947917,midland,42,PEGGY 20-8 A 1WD,DUC,2026-02-10,WCD,WCD,False,W,depth,1,1,0,0,match
+4232947918,midland,42,PEGGY 20-8 D 4WD,DUC,2026-02-11,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4232947922,midland,42,GBG MARS 13-12 D 1243BN,DUC,2026-03-13,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232947923,midland,42,GBG MARS 13-12 F 1246BN,DUC,2026-03-14,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232947972,midland,42,FASKEN 1B 305HJ,Inactive,2026-01-04,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4232947992,midland,42,MULDER 2335D UNIT 04H,Completed,2026-01-17,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232947993,midland,42,TEINERT-SALLY 26E 205H,Active,2026-01-19,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232947994,midland,42,TEINERT-SALLY 26F 206H,Active,2026-01-20,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948030,midland,42,LHN TOMAHAWK 37-25 A 1011LS,DUC,2026-08-02,LSSH,LSSH,False,W,depth,1,1,0,2,match
+4232948032,midland,42,LHN TOMAHAWK 37-25 B 1013US,DUC,2026-08-03,MS,MS,False,W,depth,0,0,0,1,crowded
+4232948033,midland,42,LHN TOMAHAWK 37-25 B 1014LS,DUC,2026-08-03,LSSH,LSSH,False,W,depth,0,0,0,4,crowded
+4232948039,midland,42,HOLUBEC-WHITEFIELD F 6H,DUC,2026-04-08,WCA_1,WCA,False,W,depth,0,0,0,3,crowded
+4232948040,midland,42,DUSEK-SHAUNA 45A 401H,Completed,2026-01-28,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232948047,midland,42,TEINERT-SALLY 26L 212H,Active,2026-03-12,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948048,midland,42,TEINERT-SALLY 26K 211H,Inactive,2026-03-10,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948061,midland,42,NOBLES WHITE 2032A 01H,Completed,2026-02-22,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948065,midland,42,NOBLES WHITE 2032B 02H,Completed,2026-02-23,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948066,midland,42,NOBLES WHITE 2032D 04H,Completed,2026-04-23,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948067,midland,42,NOBLES WHITE 2032C 03H,Completed,2026-04-23,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948074,midland,42,LHN FLAT IRON 36-24 A 1032US,DUC,2026-08-09,MS,MS,False,W,depth,0,0,1,1,conflict
+4232948075,midland,42,LHN FLAT IRON 36-24 A 1031LS,DUC,2026-08-09,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4232948076,midland,42,LHN FLAT IRON 36-24 B 1034LS,DUC,2026-08-08,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4232948083,midland,42,ST 43-42 A 1H,Completed,2026-02-20,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948084,midland,42,ST 43-42 B 2H,Completed,2026-02-21,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948095,midland,42,FOSTER 1201A 01H,Completed,2026-03-10,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948096,midland,42,FOSTER 1201B 02H,Completed,2026-03-10,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948107,midland,42,SHOW STOPPER 20-5 B 1JM,Completed,2026-02-15,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948108,midland,42,SHOW STOPPER 20-5 D 1LS,Completed,2026-02-14,LSSH,LSSH,False,W,depth,0,0,0,3,crowded
+4232948111,midland,42,SHOW STOPPER 20-5 L 3JM,Completed,2026-02-04,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948114,midland,42,COON-BEND 9E 105H,DUC,2026-04-19,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232948115,midland,42,COON-BEND 9F 106H,DUC,2026-04-19,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948117,midland,42,COON-BEND 9H 108H,DUC,2026-04-17,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232948131,midland,42,HOLUBEC-WHITEFIELD A 1H,DUC,2026-04-12,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4232948132,midland,42,HOLUBEC-WHITEFIELD B 2H,DUC,2026-04-14,JM,JM,False,W,depth,1,1,0,0,match
+4232948133,midland,42,HOLUBEC-WHITEFIELD C 3H,DUC,2026-04-15,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232948134,midland,42,MARION WEST A 36-25 1LS,Active,2026-02-10,LSSH,LSSH,False,W,depth,2,1,0,0,match
+4232948135,midland,42,HOLUBEC-WHITEFIELD D 4H,DUC,2026-04-16,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4232948136,midland,42,MARION WEST 36-25 B 1JM,Active,2026-02-09,JM,JM,False,W,depth,0,0,1,0,conflict
+4232948138,midland,42,MARION WEST 36-25 B 1WA,Active,2026-02-08,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4232948140,midland,42,MARION WEST D 36-25 2LS,Active,2026-03-20,LSSH,LSSH,False,W,depth,1,1,1,1,match
+4232948142,midland,42,MARION WEST 36-25 F 2JM,Active,2026-03-26,JM,JM,False,W,depth,0,0,1,0,conflict
+4232948143,midland,42,MARION WEST 36-25 F 2WA,Active,2026-02-03,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4232948144,midland,42,MARION WEST G 36-25 3LS,Active,2026-02-02,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4232948145,midland,42,MARION WEST G 36-25 3WB,Active,2026-02-02,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4232948146,midland,42,BATTLEGROUND 30-7 A 1JM,DUC,2026-04-20,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948162,midland,42,BATTLEGROUND 30-7 G 2LS,DUC,2026-03-06,LSSH,LSSH,False,W,depth,0,0,0,3,crowded
+4232948163,midland,42,BATTLEGROUND 30-7 H 2WA,DUC,2026-04-27,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4232948164,midland,42,BATTLEGROUND 30-7 K 3JM,DUC,2026-04-28,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948167,midland,42,MARION WEST 36-25 E 2WB,Active,2026-02-07,WCB_1,WCB,False,W,depth,2,1,0,1,match
+4232948171,midland,42,BATTLEGROUND 30-7 F 2JM,DUC,2026-04-26,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948176,midland,42,BTB U2-GC U2 12A 401H,Active,2026-03-06,JM,JM,False,W,depth,0,0,0,1,crowded
+4232948177,midland,42,BTB U2-GC U2 12B 402H,Active,2026-03-08,JM,JM,False,W,depth,1,1,0,2,match
+4232948180,midland,42,ALLEDER-WELCH 33A 201H,Inactive,2026-03-21,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4232948181,midland,42,ALLEDER-WELCH 33B 202H,Active,2026-03-22,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4232948182,midland,42,COON-MASHBURN 9I 109H,DUC,2026-04-29,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948183,midland,42,COON-MASHBURN 9J 110H,DUC,2026-04-28,LSSH,LSSH,False,W,depth,0,0,1,1,conflict
+4232948184,midland,42,COON-MASHBURN 9K 111H,DUC,2026-04-27,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4232948185,midland,42,COON-MASHBURN 9L 112H,DUC,2026-04-26,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4232948186,midland,42,COON-MASHBURN 9M 113H,DUC,2026-04-24,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4232948187,midland,42,COON-MASHBURN 9N 114H,DUC,2026-04-23,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4232948190,midland,42,ELKIN-ESTES 34SS 119H,Completed,2026-04-04,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948192,midland,42,MARSHALL 34 UNIT A R 3JM,Active,2026-03-01,JM,JM,False,W,depth,1,1,0,0,match
+4232948193,midland,42,FELDMAN-DAMERON C 3H,DUC,2026-04-05,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232948194,midland,42,FELDMAN-DAMERON D 4H,DUC,2026-03-30,JM,JM,False,W,depth,1,1,0,0,match
+4232948196,midland,42,FELDMAN-DAMERON F 6H,DUC,2026-04-02,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948197,midland,42,FELDMAN-DAMERON G 7H,DUC,2026-04-03,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948205,midland,42,BIG SHOW 20-5 C 1WA,DUC,2026-03-31,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4232948206,midland,42,BIG SHOW 20-5 D 1WB,DUC,2026-04-15,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232948208,midland,42,BIG SHOW 20-5 K 3JM,Completed,2026-04-02,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4232948209,midland,42,BIG SHOW 20-5 K 3WA,Completed,2026-04-02,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4232948211,midland,42,BIG SHOW 20-5 M 3WB,Completed,2026-04-02,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4232948212,midland,42,BIG SHOW 20-5 F 2JM,DUC,2026-05-15,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948215,midland,42,BIG SHOW 20-5 I 2WB,DUC,2026-05-28,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232948217,midland,42,BIG SHOW 20-5 J 2WD,Completed,2026-03-22,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4232948218,midland,42,GERMANIA SPBY W43B 102H,Completed,2026-04-12,JM,JM,False,W,depth,1,1,0,1,match
+4232948220,midland,42,GERMANIA SPBY W43E 105H,Completed,2026-04-14,LSSH,LSSH,False,W,depth,2,1,0,0,match
+4232948221,midland,42,GERMANIA SPBY W43H 108H,Completed,2026-04-17,JM,JM,False,W,depth,1,1,0,1,match
+4232948222,midland,42,GERMANIA W43A 101H,Completed,2026-04-11,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4232948223,midland,42,GERMANIA W43C 103H,Completed,2026-04-13,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948224,midland,42,GERMANIA W43D 104H,Completed,2026-04-18,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948225,midland,42,GERMANIA W43F 106H,Completed,2026-04-15,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948226,midland,42,GERMANIA W43G 107H,Completed,2026-04-16,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948237,midland,42,STILT EAST 18D 4H,Active,2026-05-07,WCD,WCD,False,W,depth,0,0,1,0,conflict
+4232948238,midland,42,STILT-HEIDELBERG 18A 1H,Active,2026-05-01,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4232948239,midland,42,STILT-HEIDELBERG 18C 3H,Active,2026-05-08,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948240,midland,42,STILT-HEIDELBERG 18B 2H,Active,2026-05-02,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948249,midland,42,ST 43-42 C 3H,Completed,2026-04-29,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948251,midland,42,ST 43-42 D 4H,Completed,2026-05-30,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948258,midland,42,BUCHANAN-KING 1J 10H,DUC,2026-06-03,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948259,midland,42,BUCHANAN-KING 1I 9H,DUC,2026-06-02,JM,JM,False,W,depth,0,0,0,0,nothing
+4232948260,midland,42,BUCHANAN-KING 1H 8H,DUC,2026-06-01,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4232948261,midland,42,BUCHANAN-KING 1G 7H,DUC,2026-05-31,MS,MS,False,W,depth,0,0,0,0,nothing
+4232948262,midland,42,BUCHANAN-KING 1F 6H,DUC,2026-05-30,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4232948263,midland,42,BUCHANAN-KING 1E 5H,Completed,2026-05-28,JM,JM,False,W,depth,0,0,0,0,nothing
+4232948264,midland,42,BUCHANAN-KING 1D 4H,DUC,2026-05-27,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4232948265,midland,42,BUCHANAN-KING 1C 3H,DUC,2026-05-26,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4232948266,midland,42,BUCHANAN-KING 1B 2H,DUC,2026-05-25,MS,MS,False,W,depth,0,0,0,0,nothing
+4232948267,midland,42,BUCHANAN-KING 1A 1H,DUC,2026-05-24,JM,JM,False,W,depth,0,0,0,0,nothing
+4232948268,midland,42,BUCHANAN-KING 2K 111H,DUC,2026-05-20,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4232948269,midland,42,BUCHANAN-KING 2L 112H,DUC,2026-05-21,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4232948270,midland,42,BUCHANAN-KING 2M 113H,DUC,2026-05-22,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4232948271,midland,42,BUCHANAN-KING 2N 114H,DUC,2026-05-22,MS,MS,False,W,depth,0,0,0,0,nothing
+4232948272,midland,42,BUCHANAN-KING 2O 115H,DUC,2026-05-24,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4232948273,midland,42,BUCHANAN-KING 2P 116H,DUC,2026-05-25,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4232948275,midland,42,BUCHANAN-KING 2R 118H,DUC,2026-05-27,MS,MS,False,W,depth,0,0,0,0,nothing
+4232948276,midland,42,BUCHANAN-KING 2S 119H,DUC,2026-05-28,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4232948277,midland,42,FOSTER 1201C 03H,Completed,2026-06-17,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948278,midland,42,FOSTER 1201D 04H,Completed,2026-06-18,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948279,midland,42,WILKINSON RANCH 7-5 C 3H,DUC,2026-05-31,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948280,midland,42,WILKINSON RANCH 7-5 D 4H,DUC,2026-05-30,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948283,midland,42,WILKINSON RANCH 7-5 B 2H,DUC,2026-06-02,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948337,midland,42,TEX Q C 801H,Completed,2026-06-11,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948338,midland,42,TEX Q D 802H,Completed,2026-06-12,MISS,MISS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948358,midland,42,MCALISTER-GOLLADAY 41C 3H,Completed,2026-07-01,MS,MS,False,W,depth,0,0,0,3,crowded
+4232948359,midland,42,MCALISTER-GOLLADAY 41D 4H,DUC,2026-07-02,LSSH,LSSH,False,W,depth,1,1,1,1,match
+4232948377,midland,42,MCALISTER-GOLLADAY 41A 1H,DUC,2026-06-29,MS,MS,False,W,depth,0,0,0,3,crowded
+4232948378,midland,42,MCALISTER-GOLLADAY 41B 2H,DUC,2026-06-30,LSSH,LSSH,False,W,depth,1,1,0,3,match
+4232948383,midland,42,GOLLADAY-BUCHANAN 51A 101H,DUC,2026-06-18,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948385,midland,42,GOLLADAY-BUCHANAN 51B 102H,DUC,2026-06-19,DEAN,DEAN,False,W,depth,0,0,1,0,conflict
+4232948387,midland,42,GOLLADAY-BUCHANAN 51C 103H,DUC,2026-06-20,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4232948389,midland,42,GOLLADAY-BUCHANAN 51D 104H,DUC,2026-06-21,MS,MS,False,W,depth,0,0,1,1,conflict
+4232948391,midland,42,GOLLADAY-BUCHANAN 51E 105H,DUC,2026-06-22,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4232948394,midland,42,GOLLADAY-BUCHANAN 51F 106H,DUC,2026-07-01,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4232948396,midland,42,GOLLADAY-BUCHANAN 51G 107H,DUC,2026-07-02,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232948397,midland,42,GOLLADAY-BUCHANAN 51H 108H,DUC,2026-07-03,MS,MS,False,W,depth,0,0,0,2,crowded
+4232948398,midland,42,GOLLADAY-BUCHANAN 51I 109H,DUC,2026-07-04,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4232948401,midland,42,GOLLADAY-KING 51D 4H,DUC,2026-07-10,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948402,midland,42,GOLLADAY-KING 51O 15H,DUC,2026-07-09,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4232948407,midland,42,JW H 475WB,DUC,2026-08-01,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4232948408,midland,42,JW H 464WA,DUC,2026-08-02,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4232948409,midland,42,JW H 484WD,DUC,2026-08-02,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948425,midland,42,BUCHANAN 42C 3H,DUC,2026-06-23,MS,MS,False,W,depth,1,1,0,0,match
+4232948426,midland,42,BUCHANAN 42D 4H,DUC,2026-06-24,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4232948429,midland,42,BUCHANAN 42G 7H,DUC,2026-06-28,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4232948430,midland,42,BUCHANAN 42H 8H,DUC,2026-06-29,MS,MS,False,W,depth,1,1,0,0,match
+4232948431,midland,42,BUCHANAN-KING 19A 1H,DUC,2026-07-09,DEAN,DEAN,False,W,depth,0,0,2,3,conflict
+4232948432,midland,42,BUCHANAN-KING 19B 2H,DUC,2026-07-10,MS,MS,False,W,depth,0,0,1,0,conflict
+4232948433,midland,42,JW H 425MS,DUC,2026-08-01,MS,MS,False,W,depth,0,0,0,0,nothing
+4232948434,midland,42,JW H 448LS,DUC,2026-07-31,LSSH,LSSH,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4232948435,midland,42,BUCHANAN-KING 19C 3H,DUC,2026-07-11,JM,JM,False,W,depth,1,1,2,0,match
+4232948436,midland,42,BUCHANAN-KING 19D 4H,DUC,2026-07-05,WCB_2,WCB,False,W,depth,0,0,1,2,conflict
+4232948437,midland,42,BUCHANAN-KING 19F 6H,DUC,2026-07-06,WCA_1,WCA,False,W,depth,0,0,2,3,conflict
+4232948438,midland,42,BUCHANAN-KING 19E 5H,DUC,2026-07-06,JM,JM,False,W,depth,1,1,1,1,match
+4232948439,midland,42,BUCHANAN-KING 19G 7H,DUC,2026-07-05,WCB_2,WCB,False,W,depth,0,0,1,3,conflict
+4232948440,midland,42,BUCHANAN-KING 19H 8H,DUC,2026-07-04,MS,MS,False,W,depth,1,1,1,0,match
+4232948441,midland,42,BUCHANAN-KING 19I 9H,DUC,2026-07-03,DEAN,DEAN,False,W,depth,0,0,1,3,conflict
+4232948443,midland,42,TURNER E41H 8H,DUC,2026-07-29,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948444,midland,42,TURNER E41I 9H,DUC,2026-07-27,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4232948445,midland,42,TURNER W39A 1H,DUC,2026-08-02,JM,JM,False,W,depth,0,0,0,2,crowded
+4232948446,midland,42,TURNER W39B 2H,DUC,2026-08-04,WCD,WCD,False,W,depth,1,1,0,0,match
+4232948448,midland,42,TURNER W39D 4H,DUC,2026-08-03,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948452,midland,42,TURNER W39H 10H,DUC,2026-07-28,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4232948456,midland,42,TURNER W41M 13H,DUC,2026-07-26,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4232948464,midland,42,BUCHANAN-KING D17J 10H,DUC,2026-07-16,DEAN,DEAN,False,W,depth,0,0,2,0,conflict
+4237140513,delaware,42,TREES STATE 5657A 01H,Active,2026-01-08,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4237140520,delaware,42,STEWART 28-21 SB UNIT 1TB,Active,2026-01-11,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4237140526,delaware,42,FERNWOOD 6-4 L 4WA,Completed,2026-06-21,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4237140528,delaware,42,FERNWOOD 6-4 K 4SB,Completed,2026-06-12,BS2_C,BS2,False,W,depth,0,0,0,0,nothing
+4237140536,delaware,42,MAVERICK WA1 1H,DUC,2026-08-01,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4237140537,delaware,42,MAVERICK WA2 2H,DUC,2026-07-30,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4237140538,delaware,42,MAVERICK WA3 3H,DUC,2026-07-28,WCA_2,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342256,midland,42,HUNT WEST B 15-7 4302H,Active,2026-01-27,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4238342257,midland,42,HUNT WEST C 15-7 4403H,Active,2026-01-28,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4238342258,midland,42,HUNT WEST C 15-7 4203H,Active,2026-01-28,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238342259,midland,42,HUNT WEST E 15-7 4305H,Active,2026-01-29,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238342260,midland,42,HUNT WEST F 15-7 4406H,Active,2026-01-30,WCB_2,WCB,False,W,depth,0,0,1,0,conflict
+4238342261,midland,42,HUNT WEST F 15-7 4206H,Active,2026-01-30,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4238342262,midland,42,HUNT WEST H 15-7 4308H,Active,2026-01-29,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238342280,midland,42,BANKHEAD WEST A 14-1211 4301H,Active,2026-03-22,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4238342281,midland,42,BANKHEAD WEST C 14-1211 4403H,Active,2026-03-20,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4238342282,midland,42,BANKHEAD WEST C 14-1211 4203H,Active,2026-03-22,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4238342283,midland,42,BANKHEAD WEST E 14-1211 4305H,Active,2026-03-20,WCB_1,WCB,False,W,depth,0,0,0,3,crowded
+4238342284,midland,42,BANKHEAD WEST G 14-1211 4407H,Active,2026-03-20,WCB_2,WCB,False,W,depth,0,0,1,0,conflict
+4238342285,midland,42,BANKHEAD WEST G 14-1211 4207H,Active,2026-03-19,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4238342286,midland,42,CHILI E 1447TC,Active,2026-03-08,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4238342292,midland,42,HUNT WEST A 15-7 6201H,Active,2026-04-04,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4238342293,midland,42,HUNT WEST E 15-7 6205H,Active,2026-03-11,WCD,WCD,False,W,depth,0,0,0,0,nothing
+4238342296,midland,42,HUGHES EAST A 211H,DUC,2026-04-02,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238342297,midland,42,HUGHES EAST B 213H,DUC,2026-04-04,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238342298,midland,42,HUGHES EAST C 212H,DUC,2026-04-03,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238342299,midland,42,HUGHES EAST D 334H,DUC,2026-04-04,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238342300,midland,42,HUGHES EAST E 333H,DUC,2026-04-03,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238342301,midland,42,HUGHES EAST F 331H,DUC,2026-04-03,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238342302,midland,42,HUGHES EAST G 442H,DUC,2026-04-03,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4238342303,midland,42,HUGHES EAST H 441H,DUC,2026-06-05,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342304,midland,42,HUGHES EAST I 443H,DUC,2026-04-04,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4238342305,midland,42,HUGHES EAST J 444H,DUC,2026-04-04,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4238342306,midland,42,SRH AA 4028MB,Completed,2026-03-28,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342307,midland,42,SRH AB 4029UB,Completed,2026-03-29,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342308,midland,42,SRH DA 4028DC,Completed,2026-04-01,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342309,midland,42,SRH AC 2081MB,Completed,2026-03-30,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342310,midland,42,SRH DB 2081DC,Completed,2026-04-01,WCD,WCD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342311,midland,42,SRH AD 2082UB,Completed,2026-03-31,WCB_1,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342313,midland,42,MERCHANT DANIEL WEST A 14-7 4301H,DUC,2026-05-24,WCB_1,WCB,False,W,depth,0,0,1,2,conflict
+4238342314,midland,42,MERCHANT DANIEL WEST C 14-7 4403H,DUC,2026-05-23,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4238342315,midland,42,MERCHANT DANIEL WEST C 14-7 4203H,DUC,2026-05-23,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238342316,midland,42,MERCHANT DANIEL WEST E 14-7 4305H,DUC,2026-05-22,WCB_1,WCB,False,W,depth,0,0,0,3,crowded
+4238342317,midland,42,MERCHANT DANIEL WEST G 14-7 4407H,DUC,2026-05-21,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4238342318,midland,42,MERCHANT DANIEL WEST G 14-7 4207H,DUC,2026-05-20,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4238342319,midland,42,MERCHANT DANIEL EAST I 14-7 4309H,DUC,2026-05-29,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4238342324,midland,42,MERCHANT DANIEL EAST O 14-7 4215H,DUC,2026-05-25,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4238342328,midland,42,MERCHANT CHARLES WEST E 13.5-6 4305H,DUC,2026-06-17,WCB_1,WCB,False,W,depth,0,0,1,0,conflict
+4238342331,midland,42,LARRY WEST A 13-5 4301H,DUC,2026-06-04,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342332,midland,42,LARRY WEST C 13-5 4403H,DUC,2026-06-06,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342333,midland,42,LARRY WEST C 13-5 4203H,DUC,2026-06-05,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342334,midland,42,LARRY WEST G 13-5 4407H,DUC,2026-06-08,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342335,midland,42,LARRY WEST G 13-5 4207H,DUC,2026-06-08,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342336,midland,42,LARRY EAST I 13-48 4309H,DUC,2026-05-30,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4238342337,midland,42,LARRY EAST K 13-48 4411H,DUC,2026-06-01,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4238342338,midland,42,LARRY EAST K 13-48 4211H,DUC,2026-05-31,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238342339,midland,42,LARRY EAST M 13-48 4313H,DUC,2026-06-02,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238342340,midland,42,LARRY EAST O 13-48 4415H,DUC,2026-06-02,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4238342341,midland,42,LARRY EAST O 13-48 4215H,DUC,2026-06-03,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238342342,midland,42,LARRY WEST E 13-5 4305H,DUC,2026-06-06,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342345,midland,42,SRH 11 C U 9HA,DUC,2026-05-13,WCA_1,WCA,True,W,depth,0,0,0,2,crowded
+4238342348,midland,42,SRH 11 G U 13HL,DUC,2026-05-14,WCC,WCC,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342349,midland,42,SRH 11 H U 14HC,DUC,2026-05-15,WCD,WCD,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238342381,midland,42,MERCHANT CHARLES EAST I 14.5-6 4309H,DUC,2026-06-23,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4238342382,midland,42,MERCHANT CHARLES EAST K 14.5-6 4411H,DUC,2026-06-23,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4238342383,midland,42,SAU32-3B 4211H,DUC,2026-06-22,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4238342384,midland,42,MERCHANT CHARLES EAST M 14.5-6 4313H,DUC,2026-06-21,WCB_1,WCB,False,W,depth,0,0,1,1,conflict
+4238342385,midland,42,MERCHANT CHARLES EAST O 14.5-6 4415H,DUC,2026-06-21,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4238342386,midland,42,MERCHANT CHARLES EAST O 14.5-6 4215H,DUC,2026-06-20,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238940561,delaware,42,STATE TRIVETTE 7/18 W102BG,Completed,2026-02-14,WCA_2,WCA,False,W,depth,0,0,0,2,crowded
+4238941575,delaware,42,LEOPARD UNIT 5A32 32H,Active,2026-03-26,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941677,delaware,42,HOLLYWOOD UNIT 1SH,Active,2026-04-15,BS1_S,BS1,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238941717,delaware,42,GT UNIT 13B12 12H,Active,2026-06-17,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4238941718,delaware,42,GT UNIT 13A11 11H,Active,2026-07-07,WCA_1,WCA,False,W,depth,0,0,1,0,conflict
+4238941719,delaware,42,GT UNIT 13B21 21H,Active,2026-06-10,WCB_1,WCB,False,W,depth,1,1,1,1,match
+4238941721,delaware,42,GT UNIT 13A31 31H,Active,2026-07-01,BS3_C,BS3,False,W,depth,1,1,0,0,match
+4238941722,delaware,42,GT UNIT 13B32 32H,Active,2026-06-01,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4238941775,delaware,42,STATE TRIVETTE 7/18 W102CF,Completed,2026-02-14,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4238941776,delaware,42,STATE TRIVETTE 7/18 W102DE,Completed,2026-02-13,WCB_1,WCB,False,W,depth,0,0,0,0,nothing
+4238941851,delaware,42,HOT WHEELS 1WB,Completed,2026-04-15,WCB_1,WCB,True,W,depth,0,0,0,2,crowded
+4238941852,delaware,42,HOT WHEELS 1WC,Completed,2026-04-16,WCC,WCC,True,W,depth,0,0,0,3,crowded
+4238941853,delaware,42,HOT WHEELS 2WC,Completed,2026-04-15,WCB_2,WCB,True,W,depth,0,0,0,2,crowded
+4238941869,delaware,42,STATE HOLD 'EM 57-T3-13X25 F W106H,DUC,2026-02-23,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4238941872,delaware,42,STATE HOLD 'EM 57-T3-13X25 YA X101H,DUC,2026-01-05,WCXY,WCA,False,W,depth,0,0,0,0,nothing
+4238941887,delaware,42,RUN FORREST STATE B 17B,Active,2026-04-13,WCA_2,WCA,False,W,depth,1,1,1,1,match
+4238941906,delaware,42,STATE FOUR QUEENS 56T314X232A B2 B201H,Active,2026-03-20,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238941907,delaware,42,STATE FOUR QUEENS 56T314X232B B2 B202H,Active,2026-02-11,BS2_S,BS2,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238941910,delaware,42,STATE FOUR QUEENS 56T314X233G B3 B312H,Active,2026-03-23,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941911,delaware,42,STATE FOUR QUEENS 56T314X233H B3 B311H,Active,2026-02-09,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941933,delaware,42,STATE ROAD RUNNER A 401H,Active,2026-01-06,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4238941934,delaware,42,STATE ROAD RUNNER B 402H,Active,2026-01-07,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4238941936,delaware,42,YOSEMITE STATE 56-2-33-21 A 11H,Active,2026-01-02,WCXY,WCA,False,W,depth,1,1,0,0,match
+4238941937,delaware,42,YOSEMITE STATE 56-2-33-21 B 12H,Active,2026-01-07,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238941938,delaware,42,YOSEMITE STATE 56-2-33-21 C 13H,Active,2026-01-14,WCA_2,WCA,False,W,depth,0,0,1,2,conflict
+4238941944,delaware,42,TROUBADOUR E 4H,Active,2026-01-16,BS3_S,BS3,False,W,depth,0,0,0,1,crowded
+4238941945,delaware,42,TROUBADOUR F 7H,Active,2026-01-15,BS3_S,BS3,True,W,depth,0,0,0,0,nothing
+4238941947,delaware,42,YOSEMITE STATE 56-2-33-21 E 14H,Active,2026-01-15,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238941948,delaware,42,YOSEMITE STATE 56-2-33-21 F 15H,Active,2026-01-16,WCXY,WCA,False,W,depth,0,0,1,1,conflict
+4238941952,delaware,42,SAMURAI 4-49 50 332H,Inactive,2026-03-01,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4238941954,delaware,42,EVERGREEN 1E13 13H,Active,2026-02-04,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4238941955,delaware,42,EVERGREEN 1E22 22H,Active,2026-02-14,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238941956,delaware,42,EVERGREEN 1E32 32H,Active,2026-02-19,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941957,delaware,42,EVERGREEN 1E64 64H,Active,2026-02-10,BS1_S,BS1,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238941958,delaware,42,HIGHWAY 22506 A 1-7-10 01H,Active,2026-02-20,WCB_2,WCB,False,W,depth,0,0,0,6,crowded
+4238941959,delaware,42,HIGHWAY 22506 B 1-7-10 02H,Active,2026-02-20,WCC,WCC,False,W,depth,0,0,0,1,crowded
+4238941960,delaware,42,HIGHWAY 22506 C 1-7-10 #03H,DUC,2026-01-18,WCC,WCC,False,W,depth,2,2,0,0,match
+4238941961,delaware,42,SAMURAI 4-49 50 144H,Inactive,2026-03-01,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941962,delaware,42,DIK DIK 18 11HC,Active,2026-04-14,WCA_1,WCA,True,W,depth,0,0,0,0,nothing
+4238941963,delaware,42,HIGHWAY 22506 D 1-7-10 #04H,DUC,2026-01-19,WCC,WCC,False,W,depth,0,0,0,3,crowded
+4238941987,delaware,42,CASPER STATE 57-1-47-11 K 72H,Completed,2026-07-10,BS3_C,BS3,False,W,depth,1,1,0,0,match
+4238941988,delaware,42,CASPER STATE 57-1-47-11 L 73H,Completed,2026-06-26,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941989,delaware,42,CASPER STATE 57-1-47-11 M 74H,Completed,2026-06-28,BS3_C,BS3,False,W,depth,0,0,0,1,crowded
+4238941990,delaware,42,CASPER STATE 57-1-47-11 N 75H,Completed,2026-06-30,BS3_C,BS3,False,W,depth,0,0,0,0,nothing
+4238941998,delaware,42,STATE NECTAR A1 A 1H,Completed,2026-02-23,WCA_2,WCA,False,W,depth,1,1,0,0,match
+4238941999,delaware,42,STATE NECTAR A2 A 2H,Completed,2026-02-22,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4238942000,delaware,42,STATE BOOMER KNIGHT 20/17 B W102OB,DUC,2026-06-15,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942001,delaware,42,STATE BOOMER KNIGHT 20/17 A W102PA,DUC,2026-06-16,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942002,delaware,42,STATE HONEY A1 A 1H,Completed,2026-03-08,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4238942003,delaware,42,STATE HONEY A2 A 2H,Completed,2026-03-10,WCA_2,WCA,False,W,depth,0,0,2,0,conflict
+4238942004,delaware,42,HONEY U A 1H,Completed,2026-03-07,WCA_2,WCA,True,W,depth,2,1,0,0,match
+4238942012,delaware,42,BAJA STATE UNIT 731H,Completed,2026-03-10,WCA_2,WCA,False,W,depth,0,0,0,2,crowded
+4238942013,delaware,42,BAJA STATE UNIT 732H,Completed,2026-03-12,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4238942015,delaware,42,BAJA STATE UNIT 751H,Completed,2026-03-10,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238942016,delaware,42,BAJA STATE UNIT 752H,Completed,2026-03-11,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4238942017,delaware,42,STATE BAFFIN 43/6 W102AP,Completed,2026-05-12,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942019,delaware,42,STATE BAFFIN 44/41 W102NC,Completed,2026-04-05,WCB_1,WCB,False,W,depth,0,0,0,3,crowded
+4238942020,delaware,42,STATE BAFFIN 44/41 W102MD,Completed,2026-04-05,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238942044,delaware,42,REMORA WEST J 222H,Active,2026-03-14,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238942047,delaware,42,BIG HORN 21602 A 34-33 1H,DUC,2026-04-06,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,1,crowded
+4238942048,delaware,42,BIG HORN 21602 B 34-33 2H,Completed,2026-04-07,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238942050,delaware,42,ROUNDUP 9/11 A F101OM,Completed,2026-06-21,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238942064,delaware,42,BIG HORN 21602 C 34-33 3H,Completed,2026-04-08,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238942079,delaware,42,BAMBINIO 761H,Active,2026-04-04,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4238942090,delaware,42,MEERKAT STATE UNIT 17W22 22H,Active,2026-04-23,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4238942093,delaware,42,MEERKAT STATE UNIT 17W11 11H,Active,2026-05-20,WCA_1,WCA,False,W,depth,0,0,0,2,crowded
+4238942094,delaware,42,MEERKAT STATE UNIT 17W21 21H,Active,2026-05-08,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4238942111,delaware,42,STATE MAYFLY UNIT 753H,DUC,2026-05-21,WCB_2,WCB,False,W,depth,0,0,1,1,conflict
+4238942113,delaware,42,STATE MAYFLY UNIT 754H,DUC,2026-05-27,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4238942114,delaware,42,STATE MAYFLY UNIT 755H,DUC,2026-05-29,WCB_2,WCB,False,W,depth,1,1,0,1,match
+4238942121,delaware,42,BLANTONS 20-23E UNIT 402H,DUC,2026-05-19,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4238942122,delaware,42,BLANTONS 20-23E UNIT 222H,DUC,2026-05-18,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4238942123,delaware,42,BLANTONS 20-23E UNIT 313H,DUC,2026-05-19,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4238942124,delaware,42,BLANTONS 20-23E UNIT 334H,DUC,2026-05-20,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942125,delaware,42,PAPPY VAN WINKLE STATE 20-23 312H,DUC,2026-07-05,WCB_1,WCB,False,W,depth,0,0,0,1,crowded
+4238942127,delaware,42,PAPPY VAN WINKLE STATE 20-23 401H,DUC,2026-05-18,WCB_2,WCB,False,W,depth,0,0,0,0,nothing
+4238942140,delaware,42,BIG WHISKEY STATE A 332H,DUC,2026-07-06,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942141,delaware,42,BUFFALO TRACE STATE 22-21 UNIT 311H,DUC,2026-05-31,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4238942143,delaware,42,BUFFALO TRACE STATE 22-21 UNIT 331H,DUC,2026-05-30,WCB_1,WCB,False,W,depth,1,1,0,0,match
+4238942184,delaware,42,RATTLER 23 1SB,Completed,2026-07-20,BS2_C,BS2,False,W,depth,1,1,0,0,match
+4238942186,delaware,42,RATTLER 23 2SB,Completed,2026-07-31,BS2_C,BS2,False,W,depth,1,1,0,0,match
+4238942246,delaware,42,LOCH NESS STATE C 3H,DUC,2026-09-04,BS3_S,BS3,True,W,depth,0,0,1,0,conflict
+4238942248,delaware,42,LOCH NESS STATE E 5H,DUC,2026-08-28,BS3_S,BS3,True,W,depth,0,0,0,0,nothing
+4238942254,delaware,42,CHEVRON MINERALS 19 1H,DUC,2026-09-07,BS3_S,BS3,True,W,depth,0,0,0,0,nothing
+4244532503,midland,42,JOHNNY 1H,Completed,2026-04-21,OTHER,OTHER,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143302,midland,42,UL THE MACHINE D 29-32 503HU,Active,2026-03-03,WCC,WCC,True,W,depth,1,1,0,4,match
+4246143303,midland,42,UL THE MACHINE E 29-32 504UH,Active,2026-03-21,WCB_2,WCB,True,W,depth,1,1,0,1,match
+4246143317,midland,42,TXL W 3542 F 302H,Active,2026-01-30,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4246143318,midland,42,TXL W 3542 B 102H,Active,2026-01-31,JM,JM,False,W,depth,0,0,0,1,crowded
+4246143319,midland,42,TXL W 3542 B 402H,Active,2026-02-01,WCA_1,WCA,False,W,depth,1,1,0,1,match
+4246143375,midland,42,NEAL 38E 2HL,Active,2026-01-13,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4246143376,midland,42,NEAL 38E 1HF,Active,2026-01-13,LSSH,LSSH,False,W,depth,1,1,0,2,match
+4246143377,midland,42,NEAL 38E 3HD,Active,2026-01-14,JM,JM,False,W,depth,1,1,0,1,match
+4246143378,midland,42,NEAL 38FF 106HD,Active,2026-01-08,JM,JM,False,W,depth,2,2,0,1,match
+4246143379,midland,42,NEAL 38G 7HD,Active,2026-01-10,JM,JM,False,W,depth,0,0,0,2,crowded
+4246143380,midland,42,NEAL 38X 8HD,Active,2026-01-10,JM,JM,False,W,depth,2,2,0,0,match
+4246143381,midland,42,NEAL 38F 105HF,Active,2026-01-08,LSSH,LSSH,False,W,depth,2,1,0,0,match
+4246143382,midland,42,NEAL 38F 104HL,Active,2026-01-15,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4246143384,midland,42,HALFF FULL 2/18 D F101DM,Completed,2026-02-24,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143395,midland,42,ODIN A 174H,Completed,2026-04-19,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143396,midland,42,ODIN B 154H,Completed,2026-04-20,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143397,midland,42,ODIN C 133H,Completed,2026-05-15,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143398,midland,42,ODIN D 153H,Completed,2026-05-16,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143399,midland,42,ODIN A 244H,Completed,2026-04-20,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143400,midland,42,ODIN B 224H,Completed,2026-04-20,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143401,midland,42,ODIN C 173H,Completed,2026-05-16,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143402,midland,42,ODIN C 243H,Completed,2026-05-15,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143403,midland,42,ODIN D 223H,Completed,2026-05-16,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143406,midland,42,HEATHER 7 14JM,Completed,2026-02-16,JM,JM,False,W,depth,1,1,0,0,match
+4246143418,midland,42,ODIN E 172H,DUC,2026-04-13,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143420,midland,42,ODIN G 131H,Completed,2026-04-09,US,US,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143421,midland,42,ODIN H 151H,Completed,2026-04-10,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143422,midland,42,ODIN 424H,Completed,2026-04-21,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143423,midland,42,ODIN E 242H,DUC,2026-04-13,WCB_2,WCB,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143425,midland,42,ODIN G 171H,Completed,2026-04-08,DEAN,DEAN,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143426,midland,42,ODIN G 241H,Completed,2026-04-08,WCC,WCC,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143427,midland,42,ODIN H 221H,Completed,2026-04-09,WCA_1,WCA,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143428,midland,42,HENSLEY 29E-U 101HM,Completed,2026-03-17,WCB_1,WCB,True,W,depth,0,0,1,2,conflict
+4246143429,midland,42,HENSLEY 29EE-U 102HG,Completed,2026-03-18,DEAN,DEAN,True,W,depth,1,1,0,4,match
+4246143430,midland,42,HENSLEY 29EEE-U 103HD,Completed,2026-03-19,JM,JM,True,W,depth,0,0,0,5,crowded
+4246143431,midland,42,HENSLEY 29X-U 107HD,Completed,2026-03-20,MS,MS,True,W,depth,2,1,0,1,match
+4246143432,midland,42,HENSLEY 29XX-U 108HF,Completed,2026-03-20,LSSH,LSSH,True,W,depth,1,1,1,2,match
+4246143433,midland,42,HENSLEY 29XXX-U 109HL,Completed,2026-03-21,WCB_1,WCB,True,W,depth,0,0,0,5,crowded
+4246143434,midland,42,BEVERLY 3526 A 102H,Active,2026-01-28,MS,MS,False,W,depth,0,0,0,0,nothing
+4246143435,midland,42,BEVERLY 3526 B 302H,Active,2026-01-27,LSSH,LSSH,False,W,depth,0,0,0,0,nothing
+4246143436,midland,42,CALLIE 1 01JM,Active,2026-01-24,JM,JM,False,W,depth,1,1,0,1,match
+4246143437,midland,42,CALLIE 2 03LS,Active,2026-01-18,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4246143438,midland,42,CALLIE 3 05JM,Active,2026-01-13,JM,JM,False,W,depth,0,0,0,2,crowded
+4246143439,midland,42,CALLIE 4 07LS,Active,2026-01-08,LSSH,LSSH,False,W,depth,1,1,0,2,match
+4246143440,midland,42,CALLIE 5 09JM,Active,2026-01-24,JM,JM,False,W,depth,0,0,0,2,crowded
+4246143441,midland,42,CALLIE 6 11LS,Active,2026-01-18,LSSH,LSSH,False,W,depth,1,1,0,0,match
+4246143442,midland,42,CALLIE 7 13DN,Active,2026-01-12,DEAN,DEAN,False,W,depth,0,0,0,0,nothing
+4246143443,midland,42,BEVERLY 4726 A 101H,Active,2026-02-03,MS,MS,False,W,depth,0,0,0,1,crowded
+4246143444,midland,42,BEVERLY 4726 B 401H,Active,2026-02-04,WCA_1,WCA,False,W,depth,1,1,0,2,match
+4246143445,midland,42,BEVERLY 4726 C 501H,Active,2026-02-02,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4246143446,midland,42,BEVERLY 4726 D 301H,Active,2026-02-01,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4246143452,midland,42,BENEDUM 3L 12H,Completed,2026-03-14,WCA_1,WCA,False,W,depth,0,0,0,0,nothing
+4246143458,midland,42,CC 363748 E 8JM,Completed,2026-01-17,JM,JM,False,W,depth,1,1,0,0,match
+4246143459,midland,42,CC 363748 E 7HS,Completed,2026-01-17,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4246143460,midland,42,CC 363748 D 6JM,Completed,2026-01-19,JM,JM,False,W,depth,0,0,0,2,crowded
+4246143461,midland,42,CC 363748 C 5HS,Completed,2026-01-18,LSSH,LSSH,False,W,depth,0,0,0,2,crowded
+4246143462,midland,42,CC 363748 C 4JM,Completed,2026-01-28,JM,JM,False,W,depth,0,0,0,2,crowded
+4246143463,midland,42,CC 363748 A 1JM,Completed,2026-01-26,JM,JM,False,W,depth,1,1,0,1,match
+4246143464,midland,42,CC 363748 B 2JM,Completed,2026-01-27,JM,JM,False,W,depth,1,1,0,1,match
+4246143465,midland,42,CC 363748 B 3HS,Completed,2026-01-28,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4246143466,midland,42,CC 48 WEST U 4HA,Completed,2026-01-19,WCA_1,WCA,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143471,midland,42,BEVERLY 4726 E 402H,Active,2026-03-07,DEAN,DEAN,False,W,depth,1,1,0,1,match
+4246143472,midland,42,BEVERLY 4726 F 502H,Active,2026-03-06,WCB_2,WCB,False,W,depth,1,1,0,0,match
+4246143473,midland,42,CONNELL COWDEN 8 U 12HA,Completed,2026-01-20,WCA_1,WCA,True,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143494,midland,42,JUSTIFY N011H,Completed,2026-03-13,BRNT,BRNT,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143516,midland,42,BROOK UNIT N-18A 101H,DUC,2026-04-17,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4246143521,midland,42,UL CLW 7H,Active,2026-05-19,WCB_1,WCB,False,W,depth,1,1,0,1,match
+4246143522,midland,42,UL CLW 8H,Active,2026-05-19,WCC,WCC,False,W,depth,1,1,0,1,match
+4246143523,midland,42,UL CLW 9H,Active,2026-05-18,WCB_2,WCB,False,W,depth,0,0,0,1,crowded
+4246143524,midland,42,UL CLW 10H,Active,2026-05-21,WCC,WCC,False,W,depth,1,1,0,0,match
+4246143525,midland,42,UL CLW 11H,Active,2026-05-20,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4246143526,midland,42,UL CLW 12H,Active,2026-05-20,WCB_2,WCB,False,W,depth,0,0,1,1,conflict
+4246143527,midland,42,NORTH BROOK NE34G 1007H,Inactive,2026-04-04,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4246143528,midland,42,NORTH BROOK NE34H 1008H,Inactive,2026-04-05,WCD,WCD,False,W,depth,0,0,0,1,crowded
+4246143565,midland,42,RED STAG G 7HS,Completed,2026-04-08,JM,JM,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143566,midland,42,RED STAG H 8JM,Inactive,2026-04-09,MS,MS,False,W,depth,1,1,0,0,match
+4246143567,midland,42,JAFFAR 12-35 B 1WA,Active,2026-04-17,WCA_1,WCA,False,W,depth,1,1,0,0,match
+4246143568,midland,42,JAFFAR 12-35 C 1MS,Active,2026-05-07,MS,MS,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4246143569,midland,42,BROOK UNIT N-12I 9H,DUC,2026-04-28,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4246143584,midland,42,KEIZHA NEAL 3 06JM,Completed,2026-05-10,JM,JM,False,W,depth,0,0,0,1,crowded
+4246143585,midland,42,KEIZHA NEAL 4 08JM,Completed,2026-05-06,JM,JM,False,W,depth,1,1,0,1,match
+4246143586,midland,42,ADISON NEAL 3 06JM,Completed,2026-04-30,JM,JM,False,W,depth,0,0,1,1,conflict
+4246143587,midland,42,ADISON NEAL 4 08JM,Completed,2026-04-23,JM,JM,False,W,depth,0,0,0,1,crowded
+4246143606,midland,42,HEATHER 11 22LS,Completed,2026-06-06,LSSH,LSSH,True,W,depth,0,0,1,1,conflict
+4246143624,midland,42,BROOK B-14O 115H,DUC,2026-06-07,WCA_1,WCA,False,W,depth,0,0,0,1,crowded
+4246143627,midland,42,PEMBROOK UNIT 707H,DUC,2026-05-21,LSSH,LSSH,False,W,depth,0,0,0,1,crowded
+4246143637,midland,42,BROOK A-W7M 113H,DUC,2026-05-27,WCB_2,WCB,False,W,depth,1,1,1,1,match
+4247539001,delaware,42,UTL BLUEGILL 1917B 02H,Completed,2026-03-07,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539002,delaware,42,UTL BLUEGILL 1917C 03H,Completed,2026-03-06,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539004,delaware,42,UTL BLUEGILL 1917E 05H,Completed,2026-01-03,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539005,delaware,42,UTL BLUEGILL 1917F 06H,Completed,2026-01-05,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539006,delaware,42,UTL UNFORGIVEN 0204A 01H,Completed,2026-01-13,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539008,delaware,42,UTL UNFORGIVEN 0204B 02H,Completed,2026-01-12,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539009,delaware,42,UTL UNFORGIVEN 0204C 03H,Completed,2026-02-22,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539010,delaware,42,UTL UNFORGIVEN 0204D 04H,Completed,2026-02-23,WDFD,WDFD,False,no stick of its family in its DSU,depth,0,0,0,0,nothing
+4247539066,delaware,42,DAVIS 201-200-199 UNIT 221H,DUC,2026-05-15,WCA_2,WCA,False,W,depth,0,0,0,1,crowded
+4247539068,delaware,42,DAVIS 201-200-199 UNIT 331H,Completed,2026-05-14,WCB_2,WCB,False,W,depth,0,0,0,2,crowded
+4247539080,delaware,42,DAVIS 201-200-199 UNIT 222HR,DUC,2026-06-26,WCA_2,WCA,False,W,depth,0,0,0,0,nothing
+4247539082,delaware,42,JAKE 201-200 UNIT 223HR,DUC,2026-06-24,WCA_2,WCA,False,W,depth,1,1,0,1,match
+4249535149,delaware,42,CONDOR 1510C 03H,Completed,2026-04-05,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
+4249535157,delaware,42,CONDOR 1510A 01H,Completed,2026-04-07,WCB_1,WCB,False,W,depth,0,0,0,2,crowded
