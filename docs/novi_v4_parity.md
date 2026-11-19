@@ -25,20 +25,21 @@ The numbers behind it:
 | Monthly production (2,551-well sample, 204,127 common well-months) | Oil, gas, water and producing days all equal on 99.51 % of well-months. The misses sit in 15 wells. |
 | Forecast rates (2,227-well sample, 656,762 common rows) | Oil 99.90 %, gas 99.94 %, water 99.89 % within 0.1 %. The misses sit in 3 wells. |
 
-So v4 is the same data. Three things stop a migration today:
+So v4 is the same data. Two things stop a migration today:
 
 1. **v4 has no per-day rate columns.** `PRODUCTION_MONTHLY` carries volumes and days only. The
    rates of record (`rate_calday_*`) would stop being "exactly as Novi computed them" and become
    something we compute. They reproduce exactly (section 4.3), but this changes a convention of
    record (domain rule 4), so it is Michael's decision.
-2. **2,211 horizontal wells that have a v3 forecast have no monthly forecast rows in v4** (3.7 % of
-   the 59,982 v3 forecast wells). v4 still gives them an EUR (2,172 wells) and Arps segments
-   (2,170 wells).
-3. **v4 was released today.** One snapshot says nothing about schema stability or nightly timing.
+2. **v4 was released today.** One snapshot says nothing about schema stability or nightly timing.
 
-**Side finding, independent of v4, and the more urgent one:** `raw_novi` holds stale rows that the
-nightly upsert never deletes. The log shows no full load or reconcile of `WellMonths` or
-`ForecastWellMonths` since 2026-06-23.
+A third blocker in the first draft of this study, 2,211 wells with a v3 forecast and no v4
+forecast, turned out to be stale rows on our side (section 10).
+
+**Side finding, independent of v4. Fixed the same day (section 10):** `raw_novi` held stale rows
+that the nightly upsert never deletes. The log showed no full load or reconcile of `WellMonths` or
+`ForecastWellMonths` since 2026-06-23. The numbers below and in section 4 are as measured before
+the fix.
 
 - `ForecastWellMonths`: on 44,087 of 57,771 wells (76 %) our series runs past the end of Novi's
   current forecast. That is 4,016,644 leftover rows from older forecast vintages (19 % of our
@@ -48,9 +49,10 @@ nightly upsert never deletes. The log shows no full load or reconcile of `WellMo
   differ from v4 on 2,008 of 66,017 wells (3.0 %); total oil is 0.59 % higher on our side.
 
 The fix is the documented one: `python -m etl.novi.load --reconcile`, then
-`python -m etl.refresh --force`. It writes to the warehouse, so it needs an explicit go. I could
-not confirm from today's v3 TSV that these rows are gone from the v3 feed (section 9, item 1);
-the evidence is in sections 4.2 and 4.6.
+`python -m etl.refresh --force`. Michael gave the go on 2026-11-19 and it was run that day;
+section 10 has the result. The nightly still cannot delete rows from `WellMonths` or
+`ForecastWellMonths`, so the stale rows will build up again until the loader handles deletions
+or the reconcile is scheduled.
 
 ## 2. Method
 
@@ -273,10 +275,12 @@ Common wells: 57,771.
   is that month's own volume (398 of 400 wells checked). v3 counts from first production. The
   difference v3 minus v4 is constant along each well on 2,224 of 2,227 wells (within 2 bbl), so
   v3 cumulative = v4 cumulative + cumulative actuals at the last reported month.
-- **Missing in v4:** 2,211 wells have a v3 forecast and no v4 monthly rows (427,772 rows). They
-  are live on the v3 side (533 restamped since 2026-11-05), mostly Active, first production
-  2012 to 2017, 1,130 Delaware and 776 Midland. v4 does carry `EUR_OIL_50YR` for 2,172 of them
-  and Arps segments for 2,170. 61 horizontal wells have a v4 forecast and no v3 forecast.
+- **Forecast in `raw_novi` but not in v4:** 2,211 wells (427,772 rows), mostly Active, first
+  production 2012 to 2017. These were stale too: today's v3 file has forecast rows on 57,711
+  wells, against 59,982 in `raw_novi` before the fix and 57,816 in v4. v4 carries
+  `EUR_OIL_50YR` for 2,172 of them and Arps segments for 2,170, so Novi holds a forecast for
+  them but ships no monthly rows in either feed (question 2). 61 horizontal wells had a v4
+  forecast and no forecast in `raw_novi`.
 
 ## 5. Incremental-load feasibility
 
@@ -384,12 +388,12 @@ Dropping Enverus is a separate study: geometry parity first, then a column-by-co
 1. `PRODUCTION_MONTHLY` has no per-day rates. v3's `OilPerDay` equals volume / days in month
    rounded to 0.1. Is that the definition, and will v4 ever ship rates, or is the consumer meant
    to compute them?
-2. 2,211 Permian horizontal wells have a monthly forecast in v3 and none in
-   `PRODUCTION_FORECAST_MONTHLY`, though v4 has their EUR and Arps segments. Is that intended?
-   (Example list available.)
-3. When a well is re-forecast with a shorter life, does the v3 bulk TSV still contain the old
-   tail months, or are they removed? Same for a well that leaves the us-horizontals scope: are
-   its `WellMonths` rows removed from the TSV?
+2. About 2,200 Permian horizontal wells have an EUR and Arps segments but no monthly forecast
+   rows, in v3 `ForecastWellMonths` and in v4 `PRODUCTION_FORECAST_MONTHLY` alike. They had
+   monthly rows in v3 until recently. Is that intended? (Example list available.)
+3. Answered by the 2026-11-19 v3 file (section 10): rows do leave the v3 TSV when a forecast
+   shortens or a well leaves scope, with no deletion marker. Is there any signal for those
+   removals short of comparing keys?
 4. v3 `WellType` differs from v4 `PRIMARY_STREAM` on 10.9 % of wells (7,472 Oil in v3, GAS in
    v4). How was v3 `WellType` derived, and which v4 column carries it?
 5. `PRODUCTION_FORECAST` has `CREATED_AT` and no `UPDATED_AT`, and rows within one forecast can
@@ -412,10 +416,9 @@ Dropping Enverus is a separate study: geometry parity first, then a column-by-co
 
 ## 9. Checks I could not run
 
-1. **Today's v3 TSV was not inspected.** The only local copy is from May, and I did not download
-   a new one. So "stale rows on our side" is inferred from update stamps, the load log and the
-   non-monotonic cumulatives, not confirmed against the v3 file. Question 3 covers the other
-   possibility, that the v3 feed itself keeps those rows.
+1. **Today's v3 TSV was not inspected during the study.** It was downloaded and scanned
+   afterwards for the reconcile, and it confirmed the stale-row reading (section 10). The
+   section 4 comparisons were not re-run against the cleaned tables.
 2. **No third source for volumes.** The warehouse holds no Enverus production, so where v3 and
    v4 disagree I cannot say from data which is right.
 3. **No curated-level diff.** Rebuilding `curated.wells`, `curated.production` or
@@ -433,3 +436,48 @@ Dropping Enverus is a separate study: geometry parity first, then a column-by-co
 9. **Not compared on values:** `HasAccurateFirstProductionDate`, `HasProductionSharing`,
    `IsSyntheticApi`, `OperatorEntity`, per-month operator names beyond a spot check, and the
    peak-month columns for gas, water and BOE.
+
+## 10. Reconcile run, 2026-11-19
+
+Michael gave the go for the overdue v3 reconcile and a forced curated refresh after reading the
+side finding. Both ran on 2026-11-19 from the laptop against the live warehouse. No ETL code
+changed.
+
+**Today's v3 file first.** Export `Novi_v3_US_Horizontals_T1_Permian_2026-11-19-10-37-57`, scanned
+before anything was written: 95,990 wells; 5,241,013 `WellMonths` rows; 22,353,490
+`ForecastWellMonths` rows, of which 17,217,480 are forecast rows on 57,711 wells; 15,954,057
+survey stations. No row in any file has `DeletedAt` set, so Novi drops rows from the file rather
+than marking them.
+
+**Reconcile** (`python -m etl.novi.load --reconcile`, 15:58 to 16:32 UTC):
+
+| Table | Rows before | Rows after | Deleted | Time |
+|---|---:|---:|---:|---:|
+| `WellMonths` | 5,388,571 | 5,241,013 | 149,178 | 283 s |
+| `ForecastWellMonths` | 26,864,712 | 22,353,490 | 4,511,222 | 1,023 s |
+| `DirectionalSurveys` | 15,954,057 | 15,954,057 | 0 | 713 s |
+
+All three tables now equal the file row for row in count. 2.8 % of `WellMonths` and 16.8 % of
+`ForecastWellMonths` had been stale. Wells with forecast rows fell from 59,982 to 57,711. No
+`WellMonths` well is left without a `Wells` row. The example well 3001538484 went from a forecast
+tail running past the vendor's to 131 forecast rows ending 2037-07, the same as v4.
+
+**Forced refresh** (`python -m etl.refresh --force`, 16:37 to 17:43 UTC): all 16 nightly matviews
+refreshed, each logged `success` in `meta.etl_log`. `curated.production_forecast` took 43 minutes.
+Checked live afterwards:
+
+- `curated.production_forecast`: 17,217,480 rows on 57,711 wells, equal to the forecast rows in
+  the file.
+- `curated.production`: 5,241,013 rows on 66,021 wells, equal to `raw_novi."WellMonths"`.
+
+**Side effects of the refresh.** `etl.refresh` runs the same hooks as the nightly, so it also
+wrote formation-tag run 10 (0 changes against run 9) and BOX recon run 3. Run 3 is the first
+written BOX recon run (logged `first_run`, 79,200 record sticks), one night ahead of the 5d
+shadow week, which planned the 2026-11-20 nightly as its first night. That nightly will now
+compare against run 3 instead of being the first run.
+
+**What this does not fix.** The nightly still cannot delete rows from `WellMonths` or
+`ForecastWellMonths`. Stale rows will build up again, at roughly the rate seen here (4.5M
+forecast rows in five months), until the loader handles deletions or the reconcile is put on a
+schedule. Anything that copied the warehouse before today (anduin's synced production, stored
+BOX inputs) still holds what it copied.
