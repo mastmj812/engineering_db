@@ -15,7 +15,7 @@ Record sets judged: set 16 (Delaware, 46,062 sticks) and set 17 (Midland, 33,138
 | `etl/box_recon.py` | The nightly step, pure SQL through psycopg (`JUDGE_SQL`, `STALE_SQL`, version `box_recon_1`): judge every record stick, list the stale DSU x bench, circuit breaker, write the log and replace the two tables in one transaction. `--dry-run` is read-only |
 | `scripts/apply_box_recon.py` | Applies sql/74 twice and verifies: 33 checks (tables, indexes, constraints, comments, grants, empty after a first apply, `box` untouched by identity, EXPLAIN names the stick index, one row per record stick, seven refused inserts). `--dry-run` rolls back |
 | `etl/refresh.py` | The hook: fires just before `curated.codev_context`. `etl/db.py` and `_CURATED_MATVIEWS` are not edited. `--no-box-recon` skips it |
-| `tests/test_box_recon.py` | 12 DB-free tests: the constants are the decisions of record, the SQL is read-only and literal, the module writes only its four tables and never `box`, writer and DDL agree, the hook never raises and is a no-op before sql/74, the wiring comes after everything it reads |
+| `tests/test_box_recon.py` | 13 DB-free tests: the constants are the decisions of record, the SQL is read-only and literal, the module writes only its four tables and never `box`, writer and DDL agree, the hook never raises and is a no-op before sql/74, the wiring comes after everything it reads |
 | `scripts/box_sticks_phase5b.py`, `scripts/box_recon_rehearsal.py` | The measurements below. `scripts/box_rehearsal.py`: seeds the sql/73 tables and mirrors `curated.well_lateral_survey` |
 | `scripts/gen_data_dictionary.py` | The four tables in the consumer map. The dictionary itself is regenerated after a live apply (it reads live) |
 

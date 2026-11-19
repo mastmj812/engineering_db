@@ -467,7 +467,7 @@ A new set now carries its ids from 16 and 17. Gate 5b is authored against them.
 (four ETL-owned tables: `meta.box_recon_run`, `curated.box_location_status`, `curated.box_location_status_log`,
 `curated.box_dsu_bench_stale`), `etl/box_recon.py` (the nightly step, pure SQL, version `box_recon_1`, soft, a no-op until its
 tables exist), `scripts/apply_box_recon.py` (33 checks), the hook in `etl/refresh.py` before `curated.codev_context`
-(`_CURATED_MATVIEWS` not edited), 12 tests. Bars committed first (`BARS.md`); all eight pass. On sets 16 and 17, read-only on
+(`_CURATED_MATVIEWS` not edited), 13 tests. Bars committed first (`BARS.md`); all eight pass. On sets 16 and 17, read-only on
 live: the module's SQL gives the Python reference's status on 99.993 % (Delaware) and 100 % (Midland) of sticks; 131.6 s; day 0
 is 0.20 % / 0.05 % producing or conflict and 0.15 % / 0.14 % crowded (inventory 45,903 of 46,062 and 33,073 of 33,138; 22
 conflict sticks; 3 stale DSU x bench). The stale estimate against a regeneration: -7.3 % Delaware, +7.8 % Midland in total,
