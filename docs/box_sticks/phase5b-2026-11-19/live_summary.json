@@ -1,0 +1,69 @@
+{
+ "record_sets": [
+  {
+   "set_id": 16,
+   "basin": "delaware",
+   "generator_version": "box_sticks_0.12",
+   "pulled_at": "2026-11-19T01:00:12.188Z",
+   "tag_run_id": 8
+  },
+  {
+   "set_id": 17,
+   "basin": "midland",
+   "generator_version": "box_sticks_0.12",
+   "pulled_at": "2026-11-19T01:00:12.188Z",
+   "tag_run_id": 8
+  }
+ ],
+ "predicate_version": "box_recon_1",
+ "wells_pulled_at": "2026-11-19 03:28:57.847684+00:00",
+ "seconds_read_only_pass": 131.6,
+ "uses_stick_index": true,
+ "agreement": [
+  {
+   "basin": "delaware",
+   "sticks": 46062.0,
+   "same_status_pct": 99.993,
+   "same_crowded_pct": 99.967,
+   "status_differs": 3.0,
+   "crowded_differs": 15.0
+  },
+  {
+   "basin": "midland",
+   "sticks": 33138.0,
+   "same_status_pct": 100.0,
+   "same_crowded_pct": 99.943,
+   "status_differs": 0.0,
+   "crowded_differs": 19.0
+  }
+ ],
+ "day0": [
+  {
+   "basin": "delaware",
+   "sticks": 46062.0,
+   "open": 45286.0,
+   "permitted": 656.0,
+   "pending": 28.0,
+   "producing": 72.0,
+   "conflict": 20.0,
+   "crowded": 67.0,
+   "inventory": 45903.0,
+   "producing_or_conflict_pct": 0.2,
+   "crowded_pct": 0.145
+  },
+  {
+   "basin": "midland",
+   "sticks": 33138.0,
+   "open": 33027.0,
+   "permitted": 76.0,
+   "pending": 17.0,
+   "producing": 16.0,
+   "conflict": 2.0,
+   "crowded": 47.0,
+   "inventory": 33073.0,
+   "producing_or_conflict_pct": 0.054,
+   "crowded_pct": 0.142
+  }
+ ],
+ "stale_dsu_bench": 3
+}

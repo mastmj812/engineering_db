@@ -129,7 +129,8 @@ GATE_FT = 2640.0                              # the generator's pair gate (phase
 WCA_PAIR = {"WCA_1", "WCA_2"}
 
 
-def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirror: dict | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirror: dict | None = None,
+          flat: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
     """sticks: key, basin, pad_id, bench, target_tvd_ft, geom. wells: classify() output with cls not None.
     gen: basin -> the set's cfg['generator']. Returns (stick status frame, judged pair frame).
 
@@ -137,7 +138,7 @@ def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirro
     {(pad_id, bench): target TVD}} is variant B, which follows three generator rules: no test between WCA_1 and WCA_2 in a
     co-developed DSU; a well with no depth evidence is taken at the DSU's landing of its tagged bench where that bench
     kept one (family only otherwise); crowded = at least half of the alongside length inside the sideways limit (the
-    generator's median distance), alongside >= min_overlap."""
+    generator's median distance), alongside >= min_overlap. flat = flat-ended corridors (gate 5b; etl/box_recon.py)."""
     L = legs_frame(sticks)
     out_pairs = []
     for basin in BASINS:
@@ -153,7 +154,7 @@ def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirro
 
         def share(dist_m: float, rows: np.ndarray, p: pd.DataFrame = p, wl: np.ndarray = wl, leg: np.ndarray = leg, lb: pd.DataFrame = lb) -> np.ndarray:
             a, b = p["w"].to_numpy()[rows], p["l"].to_numpy()[rows]
-            return shapely.length(shapely.intersection(leg[b], shapely.buffer(wl[a], dist_m))) / lb["leg_m"].to_numpy()[b]
+            return shapely.length(shapely.intersection(leg[b], shapely.buffer(wl[a], dist_m, cap_style="flat" if flat else "round"))) / lb["leg_m"].to_numpy()[b]
 
         allr = np.arange(len(p))
         p["ov"] = share(CORRIDOR_M, allr)

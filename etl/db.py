@@ -13,9 +13,10 @@ from __future__ import annotations
 import logging
 import os
 import time
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence, TypeVar
+from typing import Any, TypeVar
 from urllib.parse import quote
 
 import psycopg
@@ -120,7 +121,7 @@ def _open_connection() -> PGConnection:
     return conn
 
 
-def _retry_on_conn_loss(fn: "Callable[[], _T]", *, what: str) -> "_T":
+def _retry_on_conn_loss(fn: Callable[[], _T], *, what: str) -> _T:
     """Call `fn()`, retrying on `psycopg.OperationalError` with exponential
     backoff. Covers a managed-Postgres restart/failover: the server refuses new
     connections (or drops an in-flight one) for tens of seconds, then recovers
@@ -193,7 +194,7 @@ def _open_run(source: str, table_name: str) -> int:
 
 
 def _finish_run(
-    run_id: int, status: str, handle: "EtlRunHandle", error_message: str | None
+    run_id: int, status: str, handle: EtlRunHandle, error_message: str | None
 ) -> None:
     """Close an etl_log row on a FRESH short-lived connection, with retry.
 
@@ -233,7 +234,7 @@ def _finish_run(
 
 
 @contextmanager
-def log_etl_run(source: str, table_name: str) -> Iterator["EtlRunHandle"]:
+def log_etl_run(source: str, table_name: str) -> Iterator[EtlRunHandle]:
     """Context manager that records an ETL run to `meta.etl_log`.
 
     On entry, inserts a row with status='running' and returns a handle the
@@ -627,7 +628,7 @@ def upsert_batch_resilient(
     conflict_cols: Sequence[str],
     update_cols: Sequence[str],
     *,
-    reconnect: "Callable[[], PGConnection]" = get_connection,
+    reconnect: Callable[[], PGConnection] = get_connection,
 ) -> tuple[PGConnection, int]:
     """`bulk_upsert` + commit ONE batch, surviving a mid-pull connection drop.
 

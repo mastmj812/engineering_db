@@ -27,8 +27,8 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from etl.db import get_connection
 from etl.intel_sf.client import get_sf_connection

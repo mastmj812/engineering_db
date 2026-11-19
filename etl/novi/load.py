@@ -336,13 +336,13 @@ def _shipped_column_types(bulk_dir: Path) -> dict[str, dict[str, str]]:
         return {}
     schema = schema_path.read_text(encoding="utf-8")
     out: dict[str, dict[str, str]] = {}
-    for m in re.finditer(r'CREATE TABLE\s+"(\w+)"\s*\((.*?)\n\);', schema, re.S):
+    for m in re.finditer(r'CREATE TABLE\s+"(\w+)"\s*\((.*?)\n\);', schema, re.DOTALL):
         cols: dict[str, str] = {}
         for line in m.group(2).splitlines():
             cm = re.match(r'\s*"(\w+)"\s+(.+?),?\s*$', line)
             if cm:
                 base = re.sub(
-                    r"\s+(NOT\s+NULL|NULL|DEFAULT\s+.*)$", "", cm.group(2), flags=re.I
+                    r"\s+(NOT\s+NULL|NULL|DEFAULT\s+.*)$", "", cm.group(2), flags=re.IGNORECASE
                 ).strip()
                 cols[cm.group(1)] = base
         out[m.group(1)] = cols

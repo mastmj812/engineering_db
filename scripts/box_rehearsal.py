@@ -34,12 +34,16 @@ PASSWORD = "rehearsal"  # throwaway container on localhost only
 PG_BIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
 ROLES = ("analyst_ro", "box_econ_writer")
 SEED_TABLES = ("bench_scope", "extent", "extent_edge", "tc_area", "type_curve", "tc_member", "risk_factor", "location", "location_source",
-               "forecast_run")
+               "forecast_run",
+               # sql/73 (BOX sticks): what etl/box_recon.py reads (gate 5b)
+               "location_set", "location_stick", "location_set_dsu", "location_set_bench", "location_set_well")
 # step 23b: what the derive store (realized / conflict join), sql/69 and erebor's BOX + econ screens read, copied as plain tables
 MIRROR = ("curated.reconciled_inventory", "curated.erebor_locations", "curated.intel_locations", "curated.producing_reference",
           "curated.intel_pad_geom", "curated.intel_pad_member", "curated.intel_formation_blueox", "curated.wells",
           "curated.formation_blueox_tvd", "raw_novi_intel.pads", "raw_novi_intel.basin_outline",
-          "curated.wells_enriched", "curated.production")
+          "curated.wells_enriched", "curated.production",
+          # gate 5b: the nightly BOX sticks reconciliation also reads this (with curated.wells_enriched and raw_novi_intel.pads above)
+          "curated.well_lateral_survey")
 PG17_ONLY = re.compile(r"^SET (transaction_timeout|idle_session_timeout)\b.*$", re.MULTILINE)
 
 
