@@ -116,23 +116,22 @@ def _stream(sf: Any, sql: str) -> Iterator[tuple[list[str], list[tuple]]]:
 
 def _copy(sf: Any, sql: str, cur: Any, schema: str, table: str) -> int:
     """COPY a Snowflake result set into `schema."table"` on `cur`. Does not commit."""
+    batches = _stream(sf, sql)
+    first = next(batches, None)
+    if first is None:
+        return 0
+    cols, rows = first
+    quoted = ", ".join(f'"{c}"' for c in cols)
     n = 0
-    copy = None
-    try:
-        for cols, rows in _stream(sf, sql):
-            if copy is None:
-                quoted = ", ".join(f'"{c}"' for c in cols)
-                copy = cur.copy(f'COPY {schema}."{table}" ({quoted}) FROM STDIN')
-                copy.__enter__()
+    with cur.copy(f'COPY {schema}."{table}" ({quoted}) FROM STDIN') as copy:
+        while True:
             for r in rows:
                 copy.write_row(r)
             n += len(rows)
-    except BaseException as exc:
-        if copy is not None:
-            copy.__exit__(type(exc), exc, exc.__traceback__)
-        raise
-    if copy is not None:
-        copy.__exit__(None, None, None)
+            nxt = next(batches, None)
+            if nxt is None:
+                break
+            rows = nxt[1]
     return n
 
 

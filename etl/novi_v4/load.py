@@ -33,11 +33,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--allow-breaker", action="store_true", help="accept a large drop in wells or header rows")
     ap.add_argument("--confirm-live", action="store_true", help="required to write schema raw_novi")
     ap.add_argument("--compare", action="store_true", help="read-only diff of v4-shaped rows against raw_novi")
+    ap.add_argument("--diff", action="store_true", help="read-only full diff of --schema against raw_novi, inside Postgres")
     ap.add_argument("--sample-every", type=int, default=26, help="--compare: every k-th producing well for child tables")
     a = ap.parse_args(argv)
 
     if a.schema == sync.LIVE_SCHEMA and not (a.confirm_live or a.dry_run or a.compare):
         ap.error("writing raw_novi needs --confirm-live")
+    if a.diff:
+        from etl.novi_v4 import diff
+
+        for t in a.tables:
+            print(diff.format_diff(t, diff.diff_table(a.schema, t)), flush=True)
+        return 0
 
     sf = get_sf_connection()
     try:

@@ -207,6 +207,83 @@ def test_dry_run_reports_a_tripped_breaker_and_writes_nothing(monkeypatch):
         sync.sync_child(None, "raw_novi", "ForecastWellMonths")
 
 
+class _FakeSfCursor:
+    description = (("API10",), ("Year",))
+
+    def __init__(self, batches):
+        self._batches = list(batches)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def execute(self, sql):
+        self.sql = sql
+
+    def fetchmany(self, n):
+        return self._batches.pop(0) if self._batches else []
+
+
+class _FakeSf:
+    def __init__(self, batches):
+        self._batches = batches
+
+    def cursor(self):
+        return _FakeSfCursor(self._batches)
+
+
+class _FakeCopy:
+    def __init__(self, log):
+        self.log = log
+
+    def __enter__(self):
+        self.log.append("open")
+        return self
+
+    def __exit__(self, *exc):
+        self.log.append("close")
+        return False
+
+    def write_row(self, row):
+        self.log.append(row)
+
+
+class _FakePgCursor:
+    def __init__(self):
+        self.log, self.statements = [], []
+
+    def copy(self, statement):
+        self.statements.append(statement)
+        return _FakeCopy(self.log)
+
+
+def test_copy_streams_every_batch_through_one_copy():
+    cur = _FakePgCursor()
+    n = sync._copy(_FakeSf([[("A", 1), ("A", 2)], [("B", 1)]]), "select 1", cur, "raw_novi_v4", "WellMonths")
+    assert n == 3
+    assert cur.statements == ['COPY raw_novi_v4."WellMonths" ("API10", "Year") FROM STDIN']
+    assert cur.log == ["open", ("A", 1), ("A", 2), ("B", 1), "close"]
+
+
+def test_copy_of_an_empty_result_opens_no_copy():
+    cur = _FakePgCursor()
+    assert sync._copy(_FakeSf([]), "select 1", cur, "raw_novi_v4", "Wells") == 0
+    assert cur.statements == []
+
+
+def test_diff_sql_shape():
+    from etl.novi_v4 import diff
+
+    sql = diff.diff_sql("raw_novi_v4", "ForecastWellMonths", ["OilPerDay", "OilPerMonth"], {"OilPerDay"})
+    assert 'USING ("API10", "Date")' in sql and 'raw_novi."ForecastWellMonths" WHERE "IsForecasted"' in sql
+    assert 'abs(a."OilPerDay" - b."OilPerDay")' in sql
+    assert 'a."OilPerMonth" IS DISTINCT FROM b."OilPerMonth"' in sql
+    with pytest.raises(ValueError):
+        diff.diff_sql("bad;schema", "Wells", [], set())
+
+
 def test_header_guard_refuses_an_empty_or_shrunken_pull():
     with pytest.raises(RuntimeError, match="no rows"):
         sync.check_header_rows("Wells", 0, 95_985, allow=True)

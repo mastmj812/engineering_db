@@ -636,3 +636,54 @@ v4 load is still unmeasured, and so is a run from a GitHub Actions runner.
 unsourced columns in `raw_novi`, run the loader on it with `--confirm-live`, switch
 `scripts/run_daily.py` to the v4 loader, force one curated refresh, and drop `raw_novi_v4`.
 Each of those warehouse steps needs its own go.
+
+## 13. Side-by-side load and full diff, 2026-11-19
+
+With Michael's go, `sql/75` was applied and `raw_novi_v4` was loaded in full from v4, then every
+row was diffed against `raw_novi` inside Postgres
+(`python -m etl.novi_v4.load --schema raw_novi_v4 --diff`, read-only).
+
+**Load.** 22 minutes from the laptop, 13:19 to 13:41 local, 38.7M rows. The first attempt failed
+on its first table on a bug in the loader's COPY helper and rolled back with nothing written;
+fixed and covered by a test.
+
+| Table | Rows loaded | Time |
+|---|---:|---:|
+| `Wells`, `WellDetails`, `WellSpacing` | 95,990 / 95,990 / 63,914 | under 20 s each |
+| `WellMonths` | 5,241,013 | 2 min 44 s |
+| `ForecastWellMonths` | 17,217,480 | 10 min 26 s |
+| `DirectionalSurveys` | 15,954,057 | 8 min 20 s |
+
+`raw_novi_v4` is 7.6 GB on disk (`raw_novi` is 22.6 GB, bloated by the reconcile).
+
+**Diff, every row.**
+
+| Table | Common rows | v4 only / v3 only | Columns equal on every row | What differs |
+|---|---:|---|---|---|
+| `WellMonths` | 5,241,013 | 0 / 0 | 20 of 23 | `CumulativeWater` 0.062 % of rows, `CumulativeFlaredGas` 0.181 %, `Operator` 147 rows |
+| `ForecastWellMonths` | 17,217,480 | 0 / 0 | 10 of 13 | The three cumulative columns, 0.1 to 0.4 % of rows. Almost all are 1 to 2 units of rounding; 135 wells are off by more on gas |
+| `DirectionalSurveys` | 15,954,057 | 0 / 0 | 13 of 13 | nothing |
+| `WellSpacing` | 63,650 | 264 / 191 | 12 of 12 | nothing |
+| `Wells` | 95,985 | 5 / 0 | 40 of 52 | see below |
+| `WellDetails` | 95,985 | 5 / 0 | 80 of 100 | see below |
+
+All monthly volumes, producing days, months on production, sharing flags and the four per-day
+rates are equal on all 5,241,013 well-months. All forecast rates and monthly volumes are equal
+on all 17,217,480 rows. `LateralCloserXY` is equal on all 63,650 wells.
+
+Header differences, all 95,985 wells:
+
+- `DirectionalSurveyIsPlanned` 4,490 wells and `WellboreLateralLength` 50,246 wells: the two
+  known gaps from section 12.
+- `FirstCompletionProppantMass` 15,228 wells and `FirstCompletionFluidVolume` 8,656 wells: new at
+  full population, and noise. Every difference is 1 to 6 lb or gal, at most 6e-8 relative
+  (v4 ships a float, v3 an integer).
+- `SpacingIsChild` / `SpacingClosestWellXY` on 907 wells (copies of spacing columns that nothing
+  reads), `PermitID` 145, `SpudDate` 11, land grid and landing point on 1 or 2 wells.
+
+**Read.** The side-by-side copy reproduces `raw_novi` on every column that feeds a rate, a
+volume, a forecast, a survey or a spacing. What differs is listed above and in section 12, and
+none of it is read by a forecast or a cohort.
+
+**Not done.** A second night into `raw_novi_v4` (to see a real incremental with changed and
+deleted wells), the cutover of `raw_novi`, and the nightly switch. Each needs its own go.
