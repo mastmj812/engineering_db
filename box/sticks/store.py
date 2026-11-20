@@ -12,8 +12,8 @@ from . import identity as idn
 from .core import SECOND_LEVEL, Bench, Dsu, Result, Well
 
 TWO_LANDINGS = "two_landings_observed"
-STICK_FLAGS = ("pinned", TWO_LANDINGS, SECOND_LEVEL, "dsu_drilled_across")
-RUNGS = ("direct", "thickness", "bracket", "offset")
+STICK_FLAGS = ("pinned", TWO_LANDINGS, SECOND_LEVEL, "dsu_drilled_across", "grid_bounded", "outside_grid")
+RUNGS = ("direct", "thickness", "bracket", "offset", "grid")
 SAME_FT = 0.1                                  # a regenerated leg end within this of the stored one is the same leg
 
 
@@ -91,8 +91,18 @@ def well_rows(d: Dsu) -> list[dict]:
             for w in d.wells]
 
 
-def rebuild_dsu(basin: str, polygon, drow: dict, brows: list[dict], wells: dict[str, dict]) -> Dsu:
-    """The Dsu the generator was given, from stored rows. `polygon` and each well's `line` are in the work CRS."""
+GRID_FLAGS = ("grid_bounded", "outside_grid")
+
+
+def rebuild_dsu(basin: str, polygon, drow: dict, brows: list[dict], wells: dict[str, dict], sticks: list[dict] | None = None) -> Dsu:
+    """The Dsu the generator was given, from stored rows. `polygon` and each well's `line` are in the work CRS.
+    `sticks`: the DSU's stored stick records. A bench's grid note (generator 0.13) is not a column of the bench row; it is
+    read back from the flags of the bench's stored sticks (a bench with no stick has nothing the note could change)."""
+    noted: dict[str, tuple[str, ...]] = {}
+    for s in sticks or []:
+        got = tuple(f for f in GRID_FLAGS if f in s.get("flags", ()))
+        if got:
+            noted[s["bench"]] = got
     benches = []
     for b in sorted(brows, key=lambda r: r["bench_rank"]):
         direct = b["tvd_rung"] == "direct"
@@ -101,7 +111,7 @@ def rebuild_dsu(basin: str, polygon, drow: dict, brows: list[dict], wells: dict[
         control = float(basis.pop("control"))
         lv = tuple(float(v) for v in b["two_landings"]) if b.get("two_landings") else None
         sec = _f(b.get("second_level_tvd_ft"))
-        flags = ((TWO_LANDINGS,) if lv else ()) + ((SECOND_LEVEL,) if sec is not None else ())
+        flags = ((TWO_LANDINGS,) if lv else ()) + ((SECOND_LEVEL,) if sec is not None else ()) + noted.get(b["formation_blueox"], ())
         benches.append(Bench(code=b["formation_blueox"], rank=int(b["bench_rank"]), tvd_ft=_f(b["tvd_in_ft"]), rung=b["tvd_rung"],
                              spacing_ft=float(b["spacing_map_ft"]), inside_frac=float(b["inside_frac"]), control=control,
                              tvd_err_median_ft=None if direct else err[0], tvd_err_p90_ft=None if direct else err[1], spacing_basis=basis,

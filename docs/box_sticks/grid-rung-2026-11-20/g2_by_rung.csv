@@ -1,0 +1,4 @@
+rung,wells_predicted,outside_by_more_than_150,median_before_ft,median_after_ft,closer_pct,passes
+bracket,11528,322,266.5,73.9,80.4,True
+offset,19762,1059,243.8,80.9,76.8,True
+thickness (approximated),19690,675,234.0,102.5,69.9,True

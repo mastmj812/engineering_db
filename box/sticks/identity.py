@@ -66,8 +66,13 @@ def share(a: Stick, b: Stick, corridor_ft: float = CORRIDOR_FT) -> tuple[float, 
     return (tot / short, wt / tot) if tot > 0.0 and short > 0.0 else (0.0, math.inf)
 
 
-def crosswalk(prev: list[Stick], new: list[Stick], corridor_ft: float = CORRIDOR_FT, min_share: float = MIN_SHARE) -> dict:
-    """{"carried": {new key: (prev key, slot, share, offset ft)}, "new": {new key: slot}, "stopped": [prev key]}."""
+def crosswalk(prev: list[Stick], new: list[Stick], corridor_ft: float = CORRIDOR_FT, min_share: float = MIN_SHARE,
+              used: dict[tuple[int, str], int] | None = None) -> dict:
+    """{"carried": {new key: (prev key, slot, share, offset ft)}, "new": {new key: slot}, "stopped": [prev key]}.
+    used: the highest slot number EVER issued per (pad_id, bench), from every earlier set and not only `prev`. A location
+    that stopped two sets ago still holds its number, so a new stick must start above it (found 2026-11-20 at the third
+    stored generation: the previous set alone gave a number an older location already had)."""
+    used = used or {}
     P: dict[tuple, list[Stick]] = defaultdict(list)
     N: dict[tuple, list[Stick]] = defaultdict(list)
     for s in prev:
@@ -93,7 +98,7 @@ def crosswalk(prev: list[Stick], new: list[Stick], corridor_ft: float = CORRIDOR
             got_p.add(pk)
             got_n.add(nk)
             carried[nk] = (pk, slot, round(-sh, 4), round(off, 1))
-        nxt = max((p.slot or 0 for p in ps), default=0) + 1
+        nxt = max(max((p.slot or 0 for p in ps), default=0), int(used.get(g, 0))) + 1
         # new sticks take the next numbers in cross-section order (the order the generator lists them in)
         for n in ns:
             if n.key not in got_n:

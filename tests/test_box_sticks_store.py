@@ -116,8 +116,17 @@ def test_sql73_is_additive_and_guarded() -> None:
     assert not re.search(r"\bDROP\s+(TABLE|INDEX|MATERIALIZED|VIEW|SCHEMA|COLUMN)\b", code, re.IGNORECASE) and "CASCADE" not in code.replace("ON DELETE CASCADE", "")
     assert "MATERIALIZED VIEW" not in code                                   # nothing to REFRESH, nothing for the nightly
     assert code.count("ADD COLUMN IF NOT EXISTS") == 6 and "RESTART WITH 10000001" in code and "last_value FROM box.location_location_id_seq" in code
+    later = re.sub(r"--.*", "", (ROOT / "sql" / "77_box_sticks_grid_rung.sql").read_text(encoding="utf-8"))   # generator 0.13 widened the checks
     for flag in store.STICK_FLAGS:
-        assert f"'{flag}'" in code
+        assert f"'{flag}'" in later and (f"'{flag}'" in code or flag in ("grid_bounded", "outside_grid"))
+    for rung in store.RUNGS:
+        assert later.count(f"'{rung}'") == 2                                # on the stick and on the bench
+    assert "'none'" in later and "DROP TABLE" not in later and "DROP COLUMN" not in later and "DROP INDEX" not in later and "CASCADE" not in later
+    from scripts import apply_box_sticks_grid_rung as ab
+
+    for names in ab.CONSTRAINTS.values():
+        for n in names:
+            assert later.count(f"DROP CONSTRAINT IF EXISTS {n};") == 1 and later.count(f"ADD CONSTRAINT {n}") == 1
     assert "legs_geom::extensions.geography" in code and "bench_scope" not in code and "box.extent" not in code
 
 
@@ -149,3 +158,17 @@ def test_the_record_flip_supersedes_before_it_sets_and_defaults_to_a_dry_run() -
     assert "location_stick SET" not in body and "DELETE" not in body                    # the flip touches no stick row
     assert run.main.__doc__ is None and "if bad or not go:" in src[src.index("def cmd_record"):src.index("def main")]
 
+
+
+def test_a_grid_note_survives_the_stored_round_trip() -> None:
+    """Generator 0.13: the grid note is a stick flag, not a bench column; the rebuild reads it back from the stored sticks."""
+    import dataclasses
+
+    d = _dsu()
+    d = dataclasses.replace(d, benches=[dataclasses.replace(b, flags=(*b.flags, "grid_bounded")) if b.code == "BS3_S" else b for b in d.benches])
+    res = core.generate_dsu(d, CFG, LINK)
+    assert any("grid_bounded" in s["flags"] for s in res.sticks if s["bench"] == "BS3_S")
+    wells = {w["api10"]: w for w in store.well_rows(d)}
+    args = ("delaware", d.polygon, store.dsu_row(d, res), store.bench_rows(d, res), wells)
+    assert store.diff_sticks(res.sticks, core.generate_dsu(store.rebuild_dsu(*args), CFG, LINK).sticks)             # without the sticks: the note is lost
+    assert not store.diff_sticks(res.sticks, core.generate_dsu(store.rebuild_dsu(*args, res.sticks), CFG, LINK).sticks)
