@@ -48,10 +48,11 @@ CARD_SETS: list[tuple[str, int]] = [
     ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3), ("shadow1-queue-cards-2026-11-11", 3),
     ("shadow1-direct-calls-2026-11-11", 3), ("shadow6-queue-cards-2026-11-16", 3),
     ("human-call-review-2026-11-16", 3), ("sql23-retired-cards-2026-11-16", 3),
+    ("box-stick-cards-2026-11-20", 3),
 ]
 # Card sets that re-judge wells which already carry a human call (input = that call). A verdict with a code replaces
 # the earlier call, including a pre-rule override row; a hold leaves the earlier call as it stands.
-REVIEW_SETS = frozenset({"human-call-review-2026-11-16"})
+REVIEW_SETS = frozenset({"human-call-review-2026-11-16", "box-stick-cards-2026-11-20"})   # the second re-judges one pre-rule row (Vintage F 313H)
 STEP1_DECISIONS = ["v5-cards-2026-11-06", "v5-cards-r2-2026-11-06", "policy-v1-cards-2026-11-09/step1",
                    "policy-v1-cards-2026-11-09/step1_round2"]
 STEP3_SCORE = "v5_2-cards-2026-11-08"

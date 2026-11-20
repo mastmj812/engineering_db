@@ -79,7 +79,6 @@ api10,corrected_code,was,note
 4238941358,WCB_2,WCB_1,MM direct gunbarrel ratification 2026-09-17 (Roadrunner 333H)
 4238941420,WCB_2,WCB_1,MM direct gunbarrel ratification 2026-09-17 (Graves State 334H)
 4238941479,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 6 ft off destination band, jury n=6"
-4238941928,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 83 ft off destination band, jury n=3"
 4238941930,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 32 ft off destination band, jury n=3"
 4247537683,WCB_1,WCB_2,"consensus v2 flag ratified by MM (high-value review 2026-09-17); 18 ft off destination band, jury n=3"
 4247537856,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 30 ft off destination band, jury n=4"
@@ -435,10 +434,13 @@ api10,corrected_code,was,note
 3001545579,WCXY,WCC,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 86 (Step 3): ACCEPT on proposed WCXY
 3001545988,WCA_2,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 56 (Step 3): ACCEPT on proposed WCA_2
 3001546192,BS1_S,BS2_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 34 (Step 1): ACCEPT on proposed BS1_S
+3001546223,BS3_C,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 10 (Step 3): BS3_C on proposed BS3_C
 3001546344,WCA_2,WCB_2,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 79 (Step 3): ACCEPT on proposed WCA_2
 3001546378,BS2_S,BS3_C,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 20 (Step 3): ACCEPT on proposed BS2_S
 3001546391,WCA_2,OTHER,tagrule carded 2026-11-16 shadow6-queue-cards-2026-11-16 card 17 (Step 3): ACCEPT on proposed WCA_2
+3001546448,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 9 (Step 3): BS2_S on proposed BS2_S
 3001546938,BS2_S,BS3_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 1 (Step 1): ACCEPT on proposed BS2_S
+3001547220,BS3_C,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 13 (Step 3): BS3_C on proposed BS3_C
 3001547299,BS2_C,WCXY,tagrule carded 2026-11-16 human-call-review-2026-11-16 card 1 (Step 3): ACCEPT on proposed BS2_C
 3001547434,WCB_2,WCA_1,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 69 (Step 3): WCB_2 on proposed WCC
 3001547580,BS2_S,WCA_1,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 62 (Step 3): ACCEPT on proposed BS2_S
@@ -511,7 +513,9 @@ api10,corrected_code,was,note
 3002540124,AVA_0,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 3 (Step 3): ACCEPT on proposed AVA_0
 3002540142,BS2_S,BS3_C,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 29 (Step 1): BS2_S on proposed BS2_S
 3002540188,AVA_0,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 4 (Step 3): ACCEPT on proposed AVA_0
+3002540436,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 3 (Step 3): BS2_S on proposed BS2_S
 3002540530,AVA_0,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 5 (Step 3): ACCEPT on proposed AVA_0
+3002540722,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 6 (Step 3): BS2_S on proposed BS2_S
 3002541050,BS3_C,BS3_C,tagrule carded 2026-11-16 human-call-review-2026-11-16 card 2 (Step 3): ACCEPT on proposed BS3_C
 3002541310,AVA_0,OTHER,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 42 (Step 1): AVA_0 on proposed AVA_0
 3002542414,AVA_0,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 6 (Step 3): ACCEPT on proposed AVA_0
@@ -525,6 +529,7 @@ api10,corrected_code,was,note
 3002544467,BS2_C,BS2_C,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 52 (Step 1): BS2_C on proposed BS1_S
 3002544497,WCXY,OTHER,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step3 card 22 (Step 3): ACCEPT on proposed WCXY
 3002544504,BS2_S,BS3_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 3 (Step 1): ACCEPT on proposed BS2_S
+3002545535,BS2_C,BS2_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 7 (Step 3): BS2_C on proposed BS2_C
 3002545597,WCB_1,WCB_1,tagrule carded 2026-11-16 human-call-review-2026-11-16 card 8 (Step 3): WCB_1 on proposed WCA_2
 3002546029,WCB_2,WCB_2,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 67 (Step 3): ACCEPT on proposed WCB_2
 3002546247,WCA_2,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 58 (Step 3): ACCEPT on proposed WCA_2
@@ -536,19 +541,23 @@ api10,corrected_code,was,note
 3002548088,AVA_0,AVA_0,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 20 (Step 3): ACCEPT on proposed AVA_0
 3002548277,WCA_2,BS3_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 33 (Step 3): ACCEPT on proposed WCA_2
 3002548347,WCB_1,WCB_1,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 61 (Step 1): WCB_1 on proposed WCA_1
+3002548592,WCA_1,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 16 (Step 3): WCA_1 on proposed WCA_1
 3002548900,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 11 (Step 2): ACCEPT on proposed BS3_C
 3002549068,WCB_1,AVA_1,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 16 (Step 3): ACCEPT on proposed WCB_1
 3002549069,WCA_2,AVA_1,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 14 (Step 3): ACCEPT on proposed WCA_2
 3002549185,BS2_C,BS2_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 3 (Step 2): ACCEPT on proposed BS2_C
 3002549229,WCB_1,BS2_S,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 30 (Step 3): ACCEPT on proposed WCB_1
 3002549287,WCA_2,BS2_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 16 (Step 3): ACCEPT on proposed WCA_2
+3002549288,BS2_S,BS2_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 8 (Step 3): BS2_S on proposed BS2_S
 3002549314,BS2_C,BS2_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 4 (Step 2): ACCEPT on proposed BS2_C
 3002549588,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 12 (Step 2): ACCEPT on proposed BS3_C
 3002549844,BS2_C,BS2_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 5 (Step 2): ACCEPT on proposed BS2_C
 3002549942,BS2_C,BS2_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 6 (Step 2): ACCEPT on proposed BS2_C
+3002550061,AVA_1,BS1_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 4 (Step 3): AVA_1 on proposed AVA_1
 3002550117,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 13 (Step 2): ACCEPT on proposed BS3_C
 3002550118,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 14 (Step 2): ACCEPT on proposed BS3_C
 3002550158,BS2_S,BS3_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 28 (Step 3): ACCEPT on proposed BS2_S
+3002550207,BS3_C,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 14 (Step 3): BS3_C on proposed BS3_C
 3002550361,BS1_S,BS2_C,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 88 (Step 1): BS1_S on proposed BS1_S
 3002550371,BS1_S,BS3_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 23 (Step 3): ACCEPT on proposed BS1_S
 3002550408,BS3_S,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 45 (Step 3): ACCEPT on proposed BS3_S
@@ -574,6 +583,7 @@ api10,corrected_code,was,note
 3002552267,BS3_C,BS3_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 5 (Step 1): BS3_C on proposed BS2_S
 3002552281,BS2_S,OTHER,tagrule carded 2026-11-16 shadow6-queue-cards-2026-11-16 card 12 (Step 3): ACCEPT on proposed BS2_S
 3002552602,BS3_S,OTHER,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 57 (Step 3): ACCEPT on proposed BS3_S
+3002552856,BS3_C,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 5 (Step 3): BS3_C on proposed BS3_C
 3002552916,BS2_S,BS3_C,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 28 (Step 1): ACCEPT on proposed BS2_S
 3002552959,BS2_S,BS3_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 29 (Step 3): ACCEPT on proposed BS2_S
 3002553151,BS2_C,BS2_C,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 110 (Step 3): ACCEPT on proposed BS2_C
@@ -597,6 +607,7 @@ api10,corrected_code,was,note
 3002555175,BS2_C,BS2_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 7 (Step 2): ACCEPT on proposed BS2_C
 3002555207,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 19 (Step 2): ACCEPT on proposed BS3_C
 3002555209,BS3_C,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 20 (Step 2): ACCEPT on proposed BS3_C
+3002555223,BS3_C,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 15 (Step 3): BS3_C on proposed BS3_C
 3002555225,BS3_C,BS3_C,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 7 (Step 3): BS3_C on proposed BS3_C
 3002555328,BS1_S,BS2_C,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 90 (Step 1): BS1_S on proposed BS1_S
 3002555534,AVA_0,BS2_S,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 10 (Step 3): ACCEPT on proposed AVA_0
@@ -625,6 +636,7 @@ api10,corrected_code,was,note
 4210933440,WCA_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 48 (Step 3): ACCEPT on proposed WCA_1
 4210933563,WCA_2,WCB_1,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 62 (Step 1): WCA_2 on proposed WCA_1
 4210933893,BS3_S,BS3_S,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 6 (Step 1): BS3_S on proposed WCXY
+4210934231,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 11 (Step 3): BS2_S on proposed BS2_S
 4210934243,WCA_2,WCB_1,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 12 (Step 1): WCA_2 on proposed WCA_1
 4213544173,WCA_1,OTHER,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 96 (Step 3): WCA_1 on proposed LSSH
 4213544174,LSSH,OTHER,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 97 (Step 3): ACCEPT on proposed LSSH
@@ -665,10 +677,12 @@ api10,corrected_code,was,note
 4223535699,WCB_1,WCB_1,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 72 (Step 1): WCB_1 on proposed WCA_1
 4223536546,WCA_1,WCB_1,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 32 (Step 1): WCA_1 on proposed WCA_1
 4230131695,AVA_0,OTHER,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 45 (Step 1): AVA_0 on proposed AVA_0
+4230132560,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 1 (Step 3): BS2_S on proposed BS2_S
 4230132605,WCB_1,WCB_1,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 63 (Step 1): WCB_1 on proposed WCA_1
+4230132814,BS2_S,BS3_C,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 2 (Step 3): BS2_S on proposed BS2_S
 4230133134,WCXY,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 22 (Step 2): ACCEPT on proposed WCXY
 4230133177,BS3_S,BS3_S,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 36 (Step 1): BS3_S on proposed WCA_1
-4230134220,BS3_S,BS3_S,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 78 (Step 1): BS3_S on proposed WCA_1
+4230134220,WCXY,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 17 (Step 3): WCXY on proposed WCXY
 4230134223,BS3_S,BS3_S,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 4 (Step 3): BS3_S on proposed WCXY
 4230134652,WCB_1,WCB_1,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 13 (Step 1): WCB_1 on proposed WCA_1
 4230134686,WCXY,BS3_S,tagrule carded 2026-11-11 shadow1-direct-calls-2026-11-11 card 4 (Step 3): WCXY on proposed WCXY
@@ -774,6 +788,7 @@ api10,corrected_code,was,note
 4238932684,BS3_S,BS3_S,tagrule carded 2026-11-06 v5_1-cards-2026-11-06 card 25 (Step 2): BS3_S on proposed WCXY
 4238933058,WCB_2,WCB_2,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 80 (Step 3): REJECT on proposed WCA_2
 4238934239,WCA_2,WCB_1,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 14 (Step 1): WCA_2 on proposed WCA_1
+4238934288,WCB_2,WCA_2,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 12 (Step 3): WCB_2 on proposed WCB_2
 4238934442,WCB_2,WCB_2,tagrule carded 2026-11-16 sql23-retired-cards-2026-11-16 card 81 (Step 3): REJECT on proposed WCA_2
 4238934772,WCB_1,WCA_2,tagrule carded 2026-11-06 v5-cards-2026-11-06 card 46 (Step 1): WCB_1 on proposed WCB_1
 4238934804,WCA_1,BS3_S,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1 card 18 (Step 1): ACCEPT on proposed WCA_1
@@ -794,6 +809,7 @@ api10,corrected_code,was,note
 4238941896,WCA_1,OTHER,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 9 (Step 3): WCA_1 on proposed WCXY
 4238941898,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 62 (Step 3): ACCEPT on proposed WCB_1
 4238941901,WCA_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 53 (Step 3): ACCEPT on proposed WCA_1
+4238941928,WCB_1,WCB_2,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 19 (Step 3): WCB_1 on proposed WCB_1
 4241332871,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 81 (Step 3): ACCEPT on proposed WCB_1
 4241332875,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 82 (Step 3): ACCEPT on proposed WCB_1
 4241332876,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 83 (Step 3): ACCEPT on proposed WCB_1
@@ -827,3 +843,4 @@ api10,corrected_code,was,note
 4249534255,WCA_1,BS3_S,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 80 (Step 1): WCA_1 on proposed WCA_1
 4249534483,BS3_S,BS3_S,tagrule carded 2026-11-09 policy-v1-cards-2026-11-09/step1_round2 card 33 (Step 1): BS3_S on proposed WCXY
 4249534506,WCA_1,BS3_S,tagrule carded 2026-11-06 v5-cards-r2-2026-11-06 card 81 (Step 1): WCA_1 on proposed WCA_1
+4249534830,WCA_2,BS3_S,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 18 (Step 3): WCA_2 on proposed WCA_2
