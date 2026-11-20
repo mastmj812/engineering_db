@@ -80,7 +80,7 @@ The two carbonates pass narrowly (4 and 7 ft on the median); the others by 6 to 
    (`g2_by_bench_rung.csv`) the pull makes three cells worse in the hold-out: BS1_S thickness (52 to 319 ft median, 54
    wells), BS3_C thickness (248 to 387 ft, 23 wells) and BS3_C bracket (180 to 506 ft, 10 wells). I left those three
    unbounded (`BOUND_SKIP`); they carry `outside_grid` instead (54 DSU x bench). This was decided after seeing the result.
-   The alternative is to bound everything as the bar reads; say which.
+   **Confirmed by Michael 2026-11-20: leave them out.**
 2. **The thickness rung in G2 is approximated.** Its own hold-out lives in another design (phase 1); here it is the ranked
    anchor with the nearest same-bench wells beyond 1 mile. Bracket and offset use the generator's own far-rung hold-out.
 3. **No county step in the fallback.** The bars said 15 miles, then 25, then the county, then the basin. The evidence frame
