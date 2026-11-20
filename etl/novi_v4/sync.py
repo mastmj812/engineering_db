@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timezone
 from typing import Any
 
@@ -182,8 +182,15 @@ def sync_child(
     full: bool = False,
     allow_breaker: bool = False,
     dry_run: bool = False,
+    also: Iterable[str] = (),
 ) -> dict[str, Any]:
-    """Bring a child table in line with v4. Returns what was (or, on `dry_run`, would be) done."""
+    """Bring a child table in line with v4. Returns what was (or, on `dry_run`, would be) done.
+
+    `also`: wells to re-pull even when their own census is unchanged. The forecast table needs
+    it: its stored cumulatives are rebased by the well's ACTUAL cumulative before the forecast
+    starts, so a well whose production was revised must have its forecast rows rewritten too
+    (found at the cutover, 2026-11-20: 0.2-0.3 % of forecast rows a day would drift otherwise).
+    """
     schema = _check_schema(schema)
     builder, _ = q.CHILD_TABLES[table]
     remote = remote_census(sf, table)
@@ -191,12 +198,13 @@ def sync_child(
         raise RuntimeError(f"{table}: empty census from Snowflake; refusing to touch the table")
     local = local_census(schema, table)
     changed, gone = diff_census(remote, local)
+    changed = sorted(set(changed) | {a for a in also if a in remote})
     mode = "full" if full or not local else plan_pull(len(changed), len(remote))
     out: dict[str, Any] = {
         "table": table, "mode": mode, "wells_remote": len(remote), "wells_local": len(local),
         "wells_changed": len(changed), "wells_gone": len(gone),
         "rows_remote": sum(c[0] for c in remote.values()), "rows_local": sum(c[0] for c in local.values()),
-        "rows_inserted": 0, "rows_deleted": 0,
+        "rows_inserted": 0, "rows_deleted": 0, "changed": changed,
     }
     out["breaker"] = bool(local) and len(gone) > breaker_limit(len(local))
     if dry_run:

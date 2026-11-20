@@ -1,0 +1,16 @@
+[1/3] sql/77 (run twice) on aws-1-us-east-1.pooler.supabase.com:5432
+[2/3] validate
+    ok   box.location_stick.location_stick_tvd_rung_check lists 'grid'
+    ok   location_stick_tvd_rung_check still accepts the existing values
+    ok   box.location_stick.location_stick_flags_check lists 'grid_bounded', 'outside_grid'
+    ok   location_stick_flags_check still accepts the existing values
+    ok   box.location_set_bench.location_set_bench_tvd_rung_check lists 'grid', 'none'
+    ok   location_set_bench_tvd_rung_check still accepts the existing values
+    ok   row counts and record sets unchanged (4, 159738, 99108, '16,17')
+[3/3] smoke (savepoints, rolled back)
+    ok   a stick row takes tvd_rung 'grid' and both new flags
+    ok   an unknown rung is still refused
+    ok   an unknown flag is still refused
+    ok   nothing left behind by the smoke
+COMMITTED
+all checks passed

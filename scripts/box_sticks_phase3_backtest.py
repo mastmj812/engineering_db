@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 from box import tag_scoreboard as sb
-from box.sticks import checks, core, reads
+from box.sticks import checks, core, grid_rung, reads
 from dealintake import geo
 from scripts import box_sticks_phase0 as p0
 from scripts import box_sticks_phase1c as p1c
@@ -36,7 +36,7 @@ FT = geo.FT_PER_M
 CUTOFF = p3.BACKTEST_CUTOFF
 WCA_FAMILY = ("WCA_1", "WCA_2", "WCXY")
 ONE_SET = ("wca_one_member", "wca_one_landing")
-CARRIED = ("thickness", "bracket", "offset")
+CARRIED = ("thickness", "bracket", "offset", "grid")
 
 
 # ----------------------------------------------------------------------------
@@ -59,8 +59,9 @@ def backtest_frame(cache: Path) -> tuple[dict, pd.DataFrame]:
     ev = ev[(ev["screen"] == "keep") & ev["api10"].astype(str).isin(seen)].reset_index(drop=True)
     thick, far = p1c.rankings()
     ch = p1c.build_chain(ev, d["extents"], pads, sb.bench_order(), thick, far)
+    ch = grid_rung.apply_to_chain(ch, ev, pads, grid_rung.sampler())             # generator 0.13: as the run does, on the wells left visible
     db = db.merge(ch[["basin", "code", "pad_id", "z", "rung", "how", "expected_median_ft", "expected_p90_ft", "near_mi", "second_tvd_ft",
-                      "second_share"]],
+                      "second_share", "grid_note"]],
                   on=["basin", "code", "pad_id"], how="left")
     db["rung"] = db["rung"].fillna("none")
 

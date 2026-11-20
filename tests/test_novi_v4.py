@@ -227,6 +227,18 @@ def test_diff_census_catches_an_in_place_revision():
     assert sync.diff_census({"A": (1, T0, None)}, {"A": (1, T0, None)}) == ([], [])
 
 
+def test_sync_child_also_repulls_named_wells_that_are_still_on_the_share(monkeypatch):
+    """A well with unchanged forecast rows but revised production: its stored forecast
+    cumulatives (rebased by actuals) are stale, so the caller names it in `also`."""
+    census = {w: (10, T0, i) for i, w in enumerate("ABCDEFGHIJ")}
+    monkeypatch.setattr(sync, "remote_census", lambda sf, table: dict(census))
+    monkeypatch.setattr(sync, "local_census", lambda schema, table: dict(census))
+    r = sync.sync_child(None, "raw_novi_v4", "ForecastWellMonths", dry_run=True, also=["B", "GONE"])
+    assert r["changed"] == ["B"] and r["wells_changed"] == 1 and r["mode"] == "batches"
+    r = sync.sync_child(None, "raw_novi_v4", "ForecastWellMonths", dry_run=True)
+    assert r["changed"] == [] and r["mode"] == "none"
+
+
 def test_plan_pull():
     assert sync.plan_pull(0, 1000) == "none"
     assert sync.plan_pull(300, 1000) == "batches"
@@ -445,12 +457,15 @@ def test_nightly_load_writes_live_and_one_failed_table_does_not_stop_the_rest(mo
         calls.append((schema, table))
         return 10
 
+    also_seen: dict[str, list[str]] = {}
+
     def child(sf_, schema, table, **kw):
-        assert not kw  # no --full, no --allow-breaker, not a dry run
+        assert set(kw) == {"also"}  # no --full, no --allow-breaker, not a dry run
+        also_seen[table] = list(kw["also"])
         calls.append((schema, table))
         if table == "ForecastWellMonths":
             raise RuntimeError("601 wells would be deleted; refusing")
-        return {"rows_inserted": 100}
+        return {"rows_inserted": 100, "changed": ["4200300001"] if table == "WellMonths" else []}
 
     monkeypatch.setattr(load, "get_sf_connection", lambda: sf)
     monkeypatch.setattr(load, "share_run_id", lambda sf_: "20261120_100520")
@@ -460,6 +475,11 @@ def test_nightly_load_writes_live_and_one_failed_table_does_not_stop_the_rest(mo
         load.nightly_load()
     assert calls == [("raw_novi", t) for t in load.TABLES]  # every table tried, live schema only
     assert sf.closed
+    # wells whose production was re-pulled go to the forecast sync (rebased cumulatives), and
+    # to no other table
+    assert also_seen == {"WellMonths": [], "ForecastWellMonths": ["4200300001"], "DirectionalSurveys": []}
+    assert load.TABLES.index("WellMonths") < load.TABLES.index("ForecastWellMonths")
 
-    monkeypatch.setattr(load.sync, "sync_child", lambda sf_, schema, table, **kw: {"rows_inserted": 100})
+    monkeypatch.setattr(load.sync, "sync_child",
+                        lambda sf_, schema, table, **kw: {"rows_inserted": 100, "changed": []})
     assert load.nightly_load() == 3 * 10 + 3 * 100

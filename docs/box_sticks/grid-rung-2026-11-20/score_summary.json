@@ -1,0 +1,169 @@
+{
+ "g1": [
+  {
+   "bench": "BS1_S",
+   "wells": 994,
+   "wells_scored": 989,
+   "grid_median_ft": 59.9,
+   "grid_p90_ft": 182.2,
+   "offset_median_ft": 66.0,
+   "offset_p90_ft": 223.2,
+   "grid_predicts_pct": 99.8,
+   "offset_predicts_pct": 99.5,
+   "basis": {
+    "5-15 mi": 930,
+    "5-25 mi": 59,
+    "basin": 5
+   },
+   "passes": true
+  },
+  {
+   "bench": "BS2_C",
+   "wells": 582,
+   "wells_scored": 575,
+   "grid_median_ft": 76.2,
+   "grid_p90_ft": 223.5,
+   "offset_median_ft": 79.8,
+   "offset_p90_ft": 245.6,
+   "grid_predicts_pct": 99.3,
+   "offset_predicts_pct": 99.3,
+   "basis": {
+    "5-15 mi": 553,
+    "5-25 mi": 28,
+    "basin": 1
+   },
+   "passes": true
+  },
+  {
+   "bench": "BS2_S",
+   "wells": 3925,
+   "wells_scored": 3617,
+   "grid_median_ft": 64.8,
+   "grid_p90_ft": 195.4,
+   "offset_median_ft": 98.4,
+   "offset_p90_ft": 257.4,
+   "grid_predicts_pct": 99.7,
+   "offset_predicts_pct": 92.3,
+   "basis": {
+    "5-15 mi": 3901,
+    "5-25 mi": 13,
+    "basin": 11
+   },
+   "passes": true
+  },
+  {
+   "bench": "BS3_C",
+   "wells": 1456,
+   "wells_scored": 1416,
+   "grid_median_ft": 72.4,
+   "grid_p90_ft": 216.6,
+   "offset_median_ft": 79.6,
+   "offset_p90_ft": 217.8,
+   "grid_predicts_pct": 97.6,
+   "offset_predicts_pct": 97.7,
+   "basis": {
+    "5-15 mi": 1408,
+    "basin": 27,
+    "5-25 mi": 21
+   },
+   "passes": true
+  },
+  {
+   "bench": "BS3_S",
+   "wells": 2439,
+   "wells_scored": 2396,
+   "grid_median_ft": 47.9,
+   "grid_p90_ft": 153.7,
+   "offset_median_ft": 65.9,
+   "offset_p90_ft": 199.8,
+   "grid_predicts_pct": 99.8,
+   "offset_predicts_pct": 98.3,
+   "basis": {
+    "5-15 mi": 2422,
+    "5-25 mi": 15,
+    "basin": 2
+   },
+   "passes": true
+  },
+  {
+   "bench": "WCXY",
+   "wells": 1864,
+   "wells_scored": 1820,
+   "grid_median_ft": 45.6,
+   "grid_p90_ft": 125.7,
+   "offset_median_ft": 72.7,
+   "offset_p90_ft": 195.3,
+   "grid_predicts_pct": 99.8,
+   "offset_predicts_pct": 97.8,
+   "basis": {
+    "5-15 mi": 1845,
+    "5-25 mi": 15,
+    "basin": 4
+   },
+   "passes": true
+  },
+  {
+   "bench": "WCA_1",
+   "wells": 5280,
+   "wells_scored": 4980,
+   "grid_median_ft": 55.5,
+   "grid_p90_ft": 136.6,
+   "offset_median_ft": 64.8,
+   "offset_p90_ft": 199.3,
+   "grid_predicts_pct": 99.3,
+   "offset_predicts_pct": 94.7,
+   "basis": {
+    "5-15 mi": 5279,
+    "5-25 mi": 1
+   },
+   "passes": true
+  },
+  {
+   "bench": "WCA_2",
+   "wells": 4240,
+   "wells_scored": 3915,
+   "grid_median_ft": 53.4,
+   "grid_p90_ft": 144.8,
+   "offset_median_ft": 67.5,
+   "offset_p90_ft": 209.4,
+   "grid_predicts_pct": 99.6,
+   "offset_predicts_pct": 92.7,
+   "basis": {
+    "5-15 mi": 4230,
+    "5-25 mi": 9,
+    "basin": 1
+   },
+   "passes": true
+  }
+ ],
+ "g2": [
+  {
+   "rung": "bracket",
+   "wells_predicted": 11528,
+   "outside_by_more_than_150": 322,
+   "median_before_ft": 266.5,
+   "median_after_ft": 73.9,
+   "closer_pct": 80.4,
+   "passes": true
+  },
+  {
+   "rung": "offset",
+   "wells_predicted": 19762,
+   "outside_by_more_than_150": 1059,
+   "median_before_ft": 243.8,
+   "median_after_ft": 80.9,
+   "closer_pct": 76.8,
+   "passes": true
+  },
+  {
+   "rung": "thickness (approximated)",
+   "wells_predicted": 19690,
+   "outside_by_more_than_150": 675,
+   "median_before_ft": 234.0,
+   "median_after_ft": 102.5,
+   "closer_pct": 69.9,
+   "passes": true
+  }
+ ],
+ "evidence_wells_delaware": 27350
+}

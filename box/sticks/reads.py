@@ -20,7 +20,8 @@ from .core import SECOND_LEVEL, Bench, Cfg, Dsu, Well, resolve_azimuth
 
 SEP_MIN_DSU = 30                        # direct-direct DSUs needed before a separation band is used
 SEARCH_M = 2640.0 / geo.FT_PER_M       # existing wells are read this far outside the DSU (the pair-link gate)
-CARRIED = ("thickness", "bracket", "offset")
+CARRIED = ("thickness", "bracket", "offset", "grid")
+GRID_FLAGS = ("grid_bounded", "outside_grid")
 
 
 def direct_holdout() -> dict[tuple[str, str], tuple[float, float]]:
@@ -150,7 +151,7 @@ class Context:
         direct = {b.code: float(b.z) for b in db.itertuples() if b.rung == "direct" and not pd.isna(b.z)}
         for b in db.itertuples():
             why = ""
-            if b.rung in ("thickness", "bracket", "offset") and not pd.isna(b.z):
+            if b.rung in CARRIED and not pd.isna(b.z):
                 for x, zx in sorted(direct.items()):
                     band = self.sep_band.get((basin, b.code, x))
                     slack = 0.0 if pd.isna(b.expected_p90_ft) else float(b.expected_p90_ft)
@@ -160,7 +161,9 @@ class Context:
             basis, neff = self._spacing_basis(basin, b.code, poly, b.edge_band)
             sec = getattr(b, "second_tvd_ft", np.nan)                           # absent in frames built before 0.10
             sec = None if b.rung != "thickness" or pd.isna(sec) else float(sec)
-            flags = (("two_landings_observed",) if (pid, b.code) in self.two else ()) + ((SECOND_LEVEL,) if sec is not None else ())
+            note = getattr(b, "grid_note", "")                                # absent in frames built before 0.13
+            flags = ((("two_landings_observed",) if (pid, b.code) in self.two else ()) + ((SECOND_LEVEL,) if sec is not None else ())
+                     + ((note,) if note in GRID_FLAGS else ()))
             benches.append(Bench(code=b.code, rank=self.order[basin].index(b.code), tvd_ft=None if pd.isna(b.z) else float(b.z), rung=b.rung,
                                  spacing_ft=float(b.spacing_ft), inside_frac=float(b.inside_frac), control=neff,
                                  tvd_err_median_ft=None if pd.isna(b.expected_median_ft) else float(b.expected_median_ft),
