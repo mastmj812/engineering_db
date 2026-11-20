@@ -1,5 +1,11 @@
 # Bone Spring mistag classes in the Delaware: a first sizing
 
+> **CORRECTION, 2026-11-20 (same day).** The counts in this file include wells that are not producing: permits (approved and
+> cancelled), spuds and DUCs whose header TVD is not a round 100 passed the depth-evidence test. A permit depth is a plan,
+> not evidence. Of the 619 "both witnesses" wells, 180 are producing; of the 338 in the BS3_S -> BS3_C class, 50 are
+> (147 are approved permits, 90 cancelled permits, 37 spud). **Use `TAG_PRODUCERS.md` for the sizes.** The cards and
+> Michael's verdicts stand as cards; 19 of the 24 group S cards are non-producing wells.
+
 2026-11-20, read-only on live, after the Novi v4 cutover (same day). Asked by Michael after the card review
 (`cards/README.md`: 45 verdicts, 12 KEEP of which 11 carry "pinned well tag wrong"). Nothing changed: the tag rule, its tables
 and its seeds were only read. This is a count to decide where to look, not a re-tag.

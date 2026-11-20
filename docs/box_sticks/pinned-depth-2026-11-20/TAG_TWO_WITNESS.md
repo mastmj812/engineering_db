@@ -1,5 +1,11 @@
 # Delaware Bone Spring mistags: the grids and the WCA_1 height as two witnesses
 
+> **CORRECTION, 2026-11-20 (same day).** The counts in this file include wells that are not producing: permits (approved and
+> cancelled), spuds and DUCs whose header TVD is not a round 100 passed the depth-evidence test. A permit depth is a plan,
+> not evidence. Of the 619 "both witnesses" wells, 180 are producing; of the 338 in the BS3_S -> BS3_C class, 50 are
+> (147 are approved permits, 90 cancelled permits, 37 spud). **Use `TAG_PRODUCERS.md` for the sizes.** The cards and
+> Michael's verdicts stand as cards; 19 of the 24 group S cards are non-producing wells.
+
 2026-11-20, read-only (live wells after the v4 cutover; the geologist's grid files). Follows `TAG_SIZING.md`. Nothing
 changed: no tag, no seed, no rule row. Michael's caution is the frame: **the grids are not gospel**, so a grid alone
 convicts nothing here; it is used as a second, independent witness beside the height above local WCA_1.
