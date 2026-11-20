@@ -1,0 +1,25 @@
+bench,rung,outside,median_before_ft,median_after_ft
+BS1_S,thickness (approximated),54,52.3,318.6
+BS1_S,bracket,7,237.6,51.8
+BS1_S,offset,100,170.3,147.0
+BS2_C,thickness (approximated),9,368.1,85.4
+BS2_C,bracket,4,369.7,99.3
+BS2_C,offset,10,369.0,207.0
+BS2_S,thickness (approximated),39,325.8,65.8
+BS2_S,bracket,2,302.1,85.2
+BS2_S,offset,85,337.1,63.3
+BS3_C,thickness (approximated),23,247.9,386.9
+BS3_C,bracket,10,180.2,506.4
+BS3_C,offset,24,192.1,131.2
+BS3_S,thickness (approximated),74,201.0,117.9
+BS3_S,bracket,53,313.1,74.3
+BS3_S,offset,104,228.3,92.1
+WCXY,thickness (approximated),81,243.5,71.4
+WCXY,bracket,63,228.3,77.0
+WCXY,offset,145,250.5,84.7
+WCA_1,thickness (approximated),234,215.8,90.5
+WCA_1,bracket,127,283.4,75.5
+WCA_1,offset,343,197.4,71.5
+WCA_2,thickness (approximated),161,323.1,95.7
+WCA_2,bracket,56,325.8,63.6
+WCA_2,offset,248,343.1,77.1

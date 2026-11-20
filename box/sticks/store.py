@@ -12,8 +12,8 @@ from . import identity as idn
 from .core import SECOND_LEVEL, Bench, Dsu, Result, Well
 
 TWO_LANDINGS = "two_landings_observed"
-STICK_FLAGS = ("pinned", TWO_LANDINGS, SECOND_LEVEL, "dsu_drilled_across")
-RUNGS = ("direct", "thickness", "bracket", "offset")
+STICK_FLAGS = ("pinned", TWO_LANDINGS, SECOND_LEVEL, "dsu_drilled_across", "grid_bounded", "outside_grid")
+RUNGS = ("direct", "thickness", "bracket", "offset", "grid")
 SAME_FT = 0.1                                  # a regenerated leg end within this of the stored one is the same leg
 
 

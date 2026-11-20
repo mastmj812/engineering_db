@@ -25,7 +25,7 @@ from shapely.affinity import rotate
 from shapely.geometry import LineString
 from shapely.geometry.base import BaseGeometry
 
-VERSION = "box_sticks_0.12"
+VERSION = "box_sticks_0.13"
 SECOND_LEVEL = "second_level_nearby"      # stick flag: a thickness-carried depth whose neighbouring wells sit at two levels (nothing moves)
 DRILLED_ACROSS = "dsu_drilled_across"      # stick flag: a short polygon whose own wells run well past its row
 ROW_REASONS = ("setback_clip", "setback_fit", "short_lateral", "envelope_same_landing", "envelope_stacked", "no_depth_neighbour",
