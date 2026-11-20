@@ -236,7 +236,7 @@ def write_index(rows: list[dict], out: Path) -> None:
         "<!doctype html><meta charset='utf-8'><title>Pinned-depth cards</title><style>body{font:14px system-ui;margin:16px;max-width:1700px}"
         "img{width:100%;border:1px solid #d1d5db}h2{font-size:15px;margin:22px 0 6px}</style>"
         "<h1>Sticks pinned on a same-tag producer 150 to 500 ft off their depth</h1>"
-        "<p>For each card: is the yellow stick a real location beside that well (<b>KEEP</b>), or is it that well (<b>THAT WELL</b>)? "
+        "<p>For each card: is the yellow stick a real, undrilled location? <b>KEEP</b> = yes. <b>REMOVE</b> = no: it is really the well it is pinned on (same well), or the operator's staggered pattern leaves that slot empty on purpose (slot taken). "
         "Class A = two landings recorded in the DSU; B = the well sits at another bench's landing; C = neither.</p>" + body, encoding="utf-8")
 
 

@@ -3,7 +3,7 @@
 2026-11-20, read-only. 45 cards: every class C stick (35) and the first 5 of class A and of class B by location id, in location-id order.
 Open `index.html` for all cards on one page.
 
-**The question on every card:** is the yellow stick a real location beside that well (**KEEP**), or is it that well (**THAT WELL**)?
+**The question on every card:** is the yellow stick a real, undrilled location? **KEEP** = yes, it stays in inventory. **REMOVE** = no, the slot is already used, for one of two reasons: *same well* (the stick's depth is wrong and it is really the well it is pinned on) or *slot taken* (the stick is at a different landing, but the operator's staggered pattern leaves that slot empty on purpose). Until 2026-11-20 REMOVE was written THAT WELL.
 
 How to read a card:
 
@@ -17,8 +17,8 @@ How to read a card:
 |---|---|---|---|---|---|---|---|---|---|---|
 | 01 | B | delaware | 10578 | BS3_C | 11,032 | thickness | 4230132560 | -414 | 2 | KEEP (Michael 2026-11-20: the well is a BS2_S by depth) |
 | 02 | B | delaware | 10581 | BS3_C | 11,057 | thickness | 4230132814 | -370 | 2 | |
-| 03 | C | delaware | 10598 | BS2_S | 10,835 | direct | 3002551403 | -384 | 1 | THAT WELL (Michael 2026-11-20). Michael's read 2026-11-20: the local BS3_S tags (10,707 to 10,790 ft) are wrong and should be BS3_C, being about 1,400 ft above local WCA_1 control; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft, so this stick's 10,835 ft is too deep. Checked read-only: 23 of 33 BS3_S-tagged wells within 3 mi sit more than 900 ft above the local WCA_1 median (12,111 ft) |
-| 04 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136548 | -296 | 1 | |
+| 03 | C | delaware | 10598 | BS2_S | 10,835 | direct | 3002551403 | -384 | 1 | REMOVE, same well (Michael 2026-11-20). Michael's read 2026-11-20: the local BS3_S tags (10,707 to 10,790 ft) are wrong and should be BS3_C, being about 1,400 ft above local WCA_1 control; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft, so this stick's 10,835 ft is too deep. Checked read-only: 23 of 33 BS3_S-tagged wells within 3 mi sit more than 900 ft above the local WCA_1 median (12,111 ft) |
+| 04 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136548 | -296 | 1 | REMOVE, slot taken (Michael 2026-11-20): Occidental wine-rack, BS2_S alternating about 10,150 and 10,430 ft at 850 ft; the stick is on the lower level directly under the upper-level P 64H. Tags look right; the generator recorded no second BS2_S landing |
 | 05 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136550 | -276 | 1 | |
 | 06 | B | delaware | 10675 | AVA_1 | 8,478 | direct | 3001546852 | +398 | 1 | |
 | 07 | C | delaware | 10694 | BS3_C | 11,014 | direct | 3002540436 | -472 | 2 | |
