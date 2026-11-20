@@ -21,7 +21,7 @@ from etl import box_recon as br
 from etl.db import get_connection
 
 OUT = ("producing", "conflict")
-CHURN_LIMIT = 198            # S4: 0.25 % of 79,200 record sticks
+CHURN_LIMIT = 198            # S4: 0.25 % of the record sticks (79,200 on sets 16 + 17; 79,270 on sets 17 + 21)
 FLAP_LIMIT = 0.10            # S5
 SECONDS_LIMIT = 300          # S2
 DAY0_LIMIT = 0.005           # S3
@@ -29,6 +29,11 @@ DAY0_LIMIT = 0.005           # S3
 # at 2026-11-19 16:44 UTC, came from no etl-nightly run; the nightly of 2026-11-20, run 4, is night 1 and the week ends 11-26).
 # Run 5 (2026-11-20 16:03 UTC, 27 changed): the forced refresh of the Novi v4 cutover, run by hand in another session; also not a night.
 OUT_OF_BAND_RUNS = frozenset({3, 5})
+# The week is counted on the record sets it will decide for. Set 21 (generator 0.13) became the Delaware record on 2026-11-20
+# 22:15 UTC, on Michael's go, so that the shadow nights run on it: the count restarts at the first nightly that judged sets 17
+# and 21 (its log is all `set_change` for the Delaware). The nightly of 2026-11-20 on sets 16 and 17 (run 4) is kept as a
+# report and counted in no bar.
+WEEK_SETS = (17, 21)
 
 # sql/68's SELECT, per well: the same sticks, corridor, bench guard and thresholds, restricted to a list of wells.
 SQL68_PER_WELL = """
@@ -179,7 +184,7 @@ def flapping(log: list[dict]) -> dict:
 
 def night_number(runs: list[dict], run_id: int) -> int | None:
     """Night number of a written nightly run: its rank among the written run rows that a nightly wrote."""
-    nights = [r["run_id"] for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS]
+    nights = [r["run_id"] for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == list(WEEK_SETS)]
     return nights.index(run_id) + 1 if run_id in nights else None
 
 
@@ -302,7 +307,7 @@ def cmd_night(out: Path, run_id: int | None) -> dict:
 
 def cmd_week(out: Path) -> dict:
     every = _ro("SELECT * FROM meta.box_recon_run ORDER BY run_id")
-    runs = [r for r in every if r["run_id"] not in OUT_OF_BAND_RUNS]
+    runs = [r for r in every if r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == list(WEEK_SETS)]
     written = [r for r in runs if r["status"] == "written"]
     log = [r for r in _ro("SELECT run_id, location_id, cause, old_status, new_status FROM curated.box_location_status_log WHERE cause <> 'first_run'")
            if r["run_id"] not in OUT_OF_BAND_RUNS]
