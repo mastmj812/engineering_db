@@ -79,3 +79,13 @@ def test_uturn_carries_on_both_legs_and_not_on_a_repaired_half() -> None:
     x = idn.crosswalk(prev, [stick("c", (1200, 2400))])
     assert len(x["carried"]) == 1 and len(x["stopped"]) == 1
     assert idn.share(prev[0], stick("c", (1200, 2400)))[0] == 0.5
+
+
+def test_a_new_stick_starts_above_every_number_ever_issued_not_only_the_previous_sets() -> None:
+    # the previous set holds slot 1 only; an older, stopped location of this DSU x bench still holds slot 2 (found 2026-11-20)
+    prev = [stick("p1", (0,), slot=1)]
+    new = [stick("n1", (0,)), stick("n2", (880,)), stick("n3", (1760,)), stick("o1", (0,), bench="WCB_1")]
+    x = idn.crosswalk(prev, new, used={(1, "WCA_1"): 2})
+    assert x["carried"]["n1"][:2] == ("p1", 1) and x["new"] == {"n2": 3, "n3": 4, "o1": 1}
+    assert idn.crosswalk(prev, new)["new"] == {"n2": 2, "n3": 3, "o1": 1}          # without the history: the old behaviour
+    assert idn.crosswalk([], [stick("n", (0,))], used={(1, "WCA_1"): 7})["new"] == {"n": 8}

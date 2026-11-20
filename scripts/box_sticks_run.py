@@ -274,7 +274,9 @@ def write_set(cur, art: dict, backtest: dict, notes: str | None) -> tuple[int, d
         xw = {"carried": 0, "new": len(sticks), "stopped": 0, "method": "seed"}
     else:
         rows = q("SELECT k.location_id, k.detail, k.slot_no FROM box.location_stick k WHERE k.set_id = %s", (prev,)).fetchall()
-        x = idn.crosswalk([store.identity_stick(d, key=str(lid), slot=int(sl)) for lid, d, sl in rows], new)
+        used = {(int(a), b): int(m) for a, b, m in q("SELECT pad_id, formation_blueox, max(slot_no) FROM box.location WHERE source = 'box_sticks' AND basin = %s "
+                                                     "AND dsu_vintage = %s GROUP BY 1, 2", (basin, man["dsu_vintage"])).fetchall()}
+        x = idn.crosswalk([store.identity_stick(d, key=str(lid), slot=int(sl)) for lid, d, sl in rows], new, used=used)   # numbers are never reused, across every set
         plan = {nk: (int(pk), sl, "overlap", sh, off) for nk, (pk, sl, sh, off) in x["carried"].items()}
         plan |= {nk: (None, sl, "new", None, None) for nk, sl in x["new"].items()}
         xw = {"carried": len(x["carried"]), "new": len(x["new"]), "stopped": len(x["stopped"]), "method": "overlap", "prev_set_id": prev,
