@@ -17,7 +17,7 @@ How to read a card:
 |---|---|---|---|---|---|---|---|---|---|---|
 | 01 | B | delaware | 10578 | BS3_C | 11,032 | thickness | 4230132560 | -414 | 2 | KEEP (Michael 2026-11-20: the well is a BS2_S by depth) |
 | 02 | B | delaware | 10581 | BS3_C | 11,057 | thickness | 4230132814 | -370 | 2 | |
-| 03 | C | delaware | 10598 | BS2_S | 10,835 | direct | 3002551403 | -384 | 1 | verdict not yet given. Michael's read 2026-11-20: the local BS3_S tags (10,707 to 10,790 ft) are wrong and should be BS3_C, being about 1,400 ft above local WCA_1 control; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft, so this stick's 10,835 ft is too deep. Checked read-only: 23 of 33 BS3_S-tagged wells within 3 mi sit more than 900 ft above the local WCA_1 median (12,111 ft) |
+| 03 | C | delaware | 10598 | BS2_S | 10,835 | direct | 3002551403 | -384 | 1 | THAT WELL (Michael 2026-11-20). Michael's read 2026-11-20: the local BS3_S tags (10,707 to 10,790 ft) are wrong and should be BS3_C, being about 1,400 ft above local WCA_1 control; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft, so this stick's 10,835 ft is too deep. Checked read-only: 23 of 33 BS3_S-tagged wells within 3 mi sit more than 900 ft above the local WCA_1 median (12,111 ft) |
 | 04 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136548 | -296 | 1 | |
 | 05 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136550 | -276 | 1 | |
 | 06 | B | delaware | 10675 | AVA_1 | 8,478 | direct | 3001546852 | +398 | 1 | |
