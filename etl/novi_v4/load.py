@@ -21,8 +21,18 @@ from etl.novi_v4 import queries as q
 
 logger = logging.getLogger(__name__)
 
-# Wells first, as in etl/novi/load.py MVP_TABLES.
+# Wells first, as in etl/novi/load.py MVP_TABLES. WellMonths must stay ahead of
+# ForecastWellMonths: the wells whose production was re-pulled are handed to the forecast sync.
 TABLES = ["Wells", "WellMonths", "WellDetails", "WellSpacing", "ForecastWellMonths", "DirectionalSurveys"]
+
+
+PRODUCTION_TABLE, FORECAST_TABLE = "WellMonths", "ForecastWellMonths"
+
+
+def _also(table: str, production_changed: list[str]) -> list[str]:
+    """Forecast cumulatives are rebased by actual production, so the forecast sync also takes
+    the wells whose production was just re-pulled."""
+    return production_changed if table == FORECAST_TABLE else []
 
 
 def share_run_id(sf: Any) -> str | None:
@@ -41,6 +51,7 @@ def nightly_load() -> int:
     previous rows."""
     sf = get_sf_connection()
     rows, errors = 0, []
+    production_changed: list[str] = []
     try:
         logger.info("Novi v4 share run: %s", share_run_id(sf))
         for t in TABLES:
@@ -48,7 +59,10 @@ def nightly_load() -> int:
                 if t in q.HEADER_TABLES:
                     rows += sync.load_header(sf, sync.LIVE_SCHEMA, t)
                 else:
-                    rows += sync.sync_child(sf, sync.LIVE_SCHEMA, t)["rows_inserted"]
+                    r = sync.sync_child(sf, sync.LIVE_SCHEMA, t, also=_also(t, production_changed))
+                    rows += r["rows_inserted"]
+                    if t == PRODUCTION_TABLE:
+                        production_changed = r["changed"]
             except Exception as exc:
                 logger.exception("Novi v4 %s failed", t)
                 errors.append(f"{t}: {exc}")
@@ -82,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     sf = get_sf_connection()
+    production_changed: list[str] = []
     try:
         if a.compare:
             wells = compare.sample_wells(a.sample_every)
@@ -96,7 +111,10 @@ def main(argv: list[str] | None = None) -> int:
                 n = sync.load_header(sf, a.schema, t, allow_breaker=a.allow_breaker)
                 print(f"  {t:20s} {n:>12,d} rows (replaced)")
             else:
-                r = sync.sync_child(sf, a.schema, t, full=a.full, allow_breaker=a.allow_breaker, dry_run=a.dry_run)
+                r = sync.sync_child(sf, a.schema, t, full=a.full, allow_breaker=a.allow_breaker,
+                                    dry_run=a.dry_run, also=_also(t, production_changed))
+                if t == PRODUCTION_TABLE:
+                    production_changed = r["changed"]
                 print(f"  {t:20s} mode={r['mode']:8s} wells remote={r['wells_remote']:,} local={r['wells_local']:,} "
                       f"changed={r['wells_changed']:,} gone={r['wells_gone']:,}  rows remote={r['rows_remote']:,} "
                       f"local={r['rows_local']:,}  in={r['rows_inserted']:,} out={r['rows_deleted']:,}"
