@@ -816,3 +816,30 @@ forecast check takes about 2 min 20 s instead of under a minute.
 Limit: a revision that changes per-day rates while leaving every monthly cumulative unchanged
 would not be seen. The monthly volumes are the cumulative differences, so that would be a
 rate-only restatement; none has been observed.
+
+## 16. Cutover decisions, 2026-11-20
+
+Michael's decisions. Nothing is applied yet; every step below is its own go.
+
+- **Date: Friday 2026-11-27**, right after the 05:00 CT nightly finishes (about 06:30 CT). The BOX
+  recon shadow week closes with the 11-26 nightly, so its inputs do not move mid-week.
+- **Planned-survey flag: take v4 as shipped.** 584 wells go from planned to not planned (4,513
+  differ in total); the tag rule and `etl/box_recon.py` read it. Ask Novi about the 584.
+- **Rule 4 wording changes at cutover:** per-day rates are computed in the loader by Novi's
+  formula (monthly volume / days in the calendar month, one decimal), not persisted as shipped.
+  They equal v3 on every row.
+
+Steps, in order:
+
+1. Code, no database change: a v4 step in `scripts/run_daily.py` behind a setting that defaults
+   to v3; `sql/76` dropping NOT NULL on the six columns v4 cannot fill in `raw_novi."Wells"` and
+   `"WellDetails"`; triage skill and CLAUDE.md wording. Merge PR 264.
+2. Apply `sql/76` live (metadata only; the v3 loader keeps working).
+3. `python -m etl.novi_v4.load --schema raw_novi --confirm-live`, the forecast table with
+   `--full --allow-breaker` (v3's 5,136,010 history rows go). About 20 minutes.
+4. `python -m etl.refresh --force`, then verify by identity and in the three apps.
+5. Flip the nightly setting to v4; watch the next 05:00 CT run.
+6. A week later: drop `raw_novi_v4`, retire the v3 sync and load code in a separate PR.
+
+Rollback until step 6: flip the setting back, run the v3 nightly with `--reconcile`, forced
+refresh.
