@@ -67,3 +67,9 @@ def test_bar_limits_are_the_ones_written_before_the_week():
     bars = (Path(__file__).resolve().parent.parent / "docs" / "box_sticks" / "phase5d-2026-11-19" / "BARS.md").read_text(encoding="utf-8")
     assert f"<= {sh.CHURN_LIMIT} per night" in bars and f"`seconds` <= {sh.SECONDS_LIMIT}" in bars
     assert "<= 10 % return" in bars and sh.FLAP_LIMIT == 0.10 and "<= 0.5 %" in bars and sh.DAY0_LIMIT == 0.005
+
+
+def test_an_out_of_band_run_is_never_a_night():
+    runs = [{"run_id": 3, "status": "written"}, {"run_id": 4, "status": "written"}, {"run_id": 5, "status": "failed"}, {"run_id": 6, "status": "written"}]
+    assert sh.OUT_OF_BAND_RUNS == {3}                                                # Michael 2026-11-20: run 4 is night 1
+    assert [sh.night_number(runs, i) for i in (3, 4, 5, 6)] == [None, 1, None, 2]

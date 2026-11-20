@@ -25,6 +25,9 @@ CHURN_LIMIT = 198            # S4: 0.25 % of 79,200 record sticks
 FLAP_LIMIT = 0.10            # S5
 SECONDS_LIMIT = 300          # S2
 DAY0_LIMIT = 0.005           # S3
+# Run rows written outside a nightly: kept in the tables, never counted as a night (Michael 2026-11-20: run 3, the first fill
+# at 2026-11-19 16:44 UTC, came from no etl-nightly run; the nightly of 2026-11-20, run 4, is night 1 and the week ends 11-26).
+OUT_OF_BAND_RUNS = frozenset({3})
 
 # sql/68's SELECT, per well: the same sticks, corridor, bench guard and thresholds, restricted to a list of wells.
 SQL68_PER_WELL = """
@@ -173,6 +176,12 @@ def flapping(log: list[dict]) -> dict:
     return {"locations_changed": n, "flapped": len(flap), "share": round(len(flap) / n, 4) if n else 0.0, "location_ids": sorted(flap)[:50]}
 
 
+def night_number(runs: list[dict], run_id: int) -> int | None:
+    """Night number of a written nightly run: its rank among the written run rows that a nightly wrote."""
+    nights = [r["run_id"] for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS]
+    return nights.index(run_id) + 1 if run_id in nights else None
+
+
 def _nightly_runs() -> list[dict]:
     try:
         r = subprocess.run(["gh", "run", "list", "--workflow", "etl-nightly.yml", "--limit", "30", "--json", "databaseId,event,status,conclusion,createdAt"],
@@ -244,8 +253,8 @@ def cmd_night(out: Path, run_id: int | None) -> dict:
     if run is None:
         raise SystemExit(f"no run {run_id}")
     written = [r for r in runs if r["status"] == "written"]
-    night_no = 1 + sum(1 for r in written if r["run_id"] < run["run_id"]) if run["status"] == "written" else None
     latest = bool(written) and run["run_id"] == written[-1]["run_id"]
+    night_no = night_number(runs, run["run_id"])
     box = _box_state()
     log = _ro("SELECT * FROM curated.box_location_status_log WHERE run_id = %s", (run["run_id"],))
     rep: dict[str, Any] = {"kind": "night", "night": night_no, "run": run, "box": box, "log_rows": len(log),
@@ -253,7 +262,8 @@ def cmd_night(out: Path, run_id: int | None) -> dict:
                                                  sorted(Counter((r["cause"], r["old_status"], r["new_status"]) for r in log).items(), key=lambda x: -x[1])],
                            "crowded_changes": sum(1 for r in log if r["old_crowded"] is not None and bool(r["old_crowded"]) != bool(r["new_crowded"])),
                            "depends": _ro(_DEPENDS, (list(br.TABLES),)), "nightly_runs": _nightly_runs()[:6]}
-    md = [f"# Shadow night {night_no if night_no else '(not written)'}: run {run['run_id']}, {run['status']}", "",
+    head = "Out-of-band run (not a night)" if run["run_id"] in OUT_OF_BAND_RUNS else f"Shadow night {night_no if night_no else '(not written)'}"
+    md = [f"# {head}: run {run['run_id']}, {run['status']}", "",
           f"Started {run['started_at']}, {run['seconds']} s, rule `{run['predicate_version']}`, sets {run['set_ids']}, wells read {run['wells_read']}, "
           f"changed {run['changed']}, breaker limit {run['breaker_limit']}, stale {run['stale_dsu_bench']}." + (f" Error: {run['error']}" if run["error"] else ""), ""]
     if run["status"] == "written" and latest:
@@ -290,11 +300,13 @@ def cmd_night(out: Path, run_id: int | None) -> dict:
 
 
 def cmd_week(out: Path) -> dict:
-    runs = _ro("SELECT * FROM meta.box_recon_run ORDER BY run_id")
+    every = _ro("SELECT * FROM meta.box_recon_run ORDER BY run_id")
+    runs = [r for r in every if r["run_id"] not in OUT_OF_BAND_RUNS]
     written = [r for r in runs if r["status"] == "written"]
-    log = _ro("SELECT run_id, location_id, cause, old_status, new_status FROM curated.box_location_status_log WHERE cause <> 'first_run'")
+    log = [r for r in _ro("SELECT run_id, location_id, cause, old_status, new_status FROM curated.box_location_status_log WHERE cause <> 'first_run'")
+           if r["run_id"] not in OUT_OF_BAND_RUNS]
     days = Counter(str(r["started_at"])[:10] for r in runs)
-    later = written[1:]
+    later = written[1:] if not OUT_OF_BAND_RUNS else [r for r in written if night_number(every, r["run_id"]) >= 2]
     fl = flapping(log)
     bars = {
         "S1": {"nights": len(days), "written": len(written), "failed_or_breaker": [r["run_id"] for r in runs if r["status"] != "written"],
@@ -308,8 +320,8 @@ def cmd_week(out: Path) -> dict:
         "S7": {"depends": _ro(_DEPENDS, (list(br.TABLES),))},
     }
     bars["S7"]["pass"] = not bars["S7"]["depends"]
-    rep = {"kind": "week", "runs": runs, "bars": bars, "note": "S3, S6 and S8 are scored in each night's report; S2's nightly conclusions are in nightly_runs"}
-    md = ["# Shadow week so far", "", f"{len(runs)} run rows on {len(days)} days; {len(written)} written.", "", "| bar | reading | verdict |", "|---|---|---|",
+    rep = {"kind": "week", "runs": runs, "out_of_band_runs": sorted(OUT_OF_BAND_RUNS), "bars": bars, "note": "S3, S6 and S8 are scored in each night's report; S2's nightly conclusions are in nightly_runs"}
+    md = ["# Shadow week so far", "", f"{len(runs)} nightly run rows on {len(days)} days; {len(written)} written. Out-of-band run rows, not counted: {sorted(OUT_OF_BAND_RUNS)}.", "", "| bar | reading | verdict |", "|---|---|---|",
           f"| S1 | {len(written)} written of {len(runs)} rows, {len(days)} days | {'passes' if bars['S1']['pass'] else 'not yet / fails'} |",
           f"| S2 | max {bars['S2']['max_seconds']} s | {'passes on seconds' if bars['S2']['pass_seconds'] else 'not yet / fails'} |",
           f"| S4 | changed per night {list(bars['S4']['changed_per_night'].values())} | {'passes' if bars['S4']['pass'] else 'not yet / fails'} |",

@@ -1,8 +1,8 @@
 # Shadow night 1 of 7 (nightly of 2026-11-20): notes beside the generated reports
 
-Night 1 is **run 4** (`night_run_4.md`). The script heads that file "Shadow night 2" because it counts written run rows, and
-a written run row already existed. By the bars' own definition ("a night is one `etl-nightly` run that reached the curated
-refresh") run 4 is the first night.
+Night 1 is **run 4** (`night_run_4.md`). Decided by Michael 2026-11-20: this nightly is night 1 of 7 and the week ends 11-26; run 3
+is an out-of-band run, kept in the tables and counted in no bar (`OUT_OF_BAND_RUNS` in `scripts/box_recon_shadow.py`). The reports were
+regenerated with that numbering.
 
 ## 1. Run 3 was not written by a nightly (reported first)
 

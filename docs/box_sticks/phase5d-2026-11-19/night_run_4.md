@@ -1,4 +1,4 @@
-# Shadow night 2: run 4, written
+# Shadow night 1: run 4, written
 
 Started 2026-11-20 11:15:20.053701+00:00, 58.3 s, rule `box_recon_1`, sets [16, 17], wells read 85059, changed 8, breaker limit 792, stale 3.
 

@@ -1,6 +1,6 @@
 {
  "kind": "night",
- "night": 1,
+ "night": null,
  "run": {
   "run_id": 3,
   "started_at": "2026-11-19 16:44:40.300027+00:00",

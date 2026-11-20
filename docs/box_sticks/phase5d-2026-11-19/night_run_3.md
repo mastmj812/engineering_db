@@ -1,4 +1,4 @@
-# Shadow night 1: run 3, written
+# Out-of-band run (not a night): run 3, written
 
 Started 2026-11-19 16:44:40.300027+00:00, 61.2 s, rule `box_recon_1`, sets [16, 17], wells read 85056, changed 79200, breaker limit 792, stale 3.
 

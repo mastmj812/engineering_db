@@ -2,46 +2,6 @@
  "kind": "week",
  "runs": [
   {
-   "run_id": 3,
-   "started_at": "2026-11-19 16:44:40.300027+00:00",
-   "finished_at": "2026-11-19 16:45:41.093159+00:00",
-   "status": "written",
-   "wrote": true,
-   "predicate_version": "box_recon_1",
-   "set_ids": [
-    16,
-    17
-   ],
-   "wells_read": 85056,
-   "counts": {
-    "midland": {
-     "open": 33027,
-     "sticks": 33138,
-     "crowded": 47,
-     "pending": 19,
-     "conflict": 2,
-     "inventory": 33073,
-     "permitted": 74,
-     "producing": 16
-    },
-    "delaware": {
-     "open": 45283,
-     "sticks": 46062,
-     "crowded": 68,
-     "pending": 31,
-     "conflict": 20,
-     "inventory": 45902,
-     "permitted": 656,
-     "producing": 72
-    }
-   },
-   "changed": 79200,
-   "breaker_limit": 792,
-   "stale_dsu_bench": 3,
-   "seconds": 61.2,
-   "error": null
-  },
-  {
    "run_id": 4,
    "started_at": "2026-11-20 11:15:20.053701+00:00",
    "finished_at": "2026-11-20 11:16:18.099561+00:00",
@@ -82,16 +42,19 @@
    "error": null
   }
  ],
+ "out_of_band_runs": [
+  3
+ ],
  "bars": {
   "S1": {
-   "nights": 2,
-   "written": 2,
+   "nights": 1,
+   "written": 1,
    "failed_or_breaker": [],
    "days_with_more_than_one_row": [],
    "pass": false
   },
   "S2": {
-   "max_seconds": 61.2,
+   "max_seconds": 58.3,
    "nightly_runs": [
     {
      "conclusion": "success",
@@ -181,11 +144,9 @@
    "pass_seconds": true
   },
   "S4": {
-   "changed_per_night": {
-    "4": 8
-   },
+   "changed_per_night": {},
    "limit": 198,
-   "pass": true
+   "pass": false
   },
   "S5": {
    "locations_changed": 8,
