@@ -1,6 +1,6 @@
 card,file,class,location_id,basin,pad_id,bench,target_tvd_ft,tvd_rung,api10,well_depth_ft,dz_ft,nearest_other_bench,stick_legs,wells_on_section,wells_plan_only_no_depth,subject_on_section,verdict,reason,note,tag_flag
 1,card_01.png,B well at another bench landing,10047359,delaware,10578,BS3_C,11032.0,thickness,4230132560,10618.0,-414.0,BS2_S,2,6,12,True,KEEP,,the pinned well is a BS2_S by depth,pinned well tag wrong
-2,card_02.png,B well at another bench landing,10047380,delaware,10581,BS3_C,11057.2,thickness,4230132814,10687.0,-370.2,BS2_S,2,9,15,True,,,,
+2,card_02.png,B well at another bench landing,10047380,delaware,10581,BS3_C,11057.2,thickness,4230132814,10687.0,-370.2,BS2_S,2,9,15,True,KEEP,,"pinned well tag wrong, should be BS2_S",pinned well tag wrong
 3,card_03.png,C neither,10047841,delaware,10598,BS2_S,10835.0,direct,3002551403,10451.0,-384.0,BS2_C,1,7,4,True,REMOVE,same,"local BS3_S tags wrong, should be BS3_C; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft",neighbouring BS3_S tags wrong
 4,card_04.png,C neither,10047996,delaware,10607,BS2_S,10443.0,direct,4230136548,10147.0,-296.0,BS2_S,1,10,12,True,REMOVE,slot,Occidental wine-rack; tags look right; second BS2_S landing not recognised,
 5,card_05.png,C neither,10047997,delaware,10607,BS2_S,10443.0,direct,4230136550,10167.0,-276.0,BS2_S,1,16,9,True,REMOVE,slot,,

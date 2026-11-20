@@ -16,7 +16,7 @@ How to read a card:
 | card | class | basin | DSU | bench | stick TVD ft | rung | well | well offset ft | legs | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 01 | B | delaware | 10578 | BS3_C | 11,032 | thickness | 4230132560 | -414 | 2 | KEEP (Michael 2026-11-20: the well is a BS2_S by depth) |
-| 02 | B | delaware | 10581 | BS3_C | 11,057 | thickness | 4230132814 | -370 | 2 | |
+| 02 | B | delaware | 10581 | BS3_C | 11,057 | thickness | 4230132814 | -370 | 2 | KEEP (Michael 2026-11-20): pinned well tag wrong, should be BS2_S |
 | 03 | C | delaware | 10598 | BS2_S | 10,835 | direct | 3002551403 | -384 | 1 | REMOVE, same well (Michael 2026-11-20). Michael's read 2026-11-20: the local BS3_S tags (10,707 to 10,790 ft) are wrong and should be BS3_C, being about 1,400 ft above local WCA_1 control; BS2_S belongs at about 10,500 ft and BS3_C at about 10,700 ft, so this stick's 10,835 ft is too deep. Checked read-only: 23 of 33 BS3_S-tagged wells within 3 mi sit more than 900 ft above the local WCA_1 median (12,111 ft) |
 | 04 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136548 | -296 | 1 | REMOVE, slot taken (Michael 2026-11-20): Occidental wine-rack, BS2_S alternating about 10,150 and 10,430 ft at 850 ft; the stick is on the lower level directly under the upper-level P 64H. Tags look right; the generator recorded no second BS2_S landing |
 | 05 | C | delaware | 10607 | BS2_S | 10,443 | direct | 4230136550 | -276 | 1 | REMOVE, slot taken (Michael 2026-11-20) |
@@ -34,7 +34,7 @@ How to read a card:
 | 17 | A | delaware | 10985 | BS2_S | 10,964 | direct | 3002546468 | -378 | 1 | REMOVE, same well (Michael 2026-11-20) |
 | 18 | C | delaware | 11026 | BS3_S | 10,274 | thickness | 3001546223 | -412 | 1 | KEEP (Michael 2026-11-20): pinned well tag looks wrong |
 | 19 | C | delaware | 11090 | BS2_S | 8,528 | direct | 4238941817 | -288 | 1 | REMOVE, slot taken (Michael 2026-11-20) |
-| 20 | A | delaware | 11134 | BS2_S | 10,931 | direct | 3002545207 | -254 | 1 | REMOVE, same well (Michael 2026-11-20): there are two BS2_S landings here |
+| 20 | A | delaware | 11134 | BS2_S | 10,931 | direct | 3002545207 | -254 | 1 | REMOVE, same well (Michael 2026-11-20): there are two BS2_S landings here; the stick is at the wrong one of the two, so it is the well (confirmed) |
 | 21 | A | delaware | 11147 | AVA_1 | 9,626 | direct | 3002545634 | +367 | 1 | REMOVE, same well (Michael 2026-11-20) |
 | 22 | C | delaware | 11204 | BS2_S | 10,427 | direct | 3002545079 | +387 | 1 | REMOVE, same well (Michael 2026-11-20) |
 | 23 | C | delaware | 11233 | BS3_C | 10,141 | direct | 4230135518 | -252 | 1 | REMOVE, same well (Michael 2026-11-20) |
