@@ -1,0 +1,46 @@
+card,file,class,location_id,basin,pad_id,bench,target_tvd_ft,tvd_rung,api10,well_depth_ft,dz_ft,nearest_other_bench,stick_legs,wells_on_section,wells_plan_only_no_depth,subject_on_section
+1,card_01.png,B well at another bench landing,10047359,delaware,10578,BS3_C,11032.0,thickness,4230132560,10618.0,-414.0,BS2_S,2,6,12,True
+2,card_02.png,B well at another bench landing,10047380,delaware,10581,BS3_C,11057.2,thickness,4230132814,10687.0,-370.2,BS2_S,2,9,15,True
+3,card_03.png,C neither,10047841,delaware,10598,BS2_S,10835.0,direct,3002551403,10451.0,-384.0,BS2_C,1,7,4,True
+4,card_04.png,C neither,10047996,delaware,10607,BS2_S,10443.0,direct,4230136548,10147.0,-296.0,BS2_S,1,10,12,True
+5,card_05.png,C neither,10047997,delaware,10607,BS2_S,10443.0,direct,4230136550,10167.0,-276.0,BS2_S,1,16,9,True
+6,card_06.png,B well at another bench landing,10049969,delaware,10675,AVA_1,8477.7,direct,3001546852,8876.0,398.3,AVA_2,1,8,14,True
+7,card_07.png,C neither,10050320,delaware,10694,BS3_C,11014.0,direct,3002540436,10542.0,-472.0,BS2_S,2,1,4,True
+8,card_08.png,B well at another bench landing,10050455,delaware,10707,BS1_S,9690.0,thickness,3002550061,9303.0,-387.0,AVA_2,1,19,9,True
+9,card_09.png,B well at another bench landing,10050457,delaware,10707,BS3_S,11708.7,thickness,3002552856,11213.0,-495.7,BS3_C,1,21,9,True
+10,card_10.png,A two landings recorded,10051941,delaware,10792,BS3_C,11059.5,direct,3002540722,10572.0,-487.5,BS2_S,1,12,14,True
+11,card_11.png,C neither,10052227,delaware,10801,BS2_S,10614.2,direct,3002545535,10293.0,-321.2,BS2_S,1,15,14,True
+12,card_12.png,A two landings recorded,10052779,delaware,10827,BS2_S,10872.5,direct,3002549288,10607.5,-265.0,BS2_S,1,4,9,True
+13,card_13.png,C neither,10053202,delaware,10846,BS3_S,11491.1,thickness,3001545231,11229.0,-262.1,BS3_S,1,6,20,True
+14,card_14.png,C neither,10054234,delaware,10902,BS3_S,11282.5,thickness,3001545754,11010.0,-272.5,BS3_S,1,10,38,True
+15,card_15.png,C neither,10054250,delaware,10903,BS3_C,10506.0,direct,3001546448,10101.0,-405.0,BS2_S,1,8,31,True
+16,card_16.png,C neither,10055982,delaware,10982,BS2_S,10849.9,direct,3002549557,10591.0,-258.9,BS2_S,1,10,7,True
+17,card_17.png,A two landings recorded,10056027,delaware,10985,BS2_S,10964.2,direct,3002546468,10586.5,-377.7,BS2_C,1,13,10,True
+18,card_18.png,C neither,10056722,delaware,11026,BS3_S,10273.7,thickness,3001546223,9862.0,-411.7,BS3_C,1,8,7,True
+19,card_19.png,C neither,10058009,delaware,11090,BS2_S,8528.0,direct,4238941817,8240.0,-288.0,BS2_S,1,7,2,True
+20,card_20.png,A two landings recorded,10058563,delaware,11134,BS2_S,10931.2,direct,3002545207,10677.0,-254.2,BS2_S,1,13,6,True
+21,card_21.png,A two landings recorded,10058766,delaware,11147,AVA_1,9625.9,direct,3002545634,9993.0,367.1,AVA_2,1,14,7,True
+22,card_22.png,C neither,10060229,delaware,11204,BS2_S,10427.0,direct,3002545079,10814.0,387.0,BS3_C,1,10,17,True
+23,card_23.png,C neither,10060619,delaware,11233,BS3_C,10140.6,direct,4230135518,9889.0,-251.6,BS3_C,1,11,7,True
+24,card_24.png,C neither,10062102,delaware,11320,BS2_S,10779.0,direct,3002551134,10477.0,-302.0,BS2_C,1,5,5,True
+25,card_25.png,C neither,10064145,delaware,11444,BS3_S,11179.0,direct,3002552602,10889.0,-290.0,BS3_S,1,2,10,True
+26,card_26.png,C neither,10064400,delaware,11465,BS2_S,10307.5,direct,3002554230,9876.0,-431.5,BS1_S,1,3,1,True
+27,card_27.png,C neither,10065117,delaware,11583,BS3_C,7057.0,direct,4210934231,6701.0,-356.0,BS3_C,1,8,0,True
+28,card_28.png,C neither,10065815,delaware,11700,BS2_S,10000.7,thickness,3002545161,9725.0,-275.7,BS2_S,1,4,2,True
+29,card_29.png,C neither,10067556,delaware,11837,BS3_S,11558.0,direct,3002550845,11259.5,-298.5,BS3_S,1,4,8,True
+30,card_30.png,C neither,10067558,delaware,11837,BS3_S,11558.0,direct,3002550846,11114.0,-444.0,BS3_S,1,5,2,True
+31,card_31.png,C neither,10074705,delaware,12523,BS3_C,11503.4,offset,4249534177,11242.5,-260.9,BS3_C,1,6,0,True
+32,card_32.png,C neither,10078799,delaware,12917,BS2_C,9708.7,offset,4247538947,9425.5,-283.2,BS1_S,1,5,0,True
+33,card_33.png,C neither,10080851,delaware,13177,WCA_1,11172.3,direct,4238938543,11550.0,377.7,WCB_1,1,10,0,True
+34,card_34.png,C neither,10081742,delaware,13323,BS2_S,9248.0,direct,3002555437,8998.0,-250.0,BS2_S,1,4,2,True
+35,card_35.png,C neither,10083309,delaware,13552,BS2_S,7879.0,direct,3001556739,7497.0,-382.0,BS2_S,1,5,0,True
+36,card_36.png,C neither,10085886,delaware,13933,BS3_C,9642.4,thickness,4237140164,9215.5,-426.9,BS2_C,1,4,0,True
+37,card_37.png,C neither,10086188,delaware,13983,BS2_C,8544.2,offset,4237140314,8901.5,357.3,BS2_C,1,1,0,True
+38,card_38.png,C neither,10086190,delaware,13983,WCA_1,9977.0,direct,4237139654,9695.0,-282.0,WCA_1,1,5,0,True
+39,card_39.png,C neither,10088187,delaware,14420,BS3_C,7520.0,thickness,3001544032,7206.0,-314.0,BS3_C,1,1,4,True
+40,card_40.png,C neither,10089006,delaware,14773,WCB_2,10828.9,direct,4238941928,10555.0,-273.9,WCB_1,1,12,0,True
+41,card_41.png,C neither,10089792,delaware,14893,BS3_C,10007.5,offset,4238941202,9749.0,-258.5,BS3_C,1,8,0,True
+42,card_42.png,C neither,10089870,delaware,14951,WCA_2,10311.5,direct,4238934288,10738.0,426.5,WCB_1,1,3,1,True
+43,card_43.png,C neither,10096195,midland,18946,LSSH,7412.0,offset,4217337361,7051.0,-361.0,LSSH,2,1,0,True
+44,card_44.png,C neither,10114480,midland,22170,WCD,10654.0,offset,4232943378,10159.0,-495.0,WCD,1,1,4,True
+45,card_45.png,C neither,10131441,delaware,11304,BS2_S,11305.7,thickness,3002554185,10909.0,-396.7,BS2_C,2,4,11,True

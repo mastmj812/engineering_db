@@ -1,0 +1,37 @@
+card,file,group,group_size,api10,well_name,operator,county,tag,tvd_ft,grid_interval,grid_edge_ft,h_ft,h_level,proposed,wells_on_section,wells_plan_only_no_depth
+1,card_01.png,"S: BS3_S tag, both witnesses say BS3_C",338,4210932760,DONERAIL 8 FEE 2H,Devon,Culberson,BS3_S,8045.0,BS3_C,286.2,835.0,BS3_C,BS3_C,13,0
+2,card_02.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001543696,CHARLIE SWEENEY 31 23 28 RB #205C,Matador,Eddy,BS3_S,8691.0,BS3_C,186.7,719.8,BS3_C,BS3_C,6,4
+3,card_03.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001544886,CREEDENCE 21 16 W0HA STATE COM #002H,Mewbourne,Eddy,BS3_S,8953.0,BS3_C,79.2,606.0,BS3_C,BS3_C,12,10
+4,card_04.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001547220,BOROS FEDERAL COM #135H,Matador,Eddy,BS3_S,10695.0,BS3_C,169.8,816.5,BS3_C,BS3_C,14,13
+5,card_05.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001554001,SND JAVELINA UNIT 12 1 P306 #479H,Chevron,Eddy,BS3_S,11011.0,BS3_C,361.6,1001.0,BS3_C,BS3_C,13,10
+6,card_06.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001555484,SWEET TEA EBS FEDERAL COM #551H,ConocoPhillips,Eddy,BS3_S,9130.0,BS3_C,167.7,659.0,BS3_C,BS3_C,12,14
+7,card_07.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001556733,COTTON DRAW 25 36 FEDERAL COM #625H,Devon,Eddy,BS3_S,11020.0,BS3_C,284.6,970.0,BS3_C,BS3_C,25,16
+8,card_08.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001557526,ROSS DRAW 17 FEDERAL COM #516H,EOG,Eddy,BS3_S,10343.0,BS3_C,227.3,1125.0,BS3_C,BS3_C,18,71
+9,card_09.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001557878,POKER LAKE UNIT 14 26 BD #402H,Exxon Mobil,Eddy,BS3_S,10542.0,BS3_C,184.1,865.0,BS3_C,BS3_C,11,5
+10,card_10.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001558242,PABST FEDERAL COM #152H,Tap Rock Resources,Eddy,BS3_S,7413.0,BS3_C,287.8,847.8,BS3_C,BS3_C,4,7
+11,card_11.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001558456,COTTON DRAW UNIT #551H,Devon,Eddy,BS3_S,11009.0,BS3_C,176.9,900.5,BS3_C,BS3_C,27,14
+12,card_12.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001558582,HOLLYWOOD STAR FEE 17 18 D #554H,Matador,Eddy,BS3_S,7903.0,BS3_C,602.3,935.0,BS3_C,BS3_C,11,7
+13,card_13.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001558881,SHETLAND 2 11 FEDERAL COM #304H,Devon,Eddy,BS3_S,10827.0,BS3_C,283.1,956.5,BS3_C,BS3_C,14,13
+14,card_14.png,"S: BS3_S tag, both witnesses say BS3_C",338,3001559174,POKER LAKE UNIT 19 DTD #415H,Exxon Mobil,Eddy,BS3_S,9943.0,BS3_C,294.7,624.0,BS3_C,BS3_C,11,3
+15,card_15.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002545564,DUCK HUNT 1 STATE COM #401C,Permian Resources,Lea,BS3_S,10794.0,BS3_C,149.1,603.0,BS3_C,BS3_C,19,2
+16,card_16.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002550207,RED HILLS 32 5 FEDERAL COM #128H,Devon,Lea,BS3_S,11390.0,BS3_C,252.4,942.5,BS3_C,BS3_C,13,15
+17,card_17.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002552856,HAFLINGER 22 27 FEDERAL COM #303H,Devon,Lea,BS3_S,11213.0,BS3_C,248.3,771.0,BS3_C,BS3_C,16,7
+18,card_18.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002555223,GRACKLE 26 EAST FEDERAL COM #304H,EOG,Lea,BS3_S,11966.0,BS3_C,142.3,584.0,BS3_C,BS3_C,22,23
+19,card_19.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002555650,RED HILLS WEST UNIT #060H,Mewbourne,Lea,BS3_S,11021.0,BS3_C,336.7,951.8,BS3_C,BS3_C,11,8
+20,card_20.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002556064,NORTH BLONDIE 3 15 FEDERAL COM #504H,Devon,Lea,BS3_S,11994.0,BS3_C,178.4,795.0,BS3_C,BS3_C,20,7
+21,card_21.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002556427,CASCADE 29 17 FEDERAL COM #302H,Devon,Lea,BS3_S,11420.0,BS3_C,304.5,962.0,BS3_C,BS3_C,16,14
+22,card_22.png,"S: BS3_S tag, both witnesses say BS3_C",338,3002556684,HARACZ 19 FEDERAL #592H,EOG,Lea,BS3_S,10981.0,BS3_C,285.6,1055.0,BS3_C,BS3_C,12,16
+23,card_23.png,"S: BS3_S tag, both witnesses say BS3_C",338,4230136672,ANACONDA 53-24 B202HS,Petro-Hunt,Loving,BS3_S,10815.0,BS3_C,239.4,1075.5,BS3_C,BS3_C,9,0
+24,card_24.png,"S: BS3_S tag, both witnesses say BS3_C",338,4249534658,UL PAHASKA 21-6 S007H,Apache,Winkler,BS3_S,11562.0,BS3_C,91.7,558.8,BS3_C,BS3_C,7,4
+25,card_25.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,3001538032,GRANDE STATE #004E,Nadel And Gussman,Eddy,BS2_S,7975.0,BS2_C,55.4,2052.0,BS1+,BS1_S or above,11,8
+26,card_26.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,3002539910,TEAPOT #002H,Amtex Energy,Lea,BS2_S,9829.0,BS2_C,41.7,1087.0,BS3_C,BS3_C,5,3
+27,card_27.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,3002544043,ABE STATE #001H,ConocoPhillips,Lea,BS2_S,11104.0,BS3_C,0.4,970.0,BS3_C,BS3_C,8,7
+28,card_28.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,3002546983,BELL LAKE NORTH UNIT #233H,Kaiser Francis,Lea,BS2_S,10329.5,BS2_S,146.7,1005.5,BS3_C,BS3_C,13,19
+29,card_29.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,3002552199,CASA BONITA 32 STATE COM #121H,Permian Resources,Lea,BS2_S,10250.0,BS2_S,204.3,994.0,BS3_C,BS3_C,14,9
+30,card_30.png,"H: BS2_S tag, height says lower, grid says BS2_S",465,4238941915,REV GF MARIA BREBER STATE UNIT 1214SB,Chevron,Reeves,BS2_S,9494.0,BS2_S,104.7,953.2,BS3_C,BS3_C,19,2
+31,card_31.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,4210933284,KINGMAN 45 STATE UNIT 3H,Devon,Culberson,BS3_S,8069.0,WCXY,87.3,202.0,BS3_S,WCXY,7,0
+32,card_32.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,3002541351,MERCHANT LIVESTOCK 25 STATE COM #004C,GMT Exploration,Lea,BS3_S,10889.0,BS3_C,213.6,488.0,BS3_S,BS3_C,11,4
+33,card_33.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,3002548592,PREVAIL FEDERAL COM #602H,Devon,Lea,BS3_S,12081.0,WCA,99.1,253.5,BS3_S,WCA,11,12
+34,card_34.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,4230134220,KUDU 53-2-6 LOV E UNIT 4H,ConocoPhillips,Loving,BS3_S,11698.0,WCA,127.1,48.5,BS3_S,WCA,13,0
+35,card_35.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,4247534668,"UNIVERSITY LANDS ""BB"" 4H",Apache,Ward,BS3_S,11668.0,WCXY,43.9,50.0,BS3_S,WCXY,5,1
+36,card_36.png,"G: BS3_S tag, grid says another bench, height says BS3_S",337,4249534830,UL 21 WAR-WINK 38-47 A 1H,Continental Resources,Winkler,BS3_S,11270.0,WCA,50.1,59.0,BS3_S,WCA,6,6
