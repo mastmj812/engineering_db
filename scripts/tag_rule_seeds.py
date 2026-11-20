@@ -48,6 +48,7 @@ CARD_SETS: list[tuple[str, int]] = [
     ("policy-v1-cards-2026-11-09/step3", 3), ("w1-queue-cards-2026-11-09", 3), ("shadow1-queue-cards-2026-11-11", 3),
     ("shadow1-direct-calls-2026-11-11", 3), ("shadow6-queue-cards-2026-11-16", 3),
     ("human-call-review-2026-11-16", 3), ("sql23-retired-cards-2026-11-16", 3),
+    ("box-stick-cards-2026-11-20", 3),
 ]
 # Card sets that re-judge wells which already carry a human call (input = that call). A verdict with a code replaces
 # the earlier call, including a pre-rule override row; a hold leaves the earlier call as it stands.
