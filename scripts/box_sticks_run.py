@@ -377,7 +377,7 @@ def verify_set(cur, sid: int, art: dict, xw: dict, check: int | None) -> list[st
         stored.setdefault(pid, []).append(det)
     link, cfg, diffs, t0 = reads.link_fn(), reads.default_cfg(basin), [], time.time()
     for pid in pads:
-        d = store.rebuild_dsu(basin, tr(shapely.from_wkt(poly[pid]), to_work), drows[pid], brows.get(pid, []), wl)
+        d = store.rebuild_dsu(basin, tr(shapely.from_wkt(poly[pid]), to_work), drows[pid], brows.get(pid, []), wl, stored.get(pid, []))
         res = core.generate_dsu(d, cfg, link)
         # stored names carry the slot; compare on the generator's own name kept in detail
         a = [dict(s, well_name=s["generator_name"]) for s in stored.get(pid, [])]

@@ -158,3 +158,17 @@ def test_the_record_flip_supersedes_before_it_sets_and_defaults_to_a_dry_run() -
     assert "location_stick SET" not in body and "DELETE" not in body                    # the flip touches no stick row
     assert run.main.__doc__ is None and "if bad or not go:" in src[src.index("def cmd_record"):src.index("def main")]
 
+
+
+def test_a_grid_note_survives_the_stored_round_trip() -> None:
+    """Generator 0.13: the grid note is a stick flag, not a bench column; the rebuild reads it back from the stored sticks."""
+    import dataclasses
+
+    d = _dsu()
+    d = dataclasses.replace(d, benches=[dataclasses.replace(b, flags=(*b.flags, "grid_bounded")) if b.code == "BS3_S" else b for b in d.benches])
+    res = core.generate_dsu(d, CFG, LINK)
+    assert any("grid_bounded" in s["flags"] for s in res.sticks if s["bench"] == "BS3_S")
+    wells = {w["api10"]: w for w in store.well_rows(d)}
+    args = ("delaware", d.polygon, store.dsu_row(d, res), store.bench_rows(d, res), wells)
+    assert store.diff_sticks(res.sticks, core.generate_dsu(store.rebuild_dsu(*args), CFG, LINK).sticks)             # without the sticks: the note is lost
+    assert not store.diff_sticks(res.sticks, core.generate_dsu(store.rebuild_dsu(*args, res.sticks), CFG, LINK).sticks)
