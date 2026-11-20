@@ -860,3 +860,49 @@ refresh.
 - `etl-nightly-triage` skill: a section for nights on v4.
 - Left for the flip itself (step 5), because they describe the live state: the rule 4 wording
   and the data-flow paragraph in the workspace CLAUDE.md.
+
+## 17. Cutover done, 2026-11-20
+
+Michael moved the date up from 11-27 ("do the v4 cutover now, accept the muddied night"). The
+BOX reconciliation shadow week therefore has its first night on v3 inputs and the rest on v4.
+
+| Step | When (UTC) | Result |
+|---|---|---|
+| Pre-checks | 15:20 | no ETL running, nightly of 11-20 finished, share run `20261120_100520`, no foreign keys into `raw_novi` |
+| `sql/76` applied | 15:23 | all 12 columns nullable (6 on `Wells`, 6 on `WellDetails`) |
+| Load `raw_novi` from v4 | 15:24 - 15:40 | headers replaced (96,009 / 96,009 / 63,948); `DirectionalSurveys` full (31,765 wells restamped, 15,954,057 rows); `ForecastWellMonths` full with `--allow-breaker`: 17,230,944 rows in, 22,390,087 out (v3's history rows and its 8,248 history-only wells are gone) |
+| `WellMonths` full pull | 15:47 - 15:50 | 5,242,792 rows. The census had re-pulled only 125 wells, which left v3 values on the rest (sharing flags, `Operator`, two cumulatives); the full pull makes the table v4 throughout |
+| Check against the share | 15:50 | second dry run: 0 wells changed, 0 gone on all three child tables. `--compare`: 100 % equal on every column, headers on all 96,009 wells, child tables on a 2,541-well sample (201,617 well-months, 663,388 forecast rows, 509,209 stations) |
+| `etl.refresh --force` | 15:56 - 16:35 | 16 of 16 matviews. Tag rule run 12 (57,045 judged, 3 changed). BOX recon run 5 (79,200 record sticks, 27 changed, limit 792) |
+| Nightly flipped | 16:40 | repository variable `NOVI_SOURCE = v4` |
+
+Identities after the refresh: `curated.wells` holds all 96,009 `raw_novi."Wells"` rows;
+`curated.production` = `raw_novi."WellMonths"` = 5,242,792 rows; `curated.production_forecast` =
+17,230,944 rows on 57,747 wells, equal to the raw table; `curated.formation_blueox` 96,009.
+
+**Visible changes in curated.**
+
+- `curated.wells.well_type` now carries the Enverus value (`OIL`, `GAS`, `OIL & GAS`, `SWD`,
+  `INJECTOR`, ...; NULL on 507 wells) where it carried Novi's (`Oil`, `Gas`, `O&G`, `Other`).
+  No code in the four repos reads it; an ad-hoc QGIS or analyst query that filters on the old
+  spellings would.
+- `has_accurate_first_prod_date` and `novi_synthetic_api` are NULL.
+- `DirectionalSurveyIsPlanned` as v4 ships it (section 16).
+
+**One more loader gap, found by the check and fixed on this branch.** The stored forecast
+cumulatives are v4's cumulative plus the well's actual cumulative before the forecast starts.
+When Novi revises that production and leaves the forecast alone, the forecast rows do not
+change in v4 but our stored cumulatives should. Neither the stamp nor the checksum sees it: the
+scratch copy, one day old, was off on 0.16 - 0.33 % of forecast rows (cumulative columns only;
+rates and monthly volumes equal). The forecast sync now also re-pulls every well whose
+production was re-pulled the same night. `raw_novi` itself is right as loaded (full pull). Until
+this branch is merged, a v4 nightly runs without the fix and those cumulatives can drift by
+that order; `python -m etl.novi_v4.load --schema raw_novi --confirm-live --tables
+ForecastWellMonths --full` puts them right.
+
+**First v4 nightly.** 2026-11-21 05:00 CT is a Saturday and the share builds on weekdays, so
+the first night with new data is Monday 2026-11-23.
+
+**Left.** `raw_novi_v4` (7.6 GB scratch) to drop after a week of v4 nights; the v3 sync and
+load code to retire in a separate PR; the questions for Novi in section 8 plus the 584 planned
+wells and the newest-month sharing flags (section 15).
