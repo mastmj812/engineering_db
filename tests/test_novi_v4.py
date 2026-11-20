@@ -190,6 +190,30 @@ def test_diff_census_ignores_timezone_and_sub_millisecond_noise():
     assert sync.diff_census({"A": (1, T0)}, {"A": (1, None)}) == (["A"], [])
 
 
+def test_forecast_census_carries_a_content_checksum():
+    """Novi revises forecasts in place: same row count, same CREATED_AT (2,289 wells on
+    2026-11-20). Count + stamp alone miss it, so the forecast census adds a checksum."""
+    remote_sql = q.census_sql("ForecastWellMonths")
+    for stream in ("OIL", "GAS", "WATER"):
+        assert f"COALESCE(t.CUMULATIVE_{stream}, 0)" in remote_sql
+    local_sql = q.local_census_sql("raw_novi_v4", "ForecastWellMonths")
+    assert 'OVER (PARTITION BY "API10" ORDER BY "Date")' in local_sql  # running sum = v4 cumulative
+    for col in ("OilPerMonth", "GasPerMonth", "WaterPerMonth"):
+        assert f'COALESCE("{col}", 0)' in local_sql
+        assert "LAG(f.CUMULATIVE_" in q.FORECAST_COLUMNS[col]  # the identity the checksum rests on
+    for table in ("WellMonths", "DirectionalSurveys"):
+        assert "NULL AS CHECKSUM" in q.census_sql(table)
+        assert "NULL::numeric" in q.local_census_sql("raw_novi_v4", table)
+
+
+def test_diff_census_catches_an_in_place_revision():
+    same = {"A": (546, T0, 1_000), "B": (546, T0, 2_000)}
+    assert sync.diff_census(same, dict(same)) == ([], [])
+    revised = {"A": (546, T0, 1_000), "B": (546, T0, 2_015)}
+    assert sync.diff_census(revised, same) == (["B"], [])
+    assert sync.diff_census({"A": (1, T0, None)}, {"A": (1, T0, None)}) == ([], [])
+
+
 def test_plan_pull():
     assert sync.plan_pull(0, 1000) == "none"
     assert sync.plan_pull(300, 1000) == "batches"

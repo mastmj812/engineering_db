@@ -435,10 +435,42 @@ _CENSUS = {
 }
 
 
+#: Streams whose cumulatives make up the forecast content checksum.
+_CHECKSUM_STREAMS = ("OIL", "GAS", "WATER")
+
+# Content checksum per well, for tables whose stamp does not move when Novi revises rows in
+# place. PRODUCTION_FORECAST is the one: on 2026-11-20 Novi rewrote 2,289 wells' forecasts with
+# the row count and CREATED_AT unchanged. The checksum is the sum over a well's rows of the v4
+# cumulatives of the three streams. The local side rebuilds the same number from the stored
+# monthly volumes (their running sum IS the v4 cumulative), so both sides are exact integers.
+_CENSUS_CHECKSUM = {
+    "ForecastWellMonths": "SUM(" + " + ".join(
+        f"COALESCE(t.CUMULATIVE_{s}, 0)" for s in _CHECKSUM_STREAMS) + ")",
+}
+LOCAL_CHECKSUM_COLUMNS = {
+    "ForecastWellMonths": ("OilPerMonth", "GasPerMonth", "WaterPerMonth"),
+}
+
+
+def local_census_sql(schema: str, table: str) -> str:
+    """The Postgres side of the census, same shape as `census_sql`: API10, N, STAMP, CHECKSUM."""
+    cols = LOCAL_CHECKSUM_COLUMNS.get(table)
+    if cols is None:
+        return (f'SELECT "API10", count(*), max("ModifiedAt"), NULL::numeric '
+                f'FROM {schema}."{table}" GROUP BY 1')
+    monthly = " + ".join(f'COALESCE("{c}", 0)' for c in cols)
+    return f"""SELECT "API10", count(*), max("ModifiedAt"), sum(running)
+FROM (SELECT "API10", "ModifiedAt",
+             sum(({monthly})::bigint) OVER (PARTITION BY "API10" ORDER BY "Date") AS running
+      FROM {schema}."{table}") t
+GROUP BY 1"""
+
+
 def census_sql(table: str) -> str:
     view, stamp, where = _CENSUS[table]
+    checksum = _CENSUS_CHECKSUM.get(table, "NULL")
     return f"""WITH {SCOPE_CTE}
-SELECT sc.API10, COUNT(*) AS N, {_utc(f'MAX(t.{stamp})')} AS STAMP
+SELECT sc.API10, COUNT(*) AS N, {_utc(f'MAX(t.{stamp})')} AS STAMP, {checksum} AS CHECKSUM
 FROM {DB}.{view} t
 JOIN scope sc ON sc.WELLBORE_KEY = t.WELLBORE_KEY
 WHERE {where}

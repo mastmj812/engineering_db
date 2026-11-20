@@ -793,3 +793,26 @@ volume and rate column is still equal.
 - `DirectionalSurveys`: all 13 data columns still equal on 15,954,057 rows. The 2,298 wells
   re-pulled came back with identical data, so Novi restamps surveys without changing them;
   that costs about 2.5 minutes a night and nothing else.
+
+**Fix (Michael chose option 1, 2026-11-20).** The forecast census now carries a content checksum
+per well: the sum over the well's rows of the v4 oil, gas and water cumulatives. The local side
+rebuilds the same integer from the stored monthly volumes, whose running sum is the v4 cumulative.
+A well is re-pulled when its row count, newest stamp or checksum differs. Only the forecast table
+carries one; `WellMonths` and `DirectionalSurveys` have a stamp that moves.
+
+Verified on the scratch copy the same morning:
+
+- The census flagged **2,291 wells** (the 2,289 counted above plus 2 whose final cumulative was
+  unchanged but whose shape moved). Re-pull: 762,782 rows, 2 min 44 s.
+- A second dry run straight after: **0 changed, 0 gone**, so both sides compute the same number
+  on all 57,747 wells.
+- Forecast diff against `raw_novi` afterwards: every per-day rate, monthly volume and
+  `MonthsOnProduction` equal again on all 17,230,944 common rows. Cumulatives differ on
+  0.28–0.56 % of rows (the rebasing class of section 13, 0.1–0.4 % then).
+
+Cost: the local side of the forecast census is a window over 17 M rows, so a quiet night's
+forecast check takes about 2 min 20 s instead of under a minute.
+
+Limit: a revision that changes per-day rates while leaving every monthly cumulative unchanged
+would not be seen. The monthly volumes are the cumulative differences, so that would be a
+rate-only restatement; none has been observed.

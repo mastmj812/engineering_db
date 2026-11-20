@@ -5,7 +5,8 @@ Two strategies, mirroring `etl/novi/load.py`:
 - **Header tables** (Wells, WellDetails, WellSpacing): the whole table every run, replaced
   inside ONE transaction (TRUNCATE + COPY + commit), so a failed pull leaves the old rows.
 - **Child tables** (WellMonths, ForecastWellMonths, DirectionalSurveys): a per-well census
-  (row count + newest stamp) is taken on both sides. A well whose census differs is re-pulled
+  (row count + newest stamp, plus a content checksum on the forecast table, whose stamp does
+  not move when Novi revises a forecast in place) is taken on both sides. A well whose census differs is re-pulled
   whole; a well that left the share is deleted. v4 has no deletion marker, so this key
   comparison is what finds deletions (it is also how Novi builds its own diff files).
 
@@ -38,7 +39,8 @@ MIN_HEADER_SHARE = 0.90
 _FETCH = 50_000
 _SCHEMA_RE = re.compile(r"^[a-z_][a-z0-9_]*$")
 
-Census = dict[str, tuple[int, datetime | None]]
+#: API10 -> (row count, newest stamp, content checksum or None)
+Census = dict[str, tuple[Any, ...]]
 
 
 def etl_label(schema: str, table: str) -> str:
@@ -64,11 +66,12 @@ def _naive_utc(ts: datetime | None) -> datetime | None:
 
 def diff_census(remote: Census, local: Census) -> tuple[list[str], list[str]]:
     """(wells to re-pull, wells to delete). A well is re-pulled when it is new, its row count
-    differs, or its newest stamp differs in either direction (to the millisecond)."""
-    changed = sorted(
-        a for a, (n, ts) in remote.items()
-        if a not in local or local[a][0] != n or _naive_utc(local[a][1]) != _naive_utc(ts)
-    )
+    differs, its newest stamp differs in either direction (to the millisecond), or its content
+    checksum differs (tables that carry one)."""
+    def key(c: tuple[Any, ...]) -> tuple[Any, ...]:
+        return (c[0], _naive_utc(c[1]), *c[2:])
+
+    changed = sorted(a for a, c in remote.items() if a not in local or key(local[a]) != key(c))
     gone = sorted(a for a in local if a not in remote)
     return changed, gone
 
@@ -152,17 +155,21 @@ def load_header(sf: Any, schema: str, table: str, *, allow_breaker: bool = False
     return n
 
 
+def _checksum(v: Any) -> int | None:
+    return None if v is None else int(v)
+
+
 def remote_census(sf: Any, table: str) -> Census:
     with sf.cursor() as cur:
         cur.execute(q.census_sql(table))
-        return {str(a): (int(n), ts) for a, n, ts in cur.fetchall()}
+        return {str(a): (int(n), ts, _checksum(c)) for a, n, ts, c in cur.fetchall()}
 
 
 def local_census(schema: str, table: str) -> Census:
     schema = _check_schema(schema)
     with get_connection() as conn, conn.cursor() as cur:
-        cur.execute(f'SELECT "API10", count(*), max("ModifiedAt") FROM {schema}."{table}" GROUP BY 1')
-        out = {str(a).strip(): (int(n), ts) for a, n, ts in cur.fetchall()}
+        cur.execute(q.local_census_sql(schema, table))
+        out = {str(a).strip(): (int(n), ts, _checksum(c)) for a, n, ts, c in cur.fetchall()}
         conn.commit()
     return out
 
@@ -188,7 +195,7 @@ def sync_child(
     out: dict[str, Any] = {
         "table": table, "mode": mode, "wells_remote": len(remote), "wells_local": len(local),
         "wells_changed": len(changed), "wells_gone": len(gone),
-        "rows_remote": sum(n for n, _ in remote.values()), "rows_local": sum(n for n, _ in local.values()),
+        "rows_remote": sum(c[0] for c in remote.values()), "rows_local": sum(c[0] for c in local.values()),
         "rows_inserted": 0, "rows_deleted": 0,
     }
     out["breaker"] = bool(local) and len(gone) > breaker_limit(len(local))
