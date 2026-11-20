@@ -1,0 +1,204 @@
+{
+ "kind": "week",
+ "runs": [
+  {
+   "run_id": 3,
+   "started_at": "2026-11-19 16:44:40.300027+00:00",
+   "finished_at": "2026-11-19 16:45:41.093159+00:00",
+   "status": "written",
+   "wrote": true,
+   "predicate_version": "box_recon_1",
+   "set_ids": [
+    16,
+    17
+   ],
+   "wells_read": 85056,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 47,
+     "pending": 19,
+     "conflict": 2,
+     "inventory": 33073,
+     "permitted": 74,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45283,
+     "sticks": 46062,
+     "crowded": 68,
+     "pending": 31,
+     "conflict": 20,
+     "inventory": 45902,
+     "permitted": 656,
+     "producing": 72
+    }
+   },
+   "changed": 79200,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 61.2,
+   "error": null
+  },
+  {
+   "run_id": 4,
+   "started_at": "2026-11-20 11:15:20.053701+00:00",
+   "finished_at": "2026-11-20 11:16:18.099561+00:00",
+   "status": "written",
+   "wrote": true,
+   "predicate_version": "box_recon_1",
+   "set_ids": [
+    16,
+    17
+   ],
+   "wells_read": 85059,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 48,
+     "pending": 19,
+     "conflict": 2,
+     "inventory": 33072,
+     "permitted": 74,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45280,
+     "sticks": 46062,
+     "crowded": 69,
+     "pending": 34,
+     "conflict": 20,
+     "inventory": 45900,
+     "permitted": 655,
+     "producing": 73
+    }
+   },
+   "changed": 8,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 58.3,
+   "error": null
+  }
+ ],
+ "bars": {
+  "S1": {
+   "nights": 2,
+   "written": 2,
+   "failed_or_breaker": [],
+   "days_with_more_than_one_row": [],
+   "pass": false
+  },
+  "S2": {
+   "max_seconds": 61.2,
+   "nightly_runs": [
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-20T11:00:10Z",
+     "databaseId": 44723918879,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-19T19:29:02Z",
+     "databaseId": 44598764640,
+     "event": "schedule",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-19T11:00:10Z",
+     "databaseId": 44510796253,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-18T19:24:00Z",
+     "databaseId": 44380111454,
+     "event": "schedule",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-18T11:00:11Z",
+     "databaseId": 44290619954,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-17T19:51:21Z",
+     "databaseId": 44163053607,
+     "event": "schedule",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-17T11:00:11Z",
+     "databaseId": 44069973622,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-16T21:01:58Z",
+     "databaseId": 43955861514,
+     "event": "schedule",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-16T11:00:11Z",
+     "databaseId": 43853826074,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T17:43:14Z",
+     "databaseId": 43742686589,
+     "event": "schedule",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T11:00:10Z",
+     "databaseId": 43706757767,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T17:08:52Z",
+     "databaseId": 43619497742,
+     "event": "schedule",
+     "status": "completed"
+    }
+   ],
+   "pass_seconds": true
+  },
+  "S4": {
+   "changed_per_night": {
+    "4": 8
+   },
+   "limit": 198,
+   "pass": true
+  },
+  "S5": {
+   "locations_changed": 8,
+   "flapped": 0,
+   "share": 0.0,
+   "location_ids": [],
+   "limit": 0.1,
+   "pass": true
+  },
+  "S7": {
+   "depends": [],
+   "pass": true
+  }
+ },
+ "note": "S3, S6 and S8 are scored in each night's report; S2's nightly conclusions are in nightly_runs"
+}
