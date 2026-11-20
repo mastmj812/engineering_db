@@ -79,7 +79,6 @@ api10,corrected_code,was,note
 4238941358,WCB_2,WCB_1,MM direct gunbarrel ratification 2026-09-17 (Roadrunner 333H)
 4238941420,WCB_2,WCB_1,MM direct gunbarrel ratification 2026-09-17 (Graves State 334H)
 4238941479,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 6 ft off destination band, jury n=6"
-4238941928,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 83 ft off destination band, jury n=3"
 4238941930,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 32 ft off destination band, jury n=3"
 4247537683,WCB_1,WCB_2,"consensus v2 flag ratified by MM (high-value review 2026-09-17); 18 ft off destination band, jury n=3"
 4247537856,WCB_2,WCB_1,"consensus v2 flag ratified by MM (WCB_1->WCB_2 class review 2026-09-17); 30 ft off destination band, jury n=4"
@@ -810,6 +809,7 @@ api10,corrected_code,was,note
 4238941896,WCA_1,OTHER,tagrule carded 2026-11-09 w1-queue-cards-2026-11-09 card 9 (Step 3): WCA_1 on proposed WCXY
 4238941898,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 62 (Step 3): ACCEPT on proposed WCB_1
 4238941901,WCA_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 53 (Step 3): ACCEPT on proposed WCA_1
+4238941928,WCB_1,WCB_2,tagrule carded 2026-11-20 box-stick-cards-2026-11-20 card 19 (Step 3): WCB_1 on proposed WCB_1
 4241332871,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 81 (Step 3): ACCEPT on proposed WCB_1
 4241332875,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 82 (Step 3): ACCEPT on proposed WCB_1
 4241332876,WCB_1,OTHER,tagrule carded 2026-11-08 v5_2-cards-2026-11-08 card 83 (Step 3): ACCEPT on proposed WCB_1
