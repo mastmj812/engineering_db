@@ -4,8 +4,10 @@ Intended to be invoked by Windows Task Scheduler:
     python -m scripts.run_daily
 
 Sequence:
-    1. Sync Novi bulk TSVs to disk (etl.novi.sync.sync_bulk)
-    2. COPY Novi TSVs into raw_novi.* (etl.novi.load.load_all)
+    1. Sync Novi bulk TSVs to disk (etl.novi.sync.sync_bulk)             [NOVI_SOURCE=v3]
+    2. COPY Novi TSVs into raw_novi.* (etl.novi.load.load_all)           [NOVI_SOURCE=v3]
+       or, with NOVI_SOURCE=v4, pull Novi v4 from the Snowflake share into the same six
+       raw_novi tables (etl.novi_v4.load.nightly_load); step 1 is then not run
     3. Pull Enverus wells deltas into raw_enverus.wells (etl.enverus.pull_wells)
     4. Check the Novi INTEL share for new quarterly reports (notify-only;
        etl.intel_sf.detect — nonzero ROWS = reports awaiting a manual reload)
@@ -19,6 +21,7 @@ duration, and rows touched.
 from __future__ import annotations
 
 import logging
+import os
 import sys
 import time
 from dataclasses import dataclass, field
@@ -33,6 +36,19 @@ from etl.db import sweep_stale_runs
 from etl.enverus import pull_wells as enverus_wells
 
 LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+
+#: Which Novi feed fills raw_novi: "v3" (bulk TSV, the default) or "v4" (Snowflake share).
+#: On GitHub Actions it comes from the repository variable of the same name.
+NOVI_SOURCE_ENV = "NOVI_SOURCE"
+NOVI_SOURCES = ("v3", "v4")
+
+
+def novi_source() -> str:
+    """Unset or blank means v3. Anything else unknown is an error, never a guess."""
+    value = (os.environ.get(NOVI_SOURCE_ENV) or "v3").strip().lower()
+    if value not in NOVI_SOURCES:
+        raise ValueError(f"{NOVI_SOURCE_ENV}={value!r}: expected one of {NOVI_SOURCES}")
+    return value
 
 
 @dataclass
@@ -150,6 +166,17 @@ def main() -> int:
 
         return sum(load_all(state["novi_bulk_dir"]).values())
 
+    def step_novi_load_v4() -> int:
+        # Same step name and the same six raw_novi tables as the v3 load. Lazy import: the
+        # snowflake dependency must not break a v3 night.
+        from etl.novi_v4.load import nightly_load
+
+        return nightly_load()
+
+    def step_novi_source_invalid() -> int:
+        novi_source()  # raises with the bad value
+        return 0
+
     # Wrap the per-step body in try/finally so the summary + notification
     # always fire — even if a bug in the orchestrator itself (not the
     # individual steps, which are already _run_step-guarded) raises.
@@ -179,8 +206,19 @@ def main() -> int:
             return sweep_stale_runs()
 
         _run_step("etl_log.sweep_stale", step_sweep_stale, report)
-        _run_step("novi.sync", step_novi_sync, report)
-        _run_step("novi.load", step_novi_load, report)
+        try:
+            source = novi_source()
+        except ValueError:
+            source = None
+        logger.info("Novi source: %s", source)
+        if source == "v4":
+            _run_step("novi.load", step_novi_load_v4, report)
+        elif source == "v3":
+            _run_step("novi.sync", step_novi_sync, report)
+            _run_step("novi.load", step_novi_load, report)
+        else:
+            # A bad setting fails the Novi step loudly; Enverus and the refresh still run.
+            _run_step("novi.load", step_novi_source_invalid, report)
         _run_step("settle", step_settle, report)
         _run_step("enverus.pull_wells", enverus_wells.main, report)
         _run_step("intel_sf.report_check", step_intel_report_check, report)

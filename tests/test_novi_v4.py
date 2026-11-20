@@ -83,6 +83,19 @@ def test_scratch_ddl_drops_not_null_on_exactly_the_unsourced_columns():
     assert "MATERIALIZED VIEW" not in text
 
 
+def test_live_ddl_drops_not_null_on_exactly_the_unsourced_columns():
+    """sql/76 (cutover step 2) must free the same columns on raw_novi that sql/75 freed on the copy."""
+    text = (SQL_DIR / "76_raw_novi_v4_nullable.sql").read_text(encoding="utf-8")
+    body = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("--"))
+    blocks = dict(re.findall(r'ALTER TABLE raw_novi\."(\w+)"(.*?);', body, re.DOTALL))
+    assert set(blocks) == set(UNSOURCED_NOT_NULL)
+    for table, cols in UNSOURCED_NOT_NULL.items():
+        assert set(re.findall(r'ALTER COLUMN "(\w+)" DROP NOT NULL', blocks[table])) == cols
+    # nothing but those ALTERs: no drop, no cascade, no other schema
+    assert not re.search(r"\b(DROP TABLE|DROP SCHEMA|CASCADE|TRUNCATE|DELETE|CREATE)\b", body)
+    assert "raw_novi_v4" not in body
+
+
 def test_scope_is_the_v3_export_set_and_every_query_uses_it():
     assert "s.SOURCE_FILE = 'US_Horizontals'" in q.SCOPE_CTE
     for table, (builder, _) in ALL.items():
@@ -363,3 +376,90 @@ def test_compare_rows():
     assert r["columns"]["Oil"]["example"] == (("A", 2026), 10, 11)
     assert r["columns"]["Gas"]["v4_null"] == 1 and r["columns"]["Gas"]["v3_null"] == 1
     assert "<--" in compare.format_report("T", r)
+
+
+# --------------------------------------------------------------------------- nightly switch
+
+def _run_daily_with(monkeypatch, tmp_path, source):
+    """Run scripts.run_daily.main() with every step stubbed; return (exit code, step names run)."""
+    from scripts import run_daily
+
+    ran: list[str] = []
+    if source is None:
+        monkeypatch.delenv(run_daily.NOVI_SOURCE_ENV, raising=False)
+    else:
+        monkeypatch.setenv(run_daily.NOVI_SOURCE_ENV, source)
+    monkeypatch.setattr(run_daily, "_configure_logging", lambda: tmp_path / "run.log")
+    monkeypatch.setattr(run_daily.notify_step, "ping_healthcheck", lambda *a, **k: None)
+    monkeypatch.setattr(run_daily.notify_step, "notify_run", lambda *a, **k: None)
+    monkeypatch.setattr(run_daily, "sweep_stale_runs", lambda: 0)
+    monkeypatch.setattr(run_daily, "db_settle", lambda: None)
+    monkeypatch.setattr(run_daily.enverus_wells, "main", lambda: 0)
+    monkeypatch.setattr(run_daily.refresh_step, "main", lambda: 0)
+
+    import etl.novi.load as v3_load
+    import etl.novi.sync as v3_sync
+    import etl.novi_v4.load as v4_load
+    from etl.intel_sf import detect
+
+    monkeypatch.setattr(detect, "check_new_reports", lambda: 0)
+    monkeypatch.setattr(v3_sync, "sync_bulk", lambda: ran.append("v3.sync") or tmp_path)
+    monkeypatch.setattr(v3_load, "load_all", lambda d: ran.append("v3.load") or {"Wells": 1})
+    monkeypatch.setattr(v4_load, "nightly_load", lambda: ran.append("v4.load") or 7)
+    return run_daily.main(), ran
+
+
+@pytest.mark.parametrize("source", [None, "", "v3", " V3 "])
+def test_nightly_defaults_to_v3(monkeypatch, tmp_path, source):
+    """Merging the switch must change nothing: unset or blank NOVI_SOURCE is the v3 bulk load."""
+    assert _run_daily_with(monkeypatch, tmp_path, source) == (0, ["v3.sync", "v3.load"])
+
+
+def test_nightly_on_v4_skips_the_bulk_download(monkeypatch, tmp_path):
+    assert _run_daily_with(monkeypatch, tmp_path, "v4") == (0, ["v4.load"])
+
+
+def test_nightly_with_an_unknown_source_fails_the_novi_step_and_loads_neither(monkeypatch, tmp_path):
+    assert _run_daily_with(monkeypatch, tmp_path, "v5") == (1, [])
+
+
+def test_workflow_passes_the_source_variable_with_a_v3_default():
+    text = (SQL_DIR.parent / ".github" / "workflows" / "etl-nightly.yml").read_text(encoding="utf-8")
+    assert "NOVI_SOURCE: ${{ vars.NOVI_SOURCE || 'v3' }}" in text
+
+
+def test_nightly_load_writes_live_and_one_failed_table_does_not_stop_the_rest(monkeypatch):
+    from etl.novi_v4 import load
+
+    class _SF:
+        closed = False
+
+        def close(self):
+            self.closed = True
+
+    sf = _SF()
+    calls: list[tuple[str, str]] = []
+
+    def header(sf_, schema, table, **kw):
+        assert not kw  # the nightly never passes allow_breaker
+        calls.append((schema, table))
+        return 10
+
+    def child(sf_, schema, table, **kw):
+        assert not kw  # no --full, no --allow-breaker, not a dry run
+        calls.append((schema, table))
+        if table == "ForecastWellMonths":
+            raise RuntimeError("601 wells would be deleted; refusing")
+        return {"rows_inserted": 100}
+
+    monkeypatch.setattr(load, "get_sf_connection", lambda: sf)
+    monkeypatch.setattr(load, "share_run_id", lambda sf_: "20261120_100520")
+    monkeypatch.setattr(load.sync, "load_header", header)
+    monkeypatch.setattr(load.sync, "sync_child", child)
+    with pytest.raises(RuntimeError, match="ForecastWellMonths: 601 wells"):
+        load.nightly_load()
+    assert calls == [("raw_novi", t) for t in load.TABLES]  # every table tried, live schema only
+    assert sf.closed
+
+    monkeypatch.setattr(load.sync, "sync_child", lambda sf_, schema, table, **kw: {"rows_inserted": 100})
+    assert load.nightly_load() == 3 * 10 + 3 * 100

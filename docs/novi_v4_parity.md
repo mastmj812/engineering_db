@@ -843,3 +843,20 @@ Steps, in order:
 
 Rollback until step 6: flip the setting back, run the v3 nightly with `--reconcile`, forced
 refresh.
+
+**Step 1 built, 2026-11-20 (code only, nothing applied).**
+
+- `scripts/run_daily.py` reads `NOVI_SOURCE`. Unset, blank or `v3`: the bulk-TSV sync and load,
+  unchanged. `v4`: no `novi.sync` step; `novi.load` is `etl.novi_v4.load.nightly_load`, which
+  writes the six live `raw_novi` tables, logs the share run id, and keeps going past a table
+  that fails (that table keeps its previous rows and the step fails with its error). Any other
+  value fails the Novi step and loads neither feed.
+- `.github/workflows/etl-nightly.yml` passes the repository variable `NOVI_SOURCE` with a `v3`
+  default. The flip (step 5) is `gh variable set NOVI_SOURCE --body v4`: no code change, no
+  merge, and the same command with `v3` flips back.
+- `sql/76_raw_novi_v4_nullable.sql` authored, **not applied**: drops NOT NULL on the six
+  unsourced columns of `raw_novi."Wells"` and `"WellDetails"`. A test pins it to the same list
+  as sql/75 and sql/02.
+- `etl-nightly-triage` skill: a section for nights on v4.
+- Left for the flip itself (step 5), because they describe the live state: the rule 4 wording
+  and the data-flow paragraph in the workspace CLAUDE.md.
