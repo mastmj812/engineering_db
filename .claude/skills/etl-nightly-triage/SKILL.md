@@ -64,6 +64,27 @@ work when the primary never fired or failed.
 | `curated.refresh` failed on one matview | Usually transient or a missing optional matview | `erebor_locations` / `intel_forecast_accuracy` are `_OPTIONAL_MATVIEWS` — missing logs a warning and continues (expected mid-quarterly-reload). A real failure self-heals the gate: the next refresh re-attempts |
 | `intel_sf.report_check` WARNING: new report detected | Not a failure | Notify-only. The quarterly reload is manual on Michael's go-ahead → `novi-quarterly-reload` skill. The alert self-clears once the report_name lands in `raw_intel.well_master` |
 
+### When the Novi step runs on v4 (`NOVI_SOURCE=v4`)
+
+Check first which feed the night used: the log line `Novi source: v3|v4` (repository variable
+`NOVI_SOURCE`; `gh variable list`). Unset = v3, and everything above applies. On v4 there is no
+`novi.sync` step and no TSV: `novi.load` is `etl.novi_v4.load.nightly_load`, pulling the Snowflake
+share `NOVI_DATA_ACCESS.NOVI_WELLS` into the same six `raw_novi` tables. `meta.etl_log` labels
+end in ` (v4)` (`ForecastWellMonths (v4)` still matches the refresh gate). The v3 drift rows
+above do not apply.
+
+| Signature (v4) | Diagnosis | Action |
+|---|---|---|
+| `novi.load` error `N wells would be deleted (limit …); refusing` | Circuit breaker, max(200, 1 %) of a table's wells left the share | The table kept its previous rows; the other five still loaded. Check the share's scope (`SOURCE.SOURCE_FILE = 'US_Horizontals'`) with `python -m etl.novi_v4.load --schema raw_novi --dry-run`. Re-run by hand with `--confirm-live --allow-breaker` **only on Michael's go** |
+| `pulled N rows against M held (under 90%); refusing` or `Snowflake returned no rows` | Header table shrank or came back empty | Rolled back, old rows kept. Same check, same go |
+| Snowflake error naming a column or view (`invalid identifier`, `does not exist`) | Novi changed a v4 view | Hard stop: the translation SQL in `etl/novi_v4/queries.py` names every column. Fix there with a test; previous rows stay in place meanwhile |
+| Snowflake auth failure on `novi.load` | PAT expired | Same PAT as `intel_sf.report_check`: rotate, update the `SNOWFLAKE_PAT` secret. "PAT invalid; retrying as password" alone is normal |
+| Every step green but data did not move | Share not rebuilt yet | The log line `Novi v4 share run: YYYYMMDD_HHMMSS` (UTC) names the build loaded. The share builds on weekdays around 10:05 UTC; a weekend or a late build loads the previous run. Not a failure |
+| `ForecastWellMonths (v4)` re-pulls a few thousand wells with unchanged row counts | Normal | Novi revises forecasts in place; the census's content checksum catches them |
+
+Fallback to v3 (while the v3 code still exists): `gh variable set NOVI_SOURCE --body v3`, then
+`python -m etl.novi.load --reconcile` and `python -m etl.refresh --force`. Ask first.
+
 ## 3. Re-run
 
 ```powershell

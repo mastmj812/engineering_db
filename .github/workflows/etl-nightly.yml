@@ -122,6 +122,10 @@ jobs:
       NOVI_PASSWORD: ${{ secrets.NOVI_PASSWORD }}
       NOVI_SCOPE: ${{ secrets.NOVI_SCOPE }}
       NOVI_VERSION: ${{ secrets.NOVI_VERSION }}
+      # Which Novi feed fills raw_novi: v3 (bulk TSV) or v4 (Snowflake share, etl/novi_v4).
+      # Repository VARIABLE, not a secret; unset = v3. Flip with:
+      #   gh variable set NOVI_SOURCE --body v4      (back: --body v3)
+      NOVI_SOURCE: ${{ vars.NOVI_SOURCE || 'v3' }}
       # Novi INTEL Snowflake share — read-only new-report check
       # (etl/intel_sf/detect.py; step fails without these).
       SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}

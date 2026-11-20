@@ -541,3 +541,322 @@ questions in section 8.
   on all of them.
 - How much notice precedes a schema change (12).
 - Day-over-day behaviour is still unobserved by us (section 9, item 8).
+
+## 12. Loader build, 2026-11-19
+
+Michael reframed the question the same day: v3 is deprecated, v4 is the source, what stops the
+move. Answer: nothing on Novi's side. The loader did not exist. It does now, in `etl/novi_v4`,
+not yet wired into the nightly and not yet run against any table.
+
+**Shape.** The loader presents v4 in the six v3 table shapes, so `sql/04`, `05`, `10`, `49`, `64`
+and every reader of `raw_novi` stay as they are. The translation is Snowflake SQL
+(`etl/novi_v4/queries.py`); Python only streams rows into Postgres.
+
+- Header tables (`Wells`, `WellDetails`, `WellSpacing`): whole table each run, replaced inside
+  one transaction.
+- Child tables (`WellMonths`, `ForecastWellMonths`, `DirectionalSurveys`): a per-well census
+  (row count and newest stamp) on both sides. A well that differs is re-pulled whole; a well
+  that left the share is deleted. This is what the v3 nightly could not do.
+- Guards: a run refuses to delete more than max(200, 1 %) of wells, or to replace a header
+  table with under 90 % of its rows, without `--allow-breaker`. Writing `raw_novi` needs
+  `--confirm-live`.
+- `meta.etl_log` label on the live schema is `<table> (v4)`, so the `ForecastWellMonths%` gate
+  keeps firing, and now fires on deletions too. On the side-by-side schema the label cannot
+  match the gate.
+
+**Two corrections to earlier sections.**
+
+- *Scope.* The v3 population is exactly the wellbores whose `WELLBORE.SOURCE_ID` is Novi's
+  `US_Horizontals` export set: 95,990 wells, the count in the 2026-11-19 v3 file. The loader
+  uses that. A rule on `DIRECTION_CALCULATED` (floated in conversation) would have been wrong:
+  5,539 wells already in v3 are calculated-vertical. Taking any of the 766 `US_Onshore`
+  horizontals is a separate decision and is not built.
+- *`HasProductionSharing` is not lost.* v4 has no well-level flag, but `PRODUCTION` carries the
+  monthly ones. "Any month flagged" equals the v3 well flag on 95,985 of 95,985 wells.
+
+**Read-only compare of the loader's output against `raw_novi`** (after the section 10
+reconcile; `python -m etl.novi_v4.load --compare --sample-every 60`). Header tables are every
+well; child tables are a 1,101-well sample.
+
+| Table | Rows compared | Result |
+|---|---:|---|
+| `Wells`, `WellDetails` | 95,985 wells | Every filled column equal on 100 % of wells where both have a value, except the items below. v4 has 5 newer wells. |
+| `WellSpacing` | 63,650 wells | All 12 filled columns equal on 100 %. v4 has 264 more wells; 191 v3 rows are not in v4. |
+| `WellMonths` | 87,285 well-months | Volumes, days, months on production, operator, sharing flags and all four per-day rates equal on 100 %. `CumulativeWater` 99.92 %, `CumulativeFlaredGas` 99.80 % (v3's running totals are not a clean sum on a few wells; section 4.3). |
+| `ForecastWellMonths` | 281,043 rows | Same rows on both sides. Rates and monthly volumes 100 %. `CumulativeOil` 99.65 % (misses are 1 bbl of rounding), gas and water 99.96 %. |
+| `DirectionalSurveys` | 223,005 stations | Every column 100 %. |
+
+Full-table row counts from the loader's SQL equal `raw_novi` exactly: 5,241,013 production
+rows, 17,217,480 forecast rows, 15,954,057 stations. No NULL in any column the v3 tables
+declare NOT NULL.
+
+**What the compare changed in the translation.**
+
+- *Rate rounding.* v3 rounds an exact tie to the even digit (97.25 -> 97.2). Snowflake's
+  default rounds away from zero. Ties only happen in 28-day Februaries, about 0.2 % of
+  well-months. The loader divides in fixed point and rounds half to even; rates then match 100 %.
+- *Operator.* v3's monthly `Operator` is Novi's company name (`OPERATOR.NAME`), not the filer's
+  legal name in `OPERATOR_REPORTED`.
+- *Texas land grid.* v3 stores `''`, not NULL, on Texas wells without a block or abstract.
+
+**Known differences that remain.**
+
+- `DirectionalSurveyIsPlanned`: v4 is NULL on wells without a survey. v3 was FALSE on 23,107 of
+  those and NULL on 3,906, with no rule that separates them; the loader writes FALSE. 584
+  wells are planned in v3 with no v4 survey flag at all, so they lose the flag. They have no
+  stations either. Worth a question to Novi.
+- `WellboreLateralLength`: filled on 18,727 wells against 68,973 (section 11). Nothing reads it.
+- No v4 source, left NULL: `WellType`, `IsHorizontalWell`, `HasPLSSData`, `WellboreLocations`,
+  `HasAccurateFirstProductionDate`, `IsSyntheticApi`, `CountyUnique`, `CurrentOperatorEntity`,
+  `OperatorEntity`. `curated.wells.well_type` then falls through to the Enverus value already
+  in its COALESCE. No reader of any of these was found.
+- `ForecastWellMonths` holds forecast rows only. v3 also carried 5,136,010 history rows
+  (`IsForecasted` = FALSE); `sql/10` never read them and nothing else does. They go at cutover.
+- `PermitID` differs on 0.13 % of wells (v4 carries a newer permit).
+
+**Dry run of the census against the live tables** (`--schema raw_novi --dry-run`, no writes):
+
+| Table | Wells remote / local | Wells to re-pull | Wells to delete |
+|---|---|---:|---:|
+| `WellMonths` | 66,021 / 66,021 | 0 | 0 |
+| `ForecastWellMonths` | 57,711 / 65,959 | all (first run) | 8,248 (history-only wells) |
+| `DirectionalSurveys` | 68,972 / 68,972 | 29,893 | 0 |
+
+`WellMonths` agrees to the millisecond: v4 `UPDATED_AT` is v3 `ModifiedAt`. Survey stamps differ
+on 43 % of wells with identical station counts, so the first run reloads surveys once. Section 5
+showed Novi restamps every station within 30 days, so expect a full survey reload about monthly
+(roughly 12 minutes of Supabase write, by the section 10 timing).
+
+**Not done.** No table has been written. `sql/75` (the side-by-side schema `raw_novi_v4`) is
+authored, not applied. The nightly does not call the loader. The Supabase write time of a full
+v4 load is still unmeasured, and so is a run from a GitHub Actions runner.
+
+**Order from here.** Apply `sql/75`; load `raw_novi_v4` in full; diff every row against
+`raw_novi`; run a second night into it to see a real incremental; then drop NOT NULL on the same
+unsourced columns in `raw_novi`, run the loader on it with `--confirm-live`, switch
+`scripts/run_daily.py` to the v4 loader, force one curated refresh, and drop `raw_novi_v4`.
+Each of those warehouse steps needs its own go.
+
+## 13. Side-by-side load and full diff, 2026-11-19
+
+With Michael's go, `sql/75` was applied and `raw_novi_v4` was loaded in full from v4, then every
+row was diffed against `raw_novi` inside Postgres
+(`python -m etl.novi_v4.load --schema raw_novi_v4 --diff`, read-only).
+
+**Load.** 22 minutes from the laptop, 13:19 to 13:41 local, 38.7M rows. The first attempt failed
+on its first table on a bug in the loader's COPY helper and rolled back with nothing written;
+fixed and covered by a test.
+
+| Table | Rows loaded | Time |
+|---|---:|---:|
+| `Wells`, `WellDetails`, `WellSpacing` | 95,990 / 95,990 / 63,914 | under 20 s each |
+| `WellMonths` | 5,241,013 | 2 min 44 s |
+| `ForecastWellMonths` | 17,217,480 | 10 min 26 s |
+| `DirectionalSurveys` | 15,954,057 | 8 min 20 s |
+
+`raw_novi_v4` is 7.6 GB on disk (`raw_novi` is 22.6 GB, bloated by the reconcile).
+
+**Diff, every row.**
+
+| Table | Common rows | v4 only / v3 only | Columns equal on every row | What differs |
+|---|---:|---|---|---|
+| `WellMonths` | 5,241,013 | 0 / 0 | 20 of 23 | `CumulativeWater` 0.062 % of rows, `CumulativeFlaredGas` 0.181 %, `Operator` 147 rows |
+| `ForecastWellMonths` | 17,217,480 | 0 / 0 | 10 of 13 | The three cumulative columns, 0.1 to 0.4 % of rows. Almost all are 1 to 2 units of rounding; 135 wells are off by more on gas |
+| `DirectionalSurveys` | 15,954,057 | 0 / 0 | 13 of 13 | nothing |
+| `WellSpacing` | 63,650 | 264 / 191 | 12 of 12 | nothing |
+| `Wells` | 95,985 | 5 / 0 | 40 of 52 | see below |
+| `WellDetails` | 95,985 | 5 / 0 | 80 of 100 | see below |
+
+All monthly volumes, producing days, months on production, sharing flags and the four per-day
+rates are equal on all 5,241,013 well-months. All forecast rates and monthly volumes are equal
+on all 17,217,480 rows. `LateralCloserXY` is equal on all 63,650 wells.
+
+Header differences, all 95,985 wells:
+
+- `DirectionalSurveyIsPlanned` 4,490 wells and `WellboreLateralLength` 50,246 wells: the two
+  known gaps from section 12.
+- `FirstCompletionProppantMass` 15,228 wells and `FirstCompletionFluidVolume` 8,656 wells: new at
+  full population, and noise. Every difference is 1 to 6 lb or gal, at most 6e-8 relative
+  (v4 ships a float, v3 an integer).
+- `SpacingIsChild` / `SpacingClosestWellXY` on 907 wells (copies of spacing columns that nothing
+  reads), `PermitID` 145, `SpudDate` 11, land grid and landing point on 1 or 2 wells.
+
+**Read.** The side-by-side copy reproduces `raw_novi` on every column that feeds a rate, a
+volume, a forecast, a survey or a spacing. What differs is listed above and in section 12, and
+none of it is read by a forecast or a cohort.
+
+**Not done.** A second night into `raw_novi_v4` (to see a real incremental with changed and
+deleted wells), the cutover of `raw_novi`, and the nightly switch. Each needs its own go.
+
+## 14. Incremental rehearsal and a stamp defect, 2026-11-19
+
+Before the real second night, the incremental path was exercised on the scratch copy: in each
+child table of `raw_novi_v4` one well's rows were removed, one row of a second well was removed,
+and a third well's rows were copied under a fake API. The loader should re-pull two wells and
+delete one.
+
+**Defect found.** The first rehearsal reloaded every table in full. The share's stamps are
+`TIMESTAMP_LTZ` and arrive in Pacific time with an offset; a Postgres `timestamp` column drops
+the offset, so the scratch copy held `ModifiedAt` 8 hours off UTC and every well's census
+differed. On a live cutover this would have meant a full 38M-row reload every night. The
+section 13 diff did not see it because it skipped the stamp columns.
+
+**Fix.** Stamps are converted to naive UTC in the translation SQL, rows and census alike
+(pinned by a test). The full diff now compares `ModifiedAt`.
+
+**Rehearsal after the fix.** 86 seconds for the three tables, from the laptop.
+
+| Table | Wells re-pulled | Wells deleted | Rows in / out |
+|---|---:|---:|---|
+| `WellMonths` | 2 | 1 | 414 / 388 |
+| `ForecastWellMonths` | 2 | 1 | 105 / 108 |
+| `DirectionalSurveys` | 2 | 1 | 290 / 332 |
+
+The full diff afterwards is identical to section 13 on every data column, so the scratch copy
+was repaired exactly. `ModifiedAt`:
+
+- `WellMonths`: equal on all 5,241,013 rows. The census will track v3 stamps exactly.
+- `Wells` / `WellDetails`: differ on 381 wells (headers are replaced whole, so this is harmless).
+- `ForecastWellMonths`: differ on 96.7 % of rows. v4's only stamp there is `CREATED_AT`, which is
+  not v3's `ModifiedAt`. Expected; it costs one full forecast reload at cutover.
+- `DirectionalSurveys`: differ on 45.7 % of rows, the restamping noted in section 12.
+
+A quiet night (nothing changed) costs the three censuses: under 2 minutes.
+
+**Still open.** The real second night, scheduled for 2026-11-20 after the v3 nightly, will show
+what a production day's changes look like. One `meta.etl_log` row
+(`v4 raw_novi_v4.ForecastWellMonths`, started 20:12 UTC) is left at `running` from the stopped
+first rehearsal; the nightly's stale-run sweep will close it.
+
+## 15. Second night, 2026-11-20: the forecast change check misses in-place revisions
+
+Run after the v3 nightly finished (11:44 UTC, no `running` rows; the stale row from section 14
+was swept). Share run `20261120_100520`. Scratch schema only; `raw_novi` untouched.
+
+**Run.** Dry run 67 s, load 5 min 33 s, no breaker.
+
+| Table | Wells re-pulled | Wells deleted | Rows in / out |
+|---|---:|---:|---|
+| `WellMonths` | 6,966 | 0 | 699,049 / 697,270 |
+| `ForecastWellMonths` | 2,074 | 27 | 531,625 / 518,161 |
+| `DirectionalSurveys` | 2,298 | 0 | 513,842 / 513,842 |
+
+Headers replaced whole: `Wells` / `WellDetails` 96,009 (+19), `WellSpacing` 63,948 (+34).
+Header keys now match v3 exactly (96,009 common, none on one side only).
+
+**The diff does not match section 13 on the forecast table.** Section 13 had every rate and
+monthly volume equal on 17,217,480 rows. Today, on 17,230,944 common rows:
+
+| Column | Rows differing | Share |
+|---|---:|---:|
+| `OilPerMonth` / `OilPerDay` | 109,829 / 73,647 | 0.64 % / 0.43 % |
+| `GasPerMonth` / `GasPerDay` | 174,532 / 154,798 | 1.01 % / 0.90 % |
+| `WaterPerMonth` / `WaterPerDay` | 260,089 / 242,206 | 1.51 % / 1.41 % |
+| `CumulativeOil` / `Gas` / `Water` | 356,232 / 554,296 / 442,171 | 2.07 % / 3.22 % / 2.57 % |
+
+**Cause: a loader defect, not a v3/v4 data difference.** Novi revised forecasts in place between
+share runs `20261119_100441` and `20261120_100520`: same row count per well, same `CREATED_AT`,
+different volumes. The forecast census keys on (row count, newest `CREATED_AT`), so it saw
+nothing. Checked directly: for well 4247538139 Snowflake today returns exactly v3's values
+(2026-10 oil 3,560 bbl/month in both) while the scratch copy still holds yesterday's 3,575, with
+identical stamps. Across the table, **2,289 of 57,747 wells** have a final forecast cumulative in
+Snowflake that differs from the scratch copy (a floor: a revision that kept the final cumulative
+would not show in this count). v3 caught them all, because the v3 file carries a `ModifiedAt`
+that moves (4,520 wells rewritten last night; the v4 census flagged 2,074).
+
+So section 11's reading that `CREATED_AT` is enough to detect forecast changes is wrong, and the
+loader as built would let about 4 % of forecast wells go stale per revision night. **This blocks
+cutover until fixed.** Two ways to fix it:
+
+1. Add a content checksum to the forecast census (final cumulative per stream plus the sum of
+   per-day rates, computed on both sides). Keeps the incremental; a revision that changes none
+   of those would still slip through.
+2. Pull the forecast table in full every night: about 10 minutes and 17 M rows rewritten nightly,
+   blind to nothing.
+
+`WellMonths` is not affected: its `ModifiedAt` equals v3 on all 5,242,792 common rows and every
+volume and rate column is still equal.
+
+**Other differences new today.**
+
+- Production-sharing flags differ on 2,205 well-months (2,105 wells), 1,997 of them the newest
+  month (2026-09): v3 says TRUE, v4 says FALSE for gas and water, volumes equal. These wells were
+  re-pulled today and Snowflake returns the same FALSE, so this is a real v3/v4 difference on a
+  freshly reported month, not staleness. `HasProductionSharing` follows on 14 wells. Watch
+  whether it closes as the month settles; a question for Novi if it does not.
+- `CumulativeFlaredGas` 18,805 rows (0.36 %, was 0.18 %); `CumulativeWater` 4,427 (was 3,246);
+  `MonthsOnProduction` 14 rows.
+- Rows only in v3: 384 well-months and 22,436 forecast rows. v3's upsert cannot delete, so these
+  are one night's stale rows on the v3 side (the class the section 10 reconcile cleared).
+- Header columns: as section 13 within a few rows (`DirectionalSurveyIsPlanned` 4,513 wells,
+  was 4,490).
+- `DirectionalSurveys`: all 13 data columns still equal on 15,954,057 rows. The 2,298 wells
+  re-pulled came back with identical data, so Novi restamps surveys without changing them;
+  that costs about 2.5 minutes a night and nothing else.
+
+**Fix (Michael chose option 1, 2026-11-20).** The forecast census now carries a content checksum
+per well: the sum over the well's rows of the v4 oil, gas and water cumulatives. The local side
+rebuilds the same integer from the stored monthly volumes, whose running sum is the v4 cumulative.
+A well is re-pulled when its row count, newest stamp or checksum differs. Only the forecast table
+carries one; `WellMonths` and `DirectionalSurveys` have a stamp that moves.
+
+Verified on the scratch copy the same morning:
+
+- The census flagged **2,291 wells** (the 2,289 counted above plus 2 whose final cumulative was
+  unchanged but whose shape moved). Re-pull: 762,782 rows, 2 min 44 s.
+- A second dry run straight after: **0 changed, 0 gone**, so both sides compute the same number
+  on all 57,747 wells.
+- Forecast diff against `raw_novi` afterwards: every per-day rate, monthly volume and
+  `MonthsOnProduction` equal again on all 17,230,944 common rows. Cumulatives differ on
+  0.28–0.56 % of rows (the rebasing class of section 13, 0.1–0.4 % then).
+
+Cost: the local side of the forecast census is a window over 17 M rows, so a quiet night's
+forecast check takes about 2 min 20 s instead of under a minute.
+
+Limit: a revision that changes per-day rates while leaving every monthly cumulative unchanged
+would not be seen. The monthly volumes are the cumulative differences, so that would be a
+rate-only restatement; none has been observed.
+
+## 16. Cutover decisions, 2026-11-20
+
+Michael's decisions. Nothing is applied yet; every step below is its own go.
+
+- **Date: Friday 2026-11-27**, right after the 05:00 CT nightly finishes (about 06:30 CT). The BOX
+  recon shadow week closes with the 11-26 nightly, so its inputs do not move mid-week.
+- **Planned-survey flag: take v4 as shipped.** 584 wells go from planned to not planned (4,513
+  differ in total); the tag rule and `etl/box_recon.py` read it. Ask Novi about the 584.
+- **Rule 4 wording changes at cutover:** per-day rates are computed in the loader by Novi's
+  formula (monthly volume / days in the calendar month, one decimal), not persisted as shipped.
+  They equal v3 on every row.
+
+Steps, in order:
+
+1. Code, no database change: a v4 step in `scripts/run_daily.py` behind a setting that defaults
+   to v3; `sql/76` dropping NOT NULL on the six columns v4 cannot fill in `raw_novi."Wells"` and
+   `"WellDetails"`; triage skill and CLAUDE.md wording. Merge PR 264.
+2. Apply `sql/76` live (metadata only; the v3 loader keeps working).
+3. `python -m etl.novi_v4.load --schema raw_novi --confirm-live`, the forecast table with
+   `--full --allow-breaker` (v3's 5,136,010 history rows go). About 20 minutes.
+4. `python -m etl.refresh --force`, then verify by identity and in the three apps.
+5. Flip the nightly setting to v4; watch the next 05:00 CT run.
+6. A week later: drop `raw_novi_v4`, retire the v3 sync and load code in a separate PR.
+
+Rollback until step 6: flip the setting back, run the v3 nightly with `--reconcile`, forced
+refresh.
+
+**Step 1 built, 2026-11-20 (code only, nothing applied).**
+
+- `scripts/run_daily.py` reads `NOVI_SOURCE`. Unset, blank or `v3`: the bulk-TSV sync and load,
+  unchanged. `v4`: no `novi.sync` step; `novi.load` is `etl.novi_v4.load.nightly_load`, which
+  writes the six live `raw_novi` tables, logs the share run id, and keeps going past a table
+  that fails (that table keeps its previous rows and the step fails with its error). Any other
+  value fails the Novi step and loads neither feed.
+- `.github/workflows/etl-nightly.yml` passes the repository variable `NOVI_SOURCE` with a `v3`
+  default. The flip (step 5) is `gh variable set NOVI_SOURCE --body v4`: no code change, no
+  merge, and the same command with `v3` flips back.
+- `sql/76_raw_novi_v4_nullable.sql` authored, **not applied**: drops NOT NULL on the six
+  unsourced columns of `raw_novi."Wells"` and `"WellDetails"`. A test pins it to the same list
+  as sql/75 and sql/02.
+- `etl-nightly-triage` skill: a section for nights on v4.
+- Left for the flip itself (step 5), because they describe the live state: the rule 4 wording
+  and the data-flow paragraph in the workspace CLAUDE.md.
