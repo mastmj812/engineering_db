@@ -727,3 +727,69 @@ A quiet night (nothing changed) costs the three censuses: under 2 minutes.
 what a production day's changes look like. One `meta.etl_log` row
 (`v4 raw_novi_v4.ForecastWellMonths`, started 20:12 UTC) is left at `running` from the stopped
 first rehearsal; the nightly's stale-run sweep will close it.
+
+## 15. Second night, 2026-11-20: the forecast change check misses in-place revisions
+
+Run after the v3 nightly finished (11:44 UTC, no `running` rows; the stale row from section 14
+was swept). Share run `20261120_100520`. Scratch schema only; `raw_novi` untouched.
+
+**Run.** Dry run 67 s, load 5 min 33 s, no breaker.
+
+| Table | Wells re-pulled | Wells deleted | Rows in / out |
+|---|---:|---:|---|
+| `WellMonths` | 6,966 | 0 | 699,049 / 697,270 |
+| `ForecastWellMonths` | 2,074 | 27 | 531,625 / 518,161 |
+| `DirectionalSurveys` | 2,298 | 0 | 513,842 / 513,842 |
+
+Headers replaced whole: `Wells` / `WellDetails` 96,009 (+19), `WellSpacing` 63,948 (+34).
+Header keys now match v3 exactly (96,009 common, none on one side only).
+
+**The diff does not match section 13 on the forecast table.** Section 13 had every rate and
+monthly volume equal on 17,217,480 rows. Today, on 17,230,944 common rows:
+
+| Column | Rows differing | Share |
+|---|---:|---:|
+| `OilPerMonth` / `OilPerDay` | 109,829 / 73,647 | 0.64 % / 0.43 % |
+| `GasPerMonth` / `GasPerDay` | 174,532 / 154,798 | 1.01 % / 0.90 % |
+| `WaterPerMonth` / `WaterPerDay` | 260,089 / 242,206 | 1.51 % / 1.41 % |
+| `CumulativeOil` / `Gas` / `Water` | 356,232 / 554,296 / 442,171 | 2.07 % / 3.22 % / 2.57 % |
+
+**Cause: a loader defect, not a v3/v4 data difference.** Novi revised forecasts in place between
+share runs `20261119_100441` and `20261120_100520`: same row count per well, same `CREATED_AT`,
+different volumes. The forecast census keys on (row count, newest `CREATED_AT`), so it saw
+nothing. Checked directly: for well 4247538139 Snowflake today returns exactly v3's values
+(2026-10 oil 3,560 bbl/month in both) while the scratch copy still holds yesterday's 3,575, with
+identical stamps. Across the table, **2,289 of 57,747 wells** have a final forecast cumulative in
+Snowflake that differs from the scratch copy (a floor: a revision that kept the final cumulative
+would not show in this count). v3 caught them all, because the v3 file carries a `ModifiedAt`
+that moves (4,520 wells rewritten last night; the v4 census flagged 2,074).
+
+So section 11's reading that `CREATED_AT` is enough to detect forecast changes is wrong, and the
+loader as built would let about 4 % of forecast wells go stale per revision night. **This blocks
+cutover until fixed.** Two ways to fix it:
+
+1. Add a content checksum to the forecast census (final cumulative per stream plus the sum of
+   per-day rates, computed on both sides). Keeps the incremental; a revision that changes none
+   of those would still slip through.
+2. Pull the forecast table in full every night: about 10 minutes and 17 M rows rewritten nightly,
+   blind to nothing.
+
+`WellMonths` is not affected: its `ModifiedAt` equals v3 on all 5,242,792 common rows and every
+volume and rate column is still equal.
+
+**Other differences new today.**
+
+- Production-sharing flags differ on 2,205 well-months (2,105 wells), 1,997 of them the newest
+  month (2026-09): v3 says TRUE, v4 says FALSE for gas and water, volumes equal. These wells were
+  re-pulled today and Snowflake returns the same FALSE, so this is a real v3/v4 difference on a
+  freshly reported month, not staleness. `HasProductionSharing` follows on 14 wells. Watch
+  whether it closes as the month settles; a question for Novi if it does not.
+- `CumulativeFlaredGas` 18,805 rows (0.36 %, was 0.18 %); `CumulativeWater` 4,427 (was 3,246);
+  `MonthsOnProduction` 14 rows.
+- Rows only in v3: 384 well-months and 22,436 forecast rows. v3's upsert cannot delete, so these
+  are one night's stale rows on the v3 side (the class the section 10 reconcile cleared).
+- Header columns: as section 13 within a few rows (`DirectionalSurveyIsPlanned` 4,513 wells,
+  was 4,490).
+- `DirectionalSurveys`: all 13 data columns still equal on 15,954,057 rows. The 2,298 wells
+  re-pulled came back with identical data, so Novi restamps surveys without changing them;
+  that costs about 2.5 minutes a night and nothing else.
