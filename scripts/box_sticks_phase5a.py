@@ -130,7 +130,7 @@ WCA_PAIR = {"WCA_1", "WCA_2"}
 
 
 def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirror: dict | None = None,
-          flat: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
+          flat: bool = False, rule: int = 1) -> tuple[pd.DataFrame, pd.DataFrame]:
     """sticks: key, basin, pad_id, bench, target_tvd_ft, geom. wells: classify() output with cls not None.
     gen: basin -> the set's cfg['generator']. Returns (stick status frame, judged pair frame).
 
@@ -138,7 +138,9 @@ def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirro
     {(pad_id, bench): target TVD}} is variant B, which follows three generator rules: no test between WCA_1 and WCA_2 in a
     co-developed DSU; a well with no depth evidence is taken at the DSU's landing of its tagged bench where that bench
     kept one (family only otherwise); crowded = at least half of the alongside length inside the sideways limit (the
-    generator's median distance), alongside >= min_overlap. flat = flat-ended corridors (gate 5b; etl/box_recon.py)."""
+    generator's median distance), alongside >= min_overlap. flat = flat-ended corridors (gate 5b; etl/box_recon.py).
+    rule = 1: same code within 500 ft or any tag within 150 ft (sql/68's guard); rule = 2 (box_recon_2): within the set's
+    own same_dv_ft, whatever the tag."""
     L = legs_frame(sticks)
     out_pairs = []
     for basin in BASINS:
@@ -174,7 +176,8 @@ def judge(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict[str, dict], mirro
             p["ov_gate"] = share(GATE_FT * FT, allr)
         p["dz"] = p["depth_ft"] - p["target_tvd_ft"]
         nod = p["depth_ft"].isna()
-        p["same_bench"] = np.where(nod, p["fam"] == p["sfam"], ((p["code"] == p["bench"]) & (p["dz"].abs() <= SAME_CODE_FT)) | (p["dz"].abs() <= ANY_TAG_FT))
+        landing = (p["dz"].abs() <= same_dv) if rule == 2 else (((p["code"] == p["bench"]) & (p["dz"].abs() <= SAME_CODE_FT)) | (p["dz"].abs() <= ANY_TAG_FT))
+        p["same_bench"] = np.where(nod, p["fam"] == p["sfam"], landing)
         if mirror is not None:
             p["same_bench"] = p["same_bench"] & ~cross
 

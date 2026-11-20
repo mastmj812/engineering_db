@@ -1,0 +1,4 @@
+key,basin,pad_id,bench,by_new_r1,survived,well,status_r1,by_new_r2,status_r2,counts_as_inventory
+10596-WCB_1-01,delaware,10596,WCB_1,True,False,3002551957,producing,False,open,True
+11302-WCB_2-04,delaware,11302,WCB_2,True,False,3002553621,conflict,False,open,True
+20091-MS-01,midland,20091,MS,True,False,4231746454,producing,False,open,True

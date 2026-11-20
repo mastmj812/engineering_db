@@ -19,8 +19,11 @@ The rule (decisions of 2026-11-18, plan decision table):
     sets `pending`; an approved permit sets `permitted`; both stay in inventory.
   * grain = stick LEG against well. Share of the leg inside the well's 150 ft (46 m) flat-ended corridor: one well at
     >= 0.5 = matched; two or more at >= 0.5, or the best in [0.3, 0.5) = conflict.
-  * same bench = same code within 500 ft of the stick's target TVD, or within 150 ft whatever the tag; never WCA_1
-    against WCA_2 in a DSU the set recorded as co-developed. A well with no depth evidence is taken at the DSU's landing
+  * same landing (box_recon_2, 2026-11-20) = the well's depth within the record set's OWN same-landing window of the
+    stick's target TVD (box.location_set.cfg -> generator -> same_dv_ft, 150 ft today), whatever the tag; never WCA_1
+    against WCA_2 in a DSU the set recorded as co-developed. box_recon_1 used sql/68's guard instead (same code within
+    500 ft, or within 150 ft whatever the tag), which took out sticks the generator had placed on purpose 250 to 500 ft
+    over or under a same-tag producer (docs/box_sticks/phase5d-2026-11-19/matched_wells_vs_generator.md). A well with no depth evidence is taken at the DSU's landing
     of its tagged bench where that bench has a row, on its formation family otherwise (match_basis = 'planned').
   * crowded = an open / permitted / pending stick inside the record set's OWN no-place envelope (box.location_set.cfg ->
     generator) of a producing well: alongside >= min_overlap, and at least half of the alongside length inside the
@@ -46,11 +49,11 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-VERSION = "box_recon_1"
+VERSION = "box_recon_2"
 TABLES = ("meta.box_recon_run", "curated.box_location_status", "curated.box_location_status_log", "curated.box_dsu_bench_stale")
 CORRIDOR_M = 46                     # +-150 ft (sql/20)
 MATCH, CONFLICT = 0.5, 0.3          # 0.3: Michael 2026-11-18 (the generator places a row beside a well alongside under 30 %)
-SAME_CODE_FT, ANY_TAG_FT = 500, 150  # sql/68
+SAME_CODE_FT, ANY_TAG_FT = 500, 150  # sql/68; box_recon_1 only (RULE1_JUDGE_SQL, kept for comparison)
 MIN_DEPTH_FT = 4000                 # box.tag_scoreboard.MIN_EVIDENCE_TVD_FT
 STEP_OUT_DEG = 15                   # box.sticks.core.STEP_OUT_DEG
 GATE_M = 804.672                    # 2,640 ft: the generator's pair gate; "alongside" is measured inside it
@@ -150,7 +153,7 @@ scored AS (
 judged AS (
     SELECT p.*,
            NOT p.wca_cross AND CASE WHEN p.depth_ft IS NULL THEN p.fam = p.sfam
-                                    ELSE (p.code = p.bench AND abs(p.dz) <= %(same_code_ft)s) OR abs(p.dz) <= %(any_tag_ft)s END AS same_bench,
+                                    ELSE {{same_landing}} END AS same_bench,
            p.cls = 'producing' AND p.ov_gate >= p.min_ov AND
                CASE WHEN p.depth_ft IS NULL THEN p.fam = p.sfam AND p.ov_same >= 0.5 * p.ov_gate
                     WHEN abs(p.dz) <= p.same_dv_ft THEN NOT p.wca_cross AND p.ov_same >= 0.5 * p.ov_gate
@@ -262,7 +265,11 @@ FROM agg a
 JOIN st ON st.set_id = a.set_id AND st.pad_id = a.pad_id AND st.code = a.code
 """
 
-JUDGE_SQL = _JUDGE % PARAMS                 # literal SQL: the constants rendered once, no bind parameters (CREATE TABLE AS takes none)
+_SAME_LANDING = {"box_recon_1": f"(p.code = p.bench AND abs(p.dz) <= {SAME_CODE_FT}) OR abs(p.dz) <= {ANY_TAG_FT}",
+                 "box_recon_2": "abs(p.dz) <= p.same_dv_ft"}
+_JUDGE_RENDERED = _JUDGE % PARAMS           # literal SQL: the constants rendered once, no bind parameters (CREATE TABLE AS takes none)
+JUDGE_SQL = _JUDGE_RENDERED.replace("{same_landing}", _SAME_LANDING[VERSION])
+RULE1_JUDGE_SQL = _JUDGE_RENDERED.replace("{same_landing}", _SAME_LANDING["box_recon_1"])   # never run by the nightly; measurements only
 STALE_SQL = _STALE % PARAMS                 # still has {src}
 STATUS_COLS = ("set_id", "location_id", "basin", "pad_id", "formation_blueox", "n_legs", "status", "counts_as_inventory", "legs_matched",
                "matched_api10", "match_overlap", "match_basis", "conflict_reason", "pending_api10", "permit_api10", "crowded", "crowd_api10")

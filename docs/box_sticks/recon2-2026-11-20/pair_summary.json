@@ -1,0 +1,102 @@
+{
+ "bars": [
+  {
+   "rule": 1,
+   "basin": "delaware",
+   "taken_out_by_hidden": 249,
+   "of_those_gone_in_regen": 246,
+   "taken_out_agree_pct": 98.8,
+   "left_in_touched": 268,
+   "of_those_still_in_regen": 107,
+   "left_in_agree_pct": 39.9,
+   "hidden_producers": 412,
+   "capture_wells": 195,
+   "capture_pct": 47.3
+  },
+  {
+   "rule": 1,
+   "basin": "midland",
+   "taken_out_by_hidden": 370,
+   "of_those_gone_in_regen": 363,
+   "taken_out_agree_pct": 98.1,
+   "left_in_touched": 254,
+   "of_those_still_in_regen": 98,
+   "left_in_agree_pct": 38.6,
+   "hidden_producers": 333,
+   "capture_wells": 233,
+   "capture_pct": 70.0
+  },
+  {
+   "rule": 2,
+   "basin": "delaware",
+   "taken_out_by_hidden": 248,
+   "of_those_gone_in_regen": 245,
+   "taken_out_agree_pct": 98.8,
+   "left_in_touched": 272,
+   "of_those_still_in_regen": 109,
+   "left_in_agree_pct": 40.1,
+   "hidden_producers": 412,
+   "capture_wells": 194,
+   "capture_pct": 47.1
+  },
+  {
+   "rule": 2,
+   "basin": "midland",
+   "taken_out_by_hidden": 369,
+   "of_those_gone_in_regen": 362,
+   "taken_out_agree_pct": 98.1,
+   "left_in_touched": 255,
+   "of_those_still_in_regen": 98,
+   "left_in_agree_pct": 38.4,
+   "hidden_producers": 333,
+   "capture_wells": 231,
+   "capture_pct": 69.4
+  }
+ ],
+ "put_back": [
+  {
+   "basin": "delaware",
+   "put_back": 2,
+   "still_in_regen": 0,
+   "still_in_regen_pct": 0.0
+  },
+  {
+   "basin": "midland",
+   "put_back": 1,
+   "still_in_regen": 0,
+   "still_in_regen_pct": 0.0
+  }
+ ],
+ "capture": [
+  {
+   "basin": "delaware",
+   "wells_lost": [
+    "3001556040",
+    "3001557552",
+    "3002551957",
+    "3002555544",
+    "3002555905",
+    "4230137771",
+    "4230137773"
+   ],
+   "wells_gained": [
+    "3001556419",
+    "3001556531",
+    "3002555535",
+    "3002555903",
+    "4230137751",
+    "4230137772"
+   ]
+  },
+  {
+   "basin": "midland",
+   "wells_lost": [
+    "4231746454",
+    "4231747145"
+   ],
+   "wells_gained": []
+  }
+ ],
+ "stopped_in_regen": 5299,
+ "carried": 77716
+}

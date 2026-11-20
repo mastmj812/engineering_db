@@ -1,0 +1,161 @@
+{
+ "checks": [
+  {
+   "ok": true,
+   "check": "sql/74 (with the box_recon_2 comment) applies: 33 checks ok"
+  },
+  {
+   "ok": true,
+   "check": "rule 1: run 3 first_run, run 4 changed 0; producing 89, conflict 22, crowded 117, inventory 78,972 of 79,200"
+  },
+  {
+   "ok": true,
+   "check": "run 5 written on box_recon_2: changed 157 with the breaker limit forced to 1 (a rule change is not held)"
+  },
+  {
+   "ok": true,
+   "check": "every log row says rule_change (producing->open 79, permitted->open 33, pending->open 23, conflict->open 18, producing->permitted 3, conflict->permitted 1)"
+  },
+  {
+   "ok": true,
+   "check": "one row per record stick still (79,200); producing 89 -> 7, conflict 22 -> 3, crowded 117 -> 117, inventory 78,972 -> 79,073"
+  },
+  {
+   "ok": true,
+   "check": "run 6 written, changed 0, cause well (51.8 s)"
+  },
+  {
+   "ok": true,
+   "check": "0 log rows"
+  },
+  {
+   "ok": true,
+   "check": "status table identical but for the run id"
+  }
+ ],
+ "failed": [],
+ "runs": [
+  {
+   "run_id": 3,
+   "status": "written",
+   "predicate_version": "box_recon_1",
+   "changed": 79200,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 50.5,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 48,
+     "pending": 19,
+     "conflict": 2,
+     "inventory": 33072,
+     "permitted": 74,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45282,
+     "sticks": 46062,
+     "crowded": 69,
+     "pending": 34,
+     "conflict": 20,
+     "inventory": 45900,
+     "permitted": 653,
+     "producing": 73
+    }
+   }
+  },
+  {
+   "run_id": 4,
+   "status": "written",
+   "predicate_version": "box_recon_1",
+   "changed": 0,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 49.6,
+   "counts": {
+    "midland": {
+     "open": 33027,
+     "sticks": 33138,
+     "crowded": 48,
+     "pending": 19,
+     "conflict": 2,
+     "inventory": 33072,
+     "permitted": 74,
+     "producing": 16
+    },
+    "delaware": {
+     "open": 45282,
+     "sticks": 46062,
+     "crowded": 69,
+     "pending": 34,
+     "conflict": 20,
+     "inventory": 45900,
+     "permitted": 653,
+     "producing": 73
+    }
+   }
+  },
+  {
+   "run_id": 5,
+   "status": "written",
+   "predicate_version": "box_recon_2",
+   "changed": 157,
+   "breaker_limit": 1,
+   "stale_dsu_bench": 3,
+   "seconds": 51.7,
+   "counts": {
+    "midland": {
+     "open": 33056,
+     "sticks": 33138,
+     "crowded": 48,
+     "pending": 8,
+     "inventory": 33087,
+     "permitted": 71,
+     "producing": 3
+    },
+    "delaware": {
+     "open": 45406,
+     "sticks": 46062,
+     "crowded": 69,
+     "pending": 22,
+     "conflict": 3,
+     "inventory": 45986,
+     "permitted": 627,
+     "producing": 4
+    }
+   }
+  },
+  {
+   "run_id": 6,
+   "status": "written",
+   "predicate_version": "box_recon_2",
+   "changed": 0,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 3,
+   "seconds": 51.8,
+   "counts": {
+    "midland": {
+     "open": 33056,
+     "sticks": 33138,
+     "crowded": 48,
+     "pending": 8,
+     "inventory": 33087,
+     "permitted": 71,
+     "producing": 3
+    },
+    "delaware": {
+     "open": 45406,
+     "sticks": 46062,
+     "crowded": 69,
+     "pending": 22,
+     "conflict": 3,
+     "inventory": 45986,
+     "permitted": 627,
+     "producing": 4
+    }
+   }
+  }
+ ]
+}

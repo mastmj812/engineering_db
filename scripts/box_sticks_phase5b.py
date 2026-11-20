@@ -33,15 +33,15 @@ def wells_frame(run: Path) -> pd.DataFrame:
     return w
 
 
-def reference(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict, mirror: dict) -> pd.DataFrame:
+def reference(sticks: pd.DataFrame, wells: pd.DataFrame, gen: dict, mirror: dict, rule: int = 2) -> pd.DataFrame:
     """One row per stick: status (open / permitted / pending / producing / conflict), crowded, the wells. Only a producing
     well takes a stick out; a drilled-not-producing well sets pending, a permit sets permitted."""
-    a, _ = p5.judge(sticks, wells[wells["cls"].isin(["producing", "permit"])], gen, mirror, flat=True)
+    a, _ = p5.judge(sticks, wells[wells["cls"].isin(["producing", "permit"])], gen, mirror, flat=True, rule=rule)
     pend = wells[wells["cls"] == "drilled"].assign(cls="permit")
     if pend.empty:
         s = a.assign(pending_api10=None)
     else:
-        b, _ = p5.judge(sticks, pend, gen, mirror, flat=True)
+        b, _ = p5.judge(sticks, pend, gen, mirror, flat=True, rule=rule)
         s = a.merge(b[["key", "permit_api10"]].rename(columns={"permit_api10": "pending_api10"}), on="key", how="left")
     s["status"] = np.where(s["status"].isin(OUT), s["status"], np.where(s["pending_api10"].notna(), "pending", s["status"]))
     s["crowded"] = s["crowd_api10"].notna() & ~s["status"].isin(OUT)

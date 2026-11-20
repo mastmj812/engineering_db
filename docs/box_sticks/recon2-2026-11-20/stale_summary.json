@@ -1,0 +1,40 @@
+[
+ {
+  "basin": "delaware",
+  "touched_dsu_bench": 156,
+  "new_producers": 305,
+  "sticks_before": 450,
+  "sticks_regenerated": 178,
+  "sticks_total": 166,
+  "sticks_total_err_pct": -6.7,
+  "sticks_mae": 0.513,
+  "sticks_exact_pct": 58.3,
+  "stick_level_total": 272,
+  "stick_level_total_err_pct": 52.8,
+  "stick_level_mae": 0.705,
+  "stick_level_exact_pct": 55.8,
+  "subtraction_total": 179,
+  "subtraction_total_err_pct": 0.6,
+  "subtraction_mae": 0.571,
+  "subtraction_exact_pct": 55.8
+ },
+ {
+  "basin": "midland",
+  "touched_dsu_bench": 156,
+  "new_producers": 295,
+  "sticks_before": 534,
+  "sticks_regenerated": 192,
+  "sticks_total": 208,
+  "sticks_total_err_pct": 8.3,
+  "sticks_mae": 0.474,
+  "sticks_exact_pct": 62.8,
+  "stick_level_total": 255,
+  "stick_level_total_err_pct": 32.8,
+  "stick_level_mae": 0.635,
+  "stick_level_exact_pct": 53.8,
+  "subtraction_total": 253,
+  "subtraction_total_err_pct": 31.8,
+  "subtraction_mae": 0.724,
+  "subtraction_exact_pct": 49.4
+ }
+]

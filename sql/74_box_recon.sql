@@ -145,7 +145,7 @@ COMMENT ON TABLE curated.box_location_status IS
 COMMENT ON COLUMN curated.box_location_status.status IS
     'open: no match. permitted: an approved permit lies along >= 50 % of a leg (flag; still inventory). pending: a well that is drilled but not yet '
     'producing lies along >= 50 % of a leg (flag; still inventory; re-judged the night it produces). producing: a producing well lies along >= 50 % of '
-    'a leg, inside its 150 ft corridor, same bench (same code within 500 ft TVD, or within 150 ft whatever the tag). conflict: a producing well '
+    'a leg, inside its 150 ft corridor, at the same landing (box_recon_2: depth within the record set''s own same-landing window, 150 ft today, whatever the tag). conflict: a producing well '
     'alongside 30 to 50 % of a leg, or two producing wells on one leg; not inventory, listed for review.';
 COMMENT ON COLUMN curated.box_location_status.counts_as_inventory IS
     'TRUE for open / permitted / pending sticks that are not crowded. The undrilled count once gate 5 lets this table drive it.';

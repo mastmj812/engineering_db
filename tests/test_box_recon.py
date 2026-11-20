@@ -40,7 +40,12 @@ def test_judge_and_stale_are_single_read_only_selects_with_the_constants_rendere
     j = br.JUDGE_SQL
     assert ">= 0.5" in j and ">= 0.3" in j and ">= 0.2" not in j
     assert j.count("'endcap=flat'") == 4                                             # match, same landing, gate, stacked: all flat-ended
-    assert ", 46, 'endcap=flat'" in j and "<= 500" in j and "<= 150" in j and "804.672" in j
+    assert ", 46, 'endcap=flat'" in j and "804.672" in j
+    assert br.VERSION == "box_recon_2" and "ELSE abs(p.dz) <= p.same_dv_ft END AS same_bench" in j      # the set's own window, tag-blind
+    assert "<= 500" not in j and "{same_landing}" not in j and "p.code = p.bench" not in j
+    r1 = br.RULE1_JUDGE_SQL                                                           # sql/68's guard: comparison only
+    assert "(p.code = p.bench AND abs(p.dz) <= 500) OR abs(p.dz) <= 150" in r1 and r1 != j
+    assert r1.replace("(p.code = p.bench AND abs(p.dz) <= 500) OR abs(p.dz) <= 150", "abs(p.dz) <= p.same_dv_ft") == j   # the one change
     assert "WHEN k.legs_matched > 0 THEN 'producing'" in j                           # only a producing well takes a stick out
     assert "cls = 'producing' AND ov >= 0.5" in j and "cls = 'pending' AND ov >= 0.5" in j and "cls = 'permit' AND ov >= 0.5" in j
     assert "p.cls = 'producing' AND p.ov_gate >= p.min_ov" in j                      # crowded: producing wells only, median form

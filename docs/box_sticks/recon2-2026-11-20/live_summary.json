@@ -1,0 +1,155 @@
+{
+ "predicate_version": "box_recon_2",
+ "set_ids": [
+  16,
+  17
+ ],
+ "seconds_read_only_pass": 143.2,
+ "uses_stick_index": true,
+ "R1_agreement": [
+  {
+   "basin": "delaware",
+   "sticks": 46062,
+   "same_status_pct": 99.993,
+   "same_crowded_pct": 99.967,
+   "status_differs": 3,
+   "crowded_differs": 15
+  },
+  {
+   "basin": "midland",
+   "sticks": 33138,
+   "same_status_pct": 100.0,
+   "same_crowded_pct": 99.943,
+   "status_differs": 0,
+   "crowded_differs": 19
+  }
+ ],
+ "R3_day0_rule2": [
+  {
+   "basin": "delaware",
+   "sticks": 46062,
+   "open": 45404,
+   "permitted": 629,
+   "pending": 22,
+   "producing": 4,
+   "conflict": 3,
+   "crowded": 69,
+   "inventory": 45986,
+   "producing_or_conflict_pct": 0.015,
+   "crowded_pct": 0.15
+  },
+  {
+   "basin": "midland",
+   "sticks": 33138,
+   "open": 33056,
+   "permitted": 71,
+   "pending": 8,
+   "producing": 3,
+   "conflict": 0,
+   "crowded": 48,
+   "inventory": 33087,
+   "producing_or_conflict_pct": 0.009,
+   "crowded_pct": 0.145
+  }
+ ],
+ "day0_rule1": [
+  {
+   "basin": "delaware",
+   "sticks": 46062,
+   "open": 45280,
+   "permitted": 655,
+   "pending": 34,
+   "producing": 73,
+   "conflict": 20,
+   "crowded": 69,
+   "inventory": 45900,
+   "producing_or_conflict_pct": 0.202,
+   "crowded_pct": 0.15
+  },
+  {
+   "basin": "midland",
+   "sticks": 33138,
+   "open": 33027,
+   "permitted": 74,
+   "pending": 19,
+   "producing": 16,
+   "conflict": 2,
+   "crowded": 48,
+   "inventory": 33072,
+   "producing_or_conflict_pct": 0.054,
+   "crowded_pct": 0.145
+  }
+ ],
+ "stale_dsu_bench": 3,
+ "R4": {
+  "sticks_differ": 157,
+  "explained": 101,
+  "other_way": 0,
+  "unexplained": 56,
+  "transitions": [
+   {
+    "basin_r1": "delaware",
+    "status_r1": "conflict",
+    "status_r2": "open",
+    "sticks": 16
+   },
+   {
+    "basin_r1": "delaware",
+    "status_r1": "conflict",
+    "status_r2": "permitted",
+    "sticks": 1
+   },
+   {
+    "basin_r1": "delaware",
+    "status_r1": "pending",
+    "status_r2": "open",
+    "sticks": 12
+   },
+   {
+    "basin_r1": "delaware",
+    "status_r1": "permitted",
+    "status_r2": "open",
+    "sticks": 30
+   },
+   {
+    "basin_r1": "delaware",
+    "status_r1": "producing",
+    "status_r2": "open",
+    "sticks": 66
+   },
+   {
+    "basin_r1": "delaware",
+    "status_r1": "producing",
+    "status_r2": "permitted",
+    "sticks": 3
+   },
+   {
+    "basin_r1": "midland",
+    "status_r1": "conflict",
+    "status_r2": "open",
+    "sticks": 2
+   },
+   {
+    "basin_r1": "midland",
+    "status_r1": "pending",
+    "status_r2": "open",
+    "sticks": 11
+   },
+   {
+    "basin_r1": "midland",
+    "status_r1": "permitted",
+    "status_r2": "open",
+    "sticks": 3
+   },
+   {
+    "basin_r1": "midland",
+    "status_r1": "producing",
+    "status_r2": "open",
+    "sticks": 13
+   }
+  ],
+  "crowded_flag_differs": 0,
+  "inventory_back_in": 101,
+  "inventory_newly_out": 0
+ }
+}

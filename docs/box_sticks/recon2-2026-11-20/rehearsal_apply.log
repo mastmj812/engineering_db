@@ -1,0 +1,39 @@
+[1/3] sql/74: nightly BOX sticks reconciliation tables (run twice)
+    target (IPv4Address('172.17.0.2'), 5432, 'postgres')
+[2/3] validate
+    ok   meta.box_recon_run exists
+    ok   meta.box_recon_run is commented
+    ok   analyst_ro can read meta.box_recon_run
+    ok   analyst_ro cannot write meta.box_recon_run
+    ok   curated.box_location_status exists
+    ok   curated.box_location_status is commented
+    ok   analyst_ro can read curated.box_location_status
+    ok   analyst_ro cannot write curated.box_location_status
+    ok   curated.box_location_status_log exists
+    ok   curated.box_location_status_log is commented
+    ok   analyst_ro can read curated.box_location_status_log
+    ok   analyst_ro cannot write curated.box_location_status_log
+    ok   curated.box_dsu_bench_stale exists
+    ok   curated.box_dsu_bench_stale is commented
+    ok   analyst_ro can read curated.box_dsu_bench_stale
+    ok   analyst_ro cannot write curated.box_dsu_bench_stale
+    ok   indexes exist (8; missing [])
+    ok   constraints exist (6; missing [])
+    ok   the second apply changed no row (0,0,0,0 -> 0,0,0,0; run, status, log, stale)
+    ok   the new tables are empty (0,0,0,0): the first nightly fills them
+    ok   schema box untouched by identity (sets, stick rows, locations, record sets = (4, 159738, 335352, '16,17'))
+    ok   etl.box_recon sees every table it writes
+    ok   EXPLAIN of the nightly judge names box_location_stick_geog_gix
+    ok   the judge returns one row per record stick (79,200 rows, 79,200 locations, 79,200 record sticks)
+[3/3] smoke (inside a savepoint, rolled back)
+    ok   a run row and four status rows insert
+    ok   a producing stick counted as inventory is refused
+    ok   a producing stick without its well is refused
+    ok   a crowded stick that is producing is refused
+    ok   a crowded stick counted as inventory is refused
+    ok   a stale estimate that is not the lower of the two is refused
+    ok   a stale row whose well list is not its count is refused
+    ok   a run row that wrote without status written is refused
+    ok   the smoke rows are gone
+COMMITTED
+all checks passed
