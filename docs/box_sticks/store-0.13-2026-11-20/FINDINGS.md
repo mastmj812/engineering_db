@@ -94,3 +94,19 @@ them.
 - PR #268 is not merged; the set's `code_sha` is a commit of that branch, which stays in history when the PR merges (merge
   commit, not squash).
 - The Midland needs no 0.13 set (identical on the same inputs).
+
+## Record flip (2026-11-20 22:15 UTC, Michael: "Go flip set 21")
+
+Dry run first (7 of 7 checks, rolled back), then the flip (the same 7, committed; `record_flip.log`). Verified from a second
+read-only connection:
+
+| | After the flip |
+|---|---|
+| Delaware record | set 21 (`box_sticks_0.13`); set 16 superseded by 21, kept |
+| Midland record | set 17, unchanged |
+| Record sticks | 79,270 (46,132 + 33,138) |
+| Stick and location rows | 205,870 and 337,151, unchanged: no stick row was touched |
+| Forecast records | runs 30 and 32, unchanged |
+| Nightly reconciliation tables | still the 79,200 rows of sets 16 and 17 until the next nightly, which re-judges on set 21 and logs it as a set change |
+
+The title of this file is from the store; since the flip, set 21 IS the Delaware record.
