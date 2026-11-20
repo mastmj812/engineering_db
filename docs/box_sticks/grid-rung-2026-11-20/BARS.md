@@ -14,21 +14,21 @@ reconciliation, any regeneration or record flip (each its own explicit go).
 ## The two changes proposed
 
 **1. A `grid` rung in place of the `offset` rung.** Where a Delaware bench in a DSU would take its landing from the offset
-rung, it takes it from the grid: the bench's gridded top plus the bench's median fractional position times the gridded
+rung, it takes it from the grid: the bench's gridded top plus the bench's fractional position times the gridded
 thickness there. The fraction is learned per bench from producing wells with depth evidence whose tag sits in its own
-gridded interval. Grids: `Grids_10-19-26` (V5).
+gridded interval, **regionally** (revision 1, below). Grids: `Grids_10-19-26` (V5).
 
 | Bench | Interval | In the grid rung |
 |---|---|---|
 | BS1_S | `1BSPGS` to `2BSPGC` | yes |
 | BS2_S | `2BSPGS` to `3BSPGC` | yes |
 | WCA_1, WCA_2 | `WOLFCAMP_A` to `WOLFCAMP-B1` | yes |
-| BS3_C, BS2_C | | **no** (the grid lost to the offset rung there); they keep the offset rung |
-| BS3_S, WCXY | bounded by the XY top | **no**, because the XY top has no arbiter role. See question 1 |
+| BS3_C, BS2_C | `3BSPGC` to `3BSPGS`; `2BSPGC` to `2BSPGS` | **candidates** (revision 1): with a basin-wide fraction the grid lost to the offset rung; with the regional fraction it did not. G1 decides per bench |
+| BS3_S, WCXY | `3BSPGS` to `WOLFCAMP_XY`; `WOLFCAMP_XY` to `WOLFCAMP_A` | **yes, for depth only** (Michael 2026-11-20). The XY top still decides no tag and no bench membership |
 | Avalon, WCB_1, WCB_2, WCC, WCD | no trusted surface pair | no |
 
 **2. A bound on every carried landing.** A thickness, bracket or offset landing that falls more than 150 ft outside its
-bench's gridded interval is **pulled to the grid's prediction** and flagged `grid_bounded` on the bench and its sticks. The
+bench's gridded interval is **pulled to the grid's prediction** (Michael 2026-11-20: pull, not flag only) and flagged `grid_bounded` on the bench and its sticks. The
 same benches as the table, plus BS3_C and BS2_C (the interval is trusted there even where a single fraction is not). Direct
 landings are never bounded; a direct landing outside the interval is only flagged `outside_grid`.
 
@@ -60,7 +60,40 @@ G1 decides change 1; G2 decides change 2. If one fails, it is reported as failed
 - The 1,013 sticks of set 16 that sit more than 150 ft outside their gridded interval: where they end up.
 - The 82 off-depth pinned sticks: how many remain after the change.
 
-## Questions for Michael before anything is authored
+## Revision 1 (2026-11-20, after Michael's answers; still before anything is authored)
+
+Decided by Michael: BS3_S and WCXY are **in, for depth only**; an out-of-interval carried landing is **pulled** to the
+grid's prediction. He asked for a more regional basis for the fraction than basin or county.
+
+**The fraction** is where in the gridded bench wells land: 0 at the top, 1 at the base. It differs by area (BS3_C county
+medians run 0.46 to 0.84; WCA_2 0.28 to 0.67; BS2_C 0.21 to 0.74), so one basin value is a poor guess for some benches.
+
+Tested (`fraction_basis_test.csv`; producing wells, every well within 5 miles removed before predicting it): median
+absolute error in ft.
+
+| Bench | Basin | County | Wells 5 to 10 mi away | 5 to 15 mi | 5 to 25 mi | Offset rung today |
+|---|---|---|---|---|---|---|
+| BS1_S | 63 | 58 | 56 | 58 | 62 | 87 |
+| BS2_C | 102 | 73 | 73 | 72 | 75 | 94 |
+| BS2_S | 64 | 68 | 69 | 67 | 65 | 98 |
+| BS3_C | 94 | 83 | 67 | 71 | 82 | 82 |
+| BS3_S | 57 | 54 | 49 | 49 | 51 | 86 |
+| WCXY | 46 | 45 | 46 | 45 | 44 | 80 |
+| WCA_1 | 63 | 64 | 53 | 55 | 57 | 71 |
+| WCA_2 | 58 | 57 | 52 | 52 | 53 | 74 |
+
+**Basis proposed: the distance-weighted median fraction of same-tag producers 5 to 15 miles away** (Gaussian weight,
+7.5-mile scale, at least 10 wells); where there are fewer, widen to 25 miles, then the county, then the basin. It predicts
+99 % or more of wells on every bench but BS1_S and BS2_C (94 to 96 %), is level with or better than the basin value on 7
+of 8 benches, and brings the two carbonates under the offset rung, which is why they are candidates again.
+
+Stated plainly: this basis was chosen by looking at this test. G1 is run in the generator's own hold-out and is the
+confirmation, but it is the same wells, so it is not an independent test of the choice.
+
+G1 as revised: the benches are BS1_S, BS2_S, BS3_S, WCXY, WCA_1, WCA_2, and the candidates BS3_C and BS2_C; each passes or
+keeps the offset rung on its own.
+
+## Questions for Michael (answered 2026-11-20; kept for the record)
 
 1. **BS3_S and WCXY.** Both intervals are bounded by the XY top, which you ruled out as an arbiter because it misjudged
    bench membership on the tag cards. For landing depth alone they were the grid's best benches (BS3_S 56 ft against the
