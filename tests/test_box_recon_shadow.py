@@ -71,5 +71,5 @@ def test_bar_limits_are_the_ones_written_before_the_week():
 
 def test_an_out_of_band_run_is_never_a_night():
     runs = [{"run_id": 3, "status": "written"}, {"run_id": 4, "status": "written"}, {"run_id": 5, "status": "failed"}, {"run_id": 6, "status": "written"}]
-    assert sh.OUT_OF_BAND_RUNS == {3}                                                # Michael 2026-11-20: run 4 is night 1
+    assert sh.OUT_OF_BAND_RUNS == {3, 5}                                             # Michael 2026-11-20: run 4 is night 1; run 5 = the v4 cutover refresh
     assert [sh.night_number(runs, i) for i in (3, 4, 5, 6)] == [None, 1, None, 2]

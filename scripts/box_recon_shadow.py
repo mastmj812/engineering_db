@@ -27,7 +27,8 @@ SECONDS_LIMIT = 300          # S2
 DAY0_LIMIT = 0.005           # S3
 # Run rows written outside a nightly: kept in the tables, never counted as a night (Michael 2026-11-20: run 3, the first fill
 # at 2026-11-19 16:44 UTC, came from no etl-nightly run; the nightly of 2026-11-20, run 4, is night 1 and the week ends 11-26).
-OUT_OF_BAND_RUNS = frozenset({3})
+# Run 5 (2026-11-20 16:03 UTC, 27 changed): the forced refresh of the Novi v4 cutover, run by hand in another session; also not a night.
+OUT_OF_BAND_RUNS = frozenset({3, 5})
 
 # sql/68's SELECT, per well: the same sticks, corridor, bench guard and thresholds, restricted to a list of wells.
 SQL68_PER_WELL = """
