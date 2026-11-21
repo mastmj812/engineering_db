@@ -1,0 +1,59 @@
+{
+ "generator_version": "box_sticks_0.13",
+ "pulled": "2026-11-21T00:28:57.040497+00:00",
+ "basin": "delaware",
+ "dsus": 5072,
+ "dsus_with_no_bench": 3184,
+ "dsu_bench": 29719,
+ "sticks": 46153,
+ "legs": 54281,
+ "completed_lateral_ft": 443257214.8,
+ "by_rung": {
+  "grid": 5896,
+  "thickness": 19240,
+  "direct": 16523,
+  "bracket": 2553,
+  "offset": 1941
+ },
+ "by_well_type": {
+  "uturn": 8128,
+  "single": 38025
+ },
+ "by_flag": {
+  "pinned": 11630,
+  "dsu_drilled_across": 1172,
+  "outside_grid": 414,
+  "second_level_nearby": 3462,
+  "grid_bounded": 447,
+  "two_landings_observed": 227
+ },
+ "rows_culled": {
+  "envelope_stacked": 8466,
+  "envelope_same_landing": 23772,
+  "uturn_unpaired": 2014,
+  "short_lateral": 260,
+  "no_depth_neighbour": 218,
+  "setback_fit": 376,
+  "setback_clip": 1846
+ },
+ "no_row_reason": {
+  "wca_one_member": 2624,
+  "sliver": 713,
+  "no_depth": 1433,
+  "reconciled_out": 534,
+  "wca_one_landing": 263
+ },
+ "wells_read": 33166,
+ "violations": {
+  "I1": 0,
+  "I2": 0,
+  "I3": 0,
+  "I4": 0,
+  "I5": 0,
+  "I6": 0,
+  "I7": 0,
+  "I8": 0
+ },
+ "errors": 0,
+ "seconds": 631
+}

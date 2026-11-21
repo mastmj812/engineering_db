@@ -1,0 +1,9 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+    ok   set 24 (delaware, box_sticks_0.13) is not the record yet
+    ok   its stick rows = the count it was stored with (46,153 = 46,153), one location each
+    ok   every stick has its BOX stick location in the basin
+    ok   the set was generated with 0 invariant violations and 0 DSU errors
+    ok   the delaware record is set 24 and only it ({'delaware': [24], 'midland': [17]})
+    ok   previous delaware record(s) [21] superseded by 24
+    ok   no stick row changed
+RECORD: set 24 is the delaware record

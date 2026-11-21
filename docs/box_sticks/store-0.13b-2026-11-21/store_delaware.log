@@ -1,0 +1,13 @@
+target (IPv6Address('2600:1f18:6f7d:e805:c914:60eb:e5ca:ee46'), 5432, 'postgres')
+set 24 (delaware, box_sticks_0.13): 46,153 sticks; ids {'carried': 45585, 'new': 568, 'stopped': 547, 'method': 'overlap', 'prev_set_id': 21, 'corridor_ft': 220.0, 'min_share': 0.5} (80 s)
+    ok   box.location_stick rows = generated sticks (46,153 = 46,153)
+    ok   DSU / DSU x bench / well rows = generated (5,072 / 29,719 / 33,166)
+    ok   locations last seen in the set = sticks; first seen in it = new ids (46,153; 568 = 568)
+    ok   every BOX stick id >= 10,000,001 (min 10046716)
+    ok   every stick agrees with its location on DSU, bench, slot and basin
+    ok   stored leg geometry length = completed lateral (0.5 % + 5 ft)
+    ok   every stick carries an expected depth error
+    ok   DSU x bench stick counts = the stick rows
+    ok   the set is stored NOT record
+    ok   5,072 DSUs regenerated from the stored rows give the stored sticks (0 differences, 330 s)
+STORED set 24 (not record)
