@@ -1,5 +1,10 @@
 # BOX sticks generator 0.14: the Midland grids, authored and scored
 
+> **DECIDED 2026-11-21 (Michael: "Nothing for now").** The Midland table is NOT applied. This branch ships as a refactor with
+> no change to any stick: `BASINS` holds the Delaware only, the Midland table stays in the module as `MIDLAND_TABLE` with the
+> numbers below, the version is back to `box_sticks_0.13`, and only the Delaware grid files are inputs of a run. Section 8
+> has the proof. Sections 1 to 7 describe the change as it was scored, before that decision.
+
 2026-11-21. **Nothing applied, nothing stored, no record touched.** Files only: the cache of the pull that made sets 24
 and 25 (2026-11-21 00:28 UTC) and the grid files. Bars: `BARS.md`, committed (`033abf0`) before the code and before the
 hold-out was run. Branch `claude/box-sticks-grid-midland`, cut from main at `9fca1ac`.
@@ -98,3 +103,14 @@ to 120 ft) it is not adopted either: the bar was per rung, and it failed.
 - Nothing live: no store, no flip. The schema already accepts the rung (sql/77).
 - The 20 offset landings that changed depth without changing rung were not traced (stack reconciliation, as in 0.13).
 - No back-test was run on 0.14 (a store needs one).
+
+## 8. As shipped: nothing changes (after "Nothing for now")
+
+The landing frame was rebuilt with the shipped code on the inputs of sets 24 and 25 and compared with the frame that made
+them: 49,554 DSU x bench rows, the same in both, and **0 differences** in landing depth, rung, anchor, expected error,
+spacing, second level and grid note. The Midland has no grid landing (rungs: direct 10,886, thickness 4,726, offset 2,108,
+bracket 822, none 1,293), the Delaware its 2,980. So a regeneration with this code gives sets 24 and 25 again.
+
+What is kept for when the Midland comes back: the table and its hold-out numbers in `box/sticks/grid_rung.py`, `score
+--basin midland`, the tests that run the table explicitly, this evaluation, and the list of Wolfcamp A wells above the
+gridded top in Borden and Howard for the geologist.

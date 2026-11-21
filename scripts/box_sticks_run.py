@@ -97,7 +97,8 @@ def file_inputs() -> dict[str, Path]:
     from box.sticks import grid_rung
 
     grids = {f"grid_delaware_{s}": pkg.require_grid(pkg.DERIVED_SURFACES.get(s, (s, 0.0))[0], pkg.GRID_DIR) for s in grid_rung.SURFACES}
-    grids |= {f"grid_midland_{s}": f for s, f in grid_rung.midland_grid_files().items()}
+    if "midland" in grid_rung.BASINS:                                   # only the grids the generator applies are inputs of a run
+        grids |= {f"grid_midland_{s}": f for s, f in grid_rung.midland_grid_files().items()}
     return grids | {"wcxy_extent": p2a.WCXY_FILE, "thickness_rank": p1c.THICK_RANK, "far_rank": p1c.FAR_RANK, "direct_holdout": p1c.THICK_RANK.parent / "holdout_direct.csv",
          "strat_column": cfg_dir / "strat_column.yaml", "thresholds": cfg_dir / "thresholds.yaml"}
 

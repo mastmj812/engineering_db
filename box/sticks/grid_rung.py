@@ -1,5 +1,5 @@
-"""BOX sticks: the geologist's structure grids in the landing chain (generator 0.13: Delaware; 0.14: the Midland too,
-from its own table, BASINS["midland"]; docs/box_sticks/grid-midland-2026-11-21).
+"""BOX sticks: the geologist's structure grids in the landing chain (generator 0.13; applied to the Delaware only).
+A table per basin; the Midland's (MIDLAND_TABLE) is built and scored but not applied: docs/box_sticks/grid-midland-2026-11-21.
 
 Decided 2026-11-20 (docs/box_sticks_plan.md; bars docs/box_sticks/grid-rung-2026-11-20/BARS.md): the grids are a witness
 against wells and an arbiter where control is weak.
@@ -79,9 +79,13 @@ MIDLAND_BOUND: frozenset = frozenset()
 MIDLAND_BOUND_SKIP: frozenset = frozenset()
 MIDLAND_ERR: dict[str, tuple[float, float]] = dict(MIDLAND_RUNG) | {"WCA_1": (47.1, 167.1)}
 
+MIDLAND_TABLE = GridTable("midland", MIDLAND_SURFACES, MIDLAND_INTERVALS, MIDLAND_RUNG, MIDLAND_BOUND, MIDLAND_BOUND_SKIP, MIDLAND_ERR)
+# The basins the generator applies. The Midland table is built, scored and NOT applied (Michael 2026-11-21: "Nothing for
+# now"): its bound failed, and its rung cost 8 more benches dropped in depth conflicts for a gain that is real only on WCD
+# (docs/box_sticks/grid-midland-2026-11-21/FINDINGS.md). It comes back by adding it here, after the geologist has looked at
+# the Wolfcamp A top in Borden and Howard and delivered a usable Wolfcamp B Lower, with its own bars.
 BASINS: dict[str, GridTable] = {
     "delaware": GridTable("delaware", SURFACES, INTERVALS, RUNG_BENCHES, frozenset(INTERVALS), BOUND_SKIP, RUNG_BENCHES),
-    "midland": GridTable("midland", MIDLAND_SURFACES, MIDLAND_INTERVALS, MIDLAND_RUNG, MIDLAND_BOUND, MIDLAND_BOUND_SKIP, MIDLAND_ERR),
 }
 
 
@@ -145,8 +149,9 @@ def midland_sampler() -> Sampler | None:
 
 
 def samplers() -> dict[str, Sampler | None]:
-    """A sampler per basin that has a table; None for a basin whose grids cannot be loaded."""
-    return {"delaware": sampler(), "midland": midland_sampler()}
+    """A sampler per basin the generator applies (BASINS); None for a basin whose grids cannot be loaded."""
+    make = {"delaware": sampler, "midland": midland_sampler}
+    return {b: make[b]() for b in BASINS}
 
 
 def interval(code: str, g: dict[str, np.ndarray], intervals: dict[str, tuple[str, str]] | None = None) -> tuple[np.ndarray, np.ndarray]:

@@ -66,7 +66,8 @@ def cmd_score(cache: Path, out: Path, basin: str = gr.BASIN) -> dict:
     d = p0.pull(cache)
     ev = p0.evidence(d["wells"], d["rule"]).merge(pd.read_pickle(cache / "p2a_screen.pkl"), on="api10", how="left")
     ev = ev[ev["screen"] == "keep"].reset_index(drop=True)
-    table, sample = gr.BASINS[basin], gr.samplers().get(basin)
+    table = gr.BASINS.get(basin) or {"midland": gr.MIDLAND_TABLE}[basin]            # a table can be scored without being applied
+    sample = {"delaware": gr.sampler, "midland": gr.midland_sampler}[basin]()
     if sample is None:
         raise SystemExit(f"grid files not available for {basin}")
     extents, order = d["extents"], sb.bench_order()
@@ -190,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--before", type=Path)
     ap.add_argument("--after", type=Path)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--basin", default=gr.BASIN, choices=sorted(gr.BASINS))
+    ap.add_argument("--basin", default=gr.BASIN, choices=("delaware", "midland"))
     a = ap.parse_args(argv)
     if a.step == "score":
         cmd_score(a.cache, a.out, a.basin)
