@@ -104,3 +104,52 @@ def test_no_grid_means_no_change_and_no_failure():
     null = gr.apply_to_chain(ch, wells(12, 8.0, 10_400.0), PADS, lambda x, y: {s: np.full(len(x), np.nan) for s in gr.SURFACES}, rung_benches={"BS2_S": (1.0, 2.0)})
     assert null["rung"].tolist() == ["offset", "offset"] and np.allclose(null["z"], ch["z"])       # a null surface: the chain stands
     assert "WCB_1" not in gr.INTERVALS                                                                 # no trusted surface pair: never touched
+
+
+# ---- the Midland table: built and scored, not applied (docs/box_sticks/grid-midland-2026-11-21)
+
+MID = {"JO_MILL": 8_000.0, "LOWER_SPRABERRY_SHALE": 8_400.0, "WOLFCAMP_A": 9_000.0, "WOLFCAMP_B": 9_300.0}
+
+
+def mid_sample(x: np.ndarray, y: np.ndarray) -> dict[str, np.ndarray]:
+    return {s: np.full(len(x), MID.get(s, np.nan)) for s in gr.MIDLAND_SURFACES}
+
+
+def test_the_midland_table_is_what_the_bars_admitted():
+    assert set(gr.BASINS) == {"delaware"}                                                         # the generator applies the Delaware only
+    t = gr.MIDLAND_TABLE
+    assert set(t.rung) == {"MS", "JM", "LSSH", "DEAN", "WCD"} and "WCA_1" not in t.rung          # M1: WCA_1 keeps the offset rung
+    assert t.bound == frozenset() and t.bound_skip == frozenset()                                  # M2 failed: nothing is bounded
+    assert not {"WCB_1", "WCB_2", "WCC", "US"} & set(t.intervals)                                  # no picked boundary: left out
+    assert "WOLFCAMP_B_LOWER" not in t.surfaces and "WOLFCAMP_C" not in t.surfaces
+    d = gr.BASINS["delaware"]
+    assert d.intervals is gr.INTERVALS and d.rung is gr.RUNG_BENCHES and d.bound == frozenset(gr.INTERVALS) and d.bound_skip == gr.BOUND_SKIP
+
+
+def test_midland_grid_replaces_offset_and_bounds_nothing():
+    ev = wells(12, 8.0, 8_300.0, code="JM").assign(basin="midland")           # fraction 0.75 in the 8,000 to 8,400 interval
+    ev = pd.concat([ev, wells(12, 8.0, 9_100.0, code="WCA_1").assign(basin="midland")], ignore_index=True)
+    ch = chain([("midland", "JM", 1, 8_150.0, "offset"),          # offset -> grid rung
+                ("midland", "JM", 2, 8_900.0, "thickness"),       # 500 ft below the base: NOT pulled, NOT flagged (no bound in the Midland)
+                ("midland", "WCA_1", 3, 9_200.0, "offset"),       # WCA_1 failed M1: keeps the offset rung
+                ("midland", "WCA_1", 4, 9_900.0, "direct"),       # direct, far outside: not flagged
+                ("midland", "WCB_1", 5, 9_500.0, "offset")])      # no interval: untouched
+    assert np.allclose(gr.apply_to_chain(ch, ev, PADS, {"midland": mid_sample, "delaware": None})["z"], ch["z"])      # not applied: nothing moves
+    out = gr.apply_to_chain(ch, ev, PADS, {"midland": mid_sample, "delaware": None}, tables={"midland": gr.MIDLAND_TABLE})
+    assert out["rung"].tolist() == ["grid", "thickness", "offset", "direct", "offset"]
+    assert out["grid_note"].tolist() == ["grid_rung", "", "", "", ""]
+    assert np.allclose(out["z"], [8_300.0, 8_900.0, 9_200.0, 9_900.0, 9_500.0])
+    assert out["expected_median_ft"][0] == gr.MIDLAND_RUNG["JM"][0] and out["how"][0] == "grid 5-15 mi"
+
+
+def test_each_basin_reads_only_its_own_grids():
+    ev = pd.concat([wells(12, 8.0, 10_400.0), wells(12, 8.0, 8_300.0, code="JM").assign(basin="midland")], ignore_index=True)
+    ch = chain([("delaware", "BS2_S", 1, 10_300.0, "offset"), ("midland", "JM", 2, 8_150.0, "offset")])
+    two = gr.BASINS | {"midland": gr.MIDLAND_TABLE}
+    both = gr.apply_to_chain(ch, ev, PADS, {"delaware": sample, "midland": mid_sample}, tables=two)
+    assert both["rung"].tolist() == ["grid", "grid"] and np.allclose(both["z"], [10_400.0, 8_300.0])
+    only_d = gr.apply_to_chain(ch, ev, PADS, {"delaware": sample, "midland": None}, tables=two)      # Midland grids missing: its chain stands
+    assert only_d["rung"].tolist() == ["grid", "offset"] and only_d["z"][1] == 8_150.0
+    bare = gr.apply_to_chain(ch, ev, PADS, sample)                                                  # a bare sampler is the Delaware's
+    assert bare["rung"].tolist() == ["grid", "offset"]
+    assert gr.apply_to_chain(ch, ev, PADS, {"delaware": sample, "midland": mid_sample})["rung"].tolist() == ["grid", "offset"]      # as shipped
