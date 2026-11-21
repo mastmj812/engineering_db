@@ -1,0 +1,7 @@
+bench,wells,wells_scored,grid_median_ft,grid_p90_ft,offset_median_ft,offset_p90_ft,grid_predicts_pct,offset_predicts_pct,passes
+MS,1673,1587,35.9,99.0,39.4,115.0,96.9,97.7,True
+JM,1787,1758,42.9,135.2,45.2,142.3,99.5,98.9,True
+LSSH,5371,4925,47.7,138.9,54.3,147.5,92.0,99.5,True
+DEAN,985,811,40.5,137.7,45.0,154.9,98.1,83.2,True
+WCA_1,7216,6832,47.1,167.1,46.9,127.6,96.9,97.0,False
+WCD,1014,855,43.3,142.8,86.7,238.9,97.8,84.8,True
