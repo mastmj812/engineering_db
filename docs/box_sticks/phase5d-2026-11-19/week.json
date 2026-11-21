@@ -2,48 +2,49 @@
  "kind": "week",
  "runs": [
   {
-   "run_id": 4,
-   "started_at": "2026-11-20 11:15:20.053701+00:00",
-   "finished_at": "2026-11-20 11:16:18.099561+00:00",
+   "run_id": 6,
+   "started_at": "2026-11-21 11:11:49.010062+00:00",
+   "finished_at": "2026-11-21 11:15:39.734529+00:00",
    "status": "written",
    "wrote": true,
    "predicate_version": "box_recon_1",
    "set_ids": [
-    16,
-    17
+    24,
+    25
    ],
-   "wells_read": 85059,
+   "wells_read": 85065,
    "counts": {
     "midland": {
-     "open": 33027,
-     "sticks": 33138,
-     "crowded": 48,
-     "pending": 19,
+     "open": 33014,
+     "sticks": 33122,
+     "crowded": 47,
+     "pending": 18,
      "conflict": 2,
-     "inventory": 33072,
-     "permitted": 74,
+     "inventory": 33057,
+     "permitted": 72,
      "producing": 16
     },
     "delaware": {
-     "open": 45280,
-     "sticks": 46062,
+     "open": 45375,
+     "sticks": 46153,
      "crowded": 69,
-     "pending": 34,
-     "conflict": 20,
-     "inventory": 45900,
-     "permitted": 655,
-     "producing": 73
+     "pending": 30,
+     "conflict": 23,
+     "inventory": 46001,
+     "permitted": 665,
+     "producing": 60
     }
    },
-   "changed": 8,
+   "changed": 81420,
    "breaker_limit": 792,
-   "stale_dsu_bench": 3,
-   "seconds": 58.3,
+   "stale_dsu_bench": 0,
+   "seconds": 231.1,
    "error": null
   }
  ],
  "out_of_band_runs": [
-  3
+  3,
+  5
  ],
  "bars": {
   "S1": {
@@ -54,8 +55,22 @@
    "pass": false
   },
   "S2": {
-   "max_seconds": 58.3,
+   "max_seconds": 231.1,
    "nightly_runs": [
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-21T11:00:11Z",
+     "databaseId": 44896964190,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-20T19:06:20Z",
+     "databaseId": 44799007771,
+     "event": "schedule",
+     "status": "completed"
+    },
     {
      "conclusion": "success",
      "createdAt": "2026-11-20T11:00:10Z",
@@ -123,20 +138,6 @@
      "conclusion": "success",
      "createdAt": "2026-11-15T17:43:14Z",
      "databaseId": 43742686589,
-     "event": "schedule",
-     "status": "completed"
-    },
-    {
-     "conclusion": "success",
-     "createdAt": "2026-11-15T11:00:10Z",
-     "databaseId": 43706757767,
-     "event": "workflow_dispatch",
-     "status": "completed"
-    },
-    {
-     "conclusion": "success",
-     "createdAt": "2026-11-14T17:08:52Z",
-     "databaseId": 43619497742,
      "event": "schedule",
      "status": "completed"
     }
