@@ -1,0 +1,54 @@
+{
+ "generator_version": "box_sticks_0.13",
+ "pulled": "2026-11-21T00:28:57.040497+00:00",
+ "basin": "midland",
+ "dsus": 4385,
+ "dsus_with_no_bench": 3944,
+ "dsu_bench": 19835,
+ "sticks": 33122,
+ "legs": 36695,
+ "completed_lateral_ft": 339716433.8,
+ "by_rung": {
+  "thickness": 11788,
+  "offset": 5732,
+  "direct": 14261,
+  "bracket": 1341
+ },
+ "by_well_type": {
+  "single": 29549,
+  "uturn": 3573
+ },
+ "by_flag": {
+  "second_level_nearby": 1468,
+  "pinned": 8605,
+  "dsu_drilled_across": 510,
+  "two_landings_observed": 127
+ },
+ "rows_culled": {
+  "envelope_same_landing": 23646,
+  "envelope_stacked": 12245,
+  "setback_clip": 1297,
+  "setback_fit": 151,
+  "uturn_unpaired": 469,
+  "short_lateral": 78,
+  "no_depth_neighbour": 3
+ },
+ "no_row_reason": {
+  "reconciled_out": 202,
+  "no_depth": 1132,
+  "sliver": 494
+ },
+ "wells_read": 30713,
+ "violations": {
+  "I1": 0,
+  "I2": 0,
+  "I3": 0,
+  "I4": 0,
+  "I5": 0,
+  "I6": 0,
+  "I7": 0,
+  "I8": 0
+ },
+ "errors": 0,
+ "seconds": 533
+}
