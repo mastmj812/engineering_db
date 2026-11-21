@@ -30,3 +30,10 @@ The report script no longer names the sets. A night belongs to the week when it 
 written night, so any later flip (the Midland, if Michael says go) restarts the count by itself and the report says so.
 Where this file says "sets 17 and 21" or "79,270", read "the record sets of the night" (Delaware set 24: record sticks
 79,291 while set 17 is the Midland record).
+
+## Update, 2026-11-21 01:29 UTC: set 25 is the Midland record
+
+On Michael's "Go Midland", the Midland set from the same pull as set 24 (33,122 sticks; 23 new and 39 stopped against set
+17) was stored and made the record. Both flips were done before the nightly of 2026-11-21, so **night 1 is that nightly, on
+sets 24 and 25** (79,275 record sticks), and its log is `set_change` for both basins. Set 24 became the Delaware record at
+about 01:20 UTC, not 01:25 as written above.
