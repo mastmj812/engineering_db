@@ -1,8 +1,8 @@
-# BOX sticks: set 24 is the Delaware record (generator 0.13 on the corrected tags)
+# BOX sticks: sets 24 and 25 are the records (generator 0.13 on the corrected tags)
 
 2026-11-21. Michael's "go ahead" on a new pull, store and record flip after the 19 tag corrections of 2026-11-20 (seed
-reload finished 00:10 UTC, PR #269). **Set 24 is the Delaware record; set 21 is superseded and kept. Set 17 is still the
-Midland record.** The forecast records (run 32 Delaware, run 30 Midland) are untouched.
+reload finished 00:10 UTC, PR #269). **Set 24 is the Delaware record and set 25 the Midland record** (the Midland on his "Go Midland"); sets 21 and 17 are
+superseded and kept. The forecast records (run 32 Delaware, run 30 Midland) are untouched.
 
 Files here: `manifest.json` (the pull), `summary_<basin>.json`, `backtest_summary.json`, `store_delaware.log`,
 `record_flip_24.log`, `rehearsal_midland.log`.
@@ -14,7 +14,7 @@ for both basins, 2026-11-21 00:28:57 UTC, tag rule run 12, with the 19 human cal
 
 | | Set 24, Delaware |
 |---|---|
-| Stored / made record (UTC) | 2026-11-21 01:18 / 01:25 |
+| Stored / made record (UTC) | 2026-11-21 01:11 to 01:18 / about 01:20 |
 | Sticks / legs | 46,153 / 54,281 |
 | DSUs / DSU x bench / wells read | 5,072 / 29,719 / 33,166 |
 | Ids carried from set 21 | 45,585 of 46,132 (98.8 %) |
@@ -45,14 +45,29 @@ Unchanged in substance from set 21: T1 59.9 % (fails by 0.1 point), T2 4.2 % (pa
 
 Set ids 22 and 23 were used up by the rolled-back rehearsals.
 
-## The Midland: rehearsed, NOT stored
+## The Midland: set 25, stored and made the record ("Go Midland")
 
-From the same pull: 33,122 sticks (33,138 in set 17); 33,099 ids carried (99.9 %), 23 new, 39 stop. The rolled-back store
-rehearsal passed 10 of 10, with 4,385 DSUs regenerated from the stored rows at 0 differences. Generator 0.13 does not change
-the Midland; the small movement is the inputs having moved since the 2026-11-19 pull (Novi v4, tag-rule runs). Storing it
-and making it the record wait for Michael's go.
+From the same pull as set 24. Generator 0.13 does not change the Midland; the small movement is the inputs having moved
+since the 2026-11-19 pull (Novi v4, tag-rule runs).
+
+| | Set 25, Midland |
+|---|---|
+| Stored / made record (UTC) | 2026-11-21 01:23 to 01:28 / 01:29 |
+| Sticks / legs | 33,122 / 36,695 (33,138 sticks in set 17) |
+| DSUs / DSU x bench / wells read | 4,385 / 19,835 / 30,713 |
+| Ids carried from set 17 | 33,099 of 33,138 (99.9 %) |
+| New ids / ids of set 17 that stop | 23 / 39 |
+| Store checks | 10 of 10 ok (rehearsed first); 4,385 DSUs regenerated from the stored rows, 0 differences |
+| Record flip checks | 7 of 7 ok (dry run first) |
+
+Sticks by landing rung: direct 14,261; thickness 11,788; offset 5,732; bracket 1,341. No grid rung: the Midland grids are
+not in the generator.
+
+Live after both flips, from a second read-only connection: 7 sets, records **24 and 25**; 285,145 stick rows
+(= 252,023 + 33,122); 337,742 locations (= 337,719 + 23), Novi rows unchanged (252,925); record sticks 79,275;
+forecast records still runs 30 and 32.
 
 ## Shadow week
 
-No nightly had judged set 21, so the count does not restart again: night 1 is the nightly of 2026-11-21, on the record
-sets of that night. `docs/box_sticks/phase5d-2026-11-19/RESTART.md` (draft PR #261) has the note.
+No nightly had judged set 21, and both flips were done before the nightly of 2026-11-21, so the count does not restart
+again: night 1 is that nightly, on sets 24 and 25. `docs/box_sticks/phase5d-2026-11-19/RESTART.md` (draft PR #261) has the note.
