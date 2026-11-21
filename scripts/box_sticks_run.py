@@ -93,14 +93,21 @@ def file_inputs() -> dict[str, Path]:
     from scripts import box_sticks_phase1c as p1c
     from scripts import box_sticks_phase2a as p2a
     cfg_dir = ROOT / ".claude" / "skills" / "deal-intake" / "config"
+    return {"wcxy_extent": p2a.WCXY_FILE, "thickness_rank": p1c.THICK_RANK, "far_rank": p1c.FAR_RANK, "direct_holdout": p1c.THICK_RANK.parent / "holdout_direct.csv",
+         "strat_column": cfg_dir / "strat_column.yaml", "thresholds": cfg_dir / "thresholds.yaml"}
+
+
+def grid_inputs() -> dict[str, Path]:
+    """The geologist's grid files the generator applies (box.sticks.grid_rung.BASINS). They live outside the repo, so they
+    are apart from file_inputs(); a pull hashes both. A missing grid raises here: a run must not quietly generate without
+    the grid rung on a machine that cannot see the grids."""
     from box import extent_package as pkg
     from box.sticks import grid_rung
 
     grids = {f"grid_delaware_{s}": pkg.require_grid(pkg.DERIVED_SURFACES.get(s, (s, 0.0))[0], pkg.GRID_DIR) for s in grid_rung.SURFACES}
-    if "midland" in grid_rung.BASINS:                                   # only the grids the generator applies are inputs of a run
+    if "midland" in grid_rung.BASINS:
         grids |= {f"grid_midland_{s}": f for s, f in grid_rung.midland_grid_files().items()}
-    return grids | {"wcxy_extent": p2a.WCXY_FILE, "thickness_rank": p1c.THICK_RANK, "far_rank": p1c.FAR_RANK, "direct_holdout": p1c.THICK_RANK.parent / "holdout_direct.csv",
-         "strat_column": cfg_dir / "strat_column.yaml", "thresholds": cfg_dir / "thresholds.yaml"}
+    return grids
 
 
 def thresholds(basin: str) -> dict:
@@ -146,7 +153,7 @@ def pull(run: Path) -> dict:
     cache = run / "cache"
     if cache.exists() and any(cache.iterdir()):
         raise SystemExit(f"{cache} is not empty: a run dir is one pull, never reused")
-    files = file_inputs()
+    files = file_inputs() | grid_inputs()
     missing = [str(p) for p in files.values() if not p.exists()]
     if missing:
         raise SystemExit(f"file input(s) missing: {missing}")

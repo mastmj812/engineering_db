@@ -141,6 +141,9 @@ def test_every_moving_constant_is_in_the_set_cfg() -> None:
     assert t["spacing"]["FLOOR_FT"] == 1320.0 and t["identity"] == {"corridor_ft": 220.0, "min_share": 0.5}
     assert t["generator"]["stacked"] != run.thresholds("delaware")["generator"]["stacked"]         # the envelope is per basin
     assert all(p.exists() for p in run.file_inputs().values())
+    src = (ROOT / "scripts" / "box_sticks_run.py").read_text(encoding="utf-8")
+    assert "files = file_inputs() | grid_inputs()" in src                    # a pull hashes the grid files too (they live outside the repo)
+    assert not any(k.startswith("grid_") for k in run.file_inputs())         # and the repo's own inputs stay checkable without them (CI)
 
 
 def test_the_stored_set_is_read_back_with_exact_floats() -> None:
