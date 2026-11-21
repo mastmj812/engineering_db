@@ -29,11 +29,10 @@ DAY0_LIMIT = 0.005           # S3
 # at 2026-11-19 16:44 UTC, came from no etl-nightly run; the nightly of 2026-11-20, run 4, is night 1 and the week ends 11-26).
 # Run 5 (2026-11-20 16:03 UTC, 27 changed): the forced refresh of the Novi v4 cutover, run by hand in another session; also not a night.
 OUT_OF_BAND_RUNS = frozenset({3, 5})
-# The week is counted on the record sets it will decide for. Set 21 (generator 0.13) became the Delaware record on 2026-11-20
-# 22:15 UTC, on Michael's go, so that the shadow nights run on it: the count restarts at the first nightly that judged sets 17
-# and 21 (its log is all `set_change` for the Delaware). The nightly of 2026-11-20 on sets 16 and 17 (run 4) is kept as a
-# report and counted in no bar.
-WEEK_SETS = (17, 21)
+# The week is counted on the record sets it will decide for: the nights are the written nightly runs that judged the SAME sets
+# as the latest written run. A record flip therefore restarts the count by itself (Michael 2026-11-20: the shadow nights
+# must run on the set the nightly will drive; set 21 became the Delaware record that day and set 24, on the corrected
+# tags, replaced it hours later, before any nightly had judged set 21).
 
 # sql/68's SELECT, per well: the same sticks, corridor, bench guard and thresholds, restricted to a list of wells.
 SQL68_PER_WELL = """
@@ -182,9 +181,15 @@ def flapping(log: list[dict]) -> dict:
     return {"locations_changed": n, "flapped": len(flap), "share": round(len(flap) / n, 4) if n else 0.0, "location_ids": sorted(flap)[:50]}
 
 
+def week_sets(runs: list[dict]) -> list[int]:
+    """The record sets of the latest written nightly run: the sets the week is counted on."""
+    w = [r for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS]
+    return sorted(w[-1].get("set_ids") or []) if w else []
+
+
 def night_number(runs: list[dict], run_id: int) -> int | None:
-    """Night number of a written nightly run: its rank among the written run rows that a nightly wrote."""
-    nights = [r["run_id"] for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == list(WEEK_SETS)]
+    """Night number of a written nightly run: its rank among the written nightly runs on the week's sets."""
+    nights = [r["run_id"] for r in runs if r["status"] == "written" and r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == week_sets(runs)]
     return nights.index(run_id) + 1 if run_id in nights else None
 
 
@@ -307,7 +312,7 @@ def cmd_night(out: Path, run_id: int | None) -> dict:
 
 def cmd_week(out: Path) -> dict:
     every = _ro("SELECT * FROM meta.box_recon_run ORDER BY run_id")
-    runs = [r for r in every if r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == list(WEEK_SETS)]
+    runs = [r for r in every if r["run_id"] not in OUT_OF_BAND_RUNS and sorted(r.get("set_ids") or []) == week_sets(every)]
     written = [r for r in runs if r["status"] == "written"]
     log = [r for r in _ro("SELECT run_id, location_id, cause, old_status, new_status FROM curated.box_location_status_log WHERE cause <> 'first_run'")
            if r["run_id"] not in OUT_OF_BAND_RUNS]
