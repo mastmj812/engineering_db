@@ -80,11 +80,25 @@ def narvi_sha() -> tuple[str, str | None]:
     return pin, inst
 
 
+def _rel(p: Path) -> str:
+    """Repo-relative where the file is in the repo; the absolute path for the grid files, which live outside it
+    (generate() joins it to ROOT, and an absolute path survives that join)."""
+    try:
+        return p.relative_to(ROOT).as_posix()
+    except ValueError:
+        return p.as_posix()
+
+
 def file_inputs() -> dict[str, Path]:
     from scripts import box_sticks_phase1c as p1c
     from scripts import box_sticks_phase2a as p2a
     cfg_dir = ROOT / ".claude" / "skills" / "deal-intake" / "config"
-    return {"wcxy_extent": p2a.WCXY_FILE, "thickness_rank": p1c.THICK_RANK, "far_rank": p1c.FAR_RANK, "direct_holdout": p1c.THICK_RANK.parent / "holdout_direct.csv",
+    from box import extent_package as pkg
+    from box.sticks import grid_rung
+
+    grids = {f"grid_delaware_{s}": pkg.require_grid(pkg.DERIVED_SURFACES.get(s, (s, 0.0))[0], pkg.GRID_DIR) for s in grid_rung.SURFACES}
+    grids |= {f"grid_midland_{s}": f for s, f in grid_rung.midland_grid_files().items()}
+    return grids | {"wcxy_extent": p2a.WCXY_FILE, "thickness_rank": p1c.THICK_RANK, "far_rank": p1c.FAR_RANK, "direct_holdout": p1c.THICK_RANK.parent / "holdout_direct.csv",
          "strat_column": cfg_dir / "strat_column.yaml", "thresholds": cfg_dir / "thresholds.yaml"}
 
 
@@ -164,7 +178,7 @@ def pull(run: Path) -> dict:
     man = {"pulled_at": pd.Timestamp(t0).isoformat(), "pull_finished_at": pd.Timestamp(t1).isoformat(), "tag_run_id": int(tag0["run_id"]),
            "tag_policy_digest": str(tag0["policy_digest"]), "tag_switch_use_rule": bool(sw), "dsu_vintage": p0.PAD_VINTAGE, "relations": rel,
            "extents": {f"{r.basin}/{r.bench}": int(r.extent_id) for r in ext.itertuples()},
-           "files": {k: {"path": p.relative_to(ROOT).as_posix(), "sha256": _sha_file(p)} for k, p in files.items()},
+           "files": {k: {"path": _rel(p), "sha256": _sha_file(p)} for k, p in files.items()},
            "code_sha": _git("rev-parse", "HEAD"), "code_dirty": bool(_git("status", "--porcelain")), "narvi_sha": pin, "narvi_installed": inst}
     (run / "manifest.json").write_text(json.dumps(man, indent=1), encoding="utf-8")
     F = p3.build_frame(cache)

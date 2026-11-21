@@ -1,4 +1,5 @@
-"""BOX sticks: the geologist's structure grids in the landing chain (generator 0.13; Delaware only).
+"""BOX sticks: the geologist's structure grids in the landing chain (generator 0.13: Delaware; 0.14: the Midland too,
+from its own table, BASINS["midland"]; docs/box_sticks/grid-midland-2026-11-21).
 
 Decided 2026-11-20 (docs/box_sticks_plan.md; bars docs/box_sticks/grid-rung-2026-11-20/BARS.md): the grids are a witness
 against wells and an arbiter where control is weak.
@@ -21,6 +22,8 @@ chain keeps what it had: this module never fails a run and never invents a depth
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass, replace
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -47,6 +50,41 @@ CARRIED = ("thickness", "bracket", "offset")
 Sampler = Callable[[np.ndarray, np.ndarray], dict[str, np.ndarray]]
 
 
+@dataclass(frozen=True)
+class GridTable:
+    """One basin's grids: the surfaces read, the gridded interval of each bench, and what the hold-out admitted."""
+    basin: str
+    surfaces: tuple[str, ...]
+    intervals: dict[str, tuple[str, str]]
+    rung: dict[str, tuple[float, float]]        # benches whose offset rung the grid replaces -> the grid's held-out (median, P90) ft
+    bound: frozenset                            # benches whose carried landings are bounded
+    bound_skip: frozenset                       # (bench, rung) cells the bound leaves alone (the pull made the hold-out worse)
+    err: dict[str, tuple[float, float]]         # the grid's held-out (median, P90) ft for every bench it can set a depth on
+
+
+MIDLAND_SURFACES = ("MIDDLE_SPRABERRY", "JO_MILL", "LOWER_SPRABERRY_SHALE", "DEAN", "WOLFCAMP_A", "WOLFCAMP_B", "WOLFCAMP_D", "STRAWN")
+# WCB_1, WCB_2 and WCC are left out on purpose (BARS.md): the geologist's Wolfcamp B Lower surface covers 10 % of the wells,
+# so their boundary would be a constant nobody picked. US: 46 evidence wells.
+MIDLAND_INTERVALS: dict[str, tuple[str, str]] = {
+    "MS": ("MIDDLE_SPRABERRY", "JO_MILL"), "JM": ("JO_MILL", "LOWER_SPRABERRY_SHALE"), "LSSH": ("LOWER_SPRABERRY_SHALE", "DEAN"),
+    "DEAN": ("DEAN", "WOLFCAMP_A"), "WCA_1": ("WOLFCAMP_A", "WOLFCAMP_B"), "WCD": ("WOLFCAMP_D", "STRAWN"),
+}
+# From bars M1 and M2 (docs/box_sticks/grid-midland-2026-11-21/g1_by_bench.csv, g2_by_rung.csv).
+# M1: the grid beat the offset rung on five benches; WCA_1 failed (same median, a worse tail) and keeps the offset rung.
+MIDLAND_RUNG: dict[str, tuple[float, float]] = {"MS": (35.9, 99.0), "JM": (42.9, 135.2), "LSSH": (47.7, 138.9), "DEAN": (40.5, 137.7), "WCD": (43.3, 142.8)}
+# M2 FAILED on every rung: pulling a carried landing to the grid made the hold-out worse (offset 62 -> 400 ft median). No bench
+# is bounded in the Midland, and none is flagged `outside_grid` either: where a landing and the grid disagree here, the
+# hold-out says the landing is usually the one that is right.
+MIDLAND_BOUND: frozenset = frozenset()
+MIDLAND_BOUND_SKIP: frozenset = frozenset()
+MIDLAND_ERR: dict[str, tuple[float, float]] = dict(MIDLAND_RUNG) | {"WCA_1": (47.1, 167.1)}
+
+BASINS: dict[str, GridTable] = {
+    "delaware": GridTable("delaware", SURFACES, INTERVALS, RUNG_BENCHES, frozenset(INTERVALS), BOUND_SKIP, RUNG_BENCHES),
+    "midland": GridTable("midland", MIDLAND_SURFACES, MIDLAND_INTERVALS, MIDLAND_RUNG, MIDLAND_BOUND, MIDLAND_BOUND_SKIP, MIDLAND_ERR),
+}
+
+
 def sampler() -> Sampler | None:
     """(x, y in EPSG:3083 metres) -> {surface: depth ft}. None when the grid set cannot be loaded."""
     try:
@@ -70,9 +108,50 @@ def sampler() -> Sampler | None:
     return sample
 
 
-def interval(code: str, g: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+def midland_grid_files() -> dict[str, Path]:
+    """surface -> grid file of the Midland set: Grids/Midland/<newest dated folder>, beside the Delaware grids."""
+    from box import extent_package as pkg
+
+    root = pkg._ENG / "Grids" / "Midland"            # box/basin.py still lists no grid folder for the Midland: BOX type curves do not use these
+    sets = sorted(d for d in root.iterdir() if d.is_dir()) if root.is_dir() else []
+    if not sets:
+        raise FileNotFoundError(f"no Midland grid set under {root}")
+    return {s: sets[-1] / f"HCA_{s}_STRUCTURE_MDXYZ_grid.xyz" for s in MIDLAND_SURFACES}
+
+
+def midland_sampler() -> Sampler | None:
+    """As sampler(), for the Midland surfaces. None when the grid set cannot be loaded."""
+    try:
+        from pyproj import Transformer
+        from scipy.interpolate import RegularGridInterpolator
+
+        from box import extent_package as pkg
+        from box import tops_qc_report as rep
+
+        fs = {}
+        for s, f in midland_grid_files().items():
+            xs, ys, z = pkg._grid(f)
+            fs[s] = RegularGridInterpolator((ys, xs), z, bounds_error=False, fill_value=np.nan)
+        to_ll = Transformer.from_crs("EPSG:3083", "EPSG:4326", always_xy=True)
+    except Exception:  # noqa: BLE001 - no grids: the chain stands as it is
+        return None
+
+    def sample(x: np.ndarray, y: np.ndarray) -> dict[str, np.ndarray]:
+        lon, lat = to_ll.transform(np.asarray(x, float), np.asarray(y, float))
+        gx, gy = rep._to_geology(lon, lat)
+        return {s: f(np.column_stack([gy, gx])) for s, f in fs.items()}
+
+    return sample
+
+
+def samplers() -> dict[str, Sampler | None]:
+    """A sampler per basin that has a table; None for a basin whose grids cannot be loaded."""
+    return {"delaware": sampler(), "midland": midland_sampler()}
+
+
+def interval(code: str, g: dict[str, np.ndarray], intervals: dict[str, tuple[str, str]] | None = None) -> tuple[np.ndarray, np.ndarray]:
     """(top, thickness) of the code's gridded interval; NaN where a surface is null or the interval is too thin."""
-    a, b = INTERVALS[code]
+    a, b = (INTERVALS if intervals is None else intervals)[code]
     top, thick = np.asarray(g[a], float), np.asarray(g[b], float) - np.asarray(g[a], float)
     ok = np.isfinite(top) & np.isfinite(thick) & (thick > MIN_THICK_FT)
     return np.where(ok, top, np.nan), np.where(ok, thick, np.nan)
@@ -123,50 +202,60 @@ def regional_fraction(pts: np.ndarray, wxy: np.ndarray, wf: np.ndarray, exclude_
 
 
 def predict(code: str, pts: np.ndarray, g_pts: dict[str, np.ndarray], wxy: np.ndarray, wz: np.ndarray, g_wells: dict[str, np.ndarray],
-            exclude_self: bool = False) -> pd.DataFrame:
+            exclude_self: bool = False, intervals: dict[str, tuple[str, str]] | None = None) -> pd.DataFrame:
     """The grid's landing for `code` at `pts`: z, basis, top, base. NaN z where the grid or the fraction is missing."""
-    top, thick = interval(code, g_pts)
-    wt, wth = interval(code, g_wells)
+    top, thick = interval(code, g_pts, intervals)
+    wt, wth = interval(code, g_wells, intervals)
     frac, basis = regional_fraction(pts, wxy, well_fraction(wz, wt, wth), exclude_self)
     return pd.DataFrame({"z": top + frac * thick, "basis": basis, "top": top, "base": top + thick, "frac": frac})
 
 
-def apply_to_chain(ch: pd.DataFrame, ev: pd.DataFrame, pads: pd.DataFrame, sample: Sampler | None, rung_benches: dict[str, tuple[float, float]] | None = None,
-                   bound: bool = True) -> pd.DataFrame:
-    """The chain frame of scripts.box_sticks_phase1c.build_chain with the grid applied. Adds `grid_note` ('' / 'grid_rung' /
-    'grid_bounded' / 'outside_grid') and `z_before`. ev: evidence wells (basin, live, x, y, depth_ft). pads: pad_id, cx, cy."""
-    rung_benches = RUNG_BENCHES if rung_benches is None else rung_benches
+def apply_to_chain(ch: pd.DataFrame, ev: pd.DataFrame, pads: pd.DataFrame, sample: Sampler | dict[str, Sampler | None] | None,
+                   rung_benches: dict[str, tuple[float, float]] | None = None, bound: bool = True, tables: dict[str, GridTable] | None = None) -> pd.DataFrame:
+    """The chain frame of scripts.box_sticks_phase1c.build_chain with the grid applied, basin by basin. Adds `grid_note`
+    ('' / 'grid_rung' / 'grid_bounded' / 'outside_grid') and `z_before`. ev: evidence wells (basin, live, x, y, depth_ft).
+    pads: pad_id, cx, cy. `sample`: a sampler per basin (samplers()); a bare sampler is the Delaware's. A basin with no
+    table or no sampler is left as it is. `rung_benches` overrides the Delaware table's rung (tests)."""
+    tables = BASINS if tables is None else tables
+    by = sample if isinstance(sample, dict) else {BASIN: sample}
     ch = ch.copy()
     ch["grid_note"], ch["z_before"] = "", ch["z"]
-    if sample is None:
-        return ch
     cen = pads.set_index("pad_id")[["cx", "cy"]]
-    w = ev[ev["basin"] == BASIN]
-    for code in INTERVALS:
-        rows = np.flatnonzero(((ch["basin"] == BASIN) & (ch["code"] == code) & (ch["rung"] != "none")).to_numpy())
-        if not len(rows):
+    for basin, t in tables.items():
+        fn = by.get(basin)
+        if fn is None:
             continue
-        pts = cen.loc[ch["pad_id"].to_numpy()[rows]].to_numpy(float)
-        cw = w[w["live"] == code]
-        wxy = cw[["x", "y"]].to_numpy(float)
-        p = predict(code, pts, sample(pts[:, 0], pts[:, 1]), wxy, cw["depth_ft"].to_numpy(float), sample(wxy[:, 0], wxy[:, 1]) if len(wxy) else {s: np.array([]) for s in SURFACES})
-        rung, z = ch["rung"].to_numpy()[rows], ch["z"].to_numpy(float)[rows]
-        have = np.isfinite(p["z"].to_numpy())
-        miss = np.where(z < p["top"], z - p["top"], np.where(z > p["base"], z - p["base"], 0.0))
-        out = np.isfinite(miss) & (np.abs(miss) > BOUND_FT)
-        take_rung = (rung == "offset") & have & (code in rung_benches)
-        skip = np.array([(code, r) in BOUND_SKIP for r in rung], dtype=bool)
-        take_bound = bound & np.isin(rung, CARRIED) & out & have & ~take_rung & ~skip
-        note = np.where(take_rung, "grid_rung", np.where(take_bound, "grid_bounded", np.where(((rung == "direct") | skip) & out & ~take_rung, "outside_grid", "")))
-        new = take_rung | take_bound
-        ix = ch.index[rows]
-        ch.loc[ix, "grid_note"] = note
-        if new.any():
-            med, p90 = rung_benches.get(code, (np.nan, np.nan))
-            ch.loc[ix[new], "z"] = p["z"].to_numpy()[new]
-            ch.loc[ix[new], "how"] = ["grid " + b + ("" if r else f" (bound on {o})") for b, r, o in zip(p["basis"].to_numpy()[new], take_rung[new], rung[new], strict=True)]
-            ch.loc[ix[new], "rung"] = "grid"
-            ch.loc[ix[new], ["expected_median_ft", "expected_p90_ft"]] = [med, p90]
-            if "second_tvd_ft" in ch.columns:
-                ch.loc[ix[new], ["second_tvd_ft", "second_share"]] = np.nan          # the second level belonged to the replaced thickness sample
+        if basin == BASIN and rung_benches is not None:
+            t = replace(t, rung=rung_benches, err=rung_benches)
+        w = ev[ev["basin"] == basin]
+        for code in t.intervals:
+            rows = np.flatnonzero(((ch["basin"] == basin) & (ch["code"] == code) & (ch["rung"] != "none")).to_numpy())
+            if not len(rows):
+                continue
+            pts = cen.loc[ch["pad_id"].to_numpy()[rows]].to_numpy(float)
+            cw = w[w["live"] == code]
+            wxy = cw[["x", "y"]].to_numpy(float)
+            g_w = fn(wxy[:, 0], wxy[:, 1]) if len(wxy) else {s: np.array([]) for s in t.surfaces}
+            p = predict(code, pts, fn(pts[:, 0], pts[:, 1]), wxy, cw["depth_ft"].to_numpy(float), g_w, intervals=t.intervals)
+            rung, z = ch["rung"].to_numpy()[rows], ch["z"].to_numpy(float)[rows]
+            have = np.isfinite(p["z"].to_numpy())
+            miss = np.where(z < p["top"], z - p["top"], np.where(z > p["base"], z - p["base"], 0.0))
+            out = np.isfinite(miss) & (np.abs(miss) > BOUND_FT)
+            take_rung = (rung == "offset") & have & (code in t.rung)
+            bounded = code in t.bound                                       # a bench outside the bound is neither pulled nor flagged
+            skip = np.array([(code, r) in t.bound_skip for r in rung], dtype=bool)
+            take_bound = bound & bounded & np.isin(rung, CARRIED) & out & have & ~take_rung & ~skip
+            note = np.where(take_rung, "grid_rung", np.where(take_bound, "grid_bounded",
+                                                             np.where(bounded & ((rung == "direct") | skip) & out & ~take_rung, "outside_grid", "")))
+            new = take_rung | take_bound
+            ix = ch.index[rows]
+            ch.loc[ix, "grid_note"] = note
+            if new.any():
+                med, p90 = t.rung.get(code, t.err.get(code, (np.nan, np.nan)))
+                ch.loc[ix[new], "z"] = p["z"].to_numpy()[new]
+                ch.loc[ix[new], "how"] = ["grid " + b + ("" if r else f" (bound on {o})") for b, r, o in zip(p["basis"].to_numpy()[new], take_rung[new], rung[new], strict=True)]
+                ch.loc[ix[new], "rung"] = "grid"
+                ch.loc[ix[new], ["expected_median_ft", "expected_p90_ft"]] = [med, p90]
+                if "second_tvd_ft" in ch.columns:
+                    ch.loc[ix[new], ["second_tvd_ft", "second_share"]] = np.nan          # the second level belonged to the replaced thickness sample
     return ch
