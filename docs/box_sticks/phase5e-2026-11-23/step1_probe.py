@@ -5,9 +5,8 @@ import math
 import re
 import time
 
-from sqlalchemy import text
-
 from app.db import engine
+from sqlalchemy import text
 
 TABLES = ("box.location_stick", "box.location_set", "curated.box_location_status")
 
