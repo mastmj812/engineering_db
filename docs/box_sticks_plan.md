@@ -529,8 +529,41 @@ against the warehouse.
   `location_source` relaxed; proximity TVD comes from the location, not `erebor_locations.tvd`.
 - Planned spacing comes from the generator, replacing the D64 nearest-stick guess.
 - In-extent becomes "DSU intersects the extent", replacing the 50 %-of-stick rule: a recorded decision.
-- New record run per basin; econ is blank until Steven re-prices (stated choice, per the 11-04 precedent).
+- New run per basin, stored not record until phase 7 (scoped 2026-11-23, below); when it becomes the record, econ is blank
+  until Steven re-prices (stated choice, per the 11-04 precedent).
 - The PUD / RES split disappears with Novi; BOX coverage classes (validated / provisional) carry that meaning.
+
+**Scoped 2026-11-23 against the batch code (read-only survey; nothing built).** What the survey found, and what it changes
+in the bullets above:
+
+- **The run on BOX sticks is stored NOT as the record first.** A record whose locations are BOX sticks would show nothing
+  in erebor (it joins `box.pud_forecast.stick_id` to the Novi sticks of `curated.erebor_locations`) and leave
+  `curated.box_scout_locations` (sql/69) with no rows for the basin; `box_record23 flip` checks sql/69 and rolls back. The
+  record flip therefore belongs to phase 7, with the app cutover. Runs 30 and 32 stay the records through phase 6.
+- **A non-record run must be kept out of the pruner.** `box_prune_runs --apply` deletes every non-record run without econ
+  (D123).
+- **Where Novi sticks are read today:** `_UNIVERSE_SQL` (`box/production.py`), the D64 spacing guess
+  (`box_pud_run.nearest_by_stick`), the proximity inputs (`erebor_locations.tvd` by stick id, in `box_step16d_prox` and
+  `box/prox_pud_report`), and the realized / conflict joins on `curated.reconciled_inventory` (`box_record23`).
+- **Geometry.** A BOX stick is a MultiLineString; the batch takes a midpoint, a heading and a nearest gap from a single line.
+  11,701 of 79,275 record sticks are U-turns, so the analog distance and the proximity measurement need a stated rule for a
+  two-leg stick before any run.
+- **Constraints (sql/60, sql/71).** `pud_forecast.stick_id` can hold the BOX `location_id` as it is. Two CHECKs need new
+  values: `recon_status` and `spacing_source`. `box.location_source` is not written for a BOX stick.
+- **Cost.** A full build is about 7 hours of fits and 25 minutes of water, a store about 15 minutes; the bench caches are
+  keyed on the universe, so a new universe refits everything.
+
+| Step | What | Stops for |
+|---|---|---|
+| 6a | Read-only design on live, written up with bars before any code: the status mapping (producing, conflict, crowded, permitted, pending -> forecast or a stated not-covered class), sized per basin; the in-extent rule (every stored stick, against the 50 % rule), sized; the two-leg rules for analog distance and proximity, measured on U-turn sticks; spacing and lateral from the generator against D64, sized; what a run on BOX sticks is compared with (runs 30 / 32) and the bars for that comparison; which basin goes first | Michael's decisions |
+| 6b | Code on a branch, nothing applied: the universe on the record set, `locations()` on the generator's spacing and lateral, proximity TVD from the stick, recon from `curated.box_location_status`, the store path for BOX sticks, sql/NN (two CHECKs) authored, pruner guard, tests. Proven on a pilot area and in the rehearsal container | Michael's go |
+| 6c | sql/NN applied on live (two CHECK constraints widened; no row changes) | explicit go for the DDL |
+| 6d | Full build of ONE basin from clean main, stored NOT record; compared with its record run against the 6a bars | explicit go for the store; then Michael's review of the comparison |
+| 6e | erebor: the preview reads that run for BOX sticks (EUR per foot on the map and in the gunbarrel, labelled as a non-record run), so the forecasts can be judged by eye like the sticks were | Michael's review in erebor |
+| 6f | The other basin, the same way | explicit go for the store |
+
+**Gate 6:** both basins stored, not record, reviewed. Phase 7 then carries the record flips, sql/69, the app cutover and
+Steven's re-price together.
 
 ## Phase 7 - App cutover (warehouse first, apply + verify live, then apps)
 
