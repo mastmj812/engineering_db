@@ -17,6 +17,7 @@ NEW = ("box_pud_forecast_recon_status_ck", "box_pud_forecast_spacing_source_ck",
 OLD = ("pud_forecast_recon_status_check", "pud_forecast_spacing_source_check")
 _FINGERPRINT = ("SELECT count(*), md5(string_agg(run_id::text || ':' || location_id::text || ':' || recon_status || ':' || COALESCE(spacing_source, '') "
                 "|| ':' || coverage, ',' ORDER BY run_id, location_id)) FROM box.pud_forecast")
+_RUNS = "SELECT basin, count(*), count(*) FILTER (WHERE is_record) FROM box.forecast_run GROUP BY basin ORDER BY basin"  # per basin (D130)
 _DEFS = ("SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'box.pud_forecast'::regclass AND contype = 'c' "
          "AND (conname = ANY (%s) OR conname = ANY (%s))")
 
@@ -30,7 +31,7 @@ def apply(cur) -> list[str]:
             bad.append(msg)
 
     before = q(_FINGERPRINT).fetchone()
-    runs = q("SELECT count(*), count(*) FILTER (WHERE is_record) FROM box.forecast_run").fetchone()
+    runs = q(_RUNS).fetchall()
     q(SQL.read_text(encoding="utf-8"))
     defs = dict(q(_DEFS, (list(NEW), list(OLD))).fetchall())
     ck(set(defs) == set(NEW), f"the three named constraints exist and the two auto-named ones are gone ({sorted(defs)})")
@@ -40,7 +41,7 @@ def apply(cur) -> list[str]:
     ck(all(q("SELECT convalidated FROM pg_constraint WHERE conname = %s AND conrelid = 'box.pud_forecast'::regclass", (c,)).fetchone()[0] for c in NEW),
        "all three are validated against the stored rows")
     ck(tuple(q(_FINGERPRINT).fetchone()) == tuple(before), f"no row of box.pud_forecast changed ({before[0]:,} rows, same fingerprint)")
-    ck(tuple(q("SELECT count(*), count(*) FILTER (WHERE is_record) FROM box.forecast_run").fetchone()) == tuple(runs), f"runs and records unchanged ({tuple(runs)})")
+    ck(q(_RUNS).fetchall() == runs, f"runs and records unchanged, per basin ({runs})")
     return bad
 
 
