@@ -46,6 +46,7 @@ def _slice(text: str, start: str, end: str) -> str:
 def main() -> None:
     t0 = time.monotonic()
     erebor = (SQL / "22_erebor_locations.sql").read_text(encoding="utf-8")
+    novi = (SQL / "78_novi_stick_locations.sql").read_text(encoding="utf-8")
     s06 = (SQL / "06_curated_derived.sql").read_text(encoding="utf-8")
     refresh_block = _slice(
         s06,
@@ -57,9 +58,10 @@ def main() -> None:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            print("[1/4] materialize curated.erebor_locations (sql/22) — "
-                  "WITH DATA + indexes", flush=True)
+            print("[1/4] materialize curated.novi_stick_locations (sql/78: the Novi PUD / RES sticks) and "
+                  "curated.erebor_locations (sql/22: BOX sticks + producing wells) — WITH DATA + indexes", flush=True)
             t = time.monotonic()
+            cur.execute(novi)  # the quarterly reload CASCADE-dropped it with curated.intel_locations
             cur.execute(erebor)
             print(f"    built in {time.monotonic() - t:.0f}s", flush=True)
             recreate_box_scout(cur)  # sql/22's CASCADE drops the dependent sql/69 view

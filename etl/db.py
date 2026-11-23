@@ -388,8 +388,11 @@ def settle(seconds: int | None = None) -> int:
 #   - codev_context (sql/47) reads wells + formation_blueox +
 #     formation_blueox_tvd (its last input), so it follows them directly;
 #     ~1.5 min basin-wide, no downstream matview dependents.
-#   - erebor_locations reads wells_enriched (over the matviews above) AND
-#     intel_locations, so it comes after both.
+#   - erebor_locations reads wells_enriched (over the matviews above), the
+#     record BOX stick set and its nightly status (curated.box_location_status,
+#     written by the etl/box_recon hook that runs before codev_context in this
+#     same refresh), and intel_locations (rock-quality scores of producing wells),
+#     so it comes after all of them.
 #   - intel_forecast_accuracy reads producing_reference, production and
 #     intel_locations (plus the quarterly-owned reconciled_inventory), so it
 #     follows erebor_locations; nightly refresh keeps its actuals current.

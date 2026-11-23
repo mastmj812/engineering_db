@@ -5,8 +5,9 @@ statement_timeout — the pipeline never writes to the warehouse. Geometry
 crosses the boundary as WKT in EPSG:4326. Every spatial predicate uses the
 `wellstick_geom::geography` expression text that sql/26's GiST indexes serve.
 
-No economics: the Novi NPV/PV/price columns of curated.erebor_locations are
-deliberately never selected.
+No economics: the Novi NPV/PV/price columns of curated.novi_stick_locations are
+deliberately never selected. Novi sticks are read from curated.novi_stick_locations
+(sql/78): since the BOX sticks cutover curated.erebor_locations carries BOX sticks.
 """
 
 from __future__ import annotations
@@ -76,7 +77,7 @@ def novi_sticks(conn, unit: BaseGeometry, buffer_ft: float = 1320.0) -> list[dic
                el.dist_nearest_ft, el.offset_median_eur_ft, el.inflation_ratio,
                el.offset_median_tvd, el.tvd_excess_3mi_ft, el.wca_delta_ft,
                extensions.ST_AsText(el.wellstick_geom) AS wkt
-        FROM curated.erebor_locations el
+        FROM curated.novi_stick_locations el
         WHERE el.category IN ('PUD', 'RES')
           AND el.wellstick_geom IS NOT NULL
           AND extensions.ST_DWithin(el.wellstick_geom::extensions.geography,
@@ -326,7 +327,7 @@ def representative_sticks(
 def novi_params(conn, stick_ids: list[int]) -> list[dict[str, Any]]:
     """Per stick x stream x segment (1 and 2): Novi Arps (d_nom NOMINAL /yr, b,
     q_start, day_start/day_stop) plus the stick's EUR and lateral from
-    erebor_locations. No price/NPV columns.
+    novi_stick_locations. No price/NPV columns.
 
     Novi's model is multi-segment (verified 2026-09-18): segment 1 = days
     0-540 with Di pinned at 3.65/yr (0.01/day — a cap) on ~98% of gas and ~52%
@@ -341,6 +342,6 @@ def novi_params(conn, stick_ids: list[int]) -> list[dict[str, Any]]:
                a.d_eff_secant, a.q_start, a.day_start, a.day_stop,
                el.ll_ft, el.oil_eur, el.gas_eur, el.formation_blueox AS bench
         FROM curated.intel_arps a
-        JOIN curated.erebor_locations el ON el.stick_id = a.stick_id
+        JOIN curated.novi_stick_locations el ON el.stick_id = a.stick_id
         WHERE a.stick_id = ANY(%(ids)s) AND a.segment IN (1, 2)
     """, {"ids": list(stick_ids)})
