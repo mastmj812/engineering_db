@@ -1,0 +1,109 @@
+
+== 1. record sticks against box.bench_scope and the record extents (the 50 % rule, on the legs)
+   basin  sticks  no_scope_row  scope_out  in_scope_no_extent  inside_ge_50  inside_0_to_50  inside_0  inside_and_inventory
+delaware   46153             0          0                   0         43846            1750       557                 43479
+ midland   33122             0          0                   0         31413            1400       309                 31348
+
+== 1b. the same by pool (in-scope pools only)
+   basin  pool  sticks  no_extent  ge_50  part  outside
+delaware   WCA    7740          0   7555   121       64
+delaware BS3_C    6707          0   6358   271       78
+delaware BS1_S    5188          0   4981   169       38
+delaware WCB_2    5159          0   4938   165       56
+delaware BS3_S    4690          0   4512   128       50
+delaware WCB_1    4637          0   4422   155       60
+delaware BS2_S    3975          0   3790   134       51
+delaware BS2_C    2683          0   2452   168       63
+delaware   WCC    2675          0   2524   115       36
+delaware AVA_2    1149          0   1013   116       20
+delaware AVA_1    1071          0    913   130       28
+delaware AVA_0     479          0    388    78       13
+ midland  LSSH    5481          0   5296   159       26
+ midland   WCD    5187          0   4983   159       45
+ midland WCA_1    5168          0   4907   206       55
+ midland WCB_1    4496          0   4260   194       42
+ midland    MS    4102          0   3886   188       28
+ midland    JM    3304          0   3101   168       35
+ midland  DEAN    2420          0   2329    75       16
+ midland WCB_2    1985          0   1816   135       34
+ midland   WCC     979          0    835   116       28
+
+== 1c. benches of record sticks with no scope row, or scoped out
+Empty DataFrame
+Columns: [basin, formation_blueox, pool, in_scope, sticks]
+Index: []
+
+== 2. nightly status of the record sticks
+   basin    status  crowded  counts_as_inventory  sticks
+delaware      open    False                 True   45013
+delaware permitted    False                 True     701
+delaware      open     True                False     226
+delaware producing    False                False     121
+delaware   pending    False                 True      62
+delaware  conflict    False                False      29
+delaware   pending     True                False       1
+ midland      open    False                 True   32967
+ midland permitted    False                 True      71
+ midland      open     True                False      46
+ midland   pending    False                 True      19
+ midland producing    False                False      16
+ midland  conflict    False                False       2
+ midland permitted     True                False       1
+
+== 3. U-turn sticks: count, whether legs + arc merge into ONE line, leg separation
+   basin  uturn_sticks  merge_to_one_line leg_gap_ft_p50 leg_gap_ft_max completed_ft_p50
+delaware          8128               8128           1200           2537             8029
+ midland          3573               3573           1199           1789             8010
+
+== 3b. single sticks: lateral length
+   basin  single_sticks completed_ft_p50  p10   p90
+delaware          38025             9898 7258 12555
+ midland          29549             9869 7242 15151
+
+== 4. spacing: the generator's on BOX sticks
+   basin p10  p50  p90  exactly_880
+delaware 826 1170 1310           10
+ midland 715  958 1278           13
+
+== 4b. spacing: D64 on the record forecast runs (forecast-carrying rows)
+   basin  run_id  forecast_rows p10  p50  p90  default_880 completed_ft_p50
+delaware      32          48148 743 1058 1322          390             7720
+ midland      30          28801 756  882 1547           51            10560
+
+== 5. the record forecast runs by coverage class
+   basin  run_id                   coverage  rows
+delaware      32 not_covered_outside_extent 90125
+delaware      32        covered_provisional 25277
+delaware      32                    covered 22871
+delaware      32       not_covered_emerging 18465
+delaware      32   not_covered_no_precedent  8256
+delaware      32       not_covered_conflict  1567
+ midland      30 not_covered_outside_extent 37836
+ midland      30       not_covered_emerging 14794
+ midland      30                    covered 14786
+ midland      30        covered_provisional 14015
+ midland      30   not_covered_no_precedent  3739
+ midland      30       not_covered_conflict   678
+ midland      30     not_covered_no_analogs     1
+
+== 6. curated.erebor_locations today
+   basin category     geom_type   rows  with_tvd
+delaware      PDP ST_LineString  31949     31928
+delaware      PUD ST_LineString 120613    120613
+delaware      RES ST_LineString  49602     49602
+ midland      PDP ST_LineString  29043     29043
+ midland      PUD ST_LineString  62082     62082
+ midland      RES ST_LineString  25100     25100
+
+== 6b. objects that depend on curated.erebor_locations
+relkind                   dependent
+      v curated.box_scout_locations
+
+== 6c. curated.erebor_locations columns
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           columns
+stick_id, unique_id, category, inventory_class, basin, formation, formation_blueox, basin_blueox, formation_blueox_source, recon_status, deplet_t, rqs, rqt, operator, pad_name, tvd, ll_ft, npv5, npv10, npv15, npv20, npv25, pv5, pv10, pv15, pv20, pv25, oil_eur, gas_eur, wti_price, hh_price, ngl_price, wti_diff, hh_diff, pdp_count_1mi, pdp_count_3mi, pdp_count_5mi, dist_nearest_ft, dist_3rd_nearest_ft, support_lateral_ft_5mi, n_offsets_5mi, offset_median_eur_ft, inflation_ratio, offset_median_tvd, tvd_delta_ft, tvd_excess_3mi_ft, wca_delta_ft, wellstick_geom
+
+== 7. land team's view today
+   basin  rows
+delaware 48077
+ midland 28754

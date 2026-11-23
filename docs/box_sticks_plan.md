@@ -85,6 +85,7 @@ stick chain is retired.
 | Prune of superseded sets (2026-11-23; Michael: "prune the old sets", then "Yes, delete them") | **Sets 6, 7, 16, 17 and 21 pruned on live**: their rows deleted from `box.location_stick` (205,870), `box.location_set_well` (159,376), `box.location_set_bench` (128,827) and `box.location_set_dsu` (23,986), 518,059 rows, one transaction, rehearsed rolled back first. Their five `box.location_set` header rows are kept with a note (config, input manifest, counts, crosswalk); `box.location` is untouched (337,742 rows: ids and slot numbers are never reused). Records unchanged: sets 24 and 25, 79,275 sticks. There is no stored set to flip back to any more: a fallback is a regeneration. Command: `python -m scripts.box_sticks_prune --set-id N ... [--go]` (refuses a record set). Reason: nothing read them, and seven stored sets had tipped the nightly hook's plan (PR #272) |
 | Shadow week ended early; preview before phase 6 (2026-11-23; Michael: "i'm interested in accelerating this process: ending the shadow runs and moving forward with next steps ... i can't 'see' that until the outputs are actually populated in erebor", then "Yes, preview next") | **Gate 5d closes after three nights, not seven**, with its failures stated: bar S4 failed on night 2 (419 changed against 198; cause = Novi's build of 2026-11-20 rewriting New Mexico surveys, `docs/box_sticks/planned-flag-2026-11-23`), and the gate 5a back-test bars that failed still fail. Passed on all three nights: the hook wrote, identities held, 0 of 430 locations flapped, nothing reads the tables. Michael's position on the night-2 cause: vendor survey revisions are expected noise, small against the whole (59 sticks, 0.07 %), mostly New Mexico; no rule change and nothing waits on Novi. The nightly hook keeps running. **Not decided here:** whether reconciliation drives undrilled counts (gate 5). **New step, ahead of phase 6:** a geometry-only preview of the record BOX sticks in erebor (map and gunbarrel beside PDP wells, with landing TVD and nightly status; no forecast, no econ; forecasts, Highgrade and counts stay on Novi sticks and runs 30 / 32). Reason: stick quality is judged by eye on a gunbarrel, and a forecast run plus a re-price should not be spent on sticks nobody has looked at |
 | Preview gate (phase 5e step 4; 2026-11-23; Michael, after selecting wells and viewing gunbarrels in erebor: "its honestly great. i'm sure i could find SOMETHING if i dug hard enough but this is great") | **The record BOX sticks (sets 24 and 25) pass Michael's review by eye in erebor.** No finding goes back to the generator from this review. One display defect, not a stick defect: a U-turn stick was drawn as two legs without its turn arc (erebor PR #32 draws the arc; 11,701 of the 79,275 record sticks are U-turns). This is not a go for phase 6: the forecast run on BOX sticks, and the blank econ that follows until Steven re-prices, is its own explicit go |
+| Phase 6 reshaped: the run on BOX sticks is the record (2026-11-23; Michael: "can we do the run on BOX sticks as record? yes the econ portions of erebor would go dark until steven prices, but i'm fine with that ... i'm not interested in protecting the current econ data thats being run on the flawed novi_intel sticks", then "yes, rewrite the plan and start step 1") | **Phase 6 ends with the BOX-stick runs as the records, `curated.erebor_locations` and the land team's view fed by BOX sticks, and econ blank until Steven prices.** The warehouse location swap and erebor's cutover move from phase 7 into phase 6, because a record run on BOX sticks has nothing to match to while those read Novi sticks. Five steps (plan, phase 6): design, code, both basins stored, one cutover window, Steven's pricing. narvi, deal-intake and anduin follow in phase 7 and read Novi sticks until then. Runs 30 and 32 are kept for a few days after the cutover as the way back |
 
 ### What exploration found (shapes the plan)
 
@@ -523,56 +524,61 @@ against the warehouse.
 | 3 | erebor frontend: layer, switch, legend, hover, gunbarrel markers; checked in the running app with screenshots; PR **DONE 2026-11-23** (erebor PR open; bars F1 to F7 in `BARS.md`) | Michael's review in erebor |
 | 4 | Michael's findings, DSU by DSU, written up as generator inputs **DONE 2026-11-23**: reviewed in erebor after PR #31 merged; no generator finding (decision table) | gate before phase 6 |
 
-## Phase 6 - BOX forecasts on BOX sticks
+## Phase 6 - BOX forecasts on BOX sticks, as the record (rewritten 2026-11-23)
 
-- `_UNIVERSE_SQL` reads the record `box.location_set`; `stick_id` constraints on `pud_forecast` /
-  `location_source` relaxed; proximity TVD comes from the location, not `erebor_locations.tvd`.
-- Planned spacing comes from the generator, replacing the D64 nearest-stick guess.
-- In-extent becomes "DSU intersects the extent", replacing the 50 %-of-stick rule: a recorded decision.
-- New run per basin, stored not record until phase 7 (scoped 2026-11-23, below); when it becomes the record, econ is blank
-  until Steven re-prices (stated choice, per the 11-04 precedent).
+Michael, 2026-11-23: "can we do the run on BOX sticks as record? yes the econ portions of erebor would go dark until steven
+prices, but i'm fine with that ... i'm not interested in protecting the current econ data thats being run on the flawed
+novi_intel sticks. my view/vision would be that we run our BOX sticks, that populates in downstream apps and land team views,
+with the econs just being null until steven prices said record forecasts."
+
+So phase 6 ends with **the BOX-stick runs as the records, erebor and the land team's view populated from BOX sticks, econ
+blank until Steven prices**. The version of this section scoped earlier the same day (the run stored not record, the flip
+left to phase 7) is superseded.
+
+**What has to land together.** erebor and `curated.box_scout_locations` (sql/69) take location geometry from the Novi
+sticks of `curated.erebor_locations` and match forecasts to them by stick id. A record run on BOX sticks has nothing to match
+until that relation carries BOX sticks. The cutover is therefore one window: the warehouse locations switch to BOX sticks,
+both records flip unpriced (the 2026-11-04 precedent; sql/69 keeps its rows with econ blank), and erebor reads them.
+
+**What changes in the batch** (read-only survey of the code, 2026-11-23):
+
+- The location universe (`box/production.py` `_UNIVERSE_SQL`) reads the record `box.location_set` in place of
+  `curated.intel_locations`; `pud_forecast.stick_id` holds the BOX `location_id`; `box.location_source` is not written.
+- Planned spacing and lateral length come from the generator, replacing the D64 nearest-stick guess
+  (`box_pud_run.nearest_by_stick`).
+- The proximity inputs take the stick's own landing TVD, not `erebor_locations.tvd` (`box_step16d_prox`,
+  `box/prox_pud_report`).
+- Drilled and conflict sticks come from `curated.box_location_status`, not `curated.reconciled_inventory`.
+- In-extent becomes a recorded decision (step 1), replacing the 50 %-of-stick rule.
+- A BOX stick is a MultiLineString and 11,701 of 79,275 are U-turns: the midpoint, heading and gap code needs a stated rule
+  for a two-leg stick.
+- Two CHECKs on `box.pud_forecast` (sql/60) take new values: `recon_status` and `spacing_source`.
 - The PUD / RES split disappears with Novi; BOX coverage classes (validated / provisional) carry that meaning.
-
-**Scoped 2026-11-23 against the batch code (read-only survey; nothing built).** What the survey found, and what it changes
-in the bullets above:
-
-- **The run on BOX sticks is stored NOT as the record first.** A record whose locations are BOX sticks would show nothing
-  in erebor (it joins `box.pud_forecast.stick_id` to the Novi sticks of `curated.erebor_locations`) and leave
-  `curated.box_scout_locations` (sql/69) with no rows for the basin; `box_record23 flip` checks sql/69 and rolls back. The
-  record flip therefore belongs to phase 7, with the app cutover. Runs 30 and 32 stay the records through phase 6.
-- **A non-record run must be kept out of the pruner.** `box_prune_runs --apply` deletes every non-record run without econ
-  (D123).
-- **Where Novi sticks are read today:** `_UNIVERSE_SQL` (`box/production.py`), the D64 spacing guess
-  (`box_pud_run.nearest_by_stick`), the proximity inputs (`erebor_locations.tvd` by stick id, in `box_step16d_prox` and
-  `box/prox_pud_report`), and the realized / conflict joins on `curated.reconciled_inventory` (`box_record23`).
-- **Geometry.** A BOX stick is a MultiLineString; the batch takes a midpoint, a heading and a nearest gap from a single line.
-  11,701 of 79,275 record sticks are U-turns, so the analog distance and the proximity measurement need a stated rule for a
-  two-leg stick before any run.
-- **Constraints (sql/60, sql/71).** `pud_forecast.stick_id` can hold the BOX `location_id` as it is. Two CHECKs need new
-  values: `recon_status` and `spacing_source`. `box.location_source` is not written for a BOX stick.
-- **Cost.** A full build is about 7 hours of fits and 25 minutes of water, a store about 15 minutes; the bench caches are
-  keyed on the universe, so a new universe refits everything.
+- A stored run that is not yet the record must be kept out of `box_prune_runs --apply` (D123).
+- Cost: about 7 hours of fits, 25 minutes of water and 15 minutes to store, per basin.
 
 | Step | What | Stops for |
 |---|---|---|
-| 6a | Read-only design on live, written up with bars before any code: the status mapping (producing, conflict, crowded, permitted, pending -> forecast or a stated not-covered class), sized per basin; the in-extent rule (every stored stick, against the 50 % rule), sized; the two-leg rules for analog distance and proximity, measured on U-turn sticks; spacing and lateral from the generator against D64, sized; what a run on BOX sticks is compared with (runs 30 / 32) and the bars for that comparison; which basin goes first | Michael's decisions |
-| 6b | Code on a branch, nothing applied: the universe on the record set, `locations()` on the generator's spacing and lateral, proximity TVD from the stick, recon from `curated.box_location_status`, the store path for BOX sticks, sql/NN (two CHECKs) authored, pruner guard, tests. Proven on a pilot area and in the rehearsal container | Michael's go |
-| 6c | sql/NN applied on live (two CHECK constraints widened; no row changes) | explicit go for the DDL |
-| 6d | Full build of ONE basin from clean main, stored NOT record; compared with its record run against the 6a bars | explicit go for the store; then Michael's review of the comparison |
-| 6e | erebor: the preview reads that run for BOX sticks (EUR per foot on the map and in the gunbarrel, labelled as a non-record run), so the forecasts can be judged by eye like the sticks were | Michael's review in erebor |
-| 6f | The other basin, the same way | explicit go for the store |
+| 1 | Short design with numbers from live (`docs/box_sticks/phase6-2026-11-23/DESIGN.md`): status mapping, in-extent rule, two-leg rules, spacing, how a stick is stored for erebor, the bars | Michael's decisions |
+| 2 | All code on branches, nothing applied: the batch on BOX sticks; the warehouse location swap (sql/22 and what hangs off it) and sql/69; erebor reading BOX sticks. Proven in the rehearsal container and on a pilot area | Michael's go |
+| 3 | Both basins built from clean main and stored, NOT record yet (nothing changes on screen); compared with runs 30 / 32 against the step 1 bars | Michael's go for the cutover |
+| 4 | Cutover, one off-hours window, outside the nightly: apply the warehouse change, flip both records unpriced, merge erebor; verify live | done: econ is dark |
+| 5 | Steven is told (#eng-updates, on Michael's go) and prices the two record runs | his pricing |
 
-**Gate 6:** both basins stored, not record, reviewed. Phase 7 then carries the record flips, sql/69, the app cutover and
-Steven's re-price together.
+Runs 30 and 32 are kept for a few days after the cutover as the way back, then pruned on Michael's go. A revert is not one
+command: it rebuilds the location relation from Novi sticks and flips the records back.
 
-## Phase 7 - App cutover (warehouse first, apply + verify live, then apps)
+## Phase 7 - The other apps (after phase 6)
 
-- **Warehouse:** split sql/22 into a PDP matview with no Novi dependency and a locations half fed by BOX
-  sticks; sql/67 pad membership from the stored DSU id; sql/69 re-pointed.
-- **erebor:** `box_locations.py`, tiles, Highgrade, `/pad`, workup sign checks.
+erebor and the land team's view moved in phase 6. Until the apps below are cut over they keep reading Novi sticks, so narvi
+and erebor can show different undrilled locations in the same unit.
+
+- **Warehouse:** whatever of the sql/22 split and sql/67 pad membership phase 6 did not need.
 - **narvi:** `_STICK_SQL`, `available_benches` (spacing suggestion + last-resort TVD tiers), `apply_novi_rep`.
 - **deal-intake:** `novi_sticks`, gate 2 (keep-vs-generate), spacing chain steps 1-2.
 - **anduin:** `warehouse_client/intel_forecast.py` representative sticks and the dossier overlay.
+- **erebor:** the preview switch and its layer are removed once BOX sticks are the locations (done in phase 6 if it is simpler
+  there); Highgrade, `/pad` and the workup sign checks are re-walked.
 
 ## Phase 8 - Retirement (last; every drop an explicit go)
 
