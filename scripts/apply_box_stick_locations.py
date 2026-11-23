@@ -75,13 +75,23 @@ def preflight(q, ck: Checks) -> dict:
     return {"expect": expect, "old": old, "novi": novi, "pdp_by_basin": pdp_by_basin}
 
 
-def swap(cur, ck: Checks) -> dict:
-    """Steps 1 to 7 inside the caller's transaction."""
+def swap(cur, ck: Checks, container: bool = False) -> dict:
+    """Steps 1 to 7 inside the caller's transaction. `container` = the scripts.box_rehearsal database: curated objects are
+    mirrored there as plain TABLES (so the mirrored curated.erebor_locations table is dropped first), and sql/26 / sql/31 are
+    skipped because they name relations the container does not hold."""
     q = cur.execute
+    if container:
+        host = q("SELECT inet_server_port(), current_database()").fetchone()
+        tab = q("SELECT c.relkind FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'curated' AND c.relname = 'erebor_locations'").fetchone()
+        if tab is None or tab[0] != "r":
+            raise SystemExit(f"--container: curated.erebor_locations is not a mirrored table here ({host}, relkind {tab}); this is not the rehearsal container state")
     print("[1/7] preflight", flush=True)
     before = preflight(q, ck)
     if ck.bad:
         return before
+    if container:
+        q("DROP TABLE curated.erebor_locations CASCADE")           # the mirror's plain table; on live it is the matview sql/22 drops
+        q("DROP VIEW IF EXISTS curated.box_scout_locations")
     for i, name in enumerate(FILES[:2], start=2):
         t = time.monotonic()
         print(f"[{i}/7] sql/{name}", flush=True)
@@ -90,6 +100,9 @@ def swap(cur, ck: Checks) -> dict:
     print("[4/7] re-create curated.box_scout_locations (sql/69)", flush=True)
     recreate_box_scout(cur)
     for i, name in enumerate(FILES[2:], start=5):
+        if container:
+            print(f"[{i}/7] sql/{name}: skipped in the rehearsal container", flush=True)
+            continue
         print(f"[{i}/7] sql/{name}", flush=True)
         q((SQL / name).read_text(encoding="utf-8"))
 
@@ -140,6 +153,7 @@ def swap(cur, ck: Checks) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--go", action="store_true", help="COMMIT. Without it the transaction is rolled back.")
+    ap.add_argument("--container", action="store_true", help="the scripts.box_rehearsal database (DB_* point at it): see swap()")
     a = ap.parse_args(argv)
     t0 = time.monotonic()
     ck = Checks()
@@ -149,7 +163,7 @@ def main(argv: list[str] | None = None) -> int:
         with conn.cursor() as cur:
             cur.execute("SET LOCAL lock_timeout = '60s'")
             print(f"BOX sticks cutover, warehouse half ({'GO' if a.go else 'rehearsal, rolled back'})", flush=True)
-            swap(cur, ck)
+            swap(cur, ck, container=a.container)
         if ck.bad or not a.go:
             conn.rollback()
             print(f"ROLLED BACK in {time.monotonic() - t0:.0f} s. " + (f"{len(ck.bad)} of {ck.n} checks FAILED." if ck.bad else f"Rehearsal: {ck.n} of {ck.n} checks pass."), flush=True)
