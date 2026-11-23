@@ -51,6 +51,14 @@ def test_judge_and_stale_are_single_read_only_selects_with_the_constants_rendere
     assert "LEAST(st.sticks - st.sticks_out, GREATEST(st.sticks - a.new_producers, 0))" in br.STALE_SQL
 
 
+def test_the_stick_join_keeps_the_set_filter_out_of_the_index_choice():
+    # A plain `s.set_id = r.set_id` lets the planner AND the spatial probe with a bitmap of the whole record set once per
+    # well (227 s against 51 s on 2026-11-23, rows identical). The filter must stay, but not as an indexable equality.
+    j = br.JUDGE_SQL
+    assert "ON s.set_id + 0 = r.set_id" in j and "ON s.set_id = r.set_id" not in j
+    assert j.index("ON s.set_id + 0 = r.set_id") < j.index("extensions.ST_DWithin(s.legs_geom::extensions.geography, w.line::extensions.geography")
+
+
 def test_the_module_never_writes_schema_box_and_writes_only_its_four_tables():
     targets = set(re.findall(r"(?:INSERT INTO|DELETE FROM|UPDATE|TRUNCATE)\s+([a-z_]+\.[a-z_0-9]+)", SRC))
     assert targets == set(br.TABLES)

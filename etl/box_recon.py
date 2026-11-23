@@ -132,7 +132,10 @@ pair AS MATERIALIZED (
     FROM w
     JOIN rec r ON r.basin = w.basin
     JOIN box.location_stick s
-      ON s.set_id = r.set_id
+      -- `+ 0` keeps the set filter out of the index choice. Written as a plain equality, the planner ANDs the spatial probe
+      -- with a bitmap of the whole record set (location_stick_pkey, ~40,000 rows) once per well: 168 s of a 227 s run with
+      -- seven sets stored (2026-11-23). The spatial index alone returns ~48 candidates per well.
+      ON s.set_id + 0 = r.set_id
      AND extensions.ST_DWithin(s.legs_geom::extensions.geography, w.line::extensions.geography, r.same_dh_ft * 0.3048)
     LEFT JOIN box.location_set_dsu d ON d.set_id = s.set_id AND d.pad_id = s.pad_id
     LEFT JOIN box.location_set_bench b
