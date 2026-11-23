@@ -51,13 +51,14 @@ def test_a_stick_is_one_linestring_with_its_turn_arc():
 
 def test_both_arms_have_the_same_columns_in_the_same_order():
     box, pdp = _cols(BOX_ARM), _cols(PDP_ARM)
-    assert box == pdp and len(box) == 48 and box[0] == "stick_id" and box[-1] == "wellstick_geom"
+    assert box == pdp and len(box) == 49 and box[0] == "stick_id" and box[-2:] == ["pad_id", "wellstick_geom"]
+    assert "k.pad_id," in BOX_ARM and "NULL::bigint                       AS pad_id" in PDP_ARM          # Highgrade groups BOX sticks by DSU id
     assert "-(we.api10::bigint)                AS stick_id" in PDP_ARM and "'PDP'::text                        AS category" in PDP_ARM
 
 
 def test_the_novi_sticks_move_column_for_column_and_deal_intake_reads_them_there():
     novi = SQL78[SQL78.index("CREATE MATERIALIZED VIEW curated.novi_stick_locations AS"):SQL78.index("WITH DATA;")]
-    assert _cols(novi) == _cols(PDP_ARM)                                                # the shape erebor_locations always had
+    assert _cols(novi) == [c for c in _cols(PDP_ARM) if c != "pad_id"]                 # the shape erebor_locations had before the cutover
     assert "FROM curated.intel_locations il" in novi and "WHERE il.category IN ('PUD', 'RES')" in novi
     assert "CREATE UNIQUE INDEX idx_novi_stick_locations_pk" in SQL78
     assert "USING GIST ((wellstick_geom::extensions.geography))" in SQL78               # deal-intake's ST_DWithin on geography

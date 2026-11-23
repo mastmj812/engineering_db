@@ -116,8 +116,12 @@ def swap(cur, ck: Checks) -> dict:
     geo = dict(q("SELECT extensions.ST_GeometryType(wellstick_geom), count(*) FROM curated.erebor_locations WHERE category = 'BOX' GROUP BY 1").fetchall())
     ck(set(geo) == {"ST_LineString"}, f"every BOX geometry is a LineString ({geo})")
     miss = q("SELECT count(*) FILTER (WHERE tvd IS NULL), count(*) FILTER (WHERE ll_ft IS NULL), count(*) FILTER (WHERE pad_name IS NULL), "
-             "count(*) FILTER (WHERE formation_blueox IS NULL) FROM curated.erebor_locations WHERE category = 'BOX'").fetchone()
-    ck(tuple(miss) == (0, 0, 0, 0), f"every BOX row has a TVD, a lateral, a DSU name and a bench (missing: {tuple(miss)})")
+             "count(*) FILTER (WHERE formation_blueox IS NULL), count(*) FILTER (WHERE pad_id IS NULL) FROM curated.erebor_locations WHERE category = 'BOX'").fetchone()
+    ck(tuple(miss) == (0, 0, 0, 0, 0), f"every BOX row has a TVD, a lateral, a DSU name, a bench and a DSU id (missing: {tuple(miss)})")
+    nopoly = q("SELECT count(DISTINCT (el.basin, el.pad_id)) FROM curated.erebor_locations el JOIN box.location_set t ON t.is_record AND t.basin = el.basin "
+               "WHERE el.category = 'BOX' AND NOT EXISTS (SELECT 1 FROM raw_novi_intel.pads p WHERE p.report_version = t.dsu_vintage "
+               "AND p.pad_id = el.pad_id AND p.basin = el.basin AND p.geom IS NOT NULL)").fetchone()[0]
+    ck(nopoly == 0, f"every DSU of a BOX row has a polygon in raw_novi_intel.pads at the set's vintage ({nopoly} do not)")
     idx = {r[0] for r in q("SELECT indexname FROM pg_indexes WHERE schemaname = 'curated' AND tablename IN ('erebor_locations', 'novi_stick_locations')").fetchall()}
     need = {"idx_erebor_locations_pk", "idx_erebor_locations_geom", "idx_novi_stick_locations_pk", "idx_novi_stick_locations_geog"}
     ck(need <= idx, f"the unique and spatial indexes exist ({sorted(need - idx) or 'all'})")

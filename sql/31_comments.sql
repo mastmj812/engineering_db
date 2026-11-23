@@ -706,6 +706,7 @@ COMMENT ON COLUMN curated.erebor_locations.ngl_price IS 'NULL on every row since
 COMMENT ON COLUMN curated.erebor_locations.wti_diff IS 'NULL on every row since the BOX sticks cutover (docs/box_sticks_plan.md phase 6): a Novi stick attribute. The Novi sticks and this column''s values are in curated.novi_stick_locations (sql/78).';
 COMMENT ON COLUMN curated.erebor_locations.hh_diff IS 'NULL on every row since the BOX sticks cutover (docs/box_sticks_plan.md phase 6): a Novi stick attribute. The Novi sticks and this column''s values are in curated.novi_stick_locations (sql/78).';
 COMMENT ON COLUMN curated.erebor_locations.wellstick_geom IS 'LineString, EPSG:4326; GIST-indexed. BOX stick: the drilled path (a U-turn stick: leg + turn arc + leg, so longer than ll_ft). Producing well: the wellstick.';
+COMMENT ON COLUMN curated.erebor_locations.pad_id IS 'BOX stick: id of the Novi DSU it was generated in (raw_novi_intel.pads.pad_id at the record set''s DSU vintage); erebor Highgrade groups sticks by it. NULL on a producing well.';
 COMMENT ON COLUMN curated.erebor_locations.inventory_class IS 'Same as category since the BOX sticks cutover (BOX / PDP).';
 
 -- curated.novi_stick_locations (matview, sql/78) -- the Novi PUD / RES sticks, for readers still on Novi sticks.

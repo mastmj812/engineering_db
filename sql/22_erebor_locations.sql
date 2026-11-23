@@ -34,7 +34,8 @@
 --                   + leg for a U-turn stick (every record U-turn stick joins into
 --                   one line; the apply script asserts it). The legs alone are in
 --                   box.location_stick.legs_geom.
---   pad_name      = the Novi DSU's name (raw_novi_intel.pads of the set's vintage).
+--   pad_name / pad_id = the Novi DSU the stick was generated in (raw_novi_intel.pads of the
+--                   set's vintage): its name, and its id (what Highgrade groups by).
 --   Novi-only columns (deplet_t, rqs, rqt, operator, NPV / PV / EUR / prices, the
 --   offset-support family) are NULL: they describe a Novi stick, not a BOX stick.
 --
@@ -123,6 +124,10 @@ SELECT
     NULL::double precision AS inflation_ratio,
     NULL::double precision AS offset_median_tvd, NULL::double precision AS tvd_delta_ft,
     NULL::double precision AS tvd_excess_3mi_ft, NULL::double precision AS wca_delta_ft,
+    -- the Novi DSU the stick was generated in (raw_novi_intel.pads.pad_id of the set's vintage): what erebor's
+    -- Highgrade groups sticks by. pad_name alone is not enough: curated.intel_pad_geom only knows DSUs that held a
+    -- Novi stick (254 Midland DSUs with BOX sticks are not in it).
+    k.pad_id,
     -- the drilled path as ONE line: leg, or leg + turn arc + leg (U-turn)
     (CASE WHEN k.turn_geom IS NULL THEN extensions.ST_GeometryN(k.legs_geom, 1)
           ELSE extensions.ST_LineMerge(extensions.ST_Collect(k.legs_geom, k.turn_geom))
@@ -187,6 +192,7 @@ SELECT
     NULL::double precision AS inflation_ratio,
     NULL::double precision AS offset_median_tvd, NULL::double precision AS tvd_delta_ft,
     NULL::double precision AS tvd_excess_3mi_ft, NULL::double precision AS wca_delta_ft,
+    NULL::bigint                       AS pad_id,     -- a producing well belongs to no DSU here
     we.wellstick_geom
 FROM curated.wells_enriched we
 LEFT JOIN curated.net_new_pdp nn ON nn.api10 = we.api10
@@ -233,3 +239,5 @@ COMMENT ON COLUMN curated.erebor_locations.wellstick_geom IS
 'EPSG 4326 LineString. BOX row: the drilled path (a U-turn stick: leg + turn arc + leg, so longer than ll_ft). PDP row: the wellstick.';
 COMMENT ON COLUMN curated.erebor_locations.pad_name IS
 'BOX row: the name of the Novi DSU the stick was generated in. PDP row: NULL.';
+COMMENT ON COLUMN curated.erebor_locations.pad_id IS
+'BOX row: raw_novi_intel.pads.pad_id of the Novi DSU the stick was generated in (the vintage is box.location_set.dsu_vintage of the record set). PDP row: NULL.';
