@@ -93,3 +93,20 @@ Highgrade pad values wobble in the last digit between calls. Neither changes a n
 
 A selection that holds BOX sticks and nothing else gets its frame from the sticks (legs summed as undirected lines, so a
 U-turn stick's two legs do not cancel); `frame_from` in the answer says which case applied.
+
+## Step 3 results (2026-11-23; erebor branch `claude/box-sticks-preview`, PR open)
+
+Checked in the running app from the branch (frontend :5181, backend :8079, live warehouse, read-only).
+
+| Bar | Reading | Verdict |
+|---|---|---|
+| F1 | `tsc -b --noEmit` clean; the switch (`showBoxSticks`) lives in the Zustand store | passes |
+| F2 | switch on: dashed bench-colored lines drawn at zoom 11.6 and 13.6 (Delaware) and 12.6 (Midland); switch off: none. Zoom 10 and 14 were not captured separately | passes on the zooms looked at |
+| F3 | hover on a BOX stick: "BOX stick 10047541, PREVIEW, no forecast; WCB_1; landing 12,308 ft TVD; depth from thickness, expected error 55 ft; spacing 957 ft; lateral 7,258 ft; nightly open; flags pinned; DSU 10591". Hover on a Novi stick is unchanged | passes |
+| F4 | a box selection: 93 existing points (76 BOX forecast, 17 PDP) plus 144 BOX sticks as diamonds at their landing TVD in bench colors, 1 faded (taken out by the nightly); caption counts them apart; hover only | passes |
+| F5 | switch off: the chart returns to "Selection (93)" with the same counts, no diamonds, no dashed lines; the selection rollup is the same with the switch on or off | passes on what was looked at (Highgrade and the workup were not re-walked in the browser; their endpoints are unchanged, bar E7) |
+| F6 | a legend line under the switch while it is on; the layer is hidden on the Highgrade tab with the switch on | passes |
+| F7 | map: a stick's legs are one feature, both drawn. Gunbarrel: the answer carries both legs (3-mile Delaware selection: 277 sticks, 285 legs, 8 U-turn sticks) and the chart draws one diamond per row | data passes; **a U-turn stick's two diamonds were not looked at on screen** |
+
+Console: the two errors seen on load (an aborted tile request when the stick tiles are set, and "Source ov-outline already
+exists") are on main too; the BOX source no longer adds a third.
