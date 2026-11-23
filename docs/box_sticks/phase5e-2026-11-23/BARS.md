@@ -70,3 +70,26 @@ at zoom 10.**
 
 DSU by DSU: what looks wrong (depth, bench, row position against producers, spacing, a stick that should not exist, a missing
 one). Each finding is written up with the stick ids and goes to the generator before phase 6.
+
+## Step 2 results (2026-11-23; erebor branch `claude/box-sticks-preview`, backend only, no PR yet)
+
+What was built: `GET /api/tiles/box/{z}/{x}/{y}.mvt?basin=` (one line layer `box_sticks`), and `box_sticks: true` on
+`POST /api/gunbarrel` (a separate `box_sticks` list on the pad, one point per leg). All SQL lives in `app/box_locations.py`.
+Scored through the app against the live warehouse (read-only), on the densest cell of each basin.
+
+| Bar | Reading | Verdict |
+|---|---|---|
+| E1 | 130 tests pass from the repo root (120 before; 10 new), DB-free | passes |
+| E2 | both queries reach sticks only through `box.location_set.is_record` with the basin bound; pinned by a test | passes |
+| E3 | zoom 9: empty tile, no query. Worst zoom-10 tile (Delaware): **362 KiB** uncompressed (103 KiB gzipped) after the tile's columns were cut to whole feet and the stick name dropped (567 KiB before). Time: about 115 ms in the database (step 1), but **1,132 ms** for the first fetch through the app; the next fetch is served from the cache. Midland worst zoom-10 tile: 165 KiB, 336 ms. Zoom 11: 111 KiB, 287 ms | size passes; **time fails on the first fetch of the worst Delaware tile** |
+| E4 | own cache key (leading `box_sticks`, carries the record set id); 8 existing tiles (zoom 7, 9, 11, 13, both basins) byte-identical before and after | passes |
+| E5 | switch off: 6 of 8 gunbarrel answers byte-identical before and after. The other 2 (3-mile selections, midpoint rule) hold the same rows in a different order, and **main differs from itself the same way between two calls** (rows with equal offsets are returned in database order) | passes order-free; byte-for-byte cannot be met where main itself is not stable |
+| E6 | switch on, 8 selections: the axis, its ends and every existing row unchanged; BOX stick and leg counts equal an independent count each time (for example Delaware 3 miles: 277 sticks, 285 legs) | passes |
+| E7 | `/select`: 4 of 4 byte-identical. Highgrade pads: 7 values of about 4,500 differ in the last digit (1e-10), and main differs from itself the same way (float sums in database order) | passes; the Highgrade wobble is on main |
+| E8 | read-only transaction hook unchanged; values bound; identifiers fixed in code; no forecast or econ relation is read (pinned by a test) | passes |
+
+Two things on main found while scoring, not changed here: the gunbarrel's row order is not stable for equal offsets, and
+Highgrade pad values wobble in the last digit between calls. Neither changes a number anyone reads.
+
+A selection that holds BOX sticks and nothing else gets its frame from the sticks (legs summed as undirected lines, so a
+U-turn stick's two legs do not cancel); `frame_from` in the answer says which case applied.

@@ -518,7 +518,7 @@ against the warehouse.
 | Step | What | Stops for |
 |---|---|---|
 | 1 | Read-only checks on live: erebor's role reads the three tables; the tile and gunbarrel queries use the stick indexes (EXPLAIN) and their timings; bars for steps 2 and 3 written down **DONE 2026-11-23** (`docs/box_sticks/phase5e-2026-11-23/BARS.md`: erebor reads all three relations as it is, no warehouse object needed; both queries on the stick index; the layer starts at zoom 10; bars E1 to E8 and F1 to F7 written) | Michael's go |
-| 2 | erebor backend on a branch: tile endpoint, gunbarrel arm, SQL-shape tests; exercised against live with a TestClient | Michael's go |
+| 2 | erebor backend on a branch: tile endpoint, gunbarrel arm, SQL-shape tests; exercised against live with a TestClient **DONE 2026-11-23** (erebor branch `claude/box-sticks-preview`; bars in `BARS.md`: E3 fails on first-fetch time for the worst Delaware zoom-10 tile, the rest pass) | Michael's go |
 | 3 | erebor frontend: layer, switch, legend, hover, gunbarrel markers; checked in the running app with screenshots; PR | Michael's review in erebor |
 | 4 | Michael's findings, DSU by DSU, written up as generator inputs | gate before phase 6 |
 
