@@ -269,6 +269,10 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
     (None = every covered row, runs 4-7)."""
     cov = u["coverage"].isin(pr.COVERED)
     cand = u[cov & (u["prod_bench"] == bench) if bench is not None else cov].reset_index(drop=True)
+    if len(cand) and (cand.get("category") == pr.BOX_CATEGORY).all():
+        return box_stick_locations(cand)
+    if "category" in cand and (cand["category"] == pr.BOX_CATEGORY).any():
+        raise SystemExit("a universe mixes BOX sticks and Novi sticks: refused")
     # D64 neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical staggering (~130 ft TVD apart), not
     # lateral spacing — pooling them read 11-300 ft "gaps" (7c first build, 2026-10-15)
     near = nearest_by_stick(conn, u, cand)
@@ -283,6 +287,24 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
                     "spacing_source": "neighbour_gap" if g is not None else "default_880", "fp_max": None,
                     "nearest": None if near[int(r.stick_id)] is None else near[int(r.stick_id)][1],
                     "near_pdp_ft": float(g) if g is not None and str(near[int(r.stick_id)][1]).startswith("pdp:") else None})
+    return out
+
+
+def box_stick_locations(cand: pd.DataFrame) -> list[dict[str, Any]]:
+    """Covered BOX sticks as harness locations (phase 6, decisions 3 and 4). Spacing and completed lateral are the GENERATOR's:
+    no nearest-neighbour search (D64 guessed the spacing of a Novi stick from its neighbours; a BOX stick was placed at a
+    spacing). xy = the universe's midpoint (a U-turn stick: midway between its two legs). `nearest` / `near_pdp_ft` stay None:
+    a BOX stick's distance to producers is the nightly reconciliation's and the proximity step's, not D64's."""
+    x, y = dfr._xy(cand["mid_lon"], cand["mid_lat"])
+    out = []
+    for i, r in enumerate(cand.itertuples()):
+        lat, gap = float(r.ll_ft), float(r.spacing_ft)
+        if not (np.isfinite(lat) and lat > 0 and np.isfinite(gap) and gap > 0):
+            raise SystemExit(f"BOX stick {r.stick_id}: lateral {r.ll_ft} / spacing {r.spacing_ft} is not a positive number")
+        out.append({"api10": f"pud{r.stick_id}", "stick_id": int(r.stick_id), "prod_bench": r.prod_bench, "x": float(x[i]), "y": float(y[i]),
+                    "lateral_ft": lat, "lateral_eff": lat, "spacing_ft": gap, "planned_spacing_ft": gap,
+                    "spacing_source": pr.SPACING_GENERATOR, "fp_max": None, "nearest": None, "near_pdp_ft": None,
+                    "n_legs": int(r.n_legs), "target_tvd_ft": float(r.target_tvd_ft)})
     return out
 
 
