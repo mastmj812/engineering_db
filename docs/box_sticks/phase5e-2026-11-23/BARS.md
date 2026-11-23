@@ -110,3 +110,12 @@ Checked in the running app from the branch (frontend :5181, backend :8079, live 
 
 Console: the two errors seen on load (an aborted tile request when the stick tiles are set, and "Source ov-outline already
 exists") are on main too; the BOX source no longer adds a third.
+
+## Step 4 (2026-11-23)
+
+erebor PR #31 merged 19:23 UTC. Michael selected wells and viewed gunbarrels in erebor: "its honestly great. i'm sure i could
+find SOMETHING if i dug hard enough but this is great." No finding for the generator.
+
+One display defect he found: U-turn sticks were drawn without the turn arc between their legs. Fixed in erebor PR #32 (the
+tile geometry is the legs plus `turn_geom`). Checked in the running app: arcs drawn, and a selection across them returned 12
+BOX sticks as 24 gunbarrel points, two per stick. That also closes the part of bar F7 left unlooked-at in step 3.
