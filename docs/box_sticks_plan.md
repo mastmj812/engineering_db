@@ -499,8 +499,28 @@ comes before this branch merges.
 
 Geometry only: the record BOX sticks on erebor's map and in its gunbarrel beside PDP wells, with bench, landing TVD, rung and
 nightly status. No forecast and no econ for a BOX stick; every forecast, Highgrade value and count stays on Novi sticks and
-runs 30 / 32. Additive on the warehouse (one new object, nothing cascades into sql/22), switchable off in erebor. Steps and
+runs 30 / 32. Nothing cascades into sql/22; switchable off in erebor. Steps and
 gates are written before any code. What Michael finds on screen goes back into the generator before phase 6.
+
+Scoped 2026-11-23 against erebor's code (read-only survey). erebor is the only repo that changes; all of it is read-only
+against the warehouse.
+
+- **No warehouse object is needed** if erebor's role can read `box.location_stick`, `box.location_set` and
+  `curated.box_location_status` (checked in step 1). erebor reads them through `app/box_locations.py`.
+- **Map:** vector tiles on their own source and layers (79,275 MultiLineStrings is too many for one GeoJSON per basin), own
+  on / off switch, colour by bench, sticks the nightly has taken out (producing, conflict, crowded) drawn faded. Hover: bench,
+  landing TVD, rung and its expected error, spacing, flags, status and matching well.
+- **Gunbarrel:** a second query arm beside the existing one; BOX sticks are projected onto the selection's own axis, one point
+  per leg (the stored `gunbarrel_x_ft` is in the DSU's frame, not the selection's); their own marker; not cullable; the axis
+  and every count still come from the existing rows only.
+- **Untouched:** `/select` counts, Highgrade, workup, production profile, the Novi tiles and their cache.
+
+| Step | What | Stops for |
+|---|---|---|
+| 1 | Read-only checks on live: erebor's role reads the three tables; the tile and gunbarrel queries use the stick indexes (EXPLAIN) and their timings; bars for steps 2 and 3 written down | Michael's go |
+| 2 | erebor backend on a branch: tile endpoint, gunbarrel arm, SQL-shape tests; exercised against live with a TestClient | Michael's go |
+| 3 | erebor frontend: layer, switch, legend, hover, gunbarrel markers; checked in the running app with screenshots; PR | Michael's review in erebor |
+| 4 | Michael's findings, DSU by DSU, written up as generator inputs | gate before phase 6 |
 
 ## Phase 6 - BOX forecasts on BOX sticks
 
