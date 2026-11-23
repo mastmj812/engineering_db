@@ -82,6 +82,8 @@ stick chain is retired.
 | Tag corrections and set 24 (2026-11-20 / 21; Michael: "go reload", then "go ahead") | **19 human tag calls** from the stick and tag cards loaded as seeds (PR #269; reload finished 2026-11-21 00:10 UTC). **Set 24 is the Delaware record** since about 2026-11-21 01:20 UTC: generator `box_sticks_0.13` on the corrected tags, 46,153 sticks; set 21 is superseded and kept (no nightly ever judged it). **Set 25 is the Midland record** since 2026-11-21 01:29 UTC (Michael: "Go Midland"): the same pull, 33,122 sticks, 23 new and 39 stopped against set 17, which is superseded and kept |
 | Midland grids in the generator (2026-11-21; Michael: "start", then "Nothing for now") | **Not applied.** Built and scored with bars first (`docs/box_sticks/grid-midland-2026-11-21`): the grid beat the offset rung on MS, JM, LSSH, DEAN and WCD (WCD 43 against 87 ft) but not WCA_1; the bound failed on every rung (381 WCA_1 wells sit more than 150 ft above the gridded Wolfcamp A top, in Borden and Howard); the rung cost 8 more benches dropped in depth conflicts. The table stays in the code, switched off. It returns after the geologist has looked at the Wolfcamp A top there and delivered a usable Wolfcamp B Lower, with its own bars |
 | Reconciliation conflict floor (2026-11-18, gate 5a) | A well alongside **30 % to 50 %** of a stick leg is a conflict, not sql/68's 20 % to 50 %. Reason: the generator places a row beside a well that runs along under 30 % of it (2026-11-15, DSU 10600), so 20 to 30 % was a conflict by construction: 168 of 215 Delaware and 52 of 58 Midland day-0 conflicts on generator 0.12. sql/68 itself keeps 0.2 on the Novi sticks |
+| Prune of superseded sets (2026-11-23; Michael: "prune the old sets", then "Yes, delete them") | **Sets 6, 7, 16, 17 and 21 pruned on live**: their rows deleted from `box.location_stick` (205,870), `box.location_set_well` (159,376), `box.location_set_bench` (128,827) and `box.location_set_dsu` (23,986), 518,059 rows, one transaction, rehearsed rolled back first. Their five `box.location_set` header rows are kept with a note (config, input manifest, counts, crosswalk); `box.location` is untouched (337,742 rows: ids and slot numbers are never reused). Records unchanged: sets 24 and 25, 79,275 sticks. There is no stored set to flip back to any more: a fallback is a regeneration. Command: `python -m scripts.box_sticks_prune --set-id N ... [--go]` (refuses a record set). Reason: nothing read them, and seven stored sets had tipped the nightly hook's plan (PR #272) |
+| Shadow week ended early; preview before phase 6 (2026-11-23; Michael: "i'm interested in accelerating this process: ending the shadow runs and moving forward with next steps ... i can't 'see' that until the outputs are actually populated in erebor", then "Yes, preview next") | **Gate 5d closes after three nights, not seven**, with its failures stated: bar S4 failed on night 2 (419 changed against 198; cause = Novi's build of 2026-11-20 rewriting New Mexico surveys, `docs/box_sticks/planned-flag-2026-11-23`), and the gate 5a back-test bars that failed still fail. Passed on all three nights: the hook wrote, identities held, 0 of 430 locations flapped, nothing reads the tables. Michael's position on the night-2 cause: vendor survey revisions are expected noise, small against the whole (59 sticks, 0.07 %), mostly New Mexico; no rule change and nothing waits on Novi. The nightly hook keeps running. **Not decided here:** whether reconciliation drives undrilled counts (gate 5). **New step, ahead of phase 6:** a geometry-only preview of the record BOX sticks in erebor (map and gunbarrel beside PDP wells, with landing TVD and nightly status; no forecast, no econ; forecasts, Highgrade and counts stay on Novi sticks and runs 30 / 32). Reason: stick quality is judged by eye on a gunbarrel, and a forecast run plus a re-price should not be spent on sticks nobody has looked at |
 
 ### What exploration found (shapes the plan)
 
@@ -491,7 +493,34 @@ comes before this branch merges.
 
 **Generator 0.13 stored as set 21 (2026-11-20, `docs/box_sticks/store-0.13-2026-11-20/FINDINGS.md`; NOT record).** 46,132 sticks; 44,333 ids carried from set 16 (96.2 %), 1,799 new, 1,729 stop; 5,902 sticks on the grid rung. Three rolled-back rehearsals: the first two found and fixed two store-path defects (a slot number an older stopped location still held; grid flags lost when regenerating from stored rows); the third and the store passed 10 of 10 checks, with every DSU regenerated from the stored rows at 0 differences. Back-test: the same bars fail as for 0.12; the grid rung reads 33.6 ft median on 23 pairs. Nothing reads set 21 until a record flip.
 
-**Gate 5:** a week of shadow nights; back-test on wells spudded since the 2026Q3 vintage.
+**Gate 5:** a week of shadow nights (ended after three on 2026-11-23, see the decision table); back-test on wells spudded since the 2026Q3 vintage.
+
+## Phase 5e - Preview in erebor (added 2026-11-23, before phase 6)
+
+Geometry only: the record BOX sticks on erebor's map and in its gunbarrel beside PDP wells, with bench, landing TVD, rung and
+nightly status. No forecast and no econ for a BOX stick; every forecast, Highgrade value and count stays on Novi sticks and
+runs 30 / 32. Nothing cascades into sql/22; switchable off in erebor. Steps and
+gates are written before any code. What Michael finds on screen goes back into the generator before phase 6.
+
+Scoped 2026-11-23 against erebor's code (read-only survey). erebor is the only repo that changes; all of it is read-only
+against the warehouse.
+
+- **No warehouse object is needed** if erebor's role can read `box.location_stick`, `box.location_set` and
+  `curated.box_location_status` (checked in step 1). erebor reads them through `app/box_locations.py`.
+- **Map:** vector tiles on their own source and layers (79,275 MultiLineStrings is too many for one GeoJSON per basin), own
+  on / off switch, colour by bench, sticks the nightly has taken out (producing, conflict, crowded) drawn faded. Hover: bench,
+  landing TVD, rung and its expected error, spacing, flags, status and matching well.
+- **Gunbarrel:** a second query arm beside the existing one; BOX sticks are projected onto the selection's own axis, one point
+  per leg (the stored `gunbarrel_x_ft` is in the DSU's frame, not the selection's); their own marker; not cullable; the axis
+  and every count still come from the existing rows only.
+- **Untouched:** `/select` counts, Highgrade, workup, production profile, the Novi tiles and their cache.
+
+| Step | What | Stops for |
+|---|---|---|
+| 1 | Read-only checks on live: erebor's role reads the three tables; the tile and gunbarrel queries use the stick indexes (EXPLAIN) and their timings; bars for steps 2 and 3 written down | Michael's go |
+| 2 | erebor backend on a branch: tile endpoint, gunbarrel arm, SQL-shape tests; exercised against live with a TestClient | Michael's go |
+| 3 | erebor frontend: layer, switch, legend, hover, gunbarrel markers; checked in the running app with screenshots; PR | Michael's review in erebor |
+| 4 | Michael's findings, DSU by DSU, written up as generator inputs | gate before phase 6 |
 
 ## Phase 6 - BOX forecasts on BOX sticks
 
