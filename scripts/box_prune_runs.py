@@ -34,7 +34,8 @@ SELECT f.run_id, f.is_record, f.superseded_by,
        (SELECT count(*) FROM box.pud_forecast p WHERE p.run_id = f.run_id) AS n_pud,
        (SELECT count(*) FROM box.pud_forecast_month m WHERE m.run_id = f.run_id) AS n_month,
        (SELECT count(*) FROM box_econ.box_pud_econ e WHERE e.run_id = f.run_id) AS n_priced,
-       f.basin
+       f.basin,
+       COALESCE(f.notes LIKE '%%locations = BOX sticks%%', FALSE) AS box_sticks
 FROM box.forecast_run f ORDER BY f.run_id
 """
 _CHILDREN = ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "location_analog", "location_water_analog", "pud_proximity",
@@ -43,8 +44,21 @@ _CHILDREN = ("pud_forecast", "pud_forecast_stream", "pud_forecast_month", "locat
 
 def select_prune(runs: list[tuple[Any, ...]], include_priced: bool = False, basin: str | None = None) -> list[int]:
     """Not the record; priced runs only with include_priced (D123: the record is the only run worth keeping); `basin` (row[6])
-    limits it to that basin's runs."""
-    return [int(r[0]) for r in runs if not r[1] and (include_priced or int(r[5]) == 0) and (basin is None or r[6] == basin)]
+    limits it to that basin's runs. One exception: a run on BOX sticks (row[7]) in a basin whose record is still on Novi sticks is
+    AWAITING THE CUTOVER (docs/box_sticks_plan.md phase 6) and is kept; name it with --run to prune it anyway. Once the basin's
+    record is on BOX sticks the exception is over and D123 applies as before."""
+    return [int(r[0]) for r in runs if not r[1] and (include_priced or int(r[5]) == 0) and (basin is None or r[6] == basin)
+            and int(r[0]) not in awaiting_cutover(runs)]
+
+
+def awaiting_cutover(runs: list[tuple[Any, ...]]) -> set[int]:
+    """Non-record runs on BOX sticks whose basin's record run is not on BOX sticks yet. Rows without the eighth column (older
+    callers) are Novi runs."""
+    def box(r: tuple[Any, ...]) -> bool:
+        return len(r) > 7 and bool(r[7])
+
+    record_on_box = {str(r[6]) for r in runs if r[1] and box(r)}
+    return {int(r[0]) for r in runs if not r[1] and box(r) and str(r[6]) not in record_on_box}
 
 
 def select_named(runs: list[tuple[Any, ...]], ids: list[int], include_priced: bool = False) -> list[int]:
