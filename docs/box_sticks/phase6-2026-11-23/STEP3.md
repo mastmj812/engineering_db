@@ -112,12 +112,37 @@ newer production data and the lateral lengths. Not done: a rebuild at the record
 - Tonight's nightly status: the builds read the status of 2026-11-23. The live stores read it again at store time, so a stick
   that turns producing or conflict in between is handled there (`universe = source - realized since`).
 
-## Step 4 (cutover): every live write is its own explicit go, off-hours, outside the 05:00 CT nightly
+## Decision, 2026-11-24 (Michael)
 
-1. `python -m scripts.apply_box_pud_forecast_box_sticks --go` (sql/79)
-2. base stores (`box_pud_run store --out runs/p6_delaware`, `box_record23_midland store --out runs/p6_midland`), water stores,
-   measures on live, derived stores. About 45 minutes per basin from the container timings
-3. `python -m scripts.apply_box_stick_locations --go`
-4. merge engineering_db #275
-5. `box_record23 flip --basin <b> --run <id> --allow-unpriced --commit`, both basins
-6. merge erebor #33, restart erebor, verify (bars C1 to C5); regenerate the data dictionary
+The four benches outside bar P4 are accepted as they stand (location and lateral mix, and proximity on more exposed sticks).
+Nothing is tuned. Step 3 is closed; the cutover is planned below.
+
+## Step 4 (cutover): two stages, every go explicit
+
+**Stage A: additive, no reader sees a change.** Any time outside the nightly (05:00 to about 06:30 CT).
+
+| Go | Command | What it does on live | Time |
+|---|---|---|---|
+| A1 | `python -m scripts.apply_box_pud_forecast_box_sticks --go` (sql/79) | widens three CHECK constraints on `box.pud_forecast`; no row changes; a short exclusive lock on that table (lock timeout 30 s) | seconds |
+| A2 | `box_pud_run store --out runs/p6_delaware`; `box_record23_midland store --out runs/p6_midland`; the two water stores `--run-id <base>`; the two measures on live; the two derived stores `--commit` | four new runs in `box.*` (two base, two derived), none a record | about 45 minutes per basin in the container; live goes through the pooler and is not timed |
+
+Check after stage A (read-only): records still runs 30 and 32; the land team's view and `curated.erebor_locations` unchanged; the two
+derived runs match the container's runs 36 and 38 (row counts, coverage, oil EUR), except sticks whose status moved overnight.
+
+**Stage B: the swap. Off-hours, done well before 05:00 CT, Michael present for two merges.** Between B1 and B4 erebor's map
+(old code against BOX rows) and the land team's view (empty for a basin until its flip) are wrong: keep that to minutes.
+
+| Go | Step | What it does | Time |
+|---|---|---|---|
+| B1 | `python -m scripts.apply_box_stick_locations --go` | one transaction: sql/78, sql/22 (DROP CASCADE takes sql/69), sql/69, sql/26, sql/31, 22 checks; readers wait on the lock, they do not fail | 8 s in the container; live not timed |
+| B2 | PR 275 ready, Michael merges | main carries the new sql/22, deal-intake reads `curated.novi_stick_locations` | checks about 2 minutes |
+| B3 | `box_record23 flip --basin delaware --run <id> --allow-unpriced --commit`, then midland | the BOX-stick runs become the records; the land team's view fills, econ blank | seconds each |
+| B4 | erebor PR 33 ready, Michael merges; restart erebor | erebor reads BOX sticks | minutes |
+
+Then verify C1 to C4, regenerate the data dictionary, and C5 is the next morning's nightly.
+
+**Same day.** The stores read the nightly status at store time. Stage A and stage B on the same status night keep the runs and the
+swapped relation on one status; if stage B slips, a stick that turned producing meanwhile simply drops from the relation.
+
+**Going back.** Before B2: `python -m scripts.apply_erebor_locations` from main restores the Novi arm. After B3: flip back to runs
+30 and 32 (kept, not record), revert the two PRs, re-apply the old sql/22. Runs 30 and 32 are pruned only on a later go.
