@@ -53,7 +53,7 @@ SEED_TABLES: list[tuple[str, Path, str]] = [
 
 TAIL: list[list[str]] = [
     [PY, "-m", "scripts.apply_intel_formation_blueox"],
-    [PY, "-m", "scripts.apply_reconciled_inventory"],
+    [PY, "-m", "scripts.apply_reconciled_inventory", "--rebuild-reference"],  # sql/16's CASCADE took sql/20 and its dependents
     [PY, "-c", "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"],
     [PY, "-m", "scripts.apply_intel_pdp_support"],
     [PY, "-m", "scripts.apply_intel_forecast_accuracy"],

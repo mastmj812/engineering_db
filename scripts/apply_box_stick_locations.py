@@ -34,6 +34,15 @@ SQL = Path(__file__).resolve().parent.parent / "sql"
 FILES = ("78_novi_stick_locations.sql", "22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
 TILE_SQL = ("EXPLAIN (FORMAT TEXT) SELECT stick_id FROM curated.erebor_locations WHERE basin = 'delaware' AND wellstick_geom IS NOT NULL "
             "AND extensions.ST_Intersects(wellstick_geom, extensions.ST_Transform(extensions.ST_TileEnvelope(12, 862, 1661), 4326))")
+# what curated.erebor_locations reads, from the catalogue (phase 7 item 2: none of it may be Novi Intelligence;
+# raw_novi_intel.pads, the DSU polygons the stick sets were generated on, is the one Novi input and is a raw table)
+READS_SQL = """
+SELECT DISTINCT sn.nspname || '.' || src.relname
+FROM pg_depend d JOIN pg_rewrite r ON r.oid = d.objid JOIN pg_class dep ON dep.oid = r.ev_class
+JOIN pg_class src ON src.oid = d.refobjid JOIN pg_namespace sn ON sn.oid = src.relnamespace
+WHERE dep.oid = 'curated.erebor_locations'::regclass AND src.oid <> dep.oid
+"""
+NOVI_DERIVED = ("curated.net_new_pdp", "curated.reconciled_inventory", "curated.novi_stick_locations")
 _BOX_EXPECT = """
 SELECT k.basin, count(*) FILTER (WHERE COALESCE(s.status, 'open') <> 'producing') AS undrilled, count(*) AS sticks,
        count(*) FILTER (WHERE s.location_id IS NULL) AS not_judged
@@ -145,6 +154,11 @@ def swap(cur, ck: Checks, container: bool = False) -> dict:
         "SELECT r.basin, count(*) FROM box.forecast_run r JOIN box.pud_forecast p ON p.run_id = r.run_id AND p.coverage IN ('covered', 'covered_provisional') "
         "JOIN curated.erebor_locations el ON el.stick_id = p.stick_id AND el.category <> 'PDP' WHERE r.is_record GROUP BY 1").fetchall()}
     ck(scout == want, f"the land team's view = forecast rows of the record runs that are BOX sticks ({scout or 'no rows: no record run is on BOX sticks yet'})")
+    reads = sorted(r[0] for r in q(READS_SQL).fetchall())
+    novi = [r for r in reads if r.startswith(("curated.intel_", "raw_intel.")) or r in NOVI_DERIVED]
+    ck(not novi, f"the relation reads no Novi Intelligence relation, so a quarterly reload cannot drop it ({novi or reads})")
+    filled = q("SELECT count(recon_status), count(rqs), count(rqt) FROM curated.erebor_locations WHERE category = 'PDP'").fetchone()
+    ck(tuple(filled) == (0, 0, 0), f"producing-well rows carry no reconciliation tag and no Novi rock-quality score (filled: {tuple(filled)})")
     com = q("SELECT obj_description('curated.erebor_locations'::regclass) LIKE '%%RECORD BOX stick set%%'").fetchone()[0]
     ck(bool(com), "the matview comment describes BOX sticks")
     return before

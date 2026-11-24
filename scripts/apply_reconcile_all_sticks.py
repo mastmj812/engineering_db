@@ -165,7 +165,7 @@ def apply() -> bool:
     apply_intel_forecast_accuracy.main()
     print("[4/6] erebor_locations (sql/22, FINAL) + refresh_all() + sql/31", flush=True)
     from scripts import apply_erebor_locations
-    apply_erebor_locations.main()
+    apply_erebor_locations.main([])
     print("[5/6] sql/26 geography indexes", flush=True)
     _exec("26_geography_indexes.sql")
 

@@ -424,8 +424,11 @@ _CURATED_MATVIEWS: tuple[str, ...] = (
     "curated.production_forecast",
 )
 
-# Matviews allowed to be absent mid-quarterly-rebuild (the intel reload
-# DROP-CASCADEs them; apply_erebor_locations recreates them). A missing
+# Matviews allowed to be absent mid-rebuild. The quarterly intel reload
+# DROP-CASCADEs the intel ones; curated.erebor_locations is no longer one of
+# its victims (sql/22 reads no Novi Intelligence relation, BOX sticks phase 7
+# item 2) and stays listed for a structural rebuild of curated.wells or sql/20,
+# which still drops it until apply_erebor_locations recreates it. A missing
 # optional matview logs a warning and is skipped instead of failing the run —
 # same degradation refresh_all() encodes for erebor_locations.
 _OPTIONAL_MATVIEWS: frozenset[str] = frozenset(

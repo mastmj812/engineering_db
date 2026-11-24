@@ -47,9 +47,12 @@ dictionary).
   `scripts/apply_wellstick_fix.py` (14 steps).
 - sql/29 CASCADE-drops the whole intel chain incl. `erebor_locations`; sql/20 additionally kills
   sql/23 + `wells_enriched`. Quarterly chain of record: sql/29 →
-  `apply_intel_formation_blueox` → `apply_reconciled_inventory` (20 → 23 → wells_enriched → 47 codev_context → 50 dev_scenario → 21) →
-  sql/25 → `apply_intel_pdp_support` (must precede erebor_locations) →
-  `apply_intel_forecast_accuracy` → `apply_erebor_locations` (FINAL) → sql/26.
+  `apply_intel_formation_blueox` → `apply_reconciled_inventory` (checks the producer objects, then sql/68) →
+  sql/25 → `apply_intel_pdp_support` →
+  `apply_intel_forecast_accuracy` → `apply_erebor_locations --novi-sticks-only` (FINAL; sql/78) → sql/26.
+  Since BOX sticks phase 7 item 2 the reload does not drop `erebor_locations`; only a from-scratch rebuild of
+  `curated.wells` or sql/20 (`apply_reconciled_inventory --rebuild-reference`) does, and that ends with the full
+  `apply_erebor_locations`.
 - Check dependencies live if unsure: `pg_depend`/`pg_rewrite` (the data-dictionary generator has
   the query pattern).
 - Frequently-edited derivations get factored into their own small matview instead of riding a big

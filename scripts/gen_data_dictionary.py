@@ -52,7 +52,7 @@ _QUARTERLY = {
     "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
     "curated.intel_pad_member",  # sql/67, rebuilt by apply_intel_pad_geom
     "curated.intel_pad_geom",  # sql/67, rebuilt by apply_intel_pad_geom
-    "curated.novi_stick_locations",  # sql/78, rebuilt by apply_erebor_locations (every input is quarterly-owned)
+    "curated.novi_stick_locations",  # sql/78, rebuilt by apply_erebor_locations --novi-sticks-only (every input is quarterly-owned)
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -250,7 +250,8 @@ def render(model: dict[str, Any]) -> str:
         "matviews in dependency order. Quarterly: the intel reload chain "
         "rebuilds the intel-derived matviews "
         "(`load_intel_sf` -> `apply_intel_formation_blueox` -> "
-        "`apply_reconciled_inventory` -> `apply_erebor_locations`). "
+        "`apply_reconciled_inventory` -> `apply_erebor_locations --novi-sticks-only`); "
+        "it does not drop `curated.erebor_locations`. "
         "The `narvi` schema is app-owned and not documented here."
     )
     out.append("")
