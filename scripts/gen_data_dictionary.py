@@ -52,6 +52,7 @@ _QUARTERLY = {
     "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
     "curated.intel_pad_member",  # sql/67, rebuilt by apply_intel_pad_geom
     "curated.intel_pad_geom",  # sql/67, rebuilt by apply_intel_pad_geom
+    "curated.novi_stick_locations",  # sql/78, rebuilt by apply_erebor_locations (every input is quarterly-owned)
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -70,7 +71,8 @@ _CONSUMERS = {
     "curated.dev_scenario": "scripts/find_analogs.py; anduin header sync (warehouse_client/wells.py)",
     "curated.well_neighbors": "BOX 3-D spacing features (box/spacing3d.py): backtest / hindcast terms, PUD forecasts at planned spacing (plan step 7)",
     "curated.well_lateral_survey": "BOX tops-vs-tag QC (box/tops_qc.py): station-level grid sampling, KB datum check",
-    "curated.erebor_locations": "erebor map tiles, lasso selection, Highgrade population (Novi stick geometry + recon_status; BOX values are joined at query time, NOT stored here); land team direct GIS",
+    "curated.erebor_locations": "erebor map tiles, lasso selection, Highgrade population (the record BOX stick set + producing wells, with the nightly recon_status; BOX forecast values are joined at query time, NOT stored here); curated.box_scout_locations; land team direct GIS; narvi (producing wells only)",
+    "curated.novi_stick_locations": "deal-intake (the Novi sticks of a unit and their Novi parameters), until its own cutover to BOX sticks",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",

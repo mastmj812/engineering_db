@@ -2,7 +2,7 @@
 
 import pytest
 
-from scripts.box_prune_runs import select_named, select_prune
+from scripts.box_prune_runs import awaiting_cutover, select_named, select_prune
 
 
 def test_select_prune_keeps_record_and_priced_runs():
@@ -30,3 +30,20 @@ def test_run_refuses_a_record_a_priced_or_a_missing_run():
         with pytest.raises(SystemExit):
             select_named(runs, ids)
     assert select_named(runs, [31], include_priced=True) == [31]
+
+
+def test_a_box_stick_run_awaiting_the_cutover_is_kept_until_the_record_is_on_box_sticks():
+    # (run_id, is_record, superseded_by, n_pud, n_month, n_priced, basin, box_sticks)
+    before = [(30, True, None, 9, 9, 5, "midland", False), (32, True, None, 9, 9, 5, "delaware", False), (33, False, None, 9, 9, 0, "delaware", False),
+              (40, False, None, 9, 9, 0, "delaware", True), (41, False, None, 9, 9, 0, "delaware", True), (42, False, None, 9, 9, 0, "midland", True)]
+    assert awaiting_cutover(before) == {40, 41, 42}
+    assert select_prune(before) == [33]                                  # the Novi leftover goes, the BOX-stick runs stay
+    assert select_prune(before, include_priced=True) == [33]
+    assert select_named(before, [40]) == [40]                            # naming one prunes it anyway
+    after = [(30, False, 42, 9, 9, 5, "midland", False), (32, False, 41, 9, 9, 5, "delaware", False), (40, False, None, 9, 9, 0, "delaware", True),
+             (41, True, None, 9, 9, 0, "delaware", True), (42, True, None, 9, 9, 0, "midland", True)]
+    assert awaiting_cutover(after) == set()                              # the records are on BOX sticks: D123 as before
+    assert select_prune(after) == [40] and select_prune(after, include_priced=True) == [30, 32, 40]
+    mixed = [(32, True, None, 9, 9, 5, "delaware", False), (30, False, 42, 9, 9, 0, "midland", False), (42, True, None, 9, 9, 0, "midland", True),
+             (40, False, None, 9, 9, 0, "delaware", True)]
+    assert awaiting_cutover(mixed) == {40} and select_prune(mixed) == [30]   # per basin: the Midland has cut over, the Delaware has not

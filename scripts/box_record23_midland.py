@@ -194,10 +194,12 @@ def cmd_build(a: argparse.Namespace) -> int:
     cfg = di_config.load()
     B: dict[str, dict[str, Any]] = {}
     with get_connection() as conn:
-        u = pr.universe(conn, a.groups)
+        a.source = getattr(a, "source", pr.SOURCE_NOVI)
+        u = pr.universe(conn, a.groups, source=a.source)
         n_in = {g: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == g)).sum()) for g in a.groups}
         print(f"code {code_sha}; universe {len(u):,} ({u['coverage'].value_counts().to_dict()}); in-extent per group {n_in}", flush=True)
         meta = {"code_key": pud.code_key(), "limit": int(a.limit), "data_through": str(a.data_through),
+                **({"source": a.source} if a.source != pr.SOURCE_NOVI else {}),
                 "universe_sha256": hashlib.sha256(u.sort_values("stick_id")[["stick_id", "coverage", "prod_bench"]].astype(str).to_csv(index=False)
                                                   .encode("utf-8")).hexdigest()}
         for g in a.groups:
@@ -219,6 +221,7 @@ def cmd_build(a: argparse.Namespace) -> int:
            "disclosure": {**r0["disclosure"], "method_23_base": rc.method_block() | {"note": "base run: proximity applied by the derived record"}},
            "equivalence": r0["equivalence"], "benches": list(a.groups), "by_bench": by,
            "selection": {"name": "step21_rev8", "decision": "D146-D149", "evidence": str(a.pack_path), "evidence_sha256": a.pack_sha256}}
+    run.update(pud.box_stick_provenance(u))
     with open(a.out / "run.pkl", "wb") as fh:
         pickle.dump({"run": run, "universe": u, "locs": [x for g in a.groups for x in B[g]["locs"]],
                      "results": [r for g in a.groups for r in B[g]["results"]],
@@ -249,6 +252,8 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--pack-path", type=Path, default=rc.DOCS / "midland_pack_recomputed.json")  # D154 (a)
     b.add_argument("--data-through", type=dt.date.fromisoformat, default=None, help="pin the last full month (default: the live one)")
     b.add_argument("--allow-other-haircut", action="store_true", help="sensitivity only: a pack whose WCA_1 haircut is not D154's")
+    b.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_NOVI,
+                   help="the location universe: novi (run 30's) or box_sticks (the Midland record BOX stick set, phase 6)")
     s = sub.add_parser("store")
     s.add_argument("--out", type=Path, default=Path("runs") / "step23" / "midland_base")
     a = ap.parse_args(argv)
