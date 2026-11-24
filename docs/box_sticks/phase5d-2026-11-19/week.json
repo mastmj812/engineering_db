@@ -120,6 +120,46 @@
    "stale_dsu_bench": 3,
    "seconds": 226.8,
    "error": null
+  },
+  {
+   "run_id": 9,
+   "started_at": "2026-11-24 11:16:50.481258+00:00",
+   "finished_at": "2026-11-24 11:17:44.350224+00:00",
+   "status": "written",
+   "wrote": true,
+   "predicate_version": "box_recon_1",
+   "set_ids": [
+    24,
+    25
+   ],
+   "wells_read": 85187,
+   "counts": {
+    "midland": {
+     "open": 32979,
+     "sticks": 33122,
+     "crowded": 110,
+     "pending": 35,
+     "conflict": 7,
+     "inventory": 32977,
+     "permitted": 73,
+     "producing": 28
+    },
+    "delaware": {
+     "open": 45224,
+     "sticks": 46153,
+     "crowded": 278,
+     "pending": 63,
+     "conflict": 33,
+     "inventory": 45711,
+     "permitted": 702,
+     "producing": 131
+    }
+   },
+   "changed": 174,
+   "breaker_limit": 792,
+   "stale_dsu_bench": 5,
+   "seconds": 53.9,
+   "error": null
   }
  ],
  "out_of_band_runs": [
@@ -128,8 +168,8 @@
  ],
  "bars": {
   "S1": {
-   "nights": 3,
-   "written": 3,
+   "nights": 4,
+   "written": 4,
    "failed_or_breaker": [],
    "days_with_more_than_one_row": [],
    "pass": false
@@ -137,6 +177,20 @@
   "S2": {
    "max_seconds": 231.1,
    "nightly_runs": [
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-24T11:00:10Z",
+     "databaseId": 45380065865,
+     "event": "workflow_dispatch",
+     "status": "completed"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-23T22:39:11Z",
+     "databaseId": 45281714345,
+     "event": "schedule",
+     "status": "completed"
+    },
     {
      "conclusion": "success",
      "createdAt": "2026-11-23T11:00:11Z",
@@ -206,20 +260,6 @@
      "databaseId": 44380111454,
      "event": "schedule",
      "status": "completed"
-    },
-    {
-     "conclusion": "success",
-     "createdAt": "2026-11-18T11:00:11Z",
-     "databaseId": 44290619954,
-     "event": "workflow_dispatch",
-     "status": "completed"
-    },
-    {
-     "conclusion": "success",
-     "createdAt": "2026-11-17T19:51:21Z",
-     "databaseId": 44163053607,
-     "event": "schedule",
-     "status": "completed"
     }
    ],
    "pass_seconds": true
@@ -227,16 +267,20 @@
   "S4": {
    "changed_per_night": {
     "7": 419,
-    "8": 3
+    "8": 3,
+    "9": 174
    },
    "limit": 198,
    "pass": false
   },
   "S5": {
-   "locations_changed": 430,
-   "flapped": 0,
-   "share": 0.0,
-   "location_ids": [],
+   "locations_changed": 601,
+   "flapped": 2,
+   "share": 0.0033,
+   "location_ids": [
+    10052385,
+    10069005
+   ],
    "limit": 0.1,
    "pass": true
   },
