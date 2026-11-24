@@ -113,13 +113,13 @@ GRANT SELECT ON curated.box_scout_locations TO analyst_ro;
 COMMENT ON VIEW curated.box_scout_locations IS
 'Land team''s BOX locations (sql/69 v4): one row per undrilled stick location that has a BOX record-run forecast. Econ columns carry Steven''s default-deck econ (WTI $70 / HH $3) for THAT record run, and are blank until he has priced it (never an older run''s econ). geom = the stick, EPSG 4326 LineString. box_tier: validated or provisional (report apart). EUR = raw 50-yr technical integral. Econ is Steven''s, display only (D13). Plain view: always current with the latest BOX record run and Steven''s latest push.';
 COMMENT ON COLUMN curated.box_scout_locations.stick_id IS 'Location key (unique in this view).';
-COMMENT ON COLUMN curated.box_scout_locations.location_name IS 'Stick name.';
+COMMENT ON COLUMN curated.box_scout_locations.location_name IS 'Stick name: <DSU id>-<bench>-<slot>.';
 COMMENT ON COLUMN curated.box_scout_locations.basin IS 'delaware / midland.';
 COMMENT ON COLUMN curated.box_scout_locations.bench IS 'Landing bench (Blue Ox code, e.g. WCA_1, BS2_S).';
-COMMENT ON COLUMN curated.box_scout_locations.pad_name IS 'Novi DSU / pad name the stick belongs to.';
-COMMENT ON COLUMN curated.box_scout_locations.geom IS 'Stick linestring, EPSG 4326 (in QGIS: LineString / EPSG:4326).';
+COMMENT ON COLUMN curated.box_scout_locations.pad_name IS 'Name of the Novi DSU the stick was generated in.';
+COMMENT ON COLUMN curated.box_scout_locations.geom IS 'Stick linestring, EPSG 4326 (in QGIS: LineString / EPSG:4326). A U-turn stick is drawn with its turn, so the line is longer than lateral_ft.';
 COMMENT ON COLUMN curated.box_scout_locations.lateral_ft IS 'Lateral length BOX forecast on, ft.';
-COMMENT ON COLUMN curated.box_scout_locations.tvd_ft IS 'Planned landing TVD of the stick, ft (Novi''s stick TVD; the depth BOX screened it at). A planned depth, not an offset-well median: check it against local producers before relying on it.';
+COMMENT ON COLUMN curated.box_scout_locations.tvd_ft IS 'Landing TVD of the stick, ft: the BOX stick''s own landing depth (same-bench producers first; the geologist''s grids where well control is thin).';
 COMMENT ON COLUMN curated.box_scout_locations.box_tier IS 'validated = bench passed BOX''s out-of-time test; provisional = not yet (D105). Keep the two apart in any total.';
 COMMENT ON COLUMN curated.box_scout_locations.oil_eur_bbl IS 'BOX oil EUR, bbl (50-yr technical, no economic limit).';
 COMMENT ON COLUMN curated.box_scout_locations.oil_eur_bbl_per_ft IS 'BOX oil EUR per lateral foot, bbl/ft. To total a group: SUM(oil_eur_bbl) / SUM(lateral_ft), not an average of this column.';

@@ -269,6 +269,10 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
     (None = every covered row, runs 4-7)."""
     cov = u["coverage"].isin(pr.COVERED)
     cand = u[cov & (u["prod_bench"] == bench) if bench is not None else cov].reset_index(drop=True)
+    if len(cand) and (cand.get("category") == pr.BOX_CATEGORY).all():
+        return box_stick_locations(cand)
+    if "category" in cand and (cand["category"] == pr.BOX_CATEGORY).any():
+        raise SystemExit("a universe mixes BOX sticks and Novi sticks: refused")
     # D64 neighbours = the SAME formation only: a WCA_2 stick under a WCA_1 one is vertical staggering (~130 ft TVD apart), not
     # lateral spacing — pooling them read 11-300 ft "gaps" (7c first build, 2026-10-15)
     near = nearest_by_stick(conn, u, cand)
@@ -283,6 +287,24 @@ def locations(u: pd.DataFrame, conn: Any, bench: str | None = None) -> list[dict
                     "spacing_source": "neighbour_gap" if g is not None else "default_880", "fp_max": None,
                     "nearest": None if near[int(r.stick_id)] is None else near[int(r.stick_id)][1],
                     "near_pdp_ft": float(g) if g is not None and str(near[int(r.stick_id)][1]).startswith("pdp:") else None})
+    return out
+
+
+def box_stick_locations(cand: pd.DataFrame) -> list[dict[str, Any]]:
+    """Covered BOX sticks as harness locations (phase 6, decisions 3 and 4). Spacing and completed lateral are the GENERATOR's:
+    no nearest-neighbour search (D64 guessed the spacing of a Novi stick from its neighbours; a BOX stick was placed at a
+    spacing). xy = the universe's midpoint (a U-turn stick: midway between its two legs). `nearest` / `near_pdp_ft` stay None:
+    a BOX stick's distance to producers is the nightly reconciliation's and the proximity step's, not D64's."""
+    x, y = dfr._xy(cand["mid_lon"], cand["mid_lat"])
+    out = []
+    for i, r in enumerate(cand.itertuples()):
+        lat, gap = float(r.ll_ft), float(r.spacing_ft)
+        if not (np.isfinite(lat) and lat > 0 and np.isfinite(gap) and gap > 0):
+            raise SystemExit(f"BOX stick {r.stick_id}: lateral {r.ll_ft} / spacing {r.spacing_ft} is not a positive number")
+        out.append({"api10": f"pud{r.stick_id}", "stick_id": int(r.stick_id), "prod_bench": r.prod_bench, "x": float(x[i]), "y": float(y[i]),
+                    "lateral_ft": lat, "lateral_eff": lat, "spacing_ft": gap, "planned_spacing_ft": gap,
+                    "spacing_source": pr.SPACING_GENERATOR, "fp_max": None, "nearest": None, "near_pdp_ft": None,
+                    "n_legs": int(r.n_legs), "target_tvd_ft": float(r.target_tvd_ft)})
     return out
 
 
@@ -417,8 +439,11 @@ def resume_meta(code: str, a: argparse.Namespace, u: pd.DataFrame) -> dict[str, 
     """What a cached group must have been built on to be reused: the build's code (code_key), selection + evidence, well set, the
     exact universe."""
     key = u.sort_values("stick_id")[["stick_id", "coverage", "prod_bench"]].astype(str).to_csv(index=False).encode("utf-8")
-    return {"code_key": code, "selection": a.selection, "evidence_sha256": a.pack_sha256, "wells": str(a.wells), "limit": int(a.limit),
+    meta = {"code_key": code, "selection": a.selection, "evidence_sha256": a.pack_sha256, "wells": str(a.wells), "limit": int(a.limit),
             "universe_sha256": hashlib.sha256(key).hexdigest()}
+    if getattr(a, "source", pr.SOURCE_NOVI) != pr.SOURCE_NOVI:  # a Novi build's cache key is unchanged
+        meta["source"] = a.source
+    return meta
 
 
 def load_bench_cache(out: Path, bench: str, meta: dict[str, Any]) -> dict[str, Any] | None:
@@ -453,7 +478,7 @@ def cmd_build(a: argparse.Namespace) -> int:
     a.pack, a.pack_sha256 = (load_evidence(a.evidence) if a.selection == "r2" else (None, None))
     B: dict[str, dict[str, Any]] = {}
     with get_connection() as conn:
-        u = pr.universe(conn, a.benches)  # the run's basin only (D130)
+        u = pr.universe(conn, a.benches, source=getattr(a, "source", pr.SOURCE_NOVI))  # the run's basin only (D130); Novi sticks or the record BOX stick set
         n_in = {b: int((u.coverage.isin(pr.COVERED) & (u.prod_bench == b)).sum()) for b in a.benches}
         print(f"universe {len(u)}; in-extent candidates per group {n_in} ({time.time() - t0:.0f} s)", flush=True)
         meta = resume_meta(code_key(), a, u)
@@ -478,6 +503,7 @@ def cmd_build(a: argparse.Namespace) -> int:
            "haircut": r0["haircut"], "calendar_factor": r0["calendar_factor"], "disclosure": r0["disclosure"], "equivalence": r0["equivalence"],
            "benches": list(a.benches), "by_bench": by_bench,
            "selection": {"name": a.selection, "decision": "D121", "evidence": str(a.evidence), "evidence_sha256": a.pack_sha256} if a.selection == "r2" else None}
+    run.update(box_stick_provenance(u))
     locs = [x for b in a.benches for x in B[b]["locs"]]
     res = [r for b in a.benches for r in B[b]["results"]]
     meta = pd.concat([B[b]["meta"] for b in a.benches], ignore_index=True).drop_duplicates("api10").reset_index(drop=True)
@@ -488,6 +514,45 @@ def cmd_build(a: argparse.Namespace) -> int:
         print(f"[{b}] covered with forecast {by_bench[b]['n_forecast']} / {by_bench[b]['n_locations']} (in-extent {n_in[b]})", flush=True)
     print(f"wrote {a.out / 'run.pkl'} ({time.time() - t0:.0f} s)", flush=True)
     return 0
+
+
+def is_box_universe(u: pd.DataFrame) -> bool:
+    """True when every row of a universe is a BOX stick. A universe holding both kinds is refused."""
+    if "category" not in u or not (u["category"] == pr.BOX_CATEGORY).any():
+        return False
+    if not (u["category"] == pr.BOX_CATEGORY).all():
+        raise SystemExit("a universe mixes BOX sticks and Novi sticks: refused")
+    return True
+
+
+def box_stick_provenance(u: pd.DataFrame) -> dict[str, Any]:
+    """What a run on BOX sticks records about its locations (empty for a Novi run): the record stick set it read and the nightly
+    status of its sticks at the pull. The run is tied to that set: a store refuses once another set is the basin's record."""
+    if not is_box_universe(u):
+        return {}
+    sets = sorted({int(s) for s in u["set_id"]})
+    if len(sets) != 1:
+        raise SystemExit(f"a BOX-stick universe reads one record set, found {sets}")
+    return {"location_source": pr.SOURCE_BOX, "location_set_id": sets[0],
+            "location_status": {str(k): int(v) for k, v in u["recon_status"].value_counts().items()},
+            "location_rules": {"in_extent": "every stored stick (decision 2, 2026-11-23); inside_share kept per stick",
+                               "not_drillable": sorted(pr.BOX_NOT_DRILLABLE), "spacing": pr.SPACING_GENERATOR,
+                               "uturn_point": "midway between the two legs' midpoints"}}
+
+
+def box_stick_location_ids(q: Any, u: pd.DataFrame, basin: str, set_id: int) -> dict[int, int]:
+    """stick_id -> location_id for a run on BOX sticks: the SAME number (box.location.location_id is the stick's id). No vintage
+    crosswalk and no box.location_source row: a BOX stick has no Novi vintage. Refuses when the run's stick set is no longer the
+    basin's record, or when a stick is not a BOX-stick location of that set."""
+    rec = q("SELECT set_id FROM box.location_set WHERE is_record AND basin = %s", (basin,)).fetchone()
+    if rec is None or int(rec[0]) != int(set_id):
+        raise SystemExit(f"the run was built on BOX stick set {set_id}; the {basin} record set is now {None if rec is None else rec[0]}: rebuild on the record set")
+    ids = [int(s) for s in u["stick_id"]]
+    ok = q("SELECT count(*) FROM box.location l JOIN box.location_stick k ON k.location_id = l.location_id AND k.set_id = %s "
+           "WHERE l.source = 'box_sticks' AND l.basin = %s AND l.location_id = ANY (%s)", (set_id, basin, ids)).fetchone()[0]
+    if int(ok) != len(ids) or len(set(ids)) != len(ids):
+        raise SystemExit(f"{len(ids) - int(ok)} of {len(ids)} sticks are not BOX-stick locations of set {set_id} in {basin}")
+    return {i: i for i in ids}
 
 
 def apply_haircut_all(res: list[dict[str, Any]], hcut: dict[str, Any] | None,
@@ -613,6 +678,8 @@ def cmd_augment(a: argparse.Namespace) -> int:
     code_sha = _git_sha()
     S = _load(a.src)
     run_s = S["run"]
+    if run_s.get("location_source") == pr.SOURCE_BOX:
+        raise SystemExit("augment adds Novi RES sticks to a Novi build (D117 step 3): it does not apply to a run on BOX sticks")
     basin = run_s.get("basin", "delaware")  # artifacts before step 19 carry no basin; they were all Delaware runs
     benches = list(run_s["benches"])
     sel = run_s.get("selection") or {}
@@ -740,6 +807,12 @@ def cmd_store(a: argparse.Namespace) -> int:
         raise SystemExit(f"universe basins {sorted(set(u['basin']))} != the run's basin {basin} (D130: one basin per run; "
                          "an artifact built before step 19 carries every basin's universe - rebuild it)")
     by_stick = {loc["stick_id"]: (loc, r) for loc, r in zip(locs, res, strict=True)}
+    box = is_box_universe(u)
+    if box and a.record:
+        raise SystemExit("refusing --record: a run on BOX sticks becomes the record through scripts.box_record23 flip, after its proximity "
+                         "step and the warehouse cutover (scripts.apply_box_stick_locations), never at the base store")
+    if box and run.get("location_source") != pr.SOURCE_BOX:
+        raise SystemExit("the universe is BOX sticks but the run does not say so: rebuild with build --source box_sticks")
     conn = get_connection()
     try:
         with conn.cursor() as cur:
@@ -748,11 +821,15 @@ def cmd_store(a: argparse.Namespace) -> int:
             # every location lookup is the run's basin only (D130: each basin publishes on its own schedule)
             # source = 'novi' (sql/73): our own generated sticks share box.location and never take part in the Novi vintage crosswalk
             src_b = "box.location_source s JOIN box.location l USING (location_id) WHERE l.source = 'novi' AND l.basin = %s AND"
-            later = q(f"SELECT count(*) FROM {src_b} s.report_version > %s", (basin, rv)).fetchone()[0]
+            if box:  # a BOX stick IS its location: no Novi vintage, no crosswalk, no location_source row, box.location untouched
+                have = box_stick_location_ids(q, u, basin, run["location_set_id"])
+                prev_v, later = None, 0
+            else:
+                later = q(f"SELECT count(*) FROM {src_b} s.report_version > %s", (basin, rv)).fetchone()[0]
+                have = dict(q(f"SELECT s.stick_id, s.location_id FROM {src_b} s.report_version = %s", (basin, rv)).fetchall())
+                prev_v = q(f"SELECT max(s.report_version) FROM {src_b} s.report_version < %s", (basin, rv)).fetchone()[0]
             if later:
                 raise SystemExit(f"box.location already holds {basin} vintages after {rv}: refusing to store an older vintage")
-            have = dict(q(f"SELECT s.stick_id, s.location_id FROM {src_b} s.report_version = %s", (basin, rv)).fetchall())
-            prev_v = q(f"SELECT max(s.report_version) FROM {src_b} s.report_version < %s", (basin, rv)).fetchone()[0]
             new = u[~u["stick_id"].isin(have)]
             n_carried = 0
             if len(new) and prev_v is not None:
@@ -788,7 +865,10 @@ def cmd_store(a: argparse.Namespace) -> int:
                 cur.executemany("INSERT INTO box.location_source (location_id, report_version, stick_id, match_method, pad_name) VALUES (%s, %s, %s, %s, %s)",
                                 [(lid, rv, int(r.stick_id), method, r.pad_name) for lid, r in zip(ids, new.itertuples(), strict=True)])
                 have.update(dict(zip(new["stick_id"].astype(int), ids, strict=True)))
-            print(f"locations: {len(have)} ({len(new)} {method}, {n_carried} carried) ({time.time() - t0:.0f} s)", flush=True)
+            if box and len(new):
+                raise SystemExit(f"{len(new)} BOX sticks without a location: refused")  # box_stick_location_ids covers every stick
+            print((f"locations: {len(have)} BOX sticks of set {run['location_set_id']} (ids as stored; no crosswalk)" if box else
+                   f"locations: {len(have)} ({len(new)} {method}, {n_carried} carried)") + f" ({time.time() - t0:.0f} s)", flush=True)
             bb = run.get("by_bench")
             jb = {col: (Jsonb(_jsonable({**run[col], "by_bench": {b: x[col] for b, x in bb.items()}})) if bb else Jsonb(_jsonable(run[col])))
                   for col in ("haircut", "calendar_factor", "disclosure")}
@@ -797,7 +877,7 @@ def cmd_store(a: argparse.Namespace) -> int:
                     (basin, pr.SPEC, run["code_sha"], run["engine_sha"], run["dealintake_config"], rv, run["data_through"],
                      jb["haircut"], jb["calendar_factor"], jb["disclosure"],
                      Jsonb(_jsonable({str(k): int(v) for k, v in u.groupby("bench")["extent_id"].first().dropna().items()})),
-                     Jsonb({}), run_notes(run))).fetchone()[0]
+                     Jsonb({}), run_notes(run) + box_stick_note(run))).fetchone()[0]
             pf, st_rows, an_rows, months = [], [], [], []
             for r in u.itertuples():
                 lid = have[int(r.stick_id)]
@@ -861,6 +941,15 @@ def cmd_store(a: argparse.Namespace) -> int:
         conn.close()
     print(f"stored run_id {rid}{' as RECORD' if a.record else ''}: {counts} ({time.time() - t0:.0f} s)", flush=True)
     return 0
+
+
+def box_stick_note(run: dict[str, Any]) -> str:
+    """The run-notes sentence of a run on BOX sticks ('' for a Novi run)."""
+    if run.get("location_source") != pr.SOURCE_BOX:
+        return ""
+    st = run.get("location_status") or {}
+    return (f"; locations = BOX sticks, record set {run['location_set_id']} (docs/box_sticks_plan.md phase 6): every stored stick in-extent, spacing and "
+            f"completed lateral from the generator, conflict and crowded sticks not forecast, producing sticks not in the run; nightly status at the pull {st}")
 
 
 def _haircut_clause(b: str, x: dict[str, Any]) -> str:
@@ -974,6 +1063,9 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--selection", choices=("r2", "v2"), default="r2",
                        help="r2 = the D121 selection of record (measured spacing, r2 rules, the evidence pack); v2 = the pre-D121 build")
         p.add_argument("--evidence", type=Path, default=p16.EVIDENCE, help="r2: the frozen evidence pack (scripts.box_step16d evidence)")
+        p.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX,
+                       help="build: the location universe. box_sticks (default since the 2026-11-24 cutover) = the basin's record "
+                            "BOX stick set; novi = the Novi sticks (the records through runs 30 / 32), only when asked for by name")
         if name in ("rehaircut", "augment"):
             p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
         if name == "augment":

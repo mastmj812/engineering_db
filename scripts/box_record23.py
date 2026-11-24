@@ -49,6 +49,7 @@ from box import provisional as pv
 from box import prox_cont as pc
 from box import record23 as rc
 from box import step21 as st21
+from box import stick_legs as sl
 
 RUNS = Path("runs")
 OUT = RUNS / "step23"
@@ -231,6 +232,37 @@ WHERE pf.run_id = %(run)s AND pf.coverage IN ('covered', 'covered_provisional', 
 _RECON_SQL = "SELECT stick_id, status FROM curated.reconciled_inventory WHERE stick_id = ANY(%(ids)s)"
 
 
+def stick_inputs(p: pd.DataFrame, box: Any, live: Any, erebor_sql: str) -> tuple[pd.DataFrame, dict[int, str], bool]:
+    """(`p` with tvd_ft / deplet_t / operator, status by stick id, is this a run on BOX sticks).
+    Novi sticks: TVD from curated.erebor_locations and status from curated.reconciled_inventory, as every record through runs
+    30 / 32. BOX sticks (docs/box_sticks_plan.md phase 6): the stick's own landing TVD (box.location_stick of the record set, read
+    where the run's box rows live) and the nightly status (curated.box_location_status, live). A BOX stick without a TVD is
+    refused: the link code skips a location with no TVD, which would store it as unexposed."""
+    from box.tc_curve_report import _read
+
+    ids = [int(x) for x in p["stick_id"]]
+    if sl.is_box_run(p["stick_id"], p["location_id"]):
+        tvd = {int(k): float(v) for k, v in _read(box, sl.TVD_SQL, {"ids": ids})}
+        recon = {int(k): str(v) for k, v in _read(live, sl.STATUS_SQL, {"ids": ids})}
+        return sl.with_stick_tvd(p, tvd).assign(deplet_t=None, operator=None), recon, True
+    e = pd.DataFrame(_read(live, erebor_sql, {"ids": ids}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
+    recon = dict(_read(live, _RECON_SQL, {"ids": ids}))
+    out = p.merge(e, on="stick_id", how="left")
+    out["tvd_ft"] = pd.to_numeric(out["tvd_ft"], errors="coerce")
+    return out, recon, False
+
+
+def fold_legs(d: pd.DataFrame, *links: pd.DataFrame) -> tuple[pd.DataFrame, tuple[pd.DataFrame, ...]]:
+    """Per-leg outcomes -> one row per BOX stick (its more exposed leg), and every link frame cut to the chosen legs."""
+    chosen = sl.choose(d["keep"], d["factor"])
+    n = len(d)
+    out = sl.fold(d.drop(columns=["stick_location_id", "leg_no"]), chosen)
+    two = int((out["n_legs"] == 2).sum())
+    print(f"  BOX sticks: {n:,} legs -> {len(out):,} sticks ({two:,} U-turn; the second leg is the more exposed on "
+          f"{int((out['exposed_leg'] == 2).sum()):,})", flush=True)
+    return out, tuple(sl.relabel(x, chosen) for x in links)
+
+
 def measure_delaware(a: argparse.Namespace) -> int:
     import shapely
 
@@ -254,10 +286,7 @@ def measure_delaware(a: argparse.Namespace) -> int:
             raise SystemExit(f"run {a.src_run} is {basin}")
         cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
         p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
-        e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
-        recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
-        p = p.merge(e, on="stick_id", how="left")
-        p["tvd_ft"] = pd.to_numeric(p["tvd_ft"], errors="coerce")
+        p, recon, box_run = stick_inputs(p, box, conn, sdp._EREBOR_SQL)
         p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
         u = psr.pull_universe(conn, basin)
         print(f"run {run} ({basin}, data through {through}): {len(p):,} sticks (forecast + no-precedent), producers {len(u):,} "
@@ -269,12 +298,11 @@ def measure_delaware(a: argparse.Namespace) -> int:
             box.close()
         conn.close()
     ref = through  # D115 / D116: producers >= 12 months on at the run's data date
-    L = ppr.pud_links(p, u, ref)
-    with open(out / "pud_links.pkl", "wb") as f:
-        pickle.dump(L, f)
-    ids = [str(x) for x in p["location_id"]]
+    pm = sl.expand(p) if box_run else p  # a BOX stick is measured leg by leg (box/stick_legs.py); a Novi stick is one line
+    L = ppr.pud_links(pm, u, ref)
+    ids = [str(x) for x in pm["location_id"]]
     cfg = pdz.configuration(ids, L.assign(permit=False)).set_index("api10")
-    cfg["bench"] = p.set_index(p["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
+    cfg["bench"] = pm.set_index(pm["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
     with open(a.prec_runs / "links.pkl", "rb") as f:
         cl = pickle.load(f)
     with open(a.prec_runs / "children.pkl", "rb") as f:
@@ -284,9 +312,13 @@ def measure_delaware(a: argparse.Namespace) -> int:
     inc = pp.decide_all(cfg, pp.haircut_lookup(pd.read_csv(ppr.HAIRCUT_TABLE)), prec)
     fac = rc.stick_factors(L, bsn.DELAWARE, ids)
     oc = rc.outcomes(inc, fac)
-    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
+    d = pm.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
     d = d.join(inc[["haircut_key", "pair_key", "prec_multi", "prec_package"]].rename(columns={"factor": "factor_table"}))
     d["factor_table"] = inc["factor"].reindex(d.index)
+    if box_run:  # the stick takes its more exposed leg's outcome; the stored links are that leg's, one per (stick, producer)
+        d, (L,) = fold_legs(d, L)
+    with open(out / "pud_links.pkl", "wb") as f:
+        pickle.dump(L, f)
     d = d.reset_index().merge(prior, on="location_id", how="left")
     d["recon_now"] = d["stick_id"].map(recon).fillna("not_reconciled")
     d["src_forecast"] = d["coverage"].isin(["covered", "covered_provisional"])
@@ -302,7 +334,7 @@ def measure_delaware(a: argparse.Namespace) -> int:
 
 def summarise(d: pd.DataFrame, run: int, through: Any) -> dict[str, Any]:
     """The re-measure against the source run: moves in the keep set, realized-since, and expected oil by bench."""
-    real = d["recon_now"].str.startswith("realized")
+    real = d["recon_now"].str.startswith("realized") | (d["recon_now"] == sl.REALIZED)  # a BOX stick that went producing since the run
     keep = d["keep"].astype(bool)
     src_f = d["src_forecast"].astype(bool)
     dropped = src_f & ~keep
@@ -397,24 +429,20 @@ def measure_midland_run(a: argparse.Namespace) -> int:
             raise SystemExit(f"run {a.src_run} is {basin}")
         cols = ["location_id", "stick_id", "formation_blueox", "bench", "coverage", "recon_status", "wkt", "oil_eur", "prox_factor", "gas_eur", "water_eur"]
         p = pd.DataFrame(_read(box, _SRC_SQL.format(ext=sdp._ext(box)), {"run": run}), columns=cols)
-        e = pd.DataFrame(_read(conn, sdp._EREBOR_SQL, {"ids": [int(x) for x in p["stick_id"]]}), columns=["stick_id", "tvd_ft", "deplet_t", "operator"])
-        recon = dict(_read(conn, _RECON_SQL, {"ids": [int(x) for x in p["stick_id"]]}))
+        p, recon, box_run = stick_inputs(p, box, conn, sdp._EREBOR_SQL)
         u = psr.pull_universe(conn, basin)
     finally:
         if box is not conn:
             box.close()
         conn.close()
-    p = p.merge(e, on="stick_id", how="left")
-    p["tvd_ft"] = pd.to_numeric(p["tvd_ft"], errors="coerce")
     p["geom"] = eg.to_ft([shapely.from_wkt(w) for w in p["wkt"]])
     print(f"run {run} ({basin}, data through {through}): {len(p):,} forecast sticks, producers {len(u):,} ({time.time() - t0:.0f} s)", flush=True)
-    bd = sp.by_depth(ppr.pud_links(p.assign(location_id=p["location_id"].astype(str)), u, through))  # 21a revision 3
+    pm = sl.expand(p) if box_run else p  # a BOX stick is measured leg by leg (box/stick_legs.py); a Novi stick is one line
+    bd = sp.by_depth(ppr.pud_links(pm.assign(location_id=pm["location_id"].astype(str)), u, through))  # 21a revision 3
     Lp = sp.existing_as_parents(bd)  # revision 4: every existing producer a parent; what the store's named parents read
-    with open(out / "pud_links.pkl", "wb") as f:
-        pickle.dump(Lp, f)
-    ids = [str(x) for x in p["location_id"]]
+    ids = [str(x) for x in pm["location_id"]]
     cfg = pdz.configuration(ids, Lp.assign(permit=False)).set_index("api10")
-    cfg["bench"] = p.set_index(p["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
+    cfg["bench"] = pm.set_index(pm["location_id"].astype(str))["formation_blueox"].reindex(cfg.index)
     with open(RUNS / "step21b" / "prox.pkl", "rb") as f:
         prox = pickle.load(f)
     table = pd.read_csv(rc.MIDLAND_TABLE)
@@ -426,10 +454,14 @@ def measure_midland_run(a: argparse.Namespace) -> int:
     fac = rc.stick_factors(Lp, bsn.MIDLAND, ids)
     oc = rc.outcomes(inc.assign(outcome=inc["outcome"].replace({"unfit_no_usable_rung": "haircut"})), fac)
     # the configuration + D114 key columns box.pud_proximity stores (as measure_delaware joins them; missing here until the 23b store)
-    d = p.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
+    d = pm.drop(columns=["geom", "wkt"]).assign(key=ids).set_index("key").join(oc).join(cfg.drop(columns="bench"))
     d = d.join(inc[["haircut_key", "pair_key", "prec_multi", "prec_package"]])
     d["incumbent_raw"] = inc["outcome"].reindex(d.index)
     d["factor_table"] = inc["factor"].reindex(d.index)
+    if box_run:  # the stick takes its more exposed leg's outcome; the stored links are that leg's, one per (stick, producer)
+        d, (Lp, bd) = fold_legs(d, Lp, bd)
+    with open(out / "pud_links.pkl", "wb") as f:
+        pickle.dump(Lp, f)
     d = d.reset_index()
     d["recon_now"] = d["stick_id"].map(recon).fillna("not_reconciled")
     d["src_forecast"] = d["coverage"].isin(["covered", "covered_provisional"])
@@ -470,6 +502,11 @@ def _copy(cur: Any, table: str, cols: list[str], df: pd.DataFrame) -> None:
         for row in df[cols].itertuples(index=False):
             cp.write_row([None if (v is None or (isinstance(v, float) and math.isnan(v)) or v is pd.NA) else v for v in row])
 
+
+_BOX_REAL_SQL = ("SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.box_location_status s ON s.location_id = pf.location_id "
+                 "WHERE pf.run_id = %s AND s.status = 'producing'")
+_BOX_CONF_SQL = ("SELECT pf.location_id, CASE WHEN s.crowded THEN 'crowded' ELSE s.status END FROM box.pud_forecast pf "
+                 "JOIN curated.box_location_status s ON s.location_id = pf.location_id WHERE pf.run_id = %s AND (s.status = 'conflict' OR s.crowded)")
 
 PROX_COLS = ["location_id", "coverage", "config_class", "n_same", "n_topfill", "n_underfill", "n_parents_total", "flanked_same", "flanked_topfill",
              "flanked_underfill", "outcome", "factor", "haircut_key", "pair_key", "prec_multi", "prec_package", "label", "n_permit_parents",
@@ -517,17 +554,29 @@ def cmd_store(a: argparse.Namespace) -> int:
             if _failures:
                 raise RuntimeError("source")
             S = a.src_run
-            real = {int(r[0]) for r in q("SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.reconciled_inventory ri ON ri.stick_id = pf.stick_id "
-                                          "WHERE pf.run_id = %s AND ri.status LIKE 'realized%%'", (S,)).fetchall()}
+            box_run = bool(q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND stick_id >= %s", (S, sl.BOX_ID_MIN)).fetchone()[0])
+            if box_run:  # BOX sticks: the nightly status (curated.box_location_status, sql/74), never curated.reconciled_inventory
+                _check(q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND (stick_id < %s OR stick_id <> location_id)", (S, sl.BOX_ID_MIN)).fetchone()[0] == 0,
+                       "a run on BOX sticks holds BOX sticks only (stick_id = location_id)")
+                nostat = q("SELECT count(*) FROM box.pud_forecast pf WHERE pf.run_id = %s AND NOT EXISTS (SELECT 1 FROM curated.box_location_status s "
+                           "WHERE s.location_id = pf.location_id)", (S,)).fetchone()[0]
+                _check(nostat == 0, f"every stick of the source run has a nightly status row ({nostat} do not: was the record stick set regenerated?)")
+            real = ({int(r[0]) for r in q(_BOX_REAL_SQL, (S,)).fetchall()} if box_run else
+                    {int(r[0]) for r in q("SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.reconciled_inventory ri ON ri.stick_id = pf.stick_id "
+                                          "WHERE pf.run_id = %s AND ri.status LIKE 'realized%%'", (S,)).fetchall()})
             q("CREATE TEMP TABLE tmp_real (location_id bigint PRIMARY KEY) ON COMMIT DROP")
             _copy(cur, "tmp_real", ["location_id"], pd.DataFrame({"location_id": sorted(real)}))
             # gate 23a (f): D145 extended to this basin — a stick reconciled as CONFLICT now is not drillable (not_covered_conflict)
-            conf: set[int] = set()
-            if a.d145:
-                conf = {int(r[0]) for r in q("SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.reconciled_inventory ri ON ri.stick_id = pf.stick_id "
-                                             "WHERE pf.run_id = %s AND ri.status = 'conflict'", (S,)).fetchall()}
-            q("CREATE TEMP TABLE tmp_conf (location_id bigint PRIMARY KEY) ON COMMIT DROP")
-            _copy(cur, "tmp_conf", ["location_id"], pd.DataFrame({"location_id": sorted(conf)}))
+            conf_status: dict[int, str] = {}
+            if box_run:  # decision 1 (2026-11-23): a conflict or crowded BOX stick is not drillable, in either basin, whatever --d145 says
+                conf_status = {int(r[0]): str(r[1]) for r in q(_BOX_CONF_SQL, (S,)).fetchall()}
+            elif a.d145:
+                conf_status = {int(r[0]): "conflict" for r in q(
+                    "SELECT pf.location_id FROM box.pud_forecast pf JOIN curated.reconciled_inventory ri ON ri.stick_id = pf.stick_id "
+                    "WHERE pf.run_id = %s AND ri.status = 'conflict'", (S,)).fetchall()}
+            conf: set[int] = set(conf_status)
+            q("CREATE TEMP TABLE tmp_conf (location_id bigint PRIMARY KEY, status text NOT NULL) ON COMMIT DROP")
+            _copy(cur, "tmp_conf", ["location_id", "status"], pd.DataFrame({"location_id": sorted(conf), "status": [conf_status[k] for k in sorted(conf)]}))
             # gate 23b (Michael 2026-11-03, "make it not covered"): a source forecast stick stored WITHOUT water (its WOR fit found no
             # eligible water analog at the 20-mi cap; box_water_run --accept-no-water) is not_covered_no_analogs in the record — no
             # streams, no proximity row, n_analogs = its water-analog count — and disclosed. `--no-water refuse` stops the store instead.
@@ -569,7 +618,11 @@ def cmd_store(a: argparse.Namespace) -> int:
             disc = {"decisions": "D150 (step 24 rev 5), D153 (Delaware derivation)" if a.basin == bsn.DELAWARE else "D150, D151, D152",
                     "table_ref": table_ref, "source_run": S, "code_sha": code_sha, "outcomes_sha256": hashlib.sha256(Path(a.outcomes).read_bytes()).hexdigest(),
                     "counts": o.loc[o["keep"], "outcome"].value_counts().to_dict(), "dropped_realized": int(o["drop_realized"].sum()),
-                    "d145_conflict": {"applied": bool(a.d145), "sticks": len(conf)},
+                    "d145_conflict": {"applied": bool(a.d145) or box_run, "sticks": len(conf)},
+                    **({"box_sticks": {"status_source": "curated.box_location_status (nightly, sql/74)", "not_drillable": sorted(sl.NOT_DRILLABLE),
+                                       "by_status": {k: int(v) for k, v in pd.Series(conf_status).value_counts().items()} if conf_status else {},
+                                       "proximity": "each leg measured on its own; the stick takes its more exposed leg (box/stick_legs.py)"}}
+                       if box_run else {}),
                     "readmitted_carried_refusal": {"sticks": len(carried), "proximity_rows": f"copied from run {S} (its own table_ref)"},
                     "no_water_not_covered": {"decision": "gate 23b (Michael 2026-11-03)", "class": "not_covered_no_analogs",
                                              "reason": "WOR fit found < 3 eligible water analogs at the 20-mi cap; oil / gas forecast not shipped",
@@ -598,8 +651,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                 if c == "coverage":
                     return (f"CASE WHEN {cf} THEN 'not_covered_conflict' WHEN {nw_} THEN 'not_covered_no_analogs' "
                             "WHEN t.keep IS FALSE THEN 'not_covered_no_precedent' ELSE p.coverage END")
-                if c == "recon_status":
-                    return f"CASE WHEN {cf} THEN 'conflict' ELSE p.recon_status END"
+                if c == "recon_status":  # 'conflict' on a Novi stick; a BOX stick keeps the word the nightly gave it (conflict / crowded)
+                    return f"CASE WHEN {cf} THEN (SELECT k.status FROM tmp_conf k WHERE k.location_id = p.location_id) ELSE p.recon_status END"
                 if c == "flags":  # the oil search's own flags stay; the reason it ships nothing is added (erebor shows flags as notes)
                     return (f"CASE WHEN {nw_} THEN array_append(p.flags, 'not covered (gate 23b): the water WOR fit found ' || "
                             "(SELECT k.n_water FROM tmp_nowater k WHERE k.location_id = p.location_id) || "

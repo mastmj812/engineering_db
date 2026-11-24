@@ -89,7 +89,8 @@ python -m scripts.apply_reconciled_inventory           # sql/20 -> sql/23 -> wel
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
 python -m scripts.apply_intel_pdp_support              # sql/30 — must precede erebor_locations
 python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
-python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all()
+python -m scripts.apply_erebor_locations               # FINAL step; restores refresh_all(); also rebuilds
+                                                       # curated.novi_stick_locations (sql/78, the Novi sticks) and sql/69
                                                       #   + re-creates curated.box_scout_locations (sql/69 view, CASCADE victim of sql/22)
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```
@@ -167,6 +168,16 @@ anduin dossier prior-vintage overlay for a TRIMMED vintage shows 24 months of
 forecast + the anchored Arps tail (levels right, shape approximate past 2 yr).
 
 ## 9. BOX refresh (after step 7 verifies; plan step 13, D123 / D124 / D125 / D126)
+
+> **Since the BOX sticks cutover (2026-11-24) read this section with care.** The BOX records (Delaware run 36, Midland run 38)
+> run on OUR generated BOX sticks (`box.location_set` records), not on Novi sticks, and `curated.erebor_locations` carries BOX
+> sticks; the Novi sticks are in `curated.novi_stick_locations`. A new Novi vintage therefore no longer changes the BOX location
+> universe or its ids: it changes only the DSU polygons (if Novi ships new ones) and the Novi comparison data. The builds default
+> to `--source box_sticks`, and `python -m scripts.box_refresh plan` prints the chain that was run at the cutover (base store,
+> water, `box_record23 measure / store / flip`), Delaware only; the Midland commands are in
+> `docs/box_sticks/phase6-2026-11-23/STEP3.md` and `STEP4A.md`. Still to settle (docs/box_sticks_plan.md phase 7): what makes a
+> BOX refresh due now (`box_refresh check` still keys on the Novi vintage), and the Midland in the printed chain. The text below
+> describes the Novi-stick refresh as it was and is kept until that is settled.
 
 BOX (schemas `box` / `box_econ`, app-owned; the ETL never touches them) forecasts every in-extent Delaware PUD of the 13
 record groups (WCA, BS2_S, WCXY_WCA1, WCB_1, WCC, AVA_0/1/2, BS1_S, BS2_C, BS3_C, BS3_S, WCB_2) with the r2 analog workup

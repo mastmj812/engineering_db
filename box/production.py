@@ -110,6 +110,56 @@ WHERE il.category IN ('PUD', 'RES')  -- D117: BASE_CASE + UPSIDE; never PDP
 ORDER BY il.stick_id
 """
 
+# ---- BOX sticks (docs/box_sticks_plan.md phase 6; decisions of 2026-11-23, docs/box_sticks/phase6-2026-11-23/DESIGN.md) ----
+# The universe of a run on BOX sticks = the basin's RECORD stick set (box.location_set.is_record, sql/73) with the nightly
+# reconciliation status (curated.box_location_status, sql/74). Same columns as _UNIVERSE_SQL so every reader keeps its shape,
+# plus what only a BOX stick has: the set it came from, the generator's spacing, its landing TVD and its legs.
+#   stick_id      = box.location.location_id (>= 10,000,001): the app-facing id, never a Novi stick_id
+#   report_version = the DSU vintage the set was generated on (box.forecast_run.report_version stays NOT NULL)
+#   recon_status  = the nightly status; 'crowded' when the nightly's crowded flag is set; 'not_reconciled' when the
+#                   nightly has not judged the stick yet. A PRODUCING stick is not in the universe (a realized stick never was)
+#   wkt           = the drilled path as ONE line (legs + the turn arc of a U-turn stick): what the map draws
+#   legs_wkt      = the producing legs (MultiLineString): what proximity measures, leg by leg
+#   mid_lon/lat   = the leg's midpoint; for a U-turn stick the point midway between its two legs' midpoints (decision 3)
+#   ll_ft / stick_ft = the completed lateral (both legs, no arc): the generator's own number (decision 4)
+#   inside_share  = share of the legs inside the bench's record extent: stored for filtering, no longer a gate (decision 2)
+SOURCE_NOVI, SOURCE_BOX = "novi", "box_sticks"
+BOX_CATEGORY = "BOX"
+BOX_NOT_DRILLABLE = frozenset({"conflict", "crowded"})  # decision 1: no forecast, both basins (D145 extended to BOX sticks)
+BOX_RECON_STATUSES = ("open", "permitted", "pending", "conflict", "crowded", "not_reconciled")
+SPACING_GENERATOR = "generator"  # pud_forecast.spacing_source of a BOX stick (decision 4)
+
+_UNIVERSE_BOX_SQL = """
+SELECT k.location_id AS stick_id, t.set_id, t.dsu_vintage AS report_version, 'BOX'::text AS category, bs.basin, bs.bench, bs.in_scope,
+       k.formation_blueox,
+       CASE WHEN s.status IS NULL THEN 'not_reconciled' WHEN s.crowded THEN 'crowded' ELSE s.status END AS recon_status,
+       p.pad_name, k.pad_id, k.well_name, k.well_type, k.n_legs,
+       k.completed_lateral_ft AS ll_ft, k.completed_lateral_ft AS stick_ft, k.spacing_ft, k.target_tvd_ft,
+       extensions.ST_AsText(CASE WHEN k.turn_geom IS NULL THEN extensions.ST_GeometryN(k.legs_geom, 1)
+                                 ELSE extensions.ST_LineMerge(extensions.ST_Collect(k.legs_geom, k.turn_geom)) END) AS wkt,
+       extensions.ST_AsText(k.legs_geom) AS legs_wkt,
+       extensions.ST_X(m.pt) AS mid_lon, extensions.ST_Y(m.pt) AS mid_lat,
+       e.extent_id,
+       CASE WHEN e.extent_id IS NULL THEN NULL ELSE
+           extensions.ST_Length(extensions.ST_Intersection(k.legs_geom, e.geom)::extensions.geography)
+           / NULLIF(extensions.ST_Length(k.legs_geom::extensions.geography), 0) END AS inside_share
+FROM box.location_stick k
+JOIN box.location_set t ON t.set_id = k.set_id AND t.is_record
+JOIN box.bench_scope bs ON bs.basin = k.basin AND k.formation_blueox = ANY (bs.member_benches)
+LEFT JOIN box.extent e ON e.is_record AND e.basin = bs.basin AND e.bench = bs.bench
+LEFT JOIN curated.box_location_status s ON s.location_id = k.location_id AND s.set_id = k.set_id
+LEFT JOIN LATERAL (SELECT q.pad_name FROM raw_novi_intel.pads q
+                   WHERE q.report_version = t.dsu_vintage AND q.pad_id = k.pad_id AND q.basin = k.basin
+                   ORDER BY q.pad_name LIMIT 1) p ON TRUE
+CROSS JOIN LATERAL (SELECT CASE WHEN k.n_legs = 1 THEN extensions.ST_LineInterpolatePoint(extensions.ST_GeometryN(k.legs_geom, 1), 0.5)
+                                ELSE extensions.ST_LineInterpolatePoint(extensions.ST_MakeLine(
+                                         extensions.ST_LineInterpolatePoint(extensions.ST_GeometryN(k.legs_geom, 1), 0.5),
+                                         extensions.ST_LineInterpolatePoint(extensions.ST_GeometryN(k.legs_geom, 2), 0.5)), 0.5) END AS pt) m
+WHERE COALESCE(s.status, 'open') <> 'producing'
+  AND k.basin = ANY (%(basins)s)
+ORDER BY k.location_id
+"""
+
 # D64 "PDP" = wells that have PRODUCED (first_production_date set), the same test sql/20 producing_reference applies.
 # curated.wells also carries permits, cancelled permits and spuds; counting those read 172 of the 275 7c "near a
 # producer" flags off sticks that never produced (reconciliation audit, eng_db #134, 2026-10-15).
@@ -136,20 +186,31 @@ def run_basin(groups: Sequence[str]) -> str:
     return b[0]
 
 
-def universe(conn: Any, covered: Sequence[str] = RUN7_COVERED, basins: Sequence[str] | None = None) -> pd.DataFrame:
+def universe(conn: Any, covered: Sequence[str] = RUN7_COVERED, basins: Sequence[str] | None = None,
+             source: str = SOURCE_NOVI) -> pd.DataFrame:
     """The D67 / D117 universe of `basins` (default: the covered groups' basin, D130 - a run's universe is its own basin's).
-    Before step 19 the universe was every basin's: run 19 (Delaware) carries the 4,154 Midland emerging-bench rows."""
+    Before step 19 the universe was every basin's: run 19 (Delaware) carries the 4,154 Midland emerging-bench rows.
+    `source` = SOURCE_NOVI (the Novi sticks, every record through runs 30 / 32) or SOURCE_BOX (the basin's record BOX stick
+    set, phase 6): the same frame, classified by the same function."""
+    if source not in (SOURCE_NOVI, SOURCE_BOX):
+        raise ValueError(f"unknown universe source {source!r}")
     basins = list(basins) if basins is not None else [run_basin(covered)]
     with conn.cursor() as cur:
         cur.execute("SET TRANSACTION READ ONLY")
-        cur.execute(_UNIVERSE_SQL, {"basins": basins})
+        cur.execute(_UNIVERSE_BOX_SQL if source == SOURCE_BOX else _UNIVERSE_SQL, {"basins": basins})
         cols = [d.name for d in cur.description]
         rows = cur.fetchall()
     conn.rollback()
     d = pd.DataFrame(rows, columns=cols)
-    for c in ("ll_ft", "mid_lon", "mid_lat", "stick_ft", "inside_share"):
+    num = ("ll_ft", "mid_lon", "mid_lat", "stick_ft", "inside_share") + (("spacing_ft", "target_tvd_ft") if source == SOURCE_BOX else ())
+    for c in num:
         d[c] = pd.to_numeric(d[c], errors="coerce")
-    d["inside_extent"] = np.where(d["extent_id"].notna(), d["inside_share"].fillna(0) >= INSIDE_SHARE, None)
+    if source == SOURCE_BOX:
+        check_box_universe(d)
+        # decision 2: every stored stick is in-extent (the generator placed it by DSU); inside_share stays on the row
+        d["inside_extent"] = np.where(d["extent_id"].notna(), True, None)
+    else:
+        d["inside_extent"] = np.where(d["extent_id"].notna(), d["inside_share"].fillna(0) >= INSIDE_SHARE, None)
     d["prod_bench"] = [production_bench(r, covered) for r in d.itertuples()]
     d["coverage"] = [classify(r, covered) for r in d.itertuples()]
     return d
@@ -171,6 +232,8 @@ def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
         return "not_covered_emerging"
     if r.basin in CONFLICT_NOT_DRILLABLE and r.recon_status == "conflict":
         return NOT_COVERED_CONFLICT
+    if getattr(r, "category", None) == BOX_CATEGORY and r.recon_status in BOX_NOT_DRILLABLE:
+        return NOT_COVERED_CONFLICT  # decision 1: a conflict or crowded BOX stick carries no forecast, in either basin
     grp = production_bench(r, covered)
     if r.formation_blueox == "WCXY" and grp is None:
         return "not_covered_wcxy"
@@ -179,6 +242,33 @@ def classify(r: Any, covered: Sequence[str] = RUN7_COVERED) -> str:
     if not bool(r.inside_extent):
         return "not_covered_outside_extent"
     return covered_class(grp)
+
+
+def check_box_universe(d: pd.DataFrame) -> None:
+    """Refuse a BOX-stick universe that is not what the design says it is: one row per stick, one record set per basin, every
+    stick on an in-scope pool with a record extent, a positive lateral, spacing and landing, a known status, no producing stick."""
+    bad: list[str] = []
+    if d["stick_id"].duplicated().any():
+        bad.append(f"{int(d['stick_id'].duplicated().sum())} duplicated stick ids (a bench in two pools, or two record extents)")
+    per_basin = d.groupby("basin")["set_id"].nunique()
+    if (per_basin != 1).any():
+        bad.append(f"more than one record set in a basin: {per_basin.to_dict()}")
+    if len(d) and int(d["stick_id"].min()) < 10_000_001:
+        bad.append("a stick id below 10,000,001 (a Novi id)")
+    for col, what in (("extent_id", "no record extent"), ("ll_ft", "no completed lateral"), ("spacing_ft", "no spacing"),
+                      ("target_tvd_ft", "no landing TVD"), ("mid_lon", "no midpoint"), ("wkt", "no path")):
+        n = int(d[col].isna().sum())
+        if n:
+            bad.append(f"{n} sticks with {what}")
+    if not d["in_scope"].astype(bool).all():
+        bad.append(f"{int((~d['in_scope'].astype(bool)).sum())} sticks on a bench that is out of BOX scope")
+    odd = sorted(set(d["recon_status"]) - set(BOX_RECON_STATUSES))
+    if odd:
+        bad.append(f"unknown status {odd}")
+    if len(d) and not d["wkt"].astype(str).str.startswith("LINESTRING").all():
+        bad.append("a stick whose legs and turn arc do not join into one line")
+    if bad:
+        raise ValueError("BOX-stick universe refused: " + "; ".join(bad))
 
 
 def covered_class(group: str) -> str:

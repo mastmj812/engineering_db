@@ -1,54 +1,69 @@
 -- =============================================================================
--- 22 — curated.erebor_locations  (erebor display spine: §6 PDP-from-curated)
+-- 22 — curated.erebor_locations  (erebor display spine)
 --
--- erebor's map/gun-barrel/selection read this instead of curated.intel_locations.
--- It flips the spine per §6: PUD/RES (the forward inventory) come from Novi
--- Intelligence; PDP (what physically EXISTS) comes from curated.wells — the
--- accurate, current, more-complete system of record — NOT the stale, error-prone
--- novi_intel PDP layer (which only remains as a reconciliation-QC input).
+-- What erebor's map / gun-barrel / selection / Highgrade read, and what the land
+-- team's view (curated.box_scout_locations, sql/69) is built on. Two disjoint
+-- arms UNION ALL'd:
 --
--- MATERIALIZED (was a plain VIEW through 2026-06). The view re-ran a 7-way join
--- (intel_locations + intel_formation_blueox + reconciled_inventory UNION ALL
--- wells_enriched + net_new_pdp) on EVERY map tile. Against hosted Postgres
--- (Supabase, us-east-1) that was ~390-650 ms/tile of pure join cost, dozens of
--- tiles per pan. Materializing collapses it to a single GiST/btree-indexed scan
--- (~40-75 ms/tile, matching curated.intel_locations). See
--- docs/erebor_locations_materialization.md for the measured before/after.
+--   * BOX  -> the RECORD BOX stick set of each basin (box.location_stick where
+--             box.location_set.is_record, sql/73): the undrilled locations.
+--             Since the BOX sticks cutover (docs/box_sticks_plan.md, phase 6;
+--             Michael 2026-11-23). Until then this arm was the Novi PUD / RES
+--             sticks; those now live in curated.novi_stick_locations (sql/78)
+--             for the readers still on Novi sticks (deal-intake).
+--   * PDP  -> curated.wells_enriched (producing horizontals) + curated.net_new_pdp:
+--             what physically EXISTS, from the system of record. Unchanged.
 --
--- Two disjoint arms UNION ALL'd (unchanged from the view):
---   * PUD/RES  -> curated.intel_locations + curated.intel_formation_blueox
---   * PDP      -> curated.wells_enriched (producing) + curated.net_new_pdp
+-- THE BOX ARM, column by column:
+--   stick_id      = box.location.location_id (10,000,001 and up). Positive, as
+--                   the sign convention requires; never a Novi stick id (about
+--                   1.5 to 1.8 million) and never a PDP id (-(api10)).
+--   unique_id     = the stick's name '<DSU id>-<bench>-<slot>' (stable across sets).
+--   category / inventory_class = 'BOX'. Every reader tests `category <> 'PDP'`
+--                   or `= 'PDP'`; nothing may test for 'PUD' / 'RES' here any more.
+--   formation     = the bench code (a BOX stick has no Novi free-text formation).
+--   recon_status  = the nightly reconciliation (curated.box_location_status,
+--                   sql/74): open / permitted / pending / conflict, 'crowded'
+--                   when the crowded flag is set, NULL when the nightly has not
+--                   judged the stick yet. A PRODUCING stick is NOT a row: it is a
+--                   well, and the PDP arm carries the well.
+--   tvd           = the stick's landing TVD (generator; from offset producers, grids
+--                   where control is thin). ll_ft = completed lateral (both legs of
+--                   a U-turn stick, no turn arc).
+--   wellstick_geom = the drilled path as ONE LineString: the leg, or leg + turn arc
+--                   + leg for a U-turn stick (every record U-turn stick joins into
+--                   one line; the apply script asserts it). The legs alone are in
+--                   box.location_stick.legs_geom.
+--   pad_name / pad_id = the Novi DSU the stick was generated in (raw_novi_intel.pads of the
+--                   set's vintage): its name, and its id (what Highgrade groups by).
+--   Novi-only columns (deplet_t, rqs, rqt, operator, NPV / PV / EUR / prices, the
+--   offset-support family) are NULL: they describe a Novi stick, not a BOX stick.
 --
--- PDP rows carry display columns (geom / formation_blueox / tvd / operator) and
--- NULL for Novi-only econ (npv/pv/eur/prices) — PDP is producing context, not
--- risked inventory value. stick_id for PDP is -(api10) so it never collides with
--- a Novi stick_id and the frontend's promoteId selection still works. pad_name is
--- NULL -> the gun-barrel's existing spatial DSU-pad assignment resolves it.
+-- PDP rows: stick_id = -(api10); display columns only; the Novi-only columns NULL
+-- except rqs / rqt (Novi scores drilled wells).
 --
--- stick_id is UNIQUE across both arms (Novi ids are positive, PDP ids are
--- -(api10); verified 0 dupes / 0 nulls over 262,581 rows) -> a UNIQUE index makes
--- REFRESH ... CONCURRENTLY possible, so the nightly refresh never blocks the app.
+-- stick_id is UNIQUE across both arms -> a UNIQUE index -> REFRESH ... CONCURRENTLY,
+-- so the nightly refresh never blocks the app.
 --
--- REFRESH ORCHESTRATION (two cadences — see the docs file):
---   * NIGHTLY  : appended to curated.refresh_all() (sql/06). The PDP arm
---     (wells_enriched) changes nightly as wells come online; CONCURRENTLY refresh
---     picks them up after wells/producing_reference/formation_blueox_tvd refresh.
---   * QUARTERLY: the Novi reload DROPs curated.intel_locations CASCADE, which
---     drops THIS matview too. The intel/reconciliation rebuild sequence must end
---     by re-running this file (scripts/apply_erebor_locations.py) to recreate it
---     WITH DATA + indexes.
+-- REFRESH:
+--   * NIGHTLY (etl/db.py:_CURATED_MATVIEWS): both arms move nightly. The PDP arm
+--     as wells come online; the BOX arm as the reconciliation hook (etl/box_recon,
+--     which runs earlier in the same refresh) changes a stick's status, and as a
+--     producing stick leaves. A record flip of a stick set shows at the next refresh
+--     (or run REFRESH ... CONCURRENTLY by hand right after the flip).
+--   * QUARTERLY: the Novi reload DROPs curated.intel_locations CASCADE, which drops
+--     this matview through the PDP arm's rqs / rqt join. scripts/apply_erebor_locations.py
+--     recreates sql/78 and this file at the end of the rebuild.
 --
--- ROCK QUALITY (2026-09): rqs/rqt (Novi ML rock-quality score/tier, oil) ride
---   BOTH arms — PUD/RES straight from intel_locations, PDP via a LEFT JOIN to
---   intel_locations' Novi PDP class on api10 (unique per api10 there; a fan-out
---   would surface as duplicate stick_ids in the apply script's validation).
--- DEPENDS ON: curated.intel_locations (sql/29), curated.intel_formation_blueox
---   (sql/19), curated.wells_enriched (sql/06), curated.reconciled_inventory
---   (sql/21), curated.net_new_pdp (sql/25), curated.intel_pdp_support (sql/30 —
---   the offset-support scores on the PUD/RES arm; must be built BEFORE this file,
---   so apply_intel_pdp_support precedes apply_erebor_locations in the runbook).
--- Idempotent: type-aware drop (handles the one-time VIEW -> MATERIALIZED VIEW
--- transition and re-runs) then CREATE ... WITH DATA.
+-- DEPENDS ON: box.location_stick, box.location_set (sql/73), curated.box_location_status
+--   (sql/74), raw_novi_intel.pads (sql/11); curated.wells_enriched (sql/06),
+--   curated.net_new_pdp (sql/25), curated.intel_locations (sql/29: PDP rqs / rqt only).
+-- CASCADE: dropping this drops curated.box_scout_locations (sql/69); every script
+--   that runs this file calls scripts.apply_box_scout_locations.recreate (a test
+--   enforces it).
+-- SANITY: BOX rows = record sticks whose nightly status is not 'producing' (by
+--   identity, per basin); 0 duplicate / NULL stick_id; every geometry a LineString.
+-- Idempotent: type-aware drop, then CREATE ... WITH DATA.
 -- =============================================================================
 
 
@@ -70,64 +85,62 @@ DROP MATERIALIZED VIEW IF EXISTS curated.erebor_locations CASCADE;
 
 
 CREATE MATERIALIZED VIEW curated.erebor_locations AS
--- ---- PUD / RES: the Novi forward inventory ----
+-- ---- BOX: the record BOX stick set (the undrilled locations) ----
 SELECT
-    il.stick_id,
-    il.unique_id,
-    il.category,
-    -- Novi's native inventory tier (PDP / BASE_CASE / EMERGING). `category` is the
-    -- legacy suite alias (BASE_CASE->PUD, EMERGING->RES). Reconstructed here from
-    -- the bijective category relabel (lossless); becomes a straight il.inventory_class
-    -- passthrough once sql/29 carries it at the next quarterly reload.
-    CASE il.category WHEN 'PUD' THEN 'BASE_CASE' WHEN 'RES' THEN 'EMERGING'
-         ELSE il.category END          AS inventory_class,
-    il.basin,
-    il.formation,
-    fb.formation_blueox,
-    fb.basin_blueox,
-    fb.formation_blueox_source,
-    -- §6 reconciliation tag (curated.reconciled_inventory, sql/68): every Novi
-    -- stick, PUD and RES (D117), carries realized_drift / realized_phantom /
-    -- remaining_pud / conflict; NULL only for a stick with no bench or geometry.
-    ri.status                          AS recon_status,
-    -- Novi PUD-quality depletion tier (Tier-1..4; Tier-4 = offset-depleted /
-    -- drained). Drives the map's depletion filter + color mode. RES/PUD only;
-    -- PDP arm is NULL (producing wells aren't scored).
-    il.deplet_t,
-    -- Novi ML rock-quality score + tier (oil stream, sql/29 rqs/rqt). Quartiles are
-    -- cut per basin over Novi's full scored population (PDP + BASE_CASE), so the
-    -- PUD and PDP arms share one scale. EMERGING (RES) is not scored by Novi -> NULL.
-    il.rqs,
-    il.rqt,
-    il.operator,
-    il.pad_name,
-    il.tvd,
-    il.ll_ft,
-    il.npv5, il.npv10, il.npv15, il.npv20, il.npv25,
-    il.pv5,  il.pv10,  il.pv15,  il.pv20,  il.pv25,
-    il.oil_eur, il.gas_eur,
-    il.wti_price, il.hh_price, il.ngl_price, il.wti_diff, il.hh_diff,
-    -- ---- PDP offset-support score family (curated.intel_pdp_support, sql/30) ----
-    -- Refines the raw Novi PUD population into a realistic developable set — the
-    -- land team's leasing apps consume THIS layer directly, so the FULL family is
-    -- carried and filterable here (not a two-column subset). A VERIFIABILITY
-    -- screen, not a quality screen: pair with deplet_t. See per-column COMMENTs
-    -- below for the qualifying-PDP gate + 0/NULL semantics. PDP arm is NULL (N/A).
-    sup.pdp_count_1mi, sup.pdp_count_3mi, sup.pdp_count_5mi,
-    sup.dist_nearest_ft, sup.dist_3rd_nearest_ft,
-    sup.support_lateral_ft_5mi, sup.n_offsets_5mi,
-    sup.offset_median_eur_ft,
-    round(sup.inflation_ratio::numeric, 2)::double precision AS inflation_ratio,
-    -- depth context (sql/30, 2026-09 WCB_2 deep-TVD audit): guarded-set median
-    -- depth + delta, unguarded same-bench excess + below-WCA delta
-    sup.offset_median_tvd, sup.tvd_delta_ft,
-    sup.tvd_excess_3mi_ft, sup.wca_delta_ft,
-    il.wellstick_geom
-FROM curated.intel_locations il
-LEFT JOIN curated.intel_formation_blueox fb ON fb.stick_id = il.stick_id
-LEFT JOIN curated.reconciled_inventory ri ON ri.stick_id = il.stick_id
-LEFT JOIN curated.intel_pdp_support sup ON sup.stick_id = il.stick_id
-WHERE il.category IN ('PUD', 'RES')
+    k.location_id                      AS stick_id,
+    k.well_name                        AS unique_id,
+    'BOX'::text                        AS category,
+    'BOX'::text                        AS inventory_class,
+    k.basin,
+    k.formation_blueox                 AS formation,
+    k.formation_blueox,
+    k.basin                            AS basin_blueox,
+    'box_sticks'::text                 AS formation_blueox_source,
+    -- the nightly reconciliation (sql/74); NULL = not judged yet. 'producing' never
+    -- reaches here (WHERE below).
+    CASE WHEN s.crowded THEN 'crowded' ELSE s.status END AS recon_status,
+    NULL::text                         AS deplet_t,
+    NULL                               AS rqs,    -- typed by the PDP arm
+    NULL                               AS rqt,
+    NULL::text                         AS operator,
+    p.pad_name,
+    k.target_tvd_ft                    AS tvd,
+    k.completed_lateral_ft             AS ll_ft,
+    NULL::double precision AS npv5, NULL::double precision AS npv10,
+    NULL::double precision AS npv15, NULL::double precision AS npv20,
+    NULL::double precision AS npv25,
+    NULL::double precision AS pv5,  NULL::double precision AS pv10,
+    NULL::double precision AS pv15, NULL::double precision AS pv20,
+    NULL::double precision AS pv25,
+    NULL::double precision AS oil_eur, NULL::double precision AS gas_eur,
+    NULL::double precision AS wti_price, NULL::double precision AS hh_price,
+    NULL::double precision AS ngl_price, NULL::double precision AS wti_diff,
+    NULL::double precision AS hh_diff,
+    NULL::bigint AS pdp_count_1mi, NULL::bigint AS pdp_count_3mi,
+    NULL::bigint AS pdp_count_5mi,
+    NULL::double precision AS dist_nearest_ft, NULL::double precision AS dist_3rd_nearest_ft,
+    NULL::bigint AS support_lateral_ft_5mi, NULL::bigint AS n_offsets_5mi,
+    NULL::double precision AS offset_median_eur_ft,
+    NULL::double precision AS inflation_ratio,
+    NULL::double precision AS offset_median_tvd, NULL::double precision AS tvd_delta_ft,
+    NULL::double precision AS tvd_excess_3mi_ft, NULL::double precision AS wca_delta_ft,
+    -- the Novi DSU the stick was generated in (raw_novi_intel.pads.pad_id of the set's vintage): what erebor's
+    -- Highgrade groups sticks by. pad_name alone is not enough: curated.intel_pad_geom only knows DSUs that held a
+    -- Novi stick (254 Midland DSUs with BOX sticks are not in it).
+    k.pad_id,
+    -- the drilled path as ONE line: leg, or leg + turn arc + leg (U-turn)
+    (CASE WHEN k.turn_geom IS NULL THEN extensions.ST_GeometryN(k.legs_geom, 1)
+          ELSE extensions.ST_LineMerge(extensions.ST_Collect(k.legs_geom, k.turn_geom))
+     END)::extensions.geometry(LineString, 4326) AS wellstick_geom
+FROM box.location_stick k
+JOIN box.location_set t ON t.set_id = k.set_id AND t.is_record
+LEFT JOIN curated.box_location_status s ON s.location_id = k.location_id AND s.set_id = k.set_id
+LEFT JOIN LATERAL (
+    SELECT q.pad_name FROM raw_novi_intel.pads q
+    WHERE q.report_version = t.dsu_vintage AND q.pad_id = k.pad_id AND q.basin = k.basin
+    ORDER BY q.pad_name LIMIT 1
+) p ON TRUE
+WHERE COALESCE(s.status, 'open') <> 'producing'
 
 UNION ALL
 
@@ -137,7 +150,7 @@ UNION ALL
 -- conventional producers — Grayburg/San Andres — that don't belong on a
 -- lateral map / gun-barrel cross-section).
 SELECT
-    -(we.api10::bigint)                AS stick_id,    -- never collides with Novi ids
+    -(we.api10::bigint)                AS stick_id,    -- never collides with a BOX stick id
     we.api10                           AS unique_id,
     'PDP'::text                        AS category,
     'PDP'::text                        AS inventory_class,   -- native == legacy for PDP
@@ -149,7 +162,7 @@ SELECT
     -- PDP reconciliation tag: 'net_new_pdp' if this producer realized no PUD
     -- (curated.net_new_pdp, sql/25) — Novi missed the location; else NULL.
     CASE WHEN nn.api10 IS NOT NULL THEN 'net_new_pdp' END AS recon_status,
-    NULL::text                         AS deplet_t,   -- producing wells aren't depletion-scored
+    NULL::text                         AS deplet_t,   -- a Novi stick score; NULL on every row since the cutover
     -- Rock quality IS scored on drilled wells (Novi's "drilled wells" map): joined
     -- from the Novi PDP class by api10 (unique there — one PDP row per api10, so
     -- the join cannot fan out). NULL = not in / not scored by the Novi PDP class.
@@ -169,8 +182,8 @@ SELECT
     NULL::double precision AS wti_price, NULL::double precision AS hh_price,
     NULL::double precision AS ngl_price, NULL::double precision AS wti_diff,
     NULL::double precision AS hh_diff,
-    -- offset-support scores are N/A for producing wells (types must match the
-    -- PUD/RES arm: counts/footage are bigint, distances/medians double precision)
+    -- offset-support scores: a Novi stick family, NULL on every row since the cutover
+    -- (types kept: counts/footage bigint, distances/medians double precision)
     NULL::bigint AS pdp_count_1mi, NULL::bigint AS pdp_count_3mi,
     NULL::bigint AS pdp_count_5mi,
     NULL::double precision AS dist_nearest_ft, NULL::double precision AS dist_3rd_nearest_ft,
@@ -179,6 +192,7 @@ SELECT
     NULL::double precision AS inflation_ratio,
     NULL::double precision AS offset_median_tvd, NULL::double precision AS tvd_delta_ft,
     NULL::double precision AS tvd_excess_3mi_ft, NULL::double precision AS wca_delta_ft,
+    NULL::bigint                       AS pad_id,     -- a producing well belongs to no DSU here
     we.wellstick_geom
 FROM curated.wells_enriched we
 LEFT JOIN curated.net_new_pdp nn ON nn.api10 = we.api10
@@ -199,7 +213,7 @@ CREATE UNIQUE INDEX idx_erebor_locations_pk   ON curated.erebor_locations (stick
 -- all do `basin = :basin AND ST_Intersects(wellstick_geom, <env|aoi>)`).
 CREATE INDEX idx_erebor_locations_geom        ON curated.erebor_locations USING GIST (wellstick_geom);
 CREATE INDEX idx_erebor_locations_basin_cat   ON curated.erebor_locations (basin, category);
--- Forecast/selection joins key on unique_id (= novi_wellname for PUD/RES).
+-- Selection / production overlay look a row up by unique_id (the stick name, or the api10 of a PDP row).
 CREATE INDEX idx_erebor_locations_uid         ON curated.erebor_locations (unique_id);
 -- Blue Ox bench rollup (ResultsPanel cull, production curves) + §6 status legend.
 CREATE INDEX idx_erebor_locations_blueox      ON curated.erebor_locations (basin, formation_blueox);
@@ -207,44 +221,23 @@ CREATE INDEX idx_erebor_locations_recon       ON curated.erebor_locations (basin
 
 
 COMMENT ON MATERIALIZED VIEW curated.erebor_locations IS
-'erebor display spine (§6 PDP-from-curated), MATERIALIZED for per-tile read latency on hosted Postgres: PUD/RES from curated.intel_locations + intel_formation_blueox + reconciled_inventory; PDP from curated.wells_enriched (producing) + net_new_pdp. Drop-in for curated.intel_locations in erebor''s map/gun-barrel/selection. PDP stick_id = -(api10); PDP econ columns NULL (producing context, not risked value). UNIQUE(stick_id) enables CONCURRENTLY refresh. Refresh: nightly via curated.refresh_all() (PDP arm) + recreate after the quarterly Novi reload (scripts/apply_erebor_locations.py). PUD/RES rows also carry the offset-PDP support score family (curated.intel_pdp_support, sql/30) — see per-column COMMENTs; PDP rows are NULL there (not applicable).';
+'erebor display spine and the base of the land team''s view (sql/69). Undrilled locations = the RECORD BOX stick set of each basin (category BOX; stick_id = box.location.location_id, 10,000,001 and up; one LineString per stick, a U-turn stick including its turn arc; tvd = the stick''s landing TVD; recon_status = the nightly reconciliation of sql/74; a producing stick is not a row). Producing wells = curated.wells_enriched horizontals (category PDP; stick_id = -(api10)). Novi sticks are no longer here: see curated.novi_stick_locations (sql/78). The Novi-only columns (deplet_t, operator on BOX rows, NPV / PV / EUR / prices, the offset-support family) are kept for shape and are NULL. UNIQUE(stick_id) enables CONCURRENTLY refresh; refreshed nightly; recreated after the quarterly Novi reload (scripts/apply_erebor_locations.py).';
 
+COMMENT ON COLUMN curated.erebor_locations.stick_id IS
+'Location key. BOX stick: box.location.location_id (10,000,001 and up). Producing well: -(api10). The sign is load-bearing (promoteId, culls, PDP tests): never abs() it.';
+COMMENT ON COLUMN curated.erebor_locations.category IS
+'BOX (an undrilled BOX stick) or PDP (a producing horizontal well). Readers test = ''PDP'' or <> ''PDP''.';
 COMMENT ON COLUMN curated.erebor_locations.inventory_class IS
-'Novi native inventory tier: PDP / BASE_CASE / EMERGING. `category` is the legacy suite alias (BASE_CASE=PUD, EMERGING=RES) kept for back-compat — prefer inventory_class for new consumers. Currently reconstructed from the bijective category relabel; becomes a straight passthrough from curated.intel_locations at the next quarterly reload (sql/29).';
-
--- -----------------------------------------------------------------------------
--- Offset-support score family (curated.intel_pdp_support, sql/30) — documented
--- per column because the land team's leasing apps consume this layer directly
--- and filter on these programmatically. Qualifying PDP offset = horizontal +
--- same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced + within
--- the stated radius; the PDP universe is never county/basin-scoped.
--- Semantics: 0 = scored and genuinely unsupported; NULL on a PUD/RES row = not
--- scorable (unmapped bench or missing TVD/geometry); NULL on a PDP row = N/A
--- (producing wells are not scored).
--- -----------------------------------------------------------------------------
-COMMENT ON COLUMN curated.erebor_locations.pdp_count_1mi IS
-'Qualifying PDP offsets within 1 mi. 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Gate: horizontal + same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced. curated.intel_pdp_support (sql/30).';
-COMMENT ON COLUMN curated.erebor_locations.pdp_count_3mi IS
-'Qualifying PDP offsets within 3 mi (primary support tier). 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Same gate as pdp_count_1mi.';
-COMMENT ON COLUMN curated.erebor_locations.pdp_count_5mi IS
-'Qualifying PDP offsets within 5 mi (the full neighbor set). 0 = scored & unsupported; NULL(PUD/RES) = not scorable; NULL(PDP) = N/A. Same gate as pdp_count_1mi.';
-COMMENT ON COLUMN curated.erebor_locations.dist_nearest_ft IS
-'Feet to the nearest qualifying PDP offset. NULL on a scored PUD/RES = no qualifying offset within 5 mi (the credible-extent halo edge); NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.dist_3rd_nearest_ft IS
-'Feet to the 3rd-nearest qualifying PDP offset; NULL when <3 offsets (thin support is signal). NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.support_lateral_ft_5mi IS
-'Sum of qualifying PDP offsets'' lateral_length_ft within 5 mi (developed footage supporting the stick). NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.n_offsets_5mi IS
-'Count of 5-mi qualifying offsets carrying a non-null EUR — the sample size behind offset_median_eur_ft / inflation_ratio. NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.offset_median_eur_ft IS
-'Median qualifying-offset Novi 30-yr oil EUR per lateral ft within 5 mi (bbl/ft) — history-matched offset productivity. NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.inflation_ratio IS
-'Novi PUD oil EUR/ft / offset_median_eur_ft (rounded 2 dp): the PUD forecast vs its history-matched offsets. >1 = PUD forecasts above offset history; NULL = no offset basis or not scorable; NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.offset_median_tvd IS
-'Median TVD (ft) of the SAME guarded offset set behind offset_median_eur_ft / inflation_ratio — the depth the ratio was actually computed against. NULL = no qualifying offsets or not scorable; NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.tvd_delta_ft IS
-'Stick TVD minus offset_median_tvd (ft): how far the stick sits from its own comparison set''s depth (the +/-500 ft guard bounds this to roughly [-500, 500]). NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.tvd_excess_3mi_ft IS
-'Stick TVD minus the deepest same-bench producing horizontal within 3 mi, UNGUARDED (no +/-500 ft, no 6-mo gate). Positive = deeper than anything ever produced in this bench locally; >200 ft = depth-anomaly line (suspect Novi landing, 2026-09 WCB_2 audit). NULL on a scored stick = NO same-bench producer within 3 mi (frontier — also unverifiable). NULL(PDP) = N/A.';
-COMMENT ON COLUMN curated.erebor_locations.wca_delta_ft IS
-'Stick TVD minus the median WCA (WCA_1/WCA_2) producing-horizontal TVD within 3 mi, unguarded. WCB_2 landing convention: real WCB_2 PDP sits 400-700 ft below local WCA (med 516 Delaware / 460 Midland) — the land-team screen band. NULL = no WCA producer within 3 mi; NULL(PDP) = N/A.';
+'Same as category since the BOX sticks cutover (BOX / PDP). Was Novi''s native tier (PDP / BASE_CASE / EMERGING) while the undrilled arm was Novi sticks.';
+COMMENT ON COLUMN curated.erebor_locations.recon_status IS
+'BOX row: the nightly reconciliation of the stick (curated.box_location_status, sql/74): open / permitted / pending / conflict, or crowded when a producer sits inside the stick''s envelope at another landing; NULL = not judged yet. conflict and crowded sticks carry no BOX forecast. PDP row: net_new_pdp when the producer realized no Novi PUD (sql/25), else NULL.';
+COMMENT ON COLUMN curated.erebor_locations.tvd IS
+'BOX row: the stick''s landing TVD, ft (box.location_stick.target_tvd_ft: same-bench producers first, the geologist''s grids where control is thin). PDP row: the well''s TVD (wells_enriched.tvd_ft).';
+COMMENT ON COLUMN curated.erebor_locations.ll_ft IS
+'BOX row: completed lateral, ft (both legs of a U-turn stick, without the turn arc). PDP row: the well''s lateral length.';
+COMMENT ON COLUMN curated.erebor_locations.wellstick_geom IS
+'EPSG 4326 LineString. BOX row: the drilled path (a U-turn stick: leg + turn arc + leg, so longer than ll_ft). PDP row: the wellstick.';
+COMMENT ON COLUMN curated.erebor_locations.pad_name IS
+'BOX row: the name of the Novi DSU the stick was generated in. PDP row: NULL.';
+COMMENT ON COLUMN curated.erebor_locations.pad_id IS
+'BOX row: raw_novi_intel.pads.pad_id of the Novi DSU the stick was generated in (the vintage is box.location_set.dsu_vintage of the record set). PDP row: NULL.';

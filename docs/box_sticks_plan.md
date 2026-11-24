@@ -570,10 +570,40 @@ command: it rebuilds the location relation from Novi sticks and flips the record
 
 ## Phase 7 - The other apps (after phase 6)
 
-erebor and the land team's view moved in phase 6. Until the apps below are cut over they keep reading Novi sticks, so narvi
-and erebor can show different undrilled locations in the same unit.
+**State 2026-11-24.** Phase 6 went live today (records = Delaware run 36, Midland run 38 on sets 24 / 25; `curated.erebor_locations`
+= BOX sticks + producing wells; Novi sticks in `curated.novi_stick_locations`; `docs/box_sticks/phase6-2026-11-23/STEP4B.md`). The
+erebor item and the locations half of the warehouse item below shipped with it. Scoped the same day from the code of all four
+repos and from live; what is left, in order, each its own gate:
 
-- **Warehouse:** whatever of the sql/22 split and sql/67 pad membership phase 6 did not need.
+1. **BOX batch default (engineering_db).** The builds default to `--source box_sticks`; the refresh chain (`box/refresh13.chain`)
+   prints the chain run at the cutover. Open inside it: what makes a BOX refresh due (`box_refresh check` still keys on the Novi
+   vintage), and the Midland in the printed chain.
+2. **Warehouse.** The producing-well rows of sql/22 still read `curated.net_new_pdp` and `curated.intel_locations` (Novi
+   rock-quality scores), so a quarterly Novi reload still CASCADE-drops the relation erebor reads. Rebuild them with no Novi
+   relation. Off-hours apply, its own go.
+3. **narvi.** `_STICK_SQL` (the unit inventory) and `available_benches` (counts, fallback landing depth, suggested spacing) read
+   BOX sticks.
+4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After
+   narvi, because the handoff saves narvi scenarios.
+
+**Decided 2026-11-24 (Michael, "Yes, all four"):**
+
+| Topic | Decision |
+|---|---|
+| A parcel is not a DSU | BOX sticks are adopted into a unit by the existing 30 % overlap rule, as Novi sticks are today; generation stays the alternative. A parcel that straddles DSUs gets partial rows, as now |
+| The Novi forecast comparison | Unchanged in phase 7: narvi's `novi_rep`, the dossier median, the drop's `novi_comparison` sheets (a contract with Steven). It does not depend on which sticks are the locations. Replace-or-keep is decided with the Novi record in phase 8 |
+| Novi rock quality (`rqs` / `rqt`) on producing-well rows | Dropped (closes the open item below). Checked 2026-11-24: no code in erebor, narvi, deal-intake or the BOX batch reads them from the relation (anduin not checked) |
+| Saved narvi scenarios | Left as history, no migration. On live: 152 scenarios, 1,675 saved wells; 100 wells in 25 scenarios are adopted Novi sticks, 841 carry a Novi comparison set. A re-save after the narvi step picks up BOX sticks |
+
+Sizes: 79,116 BOX sticks against 257,397 Novi sticks (250,238 still `remaining_pud`): a unit shows far fewer adopted locations.
+anduin reads no Novi stick as a location (only Novi's forecast, as the comparison), so it has no phase 7 step under the decision
+above. Known and left: older BOX report scripts join `curated.erebor_locations` by Novi stick id for depth (`box/prox_pud_report`,
+`box_step16d_prox`, `box_step21a*`) and now find nothing for the Novi-stick runs 30 / 32; they are history.
+
+The list as first written (2026-11-12):
+
+- **Warehouse:** split sql/22 into a PDP matview with no Novi dependency and a locations half fed by BOX
+  sticks; sql/67 pad membership from the stored DSU id; sql/69 re-pointed.
 - **narvi:** `_STICK_SQL`, `available_benches` (spacing suggestion + last-resort TVD tiers), `apply_novi_rep`.
 - **deal-intake:** `novi_sticks`, gate 2 (keep-vs-generate), spacing chain steps 1-2.
 - **anduin:** `warehouse_client/intel_forecast.py` representative sticks and the dossier overlay.
@@ -609,7 +639,7 @@ and erebor can show different undrilled locations in the same unit.
 - Open from gate 3a: a second landing by campaign inside one bench tag (rule 3); three private narvi functions are imported.
 - (Stated 2026-11-16, Michael) BOX sticks stay on the Novi 2026Q3 DSU polygons. Short polygons that operators drill across with long straight laterals (402 U-turn DSUs, 1,933 BOX sticks at 0.7; `docs/box_sticks/phase3c-2026-11-15/`) are an artifact of that shapefile. Drawing our own DSUs is not undertaken now: with sparse development it is unclear which sections combine, and who holds the majority working interest per section is inferred, not known. Decided 2026-11-16: those sticks carry the flag `dsu_drilled_across` (400 DSUs, 1,936 sticks at 0.9).
 - Open from the 3c trials: a carried depth implausible against a direct bench in the same DSU (637 DSU x bench; Lea 10809). Dropping the bench did not hold up; the repair belongs in the landing chain (prefer an anchor bench with wells in or next to the DSU).
-- Novi rock quality (`rqs` / `rqt`) on PDP rows of sql/22: drop or keep.
+- (Decided 2026-11-24, Michael) Novi rock quality (`rqs` / `rqt`) on PDP rows of sql/22: dropped, at phase 7 item 2.
 
 ## Verification
 
