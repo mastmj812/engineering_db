@@ -207,7 +207,7 @@ def main() -> None:
 
     print(f"[14/{n}] erebor_locations — FINAL step (sql/22 + refresh_all() + sql/31)",
           flush=True)
-    apply_erebor_locations.main()
+    apply_erebor_locations.main([])
 
     validate()
     print(f"=== DONE in {time.monotonic() - t:.0f}s ===", flush=True)

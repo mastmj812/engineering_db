@@ -581,6 +581,14 @@ repos and from live; what is left, in order, each its own gate:
 2. **Warehouse.** The producing-well rows of sql/22 still read `curated.net_new_pdp` and `curated.intel_locations` (Novi
    rock-quality scores), so a quarterly Novi reload still CASCADE-drops the relation erebor reads. Rebuild them with no Novi
    relation. Off-hours apply, its own go.
+   **Built 2026-11-24, not applied.** Two parts, because the reload dropped the relation by two routes. (A) sql/22: the two
+   joins are gone; `recon_status`, `rqs`, `rqt` are typed NULLs on producing-well rows (shape unchanged, 49 columns; the tag
+   had been empty since 2026-10; no code read the scores). (B) the quarterly chain: `apply_reconciled_inventory` checks
+   sql/20 and its dependents instead of rebuilding them (`--rebuild-reference` keeps the old path), and the chain ends with
+   `apply_erebor_locations --novi-sticks-only` (sql/78). Rehearsed in the rehearsal container: every row identical outside
+   those three columns (79,138 BOX, 60,992 producing wells there), the land team's view identical, and
+   `DROP curated.intel_locations CASCADE` no longer takes the relation. Apply = `python -m scripts.apply_box_stick_locations
+   --go` (one transaction, about 20 s; it now also checks the catalogue for Novi reads). Part B's real test is the next reload.
 3. **narvi.** `_STICK_SQL` (the unit inventory) and `available_benches` (counts, fallback landing depth, suggested spacing) read
    BOX sticks.
 4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After
@@ -593,6 +601,7 @@ repos and from live; what is left, in order, each its own gate:
 | A parcel is not a DSU | BOX sticks are adopted into a unit by the existing 30 % overlap rule, as Novi sticks are today; generation stays the alternative. A parcel that straddles DSUs gets partial rows, as now |
 | The Novi forecast comparison | Unchanged in phase 7: narvi's `novi_rep`, the dossier median, the drop's `novi_comparison` sheets (a contract with Steven). It does not depend on which sticks are the locations. Replace-or-keep is decided with the Novi record in phase 8 |
 | Novi rock quality (`rqs` / `rqt`) on producing-well rows | Dropped (closes the open item below). Checked 2026-11-24: no code in erebor, narvi, deal-intake or the BOX batch reads them from the relation (anduin not checked) |
+| Novi Intelligence, the rule (2026-11-24) | Comparison only, of locations and of forecasts. Reloads continue while we subscribe; nothing downstream is derived from it. Test for every reader: a side-by-side comparison stays, anything that feeds a location, a forecast, a spacing, a depth, a class or an export field goes. A reload must not drop what an app reads for its own output. Exception of record: the stick sets are generated on the Novi 2026Q3 DSU polygons (2026-11-16) |
 | Saved narvi scenarios | Left as history, no migration. On live: 152 scenarios, 1,675 saved wells; 100 wells in 25 scenarios are adopted Novi sticks, 841 carry a Novi comparison set. A re-save after the narvi step picks up BOX sticks |
 
 Sizes: 79,116 BOX sticks against 257,397 Novi sticks (250,238 still `remaining_pud`): a unit shows far fewer adopted locations.

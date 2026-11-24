@@ -16,18 +16,24 @@ docs/erebor_locations_materialization.md for rationale + measured before/after.
   4. validate: row counts by category, stick_id uniqueness (CONCURRENTLY needs it),
      a CONCURRENTLY refresh smoke test, and an index-usage check on the tile query.
 
-This is ALSO the canonical "last step" of a quarterly Novi reload: that sequence
-DROPs curated.intel_locations CASCADE (dropping this matview), so re-run this
-script after load_intel_sf --curated / apply_intel_formation_blueox /
-apply_reconciled_inventory / net_new_pdp / apply_intel_pdp_support to rebuild it
-(full sequence: .claude/skills/novi-quarterly-reload/SKILL.md).
+Quarterly Novi reload (.claude/skills/novi-quarterly-reload/SKILL.md): its LAST curated step is
+
+    python -m scripts.apply_erebor_locations --novi-sticks-only
+
+which rebuilds only curated.novi_stick_locations (sql/78: the Novi sticks, dropped with curated.intel_locations) and
+re-applies the sql/31 comments. curated.erebor_locations itself reads no Novi Intelligence relation since phase 7 item 2
+(docs/box_sticks_plan.md) and is NOT dropped by a reload, so it is not touched and erebor stays up.
+
+The full run (no flag) is for a structural rebuild that did drop curated.erebor_locations: curated.wells (sql/04) or
+curated.producing_reference (sql/20, e.g. apply_reconciled_inventory --rebuild-reference) rebuilt from scratch.
 
 Run from repo root in the venv:
-    python -m scripts.apply_erebor_locations
+    python -m scripts.apply_erebor_locations [--novi-sticks-only]
 """
 
 from __future__ import annotations
 
+import argparse
 import time
 from pathlib import Path
 
@@ -43,7 +49,43 @@ def _slice(text: str, start: str, end: str) -> str:
     return text[i:j]
 
 
-def main() -> None:
+def novi_sticks_only() -> int:
+    """The quarterly reload's last curated step: sql/78 and the comments. curated.erebor_locations must be standing."""
+    t0 = time.monotonic()
+    conn = get_connection()
+    try:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            q = cur.execute
+            el = q("SELECT c.relispopulated FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                   "WHERE n.nspname = 'curated' AND c.relname = 'erebor_locations' AND c.relkind = 'm'").fetchone()
+            if el is None or not el[0]:
+                raise SystemExit("curated.erebor_locations is missing or empty: something dropped it (a from-scratch rebuild of "
+                                 "curated.wells or curated.producing_reference?). Run the full python -m scripts.apply_erebor_locations.")
+            before = q("SELECT category, count(*) FROM curated.erebor_locations GROUP BY 1 ORDER BY 1").fetchall()
+            print("[1/2] materialize curated.novi_stick_locations (sql/78: the Novi PUD / RES sticks)", flush=True)
+            q((SQL / "78_novi_stick_locations.sql").read_text(encoding="utf-8"))
+            q((SQL / "31_comments.sql").read_text(encoding="utf-8"))
+            print("[2/2] validation", flush=True)
+            n, want = q("SELECT (SELECT count(*) FROM curated.novi_stick_locations), "
+                        "(SELECT count(*) FROM curated.intel_locations WHERE category IN ('PUD', 'RES'))").fetchone()
+            after = q("SELECT category, count(*) FROM curated.erebor_locations GROUP BY 1 ORDER BY 1").fetchall()
+            ok = n == want and after == before
+            print(f"    curated.novi_stick_locations rows = Novi PUD + RES sticks: {n:,} = {want:,}: {n == want}", flush=True)
+            print(f"    curated.erebor_locations untouched: {before} -> {after}: {after == before}", flush=True)
+    finally:
+        conn.close()
+    print(f"=== {'DONE' if ok else 'FAILED'} in {time.monotonic() - t0:.0f}s ===", flush=True)
+    return 0 if ok else 1
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--novi-sticks-only", action="store_true",
+                    help="the quarterly reload's last step: rebuild curated.novi_stick_locations only; curated.erebor_locations is not touched")
+    a = ap.parse_args(argv)
+    if a.novi_sticks_only:
+        return novi_sticks_only()
     t0 = time.monotonic()
     erebor = (SQL / "22_erebor_locations.sql").read_text(encoding="utf-8")
     novi = (SQL / "78_novi_stick_locations.sql").read_text(encoding="utf-8")
@@ -127,7 +169,8 @@ def main() -> None:
     finally:
         conn.close()
     print(f"=== DONE in {time.monotonic() - t0:.0f}s ===", flush=True)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

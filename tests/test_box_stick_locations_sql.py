@@ -72,6 +72,53 @@ def test_the_quarterly_rebuild_recreates_the_novi_table_before_sql22():
     assert src.index("cur.execute(novi)") < src.index("cur.execute(erebor)") and "78_novi_stick_locations.sql" in src
 
 
+# ---- phase 7 item 2: nothing here is derived from Novi Intelligence, and a quarterly reload drops nothing an app reads ----
+NOVI_RELATIONS = ("intel_locations", "intel_formation_blueox", "reconciled_inventory", "intel_pdp_support", "net_new_pdp",
+                  "novi_stick_locations", "raw_intel.")
+
+
+def test_no_arm_reads_a_novi_intelligence_relation():
+    code = re.sub(r"--[^\n]*", "", BODY)                                             # comments may name what was removed
+    for novi in NOVI_RELATIONS:
+        assert novi not in code, novi
+    assert re.findall(r"(?:FROM|JOIN)\s+((?:curated|box|raw_novi_intel)\.\w+)", code) == [
+        "box.location_stick", "box.location_set", "curated.box_location_status", "raw_novi_intel.pads", "curated.wells_enriched"]
+
+
+def test_the_shape_is_unchanged_and_the_novi_columns_are_typed_nulls():
+    assert _cols(BOX_ARM) == _cols(PDP_ARM) and len(_cols(PDP_ARM)) == 49
+    for arm in (BOX_ARM, PDP_ARM):
+        assert re.search(r"NULL::double precision\s+AS rqs,", arm) and re.search(r"NULL::text\s+AS rqt,", arm)
+    assert re.search(r"NULL::text\s+AS recon_status,", PDP_ARM)                       # a producing well carries no tag
+
+
+def test_the_quarterly_chain_keeps_the_producer_objects_and_ends_on_the_novi_sticks():
+    from scripts import apply_erebor_locations as ael
+    from scripts import apply_formation_tag_rule as atr
+    from scripts import apply_reconciled_inventory as ari
+
+    ok = [(r, "v" if r in ("wells_enriched", "dev_scenario") else "m", True) for r in ari.REFERENCE]
+    assert ari.reference_problems(ok) == []
+    assert ari.reference_problems(ok[1:]) == ["curated.producing_reference is missing"]
+    assert ari.reference_problems([("producing_reference", "m", False), *ok[1:]]) == ["curated.producing_reference is not populated"]
+    src = Path(ari.__file__).read_text(encoding="utf-8")
+    main = src[src.index("def main("):]
+    assert "20_producing_reference.sql" not in main and "rebuild_reference()" in main and "check_reference()" in main
+    assert main.index("if a.rebuild_reference:") < main.index("check_reference()") < main.index("68_reconcile_all_sticks.sql")
+    only = Path(ael.__file__).read_text(encoding="utf-8")
+    only = only[only.index("def novi_sticks_only("):only.index("def main(")]
+    assert "78_novi_stick_locations.sql" in only and "22_erebor_locations.sql" not in only and "recreate_box_scout" not in only
+    # a structural rebuild (sql/16 dropped the reference) still rebuilds it, and still ends with the full apply
+    assert [atr.PY, "-m", "scripts.apply_reconciled_inventory", "--rebuild-reference"] in atr.TAIL
+    assert [atr.PY, "-m", "scripts.apply_erebor_locations"] in atr.TAIL
+
+
+def test_the_applier_checks_the_catalogue_for_novi_reads():
+    src = Path(app.__file__).read_text(encoding="utf-8")
+    assert "the relation reads no Novi Intelligence relation" in src and "q(READS_SQL)" in src
+    assert "curated.net_new_pdp" in app.NOVI_DERIVED and "pg_depend" in app.READS_SQL
+
+
 def test_the_swap_is_one_transaction_in_order_and_recreates_the_land_teams_view():
     assert app.FILES == ("78_novi_stick_locations.sql", "22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
     src = Path(app.__file__).read_text(encoding="utf-8")
