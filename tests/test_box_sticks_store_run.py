@@ -105,7 +105,7 @@ def test_both_builds_take_the_source_and_augment_refuses_a_box_run():
     assert "pr.universe(conn, a.groups, source=a.source)" in m and "run.update(pud.box_stick_provenance(u))" in m
     assert "does not apply to a run on BOX sticks" in inspect.getsource(bpr.cmd_augment)
     for mod in (bpr, mid):
-        assert '"--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_NOVI' in inspect.getsource(mod.main)
+        assert '"--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX' in inspect.getsource(mod.main)  # since the cutover
     assert (pr.SOURCE_NOVI, pr.SOURCE_BOX) == ("novi", "box_sticks")
 
 

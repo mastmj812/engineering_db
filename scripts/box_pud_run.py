@@ -1063,9 +1063,9 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--selection", choices=("r2", "v2"), default="r2",
                        help="r2 = the D121 selection of record (measured spacing, r2 rules, the evidence pack); v2 = the pre-D121 build")
         p.add_argument("--evidence", type=Path, default=p16.EVIDENCE, help="r2: the frozen evidence pack (scripts.box_step16d evidence)")
-        p.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_NOVI,
-                       help="build: the location universe. novi = the Novi sticks (every record through runs 30 / 32); "
-                            "box_sticks = the basin's record BOX stick set (docs/box_sticks_plan.md phase 6)")
+        p.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX,
+                       help="build: the location universe. box_sticks (default since the 2026-11-24 cutover) = the basin's record "
+                            "BOX stick set; novi = the Novi sticks (the records through runs 30 / 32), only when asked for by name")
         if name in ("rehaircut", "augment"):
             p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
         if name == "augment":

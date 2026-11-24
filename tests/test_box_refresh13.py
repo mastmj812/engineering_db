@@ -22,6 +22,9 @@ def test_chain_runs_the_r2_build_on_all_13_groups_and_every_write_is_a_go():
     c = r13.chain("docs/box/pool-x", "runs/x", 14)
     build = next(s for s in c if s["step"].startswith("build"))
     assert "--selection r2" in build["cmd"] and "--wells docs/box/pool-x" in build["cmd"]
+    assert "--source box_sticks" in build["cmd"]  # never the Novi sticks again by default (BOX sticks cutover, 2026-11-24)
+    assert not any("--record" in s["cmd"] for s in c) and sum("box_record23 flip" in s["cmd"] for s in c) == 1  # the flip is its own go
+    assert [s["go"] for s in c if "box_record23" in s["cmd"]] == [False, True, True]  # measure, derived store, flip
     assert build["cmd"].split("--benches ")[1].split()[0].split(",") == list(r13.GROUPS) and len(r13.GROUPS) == 13
     writes = [s for s in c if "store" in s["cmd"] or "prune" in s["cmd"]]
     assert writes and all(s["go"] for s in writes)

@@ -83,16 +83,21 @@ def chain(pool_dir: str, out: str, workers: int, basin: str = "delaware") -> lis
         {"step": "pool refresh (read-only; Michael confirms the added wells, then commit the directory)", "go": False,
          "cmd": f"python -m scripts.box_pool_refresh --out {pool_dir}"},
         {"step": "build (read-only, ~7 h, resumes per group)", "go": False,
-         "cmd": f"python -m scripts.box_pud_run build --selection r2 --wells {pool_dir} --benches {benches} --workers {workers} --out {out}"},
+         "cmd": f"python -m scripts.box_pud_run build --source box_sticks --selection r2 --wells {pool_dir} --benches {benches} "
+                f"--workers {workers} --out {out}"},
         {"step": "water build (read-only, ~40 min)", "go": False,
          "cmd": f"python -m scripts.box_water_run build --run-pkl {out}/run.pkl --out {out}_water --workers {workers}"},
-        {"step": "store the base run as record", "go": True, "cmd": f"python -m scripts.box_pud_run store --out {out} --record"},
+        # the chain run on live at the BOX sticks cutover (2026-11-24, docs/box_sticks/phase6-2026-11-23/STEP4A.md, STEP4B.md):
+        # the base run is never the record; the derived (proximity) run is flipped on its own go
+        {"step": "store the base run (not record)", "go": True, "cmd": f"python -m scripts.box_pud_run store --out {out}"},
         {"step": "store water on it", "go": True, "cmd": f"python -m scripts.box_water_run store --out {out}_water --run-id <base>"},
-        {"step": "proximity re-measure (read-only, D116)", "go": False,
-         "cmd": f"python -m scripts.box_step16d prox-measure --run-id <base> --box-db live --out {out}_prox --links-out {out}_prox_links"},
-        {"step": "proximity record: rollback rehearsal, then commit as record", "go": True,
-         "cmd": f"python -m scripts.box_prox_record store --src-run <base> --outcomes {out}_prox/pud_outcomes.csv.gz --runs {out}_prox_links"
-                " [--commit --record]"},
+        {"step": "proximity re-measure (read-only; leg by leg on U-turn sticks)", "go": False,
+         "cmd": f"python -m scripts.box_record23 measure --basin {basin} --src-run <base> --out {out}_prox"},
+        {"step": "store the derived run (not record): rollback rehearsal, then --commit", "go": True,
+         "cmd": f"python -m scripts.box_record23 store --basin {basin} --src-run <base> --outcomes {out}_prox/outcomes.csv.gz "
+                f"--links {out}_prox/pud_links.pkl [--commit]"},
+        {"step": "flip the record to the derived run (unpriced: econ blank until Steven prices it)", "go": True,
+         "cmd": f"python -m scripts.box_record23 flip --basin {basin} --run <derived> --allow-unpriced [--commit]"},
         {"step": f"prune every non-record {basin} run (D123 / D130)", "go": True,
          "cmd": f"python -m scripts.box_prune_runs --apply --include-priced --basin {basin}"},
         {"step": "Steven re-prices the new record (#eng-updates post = its own go)", "go": True, "cmd": "-"},
