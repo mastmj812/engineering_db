@@ -581,7 +581,10 @@ repos and from live; what is left, in order, each its own gate:
 2. **Warehouse.** The producing-well rows of sql/22 still read `curated.net_new_pdp` and `curated.intel_locations` (Novi
    rock-quality scores), so a quarterly Novi reload still CASCADE-drops the relation erebor reads. Rebuild them with no Novi
    relation. Off-hours apply, its own go.
-   **Built 2026-11-24, not applied.** Two parts, because the reload dropped the relation by two routes. (A) sql/22: the two
+   **Applied on live 2026-11-24 20:43 UTC** (`apply_box_stick_locations --go`: one transaction, 18 s, 23 of 23 checks; the
+   catalogue shows the relation reading only `box.location_set`, `box.location_stick`, `curated.box_location_status`,
+   `curated.wells_enriched` and `raw_novi_intel.pads`; rows 79,116 BOX + 60,995 producing wells and the land team's view
+   unchanged). Part B is code only and waits for its first real reload. Two parts, because the reload dropped the relation by two routes. (A) sql/22: the two
    joins are gone; `recon_status`, `rqs`, `rqt` are typed NULLs on producing-well rows (shape unchanged, 49 columns; the tag
    had been empty since 2026-10; no code read the scores). (B) the quarterly chain: `apply_reconciled_inventory` checks
    sql/20 and its dependents instead of rebuilding them (`--rebuild-reference` keeps the old path), and the chain ends with
