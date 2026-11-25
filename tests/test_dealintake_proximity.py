@@ -257,3 +257,48 @@ def test_review_and_dossier_show_the_culls():
                                            "u6_7": {"gate2": {"source": "generate"}, "pdp_proximity": None}}}}}
     (row,) = proximity_rows(sig)
     assert row[:6] == ["u15_22", "WCB_1", "generate", 3, 1, "-2,087"] and row[-1].startswith("4238935214 WCB_1 123 ft hz")
+
+
+def test_a_kept_box_bench_is_previewed_and_judged_on_its_own_sticks():
+    """Starlight 215-216 (2026-11-25): Gate 2 kept one BOX stick on WCA_1, but the
+    seed judged a GENERATED row at the local median depth and turned the bench off.
+    The stick itself sat outside the rule. A kept bench shows and tests its sticks,
+    each at its own depth, flag only — and is never seeded off."""
+    from dealintake.pipeline import gunbarrel_preview
+
+    class _Narvi:
+        def generate(self, *a, **k):
+            raise AssertionError("a kept BOX bench is never generated in the preview")
+
+    producer = _w("P", 0, -4500, 4500, 10439, bench="WCB_1")
+    prox = ProximityRule(UNIT, 0.0, [producer], PX)
+
+    def box(sid, bench, x, tvd):
+        return {"stick_id": sid, "formation_blueox": bench, "geom": line_ft((x, -4600), (x, 4600)), "tvd": tvd,
+                "ll_ft": 9200.0, "n_legs": 1, "spacing_ft": 889.0, "relation": "inside"}
+
+    sticks = [box(10000001, "WCA_1", 300, 10120.0),      # 319 ft above the producer: outside 300 ft vt
+              box(10000002, "WCA_2", 300, 10231.0),      # 208 ft above: inside the envelope
+              box(10000003, "WCA_2", 2000, 10231.0),
+              {**box(10000004, "WCA_1", 1500, 10120.0), "relation": "outside"}]
+    prop = [{"bench": "WCA_1", "median_tvd_ft": 10197.0}, {"bench": "WCA_2", "median_tvd_ft": 10266.0}]
+    g2 = {"WCA_1": {"source": "box", "box_inside": 1}, "WCA_2": {"source": "box", "box_inside": 2}}
+    seed = {"WCA_1": {"evaluate": True, "why": "seed"}, "WCA_2": {"evaluate": True, "why": "seed"}}
+
+    def preview(s):
+        return gunbarrel_preview(UNIT, 0.0, prop, s, g2, sticks, [], _Narvi(), setback_ft=330, prox=prox)
+
+    gun = preview_and_seed(preview, seed, apply_to_seed=True)
+    a1, a2 = gun["planned"]["WCA_1"], gun["planned"]["WCA_2"]
+    assert (a1["source"], a1["stick_ids"], a1["offsets_ft"], a1["tvd_ft"]) == ("box", [10000001], [300], 10120.0)
+    assert a1["proximity"]["would_cull"] == [] and a1["proximity"]["n_culled"] == 0
+    assert a2["stick_ids"] == [10000002, 10000003] and a2["spacing_source"] == "box_kept" and a2["spacing_ft"] == 889.0
+    assert len(a2["proximity"]["would_cull"]) == 1 and a2["proximity"]["n_culled"] == 0     # listed, not removed
+    assert seed["WCA_1"] == {"evaluate": True, "why": "seed"}
+    assert seed["WCA_2"]["evaluate"] and "keeps 2 BOX stick(s), 1 leg(s) inside a producer's envelope" in seed["WCA_2"]["why"]
+    assert gun["culled_benches"] == {}
+    # the reviewer sets a pattern -> the bench is generated again (location_source), so narvi is called
+    # (the preview reports a narvi failure on the bench instead of raising)
+    gen = gunbarrel_preview(UNIT, 0.0, prop, {"WCA_1": {"evaluate": True, "why": "x"}}, g2, sticks, [], _Narvi(),
+                            setback_ft=330, prox=prox, bench_opts={"WCA_1": {"spacing_ft": 1000.0, "winerack": False}})
+    assert "never generated" in gen["planned"]["WCA_1"]["error"]

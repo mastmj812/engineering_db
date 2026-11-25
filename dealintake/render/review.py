@@ -72,7 +72,10 @@ def proximity_cell(b: str, gb: dict[str, Any]) -> str:
     if s.get("n_culled"):
         parts.append(f"{s['n_culled']} of {s['n_rows']} culled · nearest {s['culled'][0]['text']}")
     if s.get("would_cull"):
-        parts.append(f"OVERRIDDEN: {len(s['would_cull'])} would cull ({s['would_cull'][0]['text']})")
+        kept_box = (gb.get("planned", {}).get(b) or {}).get("source") == "box"
+        parts.append((f"BOX sticks kept, flag only: {len(s['would_cull'])} leg(s) inside the envelope "
+                      if kept_box else f"OVERRIDDEN: {len(s['would_cull'])} would cull ")
+                     + f"({s['would_cull'][0]['text']})")
     if s.get("near"):
         parts.append(f"near-miss {len(s['near'])} ({s['near'][0]['text']})")
     if s.get("permit"):
@@ -272,6 +275,9 @@ def spacing_cell(b: str, u: dict[str, Any], on: bool) -> Any:
     """Bench-table cell: the row spacing a generated bench uses and where it came from."""
     s = (u.get("spacing") or {}).get(b)
     pl = ((u.get("gunbarrel") or {}).get("planned") or {}).get(b) or {}
+    if pl.get("source") == "box":
+        return _Raw("BOX sticks kept" + (f'<br><span class="meta">their own planned spacing {pl["spacing_ft"]:,.0f} ft</span>'
+                                         if pl.get("spacing_ft") else ""))
     if pl.get("spacing_source") == "reviewer":
         return _Raw(f"<b>{pl['spacing_ft']:,.0f} ft</b> (reviewer)"
                     + (f'<br><span class="meta">nearby: {_esc(spacing.short_text(s))}'
@@ -291,7 +297,7 @@ def spacing_look(u: dict[str, Any]) -> list[str]:
     out = []
     planned = (u.get("gunbarrel") or {}).get("planned") or {}
     for b, row in (u.get("bench_seed") or {}).items():
-        if row.get("evaluate") and (planned.get(b) or {}).get("spacing_source") != "reviewer":
+        if row.get("evaluate") and (planned.get(b) or {}).get("spacing_source") not in ("reviewer", "box_kept"):
             t = spacing.flag_text(b, (u.get("spacing") or {}).get(b))
             if t:
                 out.append(t)
@@ -301,9 +307,10 @@ def spacing_look(u: dict[str, Any]) -> list[str]:
 def gunbarrel(u: dict[str, Any]) -> str:
     """Cross-section perpendicular to the planned azimuth: the PROPOSED rows
     (narvi preview at the reviewed benches — hollow squares on each bench's
-    local median TVD) against the EXISTING producers (filled, by bench; faded
-    outside the unit). BOX sticks are not drawn here (Michael,
-    2026-09-28: our proposal vs PDP, nothing out of scope). The TVD window is
+    local median TVD; a bench that KEEPS its BOX sticks shows those sticks at
+    their own depth, since they are the proposal) against the EXISTING producers
+    (filled, by bench; faded outside the unit). BOX sticks of other benches are
+    not drawn here (Michael, 2026-09-28: our proposal vs PDP, nothing out of scope). The TVD window is
     the proposed benches ± a margin, so a shallow unmapped or a Woodford well
     does not flatten the picture. +offset = rule-16 sign rule v2 (W -> E for
     N-S-ish plans, S -> N for E-W-ish)."""
@@ -351,6 +358,13 @@ def gunbarrel(u: dict[str, Any]) -> str:
         rules = [r for r in pl.get("rules") or [] if "culled by PDP proximity" not in r]
         n_cull = (pl.get("proximity") or {}).get("n_culled") or 0
         uturn = pl.get("well_type") == "uturn"
+        if pl.get("source") == "box":
+            n_in = len((pl.get("proximity") or {}).get("would_cull") or [])
+            row_labels.append(f"{b}: {len(pl['offsets_ft'])} BOX stick{'s' if len(pl['offsets_ft']) != 1 else ''} kept"
+                              + (f" ({len(legs_x)} legs)" if len(legs_x) != len(pl["offsets_ft"]) else "")
+                              + f", TVD {pl['tvd_ft']:,.0f}"
+                              + (f" — {n_in} leg(s) inside a producer's envelope (flag only)" if n_in else ""))
+            continue
         row_labels.append(f"{b}: {len(pl['offsets_ft'])} {'U-turn wells (' + str(len(legs_x)) + ' legs)' if uturn else 'sticks'}"
                           f" @ {pl['spacing_ft']:,.0f} ft{' leg-to-leg' if uturn else ''}, TVD {pl['tvd_ft']:,.0f}"
                           + (" [reviewer TVD]" if pl.get("tvd_source") == "reviewer" else "")
