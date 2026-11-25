@@ -67,7 +67,7 @@ def test_single_bench_row_rules_become_culls():
     assert len(nv.calls) == 1                                   # one call: no pin preview needed
     b = u["body"]
     assert b["bench_sources"] == {"WCB_2": "generate"} and b["source_azimuth"] is False
-    assert b["categories"] == ["pdp", "pud"] and b["category_overrides"] == {}
+    assert b["categories"] == ["pdp", "box"] and b["category_overrides"] == {}
     assert b["deal_id"] == "rally_caps_dsu_1_12" and b["scenario_id"] == "plan_rally_caps_dsu_1_12"
     assert b["deal_terms"]["basis"].startswith("land file declared")          # narvi: not yet correlated
     from dealintake.geo import axial_diff
@@ -168,8 +168,8 @@ def test_mixed_roles_block_the_curve(tmp_path):
 def test_stagger_is_the_default():
     from dealintake.pipeline import location_source, staggered
     assert staggered({}) and staggered({"winerack": True}) and not staggered({"winerack": False})
-    g2 = {"source": "novi", "reason": "Novi sticks", "pud_inside": 2}
-    assert location_source(g2, {"winerack": False})["source"] == "novi"      # an opt-out is not a pattern
+    g2 = {"source": "box", "reason": "BOX sticks", "box_inside": 2}
+    assert location_source(g2, {"winerack": False})["source"] == "box"       # an opt-out is not a pattern
     assert location_source(g2, {"winerack": True})["source"] == "generate"
 
 
@@ -242,3 +242,31 @@ def test_saved_curve_carries_a_full_anduin_filter_spec(tmp_path):
     assert set(handoff.ANDUIN_DEFAULT_FILTER) <= set(fs)
     assert fs["formations"] == ["WCB_1"] and fs["statuses"] == ["PDP"] and fs["api10s"] == []
     assert fs["dealintake"]["units"] == ["u_up"]
+
+
+# --- locations are BOX sticks (config v18) ---------------------------------------------------------------------------
+
+def test_a_kept_bench_is_sent_as_box_and_counted_by_its_sticks():
+    """A bench that keeps BOX sticks is not generated: narvi adopts its own BOX sticks for it (narvi #35). The plan
+    expects one saved well per kept stick (a U-turn is one well), and generates only the other benches."""
+    nv = FakeNarvi({"WCB_2": [-440, 440]})
+    kept = {"gate2": {"source": "box"}, "tvd_ft": 12100.0, "spacing_ft": 1200.0, "row_rules": [],
+            "locations": [{"id": 10046716, "src": "box", "name": "9042-WCA_1-01", "n_legs": 2, "wkt": _line(0).wkt},
+                          {"id": 10046717, "src": "box", "name": "9042-WCA_1-02", "n_legs": 1, "wkt": _line(1200).wkt}]}
+    u = handoff.plan_unit(nv, _unit(), {"WCA_1": kept, "WCB_2": _ub([-440, 440], 12867.0, 880.0)}, 330.0)
+    assert u["issues"] == []
+    assert u["body"]["bench_sources"] == {"WCB_2": "generate", "WCA_1": "box"}
+    assert u["body"]["categories"] == ["pdp", "box"]
+    assert [z["formation"] for z in u["body"]["zones"]] == ["WCB_2"]          # the kept bench is never a generate zone
+    assert u["expected"] == {"WCA_1": 2, "WCB_2": 2}
+    assert u["box_benches"] == {"WCA_1": [10046716, 10046717]}
+    assert handoff.PLANNED == ("generated", "box")                            # what narvi_saved counts as planned
+
+
+def test_a_run_that_kept_novi_sticks_is_refused():
+    import pytest
+
+    old = {"gate2": {"source": "novi"}, "tvd_ft": 12100.0, "spacing_ft": 1320.0, "row_rules": [],
+           "locations": [{"id": 5, "src": "novi", "wkt": _line(0).wkt}]}
+    with pytest.raises(handoff.HandoffRefused, match="keeps Novi sticks .WCA_1.*re-run propose and evaluate"):
+        handoff.plan_unit(FakeNarvi({}), _unit(), {"WCA_1": old}, 330.0)

@@ -128,7 +128,7 @@ def test_renderers_show_the_swd_section_and_tolerate_its_absence(tmp_path, monke
                             "geom_source": "midpoint"}]}
     bench = {
         "tvd_ft": 9244.0, "spacing_ft": 880.0, "spacing_source": "default", "basin": "delaware",
-        "units": {"u1": {"locations": [], "tvd_ft": 9244.0, "spacing_ft": 880.0, "gate2": {"source": "novi"}, "swd": unit_swd,
+        "units": {"u1": {"locations": [], "tvd_ft": 9244.0, "spacing_ft": 880.0, "gate2": {"source": "box"}, "swd": unit_swd,
                          "gate3": {"n_locations": 2, "pdp_count_3mi_median": 12, "status": "pass", "tvd_excess_3mi_ft_max": 40},
                          "has_pdp_in_adjacent_bench": False, "standoff": None}},
         "edge_trigger": {"fired": False},

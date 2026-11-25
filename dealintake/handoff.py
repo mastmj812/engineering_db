@@ -53,7 +53,7 @@ ANDUIN_DEFAULT_FILTER: dict[str, Any] = {
     "parent_dtvd_max_ft": None, "parent_age_min_days": None, "parent_age_max_days": None,
 }
 FT_PER_M = 3.28084
-NARVI_CATEGORIES = ["pdp", "pud"]          # Novi benches: PUD only, as the dossier counted them
+NARVI_CATEGORIES = ["pdp", "box"]          # kept benches adopt narvi's BOX sticks (narvi #35); Novi names are refused
 
 
 def slug(label: str) -> str:
@@ -134,8 +134,12 @@ def plan_unit(
     frame = LocalFrame.around(geom)
     az_true = float(unit["planned_lateral"]["azimuth_deg"])
     az_grid = narvi_azimuth(az_true, geom.centroid.x, geom.centroid.y)
-    gen = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] != "novi"}
-    novi = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] == "novi"}
+    if any(UB["gate2"]["source"] == "novi" for UB in ubs.values()):
+        raise HandoffRefused(f"{unit['label']}: this run keeps Novi sticks ("
+                             + ", ".join(sorted(b for b, UB in ubs.items() if UB["gate2"]["source"] == "novi"))
+                             + "), which are no longer locations — re-run propose and evaluate (config v18)")
+    gen = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] != "box"}
+    kept = {b: UB for b, UB in ubs.items() if UB["gate2"]["source"] == "box"}
     order = sorted(gen, key=lambda b: gen[b]["tvd_ft"])
     zones = [{"formation": b, "target_tvd_ft": gen[b]["tvd_ft"], "spacing_ft": gen[b]["spacing_ft"],
               **({"well_type": gen[b]["well_type"]} if gen[b].get("well_type", "single") != "single" else {})}
@@ -204,7 +208,7 @@ def plan_unit(
     declared = str(unit.get("window_source") or "").startswith("declared")
     body = {
         **scenario_key(label), "name": label, "parcel": unit["geometry"],   # what evaluate generated on
-        "bench_sources": {**{b: "generate" for b in gen}, **{b: "novi" for b in novi}},
+        "bench_sources": {**{b: "generate" for b in gen}, **{b: "box" for b in kept}},
         "categories": NARVI_CATEGORIES, "culled_wells": sorted(culled), "category_overrides": {},
         "params": params, "zones": zones, "source_azimuth": False,
         "deal_terms": {
@@ -220,7 +224,7 @@ def plan_unit(
         "label": label, "dsu": unit.get("dsu_name") or label, "body": body, "rows": rows,
         "pins": pins, "azimuth_true_deg": az_true, "azimuth_grid_deg": round(az_grid, 2),
         "expected": {b: len(UB["locations"]) for b, UB in ubs.items()},
-        "novi_benches": {b: [loc["id"] for loc in UB["locations"]] for b, UB in novi.items()},
+        "box_benches": {b: [loc["id"] for loc in UB["locations"]] for b, UB in kept.items()},
         "issues": issues,
     }
 
@@ -394,7 +398,7 @@ def plan(
 # ---------------------------------------------------------------------------
 
 STATE_FILE = "handoff_state.json"
-PLANNED = ("generated", "pud", "res")
+PLANNED = ("generated", "box")
 
 
 class HandoffRefused(RuntimeError):

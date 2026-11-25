@@ -627,6 +627,21 @@ repos and from live; what is left, in order, each its own gate:
    and on `pud` / `res` only, so a `box` well takes the persisted neighborhood comparison set like a generated well.
 4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After
    narvi, because the handoff saves narvi scenarios.
+   **Built 2026-11-25 (engineering_db, config v18; nothing on the warehouse changes).** Decided the same day (Michael,
+   "Yes, all four"): (1) Gate 2 keeps the same rule on BOX sticks: keep a bench only when every stick is inside the unit,
+   oriented like the plan, and its LEG length fits the planned lateral; else generate. (2) A kept bench adopts the sticks
+   as they are, U-turns included (it pools on their completed lateral). (3) Spacing chain = the median planned spacing of
+   the bench's BOX sticks within 1 / 2 / 3 mi, then offset-producer closer-XY, then the reviewer; the text says when most
+   of that spacing was set from wells 10+ mi away (20,809 of 79,275 record sticks). (4) Novi sticks leave the review page;
+   the Novi forecast comparison stays. Kept sticks are scored by the runner's own offset count (`pdp_support_for_geom`),
+   never a Novi column; PDP proximity on a kept bench is flag only. The handoff sends bench source `box` and categories
+   `pdp` + `box`, and refuses a run that kept Novi sticks. Sized on four past deals (37 units, 473 unit x bench cells):
+   a stick in or crossing the unit in 189 cells on BOX against 287 on Novi; kept 30 against 15. No BOX sticks in BS2_C /
+   WCC / WCXY / WDFD there. Checked on live with the VaULt package: propose kept 12 cells and generated 81; spacing came
+   from BOX sticks on 95 benches, offset producers on 4, the reviewer on 11; evaluate (no anduin) ran the 4 kept
+   unit-benches in scope with their own names, depths and support counts; the dry-run handoff planned them as `box`.
+   Not removed: `dealintake.spacing.neighbour_gaps_ft` and its four config knobs, which the BOX stick generator uses to
+   measure producing-well spacing (`scripts/box_sticks_phase2a.py`).
 
 **Decided 2026-11-24 (Michael, "Yes, all four"):**
 

@@ -1,33 +1,33 @@
-"""Row spacing for GENERATED benches (config v15, Michael 2026-10-22).
+"""Row spacing for GENERATED benches (config v18, 2026-11-25; v15 Michael 2026-10-22).
 
-"When we're generating sticks rather than using Novi sticks, generate the
-spacing from the spacing of Novi locations in the respective bench near the
-parcel." The 880-ft narvi fallback is retired: a bench with no defensible
-number is FLAGGED for the reviewer, never filled silently.
+A generated bench takes its row spacing from the locations of the same bench
+near the parcel. Since the BOX sticks replaced Novi sticks as the locations
+(Novi Intelligence is comparison only), "the locations" are BOX sticks, and a
+BOX stick CARRIES its planned leg-to-leg spacing (`spacing_ft`, set by the
+stick generator from producing-well spacing around it): the chain reads that
+number instead of measuring gaps between drawn lines. A bench with no
+defensible number is FLAGGED for the reviewer, never filled silently.
 
-Chain (first that yields >= `min_gaps` gaps wins; the reviewer's `spacing_ft`
+Chain (first that yields >= `min_gaps` values wins; the reviewer's `spacing_ft`
 in benches.yaml / --spacing outranks all of it):
 
-  1. Novi BASE_CASE (PUD) sticks of the SAME bench within 1 -> 2 -> 3 mi of the unit;
-  2. Novi EMERGING (RES) sticks of the same bench, same radii;
-  3. offset PDP of the same bench: `wells_enriched.lateral_closer_xy_ft`
+  1. BOX sticks of the SAME bench within 1 -> 2 -> 3 mi of the unit: the median
+     of their planned spacing. The text names the distance band the sticks'
+     spacing came from when most of it is the generator's widest band;
+  2. offset PDP of the same bench: `wells_enriched.lateral_closer_xy_ft`
      (same-zone, AS-OF-FIRST-PRODUCTION; NULL and the 2,800-ft sentinel out);
-  4. nothing -> spacing_ft None, `needs_reviewer` (the bench needs a spacing_ft).
+  3. nothing -> spacing_ft None, `needs_reviewer` (the bench needs a spacing_ft).
 
-A stick's gap is the median perpendicular distance to its NEAREST parallel
-neighbour of the same set (axial azimuth within `parallel_tol_deg`, alongside
-for >= `overlap_min_frac` of the stick, measured over the shared length); a
-neighbour closer than `same_slot_ft` is the same slot (stacked/staggered or
-digitizing), not a spacing. Each stick is measured in its OWN frame, so the
-pattern's orientation does not matter — only how far apart its rows sit
-(the old in-unit midpoint projection mixed rows of differently oriented
-sticks: RIP Harambe blob BS3_S read 749 ft where the pattern is 1,320).
+`neighbour_gaps_ft` (a stick's gap = the median perpendicular distance to its
+nearest parallel neighbour, measured in its own frame) is kept for the BOX stick
+generator, which measures producing-well spacing with it.
 """
 
 from __future__ import annotations
 
 import math
 import statistics
+from collections import Counter
 from collections.abc import Sequence
 from typing import Any
 
@@ -38,10 +38,16 @@ from dealintake.geo import FT_PER_M, LocalFrame, axial_diff, stick_azimuth
 from dealintake.select_wells import bench_code
 
 FT_PER_MI = 5280.0
+FAR_BAND = "10+ mi"          # the stick generator's widest spacing band: thin local control
 
-SOURCE_LABEL = {"novi_pud": "Novi PUD", "novi_res": "Novi RES", "pdp": "offset PDP closer-XY"}
+SOURCE_LABEL = {"box": "BOX sticks", "pdp": "offset PDP closer-XY"}
 
 
+# The neighbour-gap measurement below is no longer part of the deal-intake chain (a BOX
+# stick carries its spacing). It stays because the BOX stick generator measures PRODUCER
+# spacing by this method and checks itself against this function
+# (scripts/box_sticks_phase2a.py), with the four gap knobs of planned_spacing: in the
+# thresholds file. Changing it changes how BOX sticks are spaced.
 def _coords(g: BaseGeometry) -> list[tuple[float, float]]:
     return list(g.coords) if g.geom_type == "LineString" else [c for p in g.geoms for c in p.coords]
 
@@ -91,46 +97,46 @@ def _stats(vals: list[float]) -> dict[str, float]:
     return {"median_ft": round(statistics.median(vals)), "p25_ft": round(q[0]), "p75_ft": round(q[2])}
 
 
-def _result(source: str, radius_mi: float | None, n: int, vals: list[float], ps: dict[str, Any]) -> dict[str, Any]:
+def _result(source: str, radius_mi: float | None, n: int, vals: list[float], ps: dict[str, Any],
+            note: str = "") -> dict[str, Any]:
     st = _stats(vals)
     spread = (st["p75_ft"] - st["p25_ft"]) / st["median_ft"] if st["median_ft"] else 0.0
     where = f" ≤{radius_mi:g} mi" if radius_mi is not None else f" ≤{float(ps['pdp_radius_mi']):g} mi"
-    basis = (f"{len(vals)} bounded of {n} wells" if source == "pdp" else f"{len(vals)} gaps / {n} sticks")
+    basis = (f"{len(vals)} bounded of {n} wells" if source == "pdp" else f"{len(vals)} sticks")
     return {"spacing_ft": float(st["median_ft"]), "source": source, "radius_mi": radius_mi,
             "n": n, "n_gaps": len(vals), **st, "spread_frac": round(spread, 3),
             "mixed": spread > float(ps["spread_flag_frac"]), "needs_reviewer": False,
             "text": (f"{SOURCE_LABEL[source]}{where}: {st['median_ft']:,} ft from {basis} "
-                     f"(IQR {st['p25_ft']:,}–{st['p75_ft']:,})")}
+                     f"(IQR {st['p25_ft']:,}–{st['p75_ft']:,}){note}")}
 
 
 def resolve(
-    unit: BaseGeometry, novi: list[dict[str, Any]], pdp_closer_xy: list[float | None], ps: dict[str, Any],
+    unit: BaseGeometry, box: list[dict[str, Any]], pdp_closer_xy: list[float | None], ps: dict[str, Any],
     *, sentinel_ft: float,
 ) -> dict[str, Any]:
-    """One bench's spacing for one unit. `novi` = that bench's Novi sticks
-    ({category, geom}) out to the largest radius + the neighbour search;
+    """One bench's spacing for one unit. `box` = that bench's BOX sticks
+    ({geom, spacing_ft, spacing_band}) out to the largest radius;
     `pdp_closer_xy` = that bench's offset producers' closer-XY values."""
     frame = LocalFrame.around(unit)
     ul = frame.to_local(unit)
     min_gaps = int(ps["min_gaps"])
     radii = [float(r) for r in ps["radius_steps_mi"]]
     tried: list[str] = []
-    for cat, source in (("PUD", "novi_pud"), ("RES", "novi_res")):
-        pool = [s for s in novi if s["category"] == cat]
-        if not pool:
-            tried.append(f"{SOURCE_LABEL[source]}: none within {radii[-1]:g} mi")
-            continue
-        gaps = neighbour_gaps_ft([s["geom"] for s in pool], frame,
-                                 parallel_tol_deg=float(ps["parallel_tol_deg"]),
-                                 overlap_min_frac=float(ps["overlap_min_frac"]),
-                                 same_slot_ft=float(ps["same_slot_ft"]), search_ft=float(ps["neighbour_search_ft"]))
+    pool = [s for s in box if s.get("spacing_ft")]
+    if not pool:
+        tried.append(f"{SOURCE_LABEL['box']}: none within {radii[-1]:g} mi")
+    else:
         dist = [frame.to_local(s["geom"]).distance(ul) * FT_PER_M for s in pool]
+        inr: list[int] = []
         for r in radii:
             inr = [i for i, d in enumerate(dist) if d <= r * FT_PER_MI]
-            vals = [g for i in inr if (g := gaps[i]) is not None]
-            if len(vals) >= min_gaps:
-                return {**_result(source, r, len(inr), vals, ps), "tried": tried}
-        tried.append(f"{SOURCE_LABEL[source]}: {len(vals)} gaps within {radii[-1]:g} mi (< {min_gaps})")
+            if len(inr) >= min_gaps:
+                bands = Counter(pool[i].get("spacing_band") for i in inr)
+                far = bands.get(FAR_BAND, 0)
+                note = (f"; {far} of {len(inr)} set from wells {FAR_BAND} away" if far * 2 > len(inr) else "")
+                return {**_result("box", r, len(inr), [float(pool[i]["spacing_ft"]) for i in inr], ps, note),
+                        "far_band": far * 2 > len(inr), "tried": tried}
+        tried.append(f"{SOURCE_LABEL['box']}: {len(inr)} within {radii[-1]:g} mi (< {min_gaps})")
     vals = [float(v) for v in pdp_closer_xy if v is not None and 0 < float(v) < sentinel_ft]
     if len(vals) >= min_gaps:
         return {**_result("pdp", None, len(pdp_closer_xy), vals, ps), "tried": tried}
@@ -142,14 +148,14 @@ def resolve(
 def resolve_unit(
     conn: Any, unit: BaseGeometry, benches: Sequence[str], cfg_raw: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
-    """{bench: resolve(...)} for one unit — one Novi and one PDP query."""
+    """{bench: resolve(...)} for one unit — one BOX stick and one PDP query."""
     from dealintake import (
         warehouse as wh,  # keeps the pure functions importable without a DB driver
     )
 
     ps = cfg_raw["planned_spacing"]
-    reach_ft = max(float(r) for r in ps["radius_steps_mi"]) * FT_PER_MI + float(ps["neighbour_search_ft"])
-    sticks = wh.novi_sticks(conn, unit, buffer_ft=reach_ft)
+    reach_ft = max(float(r) for r in ps["radius_steps_mi"]) * FT_PER_MI
+    sticks = wh.box_sticks(conn, unit, buffer_ft=reach_ft)
     pdp = wh.pdp_closer_xy(conn, unit, float(ps["pdp_radius_mi"]), str(cfg_raw["type_curve"]["first_prod_after"]))
     sentinel = float(cfg_raw["spacing"]["sentinel_ft"])
     out: dict[str, dict[str, Any]] = {}
@@ -160,7 +166,7 @@ def resolve_unit(
 
 
 def short_text(s: dict[str, Any] | None) -> str:
-    """'Novi PUD ≤1 mi, IQR 1,317–1,320' — the gunbarrel label / table cell."""
+    """'BOX sticks ≤1 mi, IQR 1,200–1,270' — the gunbarrel label / table cell."""
     if not s:
         return "not resolved"
     if s.get("needs_reviewer"):

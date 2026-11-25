@@ -155,7 +155,8 @@ def stick_inside(stick: BaseGeometry, unit: Polygon, tolerance_ft: float = 50.0)
 
 
 def stick_relation(stick: BaseGeometry, unit: Polygon, tolerance_ft: float = 50.0) -> str:
-    """Gate 2 v2 classification of a Novi stick against the deal unit:
+    """Gate 2 v2 classification of a stick (every leg of it: a BOX U-turn is a
+    two-part MultiLineString) against the deal unit:
       inside    covered by the unit grown by `tolerance_ft`
       outside   does not reach into the unit shrunk by `tolerance_ft` (a
                 neighbouring-DSU stick, at most grazing the line)
@@ -183,6 +184,13 @@ def stick_midpoint(stick: BaseGeometry) -> BaseGeometry:
     if isinstance(stick, LineString):
         return stick.interpolate(0.5, normalized=True)
     return stick.centroid
+
+
+def stick_legs(stick: BaseGeometry) -> list[BaseGeometry]:
+    """The producing legs of a stick: the parts of a MultiLineString (a BOX
+    U-turn has two), or the line itself. Azimuth and leg length are per LEG —
+    first-to-last vertex across a U-turn's two legs is a diagonal, not a bearing."""
+    return list(getattr(stick, "geoms", None) or [stick])
 
 
 def stick_azimuth(stick: BaseGeometry) -> float | None:

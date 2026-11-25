@@ -116,7 +116,7 @@ def test_summary_and_flags():
     off = proximity.summarize(rows, rows, enabled=False)
     assert off["n_culled"] == 0 and len(off["would_cull"]) == 1
     assert any("OVERRIDDEN" in f for f in proximity.flags("u1 WCB_1", off))
-    assert any("never culled" in f for f in proximity.flags("u1 WCB_1", off, source="novi"))
+    assert any("never culled" in f for f in proximity.flags("u1 WCB_1", off, source="box"))
     all_gone = proximity.summarize(rows[:1], [], enabled=True)
     assert any("every one of 1 rows culled" in f for f in proximity.flags("u1 WCB_1", all_gone))
     assert proximity.summarize([{"offset_ft": 0}], [], enabled=True) is None

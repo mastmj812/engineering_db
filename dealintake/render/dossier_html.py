@@ -333,7 +333,7 @@ def render(run_dir: Path) -> Path:
     if prox:
         p.append(f"<details open><summary>PDP proximity (unit × bench) — {_esc(sig['pdp_proximity']['rule'])} "
                  "(PROVISIONAL)</summary><div class=\"meta\">Rows inside an existing producer's depletion envelope are "
-                 "culled before the reviewer's row rules; Novi-sourced benches are flagged only. Near-miss = kept, inside "
+                 "culled before the reviewer's row rules; benches that keep BOX sticks are flagged only. Near-miss = kept, inside "
                  "the flag band.</div>" + _table(PROXIMITY_HEADERS, prox) + "</details>")
     p.append('<div class="toc">' + " ".join(f'<a href="#{_slug(k)}">{_esc(k)}</a>' for k in sig["benches"]) + "</div>")
 
@@ -421,7 +421,7 @@ def render(run_dir: Path) -> Path:
                      'alt="curve map" style="max-width:100%"></div>')
             p.append("<details><summary>Every planned stick on this curve</summary>"
                      + _table(["DSU", "Stick", "Source", "Lateral ft", "TVD ft", "Curve"],
-                              [[name.get(u, u), loc["id"], "Novi location kept" if loc["src"] == "novi" else "generated",
+                              [[name.get(u, u), loc["id"], "BOX stick kept" if loc["src"] == "box" else "generated",
                                 num(loc.get("ll_ft"), ",.0f"), num(loc.get("tvd"), ",.0f"), labels[gi]]
                                for u, v in sticks.items() for loc in v.get("locations", [])])
                      + "</details>")

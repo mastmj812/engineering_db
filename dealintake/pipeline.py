@@ -65,6 +65,7 @@ from dealintake.geo import (
     narvi_azimuth,
     planned_lateral,
     stick_azimuth,
+    stick_legs,
     stick_length_ft,
     stick_relation,
 )
@@ -115,19 +116,19 @@ PATTERN_KEYS = ("tvd_ft", "spacing_ft", "n_wells", "keep_side",
 
 
 def location_source(g2: dict[str, Any], opts: dict[str, Any]) -> dict[str, Any]:
-    """Gate 2 with the reviewer on top: a bench Gate 2 would source from Novi's
-    BASE_CASE sticks is GENERATED instead when the reviewer set a pattern on it
+    """Gate 2 with the reviewer on top: a bench Gate 2 would source from the BOX
+    sticks is GENERATED instead when the reviewer set a pattern on it
     (TVD / spacing / count / row rules). Rally Caps 2-44 (2026-10-01): "4 WCB_2
-    @ ~11,150" was silently replaced by Novi's single in-unit stick, while the
+    @ ~11,150" was silently replaced by the single kept in-unit stick, while the
     review page (which always generates) showed 4."""
-    if g2.get("source") != "novi":
+    if g2.get("source") != "box":
         return g2
     keys = [k for k in PATTERN_KEYS if opts.get(k) not in (None, False)]
     if not keys:
         return g2
-    return {**g2, "source": "generate", "novi_reason": g2.get("reason"),
-            "reason": f"reviewer pattern ({', '.join(keys)}) overrides Novi's "
-                      f"{g2.get('pud_inside', 0)} BASE_CASE stick(s) — generated"}
+    return {**g2, "source": "generate", "box_reason": g2.get("reason"),
+            "reason": f"reviewer pattern ({', '.join(keys)}) overrides the "
+                      f"{g2.get('box_inside', 0)} BOX stick(s) — generated"}
 
 
 def staggered(opts: dict[str, Any]) -> bool:
@@ -252,16 +253,16 @@ def winerack_legs(
 
 def gunbarrel_preview(
     unit: Any, azimuth_deg: float, bench_proposal: list[dict[str, Any]], bench_seed: dict[str, dict[str, Any]],
-    gate2: dict[str, dict[str, Any]], novi_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
+    gate2: dict[str, dict[str, Any]], box_sticks: list[dict[str, Any]], pdp_near: list[dict[str, Any]],
     narvi: Narvi, *, setback_ft: float, cross_margin_ft: float = 1320.0, along_margin_ft: float = 2640.0,
     bench_opts: dict[str, dict[str, Any]] | None = None, min_leg_ft: float | None = None,
     prox: ProximityRule | None = None, spacing_by: dict[str, dict[str, Any]] | None = None,
     anchor: str | None = None,
 ) -> dict[str, Any]:
-    """Cross-section data for the review page: existing producers and Novi
-    BASE_CASE sticks near the unit, plus one narvi preview row-set per seeded
+    """Cross-section data for the review page: existing producers and BOX
+    sticks near the unit, plus one narvi preview row-set per seeded
     bench (spacing = the reviewer's spacing_ft, else `spacing_by` — the bench's
-    nearby-Novi spacing, config v15; a bench with neither is not previewed and
+    nearby BOX-stick spacing, config v18; a bench with neither is not previewed and
     says so; TVD = the unit's local median). Offsets in the rule-16 frame (ft), TVD in ft. With
     `prox`, rows inside a producer's depletion envelope are culled (row rule)
     and each bench carries the proximity summary."""
@@ -293,14 +294,13 @@ def gunbarrel_preview(
         frac = gl.intersection(unit_local).length / gl.length if gl.length else 0.0
         existing.append({"api10": w["api10"], "bench": w["bench"], "offset_ft": round(off), "tvd_ft": float(w["tvd_ft"]),
                          "inside": frac >= 0.30, "in_unit_frac": round(frac, 2)})
-    novi = []                                  # kept in the data (not drawn) for the record
-    for st in novi_sticks:
-        if st["category"] != "PUD":
-            continue
-        oa = near(st["geom"])
-        if oa and st.get("tvd") is not None:
-            novi.append({"stick_id": st["stick_id"], "bench": st["formation_blueox"] or "(unmapped)",
-                         "offset_ft": round(oa[0]), "tvd_ft": float(st["tvd"]), "relation": st["relation"]})
+    box = []                                   # kept in the data (not drawn) for the record: one row per leg
+    for st in box_sticks:
+        for leg in stick_legs(st["geom"]):
+            oa = near(leg)
+            if oa and st.get("tvd") is not None:
+                box.append({"stick_id": st["stick_id"], "bench": st["formation_blueox"] or "(unmapped)",
+                            "offset_ft": round(oa[0]), "tvd_ft": float(st["tvd"]), "relation": st["relation"]})
     planned: dict[str, dict[str, Any]] = {}
     opts_all = bench_opts or {}
     # Winerack benches are placed together (one narvi call, staggered); the rest one by one.
@@ -332,7 +332,7 @@ def gunbarrel_preview(
         tvd = opts.get("tvd_ft", tvd_by.get(b))
         if tvd is None:
             continue
-        # The reviewer's spacing_ft wins; otherwise the nearby-Novi spacing (v15).
+        # The reviewer's spacing_ft wins; otherwise the nearby BOX-stick spacing (v18).
         # No number = no preview: the reviewer sets one (the 880 fallback is retired).
         sp_or_none, sp_src = _sp(b)
         if sp_or_none is None:
@@ -369,7 +369,7 @@ def gunbarrel_preview(
                       "winerack": b in wr_zones,
                       "proximity": proximity.summarize(rows, kept, enabled=prox_enabled(opts))}
     return {"azimuth_deg": azimuth_deg, "cross_extent_ft": [round(c_lo), round(c_hi)],
-            "bench_tvd_ft": tvd_by, "existing": existing, "novi": novi, "planned": planned}
+            "bench_tvd_ft": tvd_by, "existing": existing, "box": box, "planned": planned}
 
 
 def preview_and_seed(
@@ -463,30 +463,33 @@ def gate2_decision(
     azimuth_tol_deg: float,
     lateral_tol: float,
 ) -> dict[str, Any]:
-    """Gate 2 (Michael, 2026-09-25): keep Novi BASE_CASE locations ONLY when
-    every stick is inside the unit AND the sticks are oriented like our plan
-    AND their lateral fits our planned lateral. Novi's guess at a unit's
-    infill is often the wrong orientation or length (VaULt 44-45 S2: 5k E-W
-    in the west, 5k/10k N-S in the east); the PRESENCE of BASE_CASE sticks is
-    the signal that the bench gets infilled, so those benches are generated —
-    and the generated sticks inherit the BASE_CASE bench's spacing."""
-    n_in, n_x = g.get("pud_inside", 0), g.get("pud_crossing", 0)
-    az_n, ll_n = g.get("novi_azimuth_deg"), g.get("novi_ll_ft")
+    """Gate 2 (Michael, 2026-09-25; on BOX sticks since 2026-11-25): keep the
+    BOX sticks of a bench ONLY when every stick is inside the unit AND the
+    sticks are oriented like our plan AND their LEG length fits our planned
+    lateral. A stick set is generated in its own DSU polygons, which are not
+    the deal's unit: sticks that cross the unit line, run the other way or are
+    a different length (a U-turn of two short legs in a unit planned for long
+    singles) mean the bench is generated. A kept bench adopts the sticks as
+    they are, U-turns included; a generated bench takes the spacing of the
+    bench's BOX sticks near the unit (dealintake.spacing)."""
+    n_in, n_x = g.get("box_inside", 0), g.get("box_crossing", 0)
+    az_n, ll_n = g.get("box_azimuth_deg"), g.get("box_leg_ft")
     if n_in == 0 and n_x == 0:
-        return {"source": "generate", "reason": "no BASE_CASE stick inside", "azimuth_diff_deg": None}
+        return {"source": "generate", "reason": "no BOX stick inside", "azimuth_diff_deg": None}
     if n_x:
-        why = [f"{n_x} BASE_CASE stick(s) cross the unit line"]
+        why = [f"{n_x} BOX stick(s) cross the unit line"]
     else:
         why = []
     dz = None if az_n is None else round(axial_diff(az_n, planned_azimuth_deg), 1)
     if dz is not None and dz > azimuth_tol_deg:
-        why.append(f"BASE_CASE azimuth {az_n:.0f}° vs planned {planned_azimuth_deg:.0f}° ({dz:.0f}° off)")
+        why.append(f"BOX stick azimuth {az_n:.0f}° vs planned {planned_azimuth_deg:.0f}° ({dz:.0f}° off)")
     if ll_n is not None and planned_lateral_ft > 0 and abs(ll_n - planned_lateral_ft) > lateral_tol * planned_lateral_ft:
-        why.append(f"BASE_CASE lateral {ll_n:,.0f} ft vs planned {planned_lateral_ft:,.0f} ft (±{lateral_tol:.0%})")
+        why.append(f"BOX stick leg {ll_n:,.0f} ft vs planned {planned_lateral_ft:,.0f} ft (±{lateral_tol:.0%})")
     if why:
-        return {"source": "generate", "reason": "; ".join(why) + " — generate at the BASE_CASE spacing",
+        return {"source": "generate", "reason": "; ".join(why) + " — generate at the BOX stick spacing",
                 "azimuth_diff_deg": dz}
-    return {"source": "novi", "reason": "all BASE_CASE sticks inside, oriented and sized like the plan",
+    return {"source": "box", "reason": "all BOX sticks inside, oriented and sized like the plan"
+                                       + (f" ({g['box_uturn']} U-turn)" if g.get("box_uturn") else ""),
             "azimuth_diff_deg": dz}
 
 
@@ -591,30 +594,34 @@ def propose(
             tract_windows = tract_check(pc.get("tracts") or [], lo, hi, col, basin)
             bench_seed = unit_benches.seed_unit(dsu_name, lo, hi, proposal, col, basin)
 
-            sticks = wh.novi_sticks(conn, u)
+            sticks = wh.box_sticks(conn, u)
             rel: dict[str, Counter] = {}
             for s in sticks:
                 s["relation"] = stick_relation(s["geom"], u, tol)
-                rel.setdefault(s["formation_blueox"] or "(unmapped)", Counter())[(s["category"], s["relation"])] += 1
-            # Review-page layers (display only): Novi sticks near the unit + offset PDP laterals.
+                rel.setdefault(s["formation_blueox"] or "(unmapped)", Counter())[s["relation"]] += 1
+            # Review-page layers (display only): BOX sticks near the unit + offset PDP laterals.
             pdp_near = wh.pdp_laterals_near(conn, u, prox_radius)
             prox = ProximityRule.build(u, pl.azimuth_deg, pdp_near, cfg.raw)
             review_geoms[pc["label"]] = {
-                "novi": [{"stick_id": s["stick_id"], "bench": s["formation_blueox"] or "(unmapped)",
-                          "category": s["category"], "relation": s["relation"], "wkt": s["geom"].wkt} for s in sticks],
+                "box": [{"stick_id": s["stick_id"], "bench": s["formation_blueox"] or "(unmapped)",
+                         "well_type": s["well_type"], "relation": s["relation"], "wkt": s["geom"].wkt} for s in sticks],
                 "pdp": pdp_near,
             }
             gate2 = {}
             for b, c in sorted(rel.items()):
-                puds = [s for s in sticks if (s["formation_blueox"] or "(unmapped)") == b
-                        and s["category"] == "PUD" and s["relation"] in ("inside", "crossing")]
-                az_n = mean_axial_azimuth([stick_azimuth(s["geom"]) for s in puds])
-                ll_n = statistics.median([float(s["ll_ft"] or stick_length_ft(s["geom"])) for s in puds]) if puds else None
+                mine = [s for s in sticks if (s["formation_blueox"] or "(unmapped)") == b
+                        and s["relation"] in ("inside", "crossing")]
+                legs = [leg for s in mine for leg in stick_legs(s["geom"])]     # azimuth + length are per LEG
+                az_n = mean_axial_azimuth([stick_azimuth(leg) for leg in legs])
+                ll_n = statistics.median([stick_length_ft(leg) for leg in legs]) if legs else None
                 gate2[b] = {
-                    "pud_inside": c[("PUD", "inside")], "pud_crossing": c[("PUD", "crossing")],
-                    "res_inside": c[("RES", "inside")], "res_crossing": c[("RES", "crossing")],
-                    "novi_azimuth_deg": None if az_n is None else round(az_n, 1),
-                    "novi_ll_ft": None if ll_n is None else round(ll_n, 0),
+                    "box_inside": c["inside"], "box_crossing": c["crossing"],
+                    "box_uturn": sum(1 for s in mine if (s.get("n_legs") or 1) > 1),
+                    "box_azimuth_deg": None if az_n is None else round(az_n, 1),
+                    "box_leg_ft": None if ll_n is None else round(ll_n, 0),
+                    # completed lateral (both legs of a U-turn): the pool lateral of a kept U-turn bench
+                    "box_completed_ft": (round(statistics.median([float(s["ll_ft"]) for s in mine if s.get("ll_ft")]), 0)
+                                         if any(s.get("ll_ft") for s in mine) else None),
                 }
                 gate2[b].update(gate2_decision(
                     gate2[b], planned_azimuth_deg=pl.azimuth_deg, planned_lateral_ft=pl.median_ft,
@@ -627,8 +634,8 @@ def propose(
             # page, never automatically. Sticks are narvi PREVIEWS at the seed's
             # benches; evaluate regenerates them at the same per-unit spacing.
             rv = reviewed.get(pc["label"]) if reviewed else None
-            # Row spacing of a generated bench (config v15, Michael 2026-10-22): the
-            # bench's Novi sticks NEAR the unit, then RES, then offset-PDP closer-XY.
+            # Row spacing of a generated bench (config v18): the bench's BOX sticks
+            # NEAR the unit (their own planned spacing), then offset-PDP closer-XY.
             unit_spacing = spacing.resolve_unit(
                 conn, u, [r["bench"] for r in proposal if r["median_tvd_ft"] is not None]
                 + (list(rv["benches"]) if rv is not None else []), cfg.raw)
@@ -980,6 +987,12 @@ def bench_laterals(
     stale: list[str] = []
     for lb, pu in plan.items():
         for b in pu["benches"]:
+            # A bench that KEEPS BOX U-turn sticks pools on their completed lateral, like any U-turn.
+            g2 = location_source((by_label[lb].get("gate2") or {}).get(b) or {}, pu["bench_opts"].get(b) or {})
+            if g2.get("source") == "box" and g2.get("box_uturn") and g2.get("box_completed_ft"):
+                out[(lb, b)] = (float(g2["box_completed_ft"]),
+                                f"kept BOX sticks' completed lateral (median; {g2['box_uturn']} U-turn)")
+                continue
             if (pu["bench_opts"].get(b) or {}).get("well_type") != "uturn":
                 out[(lb, b)] = (float(pu["planned_lateral_ft"]), "planned lateral")
                 continue
@@ -1003,7 +1016,7 @@ def row_spacing(
     """Row spacing per job (the pool's planned spacing, for the tight-spacing
     class) and per (unit, bench) (the generated rows), config v15 — Michael
     2026-10-22. Order: reviewer --spacing (deal-wide) > benches.yaml spacing_ft
-    (per unit; the job takes their median) > the unit's nearby-Novi / PDP
+    (per unit; the job takes their median) > the unit's nearby BOX-stick / PDP
     spacing from propose (the job takes the median over its units) > a unit
     with no pattern of its own BORROWS the job's value, labelled. A bench with
     none of these raises: the reviewer sets spacing_ft (no silent 880)."""
@@ -1038,9 +1051,9 @@ def row_spacing(
             sp_class[key] = cls
     if missing:
         raise ValueError(
-            "no row spacing for " + ", ".join(missing) + f" — no Novi PUD/RES or offset-PDP pattern nearby (config "
+            "no row spacing for " + ", ".join(missing) + f" — no BOX sticks or offset-PDP pattern nearby (config "
             f"v{config_version} planned_spacing); set spacing_ft on the bench in benches.yaml (or --spacing BENCH=FT), "
-            "or re-run propose if this run predates config v15")
+            "or re-run propose if this run predates config v18")
     return sp_class, sp_unit
 
 
@@ -1293,8 +1306,11 @@ def evaluate(
                 opts = plan[label]["bench_opts"].get(bench) or {}
                 tvd_u, tvd_src = unit_landing_tvd(opts, local_tvd, bench_tvd[bench])
                 sp_u, sp_u_src = sp_unit[(label, bench)]
-                g2 = location_source(u["gate2"].get(bench) or {"source": "generate", "reason": "no Novi sticks in bench",
-                                                                "pud_inside": 0, "pud_crossing": 0}, opts)
+                g2 = location_source(u["gate2"].get(bench) or {"source": "generate", "reason": "no BOX sticks in bench",
+                                                                "box_inside": 0, "box_crossing": 0}, opts)
+                if g2.get("source") == "novi":       # a proposal written before the BOX sticks (config < 18)
+                    raise SystemExit(f"{label} {bench}: this run's proposal keeps Novi sticks, which are no longer "
+                                     "locations. Re-run propose (config v18) before evaluate.")
                 unit_novi: list[int] = []
                 UB: dict[str, Any] = {"gate2": g2, "tvd_ft": tvd_u, "tvd_source": tvd_src,
                                       "spacing_ft": sp_u, "spacing_source": sp_u_src,
@@ -1305,21 +1321,32 @@ def evaluate(
                     prox_memo[label] = ProximityRule(
                         geom, az_u, wh.pdp_laterals_near(conn, geom, float(prox_cfg["producer_radius_mi"])), prox_cfg)
                 prox = prox_memo.get(label)
-                if g2["source"] == "novi":
-                    sticks = [s for s in wh.novi_sticks(conn, geom)
-                              if s["formation_blueox"] == bench and s["category"] == "PUD"
+                if g2["source"] == "box":
+                    # Kept: the bench's BOX sticks inside the unit, as they are (a U-turn = one
+                    # location, two legs). Each stick keeps its OWN target TVD.
+                    sticks = [s for s in wh.box_sticks(conn, geom)
+                              if s["formation_blueox"] == bench
                               and stick_relation(s["geom"], geom, float(cfg["alignment"]["stick_inside_tolerance_ft"])) == "inside"]
-                    UB["locations"] = [{"id": s["stick_id"], "src": "novi", "ll_ft": s["ll_ft"],
-                                        "tvd": s["tvd"], "wkt": s["geom"].wkt} for s in sticks]
-                    if prox is not None:      # Novi's own pattern is never culled — flag only
+                    UB["locations"] = [{"id": s["stick_id"], "src": "box", "name": s["well_name"], "ll_ft": s["ll_ft"],
+                                        "tvd": s["tvd"], "n_legs": s.get("n_legs") or 1, "wkt": s["geom"].wkt}
+                                       for s in sticks]
+                    UB["box_set_ids"] = sorted({s["set_id"] for s in sticks})
+                    if any((s.get("n_legs") or 1) > 1 for s in sticks):
+                        UB["well_type"] = "uturn" if all((s.get("n_legs") or 1) > 1 for s in sticks) else "mixed"
+                    if prox is not None:      # a kept pattern is never culled here — flag only (one row per leg)
                         project_n, _, _ = gunbarrel_frame(geom, az_u)
-                        nrows = [{"offset_ft": round(project_n(s["geom"])[0]),
-                                  "proximity": prox.check(s["geom"], float(s["tvd"] or tvd_u))} for s in sticks]
+                        nrows = [{"offset_ft": round(project_n(leg)[0]),
+                                  "proximity": prox.check(leg, float(s["tvd"] or tvd_u))}
+                                 for s in sticks for leg in stick_legs(s["geom"])]
                         UB["pdp_proximity"] = proximity.summarize(nrows, nrows, enabled=False)
-                    sup = [{k: s.get(k) for k in ("pdp_count_1mi", "pdp_count_3mi", "pdp_count_5mi",
-                                                  "dist_nearest_ft", "offset_median_eur_ft",
-                                                  "tvd_excess_3mi_ft", "wca_delta_ft")} for s in sticks]
-                    unit_novi += [s["stick_id"] for s in sticks]
+                    # Offset support: the runner's own live count on the stick's legs (sql/48), the
+                    # same score a generated leg gets — never a Novi column. The Novi comparison
+                    # set is the representative Novi sticks AROUND each BOX stick, as for a generated leg.
+                    sup = [wh.pdp_support(conn, s["geom"], bench, float(s["tvd"] or tvd_u)) for s in sticks]
+                    for s in sticks:
+                        leg_ft = float(s["ll_ft"] or planned_ll)
+                        unit_novi += wh.representative_sticks(
+                            conn, s["geom"], bench, leg_ft, cfg.lateral_tolerance(basin, leg_ft))
                 elif staggered(opts):
                     # Placed with the unit's other winerack benches in ONE narvi call
                     # (staggered half a spacing); memoized per unit across the bench loop.
@@ -1327,7 +1354,7 @@ def evaluate(
                         zones: dict[str, tuple[float, float]] = {}
                         for b2 in plan[label]["benches"]:
                             o2 = plan[label]["bench_opts"].get(b2) or {}
-                            if not staggered(o2) or location_source(u["gate2"].get(b2) or {}, o2).get("source") == "novi":
+                            if not staggered(o2) or location_source(u["gate2"].get(b2) or {}, o2).get("source") == "box":
                                 continue
                             t2 = o2.get("tvd_ft", next((r["median_tvd_ft"] for r in u["bench_proposal"]
                                                         if bench_code(r["bench"]) == b2), None))
@@ -1357,7 +1384,7 @@ def evaluate(
                     lg = wells(gen)
                     if opts.get("pin_offset_ft") is not None:
                         UB["pin_offset_ft"] = float(opts["pin_offset_ft"])   # the handoff's save recipe pins it too
-                if g2["source"] != "novi":
+                if g2["source"] != "box":
                     # Reviewer row rules (n_wells / keep_side / drop_<side>_rows / min_leg_ft).
                     project, _, _ = gunbarrel_frame(geom, u["planned_lateral"]["azimuth_deg"])
                     rows = leg_rows(lg, project, prox, tvd_u, opts.get("pdp_proximity_ignore") or ())
@@ -1846,7 +1873,7 @@ def _log_proximity(res: dict[str, Any], key: str, label: str, s: dict[str, Any] 
                    opts: dict[str, Any], version: int) -> None:
     """PDP-proximity record for one unit x bench: culls -> decision log (rule),
     a reviewer `pdp_proximity: false` that kept would-cull rows -> decision log
-    (reviewer); near-misses, permit-TVD producers, all-culled benches, Novi
+    (reviewer); near-misses, permit-TVD producers, all-culled benches, kept-BOX
     benches and possible double drops -> flags."""
     if not s:
         return
@@ -1861,7 +1888,7 @@ def _log_proximity(res: dict[str, Any], key: str, label: str, s: dict[str, Any] 
             "decision": "culled rows " + ", ".join(f"{c['offset_ft']:+,.0f}" for c in s["culled"]) + " ft",
             "by": f"rule (config v{version}, PROVISIONAL)",
         })
-    if s["would_cull"] and source != "novi":
+    if s["would_cull"] and source != "box":
         res["decision_log"].append({
             "gate": "1b PDP proximity", "bench": key,
             "signal": f"{label}: {len(s['would_cull'])} of {s['n_rows']} rows within {s['rule']}",
