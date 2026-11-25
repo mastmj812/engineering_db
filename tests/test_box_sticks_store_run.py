@@ -105,8 +105,26 @@ def test_both_builds_take_the_source_and_augment_refuses_a_box_run():
     assert "pr.universe(conn, a.groups, source=a.source)" in m and "run.update(pud.box_stick_provenance(u))" in m
     assert "does not apply to a run on BOX sticks" in inspect.getsource(bpr.cmd_augment)
     for mod in (bpr, mid):
-        assert '"--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX' in inspect.getsource(mod.main)  # since the cutover
+        assert '"--source", choices=pr.BUILD_SOURCES, default=pr.SOURCE_BOX' in inspect.getsource(mod.main)
     assert (pr.SOURCE_NOVI, pr.SOURCE_BOX) == ("novi", "box_sticks")
+
+
+def test_no_forecast_run_is_built_or_stored_on_novi_sticks():
+    """BOX sticks phase 8 (Michael 2026-11-25): Novi Intelligence is comparison only. The Novi-stick universe stays
+    readable for the comparison and history reports; a build, a base store and a derived store all refuse it."""
+    import pytest
+
+    from scripts import box_record23 as r23
+
+    assert pr.BUILD_SOURCES == (pr.SOURCE_BOX,)
+    for mod in (bpr, mid):
+        with pytest.raises(SystemExit):                      # argparse rejects the choice
+            mod.main(["build", "--source", "novi"])
+    assert "refusing to store a run on Novi sticks" in inspect.getsource(bpr.cmd_store)
+    src = inspect.getsource(r23)
+    assert "is on Novi sticks: {prod.NOVI_RUN_REFUSED}" in src and "from box import production as prod" in src
+    assert "comparison only" in pr.NOVI_RUN_REFUSED
+    assert "FROM curated.intel_locations il" in pr._UNIVERSE_SQL          # still there for universe() readers (reports)
 
 
 def _in_list(sql: str, con: str) -> set[str]:

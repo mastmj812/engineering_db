@@ -1,10 +1,10 @@
 # oilgas data dictionary
 
-*Generated 2026-11-24 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
+*Generated 2026-11-25 by `scripts/gen_data_dictionary.py` from the live catalog — do not hand-edit. Descriptions are Postgres COMMENTs (`sql/31_comments.sql`); re-run this script after schema changes.*
 
 ## Data flow
 
-**Novi Insights (nightly) + Enverus (nightly) + Novi Intelligence (quarterly Snowflake share) -> raw schemas -> `curated` matviews -> apps (anduin / erebor / narvi) and direct read-only users.** Nightly: `scripts.run_daily` loads raw then refreshes the curated matviews in dependency order. Quarterly: the intel reload chain rebuilds the intel-derived matviews (`load_intel_sf` -> `apply_intel_formation_blueox` -> `apply_reconciled_inventory` -> `apply_erebor_locations --novi-sticks-only`); it does not drop `curated.erebor_locations`. The `narvi` schema is app-owned and not documented here.
+**Novi Insights (nightly) + Enverus (nightly) + Novi Intelligence (quarterly Snowflake share) -> raw schemas -> `curated` matviews -> apps (anduin / erebor / narvi) and direct read-only users.** Nightly: `scripts.run_daily` loads raw then refreshes the curated matviews in dependency order. Quarterly: the intel reload chain rebuilds the intel-derived matviews (`load_intel_sf` -> `apply_intel_formation_blueox` -> `apply_reconciled_inventory` -> `apply_intel_forecast_accuracy` -> `apply_erebor_locations --after-reload`); it does not drop `curated.erebor_locations`. The `narvi` schema is app-owned and not documented here.
 
 ## Conventions that affect interpretation
 
@@ -18,7 +18,7 @@
 
 ### `raw_novi.DirectionalSurveys` (table)
 
-~16,541,315 rows | nightly (scripts.run_daily raw load)
+~16,778,036 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -74,7 +74,7 @@ Novi unified history+forecast time series. IsForecasted=false rows duplicate raw
 
 Novi Insights extended per-well attributes (completion intensity, cums, EURs, spacing, peak rates), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV. Primary source behind curated.wells.
 
-~96,080 rows | nightly (scripts.run_daily raw load)
+~96,115 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -249,7 +249,7 @@ Novi Insights monthly production actuals, grain (API10, Year, Month). Nightly IN
 
 Novi Insights per-well spacing metrics (closest-well distance ft, wells in radius, avg of closest two), one row per API10. Nightly full TRUNCATE + COPY from the bulk TSV.
 
-~64,404 rows | nightly (scripts.run_daily raw load)
+~64,432 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -275,7 +275,7 @@ Novi Insights per-well spacing metrics (closest-well distance ft, wells in radiu
 
 Novi Insights well header mirror, one row per wellbore keyed API10 (some synthetic Novi APIs). Nightly full TRUNCATE + COPY from the bulk TSV (etl/novi/load.py; sync forces no_diffs=True). Column names are quoted PascalCase as shipped.
 
-~96,080 rows | nightly (scripts.run_daily raw load)
+~96,115 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -361,7 +361,7 @@ Novi Insights well header mirror, one row per wellbore keyed API10 (some synthet
 
 Enverus DirectAccess v3 wells dataset mirror; one row per completion event, upsert key (wellid, completionid). Nightly incremental pull (updateddate cursor from meta.etl_log; etl/enverus/pull.py). Intake lowercases Enverus PascalCase keys and converts literal "NULL" strings to SQL NULL.
 
-~641,898 rows | nightly (scripts.run_daily raw load)
+~640,854 rows | nightly (scripts.run_daily raw load)
 
 | column | type | description |
 |---|---|---|
@@ -675,7 +675,7 @@ Enverus DirectAccess v3 wells dataset mirror; one row per completion event, upse
 
 Snowflake share ARPS_FORECAST: segmented Arps decline parameters (b, NOMINAL per-year Di, secant/tangent effective declines, segment rates/days), planned wells only as of 2025Q3. Key (well_ref [PW-{id}], stream, segment_number, report_name).
 
-~4,150,778 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~4,092,650 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -706,7 +706,7 @@ Snowflake share ARPS_FORECAST: segmented Arps decline parameters (b, NOMINAL per
 
 Snowflake share BASIN dimension (Permian -> Delaware/Midland subbasins), keyed basin_id. Tiny global dim; full-replace on the quarterly intel load.
 
-~26 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~28 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -753,7 +753,7 @@ Flat price decks behind the Novi economics (WTI/HH/NGL prices + differentials), 
 
 Snowflake share OPERATOR dimension (reported + normalized names, contact fields), keyed operator_id. Global dim; full-replace on the quarterly intel load.
 
-~40,732 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~41,734 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -783,7 +783,7 @@ Snowflake share OPERATOR dimension (reported + normalized names, contact fields)
 
 Snowflake share PAD dimension, key (pad_id, report_name). latitude/longitude unpopulated as of 2025Q3. Loader adds basin_slug/report_version; quarterly slice reload.
 
-~18,215 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~14,002 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -807,7 +807,7 @@ Snowflake share PAD dimension, key (pad_id, report_name). latitude/longitude unp
 
 Snowflake share PLANNED_WELL entity: undrilled locations, inventory_class BASE_CASE (PUD) or EMERGING (RES), key (planned_well_id, report_name). name = the legacy sticks unique_id for BASE_CASE. planned_til_date entirely NULL as of 2025Q3. Quarterly slice reload.
 
-~461,283 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~456,017 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -841,7 +841,7 @@ Snowflake share PLANNED_WELL entity: undrilled locations, inventory_class BASE_C
 
 Snowflake share PRODUCTION_FORECAST: monthly P50 stream forecast for planned wells, 30-day forecast_day steps, ~73M rows (no ingested_at by design). Loaded via the separate --forecast gate after the legacy 7.7 GB table is dropped (disk headroom). Condensate columns all-NULL for Permian.
 
-~96,671,376 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~96,002,688 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -875,7 +875,7 @@ Snowflake share PRODUCTION_FORECAST: monthly P50 stream forecast for planned wel
 
 Snowflake share SOURCE dimension: one row per source file/collection. collection (basin_research__<Basin>__<yyyyQq>) feeds the nightly new-report detection (etl/intel_sf/detect.py -> meta.intel_report_watermark). Global dim: full-replace load.
 
-~55 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~56 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -904,7 +904,7 @@ Append-only well_ref -> stable positive stick_id registry; survives DDL re-runs 
 
 Snowflake share SURFACE_LOCATION: surface-hole lat/lon + legal description (block/township, section, TX survey/abstract) per well or planned well. Key (surface_location_id, report_name). Quarterly slice reload.
 
-~574,281 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~569,622 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -933,7 +933,7 @@ Snowflake share SURFACE_LOCATION: surface-hole lat/lon + legal description (bloc
 
 Snowflake share WELL entity: existing (PDP) wells, key (well_id, report_name). uwi_api is a 10-digit API on every row -- the api10 crosswalk to curated.wells. Quarterly slice reload.
 
-~113,021 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~113,633 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -967,7 +967,7 @@ Snowflake share WELL entity: existing (PDP) wells, key (well_id, report_name). u
 
 Snowflake share WELL_COMPLETION: completion design -- proppant_loading lb/ft, fluid_loading gal/ft, masses/volumes. Planned wells only as of 2025Q3 (zero PDP rows; gap raised with Novi). Key (well_completion_id, report_name).
 
-~461,283 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~456,017 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -998,7 +998,7 @@ Snowflake share WELL_COMPLETION: completion design -- proppant_loading lb/ft, fl
 
 Snowflake share WELL_COST_SUMMARY: Novi D&C and DCET cost totals (USD) and per-lateral-ft normalizations (USD/ft). Vendor screen inputs. Key (well_cost_summary_id, report_name).
 
-~574,304 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~569,650 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1024,7 +1024,7 @@ Snowflake share WELL_COST_SUMMARY: Novi D&C and DCET cost totals (USD) and per-l
 
 Snowflake share WELL_ECONOMICS_SUMMARY: Novi NPV/PV (5-25%), IRR, paybacks, breakevens, 30-yr EURs + IPs per well. irr unit is inconsistent by slice (fraction vs fraction/100; raised with Novi) -- normalized downstream in curated.intel_locations. Vendor screen, not authoritative economics. Key (well_economics_summary_id, report_name).
 
-~573,550 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~569,373 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1084,7 +1084,7 @@ Snowflake share WELL_ECONOMICS_SUMMARY: Novi NPV/PV (5-25%), IRR, paybacks, brea
 
 Snowflake share WELL_MASTER: the spine uniting PDP + BASE_CASE + EMERGING, grain (well_ref, report_name, inventory_class); well_ref = uwi_api (PDP) or PW-{id} (planned). geometry_wkt landed as text; geom populated post-COPY. Feeds curated.intel_locations. Quarterly slice reload.
 
-~573,999 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~566,007 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1128,7 +1128,7 @@ Snowflake share WELL_MASTER: the spine uniting PDP + BASE_CASE + EMERGING, grain
 
 Snowflake share WELL_ML_SCORE: Novi ML spacing / prior-depletion / completion scores + tiers (Tier-1..Tier-4) per well x stream. Scores are sensitivity values, NOT footage. Replaces raw_novi_intel.pud_attrs; covers PDP too. Key (well_ml_score_id, report_name).
 
-~406,443 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~408,912 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1162,7 +1162,7 @@ Snowflake share WELL_ML_SCORE: Novi ML spacing / prior-depletion / completion sc
 
 Snowflake share WELL_ROCK_QUALITY: Novi ML rock-quality score + tier per well x stream. Key (well_rock_quality_id, report_name). Quarterly slice reload.
 
-~415,435 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~412,984 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1193,7 +1193,7 @@ Snowflake share WELL_ROCK_QUALITY: Novi ML rock-quality score + tier per well x 
 
 Snowflake share WELLBORE entity: depths (tvd_td/md_td ft), lateral length ft, heel/mid/BH lat-lon, formation fields; exactly one of well_id / planned_well_id set. Key (wellbore_id, report_name). Quarterly slice reload.
 
-~574,304 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~569,650 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1235,7 +1235,7 @@ Snowflake share WELLBORE entity: depths (tvd_td/md_td ft), lateral length ft, he
 
 Snowflake share lateral trajectories: geometry_wkt (LINESTRING, EPSG:4326) landed as text, geom populated post-COPY per slice (share GEO columns are not mirrored). Key (trajectory_id, report_name). Quarterly slice reload.
 
-~570,931 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
+~570,712 rows | quarterly (scripts.load_intel_sf, Novi Snowflake share)
 
 | column | type | description |
 |---|---|---|
@@ -1411,7 +1411,7 @@ One row. use_rule FALSE (shadow): sql/16 ignores curated.formation_tag_rule and 
 
 Candidate pool for TVD-aware sub-bench inference: curated laterals in the splitting benches (Delaware AVA/WCA/WCB, Midland WCB; ~30k rows), one row per api10, pre-joined to formation_blueox and GiST-indexed on geom. Feeds curated.intel_formation_blueox (sql/19). Not in the nightly etl.refresh list - refresh manually alongside curated.formation_blueox / on the quarterly intel rebuild.
 
-~38,969 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox`, `curated.wells`
+~39,054 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox`, `curated.wells`
 
 | column | type | description |
 |---|---|---|
@@ -1651,7 +1651,7 @@ erebor display spine and the base of the land team's view (sql/69). Undrilled lo
 
 Blue Ox standardized formation mapping, one row per curated.wells api10 (~90k rows). Precedence: human call (ref.formation_tag_overrides) > nightly tag rule (curated.formation_tag_rule, sql/72; only while ref.formation_tag_switch.use_rule is TRUE and the rule row's recorded inputs still match) > crosswalk: Novi formation preferred, Enverus ENVInterval substituted for coarse Novi values, mapped via ref.formation_crosswalk. Factored out of curated.wells so crosswalk / override / rule changes are a cheap REFRESH, not a production-chain DROP CASCADE. Refreshed nightly by etl.refresh right after the tag-rule step.
 
-~95,863 rows | nightly (etl.refresh, 4/16) | reads: `curated.formation_tag_rule`, `curated.wells`, `ref.formation_crosswalk`, `ref.formation_tag_overrides`, `ref.formation_tag_switch`
+~96,115 rows | nightly (etl.refresh, 4/16) | reads: `curated.formation_tag_rule`, `curated.wells`, `ref.formation_crosswalk`, `ref.formation_tag_overrides`, `ref.formation_tag_switch`
 
 | column | type | description |
 |---|---|---|
@@ -1691,7 +1691,7 @@ TVD-sanity audit, one row per producing horizontal (api10): local 40-NN per-benc
 
 Nightly tag-rule output, one row per judged producing horizontal (etl/tag_rule.py, replaced whole in one transaction behind the circuit breaker). applied_code is what sql/16 uses while the switch is on AND novi_raw / env_raw / tvd_ft / planned still equal the well's current inputs; otherwise the well keeps its vendor tag until the next run. Queue flags list what needs cards. sql/72.
 
-~56,382 rows | on demand | consumers: curated.formation_blueox (sql/16) reads applied rows only while ref.formation_tag_switch.use_rule is ON (shadow until cutover W5); tag-rule queue/drift review
+~56,404 rows | on demand | consumers: curated.formation_blueox (sql/16) reads applied rows only while ref.formation_tag_switch.use_rule is ON (shadow until cutover W5); tag-rule queue/drift review
 
 | column | type | description |
 |---|---|---|
@@ -1814,7 +1814,7 @@ Novi Intelligence forecast vs realized actuals, one row per Novi-blind producer 
 
 Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_version, api10, mop 1-24) over each vintage's own blind-producer population (first prod >= that vintage's per-basin recognition cliff, absent from its PDP class), read from raw_intel directly — superseded vintages keep accruing out-of-sample actuals after the curated views stop serving them. DIRECT TIER ONLY (co-extent BASE_CASE stick, sql/21 predicates, bench codes re-derived per vintage); tier=unmatched rows keep NULL forecasts; no proxy tier by design (the rep-stick SSOT is latest-vintage). Measurement conventions = sql/38 (cum-based errors, 30-day months, exclude is_latest_reported from aggregates, bias = mean pct error on the per-ft columns). sql/38 remains the live-vintage surface of record (erebor Accuracy tab). Refreshed nightly; DROP-CASCADEd by the quarterly reload's sql/20 rebuild and restored by apply_intel_forecast_accuracy. sql/43.
 
-~119,961 rows | nightly (etl.refresh, 15/16) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
+~120,981 rows | nightly (etl.refresh, 15/16) (also DROP+recreated by the quarterly intel reload) | reads: `curated.bench_reference`, `curated.formation_blueox_tvd`, `curated.producing_reference`, `curated.production`, `raw_intel.production_forecast`, `raw_intel.stick_id_map`, `raw_intel.well_master`, `ref.formation_crosswalk` | consumers: vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)
 
 | column | type | description |
 |---|---|---|
@@ -1859,7 +1859,7 @@ Novi Intelligence forecast accuracy per RETAINED vintage: one row per (report_ve
 
 Blue Ox formation code per Novi Intelligence stick (curated.intel_locations), keyed on stick_id. Four-tier: PDP api10-join -> spatial+TVD inference (off curated.bench_reference) for coarse parents that split (Delaware Avalon/WolfcampA/WolfcampB, Midland WolfcampB) -> ref.formation_crosswalk -> NULL. Inference v1 = TVD-aware k=1 (12-lateral horizontal neighbourhood, then TVD-nearest; ~84.5% leave-one-out). formation_blueox_source in (pdp_join, inferred, crosswalk, NULL). Refresh with the biannual Novi Intelligence load, not nightly.
 
-~322,402 rows | quarterly (Novi intel reload chain) | reads: `curated.bench_reference`, `curated.formation_blueox`, `curated.intel_locations`, `ref.formation_crosswalk`
+~317,748 rows | quarterly (Novi intel reload chain) | reads: `curated.bench_reference`, `curated.formation_blueox`, `curated.intel_locations`, `ref.formation_crosswalk`
 
 | column | type | description |
 |---|---|---|
@@ -1874,7 +1874,7 @@ Blue Ox formation code per Novi Intelligence stick (curated.intel_locations), ke
 
 Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from the INTEL Snowflake share mirror (raw_intel, sql/27). Same output contract as the retired sql/12 version: irr_pct in percent, pad NPV rollup (SUM of member sticks), api10 crosswalk to curated.wells (PDP), gunbarrel points (all classes), GIST-indexed wellstick_geom, stable stick_id via raw_intel.stick_id_map. Latest report per basin family only (superseded vintage slices stay in raw_intel). Economics are Novi pre-computed on a flat deck — a screen, not the authoritative deal value.
 
-~322,404 rows | nightly (etl.refresh, 12/16) (also DROP+recreated by the quarterly intel reload) | reads: `curated.wells`, `raw_intel.econ_price_assumption`, `raw_intel.stick_id_map`, `raw_intel.well`, `raw_intel.well_completion`, `raw_intel.well_cost_summary`, `raw_intel.well_economics_summary`, `raw_intel.well_master`, `raw_intel.well_ml_score`, `raw_intel.well_rock_quality`, `raw_intel.wellbore` | consumers: erebor BOX pad workup + single-well lookup (stick names, Novi-vs-BOX cross-check); Novi tags/NPV no longer read by erebor
+~317,758 rows | nightly (etl.refresh, 12/16) (also DROP+recreated by the quarterly intel reload) | reads: `curated.wells`, `raw_intel.econ_price_assumption`, `raw_intel.stick_id_map`, `raw_intel.well`, `raw_intel.well_completion`, `raw_intel.well_cost_summary`, `raw_intel.well_economics_summary`, `raw_intel.well_master`, `raw_intel.well_ml_score`, `raw_intel.well_rock_quality`, `raw_intel.wellbore` | consumers: erebor BOX pad workup + single-well lookup (stick names, Novi-vs-BOX cross-check); Novi tags/NPV no longer read by erebor
 
 | column | type | description |
 |---|---|---|
@@ -1963,7 +1963,7 @@ Novi Intelligence sticks (PDP/PUD/RES) for erebor deal valuation, sourced from t
 
 Novi Intelligence pad/DSU polygons, one row per (basin, pad_key) from curated.intel_pad_member. In-polygon pads carry Novi's own drawn DSU polygon (raw_novi_intel.pads, same vintage; geom_source novi_polygon); stray groups and names without a polygon carry the member-stick convex hull + 330 ft geodesic (stick_hull_330ft, sql/45 calibration: median area ratio 1.02 vs legacy Novi polygons). Novi stacks pads per bench set over shared acreage, so polygons overlap by design. Only pads with at least one stick — every Novi DSU polygon, stick or not, stays in raw_novi_intel.pads. Quarterly only; DROP-CASCADEs with intel_locations and with a sql/11 rebuild; rebuilt by scripts.apply_intel_pad_geom. sql/67 (supersedes sql/46).
 
-~17,526 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `curated.intel_pad_member`, `raw_novi_intel.pads` | consumers: erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)
+~13,313 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `curated.intel_pad_member`, `raw_novi_intel.pads` | consumers: erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)
 
 | column | type | description |
 |---|---|---|
@@ -1984,7 +1984,7 @@ Novi Intelligence pad/DSU polygons, one row per (basin, pad_key) from curated.in
 
 Padded Novi Intelligence sticks (latest vintage, PUD + RES with geometry) mapped to a pad. Rule (sql/67, Michael 2026-10-20): a stick whose midpoint lies within its named Novi DSU polygon of the same vintage (raw_novi_intel.pads, +330 ft geodesic) -> pad_key = pad_name; same-name sticks outside it (Novi reuses Delaware names, mostly WDFD groups) -> 1-mile single-linkage groups keyed pad_name || ' [stray k/n]'; names with no polygon in the vintage -> sql/46 keys (pad_name, or pad_name || ' [k/n]'). Quarterly only; DROP-CASCADEs with intel_locations and with a sql/11 rebuild; rebuilt by scripts.apply_intel_pad_geom. sql/67 (supersedes sql/46).
 
-~256,245 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `raw_novi_intel.pads` | consumers: erebor Highgrade per-pad BOX aggregation + pad workup (stick_id -> pad_key)
+~187,128 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_locations`, `raw_novi_intel.pads` | consumers: erebor Highgrade per-pad BOX aggregation + pad workup (stick_id -> pad_key)
 
 | column | type | description |
 |---|---|---|
@@ -1995,106 +1995,6 @@ Padded Novi Intelligence sticks (latest vintage, PUD + RES with geometry) mapped
 | `pad_part` | integer | Group number within pad_name: 1 = the in-polygon pad when there is one, then stray groups by size (ties -> lowest stick_id). |
 | `n_parts` | integer | Number of separate groups Novi's pad_name spans (in-polygon pad + stray groups); > 1 means Novi reused the name. |
 | `member_rule` | text | in_novi_polygon \| stray_cluster (name has a polygon, stick outside it) \| no_polygon_cluster (no polygon for the name in this vintage — sql/46 fallback). |
-
-### `curated.intel_pdp_support` (materialized view)
-
-Per-PUD/RES offset-PDP support scores for novi_intel sticks (curated.intel_locations), keyed on stick_id. A VERIFIABILITY screen (not quality): tiered qualifying-PDP counts (1/3/5 mi), nearest/3rd-nearest distance (the halo width), support lateral footage, offset EUR/ft median, and inflation_ratio (Novi PUD forecast /ft vs the median of history-matched in-bench offsets). Qualifying offset = horizontal (sql/40 semantics) + same TVD-corrected formation_blueox + TVD +/-500 ft + >=6 mo produced + within 5 mi (PDP universe never county-scoped). Depth-context columns (2026-09, WCB_2 deep-TVD audit): offset_median_tvd / tvd_delta_ft audit the depth of the ratio's own comparison set; tvd_excess_3mi_ft (stick TVD minus UNGUARDED same-bench producer max within 3 mi; positive = deeper than anything ever produced in-bench locally, >200 ft = anomaly line) and wca_delta_ft (stick TVD minus unguarded WCA producer median within 3 mi; WCB_2 land-screen band [400,700] ft) catch anomalously deep Novi landings the +/-500 guard cannot. pdp_count_* = 0 means scored-and-unsupported; NULL scores mean not-scorable (unmapped bench / missing TVD or geometry); NULL tvd_excess_3mi_ft on a scored stick = no same-bench producer within 3 mi (frontier). Quarterly refresh only (NOT nightly); staleness under-states support, never over-states. sql/30.
-
-~257,397 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox`, `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.wells` | consumers: folded into erebor_locations (sql/22); erebor no longer screens on it (Novi screens removed 2026-10-21)
-
-| column | type | description |
-|---|---|---|
-| `stick_id` | bigint |  |
-| `pdp_count_1mi` | bigint |  |
-| `pdp_count_3mi` | bigint |  |
-| `pdp_count_5mi` | bigint |  |
-| `dist_nearest_ft` | double precision |  |
-| `dist_3rd_nearest_ft` | double precision |  |
-| `support_lateral_ft_5mi` | bigint |  |
-| `n_offsets_5mi` | bigint |  |
-| `offset_median_eur_ft` | double precision |  |
-| `offset_median_cum12m_oil_per_ft` | double precision |  |
-| `inflation_ratio` | double precision |  |
-| `offset_median_tvd` | double precision |  |
-| `tvd_delta_ft` | double precision |  |
-| `tvd_excess_3mi_ft` | double precision |  |
-| `wca_delta_ft` | double precision |  |
-
-### `curated.net_new_pdp` (materialized view)
-
-§6 reverse pass: post-vintage (first_production_date > 2025-09-30) producing horizontals whose lateral overlaps no same-(corrected)-bench PUD at the same depth (best_pud_overlap < 0.2) — incremental locations the static Novi vintage did not inventory. Closes the arithmetic new-wells ≈ realized_drift + net_new_pdp. Keyed on api10; carries wellstick_geom for mapping. Overlap vs PUD only (RES exclusion is a future refinement). Refresh with the Novi load / as wells come online.
-
-~0 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.producing_reference`
-
-| column | type | description |
-|---|---|---|
-| `api10` | character varying(32) | 10-digit API of the post-vintage producing horizontal that no Novi PUD anticipated; unique key. |
-| `basin_blueox` | text | Basin slug: delaware or midland. |
-| `formation_blueox` | text | Blue Ox bench code of the well (TVD-corrected producing code, sql/23 override applied). |
-| `tvd` | integer | Landing true vertical depth, ft (from the producing reference). |
-| `first_production_date` | date | First production date; by definition after the loaded Novi vintage (curated.intel_vintage_date()). |
-| `operator` | character varying(64) | Current operator of the well. |
-| `ll_ft` | integer | Lateral length, ft. |
-| `survey_planned` | boolean | TRUE = directional survey is a pre-drill plan (provisional formation/TVD; mostly NM). |
-| `wellstick_geom` | geometry | Lateral stick geometry (LINESTRING, EPSG:4326) for mapping; GIST-indexed. |
-| `best_pud_overlap` | numeric | Max fraction (0-1) of any same-bench PUD lateral covered by this well's +/-150 ft corridor; < 0.2 by definition (else the PUD counts as realized/conflict, not net-new). |
-
-### `curated.novi_stick_locations` (materialized view)
-
-Novi Intelligence PUD / RES sticks of the live vintage with our bench mapping, reconciliation status (sql/68) and offset-support scores (sql/30): the arm curated.erebor_locations carried until the BOX sticks cutover (sql/22, docs/box_sticks_plan.md phase 6). Read by deal-intake until its own cutover; erebor and the land team's view read BOX sticks from curated.erebor_locations. Quarterly only (every input is quarterly-owned); DROP-CASCADEs with curated.intel_locations and is recreated by scripts.apply_erebor_locations. sql/78.
-
-~257,397 rows | quarterly (Novi intel reload chain) | reads: `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.intel_pdp_support`, `curated.reconciled_inventory` | consumers: deal-intake (the Novi sticks of a unit and their Novi parameters), until its own cutover to BOX sticks
-
-| column | type | description |
-|---|---|---|
-| `stick_id` | bigint | Novi stick id (positive; never a BOX stick id, which start at 10,000,001). |
-| `unique_id` | text | 10-digit API number for producing (PDP) rows; Novi well name for PUD/RES rows. |
-| `category` | text | PDP = producing well (from the warehouse, what physically exists), PUD = Novi base-case undrilled location, RES = Novi emerging/resource location. |
-| `inventory_class` | text |  |
-| `basin` | text | Basin slug: delaware or midland. |
-| `formation` | text | Raw vendor formation name (free text, inconsistent casing) -- display only. Group and filter on formation_blueox instead. |
-| `formation_blueox` | text | Standardized Blue Ox bench code (e.g. WCA_1, WCB_2, BS2) -- the formation field of record for grouping/filtering. NULL = unmapped. |
-| `basin_blueox` | text | Blue Ox basin slug (delaware/midland), aligned with formation_blueox. |
-| `formation_blueox_source` | text | How the bench code was assigned: pdp_join / inferred / crosswalk (Novi sticks, sql/19) or the wells crosswalk chain (PDP rows). |
-| `recon_status` | text | Our reconciliation of the Novi stick (curated.reconciled_inventory, sql/68): remaining_pud / conflict / realized_drift / realized_phantom; NULL = no bench or geometry. |
-| `deplet_t` | text | Novi depletion tier for PUD/RES: Tier-1..Tier-4, where Tier-4 = most depleted (drained by offset production). NULL on PDP rows (producing wells are not depletion-scored). |
-| `rqs` | double precision | Novi ML rock-quality score (signed, unitless; higher = better rock), oil stream. PUD rows from the Novi stick; PDP rows from the Novi PDP class joined by api10 (NULL if Novi does not carry/score the well). RES rows are NULL (Novi does not score EMERGING). Vendor screen. |
-| `rqt` | text | Novi ML rock-quality tier, Tier-1 (best) .. Tier-4: quartiles of rqs cut per basin over Novi's whole scored population (PDP + BASE_CASE), so PUD and PDP tiers share one scale. This is the "rock quality quartile" in Novi's corporate research notes. NULL on RES and on unscored PDP. Vendor screen. |
-| `operator` | text | Operator name: Novi-reported for PUD/RES, current operator from the warehouse for PDP. |
-| `pad_name` | text | Novi DSU pad name (Delaware PUD only as of 2025Q3). NULL for PDP -- the gun-barrel assigns pads spatially instead. |
-| `tvd` | double precision | Novi's planned landing TVD of the stick, ft. Known to run deep on some benches (Delaware WCC median +846 ft against producers): the reason BOX sticks replaced these. |
-| `ll_ft` | double precision | Lateral length, ft. |
-| `npv5` | double precision | Novi pre-computed NPV at 5% discount, USD, flat deck. Vendor SCREEN only, not authoritative economics. NULL on PDP rows. |
-| `npv10` | double precision | Novi pre-computed NPV at 10% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv15` | double precision | Novi pre-computed NPV at 15% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv20` | double precision | Novi pre-computed NPV at 20% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `npv25` | double precision | Novi pre-computed NPV at 25% discount, USD, flat deck. Vendor screen only. NULL on PDP rows. |
-| `pv5` | double precision | Novi pre-computed present value at 5% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv10` | double precision | Novi pre-computed present value at 10% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv15` | double precision | Novi pre-computed present value at 15% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv20` | double precision | Novi pre-computed present value at 20% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `pv25` | double precision | Novi pre-computed present value at 25% discount, USD. Vendor screen only. NULL on PDP rows. |
-| `oil_eur` | double precision | Novi 30-yr oil EUR, bbl (vendor forecast horizon, not the suite's 50-yr technical EUR). NULL on PDP rows. |
-| `gas_eur` | double precision | Novi 30-yr gas EUR, Mcf. NULL on PDP rows. |
-| `wti_price` | double precision | Flat WTI oil price behind the Novi economics, USD/bbl. NULL on PDP rows. |
-| `hh_price` | double precision | Flat Henry Hub gas price behind the Novi economics, USD/MMBtu. NULL on PDP rows. |
-| `ngl_price` | double precision | Flat NGL price behind the Novi economics, USD/bbl. NULL on PDP rows. |
-| `wti_diff` | double precision | Oil price differential vs WTI in the Novi deck, USD/bbl. NULL on PDP rows. |
-| `hh_diff` | double precision | Gas price differential vs Henry Hub in the Novi deck, USD/MMBtu. NULL on PDP rows. |
-| `pdp_count_1mi` | bigint |  |
-| `pdp_count_3mi` | bigint |  |
-| `pdp_count_5mi` | bigint |  |
-| `dist_nearest_ft` | double precision |  |
-| `dist_3rd_nearest_ft` | double precision |  |
-| `support_lateral_ft_5mi` | bigint |  |
-| `n_offsets_5mi` | bigint |  |
-| `offset_median_eur_ft` | double precision |  |
-| `inflation_ratio` | double precision |  |
-| `offset_median_tvd` | double precision |  |
-| `tvd_delta_ft` | double precision |  |
-| `tvd_excess_3mi_ft` | double precision |  |
-| `wca_delta_ft` | double precision |  |
-| `wellstick_geom` | geometry(Geometry,4326) | Lateral stick geometry (LINESTRING, EPSG:4326): the drawn/planned lateral for PUD/RES, the warehouse wellstick for PDP. GIST-indexed map geometry. |
 
 ### `curated.producing_reference` (materialized view)
 
@@ -2297,7 +2197,7 @@ Actuals well-months: curated.production INNER JOIN curated.wells, adding BOE (oi
 
 Every Novi stick (PUD = BASE_CASE and RES = EMERGING; D117, sql/68 supersedes sql/21) reconciled against producing curated wells by co-extent overlap + same (corrected) formation_blueox-or-depth + TVD consistency. status in (realized_drift, realized_phantom, remaining_pud, conflict): realized is split by the realizing well's vintage — drift = online after the vintage (real stick->PDP), phantom = online before it (Novi listed an already-drilled slot). remaining_pud is the legacy label for "unrealized" and applies to RES sticks too. matched_api10 / match_overlap / matched_first_prod record the realizing well; matched_survey_planned flags realizations resting on a provisional permit survey (mostly NM). category = Novi's tag, carried for audit splits only (D117: it decides nothing). Keyed on stick_id; one row per mapped Novi stick with geometry. net_new_pdp (producing wells with no stick) is curated.net_new_pdp (sql/25). Refresh as wells come online.
 
-~257,397 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.producing_reference` | consumers: narvi remaining inventory; erebor realized class (Highgrade excludes realized; pad workup lists it)
+~252,131 rows | quarterly (Novi intel reload chain) | reads: `curated.formation_blueox_tvd`, `curated.intel_formation_blueox`, `curated.intel_locations`, `curated.producing_reference` | consumers: Novi comparison only: the Novi accuracy matviews (sql/38, sql/43) and erebor's Accuracy tab (which Novi stick a well realized). Locations are BOX sticks; their status is curated.box_location_status
 
 | column | type | description |
 |---|---|---|
@@ -2365,7 +2265,7 @@ Per-well water-stream provenance: measured vs vendor-calculated water, one row p
 
 One row per surveyed well (api10, Permian-wide): the lateral's TVD path from raw_novi.DirectionalSurveys — heel / mid / toe TVD, station TVD p10/p50/p90 and range, KB elevation, and the station path as a LINESTRING Z (lon, lat, TVD ft). Lateral span = perforation top -> bottom when Novi ships both (lateral_basis perfs), else landing point -> bottom hole (lp_bhl). Source-faithful: planned surveys (wells_enriched.directional_survey_is_planned) carry the PLAN and stay rule-15 suspect — join the flag downstream. Nightly, gated on DirectionalSurveys loads. sql/64.
 
-~71,636 rows | nightly (etl.refresh, 3/16) — refresh gated on source change | reads: `raw_novi.DirectionalSurveys` | consumers: BOX tops-vs-tag QC (box/tops_qc.py): station-level grid sampling, KB datum check
+~72,624 rows | nightly (etl.refresh, 3/16) — refresh gated on source change | reads: `raw_novi.DirectionalSurveys` | consumers: BOX tops-vs-tag QC (box/tops_qc.py): station-level grid sampling, KB datum check
 
 | column | type | description |
 |---|---|---|
@@ -2406,7 +2306,7 @@ One row per surveyed well (api10, Permian-wide): the lateral's TVD path from raw
 
 One row per wellbore, keyed api10 (unique). Novi Wells + WellDetails + WellSpacing LEFT JOINed to the latest Enverus completion event via LEFT(api14, 10) = api10; per-column source precedence is Novi preferred, Enverus fallback unless noted. Permian-wide (~90k rows). Refreshed nightly by etl.refresh / curated.refresh_all() after the vendor loads.
 
-~96,080 rows | nightly (etl.refresh, 2/16) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
+~96,115 rows | nightly (etl.refresh, 2/16) | reads: `raw_enverus.wells`, `raw_novi.WellDetails`, `raw_novi.WellSpacing`, `raw_novi.Wells`
 
 | column | type | description |
 |---|---|---|
@@ -2930,7 +2830,7 @@ BOX location ids (plan step 7, D67): one row per drillable location, outliving N
 
 The named analog wells behind each covered location (the workup's provenance, D54): rank in selection order, distance (ellipse distance on a strike search), lateral, first production, transfer = carried by the short-history transfer. See sql/60.
 
-~2,180,656 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor pad workup (named analogs)
+~1,053,730 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX workup provenance (D54): per-pad workup pages (step 7c), erebor pad workup (named analogs)
 
 | column | type | description |
 |---|---|---|
@@ -3118,7 +3018,7 @@ BOX sticks as generated, one row per (set, location): the stick of box.location.
 
 Named analogs behind each location's WATER (sql/62, D107): same-bench wells whose water is MEASURED (sql/41 measured; NM unless insufficient; seller VDR daily water), selected with box_v2's first-ring rules on circles over 5 / 7.5 / 10 / 15 / 20 mi then 30 / 40 / 50 mi until 10 eligible. water_label = the label used; a calculated-fallback cohort (fewer than 3 measured at 50 mi) lists its non-measured wells and the stream row's params say so. Different from box.location_analog (the oil / gas cohort).
 
-~2,427,632 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX water workup provenance (D107, sql/62): named measured-water analogs per location; Steven
+~1,151,734 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX water workup provenance (D107, sql/62): named measured-water analogs per location; Steven
 
 | column | type | description |
 |---|---|---|
@@ -3136,7 +3036,7 @@ Named analogs behind each location's WATER (sql/62, D107): same-bench wells whos
 
 One row per (run, location) for the whole D67 universe: Novi PUD category (no RES), reconciled remaining_pud / conflict / not_reconciled, on every box.bench_scope bench. coverage: covered (in-scope bench pool, VALIDATED, >= 50 % of the stick inside the record extent, analogs found); covered_provisional (same, on a bench_scope.validation = provisional bench - forecast with disclosed in-sample bias, never out-of-time validated, D105 / sql/63); not_covered_emerging (bench out of scope, D2); not_covered_wcxy (D61); not_covered_unvalidated (in-scope bench the frozen spec was not accepted on, D60); not_covered_outside_extent (D1); not_covered_no_analogs (fewer than 3 analogs at the 20-mi cap - reported, never hidden); not_covered_no_precedent (a searched in-extent PUD whose PDP-proximity configuration has no drilled precedent, D114 / sql/65 - search provenance kept, no forecast). Not-covered rows carry no forecast and no volumes. Filter coverage = 'covered' for validated forecasts only; IN (covered, covered_provisional) for every forecast. See sql/60, sql/63, sql/65.
 
-~288,688 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor map / selection / Highgrade coverage class per location (not covered = a class, never a zero); Steven
+~79,116 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX coverage-classed PUD forecasts (step 7): erebor map / selection / Highgrade coverage class per location (not covered = a class, never a zero); Steven
 
 | column | type | description |
 |---|---|---|
@@ -3167,7 +3067,7 @@ One row per (run, location) for the whole D67 universe: Novi PUD category (no RE
 
 Derived monthly volumes per covered location x stream, months 1-600: exact per-month integrals (D39) of params x lateral_mult, times the D62 haircut interpolated by month. UPTIME-FREE (D63): apply F(k) from box.forecast_run.calendar_factor OR a downtime factor, never both. Sum of months = eur within 0.1 %. Regenerated from box.pud_forecast_stream. See sql/60.
 
-~261,568,272 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d); erebor AOI BOX profile (mean per 1,000 ft + sum)
+~123,542,936 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX monthly volumes, uptime-free (D63): Steven's econ (box_econ, step 7d); erebor AOI BOX profile (mean per 1,000 ft + sum)
 
 | column | type | description |
 |---|---|---|
@@ -3181,7 +3081,7 @@ Derived monthly volumes per covered location x stream, months 1-600: exact per-m
 
 Per (run, covered location, stream): the fitted P50 per-1,000-ft curve params (oil, gas) or the WOR ratio (water, D107: ln WOR = alpha + beta * cum oil per 1,000 ft, applied to the RAW box_v2 oil months, D108), lateral multiplier, haircut (water: none), EUR raw / delivered / per 1,000 ft, cum-12 / 24. tier = the stream's own acceptance tier (water; sql/62). Water entered with sql/62 (D72 retired at gate 12b). See sql/60, sql/63.
 
-~440,949 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor map tiles / selection / Highgrade EUR and EUR/ft, Blue Ox drop overlay; Steven
+~207,855 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX per-stream EUR + analog P50 params (step 7): erebor map tiles / selection / Highgrade EUR and EUR/ft, Blue Ox drop overlay; Steven
 
 | column | type | description |
 |---|---|---|
@@ -3204,7 +3104,7 @@ Per (run, covered location, stream): the fitted P50 per-1,000-ft curve params (o
 
 D112-D116 (study docs/box/prox-2026-10-19): one row per forecast-universe PUD of a run that measured PDP proximity. Parents = existing producing horizontals >= 12 months on production at the run's data date, >= 30 % alongside the PUD stick, inside the class envelope (same pool 1,400 ft hz; topfill 800 ft vt / 1,400 ft hz; underfill 500 ft vt / 1,400 ft hz); no shielding exemption; permit-round producer TVDs counted and flagged. outcome: as_is_unexposed / as_is_single_parent (BOX as-is, factor 1); haircut (multi-parent with drilled precedent: oil x factor, label validated_with_exception - the pre-registered walk-forward failed as written, multi-parent cells held within +-5 %, to be confirmed on the 2026 prospective cohort); no_forecast_precedent (< 30 drilled multi-parent wells of the bench pair) and no_forecast_package (factor <= 0.80 and < 30 drilled packages) -> coverage not_covered_no_precedent. factor = what the configuration's cum-24 table gives (stored on no-forecast rows too). table_ref = sha256 of the haircut table + the pre-registration commit. See sql/65.
 
-~167,629 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity configuration / haircut / precedent per PUD (D112-D116, sql/65): erebor proximity filter + tiles + pad workup; Steven
+~78,685 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity configuration / haircut / precedent per PUD (D112-D116, sql/65): erebor proximity filter + tiles + pad workup; Steven
 
 | column | type | description |
 |---|---|---|
@@ -3234,7 +3134,7 @@ D112-D116 (study docs/box/prox-2026-10-19): one row per forecast-universe PUD of
 
 The named parents behind box.pud_proximity: one row per counted parent (class, bench, vertical / horizontal gap ft, signed offset ft + = left of the PUD stick's heading, share of the PUD stick alongside, age at the data date, permit-round TVD flag). See sql/65.
 
-~578,488 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity provenance (sql/65): named depleted parents per PUD; erebor pad workup
+~294,466 rows | on demand (BOX batch: scripts.box_extents_export / box_extents_import / box_tc_areas --store / the step-7c production run; app-owned, ETL never touches) | consumers: BOX PDP-proximity provenance (sql/65): named depleted parents per PUD; erebor pad workup
 
 | column | type | description |
 |---|---|---|
@@ -3365,7 +3265,7 @@ SUPERSEDED (D54/D57/D66, 2026-10-14): record of the retired area-curve + factor-
 
 Steven's economics on BOX forecasts (contract table, plan step 7d; D13 display-only, never flows back). One row per (box.forecast_run, box.location, deck, assumption set); only covered locations of a run can be priced; a priced run cannot be deleted. Metric names and provenance mirror his sandbox box_econ.pud_econ (schema_version 1.0.0). downtime_basis states which downtime treatment priced the uptime-free BOX volumes (D63 / D81: his own factor or BOX's published F(k), never both). oil_eur / gas_eur / ll_ft = what he priced, echoed for the tie-out view. A screen like Novi's NPV columns, not authoritative economics inside this stack. See sql/61.
 
-~2,214,740 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's econ on BOX locations (contract, sql/61): erebor map / selection / Highgrade econ screen, record run + one deck, with provenance (display only, D13); never read by box
+~1,042,889 rows | on demand (Steven pushes; contract table sql/61 owned by postgres, writer box_econ_writer; ETL never touches) | consumers: Steven's econ on BOX locations (contract, sql/61): erebor map / selection / Highgrade econ screen, record run + one deck, with provenance (display only, D13); never read by box
 
 | column | type | description |
 |---|---|---|
@@ -3673,7 +3573,7 @@ Nightly BOX sticks reconciliation run log (etl/box_recon.py, sql/74): one row pe
 
 One row per ETL step run (source x table_name), written by etl/db.py log_etl_run: status running/success/failed, row counts, timings. Doubles as the incremental cursor for Enverus pulls (updateddate > last success) and the curated refresh gate.
 
-~3,190 rows | continuous (ETL bookkeeping)
+~3,375 rows | continuous (ETL bookkeeping)
 
 | column | type | description |
 |---|---|---|

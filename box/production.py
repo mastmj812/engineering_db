@@ -124,6 +124,11 @@ ORDER BY il.stick_id
 #   ll_ft / stick_ft = the completed lateral (both legs, no arc): the generator's own number (decision 4)
 #   inside_share  = share of the legs inside the bench's record extent: stored for filtering, no longer a gate (decision 2)
 SOURCE_NOVI, SOURCE_BOX = "novi", "box_sticks"
+# What a forecast BUILD or STORE may run on. The Novi-stick universe (_UNIVERSE_SQL) stays readable for the comparison and
+# history reports that call universe() without a source; no run is built or stored on it any more (BOX sticks phase 8,
+# Michael 2026-11-25: locations are BOX sticks, Novi Intelligence is comparison only; runs 30 / 32 were pruned).
+BUILD_SOURCES = (SOURCE_BOX,)
+NOVI_RUN_REFUSED = ("BOX forecasts are built on BOX sticks only (BOX sticks phase 8, Michael 2026-11-25): Novi Intelligence is comparison only, and the last Novi-stick runs (30 / 32) were pruned")
 BOX_CATEGORY = "BOX"
 BOX_NOT_DRILLABLE = frozenset({"conflict", "crowded"})  # decision 1: no forecast, both basins (D145 extended to BOX sticks)
 BOX_RECON_STATUSES = ("open", "permitted", "pending", "conflict", "crowded", "not_reconciled")

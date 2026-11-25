@@ -759,6 +759,31 @@ Steps, each its own gate:
    The no-argument `curated.intel_vintage_date()` (the newest date across basins) stays for the apps that print one date.
 4. **Clean up:** the Novi-stick BOX path, tombstones for the retired SQL files and apply scripts, CLAUDE.md, sql/31 and
    the data dictionary, the stale skill copy under `Projects/.claude/skills`.
+   **Built 2026-11-25 (step 3 merged as PR 287).**
+   - Tombstones (comments only, the sql/21 pattern; last real bodies at commit eb3d0d3): sql/25, sql/30, sql/78 and
+     `scripts/apply_intel_pdp_support.py` (exits "retired"). `apply_wellstick_fix` skips its steps 12 and 13, sql/32
+     no longer includes the two files, and the one-off appliers `apply_followups` / `apply_reconcile_all_sticks`
+     refuse to run. The offset-support predicate set of record is now the function sql/48 (`pdp_support_for_geom`).
+   - BOX batch, decision 3 as built: the ENTRY POINTS of a run on Novi sticks are closed, not the reader. `--source`
+     accepts `box_sticks` only (`production.BUILD_SOURCES`) in `box_pud_run` and `box_record23_midland`; the base store
+     and `box_record23`'s derived store refuse a run on Novi sticks. The Novi-stick universe query stays, because the
+     comparison and history reports (`box_step21*`, `box_d117_step3`, `box_basin_dry_pull`) read it through
+     `production.universe()`; a deeper removal would take those with it. The Novi-run branches inside the builders are
+     now unreachable and were left in place.
+   - Data dictionary regenerated from live: 110 relations, the three retired ones gone. The comments of
+     `curated.erebor_locations` (sql/31, sql/22) pointed readers at `curated.novi_stick_locations` for the Novi values;
+     the files now name `curated.intel_locations`. **On live the old comment text stands until sql/31 is next applied**
+     (a write: its own go, or the next reload's `--after-reload` step), so the committed dictionary still shows it.
+   - The stale July copy of the reload skill under `Projects/.claude/skills` (shapefile-era, ended on the full
+     `apply_erebor_locations`) is removed; `Projects/CLAUDE.md` updated (both outside this repository).
+   - Checked: full suite 1,262 passed, 58 skipped (3 more skips = the matview lint on the three tombstones); ruff clean
+     on the touched files. Not run: any BOX build or store (the refusals are covered by tests only).
+
+**Phase 8 is closed with this step.** What Novi Intelligence still feeds, all comparison: `intel_locations`,
+`intel_formation_blueox`, `reconciled_inventory`, the accuracy matviews, `intel_arps` / `intel_forecast`,
+`intel_representative_sticks`; and the DSU polygons (`raw_novi_intel.pads`, frozen at 2026Q3) the stick sets are generated
+on. Open, outside the phase: the six crosswalk rows; `box_refresh` knows the Delaware groups only; narvi's 660 ft standoff
+flag covers generated wells only; `--rebuild-reference` never run; Midland pricing (Steven).
 
 The list as first written (2026-11-12), superseded by the table above where they differ:
 

@@ -11,7 +11,6 @@ from scripts import apply_box_stick_locations as app
 
 ROOT = Path(__file__).resolve().parent.parent
 SQL22 = (ROOT / "sql" / "22_erebor_locations.sql").read_text(encoding="utf-8")
-SQL78 = (ROOT / "sql" / "78_novi_stick_locations.sql").read_text(encoding="utf-8")
 BODY = SQL22[SQL22.index("CREATE MATERIALIZED VIEW curated.erebor_locations AS"):SQL22.index("WITH DATA;")]
 BOX_ARM, PDP_ARM = BODY.split("UNION ALL")
 
@@ -56,12 +55,20 @@ def test_both_arms_have_the_same_columns_in_the_same_order():
     assert "-(we.api10::bigint)                AS stick_id" in PDP_ARM and "'PDP'::text                        AS category" in PDP_ARM
 
 
-def test_the_novi_sticks_move_column_for_column_and_deal_intake_reads_them_there():
-    novi = SQL78[SQL78.index("CREATE MATERIALIZED VIEW curated.novi_stick_locations AS"):SQL78.index("WITH DATA;")]
-    assert _cols(novi) == [c for c in _cols(PDP_ARM) if c != "pad_id"]                 # the shape erebor_locations had before the cutover
-    assert "FROM curated.intel_locations il" in novi and "WHERE il.category IN ('PUD', 'RES')" in novi
-    assert "CREATE UNIQUE INDEX idx_novi_stick_locations_pk" in SQL78
-    assert "USING GIST ((wellstick_geom::extensions.geography))" in SQL78               # deal-intake's ST_DWithin on geography
+def test_the_retired_sql_files_are_tombstones_and_deal_intake_reads_no_novi_stick_table():
+    for name, rel in (("25_net_new_pdp.sql", "net_new_pdp"), ("30_intel_pdp_support.sql", "intel_pdp_support"),
+                      ("78_novi_stick_locations.sql", "novi_stick_locations")):
+        text = (ROOT / "sql" / name).read_text(encoding="utf-8")
+        assert "RETIRED" in text and "DO NOT RUN" in text and "80_retire_novi_stick_relations.sql" in text, name
+        assert f"curated.{rel}" in text
+        code = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("--"))
+        assert code.strip() == "", name                              # comments only: nothing to execute
+    import pytest
+
+    from scripts import apply_intel_pdp_support as aips
+    with pytest.raises(SystemExit, match="retired"):
+        aips.main()
+    assert "pdp_support_for_geom" in (ROOT / "sql" / "30_intel_pdp_support.sql").read_text(encoding="utf-8")
     di = (ROOT / "dealintake" / "warehouse.py").read_text(encoding="utf-8")
     # phase 7 item 4 (2026-11-25): deal-intake's LOCATIONS are BOX sticks. Phase 8 step 1: the comparison join reads
     # the Novi decline parameters from curated.intel_locations + intel_formation_blueox, so the Novi stick table

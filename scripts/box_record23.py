@@ -45,6 +45,7 @@ import pandas as pd
 
 from box import acceptance as ac
 from box import basin as bsn
+from box import production as prod
 from box import provisional as pv
 from box import prox_cont as pc
 from box import record23 as rc
@@ -555,6 +556,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                 raise RuntimeError("source")
             S = a.src_run
             box_run = bool(q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND stick_id >= %s", (S, sl.BOX_ID_MIN)).fetchone()[0])
+            if not box_run:
+                raise SystemExit(f"source run {S} is on Novi sticks: {prod.NOVI_RUN_REFUSED}")
             if box_run:  # BOX sticks: the nightly status (curated.box_location_status, sql/74), never curated.reconciled_inventory
                 _check(q("SELECT count(*) FROM box.pud_forecast WHERE run_id = %s AND (stick_id < %s OR stick_id <> location_id)", (S, sl.BOX_ID_MIN)).fetchone()[0] == 0,
                        "a run on BOX sticks holds BOX sticks only (stick_id = location_id)")

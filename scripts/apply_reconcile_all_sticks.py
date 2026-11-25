@@ -52,7 +52,7 @@ STICK_UNIVERSE_SQL = (
 def select_body(sql68: str) -> str:
     """sql/68's SELECT (the matview body), for the read-only dry run."""
     m = re.search(r"CREATE MATERIALIZED VIEW curated\.reconciled_inventory AS\n(.*?);\s*\n\s*\nCREATE UNIQUE INDEX",
-                  sql68, re.S)
+                  sql68, re.DOTALL)
     if not m:
         raise RuntimeError("sql/68 matview body not found")
     return m.group(1)
@@ -60,7 +60,7 @@ def select_body(sql68: str) -> str:
 
 def net_new_select(sql25: str) -> str:
     """sql/25's SELECT (the net_new_pdp body), for the read-only dry run."""
-    m = re.search(r"CREATE MATERIALIZED VIEW curated\.net_new_pdp AS\n(.*?\n);\s*\n", sql25, re.S)
+    m = re.search(r"CREATE MATERIALIZED VIEW curated\.net_new_pdp AS\n(.*?\n);\s*\n", sql25, re.DOTALL)
     if not m:
         raise RuntimeError("sql/25 matview body not found")
     return m.group(1)
@@ -214,6 +214,8 @@ def apply() -> bool:
 
 
 def main() -> None:
+    raise SystemExit("historical one-off, already applied: it rebuilt curated.net_new_pdp / intel_pdp_support, which are retired "
+                     "(BOX sticks phase 8, sql/80). Use the novi-quarterly-reload chain or scripts.apply_reconciled_inventory.")
     ap = argparse.ArgumentParser(description="D117 step 2: reconcile every Novi stick (sql/68).")
     ap.add_argument("--dry-run", action="store_true", help="read-only comparison, writes nothing")
     args = ap.parse_args()

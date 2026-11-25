@@ -808,6 +808,8 @@ def cmd_store(a: argparse.Namespace) -> int:
                          "an artifact built before step 19 carries every basin's universe - rebuild it)")
     by_stick = {loc["stick_id"]: (loc, r) for loc, r in zip(locs, res, strict=True)}
     box = is_box_universe(u)
+    if not box:
+        raise SystemExit(f"refusing to store a run on Novi sticks: {pr.NOVI_RUN_REFUSED}")
     if box and a.record:
         raise SystemExit("refusing --record: a run on BOX sticks becomes the record through scripts.box_record23 flip, after its proximity "
                          "step and the warehouse cutover (scripts.apply_box_stick_locations), never at the base store")
@@ -1063,9 +1065,9 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--selection", choices=("r2", "v2"), default="r2",
                        help="r2 = the D121 selection of record (measured spacing, r2 rules, the evidence pack); v2 = the pre-D121 build")
         p.add_argument("--evidence", type=Path, default=p16.EVIDENCE, help="r2: the frozen evidence pack (scripts.box_step16d evidence)")
-        p.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX,
-                       help="build: the location universe. box_sticks (default since the 2026-11-24 cutover) = the basin's record "
-                            "BOX stick set; novi = the Novi sticks (the records through runs 30 / 32), only when asked for by name")
+        p.add_argument("--source", choices=pr.BUILD_SOURCES, default=pr.SOURCE_BOX,
+                       help="build: the location universe = the basin's record BOX stick set. A run on Novi sticks can no "
+                            "longer be built (BOX sticks phase 8)")
         if name in ("rehaircut", "augment"):
             p.add_argument("--from", dest="src", type=Path, required=True, help="existing build artifact dir (run.pkl)")
         if name == "augment":
