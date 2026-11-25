@@ -40,7 +40,7 @@ def test_sql68_match_rule_is_sql21s():
     # stick filter, the category column and (BOX sticks phase 8, sql/80) the vintage
     # date read per basin instead of the one newest date.
     got = subprocess.run(["git", "show", "37e91f9:sql/21_reconciled_inventory.sql"], cwd=ROOT,
-                         capture_output=True, text=True, encoding="utf-8")
+                         capture_output=True, text=True, encoding="utf-8", check=False)
     if got.returncode != 0:  # shallow CI checkout: the history is not there
         pytest.skip("commit 37e91f9 not available (shallow clone)")
     old = got.stdout
