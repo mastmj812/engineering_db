@@ -10,7 +10,7 @@ reconciliation): Gate 2, the adopted locations and the spacing chain read them.
 Novi Intelligence is comparison only (Michael, 2026-11-24): the representative
 Novi sticks and their decline parameters are still read for the dossier's
 Novi-vs-type-curve comparison, and nothing else. No economics: the Novi
-NPV/PV/price columns of curated.novi_stick_locations are never selected.
+NPV/PV/price columns of curated.intel_locations are never selected.
 """
 
 from __future__ import annotations
@@ -337,7 +337,9 @@ def representative_sticks(
 def novi_params(conn, stick_ids: list[int]) -> list[dict[str, Any]]:
     """Per stick x stream x segment (1 and 2): Novi Arps (d_nom NOMINAL /yr, b,
     q_start, day_start/day_stop) plus the stick's EUR and lateral from
-    novi_stick_locations. No price/NPV columns.
+    curated.intel_locations and its bench from curated.intel_formation_blueox
+    (the comparison's own relations; curated.novi_stick_locations is being
+    retired, BOX sticks phase 8). No price/NPV columns.
 
     Novi's model is multi-segment (verified 2026-09-18): segment 1 = days
     0-540 with Di pinned at 3.65/yr (0.01/day — a cap) on ~98% of gas and ~52%
@@ -350,8 +352,9 @@ def novi_params(conn, stick_ids: list[int]) -> list[dict[str, Any]]:
     return _rows(conn, """
         SELECT a.stick_id, a.production_stream AS stream, a.segment, a.b, a.d_nom,
                a.d_eff_secant, a.q_start, a.day_start, a.day_stop,
-               el.ll_ft, el.oil_eur, el.gas_eur, el.formation_blueox AS bench
+               il.ll_ft, il.oil_eur, il.gas_eur, fb.formation_blueox AS bench
         FROM curated.intel_arps a
-        JOIN curated.novi_stick_locations el ON el.stick_id = a.stick_id
+        JOIN curated.intel_locations il ON il.stick_id = a.stick_id
+        JOIN curated.intel_formation_blueox fb ON fb.stick_id = a.stick_id
         WHERE a.stick_id = ANY(%(ids)s) AND a.segment IN (1, 2)
     """, {"ids": list(stick_ids)})

@@ -63,9 +63,12 @@ def test_the_novi_sticks_move_column_for_column_and_deal_intake_reads_them_there
     assert "CREATE UNIQUE INDEX idx_novi_stick_locations_pk" in SQL78
     assert "USING GIST ((wellstick_geom::extensions.geography))" in SQL78               # deal-intake's ST_DWithin on geography
     di = (ROOT / "dealintake" / "warehouse.py").read_text(encoding="utf-8")
-    # phase 7 item 4 (2026-11-25): deal-intake's LOCATIONS are BOX sticks; the Novi table is read only by the
-    # comparison join (the Novi decline parameters of the representative sticks)
-    assert di.count("FROM curated.novi_stick_locations el") == 0 and di.count("JOIN curated.novi_stick_locations el") == 1
+    # phase 7 item 4 (2026-11-25): deal-intake's LOCATIONS are BOX sticks. Phase 8 step 1: the comparison join reads
+    # the Novi decline parameters from curated.intel_locations + intel_formation_blueox, so the Novi stick table
+    # (sql/78) has no reader left in deal-intake and can be retired.
+    assert "FROM curated.novi_stick_locations" not in di and "JOIN curated.novi_stick_locations" not in di
+    assert "JOIN curated.intel_locations il ON il.stick_id = a.stick_id" in di
+    assert "JOIN curated.intel_formation_blueox fb ON fb.stick_id = a.stick_id" in di
     assert "FROM box.location_stick s" in di and "ls.is_record" in di and "st.counts_as_inventory" in di
     assert "def novi_sticks(" not in di
     assert "FROM curated.erebor_locations" not in di and "JOIN curated.erebor_locations" not in di

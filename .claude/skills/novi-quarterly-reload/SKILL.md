@@ -199,8 +199,10 @@ D126 (`docs/box/step13a-2026-10-26/CONTRACT.md`). **Every write below needs its 
 One record run PER BASIN (D130, sql/70): the chain below refreshes the Delaware record (`--basin delaware`, the default); it never
 reads or touches another basin's record. The Midland record joins this chain at BOX step 23.
 
-0. **Is it due? (read-only)** `python -m scripts.box_refresh check`: a new vintage, or the record's production-through lagging the
-   warehouse by more than 4 months (D126 safety net), plus the extent re-review trigger per group (>= 10 producers first
+0. **Is it due? (read-only)** `python -m scripts.box_refresh check`: the record's production-through lags the
+   warehouse by more than 4 months (D126, unchanged; about a quarter of new production). **A Novi Intelligence vintage is NOT a trigger any more** (BOX sticks
+   phase 8, 2026-11-25: locations are BOX sticks, Novi is comparison only), so a reload alone never calls for a BOX
+   refresh. Plus the extent re-review trigger per group (>= 10 producers first
    producing after the extent was stored, outside it within 2 mi). A due extent re-review is its own step (step-3 method +
    geology, D28), before the build. `python -m scripts.box_refresh plan --pool <dir> --out runs/<label>` prints the chain below
    with the exact commands.

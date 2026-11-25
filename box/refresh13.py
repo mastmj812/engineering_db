@@ -1,7 +1,11 @@
 """BOX step 13b — the steady-state refresh's decisions of record as code (D126), DB-free apart from the read-only pulls.
 
-  due(...)            is a refresh due? A new Novi vintage, or the record's production-through lagging the warehouse by more
-                      than LAG_MONTHS (the safety net); on demand is Michael's call and needs no rule.
+  due(...)            is a refresh due? The record's production-through lagging the warehouse by more than LAG_MONTHS
+                      (D126, unchanged). A Novi Intelligence vintage is no longer a trigger (BOX sticks phase 8, Michael
+                      2026-11-25: locations are ours, Novi is comparison only); on demand is Michael's call and needs no
+                      rule. The warehouse date is max(prod_date), which a few early reporters carry about two months
+                      past a record's own data-through built the same day (run 36: 2026-09 against 2026-11), so
+                      "more than 4" is roughly a quarter of new production.
   extent_trigger(...) the D17 re-review trigger: >= EXTENT_N producers of a group's tags, first producing after its extent was
                       stored, with lateral midpoints OUTSIDE the extent and within EXTENT_X_MI of it.
   chain(...)          the ordered commands of one refresh: read-only steps run by scripts.box_refresh, every store a separate go.
@@ -15,7 +19,7 @@ from __future__ import annotations
 import datetime as dt
 from typing import Any
 
-LAG_MONTHS = 4  # D126 safety net
+LAG_MONTHS = 4  # D126; since phase 8 (2026-11-25) the ONLY trigger - the Novi-vintage one is gone
 EXTENT_N = 10  # D126 = D17's N
 EXTENT_X_MI = 2.0  # D126 = D17's X
 MI_M = 1609.344
@@ -40,13 +44,9 @@ def months_between(a: dt.date, b: dt.date) -> int:
     return (b.year - a.year) * 12 + (b.month - a.month)
 
 
-def due(record_vintage: str, live_vintage: str, record_through: dt.date, live_through: dt.date, lag_months: int = LAG_MONTHS) -> tuple[bool, list[str]]:
-    reasons = []
-    if live_vintage > record_vintage:
-        reasons.append(f"new Novi vintage {live_vintage} (record {record_vintage})")
+def due(record_through: dt.date, live_through: dt.date, lag_months: int = LAG_MONTHS) -> tuple[bool, list[str]]:
     lag = months_between(record_through, live_through)
-    if lag > lag_months:
-        reasons.append(f"production-through lags the warehouse by {lag} months (> {lag_months}, the D126 safety net)")
+    reasons = [f"production-through lags the warehouse by {lag} months (> {lag_months}, D126)"] if lag > lag_months else []
     return bool(reasons), reasons
 
 
@@ -69,8 +69,7 @@ WHERE fb.basin_blueox = %(basin)s AND fb.formation_blueox = ANY (%(forms)s)
 """
 
 STATE_SQL = """
-SELECT r.run_id, r.report_version, r.data_through,
-       (SELECT max(report_version) FROM curated.intel_locations WHERE basin = %(basin)s) AS live_vintage,
+SELECT r.run_id, r.data_through,
        (SELECT max(prod_date) FROM curated.production) AS live_through
 FROM box.forecast_run r WHERE r.is_record AND r.basin = %(basin)s
 """

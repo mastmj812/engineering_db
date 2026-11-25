@@ -690,6 +690,47 @@ The list as first written (2026-11-12):
 
 ## Phase 8 - Retirement (last; every drop an explicit go)
 
+**Designed 2026-11-25 from the live catalogue and the code of all four repos; decided the same day (Michael, "Yes, all
+five").** The list below (2026-11-12) is too broad: with the Novi comparison kept, most Novi-side relations are comparison
+inputs. Only three have no comparison role left.
+
+| Relation | Live | Still read by | Verdict |
+|---|---|---|---|
+| `curated.intel_pdp_support` (sql/30) | 36 MB, 252,131 rows | only `novi_stick_locations` | retire (it was 100 of the 111 rebuild minutes of the 2026-11-25 reload) |
+| `curated.net_new_pdp` (sql/25) | 0 rows | nothing | retire |
+| `curated.novi_stick_locations` (sql/78) | 151 MB | deal-intake's Novi decline lookup | retire after step 1 |
+| `curated.reconciled_inventory` (sql/68) | 32 MB | `intel_forecast_accuracy`, erebor's Accuracy tab | keep: it matches a Novi stick to the well that drilled it |
+| `intel_locations`, `intel_formation_blueox`, `intel_arps` / `intel_forecast`, `intel_representative_sticks` | 0.3 GB + views | the comparison in erebor, narvi, anduin, deal-intake | keep |
+| `raw_intel.*` | 31 GB (the monthly forecast 27 GB) | comparison curves, accuracy | keep while subscribed |
+| `raw_novi_intel.pads`, `intel_pad_geom` / `_member` | 45 MB | the DSU polygons the stick sets are generated on | keep |
+
+| # | Decision |
+|---|---|
+| 1 | The Novi comparison record stays LIVE; reloads continue while we subscribe (the 2026-11-24 rule). Not frozen |
+| 2 | Retire the three relations above |
+| 3 | Remove the Novi-stick code path from the BOX batch (`box/production.py`, the Novi branch of `box_record23`); with runs 30 / 32 pruned it has nothing to run on |
+| 4 | DSU polygons frozen at 2026Q3: no 2026Q4 pad load until a stick regeneration is wanted |
+| 5 | A BOX refresh is due on production data, not on a Novi vintage; the single Novi vintage date becomes per basin |
+
+Steps, each its own gate:
+
+1. **Repoint readers (code only).** **Built 2026-11-25.** deal-intake's `novi_params` reads `curated.intel_locations` +
+   `intel_formation_blueox` (checked on live: 1,026 sticks, 6,156 rows identical to the old join; all 252,131 Novi sticks
+   are in both relations). `box_refresh check` no longer reads the Novi vintage: D126's lag rule (production-through
+   more than 4 months behind the warehouse) is unchanged and is now the only trigger. A first cut at "3 months of new
+   production" was dropped before commit: the warehouse date is `max(prod_date)`, about two months ahead of a record's own
+   data-through built the same day (run 36: 2026-09 against 2026-11), so it would have read due almost every month. erebor's health check
+   reads the relation erebor serves (its own PR). Not in this step: the per-basin vintage date (a warehouse function,
+   step 3) and the Midland groups in `box_refresh` (`GROUPS_BY_BASIN` still holds Delaware only).
+2. **Shrink the quarterly chain (code + the reload skill):** drop the `apply_intel_pdp_support`, sql/25 and
+   `--novi-sticks-only` steps; rehearse in the container.
+3. **Drop the three relations on live** (explicit go; the catalogue shows nothing else depends on them), with the per-basin
+   vintage date. Ask the land team first whether a saved QGIS layer reads `curated.novi_stick_locations`.
+4. **Clean up:** the Novi-stick BOX path, tombstones for the retired SQL files and apply scripts, CLAUDE.md, sql/31 and
+   the data dictionary, the stale skill copy under `Projects/.claude/skills`.
+
+The list as first written (2026-11-12), superseded by the table above where they differ:
+
 - **Retire** (exist only to make Novi sticks usable): sql/19 `intel_formation_blueox`, sql/25 `net_new_pdp`,
   sql/30 `intel_pdp_support`, sql/35 representative sticks, sql/68 `reconciled_inventory`, sql/42 by-report
   readers, and their apply scripts.
