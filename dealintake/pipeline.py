@@ -312,9 +312,17 @@ def gunbarrel_preview(
             return float(_o(b)["spacing_ft"]), "reviewer"
         s = (spacing_by or {}).get(b) or {}
         return (float(s["spacing_ft"]), s["text"]) if s.get("spacing_ft") else (None, s.get("text") or "no spacing")
+    # A bench Gate 2 keeps on its BOX sticks (and the reviewer set no pattern on) is
+    # previewed AS those sticks: it is what evaluate adopts, so the page and the
+    # proximity seed call must judge them, not a generated row at the local median
+    # depth (Starlight 215-216, 2026-11-25: WCA_1 was seeded off on a generated row
+    # 242 ft above a producer while its BOX stick sat 319 ft above, outside the rule).
+    kept_box = {b for b in bench_seed if location_source(gate2.get(b) or {}, _o(b)).get("source") == "box"}
     wr_zones: dict[str, tuple[float, float]] = {}
     for b, row in bench_seed.items():
         t, s = _o(b).get("tvd_ft", tvd_by.get(b)), _sp(b)[0]
+        if b in kept_box:
+            continue                                     # kept sticks are never staggered (as in evaluate)
         if row["evaluate"] and staggered(_o(b)) and t is not None and s is not None:
             wr_zones[b] = (float(t), s)
     wr: dict[str, list[dict[str, Any]]] | Exception = {}
@@ -329,6 +337,30 @@ def gunbarrel_preview(
         if not row["evaluate"]:
             continue
         opts = opts_all.get(b) or {}
+        if b in kept_box:
+            mine = [s for s in box_sticks if s["formation_blueox"] == b and s.get("relation") == "inside"]
+            rows = []
+            for s in mine:                               # each stick at its OWN target depth; flag only
+                s_tvd = s.get("tvd") if s.get("tvd") is not None else tvd_by.get(b)
+                rows += leg_rows([{"geom": s["geom"], "completed_lateral_ft": s.get("ll_ft"),
+                                   "n_legs": s.get("n_legs") or 1}], project, prox, s_tvd)
+                rows[-1]["tvd_ft"] = s_tvd
+            tvds = [float(r["tvd_ft"]) for r in rows if r["tvd_ft"] is not None]
+            sps = [float(s["spacing_ft"]) for s in mine if s.get("spacing_ft")]
+            if not rows or not tvds:
+                continue
+            uturn = [(s.get("n_legs") or 1) > 1 for s in mine]
+            planned[b] = {"source": "box", "tvd_ft": statistics.median(tvds), "tvd_source": "BOX stick",
+                          "spacing_ft": statistics.median(sps) if sps else 0.0, "spacing_source": "box_kept",
+                          "offsets_ft": [r["offset_ft"] for r in rows], "lateral_ft": [r["lateral_ft"] for r in rows],
+                          "leg_offsets_ft": [o for r in rows for o in r["leg_offsets_ft"]],
+                          "sticks_wkt": [r["leg"]["geom"].wkt for r in rows], "culled_wkt": [], "turns_wkt": [],
+                          "well_type": "uturn" if uturn and all(uturn) else "mixed" if any(uturn) else "single",
+                          "pin_offset_ft": None, "n_generated": len(rows), "rules": [],
+                          "role": opts.get("role", "base"), "winerack": False,
+                          "stick_ids": [s["stick_id"] for s in mine],
+                          "proximity": proximity.summarize(rows, rows, enabled=False)}
+            continue
         tvd = opts.get("tvd_ft", tvd_by.get(b))
         if tvd is None:
             continue
@@ -404,6 +436,12 @@ def preview_and_seed(
     if apply_to_seed:
         for b, pl in gun["planned"].items():
             s = pl.get("proximity") or {}
+            if pl.get("source") == "box" and s.get("would_cull") and bench_seed.get(b, {}).get("evaluate"):
+                # A kept BOX bench is never seeded off or culled here: the stick generator
+                # has its own no-place rule. Say what the rule sees and leave the call to the reviewer.
+                bench_seed[b]["why"] += (f"; keeps {pl['n_generated']} BOX stick(s), {len(s['would_cull'])} leg(s) "
+                                         f"inside a producer's envelope ({s['rule']}; nearest "
+                                         f"{s['would_cull'][0]['text']}) — flag only")
             if s.get("n_culled") and bench_seed.get(b, {}).get("evaluate"):
                 bench_seed[b]["why"] += (f"; PDP proximity culled {s['n_culled']} of {s['n_rows']} rows "
                                          f"(nearest {s['culled'][0]['text']})")
@@ -1755,6 +1793,11 @@ def evaluate(
                 ids = sorted({i for u in g["units"] for i in B["units"][u]["novi_ids"]})
                 G["novi"] = _novi_summary(wh.novi_params(conn, ids))
                 G["novi"]["n_sticks"] = len(ids)
+                if not ids:
+                    # Said, not left as a missing row (Starlight 2026-11-25: Novi drew no
+                    # WCA_1 / WCA_2 stick within a mile of the unit).
+                    G["flags"].append(f"no Novi comparison: Novi Intelligence has no {bench} stick within 1 mi of these "
+                                      "locations in their lateral band — the type curve stands alone")
                 # Gas basis = anduin (Michael 2026-09-28); any stream where Novi and the
                 # TC disagree by more than stream_gap_flag_ratio is called out, not buried.
                 gap = float(cfg["qc_flags"].get("stream_gap_flag_ratio", 1.5))

@@ -175,7 +175,10 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
   lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent
   in the unit, rule 9; faded = side/partial neighbours; a well entirely
-  beyond the unit's ends is not drawn). BOX sticks are NOT
+  beyond the unit's ends is not drawn). A bench that KEEPS its BOX sticks
+  shows those sticks, each at its own depth — they are the proposal, and what
+  `evaluate` adopts (Starlight 2026-11-25: the page drew generated rows for
+  kept benches). BOX sticks of other benches are NOT
   drawn — our proposal vs PDP only, nothing outside the depth rights; the
   TVD window is the proposed benches ± 1,500 ft (producers outside it are
   counted in the title, not plotted); a producer at a round-100 TVD is drawn
@@ -206,7 +209,11 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   distance — 375 ft / 1,000 ft) in amber; the bench table has a "PDP
   proximity" column; near-misses, permit-TVD producers (round-100 TVD, rule
   10: flagged, never culled) and all-culled benches go to "Needs a look".
-  Benches that keep BOX sticks are flagged, never culled. NOT the sql/50 660-ft
+  Benches that keep BOX sticks are flagged, never culled and never seeded
+  off: the rule is read on the kept sticks themselves, at their own depth, and
+  the legs inside an envelope are listed in the bench's why (Starlight 215-216:
+  the seed had judged a generated row at the local median depth and turned
+  WCA_1 off, while its BOX stick sat 319 ft above the producer). NOT the sql/50 660-ft
   vertical-parent gate: that one TAGS analog wells (midpoint offset, 1,000-ft
   band, other-bench parents, shielding) and never removes anything; this one
   removes OUR rows and shares no constant with it. Calibration (Chevron seed,
@@ -601,6 +608,10 @@ representative-stick median as a 2-segment Arps dashed beside it, the
 no-transfer curve dotted when one exists), the three-stream table, QC and
 the buildup table (collapsed). Walk him through the page, not the markdown.
 
+
+A curve with no representative Novi stick (none of the bench within 1 mi in
+the lateral band — Starlight WCA_1 / WCA_2) carries the flag "no Novi
+comparison"; the type curve stands alone.
 
 Per TC group, all three streams: Novi (median of the unit's representative
 sticks; segment-1 Di with the share pinned at Novi's 3.65 /yr cap, segment-2
