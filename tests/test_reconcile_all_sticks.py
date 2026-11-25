@@ -37,7 +37,8 @@ def test_sql68_reconciles_pud_and_res_and_carries_category():
 
 def test_sql68_match_rule_is_sql21s():
     # sql/21's last real body (commit 37e91f9) vs sql/68: identical apart from the
-    # stick filter and the category column.
+    # stick filter, the category column and (BOX sticks phase 8, sql/80) the vintage
+    # date read per basin instead of the one newest date.
     got = subprocess.run(["git", "show", "37e91f9:sql/21_reconciled_inventory.sql"], cwd=ROOT,
                          capture_output=True, text=True, encoding="utf-8")
     if got.returncode != 0:  # shallow CI checkout: the history is not there
@@ -49,6 +50,13 @@ def test_sql68_match_rule_is_sql21s():
                 .replace("        il.category,\n", "")
                 .replace("    END                                     AS status,\n    pud.category                            AS category",
                          "    END                                     AS status"))
+    per_basin = ("WITH vint AS MATERIALIZED (\n    SELECT basin, vintage_date FROM curated.intel_vintage_date_by_basin()\n),\npud AS (",
+                 "m.matched_first_prod > v.vintage_date", ") m ON TRUE\nLEFT JOIN vint v ON v.basin = pud.basin")
+    for piece in per_basin:
+        assert new_body.count(piece) == 1, piece
+    new_body = (new_body.replace(per_basin[0], "WITH pud AS (")
+                .replace(per_basin[1], "m.matched_first_prod > (SELECT curated.intel_vintage_date())")
+                .replace(per_basin[2], ") m ON TRUE"))
     assert new_body == old_body
 
 

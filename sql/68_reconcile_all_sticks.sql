@@ -19,9 +19,15 @@
 -- 120 conflict / 294 realized_phantom / 0 drift; Midland 25,052 / 19 / 29 / 0.
 -- The 312 realizing producers were already matched to a Novi PUD.
 --
--- CASCADE: dropping reconciled_inventory drops curated.erebor_locations (sql/22)
--- and curated.intel_forecast_accuracy (sql/38). scripts/apply_reconcile_all_sticks
--- rebuilds sql/25 -> sql/38 + sql/43 -> sql/22 -> sql/26 -> sql/31 after it.
+-- CHANGED 2026-11-25 (BOX sticks phase 8, sql/80): the drift / phantom split reads the
+-- Novi vintage date of the stick's OWN basin (curated.intel_vintage_date_by_basin()),
+-- not the one newest date. The basins reload on their own schedule (Delaware 2026Q3,
+-- Midland 2026Q4). With production through 2026-09 no stick changes class.
+--
+-- CASCADE: dropping reconciled_inventory drops curated.intel_forecast_accuracy
+-- (sql/38); rebuild it with scripts.apply_intel_forecast_accuracy. Since BOX sticks
+-- phase 7 item 2 it no longer drops curated.erebor_locations (sql/22 reads no Novi
+-- relation).
 -- In the quarterly chain this file runs where sql/21 did
 -- (scripts/apply_reconciled_inventory, after sql/50).
 --
@@ -35,7 +41,12 @@ DROP MATERIALIZED VIEW IF EXISTS curated.reconciled_inventory CASCADE;
 
 
 CREATE MATERIALIZED VIEW curated.reconciled_inventory AS
-WITH pud AS (
+WITH vint AS MATERIALIZED (
+    -- one row per basin, computed ONCE (a per-row call would not be: the old bare
+    -- call of the one-date function cost ~8 h here before it became an InitPlan)
+    SELECT basin, vintage_date FROM curated.intel_vintage_date_by_basin()
+),
+pud AS (
     SELECT
         il.stick_id,
         il.wellstick_geom AS geom,
@@ -66,12 +77,10 @@ SELECT
     CASE
         WHEN COALESCE(m.n_strong, 0) >= 2  THEN 'conflict'
         -- one well covers >=50% => realized. Split by vintage: a well online AFTER
-        -- the loaded Novi vintage (curated.intel_vintage_date(), sql/29) is genuine
+        -- the loaded Novi vintage OF THE STICK'S BASIN (vint, sql/80) is genuine
         -- DRIFT (real PUD->PDP value shift); one online BEFORE it means Novi listed
         -- an already-drilled slot => PHANTOM inventory (never real; e.g. Eddy 324).
-        -- scalar subquery (InitPlan) so the function runs ONCE, not per row —
-        -- a bare call is not inlinable (aggregate inside) and cost ~8h here.
-        WHEN m.best_overlap >= 0.5 AND m.matched_first_prod > (SELECT curated.intel_vintage_date())
+        WHEN m.best_overlap >= 0.5 AND m.matched_first_prod > v.vintage_date
                                             THEN 'realized_drift'
         WHEN m.best_overlap >= 0.5          THEN 'realized_phantom'
         WHEN m.best_overlap >= 0.2          THEN 'conflict'
@@ -108,6 +117,7 @@ LEFT JOIN LATERAL (
     ) c
     WHERE c.overlap > 0.05
 ) m ON TRUE
+LEFT JOIN vint v ON v.basin = pud.basin
 ;
 
 

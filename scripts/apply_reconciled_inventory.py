@@ -135,6 +135,9 @@ def main(argv: list[str] | None = None) -> None:
         check_reference()
 
     print("[2/3] build curated.reconciled_inventory (overlap matching — heavy)", flush=True)
+    # sql/80 first: the per-basin vintage function sql/68 calls, and the drop of the three retired
+    # Novi-stick matviews should one still stand (idempotent; BOX sticks phase 8)
+    _exec("retired relations + vintage by basin", "80_retire_novi_stick_relations.sql")
     _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")
 
     print("[3/3] validation", flush=True)
