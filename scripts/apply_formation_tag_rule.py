@@ -9,7 +9,7 @@ can run in the afternoon: `gh run list --workflow etl-nightly.yml`). Each mode r
     3. seeds, one transaction each: policy, classes, depth exclusions, overrides (human calls);
     4. sql/16 (rewritten: override > rule > crosswalk; DROP ... CASCADE), then the chain tail, in order:
          apply_intel_formation_blueox -> apply_reconciled_inventory (re-runs sql/20, sql/23 with its new guards,
-         wells_enriched, 47, 50, 21) -> sql/25 -> apply_intel_pdp_support -> apply_intel_forecast_accuracy
+         wells_enriched, 47, 50, 21) -> apply_intel_forecast_accuracy
          -> apply_erebor_locations (FINAL, re-applies sql/31) -> sql/26 -> sql/31;
     5. verify with the switch OFF: formation_blueox differs from the snapshot only on the override seed diff, and
        wells_enriched only there, plus wells where sql/23 no longer flips a human call, plus sql/23's neighbour
@@ -54,8 +54,6 @@ SEED_TABLES: list[tuple[str, Path, str]] = [
 TAIL: list[list[str]] = [
     [PY, "-m", "scripts.apply_intel_formation_blueox"],
     [PY, "-m", "scripts.apply_reconciled_inventory", "--rebuild-reference"],  # sql/16's CASCADE took sql/20 and its dependents
-    [PY, "-c", "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"],
-    [PY, "-m", "scripts.apply_intel_pdp_support"],
     [PY, "-m", "scripts.apply_intel_forecast_accuracy"],
     [PY, "-m", "scripts.apply_erebor_locations"],
     [PY, "-c", "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"],
@@ -118,8 +116,6 @@ RECREATED_BY: dict[str, str] = {
     "curated.codev_context": "apply_reconciled_inventory",
     "curated.dev_scenario": "apply_reconciled_inventory",
     "curated.reconciled_inventory": "apply_reconciled_inventory",
-    "curated.net_new_pdp": "sql/25",
-    "curated.intel_pdp_support": "apply_intel_pdp_support",
     "curated.intel_forecast_accuracy": "apply_intel_forecast_accuracy",
     "curated.intel_forecast_accuracy_vintage": "apply_intel_forecast_accuracy",
     "curated.erebor_locations": "apply_erebor_locations",
@@ -139,8 +135,9 @@ def cascade_closure(edges) -> dict[str, str]:
 def cascade_problems(closure: dict[str, str], recreated: dict[str, str] = RECREATED_BY) -> tuple[list[str], list[str]]:
     """(blocking, notes): objects the CASCADE would drop that no TAIL step re-creates block the window; listed
     objects no longer below ROOT are only a stale-list note."""
+    # afo.RETIRED (BOX sticks phase 8): dropped by the CASCADE on purpose and never re-created
     blocking = [f"CASCADE drops {o} ({'matview' if k == 'm' else 'view'}) but no tail step re-creates it"
-                for o, k in sorted(closure.items()) if o not in recreated]
+                for o, k in sorted(closure.items()) if o not in recreated and o not in afo.RETIRED]
     notes = [f"{o} is listed as re-created but is no longer below {afo.ROOT}" for o in sorted(set(recreated) - set(closure))]
     return blocking, notes
 

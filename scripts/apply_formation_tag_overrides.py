@@ -7,10 +7,10 @@
     2. REFRESH MATERIALIZED VIEW CONCURRENTLY every matview below
        curated.formation_blueox, in dependency order (CHAIN), erebor_locations
        last. Nothing is dropped, every object stays readable, no definition is
-       re-created from the repo. ~55-60 min, almost all of it intel_pdp_support.
-    Five CHAIN members are quarterly-owned (bench_reference,
-    intel_formation_blueox, reconciled_inventory, net_new_pdp,
-    intel_pdp_support): the nightly never refreshes them, so a seed reload left
+       re-created from the repo. It took ~55-60 min while intel_pdp_support was
+       in the chain (almost all of it); not re-timed since that matview left it.
+    Three CHAIN members are quarterly-owned (bench_reference,
+    intel_formation_blueox, reconciled_inventory): the nightly never refreshes them, so a seed reload left
     to the nightly would leave PDP tags and PUD/RES stick tags out of step.
     Before writing, the live pg_depend graph is checked against CHAIN (same
     matview set, order respects every edge) and a running nightly refuses the
@@ -23,8 +23,7 @@
     matview plus wells_enriched / dev_scenario / box_scout_locations, and this
     script then STOPS. Run it INSIDE a chain-rebuild window, followed by the
     quarterly-skill tail:
-        apply_intel_formation_blueox -> apply_reconciled_inventory -> sql/25
-        (net_new_pdp; sql/22 reads it) -> apply_intel_pdp_support ->
+        apply_intel_formation_blueox -> apply_reconciled_inventory ->
         apply_intel_forecast_accuracy -> apply_erebor_locations (FINAL; re-applies
         sql/31) -> sql/26
     Standalone use outside a window leaves the apps dark until that tail runs.
@@ -56,8 +55,16 @@ TABLE = "ref.formation_tag_overrides"
 COLUMNS = "api10, corrected_code, was, note"
 ROOT = "curated.formation_blueox"
 
-# Every matview below curated.formation_blueox, in refresh order (live pg_depend,
-# 2026-10-28). Checked against the live graph before every --refresh run.
+# RETIRED (BOX sticks phase 8, docs/box_sticks_plan.md): the three matviews that existed only
+# to make Novi sticks usable as locations. Nothing reads them for output, the quarterly chain
+# no longer builds them, and they are dropped on live at phase 8 step 3. While they still stand
+# they are neither refreshed nor required, so this script runs in both states. (From the
+# 2026-11-24 cutover until this change the preflight refused every run: the Novi stick table
+# had been created below formation_blueox and was missing from CHAIN.)
+RETIRED: tuple[str, ...] = ("curated.net_new_pdp", "curated.intel_pdp_support", "curated.novi_stick_locations")
+
+# Every matview below curated.formation_blueox that is kept current, in refresh order
+# (live pg_depend, 2026-11-25). Checked against the live graph before every --refresh run.
 CHAIN: tuple[str, ...] = (
     "curated.formation_blueox",
     "curated.bench_reference",
@@ -66,9 +73,7 @@ CHAIN: tuple[str, ...] = (
     "curated.intel_formation_blueox",
     "curated.codev_context",
     "curated.reconciled_inventory",
-    "curated.net_new_pdp",
     "curated.intel_forecast_accuracy_vintage",
-    "curated.intel_pdp_support",
     "curated.intel_forecast_accuracy",
     "curated.erebor_locations",
 )
@@ -147,7 +152,7 @@ def matview_parents(edges, root: str = ROOT) -> dict[str, set[str]]:
 
 def chain_problems(order, parents: dict[str, set[str]]) -> list[str]:
     """Why `order` is not a valid refresh of the live graph (empty = valid)."""
-    out = [f"live matview missing from CHAIN: {m}" for m in sorted(set(parents) - set(order))]
+    out = [f"live matview missing from CHAIN: {m}" for m in sorted(set(parents) - set(order) - set(RETIRED))]
     out += [f"CHAIN member not below {ROOT} live: {m}" for m in order if m not in parents]
     pos = {m: i for i, m in enumerate(order)}
     for child, ps in sorted(parents.items()):

@@ -119,7 +119,8 @@ def validate_wells_enriched(cur) -> bool:
         print("    WARN: ParentDaysOnline=-1 on child wells — sentinel semantics drifted; "
               "update sql/31 comment", flush=True)
 
-    for schema, name in (("curated", "erebor_locations"), ("curated", "intel_pdp_support")):
+    # curated.intel_pdp_support used to be checked here too; it is retired (BOX sticks phase 8)
+    for schema, name in (("curated", "erebor_locations"),):
         kind = _relkind(cur, schema, name)
         print(f"    dependent {schema}.{name} relkind={kind!r} (expect 'm' — no CASCADE)", flush=True)
         ok &= kind == "m"
@@ -128,6 +129,10 @@ def validate_wells_enriched(cur) -> bool:
 
 def validate_codev(cur) -> bool:
     ok = True
+    if cur.execute("SELECT to_regclass('curated.intel_pdp_support')").fetchone()[0] is None:
+        # the matview the function was checked against is retired (BOX sticks phase 8); the function is the score of record
+        print("    parity vs intel_pdp_support: skipped, the matview is retired", flush=True)
+        return ok
     kind = _relkind(cur, "curated", "codev_context")
     print(f"    codev_context relkind={kind!r} (expect 'm')", flush=True)
     ok &= kind == "m"

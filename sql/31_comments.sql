@@ -658,17 +658,8 @@ COMMENT ON COLUMN curated.reconciled_inventory.matched_first_prod IS 'First prod
 COMMENT ON COLUMN curated.reconciled_inventory.category IS 'Novi''s tag of the stick (PUD = BASE_CASE, RES = EMERGING), for audit splits only. D117: BOX and the apps do not key on it.';
 COMMENT ON COLUMN curated.reconciled_inventory.status IS 'Reconciliation status (any Novi stick, D117; remaining_pud is the legacy label for unrealized): remaining_pud + conflict = the DRILLABLE remaining inventory; realized_drift (drilled since the Novi vintage) and realized_phantom (already drilled before it) are NOT drillable. Producers Novi missed are the reverse pass, curated.net_new_pdp.';
 
--- curated.net_new_pdp (matview, sql/25)
-COMMENT ON COLUMN curated.net_new_pdp.api10 IS '10-digit API of the post-vintage producing horizontal that no Novi PUD anticipated; unique key.';
-COMMENT ON COLUMN curated.net_new_pdp.basin_blueox IS 'Basin slug: delaware or midland.';
-COMMENT ON COLUMN curated.net_new_pdp.formation_blueox IS 'Blue Ox bench code of the well (TVD-corrected producing code, sql/23 override applied).';
-COMMENT ON COLUMN curated.net_new_pdp.tvd IS 'Landing true vertical depth, ft (from the producing reference).';
-COMMENT ON COLUMN curated.net_new_pdp.first_production_date IS 'First production date; by definition after the loaded Novi vintage (curated.intel_vintage_date()).';
-COMMENT ON COLUMN curated.net_new_pdp.operator IS 'Current operator of the well.';
-COMMENT ON COLUMN curated.net_new_pdp.ll_ft IS 'Lateral length, ft.';
-COMMENT ON COLUMN curated.net_new_pdp.survey_planned IS 'TRUE = directional survey is a pre-drill plan (provisional formation/TVD; mostly NM).';
-COMMENT ON COLUMN curated.net_new_pdp.wellstick_geom IS 'Lateral stick geometry (LINESTRING, EPSG:4326) for mapping; GIST-indexed.';
-COMMENT ON COLUMN curated.net_new_pdp.best_pud_overlap IS 'Max fraction (0-1) of any same-bench PUD lateral covered by this well''s +/-150 ft corridor; < 0.2 by definition (else the PUD counts as realized/conflict, not net-new).';
+-- curated.net_new_pdp: retired (BOX sticks phase 8, docs/box_sticks_plan.md); its comments were removed
+-- here so this file applies whether or not the matview still stands.
 
 -- curated.erebor_locations (matview, sql/22) -- read directly by the land team via GIS.
 -- Undrilled rows are BOX sticks since the cutover (phase 6); the Novi-stick columns are kept for shape and are NULL.
@@ -709,39 +700,8 @@ COMMENT ON COLUMN curated.erebor_locations.wellstick_geom IS 'LineString, EPSG:4
 COMMENT ON COLUMN curated.erebor_locations.pad_id IS 'BOX stick: id of the Novi DSU it was generated in (raw_novi_intel.pads.pad_id at the record set''s DSU vintage); erebor Highgrade groups sticks by it. NULL on a producing well.';
 COMMENT ON COLUMN curated.erebor_locations.inventory_class IS 'Same as category since the BOX sticks cutover (BOX / PDP).';
 
--- curated.novi_stick_locations (matview, sql/78) -- the Novi PUD / RES sticks, for readers still on Novi sticks.
--- Column for column the undrilled arm curated.erebor_locations carried before the BOX sticks cutover; there are no producing-well (PDP) rows here.
-COMMENT ON COLUMN curated.novi_stick_locations.unique_id IS '10-digit API number for producing (PDP) rows; Novi well name for PUD/RES rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.category IS 'PDP = producing well (from the warehouse, what physically exists), PUD = Novi base-case undrilled location, RES = Novi emerging/resource location.';
-COMMENT ON COLUMN curated.novi_stick_locations.basin IS 'Basin slug: delaware or midland.';
-COMMENT ON COLUMN curated.novi_stick_locations.formation IS 'Raw vendor formation name (free text, inconsistent casing) -- display only. Group and filter on formation_blueox instead.';
-COMMENT ON COLUMN curated.novi_stick_locations.formation_blueox IS 'Standardized Blue Ox bench code (e.g. WCA_1, WCB_2, BS2) -- the formation field of record for grouping/filtering. NULL = unmapped.';
-COMMENT ON COLUMN curated.novi_stick_locations.basin_blueox IS 'Blue Ox basin slug (delaware/midland), aligned with formation_blueox.';
-COMMENT ON COLUMN curated.novi_stick_locations.formation_blueox_source IS 'How the bench code was assigned: pdp_join / inferred / crosswalk (Novi sticks, sql/19) or the wells crosswalk chain (PDP rows).';
-COMMENT ON COLUMN curated.novi_stick_locations.deplet_t IS 'Novi depletion tier for PUD/RES: Tier-1..Tier-4, where Tier-4 = most depleted (drained by offset production). NULL on PDP rows (producing wells are not depletion-scored).';
-COMMENT ON COLUMN curated.novi_stick_locations.rqs IS 'Novi ML rock-quality score (signed, unitless; higher = better rock), oil stream. PUD rows from the Novi stick; PDP rows from the Novi PDP class joined by api10 (NULL if Novi does not carry/score the well). RES rows are NULL (Novi does not score EMERGING). Vendor screen.';
-COMMENT ON COLUMN curated.novi_stick_locations.rqt IS 'Novi ML rock-quality tier, Tier-1 (best) .. Tier-4: quartiles of rqs cut per basin over Novi''s whole scored population (PDP + BASE_CASE), so PUD and PDP tiers share one scale. This is the "rock quality quartile" in Novi''s corporate research notes. NULL on RES and on unscored PDP. Vendor screen.';
-COMMENT ON COLUMN curated.novi_stick_locations.operator IS 'Operator name: Novi-reported for PUD/RES, current operator from the warehouse for PDP.';
-COMMENT ON COLUMN curated.novi_stick_locations.pad_name IS 'Novi DSU pad name (Delaware PUD only as of 2025Q3). NULL for PDP -- the gun-barrel assigns pads spatially instead.';
-COMMENT ON COLUMN curated.novi_stick_locations.ll_ft IS 'Lateral length, ft.';
-COMMENT ON COLUMN curated.novi_stick_locations.npv5 IS 'Novi pre-computed NPV at 5% discount, USD, flat deck. Vendor SCREEN only, not authoritative economics. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.npv10 IS 'Novi pre-computed NPV at 10% discount, USD, flat deck. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.npv15 IS 'Novi pre-computed NPV at 15% discount, USD, flat deck. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.npv20 IS 'Novi pre-computed NPV at 20% discount, USD, flat deck. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.npv25 IS 'Novi pre-computed NPV at 25% discount, USD, flat deck. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.pv5 IS 'Novi pre-computed present value at 5% discount, USD. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.pv10 IS 'Novi pre-computed present value at 10% discount, USD. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.pv15 IS 'Novi pre-computed present value at 15% discount, USD. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.pv20 IS 'Novi pre-computed present value at 20% discount, USD. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.pv25 IS 'Novi pre-computed present value at 25% discount, USD. Vendor screen only. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.oil_eur IS 'Novi 30-yr oil EUR, bbl (vendor forecast horizon, not the suite''s 50-yr technical EUR). NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.gas_eur IS 'Novi 30-yr gas EUR, Mcf. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.wti_price IS 'Flat WTI oil price behind the Novi economics, USD/bbl. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.hh_price IS 'Flat Henry Hub gas price behind the Novi economics, USD/MMBtu. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.ngl_price IS 'Flat NGL price behind the Novi economics, USD/bbl. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.wti_diff IS 'Oil price differential vs WTI in the Novi deck, USD/bbl. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.hh_diff IS 'Gas price differential vs Henry Hub in the Novi deck, USD/MMBtu. NULL on PDP rows.';
-COMMENT ON COLUMN curated.novi_stick_locations.wellstick_geom IS 'Lateral stick geometry (LINESTRING, EPSG:4326): the drawn/planned lateral for PUD/RES, the warehouse wellstick for PDP. GIST-indexed map geometry.';
+-- curated.novi_stick_locations: retired (BOX sticks phase 8, docs/box_sticks_plan.md); its comments were removed
+-- here so this file applies whether or not the matview still stands.
 
 -- ---------------------------------------------------------------------------
 -- Part 2: table-level comments (relations without an existing comment only;

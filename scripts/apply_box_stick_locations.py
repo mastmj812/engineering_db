@@ -1,18 +1,18 @@
 """BOX sticks cutover, warehouse half (docs/box_sticks_plan.md phase 6, step 4): the undrilled arm of
-curated.erebor_locations becomes the record BOX stick set, and the Novi sticks move to curated.novi_stick_locations.
+curated.erebor_locations becomes the record BOX stick set. (At the cutover the Novi sticks moved to
+curated.novi_stick_locations, sql/78; that table is retired, phase 8, and this script no longer builds it.)
 
 ONE transaction, so readers see the old relation until the commit and never a missing one:
 
   1. preflight on the record stick sets and the nightly status (nothing changes if a check fails)
-  2. sql/78  curated.novi_stick_locations  (the Novi PUD / RES arm, for deal-intake)
-  3. sql/22  curated.erebor_locations      (BOX sticks + producing wells; DROP ... CASCADE takes sql/69 with it)
-  4. sql/69  curated.box_scout_locations   (re-created; empty for a basin until its record forecast run is on BOX sticks)
-  5. sql/26  geography expression indexes  (idempotent)
-  6. sql/31  comments
-  7. checks by identity; then COMMIT (--go) or ROLLBACK (the default: a rehearsal)
+  2. sql/22  curated.erebor_locations      (BOX sticks + producing wells; DROP ... CASCADE takes sql/69 with it)
+  3. sql/69  curated.box_scout_locations   (re-created; empty for a basin until its record forecast run is on BOX sticks)
+  4. sql/26  geography expression indexes  (idempotent)
+  5. sql/31  comments
+  6. checks by identity; then COMMIT (--go) or ROLLBACK (the default: a rehearsal)
 
 After a commit: a REFRESH ... CONCURRENTLY smoke and an EXPLAIN that the tile predicate uses the GiST index, on a second
-connection. The DROP in step 3 holds an exclusive lock on curated.erebor_locations until the commit: run it OFF-HOURS, outside
+connection. The DROP in step 2 holds an exclusive lock on curated.erebor_locations until the commit: run it OFF-HOURS, outside
 the nightly, and stop erebor's map from being used meanwhile (requests wait, they do not fail).
 
 The record flips of the forecast runs are NOT done here (scripts.box_record23 flip, after this commit): until a basin's record
@@ -24,6 +24,7 @@ run is on BOX sticks the land team's view holds no row for it.
 from __future__ import annotations
 
 import argparse
+import os
 import time
 from pathlib import Path
 
@@ -31,7 +32,7 @@ from etl.db import get_connection
 from scripts.apply_box_scout_locations import recreate as recreate_box_scout
 
 SQL = Path(__file__).resolve().parent.parent / "sql"
-FILES = ("78_novi_stick_locations.sql", "22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
+FILES = ("22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
 TILE_SQL = ("EXPLAIN (FORMAT TEXT) SELECT stick_id FROM curated.erebor_locations WHERE basin = 'delaware' AND wellstick_geom IS NOT NULL "
             "AND extensions.ST_Intersects(wellstick_geom, extensions.ST_Transform(extensions.ST_TileEnvelope(12, 862, 1661), 4326))")
 # what curated.erebor_locations reads, from the catalogue (phase 7 item 2: none of it may be Novi Intelligence;
@@ -85,45 +86,46 @@ def preflight(q, ck: Checks) -> dict:
 
 
 def swap(cur, ck: Checks, container: bool = False) -> dict:
-    """Steps 1 to 7 inside the caller's transaction. `container` = the scripts.box_rehearsal database: curated objects are
-    mirrored there as plain TABLES (so the mirrored curated.erebor_locations table is dropped first), and sql/26 / sql/31 are
-    skipped because they name relations the container does not hold."""
+    """Steps 1 to 6 inside the caller's transaction. `container` = the scripts.box_rehearsal database: curated objects are
+    mirrored there as plain TABLES (so the mirrored curated.erebor_locations table is dropped first; after an earlier
+    committed rehearsal it is already the matview and sql/22's own drop takes it), and sql/26 / sql/31 are skipped because
+    they name relations the container does not hold. The container is told from live by its host (DB_HOST = localhost)."""
     q = cur.execute
+    mirrored = False
     if container:
-        host = q("SELECT inet_server_port(), current_database()").fetchone()
+        host = os.environ.get("DB_HOST", "")
+        if host not in ("localhost", "127.0.0.1"):
+            raise SystemExit(f"--container: DB_HOST is {host!r}, not the rehearsal container on localhost (scripts.box_rehearsal env)")
         tab = q("SELECT c.relkind FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'curated' AND c.relname = 'erebor_locations'").fetchone()
-        if tab is None or tab[0] != "r":
-            raise SystemExit(f"--container: curated.erebor_locations is not a mirrored table here ({host}, relkind {tab}); this is not the rehearsal container state")
-    print("[1/7] preflight", flush=True)
+        if tab is None or tab[0] not in ("r", "m"):
+            raise SystemExit(f"--container: curated.erebor_locations is neither the mirrored table nor the matview here (relkind {tab})")
+        mirrored = tab[0] == "r"
+    print("[1/6] preflight", flush=True)
     before = preflight(q, ck)
     if ck.bad:
         return before
-    if container:
+    if mirrored:
         q("DROP TABLE curated.erebor_locations CASCADE")           # the mirror's plain table; on live it is the matview sql/22 drops
+    if container:
         q("DROP VIEW IF EXISTS curated.box_scout_locations")
-    for i, name in enumerate(FILES[:2], start=2):
+    for i, name in enumerate(FILES[:1], start=2):
         t = time.monotonic()
-        print(f"[{i}/7] sql/{name}", flush=True)
+        print(f"[{i}/6] sql/{name}", flush=True)
         q((SQL / name).read_text(encoding="utf-8"))
         print(f"    done in {time.monotonic() - t:.0f} s", flush=True)
-    print("[4/7] re-create curated.box_scout_locations (sql/69)", flush=True)
+    print("[3/6] re-create curated.box_scout_locations (sql/69)", flush=True)
     recreate_box_scout(cur)
-    for i, name in enumerate(FILES[2:], start=5):
+    for i, name in enumerate(FILES[1:], start=4):
         if container:
-            print(f"[{i}/7] sql/{name}: skipped in the rehearsal container", flush=True)
+            print(f"[{i}/6] sql/{name}: skipped in the rehearsal container", flush=True)
             continue
-        print(f"[{i}/7] sql/{name}", flush=True)
+        print(f"[{i}/6] sql/{name}", flush=True)
         q((SQL / name).read_text(encoding="utf-8"))
 
-    print("[7/7] checks", flush=True)
+    print("[6/6] checks", flush=True)
     kind = dict(q("SELECT c.relname, c.relkind FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'curated' "
-                  "AND c.relname IN ('erebor_locations', 'novi_stick_locations', 'box_scout_locations')").fetchall())
-    ck(kind == {"erebor_locations": "m", "novi_stick_locations": "m", "box_scout_locations": "v"}, f"three relations exist with their kinds ({kind})")
-    n_novi = int(q("SELECT count(*) FROM curated.novi_stick_locations").fetchone()[0])
-    ck(n_novi == before["novi"], f"curated.novi_stick_locations rows = Novi PUD + RES sticks ({n_novi:,} = {before['novi']:,})")
-    old_undrilled = sum(n for c, n in before["old"].items() if c in ("PUD", "RES"))
-    if old_undrilled:      # the first cutover: the Novi arm moved, row for row
-        ck(n_novi == old_undrilled, f"... and = the undrilled rows curated.erebor_locations carried before ({old_undrilled:,})")
+                  "AND c.relname IN ('erebor_locations', 'box_scout_locations')").fetchall())
+    ck(kind == {"erebor_locations": "m", "box_scout_locations": "v"}, f"both relations exist with their kinds ({kind})")
     got = {(b, c): int(n) for b, c, n in q("SELECT basin, category, count(*) FROM curated.erebor_locations GROUP BY 1, 2").fetchall()}
     ck({c for _, c in got} == {"BOX", "PDP"}, f"categories are BOX and PDP only ({sorted({c for _, c in got})})")
     for b, (u, n, _) in before["expect"].items():
@@ -144,8 +146,8 @@ def swap(cur, ck: Checks, container: bool = False) -> dict:
                "WHERE el.category = 'BOX' AND NOT EXISTS (SELECT 1 FROM raw_novi_intel.pads p WHERE p.report_version = t.dsu_vintage "
                "AND p.pad_id = el.pad_id AND p.basin = el.basin AND p.geom IS NOT NULL)").fetchone()[0]
     ck(nopoly == 0, f"every DSU of a BOX row has a polygon in raw_novi_intel.pads at the set's vintage ({nopoly} do not)")
-    idx = {r[0] for r in q("SELECT indexname FROM pg_indexes WHERE schemaname = 'curated' AND tablename IN ('erebor_locations', 'novi_stick_locations')").fetchall()}
-    need = {"idx_erebor_locations_pk", "idx_erebor_locations_geom", "idx_novi_stick_locations_pk", "idx_novi_stick_locations_geog"}
+    idx = {r[0] for r in q("SELECT indexname FROM pg_indexes WHERE schemaname = 'curated' AND tablename = 'erebor_locations'").fetchall()}
+    need = {"idx_erebor_locations_pk", "idx_erebor_locations_geom"}
     ck(need <= idx, f"the unique and spatial indexes exist ({sorted(need - idx) or 'all'})")
     plan = [r[0] for r in q(TILE_SQL).fetchall()]
     ck(any("idx_erebor_locations_geom" in p for p in plan), "the tile predicate uses idx_erebor_locations_geom (EXPLAIN)")

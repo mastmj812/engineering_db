@@ -74,9 +74,40 @@ def test_the_novi_sticks_move_column_for_column_and_deal_intake_reads_them_there
     assert "FROM curated.erebor_locations" not in di and "JOIN curated.erebor_locations" not in di
 
 
-def test_the_quarterly_rebuild_recreates_the_novi_table_before_sql22():
-    src = (ROOT / "scripts" / "apply_erebor_locations.py").read_text(encoding="utf-8")
-    assert src.index("cur.execute(novi)") < src.index("cur.execute(erebor)") and "78_novi_stick_locations.sql" in src
+def test_no_chain_script_builds_a_retired_novi_relation():
+    """BOX sticks phase 8 step 2: sql/25, sql/30 and sql/78 are built by no script of the quarterly or the tag chain, and
+    sql/31 comments none of them (so it applies whether or not they still stand on live)."""
+    from scripts import apply_formation_tag_overrides as afo
+    from scripts import apply_formation_tag_rule as atr
+
+    assert set(afo.RETIRED) == {"curated.net_new_pdp", "curated.intel_pdp_support", "curated.novi_stick_locations"}
+    assert not set(afo.RETIRED) & set(afo.CHAIN) and not set(afo.RETIRED) & set(atr.RECREATED_BY)
+    tail = " ".join(" ".join(c) for c in atr.TAIL)
+    for name in ("25_net_new_pdp", "apply_intel_pdp_support", "78_novi_stick_locations", "novi-sticks-only"):
+        assert name not in tail, name
+    for script in ("apply_erebor_locations.py", "apply_box_stick_locations.py"):
+        src = (ROOT / "scripts" / script).read_text(encoding="utf-8")
+        assert "78_novi_stick_locations.sql" not in src and "FROM curated.novi_stick_locations" not in src, script
+    comments = (ROOT / "sql" / "31_comments.sql").read_text(encoding="utf-8")
+    for rel in afo.RETIRED:
+        assert f"COMMENT ON COLUMN {rel}." not in comments and f"COMMENT ON MATERIALIZED VIEW {rel} " not in comments, rel
+    skill = (ROOT / ".claude" / "skills" / "novi-quarterly-reload" / "SKILL.md").read_text(encoding="utf-8")
+    block = skill[skill.index("python -m scripts.load_intel_sf --curated"):skill.index("26_geography_indexes.sql")]
+    assert "25_net_new_pdp" not in block and "apply_intel_pdp_support" not in block and "--after-reload" in block
+
+
+def test_a_retired_matview_still_on_live_does_not_block_the_tag_chain():
+    """From the 2026-11-24 cutover the seed reload's preflight refused: curated.novi_stick_locations sat below
+    formation_blueox and was not in CHAIN. A retired matview is neither refreshed nor required."""
+    from scripts import apply_formation_tag_overrides as afo
+    from scripts import apply_formation_tag_rule as atr
+
+    parents = {m: set() for m in afo.CHAIN} | {r: {"curated.intel_formation_blueox"} for r in afo.RETIRED}
+    assert afo.chain_problems(afo.CHAIN, parents) == []
+    assert afo.chain_problems(afo.CHAIN, parents | {"curated.some_new_matview": set()}) == [
+        "live matview missing from CHAIN: curated.some_new_matview"]
+    closure = {o: "m" for o in atr.RECREATED_BY} | {r: "m" for r in afo.RETIRED}
+    assert atr.cascade_problems(closure)[0] == []
 
 
 # ---- phase 7 item 2: nothing here is derived from Novi Intelligence, and a quarterly reload drops nothing an app reads ----
@@ -99,7 +130,7 @@ def test_the_shape_is_unchanged_and_the_novi_columns_are_typed_nulls():
     assert re.search(r"NULL::text\s+AS recon_status,", PDP_ARM)                       # a producing well carries no tag
 
 
-def test_the_quarterly_chain_keeps_the_producer_objects_and_ends_on_the_novi_sticks():
+def test_the_quarterly_chain_keeps_the_producer_objects_and_ends_on_the_comments():
     from scripts import apply_erebor_locations as ael
     from scripts import apply_formation_tag_rule as atr
     from scripts import apply_reconciled_inventory as ari
@@ -113,8 +144,9 @@ def test_the_quarterly_chain_keeps_the_producer_objects_and_ends_on_the_novi_sti
     assert "20_producing_reference.sql" not in main and "rebuild_reference()" in main and "check_reference()" in main
     assert main.index("if a.rebuild_reference:") < main.index("check_reference()") < main.index("68_reconcile_all_sticks.sql")
     only = Path(ael.__file__).read_text(encoding="utf-8")
-    only = only[only.index("def novi_sticks_only("):only.index("def main(")]
-    assert "78_novi_stick_locations.sql" in only and "22_erebor_locations.sql" not in only and "recreate_box_scout" not in only
+    only = only[only.index("def after_reload("):only.index("def main(")]
+    assert "31_comments.sql" in only and "22_erebor_locations.sql" not in only and "recreate_box_scout" not in only
+    assert "curated.erebor_locations is missing or empty" in only
     # a structural rebuild (sql/16 dropped the reference) still rebuilds it, and still ends with the full apply
     assert [atr.PY, "-m", "scripts.apply_reconciled_inventory", "--rebuild-reference"] in atr.TAIL
     assert [atr.PY, "-m", "scripts.apply_erebor_locations"] in atr.TAIL
@@ -127,9 +159,9 @@ def test_the_applier_checks_the_catalogue_for_novi_reads():
 
 
 def test_the_swap_is_one_transaction_in_order_and_recreates_the_land_teams_view():
-    assert app.FILES == ("78_novi_stick_locations.sql", "22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
+    assert app.FILES == ("22_erebor_locations.sql", "26_geography_indexes.sql", "31_comments.sql")
     src = Path(app.__file__).read_text(encoding="utf-8")
-    assert "conn.autocommit = False" in src and src.index("recreate_box_scout(cur)") > src.index("for i, name in enumerate(FILES[:2], start=2):")
+    assert "conn.autocommit = False" in src and src.index("recreate_box_scout(cur)") > src.index("for i, name in enumerate(FILES[:1], start=2):")
     assert "if ck.bad or not a.go:" in src and src.index("conn.rollback()") < src.index("conn.commit()")
     assert "REFRESH MATERIALIZED VIEW CONCURRENTLY curated.erebor_locations" in src[src.index("conn.commit()"):]   # only after the commit
 

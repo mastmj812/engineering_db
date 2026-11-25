@@ -724,6 +724,21 @@ Steps, each its own gate:
    step 3) and the Midland groups in `box_refresh` (`GROUPS_BY_BASIN` still holds Delaware only).
 2. **Shrink the quarterly chain (code + the reload skill):** drop the `apply_intel_pdp_support`, sql/25 and
    `--novi-sticks-only` steps; rehearse in the container.
+   **Built 2026-11-25 (step 1 merged as PR 285 + erebor PR 35).** No script builds sql/25, sql/30 or sql/78 any more:
+   the quarterly chain is sql/29 -> pad geometry -> `apply_intel_formation_blueox` -> `apply_reconciled_inventory` ->
+   `apply_intel_forecast_accuracy` -> `apply_erebor_locations --after-reload` (sql/31 comments; checks the location
+   relation stands) -> sql/26. Also out of: the tag chain (`apply_formation_tag_overrides` CHAIN 12 -> 10 matviews,
+   `apply_formation_tag_rule` TAIL and RECREATED_BY), both location appliers (`apply_erebor_locations`,
+   `apply_box_stick_locations`), sql/31 (their comments, so the file applies in either state), the rehearsal mirror.
+   The three are named once, `apply_formation_tag_overrides.RETIRED`: while they still stand on live they are neither
+   refreshed nor required, and a CASCADE that takes one is not an error, so every script runs before and after step 3.
+   **Defect found and fixed here:** since the 2026-11-24 cutover the tag seed reload refused at its preflight ("live
+   matview missing from CHAIN: curated.novi_stick_locations"); no seed reload had been attempted in those two days.
+   Checked: full suite 1,259 passed; on live, read-only, the three tag preflights pass (`--refresh --dry-run`: 10
+   matviews, order respects every live edge; `--seeds --dry-run`; `--structure --dry-run`); in the rehearsal container
+   `apply_box_stick_locations --container` 22 of 22 checks without sql/78 (rolled back). Not rehearsable there: the
+   quarterly chain itself (the container holds no `raw_intel`); its proof is the next reload, which should run about
+   100 minutes shorter. Not done: the tag reload was not run for real, so its new duration is not measured.
 3. **Drop the three relations on live** (explicit go; the catalogue shows nothing else depends on them), with the per-basin
    vintage date. Ask the land team first whether a saved QGIS layer reads `curated.novi_stick_locations`.
 4. **Clean up:** the Novi-stick BOX path, tombstones for the retired SQL files and apply scripts, CLAUDE.md, sql/31 and

@@ -79,8 +79,10 @@ Michael-only (removes it from the accuracy record permanently).
 ## 5. Curated CASCADE rebuild — FIXED ORDER (see memory: quarterly-rebuild-cascade-order)
 
 sql/29 CASCADE-drops the whole intel matview chain (`intel_formation_blueox`,
-`reconciled_inventory`, `net_new_pdp`, `intel_pdp_support`,
-`intel_forecast_accuracy`, `intel_pad_member`, `intel_pad_geom`, `novi_stick_locations`). It no longer
+`reconciled_inventory`, `intel_forecast_accuracy`, `intel_pad_member`, `intel_pad_geom`). Three matviews that
+existed only to make Novi sticks usable as locations are RETIRED (BOX sticks phase 8, 2026-11-25) and are no longer
+built: `net_new_pdp` (sql/25), `intel_pdp_support` (sql/30, 100 of the 111 rebuild minutes of the 2026-11-25
+reload) and `novi_stick_locations` (sql/78). If one still stands on live the CASCADE drops it; do not re-create it. It no longer
 drops `erebor_locations` (sql/22 reads no Novi Intelligence relation since BOX sticks phase 7 item 2).
 apply_reconciled_inventory no longer rebuilds sql/20: it CHECKS that `producing_reference`, `formation_blueox_tvd`,
 `wells_enriched`, `codev_context` and `dev_scenario` stand (none reads Novi; the nightly keeps them) and builds
@@ -93,11 +95,9 @@ python -m scripts.load_intel_sf --curated              # sql/29: intel_locations
 python -m scripts.apply_intel_pad_geom                 # sql/67: pads = Novi DSU polygons of this vintage (+stray hulls); erebor Highgrade
 python -m scripts.apply_intel_formation_blueox         # sql/19
 python -m scripts.apply_reconciled_inventory           # checks the producer objects, then sql/68 (every Novi stick, D117; sql/21 retired)
-python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('25_net_new_pdp.sql')"
-python -m scripts.apply_intel_pdp_support              # sql/30 — must precede novi_stick_locations (sql/78 reads it)
 python -m scripts.apply_intel_forecast_accuracy        # sql/38 + sql/43 (self-applies sql/26 first)
-python -m scripts.apply_erebor_locations --novi-sticks-only   # FINAL curated step: curated.novi_stick_locations (sql/78,
-                                                       # the Novi sticks) + sql/31 comments; refuses if erebor_locations is gone
+python -m scripts.apply_erebor_locations --after-reload       # FINAL curated step: sql/31 comments; refuses if
+                                                       # erebor_locations is gone, and checks it is untouched
 python -c "from scripts.load_intel_sf import run_sql_file; run_sql_file('26_geography_indexes.sql')"
 ```
 
@@ -148,9 +148,9 @@ Otherwise the 3Q25 land grid + outline stay.
 - Row-count sanity: `intel_locations` ~252k (grows with vintage),
   `reconciled_inventory` = the mapped Novi STICK universe exactly — PUD + RES
   since D117 / sql/68 (2026-10-21), one row per stick with geometry and a
-  non-null formation_blueox; verify the identity, not a constant, `novi_stick_locations` = the Novi PUD + RES sticks of
-  `intel_locations`, `erebor_locations` UNCHANGED by the reload (BOX sticks + producing wells), `intel_pdp_support`
-  ~204k (= PUD+RES universe).
+  non-null formation_blueox; verify the identity, not a constant; `erebor_locations` UNCHANGED by the reload (BOX
+  sticks + producing wells). `novi_stick_locations`, `intel_pdp_support` and `net_new_pdp` are retired (phase 8): absent
+  after a reload is correct.
 - EXPLAIN the erebor tile query (pattern in `apply_erebor_locations.py`) —
   must show the GiST/geography index, not a seq scan.
 - Load the erebor map + narvi inventory page against the live warehouse.
