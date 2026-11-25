@@ -63,7 +63,7 @@ def test_sql68_match_rule_is_sql21s():
 def test_sql21_is_retired():
     text = _read("21_reconciled_inventory.sql")
     assert "RETIRED" in text and "DO NOT RUN" in text and "68_reconcile_all_sticks.sql" in text
-    assert not re.search(r"^\s*(CREATE|DROP)\b", _strip_comments(text), re.M | re.I)
+    assert not re.search(r"^\s*(CREATE|DROP)\b", _strip_comments(text), re.MULTILINE | re.IGNORECASE)
 
 
 def test_net_new_and_vintage_accuracy_match_every_stick():
