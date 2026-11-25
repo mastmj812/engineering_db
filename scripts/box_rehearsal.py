@@ -44,9 +44,10 @@ MIRROR = ("curated.reconciled_inventory", "curated.erebor_locations", "curated.i
           "curated.wells_enriched", "curated.production",
           # gate 5b: the nightly BOX sticks reconciliation also reads this (with curated.wells_enriched and raw_novi_intel.pads above)
           "curated.well_lateral_survey",
-          # phase 6 (BOX sticks cutover): the nightly status a run on BOX sticks and sql/22's BOX arm read; and what sql/22's PDP arm
-          # and sql/78 join, so scripts.apply_box_stick_locations can be rehearsed here
-          "curated.box_location_status", "curated.net_new_pdp", "curated.intel_pdp_support")
+          # phase 6 (BOX sticks cutover): the nightly status a run on BOX sticks and sql/22's BOX arm read, so
+          # scripts.apply_box_stick_locations can be rehearsed here (phase 8: net_new_pdp and intel_pdp_support, which
+          # sql/78 joined, are retired and no longer mirrored)
+          "curated.box_location_status")
 PG17_ONLY = re.compile(r"^SET (transaction_timeout|idle_session_timeout)\b.*$", re.MULTILINE)
 
 

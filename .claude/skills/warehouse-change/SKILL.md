@@ -48,8 +48,8 @@ dictionary).
 - sql/29 CASCADE-drops the whole intel chain incl. `erebor_locations`; sql/20 additionally kills
   sql/23 + `wells_enriched`. Quarterly chain of record: sql/29 →
   `apply_intel_formation_blueox` → `apply_reconciled_inventory` (checks the producer objects, then sql/68) →
-  sql/25 → `apply_intel_pdp_support` →
-  `apply_intel_forecast_accuracy` → `apply_erebor_locations --novi-sticks-only` (FINAL; sql/78) → sql/26.
+  `apply_intel_forecast_accuracy` → `apply_erebor_locations --after-reload` (FINAL; sql/31 comments) → sql/26.
+  (sql/25 `net_new_pdp`, sql/30 `intel_pdp_support` and sql/78 `novi_stick_locations` are retired, BOX sticks phase 8.)
   Since BOX sticks phase 7 item 2 the reload does not drop `erebor_locations`; only a from-scratch rebuild of
   `curated.wells` or sql/20 (`apply_reconciled_inventory --rebuild-reference`) does, and that ends with the full
   `apply_erebor_locations`.

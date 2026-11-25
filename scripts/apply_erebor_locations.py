@@ -18,17 +18,17 @@ docs/erebor_locations_materialization.md for rationale + measured before/after.
 
 Quarterly Novi reload (.claude/skills/novi-quarterly-reload/SKILL.md): its LAST curated step is
 
-    python -m scripts.apply_erebor_locations --novi-sticks-only
+    python -m scripts.apply_erebor_locations --after-reload
 
-which rebuilds only curated.novi_stick_locations (sql/78: the Novi sticks, dropped with curated.intel_locations) and
-re-applies the sql/31 comments. curated.erebor_locations itself reads no Novi Intelligence relation since phase 7 item 2
-(docs/box_sticks_plan.md) and is NOT dropped by a reload, so it is not touched and erebor stays up.
+which re-applies the sql/31 comments and checks curated.erebor_locations still stands. That relation reads no Novi
+Intelligence relation since phase 7 item 2 (docs/box_sticks_plan.md) and is NOT dropped by a reload, so it is not touched
+and erebor stays up. (The Novi stick table sql/78 this step used to rebuild is retired, phase 8.)
 
 The full run (no flag) is for a structural rebuild that did drop curated.erebor_locations: curated.wells (sql/04) or
 curated.producing_reference (sql/20, e.g. apply_reconciled_inventory --rebuild-reference) rebuilt from scratch.
 
 Run from repo root in the venv:
-    python -m scripts.apply_erebor_locations [--novi-sticks-only]
+    python -m scripts.apply_erebor_locations [--after-reload]
 """
 
 from __future__ import annotations
@@ -49,8 +49,10 @@ def _slice(text: str, start: str, end: str) -> str:
     return text[i:j]
 
 
-def novi_sticks_only() -> int:
-    """The quarterly reload's last curated step: sql/78 and the comments. curated.erebor_locations must be standing."""
+def after_reload() -> int:
+    """The quarterly reload's last curated step: the sql/31 comments (the reload's CASCADE takes the intel matviews'
+    comments with them). curated.erebor_locations must be standing and is not touched. Until BOX sticks phase 8 this
+    step also rebuilt curated.novi_stick_locations (sql/78), which is retired."""
     t0 = time.monotonic()
     conn = get_connection()
     try:
@@ -63,16 +65,12 @@ def novi_sticks_only() -> int:
                 raise SystemExit("curated.erebor_locations is missing or empty: something dropped it (a from-scratch rebuild of "
                                  "curated.wells or curated.producing_reference?). Run the full python -m scripts.apply_erebor_locations.")
             before = q("SELECT category, count(*) FROM curated.erebor_locations GROUP BY 1 ORDER BY 1").fetchall()
-            print("[1/2] materialize curated.novi_stick_locations (sql/78: the Novi PUD / RES sticks)", flush=True)
-            q((SQL / "78_novi_stick_locations.sql").read_text(encoding="utf-8"))
+            print("[1/2] re-apply data-dictionary comments (sql/31)", flush=True)
             q((SQL / "31_comments.sql").read_text(encoding="utf-8"))
             print("[2/2] validation", flush=True)
-            n, want = q("SELECT (SELECT count(*) FROM curated.novi_stick_locations), "
-                        "(SELECT count(*) FROM curated.intel_locations WHERE category IN ('PUD', 'RES'))").fetchone()
             after = q("SELECT category, count(*) FROM curated.erebor_locations GROUP BY 1 ORDER BY 1").fetchall()
-            ok = n == want and after == before
-            print(f"    curated.novi_stick_locations rows = Novi PUD + RES sticks: {n:,} = {want:,}: {n == want}", flush=True)
-            print(f"    curated.erebor_locations untouched: {before} -> {after}: {after == before}", flush=True)
+            ok = after == before
+            print(f"    curated.erebor_locations untouched: {before} -> {after}: {ok}", flush=True)
     finally:
         conn.close()
     print(f"=== {'DONE' if ok else 'FAILED'} in {time.monotonic() - t0:.0f}s ===", flush=True)
@@ -81,14 +79,13 @@ def novi_sticks_only() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--novi-sticks-only", action="store_true",
-                    help="the quarterly reload's last step: rebuild curated.novi_stick_locations only; curated.erebor_locations is not touched")
+    ap.add_argument("--after-reload", action="store_true",
+                    help="the quarterly reload's last step: sql/31 comments only; curated.erebor_locations is checked, not touched")
     a = ap.parse_args(argv)
-    if a.novi_sticks_only:
-        return novi_sticks_only()
+    if a.after_reload:
+        return after_reload()
     t0 = time.monotonic()
     erebor = (SQL / "22_erebor_locations.sql").read_text(encoding="utf-8")
-    novi = (SQL / "78_novi_stick_locations.sql").read_text(encoding="utf-8")
     s06 = (SQL / "06_curated_derived.sql").read_text(encoding="utf-8")
     refresh_block = _slice(
         s06,
@@ -100,10 +97,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         conn.autocommit = True
         with conn.cursor() as cur:
-            print("[1/4] materialize curated.novi_stick_locations (sql/78: the Novi PUD / RES sticks) and "
-                  "curated.erebor_locations (sql/22: BOX sticks + producing wells) — WITH DATA + indexes", flush=True)
+            print("[1/4] materialize curated.erebor_locations (sql/22: BOX sticks + producing wells) — WITH DATA + indexes", flush=True)
             t = time.monotonic()
-            cur.execute(novi)  # the quarterly reload CASCADE-dropped it with curated.intel_locations
             cur.execute(erebor)
             print(f"    built in {time.monotonic() - t:.0f}s", flush=True)
             recreate_box_scout(cur)  # sql/22's CASCADE drops the dependent sql/69 view

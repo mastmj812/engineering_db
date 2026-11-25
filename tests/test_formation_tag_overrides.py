@@ -57,19 +57,16 @@ import pytest
 
 from scripts import apply_formation_tag_overrides as afo
 
-# Live rewrite edges below curated.formation_blueox (pg_depend, 2026-10-28):
-# (child, child relkind, parent, parent relkind).
+# Live rewrite edges below curated.formation_blueox (pg_depend, 2026-11-25, after the BOX sticks cutover and
+# before phase 8's drops): (child, child relkind, parent, parent relkind). curated.erebor_locations reads
+# only wells_enriched now; the three RETIRED matviews still stand.
 _M, _V = "m", "v"
-LIVE_EDGES_2026_10_28 = [
+LIVE_EDGES_2026_11_25 = [
     ("curated.bench_reference", _M, "curated.formation_blueox", _M),
     ("curated.box_scout_locations", _V, "curated.erebor_locations", _M),
     ("curated.codev_context", _M, "curated.formation_blueox", _M),
     ("curated.codev_context", _M, "curated.formation_blueox_tvd", _M),
     ("curated.dev_scenario", _V, "curated.codev_context", _M),
-    ("curated.erebor_locations", _M, "curated.intel_formation_blueox", _M),
-    ("curated.erebor_locations", _M, "curated.intel_pdp_support", _M),
-    ("curated.erebor_locations", _M, "curated.net_new_pdp", _M),
-    ("curated.erebor_locations", _M, "curated.reconciled_inventory", _M),
     ("curated.erebor_locations", _M, "curated.wells_enriched", _V),
     ("curated.formation_blueox_tvd", _M, "curated.producing_reference", _M),
     ("curated.intel_forecast_accuracy", _M, "curated.formation_blueox_tvd", _M),
@@ -86,6 +83,9 @@ LIVE_EDGES_2026_10_28 = [
     ("curated.net_new_pdp", _M, "curated.formation_blueox_tvd", _M),
     ("curated.net_new_pdp", _M, "curated.intel_formation_blueox", _M),
     ("curated.net_new_pdp", _M, "curated.producing_reference", _M),
+    ("curated.novi_stick_locations", _M, "curated.intel_formation_blueox", _M),
+    ("curated.novi_stick_locations", _M, "curated.intel_pdp_support", _M),
+    ("curated.novi_stick_locations", _M, "curated.reconciled_inventory", _M),
     ("curated.producing_reference", _M, "curated.formation_blueox", _M),
     ("curated.reconciled_inventory", _M, "curated.formation_blueox_tvd", _M),
     ("curated.reconciled_inventory", _M, "curated.intel_formation_blueox", _M),
@@ -93,17 +93,22 @@ LIVE_EDGES_2026_10_28 = [
     ("curated.wells_enriched", _V, "curated.formation_blueox", _M),
     ("curated.wells_enriched", _V, "curated.formation_blueox_tvd", _M),
 ]
+# the same graph once phase 8 step 3 has dropped the retired matviews
+EDGES_AFTER_THE_DROPS = [e for e in LIVE_EDGES_2026_11_25 if e[0] not in afo.RETIRED and e[2] not in afo.RETIRED]
 
 
 def test_chain_is_a_valid_refresh_of_the_live_graph():
-    parents = afo.matview_parents(LIVE_EDGES_2026_10_28)
-    assert set(parents) == set(afo.CHAIN)
+    # valid in BOTH states: with the retired matviews still standing (today) and after their drop
+    parents = afo.matview_parents(LIVE_EDGES_2026_11_25)
+    assert set(parents) == set(afo.CHAIN) | set(afo.RETIRED)
     assert afo.chain_problems(afo.CHAIN, parents) == []
+    after = afo.matview_parents(EDGES_AFTER_THE_DROPS)
+    assert set(after) == set(afo.CHAIN) and afo.chain_problems(afo.CHAIN, after) == []
     assert afo.CHAIN[0] == afo.ROOT and afo.CHAIN[-1] == "curated.erebor_locations"
 
 
 def test_matview_parents_sees_through_views():
-    parents = afo.matview_parents(LIVE_EDGES_2026_10_28)
+    parents = afo.matview_parents(LIVE_EDGES_2026_11_25)
     # erebor_locations reads formation_blueox_tvd only through wells_enriched
     assert "curated.formation_blueox_tvd" in parents["curated.erebor_locations"]
     assert "curated.wells_enriched" not in parents["curated.erebor_locations"]
@@ -111,14 +116,14 @@ def test_matview_parents_sees_through_views():
 
 
 def test_chain_problems_catches_order_missing_and_extra():
-    parents = afo.matview_parents(LIVE_EDGES_2026_10_28)
+    parents = afo.matview_parents(LIVE_EDGES_2026_11_25)
     swapped = list(afo.CHAIN)
-    i, j = swapped.index("curated.intel_pdp_support"), swapped.index("curated.erebor_locations")
+    i, j = swapped.index("curated.reconciled_inventory"), swapped.index("curated.intel_forecast_accuracy")
     swapped[i], swapped[j] = swapped[j], swapped[i]
     assert any("before its parent" in p for p in afo.chain_problems(swapped, parents))
-    short = [m for m in afo.CHAIN if m != "curated.net_new_pdp"]
+    short = [m for m in afo.CHAIN if m != "curated.codev_context"]
     assert afo.chain_problems(short, parents) == [
-        "live matview missing from CHAIN: curated.net_new_pdp"]
+        "live matview missing from CHAIN: curated.codev_context"]
     extra = [*afo.CHAIN, "curated.production"]
     assert afo.chain_problems(extra, parents) == [
         f"CHAIN member not below {afo.ROOT} live: curated.production"]

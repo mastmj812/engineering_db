@@ -268,6 +268,6 @@ def test_recreated_by_covers_the_refresh_chain_and_the_three_views():
     views = {"curated.wells_enriched", "curated.dev_scenario", "curated.box_scout_locations"}
     assert set(atr.RECREATED_BY) == set(afo.CHAIN) | views
     tail = " ".join(" ".join(c) for c in atr.TAIL)
-    for step in set(atr.RECREATED_BY.values()) - {"sql/16", "sql/25"}:
+    for step in set(atr.RECREATED_BY.values()) - {"sql/16"}:
         assert step in tail
-    assert "25_net_new_pdp.sql" in tail
+    assert "25_net_new_pdp.sql" not in tail and "apply_intel_pdp_support" not in tail      # retired, BOX sticks phase 8
