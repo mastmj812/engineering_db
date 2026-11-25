@@ -592,6 +592,23 @@ repos and from live; what is left, in order, each its own gate:
    those three columns (79,138 BOX, 60,992 producing wells there), the land team's view identical, and
    `DROP curated.intel_locations CASCADE` no longer takes the relation. Apply = `python -m scripts.apply_box_stick_locations
    --go` (one transaction, about 20 s; it now also checks the catalogue for Novi reads). Part B's real test is the next reload.
+   **Part B tested on live 2026-11-25 00:00 to 03:13 UTC (the Midland 2026Q4 Novi Intelligence reload): PASS.** Slices
+   113,435 wellbores (81,916 undrilled + 31,519 producing) in 3 min, forecast 29,407,844 rows in 54 min, then the nine
+   rebuild steps in the skill's order with the default (checking) `apply_reconciled_inventory` and the
+   `--novi-sticks-only` ending, 1 h 51 min (`apply_intel_pdp_support` 100 min of it, 50 min in its own concurrent-refresh
+   smoke test). After every step and at the end: `curated.erebor_locations`, `box_scout_locations`, `wells_enriched`,
+   `codev_context`, `dev_scenario`, `producing_reference`, `formation_blueox_tvd`, `formation_blueox`, `wells` and
+   `box_location_status` were the same database objects with the same row counts, and the row fingerprints of
+   erebor_locations, the land view, the forecast records, the stick sets and the DSU polygons were identical; erebor
+   answered throughout. Before the first step the catalogue showed sql/29's CASCADE reaching 11 Novi-side relations and none
+   of those ten. Novi side after: Delaware 2026Q3 204,313 + Midland 2026Q4 113,435; `reconciled_inventory` =
+   `intel_pdp_support` = `novi_stick_locations` = 252,131 = the undrilled Novi sticks. Midland 2026Q3 was then deleted
+   in full (Michael's choice; `scripts.delete_superseded_vintage --go`, 17 min: 31,298,338 forecast rows + 15 tables,
+   the other four reports, `stick_id_map` 562,953 and the DSU polygons 25,625 unchanged) and the pass test repeated.
+   First mixed vintage: `curated.intel_vintage_date()` is 2026-12-31 for both basins. With data through 2026-09 no well
+   has first production after 2026-09-30, so tonight it changes no drift / phantom class (`net_new_pdp` 0 rows under
+   either date; `intel_forecast_accuracy` 0 rows, its count before the reload not recorded). A per-basin date is open.
+   Not done: no pad load (2026Q4 DSU polygons), the six crosswalk rows, `--rebuild-reference` still never run.
 3. **narvi.** `_STICK_SQL` (the unit inventory) and `available_benches` (counts, fallback landing depth, suggested spacing) read
    BOX sticks.
 4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After

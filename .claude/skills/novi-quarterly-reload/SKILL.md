@@ -165,7 +165,12 @@ python -m scripts.trim_superseded_vintage --all-superseded --dry-run   # counts 
 python -m scripts.trim_superseded_vintage --all-superseded
 ```
 
-Deletes the superseded vintage's forecast rows with mop > 24 (chunked, with
+The other choice, Michael-only and per vintage, is the FULL delete
+(`python -m scripts.delete_superseded_vintage --report <report_name>`, dry run
+by default, `--go` deletes, then `apply_intel_forecast_accuracy`; first use
+Midland 2026Q3 on 2026-11-24, about 17 min). Never take it without his word.
+
+The trim deletes the superseded vintage's forecast rows with mop > 24 (chunked, with
 settle() pauses; verifies the sql/43 accuracy grain is untouched by refreshing
 it and comparing per-vintage direct-well counts; plain VACUUM at the end makes
 the freed pages reusable for the NEXT reload instead of growing provisioned
