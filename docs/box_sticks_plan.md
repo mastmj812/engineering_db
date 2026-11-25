@@ -741,6 +741,22 @@ Steps, each its own gate:
    100 minutes shorter. Not done: the tag reload was not run for real, so its new duration is not measured.
 3. **Drop the three relations on live** (explicit go; the catalogue shows nothing else depends on them), with the per-basin
    vintage date. Ask the land team first whether a saved QGIS layer reads `curated.novi_stick_locations`.
+   **Applied on live 2026-11-25 20:2x UTC on Michael's "Yes, apply now"** (`python -m scripts.apply_retire_novi_sticks --go`,
+   117 s, every check passed; step 2 merged as PR 286). sql/80: `DROP MATERIALIZED VIEW` x3 without CASCADE
+   (`novi_stick_locations` 151 MB, `intel_pdp_support` 36 MB, `net_new_pdp` 0 rows) and
+   `curated.intel_vintage_date_by_basin()` (Delaware 2026Q3 -> 2026-09-30, Midland 2026Q4 -> 2026-12-31). sql/68 now
+   splits `realized_drift` / `realized_phantom` at the date of the stick's own basin; `apply_reconciled_inventory` runs
+   sql/80 before it. Rebuilt: `reconciled_inventory` 27 s (252,131 rows = the mapped Novi stick universe),
+   `intel_forecast_accuracy` + `_vintage` 73 s (0 and 120,981 rows, as before). Dark meanwhile: erebor's Accuracy tab only.
+   The 11 relations the apps read (among them `erebor_locations` 79,115 BOX + 61,012 producing wells, the land view 69,300,
+   `wells_enriched`, the dev-scenario objects) are the same objects with the same rows. Before the go, read-only on live:
+   the new and the old sql/68 definition gave identical rows for all 252,131 sticks, so the per-basin date itself changes
+   no stick today; the rebuilt matview differs from the one built at the 2026-11-25 reload on 15 sticks' status because
+   this morning's nightly loaded wells (the matview is quarterly-owned). The land team was not asked: their role
+   `analyst_ro` has 65 statements in `pg_stat_statements` since 2026-10-20 and none names one of the three (strong, not
+   proof: the log evicts, and a layer saved but unopened for five weeks would not show). After the drop the tag chain's
+   preflight still passes (10 matviews) and erebor's accuracy endpoints answer.
+   The no-argument `curated.intel_vintage_date()` (the newest date across basins) stays for the apps that print one date.
 4. **Clean up:** the Novi-stick BOX path, tombstones for the retired SQL files and apply scripts, CLAUDE.md, sql/31 and
    the data dictionary, the stale skill copy under `Projects/.claude/skills`.
 
