@@ -567,6 +567,10 @@ both records flip unpriced (the 2026-11-04 precedent; sql/69 keeps its rows with
 
 Runs 30 and 32 are kept for a few days after the cutover as the way back, then pruned on Michael's go. A revert is not one
 command: it rebuilds the location relation from Novi sticks and flips the records back.
+**Pruned 2026-11-25 on Michael's go** (`box_prune_runs --run 30 --run 32 --apply --include-priced`, one transaction, 951 s;
+Steven's econ rows for the two runs went with them, 398,832 + 770,368). Live forecast runs are now only the records, 36
+(Delaware) and 38 (Midland); their forecasts and econ rows, the land team's view (69,300) and the map's BOX sticks (79,115) were
+unchanged. There is no stored Novi-stick forecast to flip back to: a revert is a re-run.
 
 ## Phase 7 - The other apps (after phase 6)
 
@@ -574,6 +578,12 @@ command: it rebuilds the location relation from Novi sticks and flips the record
 = BOX sticks + producing wells; Novi sticks in `curated.novi_stick_locations`; `docs/box_sticks/phase6-2026-11-23/STEP4B.md`). The
 erebor item and the locations half of the warehouse item below shipped with it. Scoped the same day from the code of all four
 repos and from live; what is left, in order, each its own gate:
+
+**State 2026-11-25: all four items are built and merged** (engineering_db PRs 277, 278, 282; narvi PR 35), and the first deal
+ran end to end on BOX sticks the same day (Starlight, below). Still open, none started: item 1's refresh trigger and the
+printed chain's Midland; item 2's per-basin Novi vintage date, the six crosswalk rows, the 2026Q4 pad load and
+`--rebuild-reference` never run; narvi's 660 ft PDP standoff flag covers generated wells only; no kept U-turn bench has been
+through a live deal.
 
 1. **BOX batch default (engineering_db).** The builds default to `--source box_sticks`; the refresh chain (`box/refresh13.chain`)
    prints the chain run at the cutover. Open inside it: what makes a BOX refresh due (`box_refresh check` still keys on the Novi
@@ -611,7 +621,7 @@ repos and from live; what is left, in order, each its own gate:
    Not done: no pad load (2026Q4 DSU polygons), the six crosswalk rows, `--rebuild-reference` still never run.
 3. **narvi.** `_STICK_SQL` (the unit inventory) and `available_benches` (counts, fallback landing depth, suggested spacing) read
    BOX sticks.
-   **Built 2026-11-25, narvi PR 35 (open; nothing on the warehouse changes).** narvi reads `box.location_stick` of the record
+   **Built 2026-11-25, narvi PR 35 (merged the same day; narvi restarted on it; nothing on the warehouse changes).** narvi reads `box.location_stick` of the record
    set directly, because 11,701 of the 79,275 record sticks (14.8 %: 8,128 Delaware, 3,573 Midland) are two-leg U-turns
    and `curated.erebor_locations` stores each as one line. Decided the same day (Michael, "Yes, all four"):
    (1) an adopted stick carries a NEW category `box` and bench source `box`; `pud` / `res` / `novi` are refused with a 400
@@ -622,8 +632,8 @@ repos and from live; what is left, in order, each its own gate:
    (36,924 of 79,275 stick depths come from the thickness or grid rungs; producers in the ring still win). Also: unit
    membership is the 30 % overlap over ALL legs; suggested spacing = the median `spacing_ft` of the in-unit BOX sticks;
    each adopted well stores its stick set id. Checked on live, read-only: Delaware pad 9042 adopted 7 of 7 sticks (all
-   U-turn, gunbarrel offsets equal to the stored ones), Midland pad 18207 29 of 29 single sticks. Consequence until
-   item 4: deal-intake's handoff sends `pud` / `novi` and is refused by narvi. anduin: read, not run; it branches on `pdp`
+   U-turn, gunbarrel offsets equal to the stored ones), Midland pad 18207 29 of 29 single sticks. Until item 4 merged,
+   deal-intake's handoff sent `pud` / `novi` and was refused by narvi. anduin: read, not run; it branches on `pdp`
    and on `pud` / `res` only, so a `box` well takes the persisted neighborhood comparison set like a generated well.
 4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After
    narvi, because the handoff saves narvi scenarios.
@@ -642,6 +652,16 @@ repos and from live; what is left, in order, each its own gate:
    unit-benches in scope with their own names, depths and support counts; the dry-run handoff planned them as `box`.
    Not removed: `dealintake.spacing.neighbour_gaps_ft` and its four config knobs, which the BOX stick generator uses to
    measure producing-well spacing (`scripts/box_sticks_phase2a.py`).
+   **Merged 2026-11-25 (PR 282). First deal on it the same day: Starlight** (Reeves, Block 13, `runs/starlight-2026-11-25`).
+   DSU 187-186: WCA_2 kept 5 BOX sticks, WCB_2 kept 4, WCA_1 generated 6; the handoff was applied and narvi saved 9 adopted
+   sticks as category `box` with stick set 24, their own names and depths, beside 6 generated rows and 1 producer. This is
+   the first handoff that adopted BOX sticks end to end. DSU 215-216 was left out (Michael). The older Eggs Tyrone run's
+   dry-run handoff also planned READY on the new names (it has no kept bench). Two findings, fixed in PR 283 (merged):
+   the review-page preview generated rows for kept benches, so the proximity seed judged a generated row at the local
+   median depth (215-216 WCA_1 turned off although its BOX stick was 319 ft above the producer, outside the 300 ft rule)
+   and the gunbarrel drew rows evaluate never used; and a curve with no Novi stick of its bench within 1 mile (Starlight
+   WCA_1 / WCA_2) left the comparison row out without saying so. A kept bench is now shown and judged on its own sticks,
+   flag only, and is never seeded off.
 
 **Decided 2026-11-24 (Michael, "Yes, all four"):**
 
