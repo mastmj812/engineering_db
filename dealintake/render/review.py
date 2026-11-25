@@ -1,6 +1,6 @@
 """The reviewer's picture: one self-contained review.html per run (Gates 1-2).
 
-Per DSU — a map (unit, offset PDP laterals by bench, Novi BASE_CASE sticks
+Per DSU — a map (unit, offset PDP laterals by bench, BOX sticks
 inside vs crossing, the planned chord), a TVD strip (local bench medians
 against the rights window — declared depths, or a formation span resolved by
 stratigraphic order), and a bench table with the proposed scope and why.
@@ -116,10 +116,10 @@ def _lines(ax, geom, **kw) -> None:
 
 
 def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, Any]) -> str:
-    """Plan view: the unit, the offset PDP of its local benches, Novi sticks and
+    """Plan view: the unit, the offset PDP of its local benches, BOX sticks and
     OUR PROPOSED sticks (the narvi preview at the reviewed benches — bold, by
     bench; a U-turn draws both legs; rows the row rules / PDP proximity removed
-    are faint dotted). Novi sticks are drawn only for the benches proposed on
+    are faint dotted). BOX sticks are drawn only for the benches proposed on
     this unit (all benches when none is) — ten stacked benches drawn on top of
     each other hid the plan (RIP Harambe, 2026-10-22). The dashed long-axis
     chord shows only when nothing is proposed."""
@@ -140,13 +140,12 @@ def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, 
             continue
         _lines(ax, line, color=_color(w["bench"]), linewidth=0.9, alpha=0.6, zorder=3)
         seen.add(w["bench"])
-    for s in layers.get("novi", []):
+    for s in layers.get("box", []):
         if planned and bench_code(s["bench"]) not in planned:
             continue
-        base = s["category"] == "PUD"
-        _lines(ax, shp_wkt.loads(s["wkt"]), color=_color(s["bench"]), linewidth=2.6 if base else 1.2,
-               linestyle="-" if s["relation"] == "inside" else ("--" if base else ":"),
-               alpha=(0.55 if planned else 1.0) if base else 0.5, zorder=5 if base else 4)
+        _lines(ax, shp_wkt.loads(s["wkt"]), color=_color(s["bench"]), linewidth=2.6,
+               linestyle="-" if s["relation"] == "inside" else "--",
+               alpha=0.55 if planned else 1.0, zorder=5)
         seen.add(s["bench"])
     pl = u["planned_lateral"]
     for b, p in planned.items():
@@ -177,9 +176,8 @@ def unit_map(u: dict[str, Any], others: list[dict[str, Any]], layers: dict[str, 
         n = sum(len(p["sticks_wkt"]) for p in planned.values())
         handles += [plt.Line2D([], [], color=INK, linewidth=3.4, label=f"PROPOSED ({n} well{'s' * (n != 1)}, narvi preview)"),
                     plt.Line2D([], [], color=INK, linewidth=1.2, linestyle=":", label="removed by row rules / PDP proximity")]
-    handles += [plt.Line2D([], [], color=INK, linewidth=2.6, label="Novi BASE_CASE inside"),
-                plt.Line2D([], [], color=INK, linewidth=2.6, linestyle="--", label="BASE_CASE crossing"),
-                plt.Line2D([], [], color=INK, linewidth=1.2, linestyle=":", label="Novi RES"),
+    handles += [plt.Line2D([], [], color=INK, linewidth=2.6, label="BOX stick inside"),
+                plt.Line2D([], [], color=INK, linewidth=2.6, linestyle="--", label="BOX stick crossing / outside"),
                 plt.Line2D([], [], color=INK, linewidth=0.9, alpha=0.6, label="offset PDP (≤0.45 mi, target benches)"),
                 ] + ([] if planned else [plt.Line2D([], [], color=INK, linewidth=1.4, linestyle=(0, (6, 3)),
                                                     label=f"planned chord {pl['median_ft']:,.0f} ft @ {pl['azimuth_deg']:.0f}°")])
@@ -304,7 +302,7 @@ def gunbarrel(u: dict[str, Any]) -> str:
     """Cross-section perpendicular to the planned azimuth: the PROPOSED rows
     (narvi preview at the reviewed benches — hollow squares on each bench's
     local median TVD) against the EXISTING producers (filled, by bench; faded
-    outside the unit). Novi BASE_CASE sticks are not drawn (Michael,
+    outside the unit). BOX sticks are not drawn here (Michael,
     2026-09-28: our proposal vs PDP, nothing out of scope). The TVD window is
     the proposed benches ± a margin, so a shallow unmapped or a Woodford well
     does not flatten the picture. +offset = rule-16 sign rule v2 (W -> E for
@@ -488,7 +486,7 @@ def render(run_dir: Path) -> Path:
                     + " · ".join(f"{_esc(k)} {_esc(v)}" for k, v in prop["snapshot"].items()) + "</div>"]
     for w in prop.get("warnings", []):
         p.append(f'<div class="warn">{_esc(w)}</div>')
-    p.append("<p>Per DSU: the map (offset PDP laterals and Novi BASE_CASE sticks coloured by bench, the planned chord), "
+    p.append("<p>Per DSU: the map (offset PDP laterals and BOX sticks coloured by bench, the planned chord), "
              "the TVD strip (local offset-well medians against the rights window — <b>declared depths are not local "
              "depths</b>; formation phrases are resolved by stratigraphic order, never into a depth), and the bench "
              "table with the proposed scope and why. Tell me the exceptions; <code>benches.yaml</code> is the record "
@@ -498,10 +496,11 @@ def render(run_dir: Path) -> Path:
                  "existing producer (any bench; share of OUR stick alongside it) is culled — drawn as × on the gunbarrel; "
                  "a bench with every row culled seeds off. Amber squares are near-misses (kept, flagged). "
                  "<code>pdp_proximity: false</code> on a bench keeps its rows.</p>")
-    p.append("<p><b>Row spacing (config v15):</b> a generated bench takes the spacing of the SAME bench's Novi sticks "
-             "near the unit — each stick's gap to its nearest parallel neighbour, median within 1 → 2 → 3 mi (Novi PUD, "
-             "then RES), else the offset PDP's closer-XY. The IQR is beside it; a wide IQR (mixed pattern) or no "
-             "number at all goes to Needs a look. A reviewer <code>spacing_ft</code> overrides it.</p>")
+    p.append("<p><b>Row spacing (config v18):</b> a generated bench takes the spacing of the SAME bench's BOX sticks "
+             "near the unit — the median of the planned spacing those sticks carry, within 1 → 2 → 3 mi, else the "
+             "offset PDP's closer-XY. The IQR is beside it; a wide IQR (mixed pattern) or no number at all goes to "
+             "Needs a look, and the text says when most of the sticks' spacing was set from wells 10+ miles away. "
+             "A reviewer <code>spacing_ft</code> overrides it.</p>")
     p.append(overview_map(prop, classes))
     p.append('<div class="toc">' + " ".join(f'<a href="#{_esc(u["label"])}">{_esc(name[u["label"]])}</a>' for u in units) + "</div>")
     summary = []
@@ -561,23 +560,23 @@ def render(run_dir: Path) -> Path:
                 continue
             on = bool(st and st["evaluate"])
             tvd = f"{r['median_tvd_ft']:,.0f}' (n={r['wells']})" if r.get("median_tvd_ft") is not None else "no local control"
-            novi = "none nearby"
+            box_cell = "none nearby"
             if gg:
-                res = (gg.get("res_inside") or 0) + (gg.get("res_crossing") or 0)
-                novi = f"{gg.get('pud_inside', 0)} in / {gg.get('pud_crossing', 0)} crossing" + (f" · {res} RES" if res else "")
-                if gg.get("novi_azimuth_deg") is not None:
-                    novi += (f" · az {gg['novi_azimuth_deg']:.0f}°"
+                ut = gg.get("box_uturn") or 0
+                box_cell = f"{gg.get('box_inside', 0)} in / {gg.get('box_crossing', 0)} crossing" + (f" · {ut} U-turn" if ut else "")
+                if gg.get("box_azimuth_deg") is not None:
+                    box_cell += (f" · az {gg['box_azimuth_deg']:.0f}°"
                              + (f" ({gg['azimuth_diff_deg']:.0f}° off)" if gg.get("azimuth_diff_deg") else "")
-                             + (f" · {gg['novi_ll_ft']:,.0f} ft" if gg.get("novi_ll_ft") else ""))
+                             + (f" · {gg['box_leg_ft']:,.0f} ft leg" if gg.get("box_leg_ft") else ""))
             loc = "—"
             if on:
-                loc = _Raw(str(_chip("Novi", "#7c3aed") if gg.get("source") == "novi" else _chip("generate", "#db2777"))
+                loc = _Raw(str(_chip("BOX", "#7c3aed") if gg.get("source") == "box" else _chip("generate", "#db2777"))
                            + (f'<br><span class="meta">{_esc(gg.get("reason"))}</span>' if gg.get("reason") else ""))
-            rows.append([_chip(b, _color(b)), tvd, r.get("status", "—"), pdp3.get(b, 0), in_unit.get(b, 0), novi, loc,
+            rows.append([_chip(b, _color(b)), tvd, r.get("status", "—"), pdp3.get(b, 0), in_unit.get(b, 0), box_cell, loc,
                          spacing_cell(b, u, on), proximity_cell(b, u.get("gunbarrel") or {}),
                          _chip("ON", "#059669") if on else _chip("off", "#9ca3af"),
                          _Raw(f'<span class="why">{_esc(st["why"] if st else "not a target bench")}</span>')])
-        p.append(_table(["Bench", "Local TVD", "vs window", "Offset PDP ≤3 mi", "PDP in unit", "Novi BASE_CASE",
+        p.append(_table(["Bench", "Local TVD", "vs window", "Offset PDP ≤3 mi", "PDP in unit", "BOX sticks",
                          "Locations", "Row spacing", "PDP proximity", "Scope", "Why"], rows))
     p.append("</body></html>")
     out = run_dir / "review.html"

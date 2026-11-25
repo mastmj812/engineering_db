@@ -168,8 +168,8 @@ def unit_anchor(row: dict[str, Any], label: str) -> str | None:
 def bench_options(v: dict[str, Any], where: str) -> dict[str, Any]:
     """Reviewer per-bench keys (all optional, VaULt walkthrough 2026-09-28):
       tvd_ft          landing TVD for a bench with thin/no local control (geology call)
-      spacing_ft      row spacing for the generated pattern (overrides the nearby-Novi
-                      spacing, config v15; REQUIRED where none is found nearby)
+      spacing_ft      row spacing for the generated pattern (overrides the nearby BOX-stick
+                      spacing, config v18; REQUIRED where none is found nearby)
       n_wells         cap on rows per unit (4-per-section = 4 at 1,320 ft)
       keep_side       keep only the rows on that compass side of the unit centre
       drop_east_rows / drop_west_rows / drop_north_rows / drop_south_rows

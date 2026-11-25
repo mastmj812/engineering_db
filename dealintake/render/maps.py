@@ -143,7 +143,7 @@ def _draw_planned(ax, B: dict[str, Any], col_of: dict[str, str], stick_labels: b
             parts = list(getattr(shp_wkt.loads(loc["wkt"]), "geoms", None) or [shp_wkt.loads(loc["wkt"])])
             for g in parts:                       # a U-turn draws both legs
                 x, y = g.xy
-                ax.plot(x, y, color=col_of[lb], linewidth=2.6, linestyle="-" if loc["src"] == "novi" else (0, (4, 2)),
+                ax.plot(x, y, color=col_of[lb], linewidth=2.6, linestyle="-" if loc["src"] == "box" else (0, (4, 2)),
                         zorder=4, path_effects=[pe.withStroke(linewidth=4.2, foreground="white")])
             if stick_labels:      # along the stick at its midpoint — toes line up across a unit and collide
                 g = parts[0]
@@ -153,7 +153,7 @@ def _draw_planned(ax, B: dict[str, Any], col_of: dict[str, str], stick_labels: b
                 m = g.interpolate(0.5, normalized=True)
                 ang = math.degrees(math.atan2(y[-1] - y[0], x[-1] - x[0]))
                 ang = ang - 180 if ang > 90 else ang + 180 if ang < -90 else ang
-                ax.text(m.x, m.y, f"{'Novi ' if loc['src'] == 'novi' else ''}{loc['id']}{ll}", fontsize=6,
+                ax.text(m.x, m.y, f"{loc.get('name') or loc['id']}{ll}", fontsize=6,
                         color=col_of[lb], fontweight="bold", zorder=7, rotation=ang, rotation_mode="anchor",
                         transform_rotates_text=True, ha="center", va="bottom", path_effects=_HALO)
 
@@ -217,7 +217,7 @@ def _legend(ax, extra: list[Any]) -> None:
         plt.Line2D([], [], color="#374151", marker="^", linestyle="", label="came on over/under a parent"),
         plt.Line2D([], [], color="#d1d5db", linewidth=1.2, label="other wells on this bench (not in this curve)"),
         plt.Line2D([], [], color="#374151", linewidth=2.4, linestyle="--", label="planned stick (generated)"),
-        plt.Line2D([], [], color="#374151", linewidth=2.4, linestyle="-", label="planned stick (Novi location kept)"),
+        plt.Line2D([], [], color="#374151", linewidth=2.4, linestyle="-", label="planned stick (BOX stick kept)"),
     ], fontsize=6.5, loc="upper right", framealpha=0.92)
 
 

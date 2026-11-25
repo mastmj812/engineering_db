@@ -63,7 +63,11 @@ def test_the_novi_sticks_move_column_for_column_and_deal_intake_reads_them_there
     assert "CREATE UNIQUE INDEX idx_novi_stick_locations_pk" in SQL78
     assert "USING GIST ((wellstick_geom::extensions.geography))" in SQL78               # deal-intake's ST_DWithin on geography
     di = (ROOT / "dealintake" / "warehouse.py").read_text(encoding="utf-8")
-    assert di.count("FROM curated.novi_stick_locations el") == 1 and di.count("JOIN curated.novi_stick_locations el") == 1
+    # phase 7 item 4 (2026-11-25): deal-intake's LOCATIONS are BOX sticks; the Novi table is read only by the
+    # comparison join (the Novi decline parameters of the representative sticks)
+    assert di.count("FROM curated.novi_stick_locations el") == 0 and di.count("JOIN curated.novi_stick_locations el") == 1
+    assert "FROM box.location_stick s" in di and "ls.is_record" in di and "st.counts_as_inventory" in di
+    assert "def novi_sticks(" not in di
     assert "FROM curated.erebor_locations" not in di and "JOIN curated.erebor_locations" not in di
 
 

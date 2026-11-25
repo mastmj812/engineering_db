@@ -5,9 +5,12 @@ statement_timeout — the pipeline never writes to the warehouse. Geometry
 crosses the boundary as WKT in EPSG:4326. Every spatial predicate uses the
 `wellstick_geom::geography` expression text that sql/26's GiST indexes serve.
 
-No economics: the Novi NPV/PV/price columns of curated.novi_stick_locations are
-deliberately never selected. Novi sticks are read from curated.novi_stick_locations
-(sql/78): since the BOX sticks cutover curated.erebor_locations carries BOX sticks.
+Locations are BOX sticks (box.location_stick of the record set, through the BOX
+reconciliation): Gate 2, the adopted locations and the spacing chain read them.
+Novi Intelligence is comparison only (Michael, 2026-11-24): the representative
+Novi sticks and their decline parameters are still read for the dossier's
+Novi-vs-type-curve comparison, and nothing else. No economics: the Novi
+NPV/PV/price columns of curated.novi_stick_locations are never selected.
 """
 
 from __future__ import annotations
@@ -66,23 +69,30 @@ def snapshot(conn) -> dict[str, Any]:
     }
 
 
-def novi_sticks(conn, unit: BaseGeometry, buffer_ft: float = 1320.0) -> list[dict[str, Any]]:
-    """Novi PUD (BASE_CASE) + RES (EMERGING) sticks touching the unit grown by
-    `buffer_ft` — enough to see sticks that CROSS the boundary (Gate 2)."""
+def box_sticks(conn, unit: BaseGeometry, buffer_ft: float = 1320.0) -> list[dict[str, Any]]:
+    """Adoptable BOX sticks touching the unit grown by `buffer_ft` — enough to
+    see sticks that CROSS the boundary (Gate 2). The record stick set(s), and
+    only sticks that count as inventory in curated.box_location_status (open /
+    pending / permitted; a stick with no status row yet is kept) — the same
+    filter narvi adopts by, so a kept bench saves what the dossier counted.
+
+    `geom` is the stick's producing legs (a MultiLineString: one leg, or two for
+    a U-turn); `ll_ft` is the completed lateral (both legs of a U-turn);
+    `spacing_ft` is the stick's own planned leg-to-leg spacing and
+    `spacing_band` the distance band of the wells it was set from."""
     rows = _rows(conn, """
-        SELECT el.stick_id, el.unique_id, el.category, el.inventory_class,
-               el.formation_blueox, el.basin_blueox, el.tvd, el.ll_ft, el.recon_status,
-               el.oil_eur, el.gas_eur,
-               el.pdp_count_1mi, el.pdp_count_3mi, el.pdp_count_5mi,
-               el.dist_nearest_ft, el.offset_median_eur_ft, el.inflation_ratio,
-               el.offset_median_tvd, el.tvd_excess_3mi_ft, el.wca_delta_ft,
-               extensions.ST_AsText(el.wellstick_geom) AS wkt
-        FROM curated.novi_stick_locations el
-        WHERE el.category IN ('PUD', 'RES')
-          AND el.wellstick_geom IS NOT NULL
-          AND extensions.ST_DWithin(el.wellstick_geom::extensions.geography,
+        SELECT s.location_id AS stick_id, s.set_id, s.well_name, s.well_type, s.n_legs,
+               s.formation_blueox, s.basin, s.target_tvd_ft AS tvd, s.completed_lateral_ft AS ll_ft,
+               s.spacing_ft, s.spacing_band, COALESCE(st.status, 'open') AS recon_status,
+               extensions.ST_AsText(s.legs_geom) AS wkt
+        FROM box.location_stick s
+        JOIN box.location_set ls ON ls.set_id = s.set_id AND ls.is_record
+        LEFT JOIN curated.box_location_status st ON st.set_id = s.set_id AND st.location_id = s.location_id
+        WHERE (st.location_id IS NULL OR st.counts_as_inventory)
+          AND extensions.ST_DWithin(s.legs_geom::extensions.geography,
                                     extensions.ST_GeomFromText(%(u)s, 4326)::extensions.geography,
                                     %(buf)s)
+        ORDER BY s.location_id
     """, {"u": unit.wkt, "buf": buffer_ft / 3.280839895})
     for r in rows:
         r["geom"] = shp_wkt.loads(r.pop("wkt"))

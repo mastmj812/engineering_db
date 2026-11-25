@@ -41,8 +41,10 @@ reading guide to its sections.
 - Whenever Di appears (dossier, flags, chat), state nominal (per-year) AND
   1-yr effective % side by side. SPE percentile orientation (P10 = HIGH).
 - Formation grouping is `formation_blueox` only (narvi's `_b` split suffix
-  is stripped by `bench_code`). api10 is the well key; Novi sticks are
-  `stick_id` (PDP rows = `-(api10)`).
+  is stripped by `bench_code`). api10 is the well key. **Locations are BOX
+  sticks** (`box.location_stick` of the record set, ids ≥ 10,000,001; only
+  sticks that count as inventory — config v18, 2026-11-25). Novi Intelligence
+  is comparison only: its sticks feed the Novi-vs-TC figures and nothing else.
 - Novi comparison figures are the **median of representative sticks** —
   not a P50, and not the erebor export's cohort mean.
 - Curve names carry no spaces and no letter suffixes (Michael 2026-10-08):
@@ -161,10 +163,10 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
 - **The review surface is `review.html`** (written by `propose`, re-rendered
   by `python -m dealintake.cli review --run-dir …`): a deal overview map by
   lateral class, then one panel per DSU — the map (offset PDP laterals and
-  Novi BASE_CASE sticks coloured by bench, inside vs crossing, the planned
+  BOX sticks coloured by bench, inside vs crossing, the planned
   chord), the TVD strip (local bench medians against the rights window, the
   declared depth lines drawn as declared-not-local), and the bench table
-  (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, Novi in/crossing,
+  (local TVD, vs window, offset PDP ≤3 mi, PDP in unit, BOX sticks in/crossing,
   location source, scope, why), and the **gunbarrel** (Michael, 2026-09-28):
   a cross-section perpendicular to the planned azimuth in the rule-16 frame
   (origin = unit centroid, sign rule v2: reads W → E for N-S-ish plans, S → N
@@ -173,7 +175,7 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   TVD, "bench: n sticks @ spacing") against the EXISTING producers whose
   lateral overlaps the unit along the laterals (filled = ≥ 30 % co-extent
   in the unit, rule 9; faded = side/partial neighbours; a well entirely
-  beyond the unit's ends is not drawn). Novi BASE_CASE sticks are NOT
+  beyond the unit's ends is not drawn). BOX sticks are NOT
   drawn — our proposal vs PDP only, nothing outside the depth rights; the
   TVD window is the proposed benches ± 1,500 ft (producers outside it are
   counted in the title, not plotted); a producer at a round-100 TVD is drawn
@@ -204,7 +206,7 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   distance — 375 ft / 1,000 ft) in amber; the bench table has a "PDP
   proximity" column; near-misses, permit-TVD producers (round-100 TVD, rule
   10: flagged, never culled) and all-culled benches go to "Needs a look".
-  Novi-sourced benches are flagged, never culled. NOT the sql/50 660-ft
+  Benches that keep BOX sticks are flagged, never culled. NOT the sql/50 660-ft
   vertical-parent gate: that one TAGS analog wells (midpoint offset, 1,000-ft
   band, other-bench parents, shielding) and never removes anything; this one
   removes OUR rows and shares no constant with it. Calibration (Chevron seed,
@@ -220,7 +222,7 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   operator writes these from Michael's calls; `propose` previews and
   `evaluate` honour them: per bench `tvd_ft` (his landing TVD for a bench
   with thin/no local control — a geology call), `spacing_ft` (the pattern —
-  overrides the nearby-Novi spacing below), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
+  overrides the nearby BOX-stick spacing below), `n_wells` (cap, "4-per-section" = 4 @ 1,320), `keep_side:
   west|east|north|south`, `drop_east_rows: n` (and west/north/south — the n
   rows nearest that side, for PDP there or basin-edge conservatism), `role:
   upside`, `winerack: false` (opt OUT of the default stagger — a unit's
@@ -267,40 +269,43 @@ Writes `proposal.json`, `proposal.md`, `thresholds.snapshot.yaml`. Per unit:
   `in_window | edge (within 200 ft of a boundary) | out | no_window |
   no_depth`. Landing TVD is always offset-well medians, never tops. A bench
   with < 3 real-depth wells is marked thin control.
-- **Gate 2 — location source per (unit × bench)** (Michael, 2026-09-25):
-  keep Novi BASE_CASE (PUD) locations ONLY when every stick is inside the
-  unit (50-ft digitizing tolerance) AND the sticks are oriented like our
-  plan (axial difference ≤ `alignment.azimuth_tolerance_deg`, 20°) AND
-  their lateral fits our planned lateral (± the basin tolerance). Otherwise
-  **narvi generates that WHOLE bench** (never a mixed bench). Novi's guess
-  at a unit's infill is often the wrong orientation or length (VaULt 44-45
-  S2: 5k E-W in the west, 5k/10k N-S in the east; most VaULt BASE_CASE
-  sticks are 5,080-ft N-S sticks under 2-mile E-W plans) — the PRESENCE of
-  BASE_CASE sticks is the signal that the bench gets infilled, not a
-  location to copy. The review page shows each bench's Novi azimuth and
-  lateral with the reason. Pad IoU vs
-  `intel_pad_geom` is advisory only (2026Q3 covers Midland only).
-- **Spacing for generated benches** (config v15, Michael 2026-10-22, RIP
-  Harambe — "generate the spacing from the spacing of Novi locations in the
-  respective bench near the parcel"; `dealintake/spacing.py`, config
-  `planned_spacing:`): reviewer `spacing_ft` / `--spacing` → else the SAME
-  bench's **Novi PUD sticks near the unit**: each stick's gap to its nearest
-  PARALLEL neighbour (±15°, alongside ≥ 30 %, median gap over the shared
-  length, < 300 ft = same slot), median within 1 → 2 → 3 mi until ≥ 6 gaps →
-  else the same test on Novi **RES** sticks → else the bench's **offset PDP
+- **Gate 2 — location source per (unit × bench)** (Michael, 2026-09-25; on
+  BOX sticks since config v18, 2026-11-25):
+  keep a bench's BOX sticks ONLY when every stick is inside the
+  unit (50-ft digitizing tolerance, every leg) AND the sticks are oriented
+  like our plan (axial difference ≤ `alignment.azimuth_tolerance_deg`, 20°)
+  AND their LEG length fits our planned lateral (± the basin tolerance).
+  Otherwise **narvi generates that WHOLE bench** (never a mixed bench). A
+  stick set is laid out in its own DSU polygons, not the deal's unit, so
+  crossing sticks and short-leg U-turns under a long-single plan are normal
+  and mean "generate". A kept bench adopts the sticks as they are, U-turns
+  included (it then pools on the sticks' completed lateral), and narvi saves
+  it with bench source `box`. On four past deals (473 unit × bench cells) the
+  rule kept 30 cells on BOX sticks against 15 on Novi sticks; 189 cells had a
+  BOX stick against 287 with a Novi stick (no BOX sticks in BS2_C / WCC /
+  WCXY / WDFD there). The review page shows each bench's BOX stick count,
+  azimuth and leg length with the reason. Pad IoU vs `intel_pad_geom` is
+  advisory only.
+- **Spacing for generated benches** (config v18; v15 Michael 2026-10-22, RIP
+  Harambe; `dealintake/spacing.py`, config `planned_spacing:`): reviewer
+  `spacing_ft` / `--spacing` → else the SAME bench's **BOX sticks near the
+  unit**: the median of the planned spacing those sticks carry
+  (`spacing_ft`, set by the stick generator from producing-well spacing),
+  within 1 → 2 → 3 mi until ≥ 6 sticks → else the bench's **offset PDP
   `lateral_closer_xy_ft`** within 3 mi (first prod ≥ 2016, NULL / 2,800
   sentinel out, ≥ 6 wells) → else **no number**: the bench is not previewed,
   goes to "Needs a look", and `evaluate` refuses until the reviewer sets
-  `spacing_ft`. The 880-ft fallback is retired. Measured per UNIT (each unit
-  generates at its own nearby pattern; the pool's tight-spacing class uses
-  the median over the bench's units; a unit with no pattern of its own
-  borrows that median, labelled). The review page shows the source, radius
-  and IQR per bench; an IQR wider than 15 % of the median (two patterns side
-  by side — RIP Harambe WCB_1 at 1,058 / 1,320) is flagged "mixed". Known
-  read: where Novi does not split the Wolfcamp A (only WCXY RES around RIP
-  Harambe 15-22 / the blob / Boondoggle), WCA_1 / WCA_2 fall to the PDP
-  closer-XY. The old in-unit midpoint projection is gone (it read 749 ft
-  on a 1,320-ft pattern when rows of differently oriented sticks mixed).
+  `spacing_ft`. The 880-ft fallback is retired. Resolved per UNIT (each unit
+  generates at its own nearby number; the pool's tight-spacing class uses
+  the median over the bench's units; a unit with none of its own borrows
+  that median, labelled). The review page shows the source, radius and IQR
+  per bench; an IQR wider than 15 % of the median is flagged "mixed", and the
+  text says when most of the sticks' spacing was set from wells 10+ miles
+  away. Known read: a bench with no BOX sticks (BS2_C, WCC, WCXY, WDFD on
+  the 2026-11 record sets) falls to the PDP closer-XY or to the reviewer.
+  The chain no longer measures gaps between drawn sticks. The neighbour-gap
+  function and its four config knobs stay, because the BOX stick generator
+  measures producing-well spacing with them — do not remove them.
 - PDP already in the unit (≥ 30 % overlap) per bench — feeds the tier flip.
 
 **Reviewer gate — do not run `evaluate` until Michael confirms:** the
@@ -315,7 +320,7 @@ bench he wants included despite thin control. Walk him through the
 ```
 python -m dealintake.cli evaluate --run-dir runs/<deal>-<date>
        [--benches WCA_1 WCA_2 ...]       ONE deal-wide list (simple deals); omit to use benches.yaml
-       [--spacing BENCH=FT ...]          per-bench planned spacing (default: nearby-Novi pattern, config v15)
+       [--spacing BENCH=FT ...]          per-bench planned spacing (default: nearby BOX sticks, config v18)
        [--radius BENCH=MILES ...]        reviewer pool radius (gate 5a)
        [--tc-single BENCH ...]           reviewer: ONE TC for the bench (escalate resolved / pooled, no multiplier)
        [--tc-groups BENCH=unitA,unitB[;unitC] ...]   reviewer TC grouping (gate 5b)
@@ -397,8 +402,8 @@ Filling before splitting starved remote units and hid a real split (Toucan).
 
 ### Gate 3 — bench support
 
-Per location: `pdp_count_3mi` (Novi sticks carry it; narvi-generated sticks
-get it live from `pdp_support_for_geom`, same sql/30 predicate set). Bench
+Per location: `pdp_count_3mi`, live from `pdp_support_for_geom` (same sql/30
+predicate set) for kept BOX sticks and narvi-generated sticks alike. Bench
 status per unit = median vs `bench_inclusion.pdp_count_3mi_min`:
 `pass | escalate (marginal: live re-count before excluding) | escalate
 (unscorable)`. It counts RAW producers (no vintage floor, no lateral band,

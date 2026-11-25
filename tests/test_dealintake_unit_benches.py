@@ -143,7 +143,7 @@ def test_review_page_renders_from_proposal(tmp_path):
                            {"bench": "WCB_1", "median_tvd_ft": 12394.0, "wells": 10, "status": "edge", "margin_ft": 170, "note": None}],
         "bench_seed": {"WCA_1": {"evaluate": False, "why": "edge: 99 ft OUTSIDE ..."},
                        "WCB_1": {"evaluate": True, "why": "edge: 170 ft inside ..."}},
-        "gate2": {"WCB_1": {"pud_inside": 2, "pud_crossing": 0, "res_inside": 0, "res_crossing": 0, "source": "novi", "reason": "x"}},
+        "gate2": {"WCB_1": {"box_inside": 2, "box_crossing": 0, "box_uturn": 0, "source": "box", "reason": "x"}},
         "pdp_in_unit": [{"bench": "WCA_1"}], "offset_pdp_3mi": {"WCA_1": 64, "WCB_1": 14},
     }
     twin = dict(unit, label="u2", dsu_name="2-11 (Bone Spring)", bench_seed={}, gate2={})
@@ -152,19 +152,20 @@ def test_review_page_renders_from_proposal(tmp_path):
     (tmp_path / "proposal.json").write_text(json.dumps(prop), encoding="utf-8")
     (tmp_path / "review_geoms.json").write_text(json.dumps({"u1": {
         "pdp": [{"api10": "1", "bench": "WCA_1", "wkt": "LINESTRING(-103.315 31.735, -103.312 31.755)"}],
-        "novi": [{"stick_id": 5, "bench": "WCB_1", "category": "PUD", "relation": "inside",
-                  "wkt": "LINESTRING(-103.31 31.735, -103.307 31.755)"}]}}), encoding="utf-8")
+        "box": [{"stick_id": 10000005, "bench": "WCB_1", "well_type": "single", "relation": "inside",
+                 "wkt": "MULTILINESTRING((-103.31 31.735, -103.307 31.755))"}]}}), encoding="utf-8")
     unit["gunbarrel"] = {"azimuth_deg": 162.5, "cross_extent_ft": [-1300, 1300], "bench_tvd_ft": {"WCB_1": 12394.0},
                          "existing": [{"api10": "1", "bench": "WCA_1", "offset_ft": -400, "tvd_ft": 12125.0, "inside": True}],
-                         "novi": [{"stick_id": 5, "bench": "WCB_1", "offset_ft": 200, "tvd_ft": 12390.0, "relation": "inside"}],
-                         "planned": {"WCB_1": {"tvd_ft": 12394.0, "spacing_ft": 1320.0, "spacing_source": "Novi BASE_CASE",
+                         "box": [{"stick_id": 10000005, "bench": "WCB_1", "offset_ft": 200, "tvd_ft": 12390.0, "relation": "inside"}],
+                         "planned": {"WCB_1": {"tvd_ft": 12394.0, "spacing_ft": 1320.0, "spacing_source": "BOX sticks",
                                                "offsets_ft": [-660, 660], "lateral_ft": [9900, 9900]}}}
     (tmp_path / "proposal.json").write_text(json.dumps(prop), encoding="utf-8")
     text = review.render(tmp_path).read_text(encoding="utf-8")
     assert text.count("<svg") == 6                       # overview + (map + strip) x 2 units + 1 gunbarrel
     assert "gunbarrel" in text and "2 sticks @ 1,320 ft" in text
-    # Novi sticks are not drawn; the legend carries only existing benches + proposed rows
-    assert "Novi BASE_CASE stick" not in text.split("gunbarrel", 1)[1][:20000]
+    # sticks are not drawn on the gunbarrel; the legend carries only existing benches + proposed rows
+    assert "BOX stick inside" not in text.split("gunbarrel", 1)[1][:20000]
+    assert "Novi" not in text                              # the review page shows no Novi stick (2026-11-25)
     assert "same footprint as 2-11 (Bone Spring)" in text and "12,224' declared" in text
     assert "None" not in text and ">ON<" in text and ">off<" in text
 
@@ -306,11 +307,11 @@ def test_reviewer_pattern_overrides_novi_location_source():
     Novi means GENERATE; no pattern keeps Novi; a generate bench is untouched."""
     from dealintake.pipeline import location_source
 
-    novi = {"source": "novi", "reason": "all BASE_CASE sticks inside, oriented and sized like the plan", "pud_inside": 1}
+    novi = {"source": "box", "reason": "all BOX sticks inside, oriented and sized like the plan", "box_inside": 1}
     got = location_source(novi, {"tvd_ft": 11150.0, "spacing_ft": 1320.0, "n_wells": 4})
     assert got["source"] == "generate" and "tvd_ft, spacing_ft, n_wells" in got["reason"]
-    assert got["novi_reason"] == novi["reason"]
+    assert got["box_reason"] == novi["reason"]
     assert location_source(novi, {}) is novi
     assert location_source(novi, {"role": "upside"}) is novi           # role is not a pattern
-    gen = {"source": "generate", "reason": "no BASE_CASE stick inside"}
+    gen = {"source": "generate", "reason": "no BOX stick inside"}
     assert location_source(gen, {"n_wells": 4}) is gen

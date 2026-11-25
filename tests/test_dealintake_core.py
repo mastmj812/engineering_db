@@ -141,14 +141,37 @@ def test_gate2_orientation_and_length_rule():
     from dealintake.pipeline import gate2_decision
 
     kw = {"planned_azimuth_deg": 72.0, "planned_lateral_ft": 9900.0, "azimuth_tol_deg": 20.0, "lateral_tol": 0.25}
-    ok = {"pud_inside": 4, "pud_crossing": 0, "novi_azimuth_deg": 75.0, "novi_ll_ft": 9600.0}
-    assert gate2_decision(ok, **kw)["source"] == "novi"
-    # VaULt 44-45 S2: Novi supposed 5k E-W laterals — wrong orientation AND length -> generate
-    wrong = {"pud_inside": 4, "pud_crossing": 0, "novi_azimuth_deg": 162.0, "novi_ll_ft": 5000.0}
+    ok = {"box_inside": 4, "box_crossing": 0, "box_azimuth_deg": 75.0, "box_leg_ft": 9600.0}
+    assert gate2_decision(ok, **kw)["source"] == "box"
+    # a stick set laid out the other way with short legs (a U-turn of two ~4,000 ft legs) -> generate
+    wrong = {"box_inside": 4, "box_crossing": 0, "box_uturn": 4, "box_azimuth_deg": 162.0, "box_leg_ft": 4000.0}
     d = gate2_decision(wrong, **kw)
-    assert d["source"] == "generate" and "90° off" in d["reason"] and "5,000 ft" in d["reason"]
-    assert gate2_decision({"pud_inside": 2, "pud_crossing": 1, "novi_azimuth_deg": 72.0, "novi_ll_ft": 9900.0}, **kw)["source"] == "generate"
-    assert gate2_decision({"pud_inside": 0, "pud_crossing": 0}, **kw)["reason"] == "no BASE_CASE stick inside"
+    assert d["source"] == "generate" and "90° off" in d["reason"] and "leg 4,000 ft" in d["reason"]
+    assert gate2_decision({"box_inside": 2, "box_crossing": 1, "box_azimuth_deg": 72.0, "box_leg_ft": 9900.0}, **kw)["source"] == "generate"
+    # U-turns whose LEGS fit the plan are kept as they are, and the reason says so
+    kept_u = gate2_decision({"box_inside": 2, "box_crossing": 0, "box_uturn": 2, "box_azimuth_deg": 72.0, "box_leg_ft": 9800.0}, **kw)
+    assert kept_u["source"] == "box" and "2 U-turn" in kept_u["reason"]
+    assert gate2_decision({"box_inside": 0, "box_crossing": 0}, **kw)["reason"] == "no BOX stick inside"
+
+
+def test_a_uturn_stick_is_judged_leg_by_leg():
+    """A BOX U-turn is a two-part MultiLineString. Relation covers every leg; azimuth and length are per LEG (first to
+    last vertex across both legs is a diagonal, not a bearing)."""
+    from shapely.geometry import MultiLineString
+
+    from dealintake.geo import stick_azimuth, stick_legs, stick_length_ft
+
+    unit = rect_ft(0, 0, 5280, 10560)
+    u = MultiLineString([line_ft((1000, 300), (1000, 5300)), line_ft((2200, 300), (2200, 5300))])
+    assert stick_relation(u, unit) == "inside"
+    half_out = MultiLineString([line_ft((1000, 300), (1000, 5300)), line_ft((6500, 300), (6500, 5300))])
+    assert stick_relation(half_out, unit) == "crossing"            # one leg in the next unit
+    legs = stick_legs(u)
+    assert len(legs) == 2 and len(stick_legs(legs[0])) == 1
+    assert all(abs(stick_azimuth(leg) % 180.0) < 1.0 or abs(stick_azimuth(leg) - 180.0) < 1.0 for leg in legs)
+    assert all(abs(stick_length_ft(leg) - 5000.0) < 5.0 for leg in legs)
+    with pytest.raises(NotImplementedError):                       # a multi-part stick has no single bearing
+        stick_azimuth(u)
 
 
 def test_long_lateral_pool_tolerance():

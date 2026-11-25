@@ -86,9 +86,9 @@ def proposal_md(prop: dict[str, Any]) -> str:
             s.append(md(["Bench", "Local median TVD ft", "Wells", "Status vs window", "Margin ft", "Note"],
                         [[r["bench"], r["median_tvd_ft"], r["wells"], r["status"], r.get("margin_ft"), r.get("note")]
                          for r in u["bench_proposal"]]))
-        s.append("\n**Gate 2 — location source per bench** (BASE_CASE = PUD; RES shown for context)\n")
-        s.append(md(["Bench", "PUD inside", "PUD crossing", "RES inside", "RES crossing", "Source", "Why"],
-                    [[b, g["pud_inside"], g["pud_crossing"], g["res_inside"], g["res_crossing"],
+        s.append("\n**Gate 2 — location source per bench** (BOX sticks that count as inventory)\n")
+        s.append(md(["Bench", "BOX inside", "BOX crossing", "U-turn", "Source", "Why"],
+                    [[b, g.get("box_inside", 0), g.get("box_crossing", 0), g.get("box_uturn", 0),
                       g["source"], g["reason"]] for b, g in u["gate2"].items()]))
         s.append("")
     return "\n".join(s)
@@ -204,7 +204,7 @@ def render(run_dir: Path) -> Path:
     if prox:
         s.append(f"\n## PDP proximity (unit x bench) — {sig['pdp_proximity']['rule']} (PROVISIONAL)\n")
         s.append("Rows inside an existing producer's depletion envelope are culled before the reviewer's row rules "
-                 "(Novi-sourced benches: flagged only). Near-miss = kept, inside the flag band.\n")
+                 "(benches that keep BOX sticks: flagged only). Near-miss = kept, inside the flag band.\n")
         s.append(md(PROXIMITY_HEADERS, prox))
 
     sticks = maps.load_sticks(run_dir)

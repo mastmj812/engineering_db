@@ -1,7 +1,12 @@
 # deal-intake gate thresholds — VERSIONED. Bump config_version on ANY value
 # change and record it in the dossier snapshot; never hardcode a threshold in
 # pipeline logic. Provisional values are marked; calibrate, don't trust.
-config_version: 17                # v17 2026-11-04: PROTOTYPE normalize: (report-only) — BOX's D150 proximity factor on the
+config_version: 18                # v18 2026-11-25: LOCATIONS = BOX STICKS (box.location_stick, record set, counts as
+                                  #    inventory). Gate 2 keeps or generates on BOX sticks (leg length vs the planned
+                                  #    lateral; a kept bench adopts U-turns as they are); spacing chain = BOX sticks'
+                                  #    own planned spacing 1/2/3 mi -> offset PDP closer-XY -> reviewer flag; Novi
+                                  #    Intelligence is comparison only (Michael 2026-11-24/25, BOX sticks phase 7 item 4)
+                                  # v17 2026-11-04: PROTOTYPE normalize: (report-only) — BOX's D150 proximity factor on the
                                   #    generated sticks + every analog, and Cui & Cross lateral translation (D50), read per
                                   #    unit beside the curve; nothing selected or saved on it (Michael, Eggs Tyrone)
                                   # v16 2026-11-04: reviewer POOL STANDOFF rule (pool_standoff:; benches.yaml `pools:`) —
@@ -42,13 +47,12 @@ alignment:                        # gate 2 — location source (v2 rule, 2026-09
   # consistent spacing). Benches with every stick inside keep Novi locations.
   stick_inside_tolerance_ft: 50   # Novi DSU vs Land polygon digitizing slack
   fallback_scope: bench           # bench | unit
-  # Michael 2026-09-25: Novi's guess at a unit's infill is often the wrong
-  # ORIENTATION or LENGTH (VaULt 44-45 S2). Keep Novi locations only when the
-  # BASE_CASE sticks are inside AND within this axial angle of our planned
-  # azimuth AND their lateral is within the basin tolerance of our planned
-  # lateral; otherwise GENERATE — the presence of BASE_CASE sticks is the
-  # infill signal; generated sticks take the spacing of the bench's Novi
-  # sticks NEAR the unit (planned_spacing:, v15).
+  # Michael 2026-09-25, on BOX sticks since v18: a stick set is laid out in its
+  # own DSU polygons, not the deal's unit. Keep a bench's BOX sticks only when
+  # they are all inside AND within this axial angle of our planned azimuth AND
+  # their LEG length is within the basin tolerance of our planned lateral;
+  # otherwise GENERATE. Generated sticks take the spacing of the bench's BOX
+  # sticks NEAR the unit (planned_spacing:, v18).
   azimuth_tolerance_deg: 20
   # Michael 2026-09-26: planned sticks run PARALLEL TO THE UNIT LONG AXIS. narvi's
   # neighborhood-grid azimuth (a TRUE bearing: ST_Azimuth on geography) is
@@ -250,17 +254,20 @@ spacing:                          # gate 5.2 — classified at RUNTIME vs the
   # 2026-07-14): spacing when the offset came online, not current infill.
   # Real-spacing P10/P50/P90 excl. sentinel: 632/1,024/1,749 ft.
 
-planned_spacing:                  # v15 (Michael 2026-10-22, RIP Harambe) — row spacing of a GENERATED bench.
-  # "Generate the spacing from the spacing of Novi locations in the respective
-  # bench near the parcel." dealintake/spacing.py. Each Novi stick's gap = median
-  # perpendicular distance to its nearest PARALLEL neighbour of the same bench,
-  # over the shared length (own frame — pattern orientation does not matter).
-  # Chain: Novi PUD at each radius step -> Novi RES at each step -> offset PDP
-  # lateral_closer_xy_ft (same bench, first prod >= type_curve.first_prod_after,
-  # NULL / spacing.sentinel_ft excluded) -> NO number: the bench is flagged and
-  # the reviewer sets spacing_ft (no silent 880). Reviewer spacing_ft wins over all.
+planned_spacing:                  # v18 (v15 Michael 2026-10-22, RIP Harambe) — row spacing of a GENERATED bench.
+  # From the locations of the same bench near the parcel: BOX sticks, each of
+  # which carries its own planned leg-to-leg spacing (dealintake/spacing.py).
+  # Chain: the median planned spacing of the bench's BOX sticks at each radius
+  # step -> offset PDP lateral_closer_xy_ft (same bench, first prod >=
+  # type_curve.first_prod_after, NULL / spacing.sentinel_ft excluded) -> NO
+  # number: the bench is flagged and the reviewer sets spacing_ft (no silent
+  # 880). Reviewer spacing_ft wins over all. The text says when most of the
+  # sticks' spacing was set from wells 10+ miles away.
   radius_steps_mi: [1, 2, 3]      # nearest first; widen until min_gaps
-  min_gaps: 6                     # gaps (or bounded PDP wells) a source needs to count
+  min_gaps: 6                     # BOX sticks (or bounded PDP wells) a source needs to count
+  # The four gap knobs below are NOT used by the deal-intake chain since v18. They are READ BY THE
+  # BOX STICK GENERATOR (scripts/box_sticks_phase2a.py), which measures producing-well spacing by
+  # the neighbour-gap method (dealintake.spacing.neighbour_gaps_ft). Changing one changes BOX sticks.
   parallel_tol_deg: 15            # neighbour must run within this axial angle
   overlap_min_frac: 0.30          # ... alongside >= this share of the stick (rule-9 co-extent)
   same_slot_ft: 300               # closer = same slot (stacked / staggered / digitizing), not a spacing

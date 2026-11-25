@@ -151,7 +151,7 @@ class ProximityRule:
 def summarize(rows: list[dict[str, Any]], kept: list[dict[str, Any]], *, enabled: bool) -> dict[str, Any] | None:
     """Per (unit x bench): what the rule did to these rows. `enabled` False =
     the rule was overridden (reviewer `pdp_proximity: false`) or is flag-only
-    (Novi-sourced bench): the would-cull rows are listed, nothing was removed."""
+    (a bench that keeps BOX sticks): the would-cull rows are listed, nothing was removed."""
     checked = [r for r in rows if r.get("proximity") is not None]
     if not checked:
         return None
@@ -180,9 +180,9 @@ def flags(where: str, s: dict[str, Any] | None, *, source: str = "generate",
     if not s:
         return []
     out = []
-    if source == "novi" and s["would_cull"]:
-        out.append(f"PDP proximity: {where} keeps Novi BASE_CASE locations, {len(s['would_cull'])} of them inside the "
-                   f"envelope ({s['rule']}; nearest {s['would_cull'][0]['text']}) — flag only, Novi sticks are never culled")
+    if source == "box" and s["would_cull"]:
+        out.append(f"PDP proximity: {where} keeps BOX sticks, {len(s['would_cull'])} leg(s) of them inside the "
+                   f"envelope ({s['rule']}; nearest {s['would_cull'][0]['text']}) — flag only, kept sticks are never culled")
     elif s["would_cull"]:
         out.append(f"PDP proximity OVERRIDDEN (pdp_proximity: false): {where} keeps {len(s['would_cull'])} row(s) the rule "
                    f"would cull ({s['rule']}; nearest {s['would_cull'][0]['text']})")
