@@ -15,8 +15,8 @@ rebuilds the whole graph in dependency order:
    4. sql/20  producing_reference           (sql/14 crosswalk + sql/18
    5. sql/23  formation_blueox_tvd           bench_reference + sql/19)
    6. sql/06  wells_enriched +          11. sql/68  reconciled_inventory
-      production_normalized +           12. sql/25  net_new_pdp
-      type_curve_cohorts                13. apply_intel_pdp_support (sql/30)
+      production_normalized +           12. (sql/25 net_new_pdp: retired)
+      type_curve_cohorts                13. (sql/30 intel_pdp_support: retired)
    7. sql/10  production_forecast +     14. apply_erebor_locations (sql/22,
       production_combined                   FINAL: restores refresh_all() +
                                             re-applies sql/31 comments)
@@ -59,7 +59,6 @@ from pathlib import Path
 
 from etl.db import get_connection
 from scripts import apply_erebor_locations, apply_intel_formation_blueox
-from scripts import apply_intel_pdp_support
 
 SQL = Path(__file__).resolve().parent.parent / "sql"
 
@@ -191,19 +190,10 @@ def main() -> None:
           "wells_enriched already rebuilt in steps 4-6)", flush=True)
     _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")
 
-    print(f"[12/{n}] net_new_pdp (sql/25)", flush=True)
-    _exec("net_new_pdp", "25_net_new_pdp.sql")
-
-    # build()/validate() directly, not main() — its argparse would re-parse
-    # THIS script's argv.
-    print(f"[13/{n}] intel_pdp_support (sql/30)", flush=True)
-    conn = get_connection()
-    try:
-        conn.autocommit = True
-        apply_intel_pdp_support.build(conn)
-        apply_intel_pdp_support.validate(conn)
-    finally:
-        conn.close()
+    # steps 12 and 13 built curated.net_new_pdp (sql/25) and curated.intel_pdp_support (sql/30): both retired
+    # (BOX sticks phase 8, sql/80) and never rebuilt. The numbering is kept so old logs still line up.
+    print(f"[12/{n}] net_new_pdp: retired, skipped", flush=True)
+    print(f"[13/{n}] intel_pdp_support: retired, skipped", flush=True)
 
     print(f"[14/{n}] erebor_locations — FINAL step (sql/22 + refresh_all() + sql/31)",
           flush=True)

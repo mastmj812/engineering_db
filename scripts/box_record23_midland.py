@@ -252,9 +252,9 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--pack-path", type=Path, default=rc.DOCS / "midland_pack_recomputed.json")  # D154 (a)
     b.add_argument("--data-through", type=dt.date.fromisoformat, default=None, help="pin the last full month (default: the live one)")
     b.add_argument("--allow-other-haircut", action="store_true", help="sensitivity only: a pack whose WCA_1 haircut is not D154's")
-    b.add_argument("--source", choices=(pr.SOURCE_NOVI, pr.SOURCE_BOX), default=pr.SOURCE_BOX,
-                   help="the location universe: box_sticks (default since the 2026-11-24 cutover; the Midland record BOX stick set) "
-                        "or novi (run 30's), only when asked for by name")
+    b.add_argument("--source", choices=pr.BUILD_SOURCES, default=pr.SOURCE_BOX,
+                   help="the location universe = the Midland record BOX stick set. A run on Novi sticks can no longer be built "
+                        "(BOX sticks phase 8)")
     s = sub.add_parser("store")
     s.add_argument("--out", type=Path, default=Path("runs") / "step23" / "midland_base")
     a = ap.parse_args(argv)

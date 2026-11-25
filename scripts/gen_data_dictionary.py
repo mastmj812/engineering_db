@@ -45,14 +45,12 @@ _KIND = {"r": "table", "v": "view", "m": "materialized view"}
 _QUARTERLY = {
     "curated.intel_formation_blueox",
     "curated.reconciled_inventory",
-    "curated.net_new_pdp",
     "curated.intel_arps",
     "curated.intel_forecast",
     "curated.bench_reference",  # sql/18, rebuilt by apply_intel_formation_blueox
-    "curated.intel_pdp_support",  # sql/30, "Quarterly refresh only (NOT nightly)"
     "curated.intel_pad_member",  # sql/67, rebuilt by apply_intel_pad_geom
     "curated.intel_pad_geom",  # sql/67, rebuilt by apply_intel_pad_geom
-    "curated.novi_stick_locations",  # sql/78, rebuilt by apply_erebor_locations --novi-sticks-only (every input is quarterly-owned)
+    # curated.net_new_pdp, intel_pdp_support and novi_stick_locations were here: retired (BOX sticks phase 8, sql/80)
 }
 
 # Primary downstream consumers, maintained by hand (small on purpose).
@@ -63,8 +61,7 @@ _CONSUMERS = {
     "curated.production_forecast": "anduin (Novi ML forecast overlay)",
     "curated.type_curve_cohorts": "legacy delaware_basin_eval",
     "curated.intel_locations": "erebor BOX pad workup + single-well lookup (stick names, Novi-vs-BOX cross-check); Novi tags/NPV no longer read by erebor",
-    "curated.reconciled_inventory": "narvi remaining inventory; erebor realized class (Highgrade excludes realized; pad workup lists it)",
-    "curated.intel_pdp_support": "folded into erebor_locations (sql/22); erebor no longer screens on it (Novi screens removed 2026-10-21)",
+    "curated.reconciled_inventory": "Novi comparison only: the Novi accuracy matviews (sql/38, sql/43) and erebor's Accuracy tab (which Novi stick a well realized). Locations are BOX sticks; their status is curated.box_location_status",
     "curated.intel_pad_member": "erebor Highgrade per-pad BOX aggregation + pad workup (stick_id -> pad_key)",
     "curated.intel_pad_geom": "erebor Highgrade choropleth + per-DSU gunbarrel (pad polygons)",
     "curated.codev_context": "deal-intake v2 co-development tiering (dealintake/select_wells.py); curated.dev_scenario (sql/50)",
@@ -72,7 +69,6 @@ _CONSUMERS = {
     "curated.well_neighbors": "BOX 3-D spacing features (box/spacing3d.py): backtest / hindcast terms, PUD forecasts at planned spacing (plan step 7)",
     "curated.well_lateral_survey": "BOX tops-vs-tag QC (box/tops_qc.py): station-level grid sampling, KB datum check",
     "curated.erebor_locations": "erebor map tiles, lasso selection, Highgrade population (the record BOX stick set + producing wells, with the nightly recon_status; BOX forecast values are joined at query time, NOT stored here); curated.box_scout_locations; land team direct GIS; narvi (producing wells only)",
-    "curated.novi_stick_locations": "deal-intake (the Novi sticks of a unit and their Novi parameters), until its own cutover to BOX sticks",
     "curated.intel_forecast_accuracy": "erebor Accuracy tab, deal-intake inflation-band calibration",
     "curated.intel_forecast_accuracy_vintage": "vintage-over-vintage Novi calibration (superseded vintages vs accrued actuals)",
     "curated.water_data_quality": "anduin water-stream provenance badge/filter (planned)",
@@ -250,7 +246,7 @@ def render(model: dict[str, Any]) -> str:
         "matviews in dependency order. Quarterly: the intel reload chain "
         "rebuilds the intel-derived matviews "
         "(`load_intel_sf` -> `apply_intel_formation_blueox` -> "
-        "`apply_reconciled_inventory` -> `apply_erebor_locations --novi-sticks-only`); "
+        "`apply_reconciled_inventory` -> `apply_intel_forecast_accuracy` -> `apply_erebor_locations --after-reload`); "
         "it does not drop `curated.erebor_locations`. "
         "The `narvi` schema is app-owned and not documented here."
     )

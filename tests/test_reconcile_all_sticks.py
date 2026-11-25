@@ -67,7 +67,7 @@ def test_sql21_is_retired():
 
 
 def test_net_new_and_vintage_accuracy_match_every_stick():
-    assert "WHERE il.category IN ('PUD', 'RES')" in a.net_new_select(_read("25_net_new_pdp.sql"))
+    # sql/25 (net_new_pdp) matched every stick too until it was retired (BOX sticks phase 8): see the tombstone test
     sql43 = next(SQL.glob("43_*.sql")).read_text(encoding="utf-8")
     assert "wm.inventory_class IN ('BASE_CASE', 'EMERGING')" in sql43
     assert "wm.inventory_class = 'BASE_CASE'" not in sql43

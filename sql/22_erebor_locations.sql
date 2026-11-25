@@ -9,7 +9,7 @@
 --             box.location_set.is_record, sql/73): the undrilled locations.
 --             Since the BOX sticks cutover (docs/box_sticks_plan.md, phase 6;
 --             Michael 2026-11-23). Until then this arm was the Novi PUD / RES
---             sticks; those now live in curated.novi_stick_locations (sql/78)
+--             sticks; those now live in curated.intel_locations (sql/29)
 --             for the readers still on Novi sticks (deal-intake).
 --   * PDP  -> curated.wells_enriched (producing horizontals): what physically
 --             EXISTS, from the system of record.
@@ -227,7 +227,7 @@ CREATE INDEX idx_erebor_locations_recon       ON curated.erebor_locations (basin
 
 
 COMMENT ON MATERIALIZED VIEW curated.erebor_locations IS
-'erebor display spine and the base of the land team''s view (sql/69). Undrilled locations = the RECORD BOX stick set of each basin (category BOX; stick_id = box.location.location_id, 10,000,001 and up; one LineString per stick, a U-turn stick including its turn arc; tvd = the stick''s landing TVD; recon_status = the nightly reconciliation of sql/74; a producing stick is not a row). Producing wells = curated.wells_enriched horizontals (category PDP; stick_id = -(api10)). Novi sticks are no longer here: see curated.novi_stick_locations (sql/78). No Novi Intelligence relation is read (phase 7 item 2): the Novi-only columns (deplet_t, rqs, rqt, operator on BOX rows, NPV / PV / EUR / prices, the offset-support family) are kept for shape and are NULL; the only Novi input is a BOX stick''s DSU name and id (raw_novi_intel.pads). UNIQUE(stick_id) enables CONCURRENTLY refresh; refreshed nightly; a quarterly Novi reload does not drop it.';
+'erebor display spine and the base of the land team''s view (sql/69). Undrilled locations = the RECORD BOX stick set of each basin (category BOX; stick_id = box.location.location_id, 10,000,001 and up; one LineString per stick, a U-turn stick including its turn arc; tvd = the stick''s landing TVD; recon_status = the nightly reconciliation of sql/74; a producing stick is not a row). Producing wells = curated.wells_enriched horizontals (category PDP; stick_id = -(api10)). Novi sticks are no longer here: see curated.intel_locations (sql/29). No Novi Intelligence relation is read (phase 7 item 2): the Novi-only columns (deplet_t, rqs, rqt, operator on BOX rows, NPV / PV / EUR / prices, the offset-support family) are kept for shape and are NULL; the only Novi input is a BOX stick''s DSU name and id (raw_novi_intel.pads). UNIQUE(stick_id) enables CONCURRENTLY refresh; refreshed nightly; a quarterly Novi reload does not drop it.';
 
 COMMENT ON COLUMN curated.erebor_locations.stick_id IS
 'Location key. BOX stick: box.location.location_id (10,000,001 and up). Producing well: -(api10). The sign is load-bearing (promoteId, culls, PDP tests): never abs() it.';

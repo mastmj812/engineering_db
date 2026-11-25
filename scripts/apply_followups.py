@@ -39,6 +39,8 @@ def _exec(label: str, fname: str) -> None:
 
 
 def main() -> None:
+    raise SystemExit("historical one-off, already applied: it rebuilt curated.net_new_pdp / intel_pdp_support, which are retired "
+                     "(BOX sticks phase 8, sql/80). Use the novi-quarterly-reload chain or scripts.apply_reconciled_inventory.")
     t = time.monotonic()
     print("[1/4] rebuild curated.reconciled_inventory (corrected-bench match — heavy)", flush=True)
     _exec("reconciled_inventory", "68_reconcile_all_sticks.sql")

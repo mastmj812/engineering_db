@@ -88,8 +88,7 @@ ANALYZE curated.wells;
 \ir 18_bench_reference.sql
 \ir 19_intel_formation_blueox.sql
 \ir 68_reconcile_all_sticks.sql
-\ir 25_net_new_pdp.sql
-\ir 30_intel_pdp_support.sql
+-- sql/25 (net_new_pdp) and sql/30 (intel_pdp_support) ran here: both retired (BOX sticks phase 8, sql/80)
 \ir 22_erebor_locations.sql
 \ir 69_box_scout_locations.sql
 \ir 31_comments.sql
