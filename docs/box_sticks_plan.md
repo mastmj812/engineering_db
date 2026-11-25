@@ -772,8 +772,12 @@ Steps, each its own gate:
      now unreachable and were left in place.
    - Data dictionary regenerated from live: 110 relations, the three retired ones gone. The comments of
      `curated.erebor_locations` (sql/31, sql/22) pointed readers at `curated.novi_stick_locations` for the Novi values;
-     the files now name `curated.intel_locations`. **On live the old comment text stands until sql/31 is next applied**
-     (a write: its own go, or the next reload's `--after-reload` step), so the committed dictionary still shows it.
+     the files now name `curated.intel_locations`. **Applied on live 2026-11-25 on Michael's "Yes, apply comments"**
+     (`apply_erebor_locations --after-reload` = sql/31, plus the relation comments of `erebor_locations` and
+     `reconciled_inventory` from sql/22 / sql/68; comments only, row counts unchanged). Three more texts that presented
+     a retired relation as standing were corrected with it (the `reconciled_inventory` relation and `status` comments,
+     the `pdp_support_for_geom` function comment in sql/31 and sql/48). After it no relation or column comment on live
+     names the Novi stick table or points at `net_new_pdp`, and the dictionary was regenerated again.
    - The stale July copy of the reload skill under `Projects/.claude/skills` (shapefile-era, ended on the full
      `apply_erebor_locations`) is removed; `Projects/CLAUDE.md` updated (both outside this repository).
    - Checked: full suite 1,262 passed, 58 skipped (3 more skips = the matview lint on the three tombstones); ruff clean
