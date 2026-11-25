@@ -611,6 +611,20 @@ repos and from live; what is left, in order, each its own gate:
    Not done: no pad load (2026Q4 DSU polygons), the six crosswalk rows, `--rebuild-reference` still never run.
 3. **narvi.** `_STICK_SQL` (the unit inventory) and `available_benches` (counts, fallback landing depth, suggested spacing) read
    BOX sticks.
+   **Built 2026-11-25, narvi PR 35 (open; nothing on the warehouse changes).** narvi reads `box.location_stick` of the record
+   set directly, because 11,701 of the 79,275 record sticks (14.8 %: 8,128 Delaware, 3,573 Midland) are two-leg U-turns
+   and `curated.erebor_locations` stores each as one line. Decided the same day (Michael, "Yes, all four"):
+   (1) an adopted stick carries a NEW category `box` and bench source `box`; `pud` / `res` / `novi` are refused with a 400
+   (a saved recipe replays on BOX sticks); (2) only sticks that count as inventory are adoptable (open 77,816, pending 101,
+   permitted 771; not crowded 387 or conflict 40); (3) PUD vs UPSIDE in the handoff keeps the agreed rule (at least 3
+   qualifying offsets within 3 miles), now counted by narvi itself, and the Novi inflation ratio is blank; (4) the BOX
+   target depth replaces the Novi stick depth as the fallback landing depth in the same tier order, labelled "BOX stick"
+   (36,924 of 79,275 stick depths come from the thickness or grid rungs; producers in the ring still win). Also: unit
+   membership is the 30 % overlap over ALL legs; suggested spacing = the median `spacing_ft` of the in-unit BOX sticks;
+   each adopted well stores its stick set id. Checked on live, read-only: Delaware pad 9042 adopted 7 of 7 sticks (all
+   U-turn, gunbarrel offsets equal to the stored ones), Midland pad 18207 29 of 29 single sticks. Consequence until
+   item 4: deal-intake's handoff sends `pud` / `novi` and is refused by narvi. anduin: read, not run; it branches on `pdp`
+   and on `pud` / `res` only, so a `box` well takes the persisted neighborhood comparison set like a generated well.
 4. **deal-intake.** `novi_sticks`, gate 2 (keep or generate), adopted locations, spacing chain steps 1-2 read BOX sticks. After
    narvi, because the handoff saves narvi scenarios.
 
