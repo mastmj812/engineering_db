@@ -5,12 +5,16 @@ import datetime as dt
 from box import refresh13 as r13
 
 
-def test_due_on_a_new_vintage_or_a_lag_over_four_months():
+def test_due_on_a_production_lag_over_four_months_never_on_a_novi_vintage():
+    """BOX sticks phase 8 (Michael 2026-11-25): locations are ours, so a Novi Intelligence vintage is no trigger.
+    D126's lag rule is unchanged and is now the only one."""
     d = dt.date
-    assert r13.due("2026Q3", "2026Q4", d(2026, 7, 1), d(2026, 8, 1)) == (True, ["new Novi vintage 2026Q4 (record 2026Q3)"])
-    assert r13.due("2026Q3", "2026Q3", d(2026, 7, 1), d(2026, 11, 1))[0] is False  # 4 months: inside the safety net
-    ok, why = r13.due("2026Q3", "2026Q3", d(2026, 7, 1), d(2026, 12, 1))
+    assert r13.LAG_MONTHS == 4
+    assert r13.due(d(2026, 7, 1), d(2026, 8, 1)) == (False, [])
+    assert r13.due(d(2026, 7, 1), d(2026, 11, 1))[0] is False          # 4 months: inside the rule
+    ok, why = r13.due(d(2026, 7, 1), d(2026, 12, 1))
     assert ok and "5 months" in why[0]
+    assert "intel_locations" not in r13.STATE_SQL and "report_version" not in r13.STATE_SQL
 
 
 def test_extent_trigger_is_n_10():

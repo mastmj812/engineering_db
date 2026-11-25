@@ -1,6 +1,6 @@
 """BOX steady-state refresh (step 13b, D126) — one entry point for the quarterly / on-demand refresh. Read-only.
 
-    python -m scripts.box_refresh check                      is a refresh due (vintage, 4-month lag), the extent trigger per group
+    python -m scripts.box_refresh check                      is a refresh due (production lag over 4 months), the extent trigger per group
     python -m scripts.box_refresh plan  --pool <dir> --out runs/<label> [--workers 14]
                                                              the ordered chain; every store is printed, never run (each its own go)
     python -m scripts.box_refresh build --pool <dir> --out runs/<label> [--workers 14]
@@ -30,15 +30,16 @@ def check(basin: str) -> int:
         row = cur.fetchone()
         if row is None:
             raise SystemExit(f"no {basin} record run")
-        run_id, rv, through, live_v, live_through = row
+        run_id, through, live_through = row
         counts = {}
         for g, (forms, bench) in groups.items():
             cur.execute(r13.EXTENT_SQL, {"basin": basin, "bench": bench, "forms": list(forms), "x_m": r13.EXTENT_X_MI * r13.MI_M})
             counts[g] = int(cur.fetchone()[0])
         conn.rollback()
-    is_due, why = r13.due(rv, live_v, through, live_through)
-    print(f"{basin} record run {run_id}: Novi {rv}, production through {through} | warehouse: Novi {live_v}, production through {live_through}")
-    print(("REFRESH DUE: " + "; ".join(why)) if is_due else "no refresh due (vintage unchanged, lag within the safety net); on demand stays open")
+    is_due, why = r13.due(through, live_through)
+    print(f"{basin} record run {run_id}: production through {through} | warehouse: production through {live_through}")
+    print(("REFRESH DUE: " + "; ".join(why)) if is_due
+          else f"no refresh due (production lag within {r13.LAG_MONTHS} months); on demand stays open")
     trig = r13.extent_trigger(counts)
     print(f"extent trigger (>= {r13.EXTENT_N} producers first producing after the extent was stored, outside it within {r13.EXTENT_X_MI:g} mi):")
     print("  " + ", ".join(f"{g} {c}" for g, c in counts.items()))
